@@ -1,4 +1,4 @@
-# D:\PROJECT_NEUMATIC\neumatic\apps\maestros\models\base_gen_models.py
+# neumatic\apps\maestros\models\base_gen_models.py
 from django.db import models
 
 import socket
@@ -9,6 +9,7 @@ from datetime import datetime
 
 # Importa el modelo User Personalizado
 from apps.usuarios.models import User       
+
 
 class ModeloBaseGenerico(models.Model):
 	usuario = models.CharField(max_length=20, null=True, blank=True)

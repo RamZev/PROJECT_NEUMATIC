@@ -1,4 +1,4 @@
-# D:\HL_PROJECT\PERSONALSYS\apps\maestros\views\cruds_views_generics.py
+# neumatic\apps\maestros\views\cruds_views_generics.py
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
 from django.db.models import Q
 from django.http import JsonResponse
@@ -21,7 +21,6 @@ class MaestroListView(ListView):
 	cadena_filtro = ""
 	paginate_by = 8
 	
-	#app_label = ''
 	search_fields = []
 	ordering = []
 	
@@ -49,9 +48,6 @@ class MaestroListView(ListView):
 		#-- Obtener la cadena de filtro.
 		query = self.request.GET.get('busqueda', None)
 		
-		# #-- Obtener el modelo dinámicamente.
-		# Model = apps.get_model(app_label=self.app_label, model_name=self.model.__name__)
-		
 		#-- Crear la cadena de filtro en base a la lista search_fields-
 		cadena_filtro = ""
 		for field in self.search_fields:
@@ -63,33 +59,16 @@ class MaestroListView(ListView):
 		
 		#-- Ejecutar la consulta.
 		if query and cadena_filtro:
-			#queryset = Model.objects.filter(eval(cadena_filtro))
 			queryset = queryset.filter(eval(cadena_filtro))
-		# else:
-		# 	# Sin filtro, obtener todos los registros
-		# 	queryset = Model.objects.all()
 		
 		# Ordenar el queryset según la lista ordering
 		queryset = queryset.order_by(*self.ordering)
-		
-		############################################
-		# text = self.request.GET.get('buscar', None)
-		# if text and self.cadena_filtro:
-		# 	queryset = queryset.filter(eval(self.cadena_filtro))
-		############################################
 		
 		return queryset
 	
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
-		#context["buscar"] = self.request.GET.get('buscar', '')
 		context["busqueda"] = self.request.GET.get('busqueda', '')
-		
-		# #-- Encabezado de la Tabla.
-		# context['table_headers'] = self.table_headers
-		# 
-		# #-- Columnas de la Tabla.
-		# context['table_data'] = self.table_data
 		
 		#-- Agregar valores de paginación y valor seleccionado.
 		context['pagination_options'] = self.pagination_options
@@ -109,12 +88,11 @@ class MaestroListView(ListView):
 				self.paginate_by = paginate_by_value
 			except ValueError:
 				pass
-			
+		
 		#-- Mantener el valor de paginate_by en el formulario de paginación.
 		self.request.GET = self.request.GET.copy()
 		self.request.GET['paginate_by'] = str(self.paginate_by)
-		#print("Mantener el valor de paginate_by: ", self.paginate_by)
-
+		
 		return super().get(request, *args, **kwargs)
 	
 	def get_paginate_by(self, queryset):
@@ -126,32 +104,18 @@ class MaestroListView(ListView):
 class MaestroCreateView(PermissionRequiredMixin, CreateView):
 	list_view_name = None
 	
-#	fields_to_validate = []
-	
-# 	def form_valid(self, form):
-# 		#-- Validar los campos de fields_to_validate.
-# 		for field, error_message in self.fields_to_validate:
-# 			if not form.cleaned_data.get(field):
-# 				form.add_error(field, error_message)
-# 		
-# 		#-- Verificar si hay errores de validación.
-# 		if form.errors:
-# 			print("Hay errores en el formulario!")
-# 			return self.form_invalid(form)
-# 
-# 		#-- Llama al método save del formulario para guardar los datos.
-# 		return super().form_valid(form)
-# 
-# 	
-# 	def form_invalid(self, form):
-# 		"""
-# 		Si el formulario no es válido, renderiza el formulario con los errores.
-# 		"""
-# 		return self.render_to_response(self.get_context_data(form=form))
+	def form_invalid(self, form):
+		"""
+		Si el formulario no es válido, renderiza el formulario con los errores.
+		"""
+		return self.render_to_response(self.get_context_data(form=form))
 	
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
-		context['form'] = self.form_class()
+		#-- Asegurarse de que el formulario en el contexto sea el mismo que se validó
+		if 'form' not in context:
+			context['form'] = self.get_form()
+		context['requerimientos'] = otener_requerimientos_modelo(self.model)
 		return context
 	
 	#-- Método que agrega mensaje cuando no tiene permiso de crear.
@@ -162,10 +126,21 @@ class MaestroCreateView(PermissionRequiredMixin, CreateView):
 
 @method_decorator(login_required, name='dispatch')
 class MaestroUpdateView(PermissionRequiredMixin, UpdateView):
-	# -- Nombre del argumento de clave primaria pasado en el url. Por defecto es pk.
-	# pk_url_kwarg = "id"
-	
 	list_view_name = None
+	
+	def form_invalid(self, form):
+		"""
+		Si el formulario no es válido, renderiza el formulario con los errores.
+		"""
+		return self.render_to_response(self.get_context_data(form=form))
+	
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
+		#-- Asegurarse de que el formulario en el contexto sea el mismo que se validó
+		if 'form' not in context:
+			context['form'] = self.get_form()
+		context['requerimientos'] = otener_requerimientos_modelo(self.model)
+		return context
 	
 	#-- Método que agrega mensaje cuando no tiene permiso de modificar.
 	def handle_no_permission(self):
@@ -175,12 +150,9 @@ class MaestroUpdateView(PermissionRequiredMixin, UpdateView):
 
 @method_decorator(login_required, name='dispatch')
 class MaestroDeleteView(PermissionRequiredMixin, DeleteView):
-	# -- Nombre del argumento de clave primaria pasado en el url. Por defecto es pk.
-	# pk_url_kwarg = "id"
-	
 	list_view_name = None
 	
-	#-- Método que agrega mensaje cuando no tiene permiso de modificar.
+	#-- Método que agrega mensaje cuando no tiene permiso de eliminar.
 	def handle_no_permission(self):
 		messages.error(self.request, 'No tienes permiso para realizar esta acción.')
 		return redirect(self.list_view_name)
@@ -201,3 +173,25 @@ class GenericDetailView(DetailView):
         data = self.get_data(obj)
         return JsonResponse(data)
 # ------------------------------------------------------------------------------------
+
+
+def otener_requerimientos_modelo(modelo):
+	requerimientos = {}
+	
+	for field in modelo._meta.fields:
+		exclud_fields = ['usuario', 'estacion', 'fcontrol']
+		field_info = []
+		
+		if not field.primary_key and field.name not in exclud_fields:
+			if not field.blank:
+				field_info.append("Este campo es obligatorio")
+			
+			if hasattr(field, "max_length") and field.max_length is not None:
+				field_info.append(f"Debe tener un máximo de {field.max_length} caracteres")
+			
+			if field.unique:
+				field_info.append("Debe ser único")
+			
+			requerimientos[field.verbose_name] = field_info
+	
+	return requerimientos

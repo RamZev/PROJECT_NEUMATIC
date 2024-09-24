@@ -2,24 +2,31 @@
 from django import forms
 from ..models.base_models import Actividad
 from diseno_base.diseno_bootstrap import (
-    formclasstext, formclassselect, formclassdate)
+	formclasstext, formclassselect, formclassdate)
 
 
 class ActividadForm(forms.ModelForm):
-    
-    class Meta:
-        model = Actividad
-        fields = '__all__'
+	
+	def __init__(self, *args, **kwargs):
+		super().__init__(*args, **kwargs)
+		
+		#-- Agregar clases CSS a los campos con errores.
+		for field in self.fields:
+			if self[field].errors:
+				self.fields[field].widget.attrs['class'] += ' border-danger is-invalid'
+	
+	class Meta:
+		model = Actividad
+		fields = '__all__'
 
-        widgets = {
-                
-                'estatus_actividad': 
-                    forms.Select(attrs={**formclassselect}), 
-                'descripcion_actividad': 
-                    forms.TextInput(attrs={**formclasstext,
-                                           'placeholder': 'Descripción Actividad'}),
-                'fecha_registro_actividad': 
-                    forms.TextInput(attrs={**formclassdate,
-                                           'placeholder': 'Fecha de Registro' }),
-            
-        }
+		widgets = {
+			'estatus_actividad': 
+				forms.Select(attrs={**formclassselect}), 
+			'descripcion_actividad': 
+				forms.TextInput(attrs={**formclasstext,
+										'placeholder': 'Descripción Actividad'}),
+			'fecha_registro_actividad': 
+				forms.TextInput(attrs={**formclassdate,
+										'placeholder': 'Fecha de Registro' }),
+			
+		}

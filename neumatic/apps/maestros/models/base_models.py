@@ -1,4 +1,4 @@
-# D:\PROJECT_NEUMATIC\neumatic\apps\maestros\models\base_models.py
+# neumatic\apps\maestros\models\base_models.py
 from django.db import models
 from .base_gen_models import ModeloBaseGenerico
 from .sucursal_models import Sucursal
@@ -14,9 +14,10 @@ class Actividad(ModeloBaseGenerico):
     id_actividad = models.AutoField(primary_key=True)
     estatus_actividad = models.BooleanField("Estatus", default=True,
                                          choices=ESTATUS_GEN)    
-    descripcion_actividad = models.CharField(max_length=30)
-    fecha_registro_actividad = models.DateField(blank=True, null=True)
-
+    descripcion_actividad = models.CharField("Descripción actividad", 
+                                             max_length=30)
+    fecha_registro_actividad = models.DateField("Fecha de registro")
+    
     class Meta:
         db_table = 'actividad'
         verbose_name = ('Actividad')
@@ -38,7 +39,7 @@ class ComprobanteCompra(ModeloBaseGenerico):
     codigo_afip_b = models.CharField(max_length=3)
     codigo_afip_c = models.CharField(max_length=3)
     codigo_afip_m = models.CharField(max_length=3)
-
+    
     class Meta:
         db_table = 'comprobante_compra'
         verbose_name = 'Comprobante de Compra'
