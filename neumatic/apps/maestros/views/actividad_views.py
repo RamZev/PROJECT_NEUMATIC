@@ -53,15 +53,7 @@ class ConfigViews():
 	
 	# Nombre de la url 
 	success_url = reverse_lazy(list_view_name)
-	
-	# Campos de validacion
-	fields_to_validate = [
-		('descripcion_actividad', 
-		 'Descripción de Actividad no puede estar vacio'),
-		('fecha_registro_actividad', 
-		 'Fecha de Registro no puede estar vacio'),
-	]
-	
+
 
 class DataViewList():
 	search_fields = ['descripcion_actividad']
