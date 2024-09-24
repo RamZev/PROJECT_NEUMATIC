@@ -94,6 +94,7 @@ class ActividadListView(MaestroListView):
 		"table_data": DataViewList.table_data,
 	}
 
+
 # ActividadCreateView - Inicio
 class ActividadCreateView(MaestroCreateView):
 	model = ConfigViews.model
@@ -105,9 +106,7 @@ class ActividadCreateView(MaestroCreateView):
 	#-- Indicar el permiso que requiere para ejecutar la acción.
 	# (revisar de donde lo copiaste que tienes asignado permission_change en vez de permission_add)
 	permission_required = ConfigViews.permission_add
-
-	fields_to_validate = ConfigViews.fields_to_validate
-
+	
 	extra_context = {
 		"accion": f"Editar {ConfigViews.model._meta.verbose_name}",
 		"list_view_name" : ConfigViews.list_view_name
@@ -121,16 +120,15 @@ class ActividadUpdateView(MaestroUpdateView):
 	form_class = ConfigViews.form_class
 	template_name = ConfigViews.template_form
 	success_url = ConfigViews.success_url
-
+	
 	#-- Indicar el permiso que requiere para ejecutar la acción.
 	permission_required = ConfigViews.permission_change
-	
-	fields_to_validate = ConfigViews.fields_to_validate
 	
 	extra_context = {
 		 "accion": f"Editar {ConfigViews.model._meta.verbose_name}",
 		"list_view_name" : ConfigViews.list_view_name
 	}
+
 
 # ActividadDeleteView
 class ActividadDeleteView (MaestroDeleteView):
@@ -138,10 +136,10 @@ class ActividadDeleteView (MaestroDeleteView):
 	list_view_name = ConfigViews.list_view_name
 	template_name = ConfigViews.template_delete
 	success_url = ConfigViews.success_url
-
+	
 	#-- Indicar el permiso que requiere para ejecutar la acción.
 	permission_required = ConfigViews.permission_delete
-
+	
 	extra_context = {
 		"accion": f"Eliminar {ConfigViews.model._meta.verbose_name}",
 		"list_view_name" : ConfigViews.list_view_name,

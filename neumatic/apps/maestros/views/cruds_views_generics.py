@@ -115,7 +115,7 @@ class MaestroCreateView(PermissionRequiredMixin, CreateView):
 		#-- Asegurarse de que el formulario en el contexto sea el mismo que se validó
 		if 'form' not in context:
 			context['form'] = self.get_form()
-		context['requerimientos'] = otener_requerimientos_modelo(self.model)
+		context['requerimientos'] = obtener_requerimientos_modelo(self.model)
 		return context
 	
 	#-- Método que agrega mensaje cuando no tiene permiso de crear.
@@ -139,7 +139,7 @@ class MaestroUpdateView(PermissionRequiredMixin, UpdateView):
 		#-- Asegurarse de que el formulario en el contexto sea el mismo que se validó
 		if 'form' not in context:
 			context['form'] = self.get_form()
-		context['requerimientos'] = otener_requerimientos_modelo(self.model)
+		context['requerimientos'] = obtener_requerimientos_modelo(self.model)
 		return context
 	
 	#-- Método que agrega mensaje cuando no tiene permiso de modificar.
@@ -175,7 +175,7 @@ class GenericDetailView(DetailView):
 # ------------------------------------------------------------------------------------
 
 
-def otener_requerimientos_modelo(modelo):
+def obtener_requerimientos_modelo(modelo):
 	requerimientos = {}
 	
 	for field in modelo._meta.fields:

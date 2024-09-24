@@ -3,7 +3,7 @@
 
 {% load custom_tags %}
 
-<!-- Block Title  ---------------------------------------------------------------------------------------->
+<!-- Block Title -->
 {% block title %}
 	{{ master_title }}
 {% endblock title %}
@@ -36,12 +36,12 @@
 
 {% debug %}
 
-<!-- Block Header  ---------------------------------------------------------------------------------------->
+<!-- Block Header -->
 {% block header %}
 	{% include 'top_nav.html' %}
 {% endblock header %}
 
-<!-- Block Main - ---------------------------------------------------------------------------------------->
+<!-- Block Main -->
 {% block main %}
 	{% block sidebar %}
 		{% if user.is_authenticated %} 
