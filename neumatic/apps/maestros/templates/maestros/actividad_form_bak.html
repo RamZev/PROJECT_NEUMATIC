@@ -1,4 +1,3 @@
-
 {% extends 'maestro_form.html' %}
 {% load static %}
 <!-- -------------------------------------------------------------------- -->
@@ -28,54 +27,48 @@
 						</div>
 						
 						<div class="card-body bg-body-secondary">
-							<form method="post" enctype="multipart/form-data" novalidate>
+							<form class="needs-validation" method="post" enctype="multipart/form-data" novalidate>
 								{% csrf_token %}
 								<div class="accordion" id="accordionPanelsStayOpenExample">
 									<!-- Estructura generada -->
-
+									
+									<!-- Información Personal Inicio -->
 									<div class="accordion-item">
 										<h2 class="accordion-header">
-											<button 
-												class="accordion-button " 
-												type="button" 
-												data-bs-toggle="collapse" 
-												data-bs-target="#Información_Personal" 
-												aria-expanded="true" 
-												aria-controls="Información_Personal">
-												<strong>Información Personal</strong>
+											<button aria-controls="Información_Personal" aria-expanded="true" class="accordion-button"
+												data-bs-target="#Información_Personal" data-bs-toggle="collapse" type="button">
+												<strong>
+													Información General
+												</strong>
 											</button>
 										</h2>
-										<div class="accordion-collapse collapse show"
-											id="Información_Personal">
+										<div class="accordion-collapse collapse show" id="Información_Personal">
 											<div class="accordion-body bg-secondary-subtle">
+												
 												<div class="row">
+													
 													<div class="col-md-2">
-														<label class="form-label text-primary">
+														<label class="form-label text-primary mb-0">
 															{{ form.estatus_actividad.label }}
 														</label>
-														{{ form.estatus_actividad }}
+														{{ form.estatus_actividad}}
 													</div>
-						
+													
 													<div class="col-md-4">
-														<label class="form-label text-primary">
+														<label class="form-label text-primary mb-0">
 															{{ form.descripcion_actividad.label }}
 														</label>
-														{{ form.descripcion_actividad }}
+														{{ form.descripcion_actividad}}
 													</div>
-						
-													<div class="col-md-2">
-														<label class="form-label text-primary">
-															{{ form.fecha_registro_actividad.label }}
-														</label>
-														{{ form.fecha_registro_actividad }}
-													</div>
+													
 												</div>
+												
 											</div>
 										</div>
 									</div>
-		
+
 								</div>
-								
+
 								<div class="container mt-3">
 									<button class="btn btn-primary" type="submit" id="guardarBtn">
 										Guardar

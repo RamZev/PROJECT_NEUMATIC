@@ -71,7 +71,6 @@ class DataViewList():
 	table_data = [
 		{'field_name': 'descripcion_actividad', 'date_format': None},
 		{'field_name': 'fecha_registro_actividad', 'date_format': 'd/m/Y'},
-		  
 	]
 
 # ActividadListView - Inicio
@@ -108,7 +107,7 @@ class ActividadCreateView(MaestroCreateView):
 	permission_required = ConfigViews.permission_add
 	
 	extra_context = {
-		"accion": f"Editar {ConfigViews.model._meta.verbose_name}",
+		"accion": f"Crear {ConfigViews.model._meta.verbose_name}",
 		"list_view_name" : ConfigViews.list_view_name
 	}
 
@@ -125,7 +124,7 @@ class ActividadUpdateView(MaestroUpdateView):
 	permission_required = ConfigViews.permission_change
 	
 	extra_context = {
-		 "accion": f"Editar {ConfigViews.model._meta.verbose_name}",
+		"accion": f"Editar {ConfigViews.model._meta.verbose_name}",
 		"list_view_name" : ConfigViews.list_view_name
 	}
 

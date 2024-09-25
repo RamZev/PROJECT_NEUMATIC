@@ -27,6 +27,7 @@ class ActividadForm(forms.ModelForm):
 										'placeholder': 'Descripción Actividad'}),
 			'fecha_registro_actividad': 
 				forms.TextInput(attrs={**formclassdate,
+										'type': 'date',
 										'placeholder': 'Fecha de Registro' }),
 			
 		}
