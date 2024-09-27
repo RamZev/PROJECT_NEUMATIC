@@ -52,6 +52,16 @@
                                                         {{ form.descripcion_actividad.errors }}
                                                     </div>
                                                 </div>
+                                                <div class="col-md-2">
+                                                    <label class="form-label text-primary mb-0" for="{{ form.fecha_registro_actividad.id_for_label }}">
+                                                        {{ form.fecha_registro_actividad.label_tag }}
+                                                    </label>
+                                                    {{ form.fecha_registro_actividad}}
+                                                    <div class="invalid-feedback">
+                                                        {{ form.fecha_registro_actividad.errors }}
+                                                    </div>
+                                                </div>
+                                                
                                             </div>
                                         </div>
                                     </div>

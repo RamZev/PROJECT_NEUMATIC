@@ -1,0 +1,49 @@
+{
+  "model_name": "Actividad",
+  "model_string": "default",
+  "file_path": "neumatic\\apps\\maestros\\views\\",
+  "model_import_path": "..models.base_models",
+  "form_import_path": "..forms.actividad_forms",
+  "form_name": "ActividadForm",
+  "config_views": {
+    "model": "Actividad",
+    "form_class": "ActividadForm",
+    "template_delete": "base_confirm_delete.html",
+    "template_list": "maestros/maestro_list.html",
+    "context_object_name": "objetos",
+    "home_view_name": "home"
+  },
+  "permissions": {
+    "permission_add": "add_actividad",
+    "permission_change": "change_actividad",
+    "permission_delete": "delete_actividad"
+  },
+  "views": {
+    "list_view_name": "actividad_list",
+    "create_view_name": "actividad_create",
+    "update_view_name": "actividad_update",
+    "delete_view_name": "actividad_delete"
+  },
+  "template_form": "maestros/actividad_form.html",
+  "success_url": "actividad_list",
+  "data_view_list": {
+    "search_fields": ["descripcion_actividad"],
+    "ordering": ["descripcion_actividad"],
+    "paginate_by": 8,
+    "table_headers": {
+      "descripcion_actividad": [2, "Descripción"],
+      "fecha_registro_actividad": [2, "Fecha Registro"],
+      "acciones": [2, "Acciones"]
+    },
+    "table_data": [
+      {
+        "field_name": "descripcion_actividad",
+        "date_format": null
+      },
+      {
+        "field_name": "fecha_registro_actividad",
+        "date_format": "d/m/Y"
+      }
+    ]
+  }
+}
