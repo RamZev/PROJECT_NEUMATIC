@@ -2,11 +2,122 @@
 from django.urls import path
 
 from .views.actividad_views import *
+from .views.producto_deposito_views import *
+from .views.producto_familia_views import *
+from .views.producto_marca_views import *
+from .views.producto_modelo_views import *
+from .views.producto_minimo_views import *
+from .views.producto_stock_views import *
+from .views.producto_estado_views import *
+
+from .views.moneda_views import *
+from .views.provincia_views import *
+from .views.localidad_views import *
+from .views.tipo_documento_identidad_views import *
+from .views.tipo_iva_views import *
+from .views.tipo_percepcion_ib_views import *
+from .views.tipo_retencion_ib_views import *
+from .views.operario_views import *
+
 
 urlpatterns = [
-    path('actividad/', ActividadListView.as_view(), name='actividad_list'),
-    path('actividad/nueva/', ActividadCreateView.as_view(), name='actividad_create'),
-    path('actividad/<int:pk>/editar/', ActividadUpdateView.as_view(), name='actividad_update'),
-    path('actividad/<int:pk>/eliminar/', ActividadDeleteView.as_view(), name='actividad_delete'),
-        
+	#-- Actividad.
+	path('actividad/', ActividadListView.as_view(), name='actividad_list'),
+	path('actividad/nueva/', ActividadCreateView.as_view(), name='actividad_create'),
+	path('actividad/<int:pk>/editar/', ActividadUpdateView.as_view(), name='actividad_update'),
+	path('actividad/<int:pk>/eliminar/', ActividadDeleteView.as_view(), name='actividad_delete'),
+	
+	#-- ProductoDeposito.
+	path('producto_deposito/', ProductoDepositoListView.as_view(), name='producto_deposito_list'),
+	path('producto_deposito/nueva/', ProductoDepositoCreateView.as_view(), name='producto_deposito_create'),
+	path('producto_deposito/<int:pk>/editar/', ProductoDepositoUpdateView.as_view(), name='producto_deposito_update'),
+	path('producto_deposito/<int:pk>/eliminar/', ProductoDepositoDeleteView.as_view(), name='producto_deposito_delete'),
+	
+	#-- ProductoFamilia.
+	path('producto_familia/', ProductoFamiliaListView.as_view(), name='producto_familia_list'),
+	path('producto_familia/nueva/', ProductoFamiliaCreateView.as_view(), name='producto_familia_create'),
+	path('producto_familia/<int:pk>/editar/', ProductoFamiliaUpdateView.as_view(), name='producto_familia_update'),
+	path('producto_familia/<int:pk>/eliminar/', ProductoFamiliaDeleteView.as_view(), name='producto_familia_delete'),
+	
+	#-- ProductoMarca.
+	path('producto_marca/', ProductoMarcaListView.as_view(), name='producto_marca_list'),
+	path('producto_marca/nueva/', ProductoMarcaCreateView.as_view(), name='producto_marca_create'),
+	path('producto_marca/<int:pk>/editar/', ProductoMarcaUpdateView.as_view(), name='producto_marca_update'),
+	path('producto_marca/<int:pk>/eliminar/', ProductoMarcaDeleteView.as_view(), name='producto_marca_delete'),
+	
+	#-- ProductoModelo.
+	path('producto_modelo/', ProductoModeloListView.as_view(), name='producto_modelo_list'),
+	path('producto_modelo/nueva/', ProductoModeloCreateView.as_view(), name='producto_modelo_create'),
+	path('producto_modelo/<int:pk>/editar/', ProductoModeloUpdateView.as_view(), name='producto_modelo_update'),
+	path('producto_modelo/<int:pk>/eliminar/', ProductoModeloDeleteView.as_view(), name='producto_modelo_delete'),
+	
+	#-- ProductoMinimo.
+	path('producto_minimo/', ProductoMinimoListView.as_view(), name='producto_minimo_list'),
+	path('producto_minimo/nueva/', ProductoMinimoCreateView.as_view(), name='producto_minimo_create'),
+	path('producto_minimo/<int:pk>/editar/', ProductoMinimoUpdateView.as_view(), name='producto_minimo_update'),
+	path('producto_minimo/<int:pk>/eliminar/', ProductoMinimoDeleteView.as_view(), name='producto_minimo_delete'),
+	
+	#-- ProductoStock.
+	path('producto_stock/', ProductoStockListView.as_view(), name='producto_stock_list'),
+	path('producto_stock/nueva/', ProductoStockCreateView.as_view(), name='producto_stock_create'),
+	path('producto_stock/<int:pk>/editar/', ProductoStockUpdateView.as_view(), name='producto_stock_update'),
+	path('producto_stock/<int:pk>/eliminar/', ProductoStockDeleteView.as_view(), name='producto_stock_delete'),
+	
+	#-- ProductoEstado.
+	path('producto_estado/', ProductoestadoListView.as_view(), name='producto_estado_list'),
+	path('producto_estado/nueva/', ProductoestadoCreateView.as_view(), name='producto_estado_create'),
+	path('producto_estado/<int:pk>/editar/', ProductoestadoUpdateView.as_view(), name='producto_estado_update'),
+	path('producto_estado/<int:pk>/eliminar/', ProductoestadoDeleteView.as_view(), name='producto_estado_delete'),
+	
+	#-- ComprobanteVenta.
+	#-- ComprobanteCompra.
+	
+	#-- Moneda.
+	path('moneda/', MonedaListView.as_view(), name='moneda_list'),
+	path('moneda/nueva/', MonedaCreateView.as_view(), name='moneda_create'),
+	path('moneda/<int:pk>/editar/', MonedaUpdateView.as_view(), name='moneda_update'),
+	path('moneda/<int:pk>/eliminar/', MonedaDeleteView.as_view(), name='moneda_delete'),
+	
+	#-- Provincia.
+	path('provincia/', ProvinciaListView.as_view(), name='provincia_list'),
+	path('provincia/nueva/', ProvinciaCreateView.as_view(), name='provincia_create'),
+	path('provincia/<int:pk>/editar/', ProvinciaUpdateView.as_view(), name='provincia_update'),
+	path('provincia/<int:pk>/eliminar/', ProvinciaDeleteView.as_view(), name='provincia_delete'),
+	
+	#-- Localidad.
+	path('localidad/', LocalidadListView.as_view(), name='localidad_list'),
+	path('localidad/nueva/', LocalidadCreateView.as_view(), name='localidad_create'),
+	path('localidad/<int:pk>/editar/', LocalidadUpdateView.as_view(), name='localidad_update'),
+	path('localidad/<int:pk>/eliminar/', LocalidadDeleteView.as_view(), name='localidad_delete'),
+	
+	#-- TipoDocumentoIdentidad.
+	path('tipo_documento_identidad/', TipoDocumentoIdentidadListView.as_view(), name='tipo_documento_identidad_list'),
+	path('tipo_documento_identidad/nueva/', TipoDocumentoIdentidadCreateView.as_view(), name='tipo_documento_identidad_create'),
+	path('tipo_documento_identidad/<int:pk>/editar/', TipoDocumentoIdentidadUpdateView.as_view(), name='tipo_documento_identidad_update'),
+	path('tipo_documento_identidad/<int:pk>/eliminar/', TipoDocumentoIdentidadDeleteView.as_view(), name='tipo_documento_identidad_delete'),
+	
+	#-- TipoIva.
+	path('tipo_iva/', TipoIvaListView.as_view(), name='tipo_iva_list'),
+	path('tipo_iva/nueva/', TipoIvaCreateView.as_view(), name='tipo_iva_create'),
+	path('tipo_iva/<int:pk>/editar/', TipoIvaUpdateView.as_view(), name='tipo_iva_update'),
+	path('tipo_iva/<int:pk>/eliminar/', TipoIvaDeleteView.as_view(), name='tipo_iva_delete'),
+	
+	#-- TipoPercepcionIb.
+	path('tipo_percepcion_ib/', TipoPercepcionIbListView.as_view(), name='tipo_percepcion_ib_list'),
+	path('tipo_percepcion_ib/nueva/', TipoPercepcionIbCreateView.as_view(), name='tipo_percepcion_ib_create'),
+	path('tipo_percepcion_ib/<int:pk>/editar/', TipoPercepcionIbUpdateView.as_view(), name='tipo_percepcion_ib_update'),
+	path('tipo_percepcion_ib/<int:pk>/eliminar/', TipoPercepcionIbDeleteView.as_view(), name='tipo_percepcion_ib_delete'),
+	
+	#-- TipoRetencionIb.
+	path('tipo_retencion_ib/', TipoRetencionIbListView.as_view(), name='tipo_retencion_ib_list'),
+	path('tipo_retencion_ib/nueva/', TipoRetencionIbCreateView.as_view(), name='tipo_retencion_ib_create'),
+	path('tipo_retencion_ib/<int:pk>/editar/', TipoRetencionIbUpdateView.as_view(), name='tipo_retencion_ib_update'),
+	path('tipo_retencion_ib/<int:pk>/eliminar/', TipoRetencionIbDeleteView.as_view(), name='tipo_retencion_ib_delete'),
+	
+	#-- Operario.
+	path('operario/', OperarioListView.as_view(), name='operario_list'),
+	path('operario/nueva/', OperarioCreateView.as_view(), name='operario_create'),
+	path('operario/<int:pk>/editar/', OperarioUpdateView.as_view(), name='operario_update'),
+	path('operario/<int:pk>/eliminar/', OperarioDeleteView.as_view(), name='operario_delete'),
+	
 ]

@@ -1,16 +1,16 @@
-# neumatic\apps\maestros\views\actividad_views.py
+# neumatic\apps\maestros\views\operario_views.py
 from django.urls import reverse_lazy
 from ..views.cruds_views_generics import *
-from ..models.base_models import Actividad
-from ..forms.actividad_forms import ActividadForm
+from ..models.base_models import Operario
+from ..forms.operario_forms import OperarioForm
 
 
 class ConfigViews():
 	# Modelo
-	model = Actividad
+	model = Operario
 	
 	# Formulario asociado al modelo
-	form_class = ActividadForm
+	form_class = OperarioForm
 	
 	# Aplicación asociada al modelo
 	app_label = model._meta.app_label
@@ -23,7 +23,7 @@ class ConfigViews():
 	model_string = model.__name__.lower()  #-- Usar esta forma cuando el modelo esté compuesto de una sola palabra: Ej. Color.
 	
 	#-- Usar esta forma cuando el modelo esté compuesto por más de una palabra: Ej. TipoCambio colocar "tipo_cambio".
-	#model_string = "tipo_cambio"
+	# model_string = "tipo_retencion_ib"
 	
 	# Permisos
 	permission_add = f"{app_label}.add_{model_string}"
@@ -56,26 +56,31 @@ class ConfigViews():
 
 
 class DataViewList():
-	search_fields = ['descripcion_actividad']
+	search_fields = ['nombre_operario', 
+					 'telefono_operario', 
+					 'email_operario']
 	
-	ordering = ['descripcion_actividad']
+	ordering = ['nombre_operario']
 	
 	paginate_by = 8
-	  
+	
 	table_headers = {
-		'descripcion_actividad': (2, 'Descripción'),
-		'fecha_registro_actividad': (2, 'Fecha Registro'),
+		'nombre_operario': (4, 'Nombre'),
+		'telefono_operario': (3, 'Teléfono'),
+		'email_operario': (3, 'Correo'),
+		
 		'acciones': (2, 'Acciones'),
 	}
 	
 	table_data = [
-		{'field_name': 'descripcion_actividad', 'date_format': None},
-		{'field_name': 'fecha_registro_actividad', 'date_format': 'd/m/Y'},
+		{'field_name': 'nombre_operario', 'date_format': None},
+		{'field_name': 'telefono_operario', 'date_format': None},
+		{'field_name': 'email_operario', 'date_format': None},
 	]
 
 
-# ActividadListView - Inicio
-class ActividadListView(MaestroListView):
+# ProvinciaListView - Inicio
+class OperarioListView(MaestroListView):
 	model = ConfigViews.model
 	template_name = ConfigViews.template_list
 	context_object_name = ConfigViews.context_object_name
@@ -95,8 +100,8 @@ class ActividadListView(MaestroListView):
 	}
 
 
-# ActividadCreateView - Inicio
-class ActividadCreateView(MaestroCreateView):
+# ProvinciaCreateView - Inicio
+class OperarioCreateView(MaestroCreateView):
 	model = ConfigViews.model
 	list_view_name = ConfigViews.list_view_name
 	form_class = ConfigViews.form_class
@@ -113,8 +118,8 @@ class ActividadCreateView(MaestroCreateView):
 	}
 
 
-# ActividadUpdateView
-class ActividadUpdateView(MaestroUpdateView):
+# ProvinciaUpdateView
+class OperarioUpdateView(MaestroUpdateView):
 	model = ConfigViews.model
 	list_view_name = ConfigViews.list_view_name
 	form_class = ConfigViews.form_class
@@ -130,8 +135,8 @@ class ActividadUpdateView(MaestroUpdateView):
 	}
 
 
-# ActividadDeleteView
-class ActividadDeleteView (MaestroDeleteView):
+# ProvinciaDeleteView
+class OperarioDeleteView (MaestroDeleteView):
 	model = ConfigViews.model
 	list_view_name = ConfigViews.list_view_name
 	template_name = ConfigViews.template_delete

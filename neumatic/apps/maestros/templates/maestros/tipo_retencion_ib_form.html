@@ -1,4 +1,3 @@
-
 {% extends 'maestro_form.html' %}
 {% load static %}
 <!-- -------------------------------------------------------------------- -->
@@ -39,35 +38,58 @@
 												class="accordion-button " 
 												type="button" 
 												data-bs-toggle="collapse" 
-												data-bs-target="#Información_Personal" 
+												data-bs-target="#Información_General" 
 												aria-expanded="true" 
-												aria-controls="Información_Personal">
-												<strong>Información Personal</strong>
+												aria-controls="Información_General">
+												<strong>Información General</strong>
 											</button>
 										</h2>
 										<div class="accordion-collapse collapse show"
-											id="Información_Personal">
+											id="Información_General">
 											<div class="accordion-body bg-secondary-subtle">
+		
 												<div class="row">
 													<div class="col-md-2">
 														<label class="form-label text-primary">
-															{{ form.estatus_actividad.label }}
+															{{ form.estatus_tipo_retencion_ib.label }}
 														</label>
-														{{ form.estatus_actividad }}
+														{{ form.estatus_tipo_retencion_ib }}
 													</div>
 						
-													<div class="col-md-4">
+													<div class="col-md-6">
 														<label class="form-label text-primary">
-															{{ form.descripcion_actividad.label }}
+															{{ form.descripcion_tipo_retencion_ib.label }}
 														</label>
-														{{ form.descripcion_actividad }}
+														{{ form.descripcion_tipo_retencion_ib }}
+													</div>
+												</div>
+												<div class="row">
+													<div class="col-md-2">
+														<label class="form-label text-primary">
+															{{ form.alicuota_inscripto.label }}
+														</label>
+														{{ form.alicuota_inscripto }}
 													</div>
 						
 													<div class="col-md-2">
 														<label class="form-label text-primary">
-															{{ form.fecha_registro_actividad.label }}
+															{{ form.alicuota_no_inscripto.label }}
 														</label>
-														{{ form.fecha_registro_actividad }}
+														{{ form.alicuota_no_inscripto }}
+													</div>
+						
+													<div class="col-md-2">
+														<label class="form-label text-primary">
+															{{ form.monto.label }}
+														</label>
+														{{ form.monto }}
+													</div>
+						
+													<div class="col-md-2">
+														<label class="form-label text-primary">
+															{{ form.minimo.label }}
+														</label>
+														{{ form.minimo }}
 													</div>
 												</div>
 											</div>
@@ -116,7 +138,7 @@
 				errorModal.show();
 			}
 			
-			// Validación en tiempo real: remover tooltips y clases al escribir.
+			// Validación en tiempo real: remover clases al escribir.
 			// Seleccionar inputs y selects.
 			var inputs = document.querySelectorAll('input, select');
 			console.log(inputs);

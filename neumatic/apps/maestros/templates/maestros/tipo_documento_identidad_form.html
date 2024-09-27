@@ -27,48 +27,69 @@
 						</div>
 						
 						<div class="card-body bg-body-secondary">
-							<form class="needs-validation" method="post" enctype="multipart/form-data" novalidate>
+							<form method="post" enctype="multipart/form-data" novalidate>
 								{% csrf_token %}
 								<div class="accordion" id="accordionPanelsStayOpenExample">
 									<!-- Estructura generada -->
-									
-									<!-- Información Personal Inicio -->
+
 									<div class="accordion-item">
 										<h2 class="accordion-header">
-											<button aria-controls="Información_Personal" aria-expanded="true" class="accordion-button"
-												data-bs-target="#Información_Personal" data-bs-toggle="collapse" type="button">
-												<strong>
-													Información General
-												</strong>
+											<button 
+												class="accordion-button " 
+												type="button" 
+												data-bs-toggle="collapse" 
+												data-bs-target="#Información_General" 
+												aria-expanded="true" 
+												aria-controls="Información_General">
+												<strong>Información General</strong>
 											</button>
 										</h2>
-										<div class="accordion-collapse collapse show" id="Información_Personal">
+										<div class="accordion-collapse collapse show"
+											id="Información_General">
 											<div class="accordion-body bg-secondary-subtle">
-												
+		
 												<div class="row">
-													
 													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
-															{{ form.estatus_actividad.label }}
+														<label class="form-label text-primary">
+															{{ form.estatus_tipo_documento_identidad.label }}
 														</label>
-														{{ form.estatus_actividad}}
+														{{ form.estatus_tipo_documento_identidad }}
 													</div>
-													
-													<div class="col-md-4">
-														<label class="form-label text-primary mb-0">
-															{{ form.descripcion_actividad.label }}
+						
+													<div class="col-md-2">
+														<label class="form-label text-primary">
+															{{ form.nombre_documento_identidad.label }}
 														</label>
-														{{ form.descripcion_actividad}}
+														{{ form.nombre_documento_identidad }}
 													</div>
-													
+						
+													<div class="col-md-2">
+														<label class="form-label text-primary">
+															{{ form.tipo_documento_identidad.label }}
+														</label>
+														{{ form.tipo_documento_identidad }}
+													</div>
+						
+													<div class="col-md-2">
+														<label class="form-label text-primary">
+															{{ form.codigo_afip.label }}
+														</label>
+														{{ form.codigo_afip }}
+													</div>
+						
+													<div class="col-md-2">
+														<label class="form-label text-primary">
+															{{ form.ws_afip.label }}
+														</label>
+														{{ form.ws_afip }}
+													</div>
 												</div>
-												
 											</div>
 										</div>
 									</div>
-
+		
 								</div>
-
+								
 								<div class="container mt-3">
 									<button class="btn btn-primary" type="submit" id="guardarBtn">
 										Guardar
@@ -109,7 +130,7 @@
 				errorModal.show();
 			}
 			
-			// Validación en tiempo real: remover tooltips y clases al escribir.
+			// Validación en tiempo real: remover clases al escribir.
 			// Seleccionar inputs y selects.
 			var inputs = document.querySelectorAll('input, select');
 			console.log(inputs);
