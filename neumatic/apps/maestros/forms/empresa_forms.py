@@ -1,19 +1,12 @@
 # neumatic\apps\maestros\forms\empresa_forms.py
 from django import forms
+from .crud_forms_generics import CrudGenericForm
 from ..models.empresa_models import Empresa
 from diseno_base.diseno_bootstrap import(
     formclasstext, formclassselect, formclassdate)
 
 
-class EmpresaForm(forms.ModelForm):
-    
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        #-- Agregar clases CSS a los campos con errores.
-        for field in self.fields:
-            if self[field].errors:
-                self.fields[field].widget.attrs['class'] += 'border-danger is-invalid'
+class EmpresaForm(CrudGenericForm):
     
     class Meta:
         model = Empresa

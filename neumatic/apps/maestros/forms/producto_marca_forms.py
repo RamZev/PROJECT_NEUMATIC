@@ -1,19 +1,12 @@
 # neumatic\apps\maestros\forms\producto_marca_forms.py
 from django import forms
+from .crud_forms_generics import CrudGenericForm
 from ..models.base_models import ProductoMarca
 from diseno_base.diseno_bootstrap import (
 	formclasstext, formclassselect, formclasscheck)
 
 
-class ProductoMarcaForm(forms.ModelForm):
-	
-	def __init__(self, *args, **kwargs):
-		super().__init__(*args, **kwargs)
-		
-		#-- Agregar clases CSS a los campos con errores.
-		for field in self.fields:
-			if self[field].errors:
-				self.fields[field].widget.attrs['class'] += ' border-danger is-invalid'
+class ProductoMarcaForm(CrudGenericForm):
 	
 	class Meta:
 		model = ProductoMarca
