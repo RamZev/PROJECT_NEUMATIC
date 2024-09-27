@@ -1,11 +1,11 @@
-# neumatic\apps\maestros\forms\producto_minimo_forms.py
+# neumatic\apps\maestros\forms\producto_familia_forms.py
 from django import forms
-from ..models.base_models import Provincia
+from ..models.base_models import Moneda
 from diseno_base.diseno_bootstrap import (
-	formclasstext, formclassselect)
+	formclasstext, formclassselect, formclasscheck)
 
 
-class ProvinciaForm(forms.ModelForm):
+class MonedaForm(forms.ModelForm):
 	
 	def __init__(self, *args, **kwargs):
 		super().__init__(*args, **kwargs)
@@ -16,14 +16,20 @@ class ProvinciaForm(forms.ModelForm):
 				self.fields[field].widget.attrs['class'] += ' border-danger is-invalid'
 	
 	class Meta:
-		model = Provincia
+		model = Moneda
 		fields = '__all__'
-		
+
 		widgets = {
-			'estatus_provincia': 
+			'estatus_moneda': 
 				forms.Select(attrs={**formclassselect}),
-			'codigo_provincia': 
+			'nombre_moneda': 
 				forms.TextInput(attrs={**formclasstext}),
-			'nombre_provincia': 
+			'cotizacion_moneda': 
 				forms.TextInput(attrs={**formclasstext}),
+			'simbolo_moneda': 
+				forms.TextInput(attrs={**formclasstext}),
+			'ws_afip': 
+				forms.TextInput(attrs={**formclasstext}),
+			'predeterminada': 
+				forms.CheckboxInput(attrs={**formclasscheck}),
 		}

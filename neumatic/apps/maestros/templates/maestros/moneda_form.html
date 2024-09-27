@@ -3,73 +3,6 @@
 <!-- -------------------------------------------------------------------- -->
 {% block maincomponent %}
 	{% block principalcomponent %}
-<<<<<<< HEAD
-    <div id="layoutSidenav_content">
-		<main>
-            <div class="container-fluid">
-                <div class="card border-light mb-3 mt-2">
-                    <div class="card-header text-white bg-primary opacity-75 d-flex 
-							justify-content-between">
-						{{ accion }}
-						<button type="button" class="btn-close btn-close-white" 
-							aria-label="Close"
-							onclick="window.location.href='{% url list_view_name %}'">
-						</button>
-					</div>
-                    
-                    <div class="card-body bg-body-secondary">
-                        <form class="needs-validation" method="post" enctype="multipart/form-data" novalidate>
-                            {% csrf_token %}
-                            <div class="accordion" id="accordionPanelsStayOpenExample">
-                                <!-- Estructura generada -->
-                                
-                                <!-- Información Personal Inicio -->
-                                <div class="accordion-item">
-                                    <h2 class="accordion-header">
-                                        <button aria-controls="Información_Personal" aria-expanded="true" class="accordion-button" data-bs-target="#Información_Personal" data-bs-toggle="collapse" type="button">
-                                            <strong>
-                                                Información General
-                                            </strong>
-                                        </button>
-                                    </h2>
-                                    <div class="accordion-collapse collapse show" id="Información_Personal">
-                                        <div class="accordion-body bg-secondary-subtle">
-                                            <div class="row">
-                                                <div class="col-md-2">
-                                                    <label class="form-label text-primary mb-0" for="{{ form.estatus_actividad.id_for_label }}">
-                                                        {{ form.estatus_actividad.label_tag }}
-                                                    </label>
-                                                    {{ form.estatus_actividad}}
-                                                    <div class="invalid-feedback">
-                                                        {{ form.estatus_actividad.errors }}
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-4">
-                                                    <label class="form-label text-primary mb-0" for="{{ form.descripcion_actividad.id_for_label }}">
-                                                        {{ form.descripcion_actividad.label_tag }}
-                                                    </label>
-                                                    {{ form.descripcion_actividad}}
-                                                    <div class="invalid-feedback">
-                                                        {{ form.descripcion_actividad.errors }}
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-2">
-                                                    <label class="form-label text-primary mb-0" for="{{ form.fecha_registro_actividad.id_for_label }}">
-                                                        {{ form.fecha_registro_actividad.label_tag }}
-                                                    </label>
-                                                    {{ form.fecha_registro_actividad}}
-                                                    <div class="invalid-feedback">
-                                                        {{ form.fecha_registro_actividad.errors }}
-                                                    </div>
-                                                </div>
-                                                
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                            </div>
-=======
 		<div id="layoutSidenav_content">
 			<main>
 				<div class="container-fluid">
@@ -98,7 +31,6 @@
 								{% csrf_token %}
 								<div class="accordion" id="accordionPanelsStayOpenExample">
 									<!-- Estructura generada -->
->>>>>>> f71623c58ffe87c8f648350694c7b54122edf9f7
 
 									<div class="accordion-item">
 										<h2 class="accordion-header">
@@ -119,23 +51,45 @@
 												<div class="row">
 													<div class="col-md-2">
 														<label class="form-label text-primary">
-															{{ form.estatus_actividad.label }}
+															{{ form.estatus_moneda.label }}
 														</label>
-														{{ form.estatus_actividad }}
+														{{ form.estatus_moneda }}
 													</div>
 						
 													<div class="col-md-4">
 														<label class="form-label text-primary">
-															{{ form.descripcion_actividad.label }}
+															{{ form.nombre_moneda.label }}
 														</label>
-														{{ form.descripcion_actividad }}
+														{{ form.nombre_moneda }}
 													</div>
 						
 													<div class="col-md-2">
 														<label class="form-label text-primary">
-															{{ form.fecha_registro_actividad.label }}
+															{{ form.simbolo_moneda.label }}
 														</label>
-														{{ form.fecha_registro_actividad }}
+														{{ form.simbolo_moneda }}
+													</div>
+												</div>
+												<div class="row">
+													<div class="col-md-2">
+														<label class="form-label text-primary">
+															{{ form.cotizacion_moneda.label }}
+														</label>
+														{{ form.cotizacion_moneda }}
+													</div>
+						
+													<div class="col-md-2">
+														<label class="form-label text-primary">
+															{{ form.ws_afip.label }}
+														</label>
+														{{ form.ws_afip }}
+													</div>
+						
+													<div class="col-md-2">
+														<label class="form-label text-primary">
+															{{ form.predeterminada.label }}
+														</label>
+														{{ form.predeterminada }}
 													</div>
 												</div>
 											</div>

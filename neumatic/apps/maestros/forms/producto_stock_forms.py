@@ -1,11 +1,11 @@
-# neumatic\apps\maestros\forms\producto_minimo_forms.py
+# neumatic\apps\maestros\forms\producto_stock_forms.py
 from django import forms
-from ..models.base_models import Provincia
+from ..models.base_models import ProductoStock
 from diseno_base.diseno_bootstrap import (
-	formclasstext, formclassselect)
+	formclasstext, formclassselect, formclassdate)
 
 
-class ProvinciaForm(forms.ModelForm):
+class ProductoStockForm(forms.ModelForm):
 	
 	def __init__(self, *args, **kwargs):
 		super().__init__(*args, **kwargs)
@@ -16,14 +16,18 @@ class ProvinciaForm(forms.ModelForm):
 				self.fields[field].widget.attrs['class'] += ' border-danger is-invalid'
 	
 	class Meta:
-		model = Provincia
+		model = ProductoStock
 		fields = '__all__'
-		
+
 		widgets = {
-			'estatus_provincia': 
+			'id_producto': 
 				forms.Select(attrs={**formclassselect}),
-			'codigo_provincia': 
+			'id_deposito': 
+				forms.Select(attrs={**formclassselect}),
+			'stock': 
 				forms.TextInput(attrs={**formclasstext}),
-			'nombre_provincia': 
+			'minimo': 
 				forms.TextInput(attrs={**formclasstext}),
+			'fecha_producto_stock': 
+				forms.TextInput(attrs={**formclassdate, 'type': 'date'}),
 		}

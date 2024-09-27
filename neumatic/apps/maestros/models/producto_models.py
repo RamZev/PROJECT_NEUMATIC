@@ -34,7 +34,10 @@ class Producto(ModeloBaseGenerico):
     despacho_2 = models.CharField(max_length=16)  # Dirección de despacho 2
     descripcion_producto = models.CharField(max_length=50)  # Descripción del producto
     carrito = models.BooleanField()  # Indica si el producto está en el carrito
-
+    
+    def __str__(self):
+        return self.nombre_producto
+    
     class Meta:
         db_table = 'producto'
         verbose_name = 'Producto'

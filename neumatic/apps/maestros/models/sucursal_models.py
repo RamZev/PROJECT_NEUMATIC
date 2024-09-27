@@ -22,7 +22,10 @@ class Sucursal(ModeloBaseGenerico):
     email_sucursal = models.CharField(max_length=50)
     inicio_actividad = models.DateField()
     codigo_michelin = models.IntegerField()
-
+    
+    def __str__(self):
+        return self.nombre_sucursal
+    
     class Meta:
         db_table = 'sucursal'
         verbose_name = ('Sucursal')
