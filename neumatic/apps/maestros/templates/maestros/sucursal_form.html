@@ -1,0 +1,151 @@
+{% extends 'maestro_form.html' %}
+{% load static %}
+
+{% block maincomponent %}
+	{% block principalcomponent %}
+    <div id="layoutSidenav_content">
+		<main>
+            <div class="container-fluid">
+                <div class="card border-light mb-3 mt-2">
+                    <div class="card-header text-white bg-primary opacity-75 d-flex 
+							justify-content-between">
+						{{ accion }}
+						<button type="button" class="btn-close btn-close-white" 
+							aria-label="Close"
+							onclick="window.location.href='{% url list_view_name %}'">
+						</button>
+					</div>
+                    
+                    <div class="card-body bg-body-secondary">
+                        <form class="needs-validation" method="post" enctype="multipart/form-data" novalidate>
+                            {% csrf_token %}
+                            <div class="accordion" id="accordionPanelsStayOpenExample">
+                                <!-- Estructura generada -->
+                                
+                                <!-- Información Personal Inicio -->
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header">
+                                        <button aria-controls="Información_Personal" aria-expanded="true" class="accordion-button" data-bs-target="#Información_Personal" data-bs-toggle="collapse" type="button">
+                                            <strong>
+                                                Información Sucursal
+                                            </strong>
+                                        </button>
+                                    </h2>
+                                    <div class="accordion-collapse collapse show" id="Información_Personal">
+                                        <div class="accordion-body bg-secondary-subtle">
+                                            <div class="row">
+                                                <div class="col-md-2">
+                                                    <label class="form-label text-primary mb-0" for="{{ form.estatus_sucursal.id_for_label }}">
+                                                        {{ form.estatus_sucursal.label_tag }}
+                                                    </label>
+                                                    {{ form.estatus_sucursal}}
+                                                    <div class="invalid-feedback">
+                                                        {{ form.estatus_sucursal.errors }}
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-3">
+                                                    <label class="form-label text-primary mb-0" for="{{ form.nombre_sucursal.id_for_label }}">
+                                                        {{ form.nombre_sucursal.label_tag }}
+                                                    </label>
+                                                    {{ form.nombre_sucursal}}
+                                                    <div class="invalid-feedback">
+                                                        {{ form.nombre_sucursal.errors }}
+                                                    </div>
+                                                </div>
+                                                
+                                                <div class="col-md-3">
+                                                    <label class="form-label text-primary mb-0" for="{{ form.domicilio_sucursal.id_for_label }}">
+                                                        {{ form.domicilio_sucursal.label_tag }}
+                                                    </label>
+                                                    {{ form.domicilio_sucursal}}
+                                                    <div class="invalid-feedback">
+                                                        {{ form.domicilio_sucursal.errors }}
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-2">
+                                                    <label class="form-label text-primary mb-0" for="{{ form.id_localidad.id_for_label }}">
+                                                        {{ form.id_localidad.label_tag }}
+                                                    </label>
+                                                    {{ form.id_localidad}}
+                                                    <div class="invalid-feedback">
+                                                        {{ form.id_localidad.errors }}
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-2">
+                                                    <label class="form-label text-primary mb-0" for="{{ form.id_provincia.id_for_label }}">
+                                                        {{ form.id_provincia.label_tag }}
+                                                    </label>
+                                                    {{ form.id_provincia}}
+                                                    <div class="invalid-feedback">
+                                                        {{ form.id_provincia.errors }}
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-md-3">
+                                                    <label class="form-label text-primary mb-0" for="{{ form.telefono_sucursal.id_for_label}}">
+                                                        {{ form.telefono_sucursal.label_tag }}
+                                                    </label>
+                                                    {{ form.telefono_sucursal}}
+                                                    <div class="invalid-feedback">
+                                                        {{ form.telefono_sucursal.errors }}
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-3">
+                                                    <label class="form-label text-primary mb-0" for="{{ form.email_sucursal.id_for_label}}">
+                                                        {{ form.email_sucursal.label_tag }}
+                                                    </label>
+                                                    {{ form.email_sucursal}}
+                                                    <div class="invalid-feedback">
+                                                        {{ form.email_sucursal.errors }}
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-3">
+                                                    <label class="form-label text-primary mb-0" for="{{ form.inicio_actividad.id_for_label}}">
+                                                        {{ form.inicio_actividad.label_tag }}
+                                                    </label>
+                                                    {{ form.inicio_actividad}}
+                                                    <div class="invalid-feedback">
+                                                        {{ form.inicio_actividad.errors }}
+                                                    </div>
+                                                </div>
+                                                
+                                                <div class="col-md-3">
+                                                    <label class="form-label text-primary mb-0" for="{{ form.codigo_michelin.id_for_label}}">
+                                                        {{ form.codigo_michelin.label_tag }}
+                                                    </label>
+                                                    {{ form.codigo_michelin}}
+                                                    <div class="invalid-feedback">
+                                                        {{ form.codigo_michelin.errors }}
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                            </div>
+
+                            <div class="container mt-3">
+                                <button class="btn btn-primary" type="submit" id="guardarBtn">
+                                    Guardar
+                                </button>
+                                <a class="btn btn-secondary" href="{% url list_view_name %}">
+                                    Cancelar
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    {% endblock principalcomponent %}
+{% endblock maincomponent %}
