@@ -1,0 +1,212 @@
+{% extends 'maestro_form.html' %}
+{% load static %}
+
+{% block maincomponent %}
+	{% block principalcomponent %}
+    <div id="layoutSidenav_content">
+		<main>
+            <div class="container-fluid">
+                <div class="card border-light mb-3 mt-2">
+                    <div class="card-header text-white bg-primary opacity-75 d-flex 
+							justify-content-between">
+						{{ accion }}
+						<button type="button" class="btn-close btn-close-white" 
+							aria-label="Close"
+							onclick="window.location.href='{% url list_view_name %}'">
+						</button>
+					</div>
+                    
+                    <div class="card-body bg-body-secondary">
+                        <form class="needs-validation" method="post" enctype="multipart/form-data" novalidate>
+                            {% csrf_token %}
+                            <div class="accordion" id="accordionPanelsStayOpenExample">
+                                <!-- Estructura generada -->
+                                
+                                <!-- Información Personal Inicio -->
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header">
+                                        <button aria-controls="Información_Personal" aria-expanded="true" class="accordion-button" data-bs-target="#Información_Personal" data-bs-toggle="collapse" type="button">
+                                            <strong>
+                                                Información Vendedor
+                                            </strong>
+                                        </button>
+                                    </h2>
+                                    <div class="accordion-collapse collapse show" id="Información_Personal">
+                                        <div class="accordion-body bg-secondary-subtle">
+                                            <div class="row">
+                                                <div class="col-md-2">
+                                                    <label class="form-label text-primary mb-0" for="{{ form.estatus_vendedor.id_for_label }}">
+                                                        {{ form.estatus_vendedor.label_tag }}
+                                                    </label>
+                                                    {{ form.estatus_vendedor}}
+                                                    <div class="invalid-feedback">
+                                                        {{ form.estatus_vendedor.errors }}
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-3">
+                                                    <label class="form-label text-primary mb-0" for="{{ form.nombre_vendedor.id_for_label }}">
+                                                        {{ form.nombre_vendedor.label_tag }}
+                                                    </label>
+                                                    {{ form.nombre_vendedor}}
+                                                    <div class="invalid-feedback">
+                                                        {{ form.nombre_vendedor.errors }}
+                                                    </div>
+                                                </div>
+                                                
+                                                <div class="col-md-2">
+                                                    <label class="form-label text-primary mb-0" for="{{ form.domicilio_vendedor.id_for_label }}">
+                                                        {{ form.domicilio_vendedor.label_tag }}
+                                                    </label>
+                                                    {{ form.domicilio_vendedor}}
+                                                    <div class="invalid-feedback">
+                                                        {{ form.domicilio_vendedor.errors }}
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-3">
+                                                    <label class="form-label text-primary mb-0" for="{{ form.email_vendedor.id_for_label }}">
+                                                        {{ form.email_vendedor.label_tag }}
+                                                    </label>
+                                                    {{ form.email_vendedor}}
+                                                    <div class="invalid-feedback">
+                                                        {{ form.email_vendedor.errors }}
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-2">
+                                                    <label class="form-label text-primary mb-0" for="{{ form.telefono_vendedor.id_for_label }}">
+                                                        {{ form.telefono_vendedor.label_tag }}
+                                                    </label>
+                                                    {{ form.telefono_vendedor}}
+                                                    <div class="invalid-feedback">
+                                                        {{ form.telefono_vendedor.errors }}
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-md-2">
+                                                    <label class="form-label text-primary mb-0" for="{{ form.pje_auto.id_for_label}}">
+                                                        {{ form.pje_auto.label_tag }}
+                                                    </label>
+                                                    {{ form.pje_auto}}
+                                                    <div class="invalid-feedback">
+                                                        {{ form.pje_auto.errors }}
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-2">
+                                                    <label class="form-label text-primary mb-0" for="{{ form.pje_camion.id_for_label}}">
+                                                        {{ form.pje_camion.label_tag }}
+                                                    </label>
+                                                    {{ form.pje_camion}}
+                                                    <div class="invalid-feedback">
+                                                        {{ form.pje_camion.errors }}
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-2">
+                                                    <label class="form-label text-primary mb-0" for="{{ form.vence_factura.id_for_label}}">
+                                                        {{ form.vence_factura.label_tag }}
+                                                    </label>
+                                                    {{ form.vence_factura}}
+                                                    <div class="invalid-feedback">
+                                                        {{ form.vence_factura.errors }}
+                                                    </div>
+                                                </div>
+                                                
+                                                <div class="col-md-2">
+                                                    <label class="form-label text-primary mb-0" for="{{ form.vence_remito.id_for_label}}">
+                                                        {{ form.vence_remito.label_tag }}
+                                                    </label>
+                                                    {{ form.vence_remito}}
+                                                    <div class="invalid-feedback">
+                                                        {{ form.vence_remito.errors }}
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-2">
+                                                    <label class="form-label text-primary mb-0" for="{{ form.id_sucursal.id_for_label}}">
+                                                        {{ form.id_sucursal.label_tag }}
+                                                    </label>
+                                                    {{ form.id_sucursal}}
+                                                    <div class="invalid-feedback">
+                                                        {{ form.id_sucursal.errors }}
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-2">
+                                                    <label class="form-label text-primary mb-0" for="{{ form.tipo_venta.id_for_label}}">
+                                                        {{ form.tipo_venta.label_tag }}
+                                                    </label>
+                                                    {{ form.tipo_venta}}
+                                                    <div class="invalid-feedback">
+                                                        {{ form.tipo_venta.errors }}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="row">
+                                                <div class="col-md-3">
+                                                    <label class="form-label text-primary mb-0" for="{{ form.col_descuento.id_for_label}}">
+                                                        {{ form.col_descuento.label_tag }}
+                                                    </label>
+                                                    {{ form.col_descuento}}
+                                                    <div class="invalid-feedback">
+                                                        {{ form.col_descuento.errors }}
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-3">
+                                                    <label class="form-label text-primary mb-0" for="{{ form.email_venta.id_for_label}}">
+                                                        {{ form.email_venta.label_tag }}
+                                                    </label>
+                                                    {{ form.email_venta}}
+                                                    <div class="invalid-feedback">
+                                                        {{ form.email_venta.errors }}
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-3">
+                                                    <label class="form-label text-primary mb-0" for="{{ form.info_saldo.id_for_label}}">
+                                                        {{ form.info_saldo.label_tag }}
+                                                    </label>
+                                                    {{ form.info_saldo}}
+                                                    <div class="invalid-feedback">
+                                                        {{ form.info_saldo.errors }}
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-3">
+                                                    <label class="form-label text-primary mb-0" for="{{ form.info_estadistica.id_for_label}}">
+                                                        {{ form.info_estadistica.label_tag }}
+                                                    </label>
+                                                    {{ form.info_estadistica}}
+                                                    <div class="invalid-feedback">
+                                                        {{ form.info_estadistica.errors }}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                            </div>
+
+                            <div class="container mt-3">
+                                <button class="btn btn-primary" type="submit" id="guardarBtn">
+                                    Guardar
+                                </button>
+                                <a class="btn btn-secondary" href="{% url list_view_name %}">
+                                    Cancelar
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    {% endblock principalcomponent %}
+{% endblock maincomponent %}
