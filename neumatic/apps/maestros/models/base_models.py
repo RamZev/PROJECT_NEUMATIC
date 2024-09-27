@@ -158,9 +158,9 @@ class ComprobanteVenta(ModeloBaseGenerico):
     id_comprobante_venta = models.AutoField(primary_key=True)
     estatus_comprobante_venta = models.BooleanField("Estatus", default=True, 
                                                     choices=ESTATUS_GEN)  # Estatus del comprobante
-    codigo_comprobante_venta = models.CharField("Código comprobante", 
+    codigo_comprobante_venta = models.CharField("Código Comprobante", 
                                                 max_length=3)
-    nombre_comprobante_venta = models.CharField("Nombre", max_length=50)  # Nombre del comprobante
+    nombre_comprobante_venta = models.CharField("Nombre Comprobante", max_length=50)  # Nombre del comprobante
     impresion = models.CharField("Impresora", max_length=50)  # Detalle de impresión
     mult_venta = models.IntegerField("Mult. Venta")  # Multiplicador de venta
     mult_saldo = models.IntegerField("Mult. Saldo")  # Multiplicador de saldo

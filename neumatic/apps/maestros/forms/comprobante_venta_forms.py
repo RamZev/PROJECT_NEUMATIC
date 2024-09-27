@@ -17,9 +17,10 @@ class ComprobanteVentaForm(CrudGenericForm):
 				forms.Select(attrs={**formclassselect}),
 			'codigo_comprobante_venta': 
 				forms.TextInput(attrs={**formclasstext}),
+			'nombre_comprobante_venta': 
+				forms.TextInput(attrs={**formclasstext}),
 			'impresion': 
 				forms.TextInput(attrs={**formclasstext}),
-			
 			'mult_venta': 
 				forms.TextInput(attrs={**formclasstext}),
 			'mult_saldo': 
@@ -32,7 +33,6 @@ class ComprobanteVentaForm(CrudGenericForm):
 				forms.TextInput(attrs={**formclasstext}),
 			'mult_estadistica': 
 				forms.TextInput(attrs={**formclasstext}),
-			
 			'libro_iva': 
 				forms.TextInput(attrs={**formclasscheck}),
 			'estadistica': 
@@ -43,17 +43,14 @@ class ComprobanteVentaForm(CrudGenericForm):
 				forms.TextInput(attrs={**formclasscheck}),
 			'pendiente': 
 				forms.TextInput(attrs={**formclasscheck}),
-			
 			'info_michelin_auto': 
 				forms.TextInput(attrs={**formclasscheck}),
 			'info_michelin_camion': 
 				forms.TextInput(attrs={**formclasscheck}),
-			
 			'codigo_afip_a': 
 				forms.TextInput(attrs={**formclasstext}),
 			'codigo_afip_b': 
 				forms.TextInput(attrs={**formclasstext}),
-			
 			'compro_asociado': 
 				forms.TextInput(attrs={**formclasstext}),
 		}

@@ -9,7 +9,8 @@ from .views.producto_modelo_views import *
 from .views.producto_minimo_views import *
 from .views.producto_stock_views import *
 from .views.producto_estado_views import *
-
+from .views.comprobante_venta_views import *
+from .views.comprobante_compra_views import *
 from .views.moneda_views import *
 from .views.provincia_views import *
 from .views.localidad_views import *
@@ -70,7 +71,16 @@ urlpatterns = [
 	path('producto_estado/<int:pk>/eliminar/', ProductoestadoDeleteView.as_view(), name='producto_estado_delete'),
 	
 	#-- ComprobanteVenta.
+	path('comprobante_venta/', ComprobanteVentaListView.as_view(), name='comprobante_venta_list'),
+	path('comprobante_venta/nueva/', ComprobanteVentaCreateView.as_view(), name='comprobante_venta_create'),
+	path('comprobante_venta/<int:pk>/editar/', ComprobanteVentaUpdateView.as_view(), name='comprobante_venta_update'),
+	path('comprobante_venta/<int:pk>/eliminar/', ComprobanteVentaDeleteView.as_view(), name='comprobante_venta_delete'),
+	
 	#-- ComprobanteCompra.
+	path('comprobante_compra/', ComprobantecompraListView.as_view(), name='comprobante_compra_list'),
+	path('comprobante_compra/nueva/', ComprobantecompraCreateView.as_view(), name='comprobante_compra_create'),
+	path('comprobante_compra/<int:pk>/editar/', ComprobantecompraUpdateView.as_view(), name='comprobante_compra_update'),
+	path('comprobante_compra/<int:pk>/eliminar/', ComprobantecompraDeleteView.as_view(), name='comprobante_compra_delete'),
 	
 	#-- Moneda.
 	path('moneda/', MonedaListView.as_view(), name='moneda_list'),
