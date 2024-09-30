@@ -4,13 +4,10 @@ from .base_gen_models import ModeloBaseGenerico
 from .base_models import *
 from .vendedor_models import Vendedor
 from .sucursal_models import Sucursal
-<<<<<<< HEAD
 from entorno.constantes_base import (
-    ESTATUS_GEN, CONDICION_VENTA, SEXO)
+    ESTATUS_GEN, CONDICION_VENTA, SEXO, 
+    CLIENTE_VIP, CLIENTE_MAYORISTA)
 
-=======
-from entorno.constantes_base import ESTATUS_GEN
->>>>>>> 6d4b95980aeece46c07f41718ed22af55c62a2c5
 
 class Cliente(ModeloBaseGenerico):
     id_cliente = models.AutoField(primary_key=True)
@@ -21,7 +18,8 @@ class Cliente(ModeloBaseGenerico):
                                          max_length=50)
     codigo_postal = models.CharField("Código Postal", max_length=5)
     id_provincia = models.ForeignKey(Provincia, on_delete=models.PROTECT, 
-                                     verbose_name="Provincia")
+                                     verbose_name="Provincia",
+                                     null=True, blank=True)
     id_localidad = models.ForeignKey(Localidad, on_delete=models.PROTECT,
                                      verbose_name="Localidad")
     tipo_persona = models.CharField("Tipo de Persona", max_length=1)
@@ -50,19 +48,32 @@ class Cliente(ModeloBaseGenerico):
     sexo = models.CharField("Sexo", max_length=1, 
                             default="M", 
                             choices=SEXO)
-    id_actividad = models.ForeignKey(Actividad, on_delete=models.CASCADE)
-    id_sucursal = models.ForeignKey(Sucursal, on_delete=models.CASCADE)
-    id_percepcion_ib = models.ForeignKey(TipoPercepcionIb, on_delete=models.CASCADE)
-    numero_ib = models.CharField(max_length=15)
-    vip = models.BooleanField(default=False)
-    mayorista = models.BooleanField(default=False)
-    sub_cuenta = models.IntegerField()
-    observaciones_cliente = models.TextField(blank=True, null=True)
-    id_usuario = models.IntegerField()  # El usuario que creó el cliente
+    id_actividad = models.ForeignKey(Actividad, 
+                                     on_delete=models.CASCADE,
+                                     verbose_name="Actividad")
+    id_sucursal = models.ForeignKey(Sucursal, 
+                                    on_delete=models.CASCADE,
+                                    verbose_name="Actividad")
+    id_percepcion_ib = models.ForeignKey(TipoPercepcionIb, 
+                                         on_delete=models.CASCADE, 
+                                         verbose_name="Percepción IB")
+    numero_ib = models.CharField("Número IB", max_length=15)
+    vip = models.BooleanField("Cliente VIP", 
+                              default=False,
+                              choices=CLIENTE_VIP)
+    mayorista = models.BooleanField("Cliente VIP", 
+                                    default=False,
+                                    choices=CLIENTE_MAYORISTA)
+    sub_cuenta = models.IntegerField("Sub Cuenta")
+    observaciones_cliente = models.TextField("Observaciones", 
+                                             blank=True, null=True)
+    # id_usuario = models.IntegerField()  # El usuario que creó el cliente
     black_list = models.BooleanField(default=False)
-    black_list_motivo = models.BinaryField(max_length=50)
-    black_list_usuario = models.CharField(max_length=20)
-    fecha_baja = models.DateField()
+    black_list_motivo = models.BinaryField("Motivo Black List", 
+                                           max_length=50)
+    black_list_usuario = models.CharField("Usuario Black List", 
+                                          max_length=20)
+    fecha_baja = models.DateField("Fecha de Baja")
 
     class Meta:
         db_table = 'cliente'
