@@ -1,15 +1,11 @@
-# D:\PROJECT_NEUMATIC\neumatic\apps\proveedores\models\proveedor.py
+# neumatic\apps\maestros\models\proveedor_models.py
 from django.db import models
 from .base_gen_models import ModeloBaseGenerico
 from .base_models import Localidad  # Importar modelo Localidad
 from .base_models import TipoIva  # Importar modelo TipoIVA
 from .base_models import TipoRetencionIb  # Importar modelo TipoRetencionIB
+from entorno.entorno_base import ESTATUS_GEN
 
-# -- Datos estándares aplicables a los modelos base
-ESTATUS_GEN = [
-    (True, 'Activo'),
-    (False, 'Inactivo'),
-]
 
 class Proveedor(ModeloBaseGenerico):
     id_proveedor = models.AutoField(primary_key=True)

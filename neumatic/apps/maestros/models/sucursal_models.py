@@ -1,13 +1,8 @@
-# D:\PROJECT_NEUMATIC\neumatic\apps\maestros\models\sucursal_models.py
+# neumatic\apps\maestros\models\sucursal_models.py
 from django.db import models
 from .base_gen_models import ModeloBaseGenerico
 from .base_models import *
-
-# -- Datos estándares aplicables a los modelos base
-ESTATUS_GEN = [
-    (True, 'Activo'),
-    (False, 'Inactivo'),
-]
+from entorno.entorno_base import ESTATUS_GEN
 
 
 class Sucursal(ModeloBaseGenerico):

@@ -1,18 +1,15 @@
-# D:\PROJECT_NEUMATIC\neumatic\apps\maestros\models\producto_models.py
+# neumatic\apps\maestros\models\producto_models.py
 from django.db import models
 from .base_gen_models import ModeloBaseGenerico
 from .base_models import (ProductoFamilia, ProductoMarca,
                           ProductoModelo)
+from entorno.entorno_base import ESTATUS_GEN
 
-# -- Datos estándares aplicables a los modelos base
-ESTATUS_GEN = [
-    (True, 'Activo'),
-    (False, 'Inactivo'),
-]
 
 class Producto(ModeloBaseGenerico):
     id_producto = models.AutoField(primary_key=True)
-    estatus_producto = models.BooleanField("Estatus", default=True, choices=ESTATUS_GEN)  
+    estatus_producto = models.BooleanField("Estatus", default=True, 
+                                           choices=ESTATUS_GEN)
     codigo_producto = models.IntegerField()
     tipo_producto = models.CharField(max_length=1)
     id_familia = models.ForeignKey(ProductoFamilia, on_delete=models.CASCADE)
