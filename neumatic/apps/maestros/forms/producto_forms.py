@@ -18,13 +18,13 @@ class ProductoForm(CrudGenericForm):
 			'codigo_producto': 
 				forms.TextInput(attrs={**formclasstext}),
 			'tipo_producto': 
-				forms.TextInput(attrs={**formclasstext}),
+				forms.Select(attrs={**formclassselect}),
 			'id_familia': 
-				forms.TextInput(attrs={**formclassselect}),
+				forms.Select(attrs={**formclassselect}),
 			'id_marca': 
-				forms.TextInput(attrs={**formclassselect}),
+				forms.Select(attrs={**formclassselect}),
 			'id_modelo': 
-				forms.TextInput(attrs={**formclassselect}),
+				forms.Select(attrs={**formclassselect}),
 			'cai': 
 				forms.TextInput(attrs={**formclasstext}),
 			'medida': 
@@ -36,8 +36,10 @@ class ProductoForm(CrudGenericForm):
 			'unidad': 
 				forms.TextInput(attrs={**formclasstext}),
 			'fecha_fabricacion': 
-				forms.TextInput(attrs={**formclassdate, 'type':'date'}),
+				forms.TextInput(attrs={**formclasstext}),
 			'costo': 
+				forms.TextInput(attrs={**formclasstext}),
+			'alicuota_iva': 
 				forms.TextInput(attrs={**formclasstext}),
 			'precio': 
 				forms.TextInput(attrs={**formclasstext}),
@@ -54,5 +56,5 @@ class ProductoForm(CrudGenericForm):
 			'descripcion_producto': 
 				forms.TextInput(attrs={**formclasstext}),
 			'carrito': 
-				forms.TextInput(attrs={**formclasscheck}),
+				forms.CheckboxInput(attrs={**formclasscheck}),
 		}

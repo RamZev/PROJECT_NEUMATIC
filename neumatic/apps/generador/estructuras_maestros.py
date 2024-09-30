@@ -329,7 +329,7 @@ estructura_campos = {
 	},
 	
 	'producto': {
-		'Información General': {
+		'Información Producto': {
 			'fila_1': [
 				{'field_name': 'estatus_producto', 'columna': 2},
 				{'field_name': 'codigo_producto', 'columna': 2},

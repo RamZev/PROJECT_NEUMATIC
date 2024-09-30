@@ -60,22 +60,20 @@ class DataViewList():
 					 'nombre_producto', 
 	]
 	
-	ordering = ['nombre_operario']
+	ordering = ['nombre_producto']
 	
 	paginate_by = 8
 	
 	table_headers = {
-		'nombre_operario': (4, 'Nombre'),
-		'telefono_operario': (3, 'Teléfono'),
-		'email_operario': (3, 'Correo'),
+		'nombre_producto': (5, 'Nombre producto'),
+		'codigo_producto': (5, 'Código producto'),
 		
 		'acciones': (2, 'Acciones'),
 	}
 	
 	table_data = [
-		{'field_name': 'nombre_operario', 'date_format': None},
-		{'field_name': 'telefono_operario', 'date_format': None},
-		{'field_name': 'email_operario', 'date_format': None},
+		{'field_name': 'nombre_producto', 'date_format': None},
+		{'field_name': 'codigo_producto', 'date_format': None},
 	]
 
 

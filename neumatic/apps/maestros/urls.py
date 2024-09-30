@@ -23,6 +23,7 @@ from .views.operario_views import *
 from .views.empresa_views import *
 from .views.vendedor_views import *
 from .views.sucursal_views import *
+from .views.producto_views import *
 
 
 urlpatterns = [
@@ -133,20 +134,29 @@ urlpatterns = [
 	path('operario/nueva/', OperarioCreateView.as_view(), name='operario_create'),
 	path('operario/<int:pk>/editar/', OperarioUpdateView.as_view(), name='operario_update'),
 	path('operario/<int:pk>/eliminar/', OperarioDeleteView.as_view(), name='operario_delete'),
- 
+	
+	#-- Empresa.
 	path('empresa/', EmpresaListView.as_view(), name='empresa_list'),
-    path('empresa/nueva/', EmpresaCreateView.as_view(), name='empresa_create'),
-    path('empresa/<int:pk>/editar/', EmpresaUpdateView.as_view(), name='empresa_update'),
-    path('empresa/<int:pk>/eliminar/', EmpresaDeleteView.as_view(), name='empresa_delete'),
-    
-    path('vendedor/', VendedorListView.as_view(), name='vendedor_list'),
-    path('vendedor/nueva/', VendedorCreateView.as_view(), name='vendedor_create'),
-    path('vendedor/<int:pk>/editar/', VendedorUpdateView.as_view(), name='vendedor_update'),
-    path('vendedor/<int:pk>/eliminar/', VendedorDeleteView.as_view(), name='vendedor_delete'),
-    
-    path('sucursal/', SucursalListView.as_view(), name='sucursal_list'),
-    path('sucursal/nueva/', SucursalCreateView.as_view(), name='sucursal_create'),
-    path('sucursal/<int:pk>/editar/', SucursalUpdateView.as_view(), name='sucursal_update'),
-    path('sucursal/<int:pk>/eliminar/', SucursalDeleteView.as_view(), name='sucursal_delete'),
+	path('empresa/nueva/', EmpresaCreateView.as_view(), name='empresa_create'),
+	path('empresa/<int:pk>/editar/', EmpresaUpdateView.as_view(), name='empresa_update'),
+	path('empresa/<int:pk>/eliminar/', EmpresaDeleteView.as_view(), name='empresa_delete'),
+	
+	#-- Vendedor.
+	path('vendedor/', VendedorListView.as_view(), name='vendedor_list'),
+	path('vendedor/nueva/', VendedorCreateView.as_view(), name='vendedor_create'),
+	path('vendedor/<int:pk>/editar/', VendedorUpdateView.as_view(), name='vendedor_update'),
+	path('vendedor/<int:pk>/eliminar/', VendedorDeleteView.as_view(), name='vendedor_delete'),
+	
+	#-- Sucursal.
+	path('sucursal/', SucursalListView.as_view(), name='sucursal_list'),
+	path('sucursal/nueva/', SucursalCreateView.as_view(), name='sucursal_create'),
+	path('sucursal/<int:pk>/editar/', SucursalUpdateView.as_view(), name='sucursal_update'),
+	path('sucursal/<int:pk>/eliminar/', SucursalDeleteView.as_view(), name='sucursal_delete'),
+
+	#-- Producto.
+	path('producto/', ProductoListView.as_view(), name='producto_list'),
+	path('producto/nueva/', ProductoCreateView.as_view(), name='producto_create'),
+	path('producto/<int:pk>/editar/', ProductoUpdateView.as_view(), name='producto_update'),
+	path('producto/<int:pk>/eliminar/', ProductoDeleteView.as_view(), name='producto_delete'),
 
 ]
