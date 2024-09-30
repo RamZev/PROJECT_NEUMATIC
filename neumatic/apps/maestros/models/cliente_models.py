@@ -14,14 +14,17 @@ ESTATUS_GEN = [
 class Cliente(ModeloBaseGenerico):
     id_cliente = models.AutoField(primary_key=True)
     estatus_cliente = models.BooleanField("Estatus", default=True, choices=ESTATUS_GEN)
-    nombre_cliente = models.CharField(max_length=50)
-    domicilio_cliente = models.CharField(max_length=50)
-    codigo_postal = models.CharField("* Estatus", max_length=5)
-    id_localidad = models.IntegerField()  # Si hay relación con otra tabla, define una ForeignKey
+    nombre_cliente = models.CharField("Nombre Cliente", max_length=50)
+    domicilio_cliente = models.CharField("Domicilio Cliente", max_length=50)
+    codigo_postal = models.CharField("Código Postal", max_length=5)
+    id_provincia = models.ForeignKey(Provincia, on_delete=models.PROTECT, 
+                                     verbose_name="Provincia")
+    id_localidad = models.ForeignKey(Localidad, on_delete=models.PROTECT,
+                                     verbose_name="Localidad")
     tipo_persona = models.CharField(max_length=1)
     id_tipo_iva = models.ForeignKey(TipoIva, on_delete=models.CASCADE)
     id_tipo_documento_identidad = models.ForeignKey(TipoDocumentoIdentidad, on_delete=models.CASCADE)
-    cuit = models.IntegerField()
+    cuit = models.IntegerField("CUIT")
     condicion_venta = models.IntegerField()
     telefono_cliente = models.CharField(max_length=15)
     fax_cliente = models.CharField(max_length=15)
