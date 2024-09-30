@@ -4,9 +4,13 @@ from .base_gen_models import ModeloBaseGenerico
 from .base_models import *
 from .vendedor_models import Vendedor
 from .sucursal_models import Sucursal
+<<<<<<< HEAD
 from entorno.constantes_base import (
     ESTATUS_GEN, CONDICION_VENTA, SEXO)
 
+=======
+from entorno.constantes_base import ESTATUS_GEN
+>>>>>>> 6d4b95980aeece46c07f41718ed22af55c62a2c5
 
 class Cliente(ModeloBaseGenerico):
     id_cliente = models.AutoField(primary_key=True)
