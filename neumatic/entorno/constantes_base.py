@@ -4,7 +4,6 @@ ESTATUS_GEN = [
     (False, 'Inactivo'),
 ]
 
-<<<<<<< HEAD
 CONDICION_VENTA = [
     (1, 'Contado'),
     (2, 'Cuenta Corriente'),
@@ -19,9 +18,7 @@ SEXO = [
     ("M", 'Masculino'),
     ("F", 'Femenino'),
 ]
-=======
 TIPO_PRODUCTO_SERVICIO = [
 	('p', 'Producto'),
 	('S', 'Servicio')
 ]
->>>>>>> 6d4b95980aeece46c07f41718ed22af55c62a2c5
