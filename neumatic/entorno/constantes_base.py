@@ -3,3 +3,8 @@ ESTATUS_GEN = [
     (True, 'Activo'),
     (False, 'Inactivo'),
 ]
+
+TIPO_PRODUCTO_SERVICIO = [
+	('p', 'Producto'),
+	('S', 'Servicio')
+]

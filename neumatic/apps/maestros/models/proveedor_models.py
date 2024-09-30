@@ -4,7 +4,7 @@ from .base_gen_models import ModeloBaseGenerico
 from .base_models import Localidad  # Importar modelo Localidad
 from .base_models import TipoIva  # Importar modelo TipoIVA
 from .base_models import TipoRetencionIb  # Importar modelo TipoRetencionIB
-from entorno.entorno_base import ESTATUS_GEN
+from entorno.constantes_base import ESTATUS_GEN
 
 
 class Proveedor(ModeloBaseGenerico):

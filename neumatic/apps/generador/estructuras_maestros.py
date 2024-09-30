@@ -84,6 +84,7 @@ estructura_campos = {
 			# Agrega más filas o campos según sea necesario
 		},
 	},
+	
 	'actividad': {
 		'Información General': {
 			'fila_1': [
@@ -322,6 +323,45 @@ estructura_campos = {
 			],
 			'fila_2': [
 				{'field_name': 'telefono_operario', 'columna': 6},
+				{'field_name': 'email_operario', 'columna': 6},
+			],
+		}
+	},
+	
+	'producto': {
+		'Información General': {
+			'fila_1': [
+				{'field_name': 'estatus_producto', 'columna': 2},
+				{'field_name': 'codigo_producto', 'columna': 2},
+				{'field_name': 'nombre_producto', 'columna': 4},
+				{'field_name': 'tipo_producto', 'columna': 2},
+			],
+			'fila_2': [
+				{'field_name': 'id_familia', 'columna': 4},
+				{'field_name': 'id_marca', 'columna': 4},
+				{'field_name': 'id_modelo', 'columna': 4},
+			],
+			'fila_3': [
+				{'field_name': 'cai', 'columna': 6},
+				{'field_name': 'medida', 'columna': 6},
+				{'field_name': 'segmento', 'columna': 6},
+				{'field_name': 'unidad', 'columna': 6},
+				{'field_name': 'fecha_fabricacion', 'columna': 6},
+			],
+			'fila_4': [
+				{'field_name': 'costo', 'columna': 6},
+				{'field_name': 'alicuota_iva', 'columna': 6},
+				{'field_name': 'precio', 'columna': 6},
+				{'field_name': 'descuento', 'columna': 6},
+			],
+			'fila_5': [
+				{'field_name': 'id_familia', 'columna': 6},
+				{'field_name': 'email_operario', 'columna': 6},
+				{'field_name': 'email_operario', 'columna': 6},
+			],
+			'fila_6': [
+				{'field_name': 'id_familia', 'columna': 6},
+				{'field_name': 'email_operario', 'columna': 6},
 				{'field_name': 'email_operario', 'columna': 6},
 			],
 		}

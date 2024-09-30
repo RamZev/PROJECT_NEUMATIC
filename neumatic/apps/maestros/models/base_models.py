@@ -2,7 +2,7 @@
 from django.db import models
 from .base_gen_models import ModeloBaseGenerico
 from .sucursal_models import Sucursal
-from entorno.entorno_base import ESTATUS_GEN
+from entorno.constantes_base import ESTATUS_GEN
 
 
 class Actividad(ModeloBaseGenerico):
