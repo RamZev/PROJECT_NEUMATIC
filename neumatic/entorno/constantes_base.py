@@ -18,7 +18,18 @@ SEXO = [
     ("M", 'Masculino'),
     ("F", 'Femenino'),
 ]
+
 TIPO_PRODUCTO_SERVICIO = [
 	('p', 'Producto'),
 	('S', 'Servicio')
+]
+
+CLIENTE_VIP = [
+	(True, 'SI'),
+	(False, 'NO')
+]
+
+CLIENTE_MAYORISTA = [
+	(True, 'SI'),
+	(False, 'NO')
 ]
