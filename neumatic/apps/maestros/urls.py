@@ -24,7 +24,8 @@ from .views.empresa_views import *
 from .views.vendedor_views import *
 from .views.sucursal_views import *
 from .views.producto_views import *
-
+from .views.proveedor_views import *
+from .views.parametro_views import *
 
 urlpatterns = [
 	#-- Actividad.
@@ -158,5 +159,17 @@ urlpatterns = [
 	path('producto/nueva/', ProductoCreateView.as_view(), name='producto_create'),
 	path('producto/<int:pk>/editar/', ProductoUpdateView.as_view(), name='producto_update'),
 	path('producto/<int:pk>/eliminar/', ProductoDeleteView.as_view(), name='producto_delete'),
+
+	#-- Proveedor.
+	path('proveedor/', ProveedorListView.as_view(), name='proveedor_list'),
+	path('proveedor/nueva/', ProveedorCreateView.as_view(), name='proveedor_create'),
+	path('proveedor/<int:pk>/editar/', ProveedorUpdateView.as_view(), name='proveedor_update'),
+	path('proveedor/<int:pk>/eliminar/', ProveedorDeleteView.as_view(), name='proveedor_delete'),
+
+	#-- Parametro.
+	path('parametro/', ParametroListView.as_view(), name='parametro_list'),
+	path('parametro/nueva/', ParametroCreateView.as_view(), name='parametro_create'),
+	path('parametro/<int:pk>/editar/', ParametroUpdateView.as_view(), name='parametro_update'),
+	path('parametro/<int:pk>/eliminar/', ParametroDeleteView.as_view(), name='parametro_delete'),
 
 ]

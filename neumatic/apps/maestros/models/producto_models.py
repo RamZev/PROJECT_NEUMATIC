@@ -56,6 +56,7 @@ class Producto(ModeloBaseGenerico):
 
 
 ''' Solo para cuadrar plantilla del form
+
 	Línea 1
 		estatus_producto = models.BooleanField("Estatus", default=True, choices=ESTATUS_GEN)
 		codigo_producto = models.IntegerField("Código producto", validators=[MinValueValidator(1), MaxValueValidator(999)])
@@ -71,7 +72,8 @@ class Producto(ModeloBaseGenerico):
 		cai = models.CharField("CAI", max_length=20)  # CAI del producto
 		medida = models.CharField("Medida", max_length=15)  # Medida del producto
 		segmento = models.CharField("Segmento", max_length=3)  # Segmento del producto
-		unidad = models.IntegerField("Unidad", validators=[MinValueValidator(1), MaxValueValidator(999)])                                  #-- no está en captura
+		unidad = models.Integer
+        Field("Unidad", validators=[MinValueValidator(1), MaxValueValidator(999)])                                  #-- no está en captura
 		fecha_fabricacion = models.CharField("Fecha fabricación", max_length=6)  # Fecha de fabricación
     
 	Línea 4

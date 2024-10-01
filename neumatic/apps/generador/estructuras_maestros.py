@@ -316,7 +316,7 @@ estructura_campos = {
 	},
 	
 	'operario': {
-		'Información General': {
+		'Información Operario': {
 			'fila_1': [
 				{'field_name': 'estatus_operario', 'columna': 2},
 				{'field_name': 'nombre_operario', 'columna': 6},
@@ -363,6 +363,55 @@ estructura_campos = {
 			'fila_6': [
 				{'field_name': 'descripcion_producto', 'columna': 4},
 				{'field_name': 'carrito', 'columna': 2},
+			],
+		}
+	},
+	
+	'proveedor': {
+		'Información Proveedor': {
+			'fila_1': [
+				{'field_name': 'estatus_proveedor', 'columna': 2},
+				{'field_name': 'nombre_proveedor', 'columna': 4},
+			],
+			'fila_2': [
+				{'field_name': 'domicilio_proveedor', 'columna': 4},
+				{'field_name': 'id_localidad', 'columna': 2},
+				{'field_name': 'codigo_postal', 'columna': 2},
+			],
+			'fila_3': [
+				{'field_name': 'telefono_proveedor', 'columna': 2},
+				{'field_name': 'movil_proveedor', 'columna': 2},
+				{'field_name': 'email_proveedor', 'columna': 4},
+			],
+			'fila_4': [
+				{'field_name': 'ib_numero', 'columna': 2},
+				{'field_name': 'cuit', 'columna': 2},
+				{'field_name': 'id_tipo_iva', 'columna': 2},
+			],
+			'fila_5': [
+				{'field_name': 'id_tipo_retencion_ib', 'columna': 4},
+				{'field_name': 'ib_alicuota', 'columna': 2},
+				{'field_name': 'ib_exento', 'columna': 2},
+				{'field_name': 'multilateral', 'columna': 2},
+			],
+			'fila_6': [
+				{'field_name': 'observacion_proveedor', 'columna': 10},
+			],
+		}
+	},
+	
+	'parametro': {
+		'Información Parámetros': {
+			'fila_1': [
+				{'field_name': 'estatus_parametro', 'columna': 2},
+				{'field_name': 'id_empresa', 'columna': 8},
+			],
+			'fila_2': [
+				{'field_name': 'interes', 'columna': 2},
+				{'field_name': 'interes_dolar', 'columna': 2},
+				{'field_name': 'cotizacion_dolar', 'columna': 2},
+				{'field_name': 'dias_vencimiento', 'columna': 2},
+				{'field_name': 'descuento_maximo', 'columna': 2},
 			],
 		}
 	},
