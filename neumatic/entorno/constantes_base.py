@@ -43,8 +43,13 @@ BLACK_LIST = [
     (True, 'Si'),
     (False, 'No'),
 ]
+
 TIPO_VENTA = [
 	('R', 'R'),
 	('M', 'M'),
 ]
 
+WS_MODO = [
+	(1, 'Homologación'),
+	(2, 'Producción'),
+]

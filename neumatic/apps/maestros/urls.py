@@ -21,6 +21,7 @@ from .views.tipo_percepcion_ib_views import *
 from .views.tipo_retencion_ib_views import *
 from .views.operario_views import *
 #-- Catálogos
+from .views.cliente_views import *
 from .views.proveedor_views import *
 from .views.producto_views import *
 from .views.cliente_views import *
@@ -142,6 +143,12 @@ urlpatterns = [
 	path('operario/<int:pk>/eliminar/', OperarioDeleteView.as_view(), name='operario_delete'),
 	
 	#-- Catálogos:
+	#-- Cliente.
+	path('cliente/', ClienteListView.as_view(), name='cliente_list'),
+	path('cliente/nueva/', ClienteCreateView.as_view(), name='cliente_create'),
+	path('cliente/<int:pk>/editar/', ClienteUpdateView.as_view(), name='cliente_update'),
+	path('cliente/<int:pk>/eliminar/', ClienteDeleteView.as_view(), name='cliente_delete'),
+	
 	#-- Proveedor.
 	path('proveedor/', ProveedorListView.as_view(), name='proveedor_list'),
 	path('proveedor/nueva/', ProveedorCreateView.as_view(), name='proveedor_create'),
@@ -171,12 +178,6 @@ urlpatterns = [
 	path('sucursal/nueva/', SucursalCreateView.as_view(), name='sucursal_create'),
 	path('sucursal/<int:pk>/editar/', SucursalUpdateView.as_view(), name='sucursal_update'),
 	path('sucursal/<int:pk>/eliminar/', SucursalDeleteView.as_view(), name='sucursal_delete'),
-
-	#-- Cliente.
-	path('cliente/', ClienteListView.as_view(), name='cliente_list'),
-	path('cliente/nueva/', ClienteCreateView.as_view(), name='cliente_create'),
-	path('cliente/<int:pk>/editar/', ClienteUpdateView.as_view(), name='cliente_update'),
-	path('cliente/<int:pk>/eliminar/', ClienteDeleteView.as_view(), name='cliente_delete'),
 	
 	#-- Parametro.
 	path('parametro/', ParametroListView.as_view(), name='parametro_list'),
