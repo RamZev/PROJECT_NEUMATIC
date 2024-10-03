@@ -1,16 +1,16 @@
-# neumatic\apps\maestros\views\vendedor_views.py
+# neumatic\apps\maestros\views\operario_views.py
 from django.urls import reverse_lazy
 from ..views.cruds_views_generics import *
-from ..models.vendedor_models import Vendedor
-from ..forms.vendedor_forms import VendedorForm
+from ..models.proveedor_models import Proveedor
+from ..forms.proveedor_forms import ProveedorForm
 
 
 class ConfigViews():
 	# Modelo
-	model = Vendedor
+	model = Proveedor
 	
 	# Formulario asociado al modelo
-	form_class = VendedorForm
+	form_class = ProveedorForm
 	
 	# Aplicación asociada al modelo
 	app_label = model._meta.app_label
@@ -23,7 +23,7 @@ class ConfigViews():
 	model_string = model.__name__.lower()  #-- Usar esta forma cuando el modelo esté compuesto de una sola palabra: Ej. Color.
 	
 	#-- Usar esta forma cuando el modelo esté compuesto por más de una palabra: Ej. TipoCambio colocar "tipo_cambio".
-	#model_string = "tipo_cambio"
+	# model_string = "tipo_retencion_ib"
 	
 	# Permisos
 	permission_add = f"{app_label}.add_{model_string}"
@@ -56,30 +56,31 @@ class ConfigViews():
 
 
 class DataViewList():
-	search_fields = ['nombre_vendedor']
+	search_fields = ['nombre_proveedor', 
+					 'telefono_proveedor', 
+	]
 	
-	ordering = ['nombre_vendedor']
+	ordering = ['nombre_proveedor']
 	
 	paginate_by = 8
-	  
+	
 	table_headers = {
-		'nombre_vendedor': (4, 'Nombre Vendedor'),
-		'telefono_vendedor': (2, 'Teléfono'),
-		'id_sucursal': (4, 'Sucursal'),
+		'nombre_proveedor': (4, 'Nombre producto'),
+		'telefono_proveedor': (3, 'Código producto'),
+		'movil_proveedor': (3, 'Código producto'),
 		
 		'acciones': (2, 'Acciones'),
 	}
 	
 	table_data = [
-		{'field_name': 'nombre_vendedor', 'date_format': None},
-		{'field_name': 'telefono_vendedor', 'date_format': None},
-		{'field_name': 'id_sucursal', 'date_format': None},
-		
-		  
+		{'field_name': 'nombre_proveedor', 'date_format': None},
+		{'field_name': 'telefono_proveedor', 'date_format': None},
+		{'field_name': 'movil_proveedor', 'date_format': None},
 	]
 
-# VendedorListView - Inicio
-class VendedorListView(MaestroListView):
+
+# ProvinciaListView - Inicio
+class ProveedorListView(MaestroListView):
 	model = ConfigViews.model
 	template_name = ConfigViews.template_list
 	context_object_name = ConfigViews.context_object_name
@@ -99,8 +100,8 @@ class VendedorListView(MaestroListView):
 	}
 
 
-# VendedorCreateView - Inicio
-class VendedorCreateView(MaestroCreateView):
+# ProvinciaCreateView - Inicio
+class ProveedorCreateView(MaestroCreateView):
 	model = ConfigViews.model
 	list_view_name = ConfigViews.list_view_name
 	form_class = ConfigViews.form_class
@@ -112,13 +113,13 @@ class VendedorCreateView(MaestroCreateView):
 	permission_required = ConfigViews.permission_add
 	
 	extra_context = {
-		"accion": f"Editar {ConfigViews.model._meta.verbose_name}",
+		"accion": f"Crear {ConfigViews.model._meta.verbose_name}",
 		"list_view_name" : ConfigViews.list_view_name
 	}
 
 
-# VendedorUpdateView
-class VendedorUpdateView(MaestroUpdateView):
+# ProvinciaUpdateView
+class ProveedorUpdateView(MaestroUpdateView):
 	model = ConfigViews.model
 	list_view_name = ConfigViews.list_view_name
 	form_class = ConfigViews.form_class
@@ -129,13 +130,13 @@ class VendedorUpdateView(MaestroUpdateView):
 	permission_required = ConfigViews.permission_change
 	
 	extra_context = {
-		 "accion": f"Editar {ConfigViews.model._meta.verbose_name}",
+		"accion": f"Editar {ConfigViews.model._meta.verbose_name}",
 		"list_view_name" : ConfigViews.list_view_name
 	}
 
 
-# VendedorDeleteView
-class VendedorDeleteView (MaestroDeleteView):
+# ProvinciaDeleteView
+class ProveedorDeleteView (MaestroDeleteView):
 	model = ConfigViews.model
 	list_view_name = ConfigViews.list_view_name
 	template_name = ConfigViews.template_delete

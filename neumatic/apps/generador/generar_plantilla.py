@@ -62,12 +62,13 @@ html_code = """{% extends 'maestro_form.html' %}
 
 primera_iteracion = True
 
+#-- Insertar elementos del acordeón.
 for seccion, filas in estructura_campos.items():
 		html_code += f"""
 									<div class="accordion-item">
 										<h2 class="accordion-header">
 											<button 
-												class="accordion-button {'collapsed' if not primera_iteracion else ''}" 
+												class="accordion-button py-2 {'collapsed' if not primera_iteracion else ''}" 
 												type="button" 
 												data-bs-toggle="collapse" 
 												data-bs-target="#{seccion.replace(" ", "_")}" 
@@ -80,25 +81,28 @@ for seccion, filas in estructura_campos.items():
 											id="{seccion.replace(" ", "_")}">
 											<div class="accordion-body bg-secondary-subtle">
 		"""
-	
+		
+		#-- Insertar elementos fila.
 		for fila, campos in filas.items():
 				html_code += '''
 												<div class="row">'''
+				
+				#-- Insertar inputs.
 				for campo in campos:
 						field_name = campo['field_name']
 						columna = campo['columna']
 			
 						html_code += f"""
 													<div class="col-md-{columna}">
-														<label class="form-label text-primary">
+														<label class="form-label text-primary mb-0">
 															{{{{ form.{field_name}.label }}}}
 														</label>
 														{{{{ form.{field_name} }}}}
 													</div>
 						"""
-		
+				
 				html_code += '						</div>'
-	
+		
 		html_code += """
 											</div>
 										</div>

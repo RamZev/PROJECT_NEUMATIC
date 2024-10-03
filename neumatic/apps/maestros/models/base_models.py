@@ -1,7 +1,7 @@
 # neumatic\apps\maestros\models\base_models.py
 from django.db import models
 from .base_gen_models import ModeloBaseGenerico
-from .sucursal_models import Sucursal
+# from .sucursal_models import Sucursal
 from entorno.constantes_base import ESTATUS_GEN
 
 
@@ -27,7 +27,7 @@ class ProductoDeposito(ModeloBaseGenerico):
     id_producto_deposito = models.AutoField(primary_key=True)
     estatus_producto_deposito = models.BooleanField("Estatus", default=True, 
                                                     choices=ESTATUS_GEN)
-    id_sucursal = models.ForeignKey(Sucursal, on_delete=models.CASCADE,
+    id_sucursal = models.ForeignKey('Sucursal', on_delete=models.CASCADE,
                                     verbose_name="Sucursal")
     nombre_producto_deposito = models.CharField("Nombre", max_length=50)
     
@@ -99,7 +99,7 @@ class ProductoMinimo(ModeloBaseGenerico):
     id_producto_minimo = models.AutoField(primary_key=True)
     cai = models.CharField("CAI", max_length=20)
     minimo = models.IntegerField("Mínimo")
-    id_deposito = models.ForeignKey(ProductoDeposito, on_delete=models.CASCADE, 
+    id_deposito = models.ForeignKey('ProductoDeposito', on_delete=models.CASCADE, 
                                     verbose_name="Depósito")
     
     def __str__(self):
@@ -116,7 +116,7 @@ class ProductoStock(ModeloBaseGenerico):
     id_producto_stock = models.AutoField(primary_key=True)
     id_producto = models.ForeignKey('Producto', on_delete=models.CASCADE, 
                                     verbose_name="Producto")
-    id_deposito = models.ForeignKey(ProductoDeposito, on_delete=models.CASCADE, 
+    id_deposito = models.ForeignKey('ProductoDeposito', on_delete=models.CASCADE, 
                                     verbose_name="Depósito")
     stock = models.IntegerField("Stock")
     minimo = models.IntegerField("Mínimo")
@@ -253,7 +253,7 @@ class Localidad(ModeloBaseGenerico):
     id_localidad = models.AutoField(primary_key=True)
     estatus_localidad = models.BooleanField("Estatus", default=True,
                                             choices=ESTATUS_GEN)
-    id_provincia = models.ForeignKey(Provincia, on_delete=models.CASCADE, 
+    id_provincia = models.ForeignKey('Provincia', on_delete=models.CASCADE, 
                                      verbose_name="Provincia")
     codigo_postal = models.CharField("Código Postal", max_length=5)
     nombre_localidad = models.CharField("Nombre Localidad", max_length=30)
@@ -356,7 +356,7 @@ class Operario(ModeloBaseGenerico):
     estatus_operario = models.BooleanField("Estatus", default=True,
                                            choices=ESTATUS_GEN)
     nombre_operario = models.CharField("Nombre", max_length=50)
-    telefono_operario = models.CharField("Teléfono", max_length=50)
+    telefono_operario = models.CharField("Teléfono", max_length=15)
     email_operario = models.CharField("Correo", max_length=50)
     
     def __str__(self):

@@ -3,7 +3,7 @@ from django import forms
 from .crud_forms_generics import CrudGenericForm
 from ..models.producto_models import Producto
 from diseno_base.diseno_bootstrap import (
-	formclasstext, formclassselect, formclasscheck, formclassdate)
+	formclasstext, formclassselect, formclasscheck)
 
 
 class ProductoForm(CrudGenericForm):

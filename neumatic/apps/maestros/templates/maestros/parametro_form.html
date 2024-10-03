@@ -38,58 +38,65 @@
 												class="accordion-button py-2 " 
 												type="button" 
 												data-bs-toggle="collapse" 
-												data-bs-target="#Información_General" 
+												data-bs-target="#Información_Parámetros" 
 												aria-expanded="true" 
-												aria-controls="Información_General">
-												<strong>Información Moneda</strong>
+												aria-controls="Información_Parámetros">
+												<strong>Información Parámetros</strong>
 											</button>
 										</h2>
 										<div class="accordion-collapse collapse show"
-											id="Información_General">
+											id="Información_Parámetros">
 											<div class="accordion-body bg-secondary-subtle">
 		
 												<div class="row">
 													<div class="col-md-2">
 														<label class="form-label text-primary mb-0">
-															{{ form.estatus_moneda.label }}
+															{{ form.estatus_parametro.label }}
 														</label>
-														{{ form.estatus_moneda }}
+														{{ form.estatus_parametro }}
 													</div>
 						
-													<div class="col-md-2">
+													<div class="col-md-8">
 														<label class="form-label text-primary mb-0">
-															{{ form.nombre_moneda.label }}
+															{{ form.id_empresa.label }}
 														</label>
-														{{ form.nombre_moneda }}
-													</div>
-						
-													<div class="col-md-1">
-														<label class="form-label text-primary mb-0">
-															{{ form.simbolo_moneda.label }}
-														</label>
-														{{ form.simbolo_moneda }}
+														{{ form.id_empresa }}
 													</div>
 												</div>
 												<div class="row">
 													<div class="col-md-2">
 														<label class="form-label text-primary mb-0">
-															{{ form.cotizacion_moneda.label }}
+															{{ form.interes.label }}
 														</label>
-														{{ form.cotizacion_moneda }}
-													</div>
-						
-													<div class="col-md-1">
-														<label class="form-label text-primary mb-0">
-															{{ form.ws_afip.label }}
-														</label>
-														{{ form.ws_afip }}
+														{{ form.interes }}
 													</div>
 						
 													<div class="col-md-2">
 														<label class="form-label text-primary mb-0">
-															{{ form.predeterminada.label }}
+															{{ form.interes_dolar.label }}
 														</label>
-														{{ form.predeterminada }}
+														{{ form.interes_dolar }}
+													</div>
+						
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0">
+															{{ form.cotizacion_dolar.label }}
+														</label>
+														{{ form.cotizacion_dolar }}
+													</div>
+						
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0">
+															{{ form.dias_vencimiento.label }}
+														</label>
+														{{ form.dias_vencimiento }}
+													</div>
+						
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0">
+															{{ form.descuento_maximo.label }}
+														</label>
+														{{ form.descuento_maximo }}
 													</div>
 												</div>
 											</div>
