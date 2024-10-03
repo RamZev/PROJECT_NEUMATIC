@@ -39,3 +39,7 @@ TIPO_VENTA = [
 	('M', 'M'),
 ]
 
+WS_MODO = [
+	(1, 'Homologación'),
+	(2, 'Producción'),
+]
