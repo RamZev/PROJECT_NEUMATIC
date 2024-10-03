@@ -24,6 +24,7 @@ from .views.empresa_views import *
 from .views.vendedor_views import *
 from .views.sucursal_views import *
 from .views.producto_views import *
+from .views.cliente_views import *
 
 
 urlpatterns = [
@@ -158,5 +159,11 @@ urlpatterns = [
 	path('producto/nueva/', ProductoCreateView.as_view(), name='producto_create'),
 	path('producto/<int:pk>/editar/', ProductoUpdateView.as_view(), name='producto_update'),
 	path('producto/<int:pk>/eliminar/', ProductoDeleteView.as_view(), name='producto_delete'),
+ 
+	#-- Cliente.
+	path('cliente/', ClienteListView.as_view(), name='cliente_list'),
+	path('cliente/nueva/', ClienteCreateView.as_view(), name='cliente_create'),
+	path('cliente/<int:pk>/editar/', ClienteUpdateView.as_view(), name='cliente_update'),
+	path('cliente/<int:pk>/eliminar/', ClienteDeleteView.as_view(), name='cliente_delete'),
 
 ]

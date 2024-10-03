@@ -1,0 +1,393 @@
+{% extends 'maestro_form.html' %}
+{% load static %}
+<!-- -------------------------------------------------------------------- -->
+{% block maincomponent %}
+	{% block principalcomponent %}
+		<div id="layoutSidenav_content">
+			<main>
+				<div class="container-fluid">
+					
+					<div class="card border-light mb-3 mt-2">
+						<div class="card-header text-white bg-primary opacity-75 d-flex 
+									justify-content-between">
+							{{ accion }}
+							<div class="flex align-items-center">
+								<a 
+									class="me-2 text-white" 
+									data-bs-toggle="modal" 
+									data-bs-target="#helpModal" 
+									style="cursor: pointer;">
+									<i class="bi bi-question-lg"></i></a>
+								
+								<button type="button" class="btn-close btn-close-white" 
+									aria-label="Close"
+									onclick="window.location.href='{% url list_view_name %}'">
+								</button>
+							</div>
+						</div>
+						
+						<div class="card-body bg-body-secondary">
+							<form method="post" enctype="multipart/form-data" novalidate>
+								{% csrf_token %}
+								<div class="accordion" id="accordionPanelsStayOpenExample">
+									<!-- Estructura generada -->
+
+									<div class="accordion-item">
+										<h2 class="accordion-header">
+											<button 
+												class="accordion-button " 
+												type="button" 
+												data-bs-toggle="collapse" 
+												data-bs-target="#Información_General" 
+												aria-expanded="true" 
+												aria-controls="Información_General">
+												<strong>Información General</strong>
+											</button>
+										</h2>
+										<div class="accordion-collapse collapse show"
+											id="Información_General">
+											<div class="accordion-body bg-secondary-subtle">
+		
+												<div class="row">
+													<div class="col-md-2">
+														<label class="form-label text-primary">
+															{{ form.estatus_cliente.label }}
+														</label>
+														{{ form.estatus_cliente }}
+													</div>
+						
+													<div class="col-md-4">
+														<label class="form-label text-primary">
+															{{ form.nombre_cliente.label }}
+														</label>
+														{{ form.nombre_cliente }}
+													</div>
+						
+													<div class="col-md-6">
+														<label class="form-label text-primary">
+															{{ form.domicilio_cliente.label }}
+														</label>
+														{{ form.domicilio_cliente }}
+													</div>
+												</div>
+												<div class="row">
+													<div class="col-md-2">
+														<label class="form-label text-primary">
+															{{ form.codigo_postal.label }}
+														</label>
+														{{ form.codigo_postal }}
+													</div>
+						
+													<div class="col-md-4">
+														<label class="form-label text-primary">
+															{{ form.id_provincia.label }}
+														</label>
+														{{ form.id_provincia }}
+													</div>
+						
+													<div class="col-md-4">
+														<label class="form-label text-primary">
+															{{ form.id_localidad.label }}
+														</label>
+														{{ form.id_localidad }}
+													</div>
+												</div>
+												<div class="row">
+													<div class="col-md-2">
+														<label class="form-label text-primary">
+															{{ form.tipo_persona.label }}
+														</label>
+														{{ form.tipo_persona }}
+													</div>
+						
+													<div class="col-md-2">
+														<label class="form-label text-primary">
+															{{ form.id_tipo_documento_identidad.label }}
+														</label>
+														{{ form.id_tipo_documento_identidad }}
+													</div>
+						
+													<div class="col-md-2">
+														<label class="form-label text-primary">
+															{{ form.cuit.label }}
+														</label>
+														{{ form.cuit }}
+													</div>
+						
+													<div class="col-md-2">
+														<label class="form-label text-primary">
+															{{ form.id_tipo_iva.label }}
+														</label>
+														{{ form.id_tipo_iva }}
+													</div>
+						
+													<div class="col-md-2">
+														<label class="form-label text-primary">
+															{{ form.condicion_venta.label }}
+														</label>
+														{{ form.condicion_venta }}
+													</div>
+												</div>
+												<div class="row">
+													<div class="col-md-2">
+														<label class="form-label text-primary">
+															{{ form.telefono_cliente.label }}
+														</label>
+														{{ form.telefono_cliente }}
+													</div>
+						
+													<div class="col-md-2">
+														<label class="form-label text-primary">
+															{{ form.fax_cliente.label }}
+														</label>
+														{{ form.fax_cliente }}
+													</div>
+						
+													<div class="col-md-2">
+														<label class="form-label text-primary">
+															{{ form.movil_cliente.label }}
+														</label>
+														{{ form.movil_cliente }}
+													</div>
+						
+													<div class="col-md-3">
+														<label class="form-label text-primary">
+															{{ form.email_cliente.label }}
+														</label>
+														{{ form.email_cliente }}
+													</div>
+						
+													<div class="col-md-3">
+														<label class="form-label text-primary">
+															{{ form.email2_cliente.label }}
+														</label>
+														{{ form.email2_cliente }}
+													</div>
+												</div>
+												<div class="row">
+													<div class="col-md-3">
+														<label class="form-label text-primary">
+															{{ form.transporte_cliente.label }}
+														</label>
+														{{ form.transporte_cliente }}
+													</div>
+						
+													<div class="col-md-3">
+														<label class="form-label text-primary">
+															{{ form.id_vendedor.label }}
+														</label>
+														{{ form.id_vendedor }}
+													</div>
+						
+													<div class="col-md-2">
+														<label class="form-label text-primary">
+															{{ form.fecha_nacimiento.label }}
+														</label>
+														{{ form.fecha_nacimiento }}
+													</div>
+						
+													<div class="col-md-2">
+														<label class="form-label text-primary">
+															{{ form.fecha_alta.label }}
+														</label>
+														{{ form.fecha_alta }}
+													</div>
+						
+													<div class="col-md-2">
+														<label class="form-label text-primary">
+															{{ form.sexo.label }}
+														</label>
+														{{ form.sexo }}
+													</div>
+												</div>
+												<div class="row">
+													<div class="col-md-3">
+														<label class="form-label text-primary">
+															{{ form.id_actividad.label }}
+														</label>
+														{{ form.id_actividad }}
+													</div>
+						
+													<div class="col-md-3">
+														<label class="form-label text-primary">
+															{{ form.id_sucursal.label }}
+														</label>
+														{{ form.id_sucursal }}
+													</div>
+						
+													<div class="col-md-3">
+														<label class="form-label text-primary">
+															{{ form.id_percepcion_ib.label }}
+														</label>
+														{{ form.id_percepcion_ib }}
+													</div>
+						
+													<div class="col-md-3">
+														<label class="form-label text-primary">
+															{{ form.numero_ib.label }}
+														</label>
+														{{ form.numero_ib }}
+													</div>
+												</div>
+												<div class="row">
+													<div class="col-md-2">
+														<label class="form-label text-primary">
+															{{ form.vip.label }}
+														</label>
+														{{ form.vip }}
+													</div>
+						
+													<div class="col-md-2">
+														<label class="form-label text-primary">
+															{{ form.mayorista.label }}
+														</label>
+														{{ form.mayorista }}
+													</div>
+						
+													<div class="col-md-2">
+														<label class="form-label text-primary">
+															{{ form.sub_cuenta.label }}
+														</label>
+														{{ form.sub_cuenta }}
+													</div>
+						
+													<div class="col-md-6">
+														<label class="form-label text-primary">
+															{{ form.observaciones_cliente.label }}
+														</label>
+														{{ form.observaciones_cliente }}
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+		
+									<div class="accordion-item">
+										<h2 class="accordion-header">
+											<button 
+												class="accordion-button collapsed" 
+												type="button" 
+												data-bs-toggle="collapse" 
+												data-bs-target="#Black_List" 
+												aria-expanded="false" 
+												aria-controls="Black_List">
+												<strong>Black List</strong>
+											</button>
+										</h2>
+										<div class="accordion-collapse collapse "
+											id="Black_List">
+											<div class="accordion-body bg-secondary-subtle">
+		
+												<div class="row">
+													<div class="col-md-2">
+														<label class="form-label text-primary">
+															{{ form.black_list.label }}
+														</label>
+														{{ form.black_list }}
+													</div>
+						
+													<div class="col-md-5">
+														<label class="form-label text-primary">
+															{{ form.black_list_motivo.label }}
+														</label>
+														{{ form.black_list_motivo }}
+													</div>
+						
+													<div class="col-md-3">
+														<label class="form-label text-primary">
+															{{ form.black_list_usuario.label }}
+														</label>
+														{{ form.black_list_usuario }}
+													</div>
+						
+													<div class="col-md-2">
+														<label class="form-label text-primary">
+															{{ form.fecha_baja.label }}
+														</label>
+														{{ form.fecha_baja }}
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+		
+								</div>
+								
+								<div class="container mt-3">
+									<button class="btn btn-primary" type="submit" id="guardarBtn">
+										Guardar
+									</button>
+									<a class="btn btn-secondary" href="{% url list_view_name %}">
+										Cancelar
+									</a>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+			</main>
+		</div>
+	{% endblock principalcomponent %}
+{% endblock maincomponent %}
+<!-- -------------------------------------------------------------------- -->
+{% block modals %}
+	<!-- Modal para mostrar errores -->
+	{% include 'maestros/modal_errors.html' %}
+	
+	<!-- Modal para mostrar los requerimientos de los campos -->
+	{% include 'maestros/modal_fields_requirements.html' %}
+{% endblock modals %}
+<!-- -------------------------------------------------------------------- -->
+{% block footer %}
+{% endblock footer %}
+<!-- -------------------------------------------------------------------- -->
+{% block script %}
+	<script>
+		document.addEventListener('DOMContentLoaded', function () {
+			const errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
+			const modalElement = document.getElementById('errorModal');
+			const hasErrors = modalElement.dataset.hasErrors === "true";
+			
+			// Mostrar el modal si hay errores
+			if (hasErrors) {
+				errorModal.show();
+			}
+			
+			// Validación en tiempo real: remover clases al escribir.
+			// Seleccionar inputs y selects.
+			var inputs = document.querySelectorAll('input, select');
+			console.log(inputs);
+			inputs.forEach(function (input) {
+				// Para los campos de tipo input (text, number, etc.)
+				input.addEventListener('input', function () {
+					if (input.classList.contains('is-invalid')) {
+						// Eliminar la clase de borde rojo (border-danger).
+						input.classList.remove('is-invalid', 'border-danger');
+						// Agregar la clase de borde azul (border-primary).
+						input.classList.add('border-primary');
+					}
+				});
+				// Para los combobox (select)
+				input.addEventListener('change', function () {
+					if (input.classList.contains('is-invalid')) {
+						// Eliminar la clase de borde rojo (border-danger).
+						input.classList.remove('is-invalid', 'border-danger');
+						// Agregar la clase de borde azul (border-primary).
+						input.classList.add('border-primary');
+					}
+				});
+				
+			});
+			
+			// Al cerrar el modal, enfocar el primer campo con error
+			modalElement.addEventListener('hidden.bs.modal', function () {
+				// Buscar el primer campo con la clase 'is-invalid' después de que el modal esté completamente oculto
+				const firstInvalidField = document.querySelector('.is-invalid');
+				if (firstInvalidField) {
+					firstInvalidField.focus(); // Establecer el foco en el primer campo con error
+				}
+			});
+			
+		});
+	</script>
+{% endblock script %}
