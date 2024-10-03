@@ -4,6 +4,11 @@ ESTATUS_GEN = [
     (False, 'Inactivo'),
 ]
 
+TIPO_PERSONA = [
+    ("N", 'Natural'),
+    ("F", 'Física'),
+]
+
 CONDICION_VENTA = [
     (1, 'Contado'),
     (2, 'Cuenta Corriente'),
@@ -32,6 +37,11 @@ CLIENTE_VIP = [
 CLIENTE_MAYORISTA = [
 	(True, 'SI'),
 	(False, 'NO')
+]
+
+BLACK_LIST = [
+    (True, 'Si'),
+    (False, 'No'),
 ]
 
 TIPO_VENTA = [

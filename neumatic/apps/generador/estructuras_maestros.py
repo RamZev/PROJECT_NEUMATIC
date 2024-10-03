@@ -366,6 +366,65 @@ estructura_campos = {
 			],
 		}
 	},
+<<<<<<< HEAD
+ 
+	'cliente': {
+		'Información General': {
+			'fila_1': [
+				{'field_name': 'estatus_cliente', 'columna': 2},
+				{'field_name': 'nombre_cliente', 'columna': 4},
+				{'field_name': 'domicilio_cliente', 'columna': 6},
+			],
+			'fila_2': [
+				{'field_name': 'codigo_postal', 'columna': 2},
+				{'field_name': 'id_provincia', 'columna': 4},
+				{'field_name': 'id_localidad', 'columna': 4},
+			],
+			'fila_3': [
+				{'field_name': 'tipo_persona', 'columna': 2},
+				{'field_name': 'id_tipo_documento_identidad', 'columna': 2},
+				{'field_name': 'cuit', 'columna': 2},
+				{'field_name': 'id_tipo_iva', 'columna': 2},
+				{'field_name': 'condicion_venta', 'columna': 2},
+			],
+			'fila_4': [
+				{'field_name': 'telefono_cliente', 'columna': 2},
+				{'field_name': 'fax_cliente', 'columna': 2},
+				{'field_name': 'movil_cliente', 'columna': 2},
+				{'field_name': 'email_cliente', 'columna': 3},
+				{'field_name': 'email2_cliente', 'columna': 3},
+			],
+			'fila_5': [
+				{'field_name': 'transporte_cliente', 'columna': 3},
+				{'field_name': 'id_vendedor', 'columna': 3},
+				{'field_name': 'fecha_nacimiento', 'columna': 2},
+				{'field_name': 'fecha_alta', 'columna': 2},
+				{'field_name': 'sexo', 'columna': 2},
+			],
+			'fila_6': [
+				{'field_name': 'id_actividad', 'columna': 3},
+				{'field_name': 'id_sucursal', 'columna': 3},
+				{'field_name': 'id_percepcion_ib', 'columna': 3},
+				{'field_name': 'numero_ib', 'columna': 3},
+			],
+			'fila_7': [
+				{'field_name': 'vip', 'columna': 2},
+				{'field_name': 'mayorista', 'columna': 2},
+				{'field_name': 'sub_cuenta', 'columna': 2},
+				{'field_name': 'observaciones_cliente', 'columna': 6},
+			],
+			# Agrega más filas o campos según sea necesario
+		},
+		'Black List': {
+			'fila_1': [
+				{'field_name': 'black_list', 'columna': 2},
+				{'field_name': 'black_list_motivo', 'columna': 5},
+				{'field_name': 'black_list_usuario', 'columna': 3},
+				{'field_name': 'fecha_baja', 'columna': 2},
+			],        
+		},	
+	}
+=======
 	
 	'proveedor': {
 		'Información Proveedor': {
@@ -483,4 +542,5 @@ estructura_campos = {
 		}
 	},
 	
+>>>>>>> 3b13b61962f70e5396554f63fb338ece2e10bce5
 }

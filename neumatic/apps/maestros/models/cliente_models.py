@@ -6,7 +6,8 @@ from .vendedor_models import Vendedor
 from .sucursal_models import Sucursal
 from entorno.constantes_base import (
     ESTATUS_GEN, CONDICION_VENTA, SEXO, 
-    CLIENTE_VIP, CLIENTE_MAYORISTA)
+    CLIENTE_VIP, CLIENTE_MAYORISTA,
+    TIPO_PERSONA, BLACK_LIST)
 
 
 class Cliente(ModeloBaseGenerico):
@@ -22,7 +23,9 @@ class Cliente(ModeloBaseGenerico):
                                      null=True, blank=True)
     id_localidad = models.ForeignKey(Localidad, on_delete=models.PROTECT,
                                      verbose_name="Localidad")
-    tipo_persona = models.CharField("Tipo de Persona", max_length=1)
+    tipo_persona = models.CharField("Tipo de Persona", max_length=1,
+                                    default="N", 
+                                    choices=TIPO_PERSONA)
     id_tipo_iva = models.ForeignKey(TipoIva, on_delete=models.CASCADE,
                                     verbose_name="Tipo de Iva")
     id_tipo_documento_identidad = models.ForeignKey(
@@ -53,7 +56,7 @@ class Cliente(ModeloBaseGenerico):
                                      verbose_name="Actividad")
     id_sucursal = models.ForeignKey(Sucursal, 
                                     on_delete=models.CASCADE,
-                                    verbose_name="Actividad")
+                                    verbose_name="Sucursal")
     id_percepcion_ib = models.ForeignKey(TipoPercepcionIb, 
                                          on_delete=models.CASCADE, 
                                          verbose_name="Percepción IB")
@@ -61,15 +64,16 @@ class Cliente(ModeloBaseGenerico):
     vip = models.BooleanField("Cliente VIP", 
                               default=False,
                               choices=CLIENTE_VIP)
-    mayorista = models.BooleanField("Cliente VIP", 
+    mayorista = models.BooleanField("Mayorista", 
                                     default=False,
                                     choices=CLIENTE_MAYORISTA)
     sub_cuenta = models.IntegerField("Sub Cuenta")
     observaciones_cliente = models.TextField("Observaciones", 
                                              blank=True, null=True)
     # id_usuario = models.IntegerField()  # El usuario que creó el cliente
-    black_list = models.BooleanField(default=False)
-    black_list_motivo = models.BinaryField("Motivo Black List", 
+    black_list = models.BooleanField("Black List", default=False, 
+                                          choices=BLACK_LIST)
+    black_list_motivo = models.CharField("Motivo Black List", 
                                            max_length=50)
     black_list_usuario = models.CharField("Usuario Black List", 
                                           max_length=20)
