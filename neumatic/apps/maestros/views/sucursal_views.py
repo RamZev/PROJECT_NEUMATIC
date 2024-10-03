@@ -56,31 +56,26 @@ class ConfigViews():
 
 
 class DataViewList():
-	search_fields = ['nombre_sucursal',]
+	search_fields = ['nombre_sucursal', 'codigo_michelin']
 	
 	ordering = ['nombre_sucursal']
 	
 	paginate_by = 8
 	  
 	table_headers = {
-		'nombre_sucursal': (1, 'Nombre'),
-		'id_localidad': (1, 'Localidad'),
-		'id_provincia': (1, 'Provincia'),
-		'telefono_sucursal': (2, 'Teléfono'),
-		'email_sucursal': (2, 'Email'),
-		'inicio_actividad': (2, 'Inicio'),
-		'codigo_michelin': (1, 'Código'),
+		'nombre_sucursal': (4, 'Nombre'),
+		'codigo_michelin': (2, 'Código Michelin'),
+		'id_localidad': (2, 'Localidad'),
+		'id_provincia': (2, 'Provincia'),
+		
 		'acciones': (2, 'Acciones'),
 	}
 	
 	table_data = [
 		{'field_name': 'nombre_sucursal', 'date_format': None},
+		{'field_name': 'codigo_michelin', 'date_format': None},  
 		{'field_name': 'id_localidad', 'date_format': None},
 		{'field_name': 'id_provincia', 'date_format': None},
-		{'field_name': 'telefono_sucursal', 'date_format': None},
-		{'field_name': 'email_sucursal', 'date_format': None},
-		{'field_name': 'inicio_actividad', 'date_format': 'd/m/Y'},
-		{'field_name': 'codigo_michelin', 'date_format': None},  
 	]
 
 

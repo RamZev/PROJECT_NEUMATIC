@@ -86,7 +86,7 @@ estructura_campos = {
 	},
 	
 	'actividad': {
-		'Información General': {
+		'Información Actividad': {
 			'fila_1': [
 				{'field_name': 'estatus_actividad', 'columna': 2},
 				{'field_name': 'descripcion_actividad', 'columna': 4},
@@ -96,7 +96,7 @@ estructura_campos = {
 	},
 	
 	'prod_deposito': {
-		'Información General': {
+		'Información Producto Depósito': {
 			'fila_1': [
 				{'field_name': 'estatus_producto_deposito', 'columna': 2},
 				{'field_name': 'id_sucursal', 'columna': 4},
@@ -106,7 +106,7 @@ estructura_campos = {
 	},
 	
 	'prod_familia': {
-		'Información General': {
+		'Información Producto Familia': {
 			'fila_1': [
 				{'field_name': 'estatus_producto_familia', 'columna': 2},
 				{'field_name': 'nombre_producto_familia', 'columna': 4},
@@ -116,22 +116,22 @@ estructura_campos = {
 	},
 	
 	'moneda': {
-		'Información General': {
+		'Información Moneda': {
 			'fila_1': [
 				{'field_name': 'estatus_moneda', 'columna': 2},
-				{'field_name': 'nombre_moneda', 'columna': 4},
-				{'field_name': 'simbolo_moneda', 'columna': 2}
+				{'field_name': 'nombre_moneda', 'columna': 2},
+				{'field_name': 'simbolo_moneda', 'columna': 1}
 			],
 			'fila_2': [
 				{'field_name': 'cotizacion_moneda', 'columna': 2},
-				{'field_name': 'ws_afip', 'columna': 2},
+				{'field_name': 'ws_afip', 'columna': 1},
 				{'field_name': 'predeterminada', 'columna': 2}
 			],
 		}
 	},
 	
 	'prod_marca': {
-		'Información General': {
+		'Información Producto Marca': {
 			'fila_1': [
 				{'field_name': 'estatus_producto_marca', 'columna': 2},
 				{'field_name': 'nombre_producto_marca', 'columna': 4},
@@ -142,7 +142,7 @@ estructura_campos = {
 	},
 	
 	'prod_modelo': {
-		'Información General': {
+		'Información Producto Modelo': {
 			'fila_1': [
 				{'field_name': 'estatus_modelo', 'columna': 2},
 				{'field_name': 'nombre_modelo', 'columna': 4},
@@ -151,7 +151,7 @@ estructura_campos = {
 	},
 	
 	'prod_minimo': {
-		'Información General': {
+		'Información Producto Mínimo': {
 			'fila_1': [
 				{'field_name': 'cai', 'columna': 2},
 				{'field_name': 'minimo', 'columna': 2},
@@ -161,7 +161,7 @@ estructura_campos = {
 	},
 	
 	'prod_stock': {
-		'Información General': {
+		'Información Producto Stock': {
 			'fila_1': [
 				{'field_name': 'id_producto', 'columna': 3},
 				{'field_name': 'id_deposito', 'columna': 3},
@@ -173,7 +173,7 @@ estructura_campos = {
 	},
 	
 	'prod_estado': {
-		'Información General': {
+		'Información Producto Estado': {
 			'fila_1': [
 				{'field_name': 'estado_producto', 'columna': 2},
 				{'field_name': 'nombre_producto_estado', 'columna': 3},
@@ -182,7 +182,7 @@ estructura_campos = {
 	},
 	
 	'comprobante_venta': {
-		'Información General': {
+		'Información Comprobante Venta': {
 			'fila_1': [
 				{'field_name': 'estatus_comprobante_venta', 'columna': 2},
 				{'field_name': 'codigo_comprobante_venta', 'columna': 2},
@@ -217,7 +217,7 @@ estructura_campos = {
 	},
 	
 	'comprobante_compra': {
-		'Información General': {
+		'Información Comprobante Compra': {
 			'fila_1': [
 				{'field_name': 'estatus_comprobante_compra', 'columna': 2},
 				{'field_name': 'codigo_comprobante_compra', 'columna': 3},
@@ -242,17 +242,17 @@ estructura_campos = {
 	},
 	
 	'provincia': {
-		'Información General': {
+		'Información Provincia': {
 			'fila_1': [
 				{'field_name': 'estatus_provincia', 'columna': 2},
-				{'field_name': 'codigo_provincia', 'columna': 2},
+				{'field_name': 'codigo_provincia', 'columna': 1},
 				{'field_name': 'nombre_provincia', 'columna': 3},
 			]
 		}
 	},
 	
 	'localidad': {
-		'Información General': {
+		'Información Localidad': {
 			'fila_1': [
 				{'field_name': 'estatus_localidad', 'columna': 2},
 				{'field_name': 'id_provincia', 'columna': 3},
@@ -263,7 +263,7 @@ estructura_campos = {
 	},
 	
 	'tipo_documento_identidad': {
-		'Información General': {
+		'Información Tipo Documento Identidad': {
 			'fila_1': [
 				{'field_name': 'estatus_tipo_documento_identidad', 'columna': 2},
 				{'field_name': 'nombre_documento_identidad', 'columna': 2},
@@ -275,7 +275,7 @@ estructura_campos = {
 	},
 	
 	'tipo_iva': {
-		'Información General': {
+		'Información Tipo I.V.A.': {
 			'fila_1': [
 				{'field_name': 'estatus_tipo_iva', 'columna': 2},
 				{'field_name': 'codigo_iva', 'columna': 2},
@@ -286,10 +286,10 @@ estructura_campos = {
 	},
 	
 	'tipo_percepcion_ib': {
-		'Información General': {
+		'Información Tipo Percepción IB': {
 			'fila_1': [
 				{'field_name': 'estatus_tipo_percepcion_ib', 'columna': 2},
-				{'field_name': 'descripcion_tipo_percepcion_ib', 'columna': 6},
+				{'field_name': 'descripcion_tipo_percepcion_ib', 'columna': 4},
 			],
 			'fila_2': [
 				{'field_name': 'alicuota', 'columna': 2},
@@ -301,10 +301,10 @@ estructura_campos = {
 	},
 	
 	'tipo_retencion_ib': {
-		'Información General': {
+		'Información Tipo Retención IB': {
 			'fila_1': [
 				{'field_name': 'estatus_tipo_retencion_ib', 'columna': 2},
-				{'field_name': 'descripcion_tipo_retencion_ib', 'columna': 6},
+				{'field_name': 'descripcion_tipo_retencion_ib', 'columna': 4},
 			],
 			'fila_2': [
 				{'field_name': 'alicuota_inscripto', 'columna': 2},
@@ -319,11 +319,11 @@ estructura_campos = {
 		'Información Operario': {
 			'fila_1': [
 				{'field_name': 'estatus_operario', 'columna': 2},
-				{'field_name': 'nombre_operario', 'columna': 6},
+				{'field_name': 'nombre_operario', 'columna': 4},
 			],
 			'fila_2': [
-				{'field_name': 'telefono_operario', 'columna': 6},
-				{'field_name': 'email_operario', 'columna': 6},
+				{'field_name': 'telefono_operario', 'columna': 2},
+				{'field_name': 'email_operario', 'columna': 4},
 			],
 		}
 	},
@@ -412,6 +412,73 @@ estructura_campos = {
 				{'field_name': 'cotizacion_dolar', 'columna': 2},
 				{'field_name': 'dias_vencimiento', 'columna': 2},
 				{'field_name': 'descuento_maximo', 'columna': 2},
+			],
+		}
+	},
+	
+	'numero': {
+		'Información Numeración de Comprobantes': {
+			'fila_1': [
+				{'field_name': 'estatus_numero', 'columna': 2},
+				{'field_name': 'id_sucursal', 'columna': 4},
+				{'field_name': 'punto_venta', 'columna': 2},
+			],
+			'fila_2': [
+				{'field_name': 'comprobante', 'columna': 2},
+				{'field_name': 'letra', 'columna': 2},
+				{'field_name': 'numero', 'columna': 2},
+				{'field_name': 'lineas', 'columna': 2},
+				{'field_name': 'copias', 'columna': 2},
+			],
+		}
+	},
+	
+	'sucursal': {
+		'Información Sucursal': {
+			'fila_1': [
+				{'field_name': 'estatus_sucursal', 'columna': 2},
+				{'field_name': 'nombre_sucursal', 'columna': 4},
+				{'field_name': 'codigo_michelin', 'columna': 2},
+			],
+			'fila_2': [
+				{'field_name': 'domicilio_sucursal', 'columna': 4},
+				{'field_name': 'id_localidad', 'columna': 2},
+				{'field_name': 'id_provincia', 'columna': 2},
+			],
+			'fila_3': [
+				{'field_name': 'telefono_sucursal', 'columna': 2},
+				{'field_name': 'email_sucursal', 'columna': 4},
+				{'field_name': 'inicio_actividad', 'columna': 2},
+			],
+		}
+	},
+	
+	'vendedor': {
+		'Información Vendedor': {
+			'fila_1': [
+				{'field_name': 'estatus_vendedor', 'columna': 2},
+				{'field_name': 'nombre_vendedor', 'columna': 3},
+			],
+			'fila_2': [
+				{'field_name': 'telefono_vendedor', 'columna': 2},
+				{'field_name': 'domicilio_vendedor', 'columna': 3},
+				{'field_name': 'email_vendedor', 'columna': 4},
+			],
+			'fila_3': [
+				{'field_name': 'pje_auto', 'columna': 2},
+				{'field_name': 'pje_camion', 'columna': 2},
+				{'field_name': 'vence_factura', 'columna': 2},
+				{'field_name': 'vence_remito', 'columna': 2},
+			],
+			'fila_4': [
+				{'field_name': 'id_sucursal', 'columna': 4},
+				{'field_name': 'tipo_venta', 'columna': 2},
+				{'field_name': 'col_descuento', 'columna': 2},
+			],
+			'fila_5': [
+				{'field_name': 'email_venta', 'columna': 4},
+				{'field_name': 'info_saldo', 'columna': 4},
+				{'field_name': 'info_estadistica', 'columna': 4},
 			],
 		}
 	},

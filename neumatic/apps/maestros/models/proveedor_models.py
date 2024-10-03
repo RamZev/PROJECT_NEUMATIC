@@ -1,9 +1,9 @@
 # neumatic\apps\maestros\models\proveedor_models.py
 from django.db import models
 from .base_gen_models import ModeloBaseGenerico
-from .base_models import Localidad  # Importar modelo Localidad
-from .base_models import TipoIva  # Importar modelo TipoIVA
-from .base_models import TipoRetencionIb  # Importar modelo TipoRetencionIB
+# from .base_models import Localidad  # Importar modelo Localidad
+# from .base_models import TipoIva  # Importar modelo TipoIVA
+# from .base_models import TipoRetencionIb  # Importar modelo TipoRetencionIB
 from entorno.constantes_base import ESTATUS_GEN
 
 
@@ -13,13 +13,13 @@ class Proveedor(ModeloBaseGenerico):
 										 choices=ESTATUS_GEN)
 	nombre_proveedor = models.CharField("Nombre proveedor", max_length=50)
 	domicilio_proveedor = models.CharField("Domicilio", max_length=50)
-	id_localidad = models.ForeignKey(Localidad, on_delete=models.CASCADE, 
+	id_localidad = models.ForeignKey('Localidad', on_delete=models.CASCADE, 
 								  verbose_name="Localidad")
 	codigo_postal = models.CharField("Código postal", max_length=5)
-	id_tipo_iva = models.ForeignKey(TipoIva, on_delete=models.CASCADE, 
+	id_tipo_iva = models.ForeignKey('TipoIva', on_delete=models.CASCADE, 
 								 verbose_name="Tipo IVA")
 	cuit = models.BigIntegerField("C.U.I.T.")
-	id_tipo_retencion_ib = models.ForeignKey(TipoRetencionIb, 
+	id_tipo_retencion_ib = models.ForeignKey('TipoRetencionIb', 
 										  on_delete=models.CASCADE, 
 										  verbose_name="Tipo de Retención Ib")
 	ib_numero = models.CharField("Ingreso Bruto*", max_length=15)

@@ -1,0 +1,15 @@
+01/10/2024
+	Leoncio
+		He cambiado el modelo Parametro por la definición que está en "proyecto_DBN.sql" (08/09/2024) en el Drive.
+		Aplicar migraciones.
+
+03/10/2024:
+	Leoncio
+		* Modelo Operario: 
+			- Cambio logitud campo telefono_operario de 50 a 15 caracteres.
+		* Modelo Vendedor: 
+			- Cambio tipo campo tipo_venta de BooleanField a CharField.
+		* Modelo Empresa: 
+			- Se cambia el campo iva de CharField a ForeignKey relacionado con TipoIva.
+			- Se cambia el atributo on_delete de campo id_localidad a PROTECT.
+			- Se cambia el atributo on_delete de campo id_provincia a PROTECT.

@@ -33,3 +33,9 @@ CLIENTE_MAYORISTA = [
 	(True, 'SI'),
 	(False, 'NO')
 ]
+
+TIPO_VENTA = [
+	('R', 'R'),
+	('M', 'M'),
+]
+

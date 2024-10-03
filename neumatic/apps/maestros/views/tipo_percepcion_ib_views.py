@@ -63,11 +63,11 @@ class DataViewList():
 	paginate_by = 8
 	
 	table_headers = {
-		'descripcion_tipo_percepcion_ib': (2, 'Descripción'),
+		'descripcion_tipo_percepcion_ib': (4, 'Descripción'),
 		'alicuota': (2, 'Alícuota'),
 		'monto': (2, 'Monto'),
 		'minimo': (2, 'Mínimo'),
-		'neto_total': (2, 'Neto total'),
+		
 		'acciones': (2, 'Acciones'),
 	}
 	
@@ -76,7 +76,6 @@ class DataViewList():
 		{'field_name': 'alicuota', 'date_format': None},
 		{'field_name': 'monto', 'date_format': None},
 		{'field_name': 'minimo', 'date_format': None},
-		{'field_name': 'neto_total', 'date_format': None},
 	]
 
 

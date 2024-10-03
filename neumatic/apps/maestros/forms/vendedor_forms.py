@@ -3,10 +3,10 @@ from django import forms
 from .crud_forms_generics import CrudGenericForm
 from ..models.vendedor_models import Vendedor
 from diseno_base.diseno_bootstrap import (
-	formclasstext, formclassselect, formclassdate)
+	formclasstext, formclassselect, formclasscheck)
 
 
-class VendedorForm(forms.ModelForm):
+class VendedorForm(CrudGenericForm):
 	
 	class Meta:
 		model = Vendedor
@@ -16,17 +16,13 @@ class VendedorForm(forms.ModelForm):
 			'estatus_vendedor': 
 				forms.Select(attrs={**formclassselect}), 
 			'nombre_vendedor': 
-				forms.TextInput(attrs={**formclasstext,
-										'placeholder': 'Nombre Vendedor'}),
+				forms.TextInput(attrs={**formclasstext}),
 			'domicilio_vendedor': 
-				forms.TextInput(attrs={**formclasstext,
-										'placeholder': 'Domicilio Vendedor'}),
+				forms.TextInput(attrs={**formclasstext}),
 			'email_vendedor': 
-				forms.TextInput(attrs={**formclasstext,
-										'placeholder': 'Email Vendedor'}),
+				forms.EmailInput(attrs={**formclasstext}),
 			'telefono_vendedor': 
-				forms.TextInput(attrs={**formclasstext,
-										'placeholder': 'Teléfono'}),
+				forms.TextInput(attrs={**formclasstext}),
 			'pje_auto': 
 				forms.NumberInput(attrs={**formclasstext}),
 			'pje_camion': 
@@ -36,20 +32,15 @@ class VendedorForm(forms.ModelForm):
 			'vence_remito': 
 				forms.NumberInput(attrs={**formclasstext}),	
 			'id_sucursal': 
-				forms.Select(attrs={**formclassselect,
-										'placeholder': 'Sucursal'}),
+				forms.Select(attrs={**formclassselect}),
 			'tipo_venta': 
-				forms.TextInput(attrs={**formclasstext,
-										'placeholder': 'Tipo Venta'}),
+				forms.Select(attrs={**formclassselect}),
 			'col_descuento': 
 				forms.NumberInput(attrs={**formclasstext}),
 			'email_venta': 
-				forms.Select(attrs={**formclassselect,
-										'placeholder': 'Tipo Venta'}),
+				forms.CheckboxInput(attrs={**formclasscheck}),
 			'info_saldo': 
-				forms.Select(attrs={**formclassselect,
-										'placeholder': 'Info. Saldo'}),
+				forms.CheckboxInput(attrs={**formclasscheck}),
 			'info_estadistica':
-				forms.Select(attrs={**formclassselect,
-										'placeholder': 'Info. Estadística'})															
+				forms.CheckboxInput(attrs={**formclasscheck})
 		}

@@ -1,3 +1,0 @@
-Leoncio 01/10/2024:
-	He cambiado el modelo Parametro por la definición que está en "proyecto_DBN.sql" (08/09/2024) en el Drive.
-	Aplicar migraciones.

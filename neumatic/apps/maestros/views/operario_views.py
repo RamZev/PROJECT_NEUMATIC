@@ -66,8 +66,8 @@ class DataViewList():
 	
 	table_headers = {
 		'nombre_operario': (4, 'Nombre'),
-		'telefono_operario': (3, 'Teléfono'),
-		'email_operario': (3, 'Correo'),
+		'telefono_operario': (2, 'Teléfono'),
+		'email_operario': (4, 'Correo'),
 		
 		'acciones': (2, 'Acciones'),
 	}

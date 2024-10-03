@@ -63,11 +63,12 @@ class DataViewList():
 	paginate_by = 8
 	
 	table_headers = {
-		'descripcion_tipo_retencion_ib': (2, 'Descripción'),
-		'alicuota_inscripto': (2, 'Alícuota Inscripto'),
-		'alicuota_no_inscripto': (2, 'Alícuota No Inscripto'),
+		'descripcion_tipo_retencion_ib': (4, 'Descripción'),
+		'alicuota_inscripto': (1, 'Alícuota Inscripto'),
+		'alicuota_no_inscripto': (1, 'Alícuota No Inscripto'),
 		'monto': (2, 'Monto'),
 		'minimo': (2, 'Mínimo'),
+		
 		'acciones': (2, 'Acciones'),
 	}
 	

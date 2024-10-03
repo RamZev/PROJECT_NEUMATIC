@@ -38,58 +38,72 @@
 												class="accordion-button py-2 " 
 												type="button" 
 												data-bs-toggle="collapse" 
-												data-bs-target="#Información_General" 
+												data-bs-target="#Información_Numeración_de_Comprobantes" 
 												aria-expanded="true" 
-												aria-controls="Información_General">
-												<strong>Información Moneda</strong>
+												aria-controls="Información_Numeración_de_Comprobantes">
+												<strong>Información Numeración de Comprobantes</strong>
 											</button>
 										</h2>
 										<div class="accordion-collapse collapse show"
-											id="Información_General">
+											id="Información_Numeración_de_Comprobantes">
 											<div class="accordion-body bg-secondary-subtle">
 		
 												<div class="row">
 													<div class="col-md-2">
 														<label class="form-label text-primary mb-0">
-															{{ form.estatus_moneda.label }}
+															{{ form.estatus_numero.label }}
 														</label>
-														{{ form.estatus_moneda }}
+														{{ form.estatus_numero }}
+													</div>
+						
+													<div class="col-md-4">
+														<label class="form-label text-primary mb-0">
+															{{ form.id_sucursal.label }}
+														</label>
+														{{ form.id_sucursal }}
 													</div>
 						
 													<div class="col-md-2">
 														<label class="form-label text-primary mb-0">
-															{{ form.nombre_moneda.label }}
+															{{ form.punto_venta.label }}
 														</label>
-														{{ form.nombre_moneda }}
-													</div>
-						
-													<div class="col-md-1">
-														<label class="form-label text-primary mb-0">
-															{{ form.simbolo_moneda.label }}
-														</label>
-														{{ form.simbolo_moneda }}
+														{{ form.punto_venta }}
 													</div>
 												</div>
 												<div class="row">
 													<div class="col-md-2">
 														<label class="form-label text-primary mb-0">
-															{{ form.cotizacion_moneda.label }}
+															{{ form.comprobante.label }}
 														</label>
-														{{ form.cotizacion_moneda }}
-													</div>
-						
-													<div class="col-md-1">
-														<label class="form-label text-primary mb-0">
-															{{ form.ws_afip.label }}
-														</label>
-														{{ form.ws_afip }}
+														{{ form.comprobante }}
 													</div>
 						
 													<div class="col-md-2">
 														<label class="form-label text-primary mb-0">
-															{{ form.predeterminada.label }}
+															{{ form.letra.label }}
 														</label>
-														{{ form.predeterminada }}
+														{{ form.letra }}
+													</div>
+						
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0">
+															{{ form.numero.label }}
+														</label>
+														{{ form.numero }}
+													</div>
+						
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0">
+															{{ form.lineas.label }}
+														</label>
+														{{ form.lineas }}
+													</div>
+						
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0">
+															{{ form.copias.label }}
+														</label>
+														{{ form.copias }}
 													</div>
 												</div>
 											</div>

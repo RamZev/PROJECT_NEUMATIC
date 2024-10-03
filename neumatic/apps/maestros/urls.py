@@ -1,6 +1,7 @@
 # \apps\maestros\urls.py
 from django.urls import path
 
+#-- Tablas
 from .views.actividad_views import *
 from .views.producto_deposito_views import *
 from .views.producto_familia_views import *
@@ -19,15 +20,17 @@ from .views.tipo_iva_views import *
 from .views.tipo_percepcion_ib_views import *
 from .views.tipo_retencion_ib_views import *
 from .views.operario_views import *
-
-from .views.empresa_views import *
-from .views.vendedor_views import *
-from .views.sucursal_views import *
-from .views.producto_views import *
+#-- Catálogos
 from .views.proveedor_views import *
+from .views.producto_views import *
+from .views.vendedor_views import *
+from .views.empresa_views import *
+from .views.sucursal_views import *
 from .views.parametro_views import *
+from .views.numero_views import *
 
 urlpatterns = [
+	#-- Tablas:
 	#-- Actividad.
 	path('actividad/', ActividadListView.as_view(), name='actividad_list'),
 	path('actividad/nueva/', ActividadCreateView.as_view(), name='actividad_create'),
@@ -136,11 +139,18 @@ urlpatterns = [
 	path('operario/<int:pk>/editar/', OperarioUpdateView.as_view(), name='operario_update'),
 	path('operario/<int:pk>/eliminar/', OperarioDeleteView.as_view(), name='operario_delete'),
 	
-	#-- Empresa.
-	path('empresa/', EmpresaListView.as_view(), name='empresa_list'),
-	path('empresa/nueva/', EmpresaCreateView.as_view(), name='empresa_create'),
-	path('empresa/<int:pk>/editar/', EmpresaUpdateView.as_view(), name='empresa_update'),
-	path('empresa/<int:pk>/eliminar/', EmpresaDeleteView.as_view(), name='empresa_delete'),
+	#-- Catálogos:
+	#-- Proveedor.
+	path('proveedor/', ProveedorListView.as_view(), name='proveedor_list'),
+	path('proveedor/nueva/', ProveedorCreateView.as_view(), name='proveedor_create'),
+	path('proveedor/<int:pk>/editar/', ProveedorUpdateView.as_view(), name='proveedor_update'),
+	path('proveedor/<int:pk>/eliminar/', ProveedorDeleteView.as_view(), name='proveedor_delete'),
+	
+	#-- Producto.
+	path('producto/', ProductoListView.as_view(), name='producto_list'),
+	path('producto/nueva/', ProductoCreateView.as_view(), name='producto_create'),
+	path('producto/<int:pk>/editar/', ProductoUpdateView.as_view(), name='producto_update'),
+	path('producto/<int:pk>/eliminar/', ProductoDeleteView.as_view(), name='producto_delete'),
 	
 	#-- Vendedor.
 	path('vendedor/', VendedorListView.as_view(), name='vendedor_list'),
@@ -148,28 +158,28 @@ urlpatterns = [
 	path('vendedor/<int:pk>/editar/', VendedorUpdateView.as_view(), name='vendedor_update'),
 	path('vendedor/<int:pk>/eliminar/', VendedorDeleteView.as_view(), name='vendedor_delete'),
 	
+	#-- Empresa.
+	path('empresa/', EmpresaListView.as_view(), name='empresa_list'),
+	path('empresa/nueva/', EmpresaCreateView.as_view(), name='empresa_create'),
+	path('empresa/<int:pk>/editar/', EmpresaUpdateView.as_view(), name='empresa_update'),
+	path('empresa/<int:pk>/eliminar/', EmpresaDeleteView.as_view(), name='empresa_delete'),
+	
 	#-- Sucursal.
 	path('sucursal/', SucursalListView.as_view(), name='sucursal_list'),
 	path('sucursal/nueva/', SucursalCreateView.as_view(), name='sucursal_create'),
 	path('sucursal/<int:pk>/editar/', SucursalUpdateView.as_view(), name='sucursal_update'),
 	path('sucursal/<int:pk>/eliminar/', SucursalDeleteView.as_view(), name='sucursal_delete'),
-
-	#-- Producto.
-	path('producto/', ProductoListView.as_view(), name='producto_list'),
-	path('producto/nueva/', ProductoCreateView.as_view(), name='producto_create'),
-	path('producto/<int:pk>/editar/', ProductoUpdateView.as_view(), name='producto_update'),
-	path('producto/<int:pk>/eliminar/', ProductoDeleteView.as_view(), name='producto_delete'),
-
-	#-- Proveedor.
-	path('proveedor/', ProveedorListView.as_view(), name='proveedor_list'),
-	path('proveedor/nueva/', ProveedorCreateView.as_view(), name='proveedor_create'),
-	path('proveedor/<int:pk>/editar/', ProveedorUpdateView.as_view(), name='proveedor_update'),
-	path('proveedor/<int:pk>/eliminar/', ProveedorDeleteView.as_view(), name='proveedor_delete'),
-
+	
 	#-- Parametro.
 	path('parametro/', ParametroListView.as_view(), name='parametro_list'),
 	path('parametro/nueva/', ParametroCreateView.as_view(), name='parametro_create'),
 	path('parametro/<int:pk>/editar/', ParametroUpdateView.as_view(), name='parametro_update'),
 	path('parametro/<int:pk>/eliminar/', ParametroDeleteView.as_view(), name='parametro_delete'),
+	
+	#-- Numero.
+	path('numero/', NumeroListView.as_view(), name='numero_list'),
+	path('numero/nueva/', NumeroCreateView.as_view(), name='numero_create'),
+	path('numero/<int:pk>/editar/', NumeroUpdateView.as_view(), name='numero_update'),
+	path('numero/<int:pk>/eliminar/', NumeroDeleteView.as_view(), name='numero_delete'),
 
 ]
