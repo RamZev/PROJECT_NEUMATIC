@@ -39,15 +39,12 @@ CLIENTE_MAYORISTA = [
 	(False, 'NO')
 ]
 
-<<<<<<< HEAD
 BLACK_LIST = [
     (True, 'Si'),
     (False, 'No'),
 ]
-=======
 TIPO_VENTA = [
 	('R', 'R'),
 	('M', 'M'),
 ]
 
->>>>>>> 3b13b61962f70e5396554f63fb338ece2e10bce5

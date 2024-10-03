@@ -23,16 +23,13 @@ from .views.operario_views import *
 #-- Catálogos
 from .views.proveedor_views import *
 from .views.producto_views import *
-<<<<<<< HEAD
 from .views.cliente_views import *
 
-=======
 from .views.vendedor_views import *
 from .views.empresa_views import *
 from .views.sucursal_views import *
 from .views.parametro_views import *
 from .views.numero_views import *
->>>>>>> 3b13b61962f70e5396554f63fb338ece2e10bce5
 
 urlpatterns = [
 	#-- Tablas:
@@ -174,20 +171,12 @@ urlpatterns = [
 	path('sucursal/nueva/', SucursalCreateView.as_view(), name='sucursal_create'),
 	path('sucursal/<int:pk>/editar/', SucursalUpdateView.as_view(), name='sucursal_update'),
 	path('sucursal/<int:pk>/eliminar/', SucursalDeleteView.as_view(), name='sucursal_delete'),
-<<<<<<< HEAD
 
-	#-- Producto.
-	path('producto/', ProductoListView.as_view(), name='producto_list'),
-	path('producto/nueva/', ProductoCreateView.as_view(), name='producto_create'),
-	path('producto/<int:pk>/editar/', ProductoUpdateView.as_view(), name='producto_update'),
-	path('producto/<int:pk>/eliminar/', ProductoDeleteView.as_view(), name='producto_delete'),
- 
 	#-- Cliente.
 	path('cliente/', ClienteListView.as_view(), name='cliente_list'),
 	path('cliente/nueva/', ClienteCreateView.as_view(), name='cliente_create'),
 	path('cliente/<int:pk>/editar/', ClienteUpdateView.as_view(), name='cliente_update'),
 	path('cliente/<int:pk>/eliminar/', ClienteDeleteView.as_view(), name='cliente_delete'),
-=======
 	
 	#-- Parametro.
 	path('parametro/', ParametroListView.as_view(), name='parametro_list'),
@@ -200,6 +189,5 @@ urlpatterns = [
 	path('numero/nueva/', NumeroCreateView.as_view(), name='numero_create'),
 	path('numero/<int:pk>/editar/', NumeroUpdateView.as_view(), name='numero_update'),
 	path('numero/<int:pk>/eliminar/', NumeroDeleteView.as_view(), name='numero_delete'),
->>>>>>> 3b13b61962f70e5396554f63fb338ece2e10bce5
 
 ]

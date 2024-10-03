@@ -366,7 +366,6 @@ estructura_campos = {
 			],
 		}
 	},
-<<<<<<< HEAD
  
 	'cliente': {
 		'Información General': {
@@ -423,8 +422,7 @@ estructura_campos = {
 				{'field_name': 'fecha_baja', 'columna': 2},
 			],        
 		},	
-	}
-=======
+	},
 	
 	'proveedor': {
 		'Información Proveedor': {
@@ -542,5 +540,4 @@ estructura_campos = {
 		}
 	},
 	
->>>>>>> 3b13b61962f70e5396554f63fb338ece2e10bce5
 }
