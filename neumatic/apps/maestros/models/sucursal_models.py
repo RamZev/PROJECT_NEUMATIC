@@ -13,14 +13,14 @@ class Sucursal(ModeloBaseGenerico):
 	nombre_sucursal = models.CharField("Nombre sucursal", max_length=50)
 	codigo_michelin = models.IntegerField("Código Michelin", 
 									   validators=[MinValueValidator(1), 
-												MaxValueValidator(9999999999)])
+												MaxValueValidator(99999)])
 	domicilio_sucursal = models.CharField("Domicilio", max_length=50)
 	id_localidad = models.ForeignKey('Localidad', on_delete=models.CASCADE, 
 								  verbose_name="Localidad")
 	id_provincia = models.ForeignKey('Provincia', on_delete=models.CASCADE, 
 								  verbose_name="Provincia")
 	telefono_sucursal = models.CharField("Teléfono", max_length=15)
-	email_sucursal = models.CharField("Correo", max_length=50)
+	email_sucursal = models.EmailField("Correo", max_length=50)
 	inicio_actividad = models.DateField("Inicio actividad")
 	
 	def __str__(self):
@@ -46,7 +46,7 @@ class Sucursal(ModeloBaseGenerico):
 	
 	Línea 3
 		telefono_sucursal = models.CharField("Teléfono", max_length=15)
-		email_sucursal = models.CharField("Correo", max_length=50)
+		email_sucursal = models.EmailField("Correo", max_length=50)
 		inicio_actividad = models.DateField("Inicio actividad")
 		codigo_michelin = models.IntegerField("Código Michelin", validators=[MinValueValidator(1), MaxValueValidator(9999999999)])
 	

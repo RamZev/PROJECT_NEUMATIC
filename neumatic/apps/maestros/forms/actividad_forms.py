@@ -3,7 +3,7 @@ from django import forms
 from .crud_forms_generics import CrudGenericForm
 from ..models.base_models import Actividad
 from diseno_base.diseno_bootstrap import (
-	formclasstext, formclassselect, formclassdate)
+	formclasstext, formclassselect)
 
 
 class ActividadForm(CrudGenericForm):
@@ -16,9 +16,5 @@ class ActividadForm(CrudGenericForm):
 			'estatus_actividad': 
 				forms.Select(attrs={**formclassselect}), 
 			'descripcion_actividad': 
-				forms.TextInput(attrs={**formclasstext,
-										'placeholder': 'Descripción Actividad'}),
-			'fecha_registro_actividad': 
-				forms.TextInput(attrs={'type':'date', **formclassdate}),
-			
+				forms.TextInput(attrs={**formclasstext}),
 		}

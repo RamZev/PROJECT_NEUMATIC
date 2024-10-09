@@ -47,7 +47,7 @@
 										<div class="accordion-collapse collapse show"
 											id="Información_General">
 											<div class="accordion-body bg-secondary-subtle">
-		
+												
 												<div class="row">
 													<div class="col-md-2">
 														<label class="form-label text-primary mb-0">
@@ -55,26 +55,26 @@
 														</label>
 														{{ form.estatus_localidad }}
 													</div>
-						
+													
 													<div class="col-md-3">
 														<label class="form-label text-primary mb-0">
-															{{ form.id_provincia.label }}
+															{{ form.nombre_localidad.label }}
 														</label>
-														{{ form.id_provincia }}
+														{{ form.nombre_localidad }}
 													</div>
-						
+													
 													<div class="col-md-2">
 														<label class="form-label text-primary mb-0">
 															{{ form.codigo_postal.label }}
 														</label>
 														{{ form.codigo_postal }}
 													</div>
-						
+													
 													<div class="col-md-3">
 														<label class="form-label text-primary mb-0">
-															{{ form.nombre_localidad.label }}
+															{{ form.id_provincia.label }}
 														</label>
-														{{ form.nombre_localidad }}
+														{{ form.id_provincia }}
 													</div>
 												</div>
 											</div>
@@ -99,65 +99,3 @@
 		</div>
 	{% endblock principalcomponent %}
 {% endblock maincomponent %}
-<!-- -------------------------------------------------------------------- -->
-{% block modals %}
-	<!-- Modal para mostrar errores -->
-	{% include 'maestros/modal_errors.html' %}
-	
-	<!-- Modal para mostrar los requerimientos de los campos -->
-	{% include 'maestros/modal_fields_requirements.html' %}
-{% endblock modals %}
-<!-- -------------------------------------------------------------------- -->
-{% block footer %}
-{% endblock footer %}
-<!-- -------------------------------------------------------------------- -->
-{% block script %}
-	<script>
-		document.addEventListener('DOMContentLoaded', function () {
-			const errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
-			const modalElement = document.getElementById('errorModal');
-			const hasErrors = modalElement.dataset.hasErrors === "true";
-			
-			// Mostrar el modal si hay errores
-			if (hasErrors) {
-				errorModal.show();
-			}
-			
-			// Validación en tiempo real: remover clases al escribir.
-			// Seleccionar inputs y selects.
-			var inputs = document.querySelectorAll('input, select');
-			console.log(inputs);
-			inputs.forEach(function (input) {
-				// Para los campos de tipo input (text, number, etc.)
-				input.addEventListener('input', function () {
-					if (input.classList.contains('is-invalid')) {
-						// Eliminar la clase de borde rojo (border-danger).
-						input.classList.remove('is-invalid', 'border-danger');
-						// Agregar la clase de borde azul (border-primary).
-						input.classList.add('border-primary');
-					}
-				});
-				// Para los combobox (select)
-				input.addEventListener('change', function () {
-					if (input.classList.contains('is-invalid')) {
-						// Eliminar la clase de borde rojo (border-danger).
-						input.classList.remove('is-invalid', 'border-danger');
-						// Agregar la clase de borde azul (border-primary).
-						input.classList.add('border-primary');
-					}
-				});
-				
-			});
-			
-			// Al cerrar el modal, enfocar el primer campo con error
-			modalElement.addEventListener('hidden.bs.modal', function () {
-				// Buscar el primer campo con la clase 'is-invalid' después de que el modal esté completamente oculto
-				const firstInvalidField = document.querySelector('.is-invalid');
-				if (firstInvalidField) {
-					firstInvalidField.focus(); // Establecer el foco en el primer campo con error
-				}
-			});
-			
-		});
-	</script>
-{% endblock script %}

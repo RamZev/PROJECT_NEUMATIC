@@ -17,14 +17,15 @@ class ParametroForm(CrudGenericForm):
 				forms.Select(attrs={**formclassselect}),
 			'id_empresa': 
 				forms.Select(attrs={**formclassselect}),
+			
 			'interes': 
-				forms.TextInput(attrs={**formclasstext}),
+				forms.NumberInput(attrs={**formclasstext, 'min': 0, 'max': 99, 'step': '0.01'}),
 			'interes_dolar': 
-				forms.TextInput(attrs={**formclasstext}),
+				forms.NumberInput(attrs={**formclasstext, 'min': 0, 'max': 99, 'step': '0.01'}),
 			'cotizacion_dolar': 
-				forms.TextInput(attrs={**formclasstext}),
+				forms.NumberInput(attrs={**formclasstext, 'min': 0, 'max': 9999999999999999, 'step': '0.01'}),
 			'dias_vencimiento': 
-				forms.TextInput(attrs={**formclasstext}),
+				forms.NumberInput(attrs={**formclasstext, 'min': 0, 'max': 99}),
 			'descuento_maximo': 
-				forms.TextInput(attrs={**formclasstext}),
+				forms.NumberInput(attrs={**formclasstext, 'min': 0, 'max': 99, 'step': '0.01'}),
 		}

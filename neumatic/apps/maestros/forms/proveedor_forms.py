@@ -26,7 +26,10 @@ class ProveedorForm(CrudGenericForm):
 			'id_tipo_iva': 
 				forms.Select(attrs={**formclassselect}),
 			'cuit': 
-				forms.TextInput(attrs={**formclasstext}),
+				forms.NumberInput(attrs={**formclasstext, 
+							 'min': 20999999999, 
+							 'max': 34999999999, 
+							 'maxlength': 11}),
 			'id_tipo_retencion_ib': 
 				forms.Select(attrs={**formclassselect}),
 			'ib_numero': 

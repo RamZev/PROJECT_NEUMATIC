@@ -1,5 +1,6 @@
 # neumatic\apps\maestros\models\proveedor_models.py
 from django.db import models
+from django.core.validators import MinValueValidator, MaxValueValidator
 from .base_gen_models import ModeloBaseGenerico
 # from .base_models import Localidad  # Importar modelo Localidad
 # from .base_models import TipoIva  # Importar modelo TipoIVA
@@ -18,7 +19,9 @@ class Proveedor(ModeloBaseGenerico):
 	codigo_postal = models.CharField("Código postal", max_length=5)
 	id_tipo_iva = models.ForeignKey('TipoIva', on_delete=models.CASCADE, 
 								 verbose_name="Tipo IVA")
-	cuit = models.BigIntegerField("C.U.I.T.")
+	cuit = models.IntegerField("C.U.I.T.", 
+							validators=[MinValueValidator(20000000000), 
+				   						MaxValueValidator(34999999999)])
 	id_tipo_retencion_ib = models.ForeignKey('TipoRetencionIb', 
 										  on_delete=models.CASCADE, 
 										  verbose_name="Tipo de Retención Ib")
@@ -60,7 +63,7 @@ class Proveedor(ModeloBaseGenerico):
 	
 	Línea 4
 		ib_numero = models.CharField("Ingreso Bruto*", max_length=15)
-		cuit = models.BigIntegerField("C.U.I.T.")
+		cuit = models.IntegerField("C.U.I.T.")
 		id_tipo_iva = models.ForeignKey(TipoIva, on_delete=models.CASCADE, verbose_name="Tipo IVA")
 		
 	Línea 5

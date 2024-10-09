@@ -32,7 +32,10 @@ class ClienteForm(CrudGenericForm):
 			'id_tipo_documento_identidad': 
 				forms.Select(attrs={**formclassselect}),
 			'cuit': 
-				forms.TextInput(attrs={**formclasstext}),
+				forms.NumberInput(attrs={**formclasstext, 
+                           'min': 20999999999, 
+                           'max': 34999999999, 
+                           'maxlength': 11}),
 			'condicion_venta': 
 				forms.Select(attrs={**formclassselect}),
 			'telefono_cliente': 

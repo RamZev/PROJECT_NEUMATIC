@@ -48,7 +48,7 @@ class Vendedor(ModeloBaseGenerico):
 	Línea 2
 		telefono_vendedor = models.CharField("Teléfono", max_length=15)
 		domicilio_vendedor = models.CharField("Domicilio", max_length=30)
-		email_vendedor = models.CharField("Correo", max_length=50)
+		email_vendedor = models.EmailField("Correo", max_length=50)
 	Línea 3
 		pje_auto = models.DecimalField("% auto", max_digits=6, decimal_places=2)
 		pje_camion = models.DecimalField("% camión", max_digits=6, decimal_places=2)

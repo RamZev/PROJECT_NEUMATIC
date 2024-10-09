@@ -108,14 +108,27 @@ class MaestroCreateView(PermissionRequiredMixin, CreateView):
 		"""
 		Si el formulario no es válido, renderiza el formulario con los errores.
 		"""
-		return self.render_to_response(self.get_context_data(form=form))
+		
+		#-- Establecer el contexto con la información sobre errores.
+		context = self.get_context_data(form=form)
+		#-- Indicar que hay errores.
+		context['data_has_errors'] = True
+		
+		return self.render_to_response(context)
 	
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
+		
+		#-- Controlar mostrar o no el modal con los errors de validación.
+		#-- Inicialmente, no hay errores.
+		if 'data_has_errors' not in context:
+			context['data_has_errors'] = False
+		
 		#-- Asegurarse de que el formulario en el contexto sea el mismo que se validó
 		if 'form' not in context:
 			context['form'] = self.get_form()
 		context['requerimientos'] = obtener_requerimientos_modelo(self.model)
+		
 		return context
 	
 	#-- Método que agrega mensaje cuando no tiene permiso de crear.
@@ -132,14 +145,27 @@ class MaestroUpdateView(PermissionRequiredMixin, UpdateView):
 		"""
 		Si el formulario no es válido, renderiza el formulario con los errores.
 		"""
-		return self.render_to_response(self.get_context_data(form=form))
+		
+		#-- Establecer el contexto con la información sobre errores.
+		context = self.get_context_data(form=form)
+		#-- Indicar que hay errores.
+		context['data_has_errors'] = True
+		
+		return self.render_to_response(context)
 	
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
+		
+		#-- Controlar mostrar o no el modal con los errors de validación.
+		#-- Inicialmente, no hay errores.
+		if 'data_has_errors' not in context:
+			context['data_has_errors'] = False
+		
 		#-- Asegurarse de que el formulario en el contexto sea el mismo que se validó
 		if 'form' not in context:
 			context['form'] = self.get_form()
 		context['requerimientos'] = obtener_requerimientos_modelo(self.model)
+		
 		return context
 	
 	#-- Método que agrega mensaje cuando no tiene permiso de modificar.
@@ -161,17 +187,17 @@ class MaestroDeleteView(PermissionRequiredMixin, DeleteView):
 
 @method_decorator(login_required, name='dispatch')
 class GenericDetailView(DetailView):
-    def get_data(self, obj):
-        """
-        Este método debe ser sobreescrito en la clase hija 
-        para proporcionar los datos específicos.
-        """
-        return {}
+	def get_data(self, obj):
+		"""
+		Este método debe ser sobreescrito en la clase hija 
+		para proporcionar los datos específicos.
+		"""
+		return {}
 
-    def render_to_response(self, context, **response_kwargs):
-        obj = self.get_object()
-        data = self.get_data(obj)
-        return JsonResponse(data)
+	def render_to_response(self, context, **response_kwargs):
+		obj = self.get_object()
+		data = self.get_data(obj)
+		return JsonResponse(data)
 # ------------------------------------------------------------------------------------
 
 

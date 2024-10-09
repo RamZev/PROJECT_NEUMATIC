@@ -15,24 +15,23 @@ class SucursalForm(CrudGenericForm):
 			'estatus_sucursal': 
 				forms.Select(attrs={**formclassselect}), 
 			'nombre_sucursal': 
-				forms.TextInput(attrs={**formclasstext,
-										'placeholder': 'Nombre Sucursal'}),
+				forms.TextInput(attrs={**formclasstext}),
 			'codigo_michelin': 
-				forms.TextInput(attrs={**formclasstext,
-										'placeholder': 'Código Michelin'}),
+				forms.TextInput(attrs={**formclasstext}),
 			'domicilio_sucursal': 
-				forms.TextInput(attrs={**formclasstext,
-										'placeholder': 'Domicilio Sucursal'}),
+				forms.TextInput(attrs={**formclasstext}),
 			'id_localidad':
 				forms.Select(attrs={**formclassselect}),
 			'id_provincia':
 				forms.Select(attrs={**formclassselect}),
+			
+			# 'telefono_sucursal': 
+			# 	forms.TextInput(attrs={**formclasstext}),
 			'telefono_sucursal': 
-				forms.TextInput(attrs={**formclasstext,
-										'placeholder': 'Teléfono Sucursal'}),
+				forms.NumberInput(attrs={**formclasstext}),
+			
 			'email_sucursal': 
-				forms.EmailInput(attrs={**formclasstext,
-										'placeholder': 'Email Sucursal'}),
+				forms.EmailInput(attrs={**formclasstext}),
 			'inicio_actividad': 
 				forms.TextInput(attrs={**formclassdate,
 										'type': 'date'}),
