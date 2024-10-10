@@ -1,0 +1,354 @@
+[33mcommit 5db9746f8049e26c879b5bc483e8834d62e4ab21[m[33m ([m[1;36mHEAD -> [m[1;32mmain[m[33m)[m
+Author: Leoncio R. Barrios H <leonciobarriosh@gmail.com>
+Date:   Wed Oct 9 16:52:49 2024 -0500
+
+    Se efectúan varios cambios:
+    
+    - Se unifica el tipo de dato para el CUIT IntegerField en los modelos: Cliente, Proveedor y Empresa.
+    - Se se ha cambiado el atributo on_delete de algunos ForeingKey del modelo Cliente a PROTECT.
+    - Se cambia el tipo de dato del campo CBU del modelo Empresa a BigInteger.
+    - Se establece el campo id_iva del modelo Empresa a opcional.
+    - Se corrigen los CRUDs y modelos según observaciones de Mario: Actividad, Sucursal, Empresa y Parámetro.
+
+[33mcommit f680bccc70ae2ba6926cb5d83d839cb0ae6109d8[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Merge: d63657c 3a9c3f9
+Author: Leoncio R. Barrios H <leonciobarriosh@gmail.com>
+Date:   Thu Oct 3 17:49:28 2024 -0500
+
+    Resoloción conflicto sidebar.html
+
+[33mcommit d63657c949a39a531e3a9c5fc2d34487a1093e61[m
+Author: Leoncio R. Barrios H <leonciobarriosh@gmail.com>
+Date:   Thu Oct 3 17:45:50 2024 -0500
+
+    Resolución conf. menú
+
+[33mcommit 3a9c3f9837a071d74169d489c74ada160fa51aaf[m
+Author: Ramosric <neuraldevs@gmail.com>
+Date:   Thu Oct 3 17:44:46 2024 -0500
+
+    Actualización del CRUD Clientes con el Generador 5
+
+[33mcommit 4519afef03cfc340dde33d4d28bb746e8f9ea0e2[m
+Author: Leoncio R. Barrios H <leonciobarriosh@gmail.com>
+Date:   Thu Oct 3 17:35:33 2024 -0500
+
+    Sobreescrito el módulo estructuras_maestros.py
+
+[33mcommit a353976978360db60c599655840985bf12eec266[m
+Merge: 9957150 f410d16
+Author: Ramosric <neuraldevs@gmail.com>
+Date:   Thu Oct 3 17:28:50 2024 -0500
+
+    Actualización del CRUD Clientes con el Generador 4
+
+[33mcommit 9957150313eaa4f4e5c241857af872354aa60349[m
+Author: Ramosric <neuraldevs@gmail.com>
+Date:   Thu Oct 3 17:20:52 2024 -0500
+
+    Actualización del CRUD Clientes con el Generador 3
+
+[33mcommit f410d167cedd609e7d44c33f9e3955c5de07fbbd[m
+Author: Leoncio R. Barrios H <leonciobarriosh@gmail.com>
+Date:   Thu Oct 3 17:20:06 2024 -0500
+
+    Actualizar estructuras_maestros.py
+
+[33mcommit 076ef2e1f752f526c095c8b95b8eb7d74a89074e[m
+Merge: ae3f089 cafd2e9
+Author: Leoncio R. Barrios H <leonciobarriosh@gmail.com>
+Date:   Thu Oct 3 17:16:42 2024 -0500
+
+    Resolución de confictos menu
+
+[33mcommit ae3f0899de3620917f6770765623d443173ac494[m
+Author: Leoncio R. Barrios H <leonciobarriosh@gmail.com>
+Date:   Thu Oct 3 16:59:45 2024 -0500
+
+    Commit para poder bajar los cambios de Ricardo
+
+[33mcommit cafd2e922a304563cd6e0bd031e85ebc1f2c019c[m
+Merge: 5e24b13 3b13b61
+Author: Ramosric <neuraldevs@gmail.com>
+Date:   Thu Oct 3 16:55:04 2024 -0500
+
+    Actualización del CRUD Clientes con el Generador 2
+
+[33mcommit 5e24b133c39675c8a83e41d224483d0bfb766588[m
+Author: Ramosric <neuraldevs@gmail.com>
+Date:   Thu Oct 3 16:53:12 2024 -0500
+
+    Actualización del CRUD Clientes con el Generador
+
+[33mcommit 3b13b61962f70e5396554f63fb338ece2e10bce5[m
+Author: Leoncio R. Barrios H <leonciobarriosh@gmail.com>
+Date:   Thu Oct 3 16:00:33 2024 -0500
+
+    Se renombra el archivo bitacora_migraciones.txt a bitacora_migraciones_leoncio.txt
+
+[33mcommit e1729ba083c011c0527a290bc6a6876b1f5ee5fb[m
+Author: Leoncio R. Barrios H <leonciobarriosh@gmail.com>
+Date:   Thu Oct 3 15:52:13 2024 -0500
+
+    Leoncio: varios cambios
+    
+    - Modificado el generador de plantillas: clases css para reducir altura de los acordeones y la separación de lo labels de los inputs.
+    - Creados los CRUDs: vendedor, numero, parametro, sucursal
+    - Actualización de las plantillas de los CRUDs.
+
+[33mcommit 79f227a0a6011264885730a0e7771339ed758b5c[m
+Author: Leoncio R. Barrios H <leonciobarriosh@gmail.com>
+Date:   Tue Oct 1 18:00:13 2024 -0500
+
+    Cruds: proveedores y parametros, reescrito modelo parametro
+
+[33mcommit b0d4e01f89a7d02534db66e282de4b39c2ed51fe[m
+Author: Leoncio R. Barrios H <leonciobarriosh@gmail.com>
+Date:   Mon Sep 30 20:52:03 2024 -0500
+
+    Actualizado el .gitignore: ignorar venv
+
+[33mcommit b6479b484f44217b6635dca95e2ae8b4dc5cb4be[m
+Author: Leoncio R. Barrios H <leonciobarriosh@gmail.com>
+Date:   Mon Sep 30 17:11:50 2024 -0500
+
+    Terminado el crud de productos (faltan detalles)
+
+[33mcommit ec9224813f9b52c9eab64404ff91624d42777cea[m
+Merge: 9fe68a7 3d013fa
+Author: Leoncio R. Barrios H <leonciobarriosh@gmail.com>
+Date:   Mon Sep 30 16:38:23 2024 -0500
+
+    Trabajando en el crud de producto (no teminado)
+
+[33mcommit 9fe68a72f2e117aa419c7a9e73335638abaa36ec[m
+Author: Leoncio R. Barrios H <leonciobarriosh@gmail.com>
+Date:   Mon Sep 30 16:35:15 2024 -0500
+
+    Trabajando en el crud de producto (no teminado)
+
+[33mcommit 3d013faffd9ace0ce76139bb3c643ea7b7f3964d[m
+Merge: 59e6608 0e5590c
+Author: Ramosric <neuraldevs@gmail.com>
+Date:   Mon Sep 30 16:32:39 2024 -0500
+
+    Merge branch 'main' of https://github.com/RamZev/PROJECT_NEUMATIC
+
+[33mcommit 59e66082a60a7f6dce63bf8fc579dd33574ab659[m
+Author: Ramosric <neuraldevs@gmail.com>
+Date:   Mon Sep 30 16:31:54 2024 -0500
+
+    Actualización y migraciones del modelo cliente
+
+[33mcommit 0e5590cedd087c35ee74f277892202b98f19ba59[m
+Author: Leoncio R. Barrios H <leonciobarriosh@gmail.com>
+Date:   Mon Sep 30 15:48:00 2024 -0500
+
+    Resuelto conflicto el el módulo cliente_models.py
+
+[33mcommit 7b73a7a3dcb333af3cb4049cfb08be1d350299b0[m
+Merge: ca6ad65 6d4b959
+Author: Ramosric <neuraldevs@gmail.com>
+Date:   Mon Sep 30 15:44:29 2024 -0500
+
+    Cambios en la carpeta entorno 2
+
+[33mcommit ca6ad65f068679ddf0cea4b6915feb91fcf8df9f[m
+Author: Ramosric <neuraldevs@gmail.com>
+Date:   Mon Sep 30 15:40:53 2024 -0500
+
+    Cambios en la carpeta entorno
+
+[33mcommit 6d4b95980aeece46c07f41718ed22af55c62a2c5[m
+Author: Leoncio R. Barrios H <leonciobarriosh@gmail.com>
+Date:   Mon Sep 30 15:37:04 2024 -0500
+
+    Renombrado el módulo entorno_base.py a constantes_base.py y agregada una nueva constante
+
+[33mcommit c1e4197fdd7b50df759afd1b31433064e304af37[m
+Author: Leoncio R. Barrios H <leonciobarriosh@gmail.com>
+Date:   Mon Sep 30 11:47:51 2024 -0500
+
+    Se ignora y quita del seguimiento la base de datos
+
+[33mcommit e22e45a6ebb049f290a3bb67936adc9ada9f3788[m
+Author: Leoncio R. Barrios H <leonciobarriosh@gmail.com>
+Date:   Mon Sep 30 11:38:29 2024 -0500
+
+    Actualizados los modelos para que importe el módulo entorno/entorno_base.py
+
+[33mcommit 8196dd6bc98d3f64beee8464ec37e2a773b72ceb[m
+Author: Ramosric <neuraldevs@gmail.com>
+Date:   Mon Sep 30 11:29:08 2024 -0500
+
+    Se modifió la carpeta data_load\ excluyendo de git la carpeta data_load\datavfox"
+
+[33mcommit 2af8ea4e42b16f382bf4af8877f7b17a4aefa750[m
+Author: Ramosric <neuraldevs@gmail.com>
+Date:   Mon Sep 30 11:07:32 2024 -0500
+
+    Se creó carpeta entorno y archivo entorno_base.py
+
+[33mcommit b2f5c560b2ff4b507c9227270963f646e6ccd6ac[m
+Author: Leoncio R. Barrios H <leonciobarriosh@gmail.com>
+Date:   Fri Sep 27 17:57:36 2024 -0500
+
+    Actualizadas las clases forms que hereden de CrudGenericForm
+
+[33mcommit f35c98c58c71f436636981ec4ffd78029a3427c5[m
+Author: Leoncio R. Barrios H <leonciobarriosh@gmail.com>
+Date:   Fri Sep 27 17:41:58 2024 -0500
+
+    Actualizado el Generador de Plantillas
+
+[33mcommit 269411404009b5d835d5158342e3ba71b260c2bc[m
+Merge: e484635 9f9cdfb
+Author: Leoncio R. Barrios H <leonciobarriosh@gmail.com>
+Date:   Fri Sep 27 16:58:54 2024 -0500
+
+    Merge branch 'main' of https://github.com/RamZev/PROJECT_NEUMATIC
+
+[33mcommit e4846350b3acd0efebe5a1d2b0c090092546b200[m
+Author: Leoncio R. Barrios H <leonciobarriosh@gmail.com>
+Date:   Fri Sep 27 16:58:34 2024 -0500
+
+    Creados los crud de comprobante compra y venta
+
+[33mcommit 9f9cdfb8f483b428de6a989f10ce63ed8d1bf27b[m
+Author: Ramosric <neuraldevs@gmail.com>
+Date:   Fri Sep 27 16:46:51 2024 -0500
+
+    RRZ 27082024-2
+
+[33mcommit e05528807e5794414ad67dab410bc329cd069acd[m
+Author: Ramosric <neuraldevs@gmail.com>
+Date:   Fri Sep 27 16:11:44 2024 -0500
+
+    RRZ 27082024-2
+
+[33mcommit 8107e419dec5fefe6461ad2c5dd981027598f656[m
+Merge: 322264d f71623c
+Author: Ramosric <neuraldevs@gmail.com>
+Date:   Fri Sep 27 16:04:14 2024 -0500
+
+    RRZ 27082024
+
+[33mcommit 322264d36a15e98dcece1a64281374693dbb1e1f[m
+Author: Ramosric <neuraldevs@gmail.com>
+Date:   Fri Sep 27 16:01:25 2024 -0500
+
+    RRZ 27082024
+
+[33mcommit f71623c58ffe87c8f648350694c7b54122edf9f7[m
+Author: Leoncio R. Barrios H <leonciobarriosh@gmail.com>
+Date:   Fri Sep 27 15:39:48 2024 -0500
+
+    Creación de 16 cruds
+
+[33mcommit 078b00b6fbae53cbd43a0f10e895025214a77d27[m
+Author: Leoncio R. Barrios H <leonciobarriosh@gmail.com>
+Date:   Wed Sep 25 14:58:54 2024 -0500
+
+    Excluida la BBDD en el .gitignore
+
+[33mcommit 571f97841210464f7d8b54624cef5689d2100769[m
+Author: Leoncio R. Barrios H <leonciobarriosh@gmail.com>
+Date:   Wed Sep 25 14:37:36 2024 -0500
+
+    Creada la carpeta docs y dentro el archivo bitacora_migraciones.txt
+
+[33mcommit 6b407ddbde4653d287f0d2f8b18cbafd748435d7[m
+Author: Leoncio R. Barrios H <leonciobarriosh@gmail.com>
+Date:   Wed Sep 25 14:06:50 2024 -0500
+
+    Implementados varios cambios. CRUD Actividad. Otrosl.
+    
+    - Creada la carpeta para los generadores en la raíz de apps, con el generador
+      e instalada la dependecia.
+    - Modificado el generador de plantillas (estructura, etiquetas e indentación).
+    - Implementado el CRUD de Actividad con la plantilla creada con el generador
+      actualizado.
+    - Modificado el orden de los modelos y creado el método __str__ a los modelos
+      que no los tenían.
+    - Corregida la vista de ActividadCreateView: variable "accion" en el
+      extra_context decía Editar y debe decir Crear.
+    - Excluída la BBDD del control de git y actualizado el .gitignore.
+
+[33mcommit 4551802879251c8ef93227c86cbe7137d9316ec2[m
+Author: Leoncio R. Barrios H <leonciobarriosh@gmail.com>
+Date:   Tue Sep 24 17:30:44 2024 -0500
+
+    Corregido el nombre de la función obtener_requerimientos_modelo
+
+[33mcommit b354ad5851fea0c0ead179cd60c03b0a86da4036[m
+Author: Leoncio R. Barrios H <leonciobarriosh@gmail.com>
+Date:   Tue Sep 24 16:30:05 2024 -0500
+
+    Eliminado campos a validar
+
+[33mcommit 3d02bf590735e63d41d6d8495bd6304628cbb571[m
+Author: Leoncio R. Barrios H <leonciobarriosh@gmail.com>
+Date:   Tue Sep 24 16:26:45 2024 -0500
+
+    Implementación maestro actividad y correcciones
+
+[33mcommit d8e9215e795ee8057ce7783f285c0d9cfdc0079d[m
+Author: Ramosric <neuraldevs@gmail.com>
+Date:   Tue Sep 24 13:25:08 2024 -0500
+
+    cuarto commit
+
+[33mcommit 5bf9e10c3d00e0872b3742b75e0c41b23042cd16[m
+Merge: 037985f 24d65fa
+Author: Ramosric <neuraldevs@gmail.com>
+Date:   Tue Sep 24 13:16:20 2024 -0500
+
+    Merge branch 'main' of https://github.com/RamZev/PROJECT_NEUMATIC
+
+[33mcommit 037985fdfd964cb96fbd989a443ebc3f14d61077[m
+Author: Ramosric <neuraldevs@gmail.com>
+Date:   Tue Sep 24 13:13:46 2024 -0500
+
+    tercer commit
+
+[33mcommit 24d65fa39bcf74edadfd6178aadfa24980aaca34[m
+Author: Leoncio R. Barrios H <leonciobarriosh@gmail.com>
+Date:   Tue Sep 24 13:12:38 2024 -0500
+
+    Se añadío otro comentario y la ruta relativa del módulo
+
+[33mcommit 9e29096cf49d913ba7c6117163c16e71c78f0a7a[m
+Author: Leoncio R. Barrios H <leonciobarriosh@gmail.com>
+Date:   Tue Sep 24 13:07:33 2024 -0500
+
+    Añadido comentario en el módulo comprobante_compra.py
+
+[33mcommit 91e567230061c8f2c4e42f087d4847ba4984c500[m
+Author: Leoncio R. Barrios H <leonciobarriosh@gmail.com>
+Date:   Tue Sep 24 13:03:42 2024 -0500
+
+    Removido el .rar
+
+[33mcommit cc5a567a1ca91290b62c85880b4ba3ee108d6228[m
+Author: Leoncio R. Barrios H <leonciobarriosh@gmail.com>
+Date:   Tue Sep 24 12:26:03 2024 -0500
+
+    Eliminar directorios __pycache__ y actualizar .gitignore
+
+[33mcommit e04312abb703d0ab272784b9b30474df6ec20ec5[m
+Author: Leoncio R. Barrios H <leonciobarriosh@gmail.com>
+Date:   Tue Sep 24 11:13:29 2024 -0500
+
+    He añadido el .gitignore
+
+[33mcommit 0b2ee38d057386e7886cccc3e7291efffc9748fc[m
+Author: Ramosric <neuraldevs@gmail.com>
+Date:   Mon Sep 23 23:35:18 2024 -0500
+
+    Segundo commit
+
+[33mcommit 4382d844be512c5609691954691c474e4f67d7c9[m
+Author: Ramosric <neuraldevs@gmail.com>
+Date:   Mon Sep 23 22:59:30 2024 -0500
+
+    Primer Commit

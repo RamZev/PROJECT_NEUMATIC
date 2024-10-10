@@ -11,3 +11,20 @@
 		- Se cambia el campo iva de CharField a ForeignKey relacionado con TipoIva.
 		- Se cambia el atributo on_delete de campo id_localidad a PROTECT.
 		- Se cambia el atributo on_delete de campo id_provincia a PROTECT.
+
+08/10/2024:
+	* Modelo Cliente:
+		- He cambiado el atributo on_delete de unos foreinKey de CASCADE a PROTECT.
+		- He quitado los imports de los modelos relacionados y encerrado entre comillas los modelos de referencia en los foreinKey (lazy reference).
+		- Se estandariza el campo CUIT a IntegerField (Cliente, Proveedor, Empresa)
+	* Modelo Proveedor:
+		- Se estandariza el campo CUIT a IntegerField (Cliente, Proveedor, Empresa)
+	* Modelo Empresa:
+		- Se estandariza el campo CUIT a IntegerField (Cliente, Proveedor, Empresa)
+
+09/10/2024:
+	* Modelo Empresa:
+		- Se cambia el tipo de dato del campo cbu de BigInteger(máx.19chr) a CharField.
+		- Se cambia a opcional el campo id_iva (null=True, blank=True).
+	* Modelo Actividad:
+		- Se quita el campo fecha_registro_actividad.
