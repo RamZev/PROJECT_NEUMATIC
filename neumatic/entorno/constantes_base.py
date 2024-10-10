@@ -45,8 +45,8 @@ BLACK_LIST = [
 ]
 
 TIPO_VENTA = [
-	('R', 'R'),
-	('M', 'M'),
+	('M', 'Mostrador'),
+	('R', 'Revendedor'),
 ]
 
 WS_MODO = [

@@ -18,15 +18,15 @@ class NumeroForm(CrudGenericForm):
 			'id_sucursal': 
 				forms.Select(attrs={**formclassselect}),
 			'punto_venta': 
-				forms.TextInput(attrs={**formclasstext}),
+				forms.NumberInput(attrs={**formclasstext, 'min': 1, 'max': 999}),
 			'comprobante': 
 				forms.TextInput(attrs={**formclasstext}),
 			'letra': 
 				forms.TextInput(attrs={**formclasstext}),
 			'numero': 
-				forms.TextInput(attrs={**formclasstext}),
+				forms.NumberInput(attrs={**formclasstext, 'min': 1, 'max': 9999999999999}),
 			'lineas': 
-				forms.TextInput(attrs={**formclasstext}),
+				forms.NumberInput(attrs={**formclasstext, 'min': 1, 'max': 999}),
 			'copias': 
-				forms.TextInput(attrs={**formclasstext}),
+				forms.NumberInput(attrs={**formclasstext, 'min': 1, 'max': 999}),
 		}

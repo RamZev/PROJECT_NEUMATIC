@@ -19,6 +19,10 @@ class ProductoMarcaForm(CrudGenericForm):
 				forms.TextInput(attrs={**formclasstext}),
 			'principal': 
 				forms.CheckboxInput(attrs={**formclasscheck}),
+			'info_michelin_auto': 
+				forms.CheckboxInput(attrs={**formclasscheck}),
+			'info_michelin_camion': 
+				forms.CheckboxInput(attrs={**formclasscheck}),
 			'id_moneda': 
 				forms.Select(attrs={**formclassselect}),
 		}

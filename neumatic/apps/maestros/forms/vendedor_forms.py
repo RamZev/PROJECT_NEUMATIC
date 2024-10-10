@@ -11,7 +11,7 @@ class VendedorForm(CrudGenericForm):
 	class Meta:
 		model = Vendedor
 		fields = '__all__'
-
+		
 		widgets = {
 			'estatus_vendedor': 
 				forms.Select(attrs={**formclassselect}), 
@@ -22,21 +22,27 @@ class VendedorForm(CrudGenericForm):
 			'email_vendedor': 
 				forms.EmailInput(attrs={**formclasstext}),
 			'telefono_vendedor': 
-				forms.TextInput(attrs={**formclasstext}),
+				forms.NumberInput(attrs={**formclasstext, 
+								  'min': 1, 'max': 999999999999999}),
 			'pje_auto': 
-				forms.NumberInput(attrs={**formclasstext}),
+				forms.NumberInput(attrs={**formclasstext, 
+							 	  'min': 0, 'max': 99.99}),
 			'pje_camion': 
-				forms.NumberInput(attrs={**formclasstext}),			
+				forms.NumberInput(attrs={**formclasstext, 
+							 	  'min': 0, 'max': 99.99}),
 			'vence_factura': 
-				forms.NumberInput(attrs={**formclasstext}),	
+				forms.NumberInput(attrs={**formclasstext, 
+							 	  'min': 0, 'max': 999}),	
 			'vence_remito': 
-				forms.NumberInput(attrs={**formclasstext}),	
+				forms.NumberInput(attrs={**formclasstext, 
+							 	  'min': 0, 'max': 999}),	
 			'id_sucursal': 
 				forms.Select(attrs={**formclassselect}),
 			'tipo_venta': 
 				forms.Select(attrs={**formclassselect}),
 			'col_descuento': 
-				forms.NumberInput(attrs={**formclasstext}),
+				forms.NumberInput(attrs={**formclasstext, 
+							 	  'min': 0, 'max': 999}),
 			'email_venta': 
 				forms.CheckboxInput(attrs={**formclasscheck}),
 			'info_saldo': 

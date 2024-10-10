@@ -1,6 +1,7 @@
 # neumatic\apps\maestros\models\base_models.py
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
+from django.core.exceptions import ValidationError
 from .base_gen_models import ModeloBaseGenerico
 from entorno.constantes_base import ESTATUS_GEN
 
@@ -8,13 +9,13 @@ from entorno.constantes_base import ESTATUS_GEN
 class Actividad(ModeloBaseGenerico):
 	id_actividad = models.AutoField(primary_key=True)
 	estatus_actividad = models.BooleanField("Estatus", default=True,
-										 choices=ESTATUS_GEN)    
-	descripcion_actividad = models.CharField("Descripción actividad", 
+											choices=ESTATUS_GEN)
+	descripcion_actividad = models.CharField("Descripción actividad",
 											 max_length=30)
-	
+
 	def __str__(self):
 		return self.descripcion_actividad
-	
+
 	class Meta:
 		db_table = 'actividad'
 		verbose_name = ('Actividad')
@@ -24,15 +25,15 @@ class Actividad(ModeloBaseGenerico):
 
 class ProductoDeposito(ModeloBaseGenerico):
 	id_producto_deposito = models.AutoField(primary_key=True)
-	estatus_producto_deposito = models.BooleanField("Estatus", default=True, 
+	estatus_producto_deposito = models.BooleanField("Estatus", default=True,
 													choices=ESTATUS_GEN)
 	id_sucursal = models.ForeignKey('Sucursal', on_delete=models.CASCADE,
 									verbose_name="Sucursal")
 	nombre_producto_deposito = models.CharField("Nombre", max_length=50)
-	
+
 	def __str__(self):
 		return self.nombre_producto_deposito
-	
+
 	class Meta:
 		db_table = 'producto_deposito'
 		verbose_name = 'Producto Depósito'
@@ -42,11 +43,13 @@ class ProductoDeposito(ModeloBaseGenerico):
 
 class ProductoFamilia(ModeloBaseGenerico):
 	id_producto_familia = models.AutoField(primary_key=True)
-	estatus_producto_familia = models.BooleanField("Estatus", default=True, 
+	estatus_producto_familia = models.BooleanField("Estatus", default=True,
 												   choices=ESTATUS_GEN)
 	nombre_producto_familia = models.CharField("Nombre", max_length=50)
-	comision_operario = models.DecimalField("Comisión Operario", max_digits=6, 
-											decimal_places=2)
+	comision_operario = models.DecimalField("Comisión Operario(%)",
+											max_digits=6, decimal_places=2,
+											validators=[MinValueValidator(0),
+														MaxValueValidator(9999.99)])
 	
 	def __str__(self):
 		return self.nombre_producto_familia
@@ -60,14 +63,17 @@ class ProductoFamilia(ModeloBaseGenerico):
 
 class ProductoMarca(ModeloBaseGenerico):
 	id_producto_marca = models.AutoField(primary_key=True)
-	estatus_producto_marca = models.BooleanField("Estatus", default=True, 
+	estatus_producto_marca = models.BooleanField("Estatus", default=True,
 												 choices=ESTATUS_GEN)
 	nombre_producto_marca = models.CharField("Nombre", max_length=50)
-	principal = models.BooleanField("Principal", null=True, blank=True, 
-									default=False)
-	id_moneda = models.ForeignKey('Moneda', on_delete=models.PROTECT, 
+	principal = models.BooleanField("Principal", default=False)
+	info_michelin_auto = models.BooleanField("Informar xTractor Autos", 
+										  	  default=False)
+	info_michelin_camion = models.BooleanField("Informar xTractor Camiones", 
+												default=False)
+	id_moneda = models.ForeignKey('Moneda', on_delete=models.PROTECT,
 								  verbose_name="Moneda")
-
+	
 	def __str__(self):
 		return self.nombre_producto_marca
 	
@@ -80,13 +86,13 @@ class ProductoMarca(ModeloBaseGenerico):
 
 class ProductoModelo(ModeloBaseGenerico):
 	id_modelo = models.AutoField(primary_key=True)  # Clave primaria
-	estatus_modelo = models.BooleanField("Estatus", default=True, 
+	estatus_modelo = models.BooleanField("Estatus", default=True,
 										 choices=ESTATUS_GEN)  # Estatus del modelo
 	nombre_modelo = models.CharField("Nombre", max_length=50)
-	
+
 	def __str__(self):
 		return self.nombre_modelo
-	
+
 	class Meta:
 		db_table = 'producto_modelo'
 		verbose_name = 'Modelo de Producto'
@@ -97,16 +103,16 @@ class ProductoModelo(ModeloBaseGenerico):
 class ProductoMinimo(ModeloBaseGenerico):
 	id_producto_minimo = models.AutoField(primary_key=True)
 	cai = models.CharField("CAI", max_length=20)
-	minimo = models.IntegerField("Mínimo", 
-                                     validators=[MinValueValidator(1), 
-                                                 MaxValueValidator(99)])
-	id_deposito = models.ForeignKey('ProductoDeposito', 
-								 on_delete=models.CASCADE, 
-								 verbose_name="Depósito")
-	
+	minimo = models.IntegerField("Mínimo",
+								 validators=[MinValueValidator(1),
+											 MaxValueValidator(99)])
+	id_deposito = models.ForeignKey('ProductoDeposito',
+									on_delete=models.CASCADE,
+									verbose_name="Depósito")
+
 	def __str__(self):
 		return f'{self.cai} - Min: {self.minimo}'
-	
+
 	class Meta:
 		db_table = 'producto_minimo'
 		verbose_name = 'Producto Mínimo'
@@ -116,22 +122,22 @@ class ProductoMinimo(ModeloBaseGenerico):
 
 class ProductoStock(ModeloBaseGenerico):
 	id_producto_stock = models.AutoField(primary_key=True)
-	id_producto = models.ForeignKey('Producto', on_delete=models.CASCADE, 
+	id_producto = models.ForeignKey('Producto', on_delete=models.CASCADE,
 									verbose_name="Producto")
-	id_deposito = models.ForeignKey('ProductoDeposito', on_delete=models.CASCADE, 
+	id_deposito = models.ForeignKey('ProductoDeposito', on_delete=models.CASCADE,
 									verbose_name="Depósito")
-	stock = models.IntegerField("Stock", 
-							 validators=[MinValueValidator(1), 
-										 MaxValueValidator(999)])
-	minimo = models.IntegerField("Mínimo", 
-							  validators=[MinValueValidator(1), 
-					 					  MaxValueValidator(999)])
+	stock = models.IntegerField("Stock",
+								validators=[MinValueValidator(1),
+											MaxValueValidator(999)])
+	minimo = models.IntegerField("Mínimo",
+								 validators=[MinValueValidator(1),
+											 MaxValueValidator(999)])
 	fecha_producto_stock = models.DateField("Fecha Stock")
-	
+
 	def __str__(self):
 		return f'Producto {self.id_producto} - Stock: {self.stock} - \
 			Depósito: {self.id_deposito}'
-	
+
 	class Meta:
 		db_table = 'producto_stock'
 		verbose_name = 'Producto Stock'
@@ -143,10 +149,10 @@ class ProductoEstado(ModeloBaseGenerico):
 	id_producto_estado = models.AutoField(primary_key=True)
 	estado_producto = models.CharField("Estado Producto", max_length=1)
 	nombre_producto_estado = models.CharField("Nombre", max_length=15)
-	
+
 	def __str__(self):
 		return self.nombre_producto_estado
-	
+
 	class Meta:
 		db_table = 'producto_estado'
 		verbose_name = 'Estado de Producto'
@@ -156,43 +162,67 @@ class ProductoEstado(ModeloBaseGenerico):
 
 class ComprobanteVenta(ModeloBaseGenerico):
 	id_comprobante_venta = models.AutoField(primary_key=True)
-	estatus_comprobante_venta = models.BooleanField("Estatus", default=True, 
+	estatus_comprobante_venta = models.BooleanField("Estatus", default=True,
 													choices=ESTATUS_GEN)  # Estatus del comprobante
-	codigo_comprobante_venta = models.CharField("Código Comprobante", 
+	codigo_comprobante_venta = models.CharField("Código Comprobante",
 												max_length=3)
-	nombre_comprobante_venta = models.CharField("Nombre Comprobante", max_length=50)  # Nombre del comprobante
-	impresion = models.CharField("Impresora", max_length=50)  # Detalle de impresión
-	compro_asociado = models.CharField("Comprobate Asociado", max_length=20)  # Comprobante asociado
-	mult_venta = models.IntegerField("Mult. Venta", 
-									 validators=[MinValueValidator(1), 
-												 MaxValueValidator(99)])  # Multiplicador de venta
-	mult_saldo = models.IntegerField("Mult. Saldo", 
-									 validators=[MinValueValidator(1), 
-												 MaxValueValidator(99)])  # Multiplicador de saldo
-	mult_stock = models.IntegerField("Mult. Stock", 
-									 validators=[MinValueValidator(1), 
-												 MaxValueValidator(99)])  # Multiplicador de stock
-	mult_comision = models.IntegerField("Mult. Comisión", 
-									 validators=[MinValueValidator(1), 
-												 MaxValueValidator(99)])  # Multiplicador de comisión
-	mult_caja = models.IntegerField("Mult. Caja", 
-									 validators=[MinValueValidator(1), 
-												 MaxValueValidator(99)])  # Multiplicador de caja
-	mult_estadistica = models.IntegerField("Mult. Estadísticas", 
-									 validators=[MinValueValidator(1), 
-												 MaxValueValidator(99)])  # Multiplicador de estadísticas
+	nombre_comprobante_venta = models.CharField(
+		"Nombre Comprobante", max_length=50)  # Nombre del comprobante
+	impresion = models.CharField(
+		"Impresora", max_length=50, null=True, blank=True)  # Detalle de impresión
+	compro_asociado = models.CharField(
+		"Comprobate Asociado", max_length=20, null=True, blank=True)  # Comprobante asociado
+	
+	mult_venta = models.IntegerField("Mult. Venta")  # Multiplicador de venta
+	mult_saldo = models.IntegerField("Mult. Saldo")  # Multiplicador de saldo
+	mult_stock = models.IntegerField("Mult. Stock")  # Multiplicador de stock
+	mult_comision = models.IntegerField("Mult. Comisión")  # Multiplicador de comisión
+	mult_caja = models.IntegerField("Mult. Caja")  # Multiplicador de caja
+	mult_estadistica = models.IntegerField("Mult. Estadísticas")  # Multiplicador de estadísticas
+	
 	libro_iva = models.BooleanField("Libro IVA")  # Libro IVA asociado
-	estadistica = models.BooleanField("Estadísticas")  # Indicador de estadísticas
+	estadistica = models.BooleanField(
+		"Estadísticas")  # Indicador de estadísticas
 	electronica = models.BooleanField("Electrónica")  # Comprobante electrónico
 	presupuesto = models.BooleanField("Presupuesto")  # Presupuesto
 	pendiente = models.BooleanField("Pendiente")  # Indicador de pendiente
-	info_michelin_auto = models.BooleanField("Info. Michelin auto")  # Información Michelin auto
-	info_michelin_camion = models.BooleanField("Info. Michelin camión")  # Información Michelin camión
-	codigo_afip_a = models.CharField("Código AFIP A", max_length=3)  # Código AFIP A
-	codigo_afip_b = models.CharField("Código AFIP B", max_length=3)  # Código AFIP B
-
+	info_michelin_auto = models.BooleanField(
+		"Info. Michelin auto")  # Información Michelin auto
+	info_michelin_camion = models.BooleanField(
+		"Info. Michelin camión")  # Información Michelin camión
+	codigo_afip_a = models.CharField(
+		"Código AFIP A", max_length=3)  # Código AFIP A
+	codigo_afip_b = models.CharField(
+		"Código AFIP B", max_length=3)  # Código AFIP B
+	
 	def __str__(self):
 		return self.nombre_comprobante_venta
+	
+	def clean(self):
+		errors = {}
+		
+		if self.mult_venta != -1 and self.mult_venta != 0 and self.mult_venta != 1:
+			errors.update({'mult_venta': "Los valores permitidos son: -1, 0 y 1"})
+		
+		if self.mult_saldo != -1 and self.mult_saldo != 0 and self.mult_saldo != 1:
+			errors.update({'mult_saldo': "Los valores permitidos son: -1, 0 y 1"})
+		
+		if self.mult_stock != -1 and self.mult_stock != 0 and self.mult_stock != 1:
+			errors.update({'mult_stock': "Los valores permitidos son: -1, 0 y 1"})
+		
+		if self.mult_comision != -1 and self.mult_comision != 0 and self.mult_comision != 1:
+			errors.update({'mult_comision': "Los valores permitidos son: -1, 0 y 1"})
+		
+		if self.mult_caja != -1 and self.mult_caja != 0 and self.mult_caja != 1:
+			errors.update({'mult_caja': "Los valores permitidos son: -1, 0 y 1"})
+		
+		if self.mult_estadistica != -1 and self.mult_estadistica != 0 and self.mult_estadistica != 1:
+			errors.update({'mult_estadistica': "Los valores permitidos son: -1, 0 y 1"})
+		
+		if errors:
+			raise ValidationError(errors)
+		
+		return super().clean()
 	
 	class Meta:
 		db_table = 'comprobante_venta'
@@ -203,23 +233,15 @@ class ComprobanteVenta(ModeloBaseGenerico):
 
 class ComprobanteCompra(ModeloBaseGenerico):
 	id_comprobante_compra = models.AutoField(primary_key=True)
-	estatus_comprobante_compra = models.BooleanField("Estatus", default=True, 
+	estatus_comprobante_compra = models.BooleanField("Estatus", default=True,
 													 choices=ESTATUS_GEN)
-	codigo_comprobante_compra = models.CharField("Código comprobante", 
+	codigo_comprobante_compra = models.CharField("Código comprobante",
 												 max_length=3)
 	nombre_comprobante_compra = models.CharField("Nombre", max_length=30)
-	mult_compra = models.IntegerField("Mult. Compra", 
-									 validators=[MinValueValidator(1), 
-												 MaxValueValidator(99)])
-	mult_saldo = models.IntegerField("Mult. Saldo", 
-									 validators=[MinValueValidator(1), 
-												 MaxValueValidator(99)])
-	mult_stock = models.IntegerField("Mult. Stock", 
-									 validators=[MinValueValidator(1), 
-												 MaxValueValidator(99)])
-	mult_caja = models.IntegerField("Mult. IVA", 
-									 validators=[MinValueValidator(1), 
-												 MaxValueValidator(99)])
+	mult_compra = models.IntegerField("Mult. Compra")
+	mult_saldo = models.IntegerField("Mult. Saldo")
+	mult_stock = models.IntegerField("Mult. Stock")
+	mult_caja = models.IntegerField("Mult. IVA")
 	libro_iva = models.BooleanField("Libreo IVA")
 	codigo_afip_a = models.CharField("Código AFIP A", max_length=3)
 	codigo_afip_b = models.CharField("Código AFIP B", max_length=3)
@@ -228,6 +250,26 @@ class ComprobanteCompra(ModeloBaseGenerico):
 	
 	def __str__(self):
 		return self.nombre_comprobante_compra
+	
+	def clean(self):
+		errors = {}
+		
+		if self.mult_compra != -1 and self.mult_compra != 0 and self.mult_compra != 1:
+			errors.update({"mult_compra": "Los valores permitidos son: -1, 0 y 1"})
+		
+		if self.mult_saldo != -1 and self.mult_saldo != 0 and self.mult_saldo != 1:
+			errors.update({"mult_saldo": "Los valores permitidos son: -1, 0 y 1"})
+		
+		if self.mult_stock != -1 and self.mult_stock != 0 and self.mult_stock != 1:
+			errors.update({"mult_stock": "Los valores permitidos son: -1, 0 y 1"})
+		
+		if self.mult_caja != -1 and self.mult_caja != 0 and self.mult_caja != 1:
+			errors.update({"mult_caja": "Los valores permitidos son: -1, 0 y 1"})
+		
+		if errors:
+			raise ValidationError(errors)
+		
+		return super().clean()
 	
 	class Meta:
 		db_table = 'comprobante_compra'
@@ -238,19 +280,19 @@ class ComprobanteCompra(ModeloBaseGenerico):
 
 class Moneda(ModeloBaseGenerico):
 	id_moneda = models.AutoField(primary_key=True)
-	estatus_moneda = models.BooleanField("Estatus", default=True, 
+	estatus_moneda = models.BooleanField("Estatus", default=True,
 										 choices=ESTATUS_GEN)
 	nombre_moneda = models.CharField("Nombre", max_length=20)
-	cotizacion_moneda = models.DecimalField("Cotización", max_digits=18, 
+	cotizacion_moneda = models.DecimalField("Cotización", max_digits=18,
 											decimal_places=4)
 	simbolo_moneda = models.CharField("Símbolo", max_length=3)
 	ws_afip = models.CharField("WS AFIP", max_length=3)
-	predeterminada = models.BooleanField("Predeterminada", null=True, 
+	predeterminada = models.BooleanField("Predeterminada", null=True,
 										 blank=True, default=False)
 
 	def __str__(self):
 		return self.nombre_moneda
-	
+
 	class Meta:
 		db_table = 'moneda'
 		verbose_name = ('Moneda')
@@ -267,7 +309,7 @@ class Provincia(ModeloBaseGenerico):
 
 	def __str__(self):
 		return self.nombre_provincia
-	
+
 	class Meta:
 		db_table = 'provincia'
 		verbose_name = ('Provincia')
@@ -281,12 +323,12 @@ class Localidad(ModeloBaseGenerico):
 											choices=ESTATUS_GEN)
 	nombre_localidad = models.CharField("Nombre Localidad", max_length=30)
 	codigo_postal = models.CharField("Código Postal", max_length=5)
-	id_provincia = models.ForeignKey('Provincia', on_delete=models.CASCADE, 
+	id_provincia = models.ForeignKey('Provincia', on_delete=models.CASCADE,
 									 verbose_name="Provincia")
 
 	def __str__(self):
 		return self.nombre_localidad
-	
+
 	class Meta:
 		db_table = 'localidad'
 		verbose_name = ('Localidad')
@@ -296,17 +338,17 @@ class Localidad(ModeloBaseGenerico):
 
 class TipoDocumentoIdentidad(ModeloBaseGenerico):
 	id_tipo_documento_identidad = models.AutoField(primary_key=True)
-	estatus_tipo_documento_identidad = models.BooleanField("Estatus", 
+	estatus_tipo_documento_identidad = models.BooleanField("Estatus",
 														   default=True,
 														   choices=ESTATUS_GEN)
 	nombre_documento_identidad = models.CharField("Nombre", max_length=4)
 	tipo_documento_identidad = models.CharField("Tipo", max_length=4)
 	codigo_afip = models.CharField("Código AFIP", max_length=2)
 	ws_afip = models.CharField("WS AFIP", max_length=2)
-	
+
 	def __str__(self):
 		return self.nombre_documento_identidad
-	
+
 	class Meta:
 		db_table = 'tipo_documento_identidad'
 		verbose_name = ('Tipo de Documento de Identidad')
@@ -316,16 +358,16 @@ class TipoDocumentoIdentidad(ModeloBaseGenerico):
 
 class TipoIva(ModeloBaseGenerico):
 	id_tipo_iva = models.AutoField(primary_key=True)
-	estatus_tipo_iva = models.BooleanField("Estatus", default=True, 
+	estatus_tipo_iva = models.BooleanField("Estatus", default=True,
 										   choices=ESTATUS_GEN)
 	codigo_iva = models.CharField("Código IVA", max_length=4)
 	nombre_iva = models.CharField("Nombre", max_length=25)
-	discrimina_iva = models.BooleanField("Discrimina IVA", null=True, 
+	discrimina_iva = models.BooleanField("Discrimina IVA", null=True,
 										 blank=True)
-	
+
 	def __str__(self):
 		return self.nombre_iva
-	
+
 	class Meta:
 		db_table = 'tipo_iva'
 		verbose_name = ('Tipo de IVA')
@@ -335,18 +377,18 @@ class TipoIva(ModeloBaseGenerico):
 
 class TipoPercepcionIb(ModeloBaseGenerico):
 	id_tipo_percepcion_ib = models.AutoField(primary_key=True)
-	estatus_tipo_percepcion_ib = models.BooleanField("Estatus", default=True, 
+	estatus_tipo_percepcion_ib = models.BooleanField("Estatus", default=True,
 													 choices=ESTATUS_GEN)
-	descripcion_tipo_percepcion_ib = models.CharField("Descripción", 
+	descripcion_tipo_percepcion_ib = models.CharField("Descripción",
 													  max_length=50)
 	alicuota = models.DecimalField("Alícuota", max_digits=6, decimal_places=2)
 	monto = models.DecimalField("Monto", max_digits=18, decimal_places=2)
 	minimo = models.DecimalField("Mínimo", max_digits=18, decimal_places=2)
 	neto_total = models.BooleanField("Neto total", null=True, blank=True)
-	
+
 	def __str__(self):
 		return self.descripcion_tipo_percepcion_ib
-	
+
 	class Meta:
 		db_table = 'tipo_percepcion_ib'
 		verbose_name = ('Tipo de Percepción IB')
@@ -356,20 +398,20 @@ class TipoPercepcionIb(ModeloBaseGenerico):
 
 class TipoRetencionIb(ModeloBaseGenerico):
 	id_tipo_retencion_ib = models.AutoField(primary_key=True)
-	estatus_tipo_retencion_ib = models.BooleanField("Estatus", default=True, 
+	estatus_tipo_retencion_ib = models.BooleanField("Estatus", default=True,
 													choices=ESTATUS_GEN)
-	descripcion_tipo_retencion_ib = models.CharField("Descripción", 
+	descripcion_tipo_retencion_ib = models.CharField("Descripción",
 													 max_length=50)
-	alicuota_inscripto = models.DecimalField("Alícuota Inscripto", 
+	alicuota_inscripto = models.DecimalField("Alícuota Inscripto",
 											 max_digits=6, decimal_places=2)
-	alicuota_no_inscripto = models.DecimalField("Alícuota No Inscripto", 
+	alicuota_no_inscripto = models.DecimalField("Alícuota No Inscripto",
 												max_digits=6, decimal_places=2)
 	monto = models.DecimalField("Monto", max_digits=18, decimal_places=2)
 	minimo = models.DecimalField("Mínimo", max_digits=18, decimal_places=2)
-	
+
 	def __str__(self):
 		return self.descripcion_tipo_retencion_ib
-	
+
 	class Meta:
 		db_table = 'tipo_retencion_ib'
 		verbose_name = ('Tipo de Retención IB')
@@ -384,10 +426,10 @@ class Operario(ModeloBaseGenerico):
 	nombre_operario = models.CharField("Nombre", max_length=50)
 	telefono_operario = models.CharField("Teléfono", max_length=15)
 	email_operario = models.EmailField("Correo", max_length=50)
-	
+
 	def __str__(self):
 		return self.nombre_operario
-	
+
 	class Meta:
 		db_table = 'operario'
 		verbose_name = ('Operario')
