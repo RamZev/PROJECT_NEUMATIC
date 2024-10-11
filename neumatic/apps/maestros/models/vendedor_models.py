@@ -2,8 +2,7 @@
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from .base_gen_models import ModeloBaseGenerico
-# from .base_models import *
-# from .sucursal_models import Sucursal
+from .sucursal_models import Sucursal
 from entorno.constantes_base import ESTATUS_GEN, TIPO_VENTA
 
 
@@ -27,7 +26,7 @@ class Vendedor(ModeloBaseGenerico):
 	vence_remito = models.IntegerField("Días vcto. Remito", 
 										validators=[MinValueValidator(1), 
 													MaxValueValidator(999)])
-	id_sucursal = models.ForeignKey('Sucursal', on_delete=models.CASCADE, 
+	id_sucursal = models.ForeignKey(Sucursal, on_delete=models.CASCADE, 
 									verbose_name="Sucursal")  # Relación con sucursal
 	tipo_venta = models.CharField("Tipo", max_length=1, choices=TIPO_VENTA)
 	col_descuento = models.IntegerField("Columna Dcto.", 
@@ -36,7 +35,11 @@ class Vendedor(ModeloBaseGenerico):
 	email_venta = models.BooleanField("Enviar correos con Comprobantes", default=False)
 	info_saldo = models.BooleanField("Mostrar Saldo en Correos Electrónicos", default=False)
 	info_estadistica = models.BooleanField("Mostrar Saldos en Comp. Sin Estadísticas", default=False)
-
+	
+	def __str__(self):
+		return self.nombre_vendedor
+	
+	
 	class Meta:
 		db_table = 'vendedor'
 		verbose_name = ('Vendedor')

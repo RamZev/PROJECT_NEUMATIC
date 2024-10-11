@@ -2,7 +2,7 @@
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from .base_gen_models import ModeloBaseGenerico
-# from .base_models import *
+from .base_models import Provincia, Localidad
 from entorno.constantes_base import ESTATUS_GEN
 
 
@@ -15,9 +15,9 @@ class Sucursal(ModeloBaseGenerico):
 									   validators=[MinValueValidator(1), 
 												MaxValueValidator(99999)])
 	domicilio_sucursal = models.CharField("Domicilio", max_length=50)
-	id_localidad = models.ForeignKey('Localidad', on_delete=models.CASCADE, 
+	id_localidad = models.ForeignKey(Localidad, on_delete=models.CASCADE, 
 								  verbose_name="Localidad")
-	id_provincia = models.ForeignKey('Provincia', on_delete=models.CASCADE, 
+	id_provincia = models.ForeignKey(Provincia, on_delete=models.CASCADE, 
 								  verbose_name="Provincia")
 	telefono_sucursal = models.CharField("Teléfono", max_length=15)
 	email_sucursal = models.EmailField("Correo", max_length=50)
@@ -25,6 +25,7 @@ class Sucursal(ModeloBaseGenerico):
 	
 	def __str__(self):
 		return self.nombre_sucursal
+	
 	
 	class Meta:
 		db_table = 'sucursal'

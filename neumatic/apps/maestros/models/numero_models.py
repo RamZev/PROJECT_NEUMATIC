@@ -2,7 +2,7 @@
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from .base_gen_models import ModeloBaseGenerico
-# from .sucursal_models import Sucursal
+from .sucursal_models import Sucursal
 from entorno.constantes_base import ESTATUS_GEN
 
 
@@ -10,7 +10,7 @@ class Numero(ModeloBaseGenerico):
 	id_numero = models.AutoField(primary_key=True)
 	estatus_numero = models.BooleanField("Estatus", default=True, 
 										 choices=ESTATUS_GEN)
-	id_sucursal = models.ForeignKey('Sucursal', on_delete=models.CASCADE, 
+	id_sucursal = models.ForeignKey(Sucursal, on_delete=models.CASCADE, 
 									verbose_name="Sucursal")
 	punto_venta = models.IntegerField("Punto de Venta", 
 								   validators=[MinValueValidator(1), 

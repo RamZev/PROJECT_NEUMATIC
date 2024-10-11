@@ -2,7 +2,7 @@
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from .base_gen_models import ModeloBaseGenerico
-from .base_models import *
+from .base_models import Localidad, Provincia, TipoIva
 from entorno.constantes_base import ESTATUS_GEN, WS_MODO
 
 
@@ -14,12 +14,12 @@ class Empresa(ModeloBaseGenerico):
 	nombre_comercial = models.CharField("Nombre Comercial", max_length=50)
 	domicilio_empresa = models.CharField("Domicilio", max_length=50)
 	codigo_postal = models.CharField("Código postal", max_length=4)
-	id_localidad = models.ForeignKey('Localidad', on_delete=models.PROTECT, 
+	id_localidad = models.ForeignKey(Localidad, on_delete=models.PROTECT, 
 								  verbose_name="Localidad")
-	id_provincia = models.ForeignKey('Provincia', on_delete=models.PROTECT, 
+	id_provincia = models.ForeignKey(Provincia, on_delete=models.PROTECT, 
 								  verbose_name="Provincia")
 	# iva = models.CharField(max_length=3)
-	id_iva = models.ForeignKey('TipoIva', on_delete=models.PROTECT, 
+	id_iva = models.ForeignKey(TipoIva, on_delete=models.PROTECT, 
 						 verbose_name="Tipo I.V.A.", null=True, blank=True)
 	cuit = models.IntegerField("C.U.I.T.", 
 							validators=[MinValueValidator(20000000000), 
@@ -46,6 +46,7 @@ class Empresa(ModeloBaseGenerico):
 	
 	def __str__(self):
 		return self.nombre_fiscal
+	
 	
 	class Meta:
 		db_table = 'empresa'

@@ -51,6 +51,10 @@ class ProductoFamilia(ModeloBaseGenerico):
 											max_digits=6, decimal_places=2,
 											validators=[MinValueValidator(0),
 														MaxValueValidator(9999.99)])
+	info_michelin_auto = models.BooleanField("Info. Michelin auto", 
+										  	 default=False)
+	info_michelin_camion = models.BooleanField("Info. Michelin camión", 
+											   default=False)
 	
 	def __str__(self):
 		return self.nombre_producto_familia
@@ -68,9 +72,9 @@ class ProductoMarca(ModeloBaseGenerico):
 												 choices=ESTATUS_GEN)
 	nombre_producto_marca = models.CharField("Nombre", max_length=50)
 	principal = models.BooleanField("Principal", default=False)
-	info_michelin_auto = models.BooleanField("Informar xTractor Autos", 
+	info_michelin_auto = models.BooleanField("Info. Michelin auto", 
 										  	  default=False)
-	info_michelin_camion = models.BooleanField("Informar xTractor Camiones", 
+	info_michelin_camion = models.BooleanField("Info. Michelin camión", 
 												default=False)
 	id_moneda = models.ForeignKey('Moneda', on_delete=models.PROTECT,
 								  verbose_name="Moneda")
@@ -181,16 +185,15 @@ class ComprobanteVenta(ModeloBaseGenerico):
 	mult_caja = models.IntegerField("Mult. Caja")  # Multiplicador de caja
 	mult_estadistica = models.IntegerField("Mult. Estadísticas")  # Multiplicador de estadísticas
 	
-	libro_iva = models.BooleanField("Libro IVA")  # Libro IVA asociado
-	estadistica = models.BooleanField(
-		"Estadísticas")  # Indicador de estadísticas
-	electronica = models.BooleanField("Electrónica")  # Comprobante electrónico
-	presupuesto = models.BooleanField("Presupuesto")  # Presupuesto
-	pendiente = models.BooleanField("Pendiente")  # Indicador de pendiente
-	info_michelin_auto = models.BooleanField(
-		"Info. Michelin auto")  # Información Michelin auto
-	info_michelin_camion = models.BooleanField(
-		"Info. Michelin camión")  # Información Michelin camión
+	libro_iva = models.BooleanField("Libro IVA", default=False)  # Libro IVA asociado
+	estadistica = models.BooleanField("Estadísticas", default=False)  # Indicador de estadísticas
+	electronica = models.BooleanField("Electrónica", default=False)  # Comprobante electrónico
+	presupuesto = models.BooleanField("Presupuesto", default=False)  # Presupuesto
+	pendiente = models.BooleanField("Pendiente", default=False)  # Indicador de pendiente
+	info_michelin_auto = models.BooleanField("Info. Michelin auto", 
+										  	  default=False)  # Información Michelin auto
+	info_michelin_camion = models.BooleanField("Info. Michelin camión", 
+												default=False)  # Información Michelin camión
 	codigo_afip_a = models.CharField(
 		"Código AFIP A", max_length=3)  # Código AFIP A
 	codigo_afip_b = models.CharField(
@@ -243,7 +246,7 @@ class ComprobanteCompra(ModeloBaseGenerico):
 	mult_saldo = models.IntegerField("Mult. Saldo")
 	mult_stock = models.IntegerField("Mult. Stock")
 	mult_caja = models.IntegerField("Mult. IVA")
-	libro_iva = models.BooleanField("Libreo IVA")
+	libro_iva = models.BooleanField("Libreo IVA", default=False)
 	codigo_afip_a = models.CharField("Código AFIP A", max_length=3)
 	codigo_afip_b = models.CharField("Código AFIP B", max_length=3)
 	codigo_afip_c = models.CharField("Código AFIP C", max_length=3)
