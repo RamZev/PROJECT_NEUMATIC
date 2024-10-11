@@ -447,6 +447,9 @@ class MedioPago(ModeloBaseGenerico):
                                           default=True,
                                           choices=CONDICION_PAGO)
     plazo_medio_pago = models.IntegerField()
+    
+    def __str__(self):
+        return self.nombre_medio_pago
 
     class Meta:
         db_table = 'medio_pago'
