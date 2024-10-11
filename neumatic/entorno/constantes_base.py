@@ -53,3 +53,8 @@ WS_MODO = [
 	(1, 'Homologación'),
 	(2, 'Producción'),
 ]
+
+CONDICION_PAGO = [
+    (1, 'Contado'),
+    (2, 'Cuenta Corriente'),
+]

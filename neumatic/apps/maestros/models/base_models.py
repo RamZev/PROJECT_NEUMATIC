@@ -2,7 +2,7 @@
 from django.db import models
 from .base_gen_models import ModeloBaseGenerico
 # from .sucursal_models import Sucursal
-from entorno.constantes_base import ESTATUS_GEN
+from entorno.constantes_base import ESTATUS_GEN, CONDICION_PAGO
 
 
 class Actividad(ModeloBaseGenerico):
@@ -367,3 +367,21 @@ class Operario(ModeloBaseGenerico):
         verbose_name = ('Operario')
         verbose_name_plural = ('Operarios')
         ordering = ['nombre_operario']
+
+
+class MedioPago(ModeloBaseGenerico):
+    id_medio_pago = models.AutoField(primary_key=True)
+    estatus_medio_pago = models.BooleanField("Estatus", default=True,
+                                           choices=ESTATUS_GEN)
+    nombre_medio_pago = models.CharField(max_length=30)
+    condicion_medio_pago = models.IntegerField("Condición Pago", 
+                                          default=True,
+                                          choices=CONDICION_PAGO)
+    plazo_medio_pago = models.IntegerField()
+
+    class Meta:
+        db_table = 'medio_pago'
+        verbose_name = 'Medio de Pago'
+        verbose_name_plural = 'Medios de Pago'
+        ordering = ['nombre_medio_pago']
+

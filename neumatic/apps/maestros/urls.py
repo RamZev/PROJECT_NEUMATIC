@@ -20,6 +20,8 @@ from .views.tipo_iva_views import *
 from .views.tipo_percepcion_ib_views import *
 from .views.tipo_retencion_ib_views import *
 from .views.operario_views import *
+from .views.medio_pago_views import *
+
 #-- Catálogos
 from .views.cliente_views import *
 from .views.proveedor_views import *
@@ -190,5 +192,11 @@ urlpatterns = [
 	path('numero/nueva/', NumeroCreateView.as_view(), name='numero_create'),
 	path('numero/<int:pk>/editar/', NumeroUpdateView.as_view(), name='numero_update'),
 	path('numero/<int:pk>/eliminar/', NumeroDeleteView.as_view(), name='numero_delete'),
+ 
+	#-- MedioPago.
+	path('medio_pago/', MedioPagoListView.as_view(), name='medio_pago_list'),
+	path('medio_pago/nueva/', MedioPagoCreateView.as_view(), name='medio_pago_create'),
+	path('medio_pago/<int:pk>/editar/', MedioPagoUpdateView.as_view(), name='medio_pago_update'),
+	path('medio_pago/<int:pk>/eliminar/', MedioPagoDeleteView.as_view(), name='medio_pago_delete'),
 
 ]

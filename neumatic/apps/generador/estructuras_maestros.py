@@ -540,4 +540,15 @@ estructura_campos = {
 		}
 	},
 	
+	'medio_pago': {
+		'Información Medio de Pago': {
+			'fila_1': [
+				{'field_name': 'estatus_medio_pago', 'columna': 2},
+				{'field_name': 'nombre_medio_pago', 'columna': 4},
+				{'field_name': 'condicion_medio_pago', 'columna': 2},
+				{'field_name': 'plazo_medio_pago', 'columna': 2},
+			]
+		}
+	},
 }
+
