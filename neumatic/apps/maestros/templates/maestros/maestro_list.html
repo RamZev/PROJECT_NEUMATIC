@@ -9,29 +9,29 @@
 {% endblock title %}
 
 {% block style %}
-    body {
-        background-color: rgb(0, 204, 255);
-    }
-
-    .tbl-container {
-       
-    }
+		body {
+			background-color: rgb(0, 204, 255);
+		}
 		
-    .tbl-fixed {
-        overflow-x: scroll;
-        overflow-y: scroll;
-        height: fit-content;
-        max-height: 60vh;
-        margin-top: 0px;
-        font-size: 80%;
-    }
-    table {
-        min-width: max-content;
-    }
-    table th {
-        position: sticky;
-        top: 0px;
-    }
+		.tbl-container {
+			 
+		}
+		
+		.tbl-fixed {
+			overflow-x: scroll;
+			overflow-y: scroll;
+			height: fit-content;
+			max-height: 60vh;
+			margin-top: 0px;
+			font-size: 80%;
+		}
+		table {
+			min-width: max-content;
+		}
+		table th {
+			position: sticky;
+			top: 0px;
+		}
 {% endblock style %}
 
 {% debug %}
@@ -100,12 +100,34 @@
 									<tbody>
 										{% for objeto in objetos %}
 											<tr>
-												{% for data_info in table_data %}
-													{% if data_info.date_format %}
-														<td>{{ objeto|get_attribute:data_info.field_name|default:"" |date:data_info.date_format }}</td>
-													{% else %}
-														<td>{{ objeto|get_attribute:data_info.field_name|default:"" }}</td>
+												{% comment %} {% for data_info in table_data %}
+													{% if  %}
+														{% if data_info.date_format %}
+															<td>{{ objeto|get_attribute:data_info.field_name|default:"" |date:data_info.date_format }}</td>
+														{% else %}
+															<td>{{ objeto|get_attribute:data_info.field_name|default:"" }}</td>
+														{% endif %}
 													{% endif %}
+												{% endfor %} {% endcomment %}
+												
+												{% for data_info in table_data %}
+													{% with objeto|get_attribute:data_info.field_name as field_value %}
+														{% if field_value|get_type == 'bool' %}
+															<td>
+																{% if field_value %}
+																	<i class="fa fa-check text-success"></i> <!-- Ícono de check verde -->
+																{% else %}
+																	<i class="fa fa-times text-danger"></i> <!-- Ícono de "X" roja -->
+																{% endif %}
+															</td>															
+														{% else %}
+															{% if data_info.date_format %}
+																<td>{{ objeto|get_attribute:data_info.field_name|default:"" |date:data_info.date_format }}</td>
+															{% else %}
+																<td>{{ objeto|get_attribute:data_info.field_name|default:"" }}</td>
+															{% endif %}
+														{% endif %}
+													{% endwith %}
 												{% endfor %}
 												
 												<td>
@@ -116,7 +138,7 @@
 															style="font-size: 80%; padding: 0.3rem 0.6rem;">
 														<i class="fa fa-edit"></i>
 													</button>
-
+													
 													<!-- Botón Eliminar -->
 													<button type="button" class="btn btn-outline-danger btn-sm btn-delete boton-oculto" 
 															data-bs-toggle="modal" data-bs-target="#deleteModal" 
@@ -124,14 +146,14 @@
 															style="font-size: 80%; padding: 0.3rem 0.6rem;">
 														<i class="fa fa-trash-alt"></i>
 													</button>
-
+													
 													<!-- Botón Ver -->
 													<button type="button" class="btn btn-outline-success btn-sm btn-view boton-oculto"
 															data-bs-toggle="tooltip" data-bs-placement="top" title="Ver Registro"
 															style="font-size: 80%; padding: 0.3rem 0.6rem;">
 														<i class="fa fa-eye"></i>
 													</button>
-
+													
 												</td>
 											</tr>
 										{% endfor %}
@@ -139,7 +161,7 @@
 								</table>
 								<!-- Final Tabla de Maestro -->
 							</div>
-
+							
 							{% block paginador %}
 								{% include 'paginador.html' %}
 							{% endblock paginador %}
@@ -199,7 +221,7 @@
 			form.action = url
 		})
 	</script>
-
+	
 	<script>
 		document.addEventListener('DOMContentLoaded', function () {
 			const messageList = document.getElementById('message-list');

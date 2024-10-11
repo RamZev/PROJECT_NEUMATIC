@@ -7,16 +7,17 @@ from diseno_base.diseno_bootstrap import (
 
 
 class ProductoFamiliaForm(CrudGenericForm):
-	
+
 	class Meta:
 		model = ProductoFamilia
 		fields = '__all__'
 
 		widgets = {
-			'estatus_producto_familia': 
-				forms.Select(attrs={**formclassselect}),
-			'nombre_producto_familia': 
-				forms.TextInput(attrs={**formclasstext}),
-			'comision_operario': 
-				forms.TextInput(attrs={**formclasstext}),
+			'estatus_producto_familia':
+			forms.Select(attrs={**formclassselect}),
+				'nombre_producto_familia':
+			forms.TextInput(attrs={**formclasstext}),
+				'comision_operario':
+			forms.NumberInput(attrs={**formclasstext,
+									 'min': 0, 'max': 9999.99}),
 		}

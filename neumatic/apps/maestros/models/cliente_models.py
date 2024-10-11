@@ -1,9 +1,10 @@
 # neumatic\apps\maestros\models\cliente_models.py
 from django.db import models
+from django.core.validators import MinValueValidator, MaxValueValidator
 from .base_gen_models import ModeloBaseGenerico
-from .base_models import *
-from .vendedor_models import Vendedor
-from .sucursal_models import Sucursal
+# from .base_models import *
+# from .vendedor_models import Vendedor
+# from .sucursal_models import Sucursal
 from entorno.constantes_base import (
     ESTATUS_GEN, CONDICION_VENTA, SEXO, 
     CLIENTE_VIP, CLIENTE_MAYORISTA,
@@ -18,21 +19,23 @@ class Cliente(ModeloBaseGenerico):
     domicilio_cliente = models.CharField("Domicilio Cliente", 
                                          max_length=50)
     codigo_postal = models.CharField("Código Postal", max_length=5)
-    id_provincia = models.ForeignKey(Provincia, on_delete=models.PROTECT, 
+    id_provincia = models.ForeignKey('Provincia', on_delete=models.PROTECT, 
                                      verbose_name="Provincia",
                                      null=True, blank=True)
-    id_localidad = models.ForeignKey(Localidad, on_delete=models.PROTECT,
+    id_localidad = models.ForeignKey('Localidad', on_delete=models.PROTECT,
                                      verbose_name="Localidad")
     tipo_persona = models.CharField("Tipo de Persona", max_length=1,
                                     default="N", 
                                     choices=TIPO_PERSONA)
-    id_tipo_iva = models.ForeignKey(TipoIva, on_delete=models.CASCADE,
+    id_tipo_iva = models.ForeignKey('TipoIva', on_delete=models.PROTECT,
                                     verbose_name="Tipo de Iva")
     id_tipo_documento_identidad = models.ForeignKey(
-        TipoDocumentoIdentidad, 
-        on_delete=models.CASCADE,
+        'TipoDocumentoIdentidad', 
+        on_delete=models.PROTECT,
         verbose_name="Tipo Doc. Identidad ")
-    cuit = models.IntegerField("CUIT")
+    cuit = models.IntegerField("CUIT", 
+							validators=[MinValueValidator(20000000000), 
+				   						MaxValueValidator(34999999999)])
     condicion_venta = models.IntegerField("Condición Venta", 
                                           default=True,
                                           choices=CONDICION_VENTA)
@@ -43,22 +46,22 @@ class Cliente(ModeloBaseGenerico):
     email_cliente = models.EmailField("Email", max_length=50)
     email2_cliente = models.EmailField("Email 2", max_length=50)
     transporte_cliente = models.CharField("Transporte", max_length=50)
-    id_vendedor = models.ForeignKey(Vendedor, 
-                                    on_delete=models.CASCADE,
+    id_vendedor = models.ForeignKey('Vendedor', 
+                                    on_delete=models.PROTECT,
                                     verbose_name="Vendedor")
     fecha_nacimiento = models.DateField("Fecha Nacimiento")
     fecha_alta = models.DateField("Fecha Alta")
     sexo = models.CharField("Sexo", max_length=1, 
                             default="M", 
                             choices=SEXO)
-    id_actividad = models.ForeignKey(Actividad, 
-                                     on_delete=models.CASCADE,
+    id_actividad = models.ForeignKey('Actividad', 
+                                     on_delete=models.PROTECT,
                                      verbose_name="Actividad")
-    id_sucursal = models.ForeignKey(Sucursal, 
+    id_sucursal = models.ForeignKey('Sucursal', 
                                     on_delete=models.CASCADE,
                                     verbose_name="Sucursal")
-    id_percepcion_ib = models.ForeignKey(TipoPercepcionIb, 
-                                         on_delete=models.CASCADE, 
+    id_percepcion_ib = models.ForeignKey('TipoPercepcionIb', 
+                                         on_delete=models.PROTECT, 
                                          verbose_name="Percepción IB")
     numero_ib = models.CharField("Número IB", max_length=15)
     vip = models.BooleanField("Cliente VIP", 
@@ -67,7 +70,9 @@ class Cliente(ModeloBaseGenerico):
     mayorista = models.BooleanField("Mayorista", 
                                     default=False,
                                     choices=CLIENTE_MAYORISTA)
-    sub_cuenta = models.IntegerField("Sub Cuenta")
+    sub_cuenta = models.IntegerField("Sub Cuenta", 
+                                     validators=[MinValueValidator(1), 
+                                                 MaxValueValidator(999999)])
     observaciones_cliente = models.TextField("Observaciones", 
                                              blank=True, null=True)
     # id_usuario = models.IntegerField()  # El usuario que creó el cliente

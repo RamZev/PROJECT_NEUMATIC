@@ -95,7 +95,7 @@ estructura_campos = {
 		}
 	},
 	
-	'prod_deposito': {
+	'producto_deposito': {
 		'Información Producto Depósito': {
 			'fila_1': [
 				{'field_name': 'estatus_producto_deposito', 'columna': 2},
@@ -105,7 +105,7 @@ estructura_campos = {
 		}
 	},
 	
-	'prod_familia': {
+	'producto_familia': {
 		'Información Producto Familia': {
 			'fila_1': [
 				{'field_name': 'estatus_producto_familia', 'columna': 2},
@@ -130,18 +130,22 @@ estructura_campos = {
 		}
 	},
 	
-	'prod_marca': {
+	'producto_marca': {
 		'Información Producto Marca': {
 			'fila_1': [
 				{'field_name': 'estatus_producto_marca', 'columna': 2},
 				{'field_name': 'nombre_producto_marca', 'columna': 4},
-				{'field_name': 'principal', 'columna': 2},
 				{'field_name': 'id_moneda', 'columna': 2},
-			]
+			],
+			'fila_2': [
+				{'field_name': 'principal', 'columna': 2},
+				{'field_name': 'info_michelin_auto', 'columna': 2},
+				{'field_name': 'info_michelin_camion', 'columna': 2},
+			],
 		}
 	},
 	
-	'prod_modelo': {
+	'producto_modelo': {
 		'Información Producto Modelo': {
 			'fila_1': [
 				{'field_name': 'estatus_modelo', 'columna': 2},
@@ -150,7 +154,7 @@ estructura_campos = {
 		}
 	},
 	
-	'prod_minimo': {
+	'producto_minimo': {
 		'Información Producto Mínimo': {
 			'fila_1': [
 				{'field_name': 'cai', 'columna': 2},
@@ -160,7 +164,7 @@ estructura_campos = {
 		}
 	},
 	
-	'prod_stock': {
+	'producto_stock': {
 		'Información Producto Stock': {
 			'fila_1': [
 				{'field_name': 'id_producto', 'columna': 3},
@@ -172,7 +176,7 @@ estructura_campos = {
 		}
 	},
 	
-	'prod_estado': {
+	'producto_estado': {
 		'Información Producto Estado': {
 			'fila_1': [
 				{'field_name': 'estado_producto', 'columna': 2},
@@ -186,13 +190,10 @@ estructura_campos = {
 			'fila_1': [
 				{'field_name': 'estatus_comprobante_venta', 'columna': 2},
 				{'field_name': 'codigo_comprobante_venta', 'columna': 2},
-				{'field_name': 'nombre_comprobante_venta', 'columna': 6},
-			],
-			'fila_2': [
-				{'field_name': 'impresion', 'columna': 6},
+				{'field_name': 'nombre_comprobante_venta', 'columna': 4},
 				{'field_name': 'compro_asociado', 'columna': 4},
 			],
-			'fila_3': [
+			'fila_2': [
 				{'field_name': 'mult_venta', 'columna': 2},
 				{'field_name': 'mult_saldo', 'columna': 2},
 				{'field_name': 'mult_stock', 'columna': 2},
@@ -200,14 +201,14 @@ estructura_campos = {
 				{'field_name': 'mult_caja', 'columna': 2},
 				{'field_name': 'mult_estadistica', 'columna': 2},
 			],
-			'fila_4': [
+			'fila_3': [
 				{'field_name': 'libro_iva', 'columna': 2},
 				{'field_name': 'estadistica', 'columna': 2},
 				{'field_name': 'electronica', 'columna': 2},
 				{'field_name': 'presupuesto', 'columna': 2},
 				{'field_name': 'pendiente', 'columna': 2},
 			],
-			'fila_5': [
+			'fila_4': [
 				{'field_name': 'codigo_afip_a', 'columna': 2},
 				{'field_name': 'codigo_afip_b', 'columna': 2},
 				{'field_name': 'info_michelin_auto', 'columna': 2},
@@ -220,8 +221,8 @@ estructura_campos = {
 		'Información Comprobante Compra': {
 			'fila_1': [
 				{'field_name': 'estatus_comprobante_compra', 'columna': 2},
-				{'field_name': 'codigo_comprobante_compra', 'columna': 3},
-				{'field_name': 'nombre_comprobante_compra', 'columna': 3},
+				{'field_name': 'codigo_comprobante_compra', 'columna': 2},
+				{'field_name': 'nombre_comprobante_compra', 'columna': 4},
 			],
 			'fila_2': [
 				{'field_name': 'mult_compra', 'columna': 2},
@@ -255,9 +256,9 @@ estructura_campos = {
 		'Información Localidad': {
 			'fila_1': [
 				{'field_name': 'estatus_localidad', 'columna': 2},
-				{'field_name': 'id_provincia', 'columna': 3},
-				{'field_name': 'codigo_postal', 'columna': 2},
 				{'field_name': 'nombre_localidad', 'columna': 3},
+				{'field_name': 'codigo_postal', 'columna': 2},
+				{'field_name': 'id_provincia', 'columna': 3},
 			]
 		}
 	},
@@ -366,7 +367,7 @@ estructura_campos = {
 			],
 		}
 	},
- 
+	
 	'cliente': {
 		'Información General': {
 			'fila_1': [
@@ -550,5 +551,52 @@ estructura_campos = {
 			]
 		}
 	},
+ 
+ 'empresa': {
+		'Información Empresa': {
+			'fila_1': [
+				{'field_name': 'estatus_empresa', 'columna': 2},
+				{'field_name': 'nombre_fiscal', 'columna': 4},
+				{'field_name': 'nombre_comercial', 'columna': 4},
+			],
+			'fila_2': [
+				{'field_name': 'domicilio_empresa', 'columna': 4},
+				{'field_name': 'codigo_postal', 'columna': 2},
+				{'field_name': 'id_localidad', 'columna': 3},
+				{'field_name': 'id_provincia', 'columna': 3},
+			],
+			'fila_3': [
+				{'field_name': 'telefono', 'columna': 2},
+				{'field_name': 'email_empresa', 'columna': 4},
+				{'field_name': 'web_empresa', 'columna': 4},
+				{'field_name': 'logo_empresa', 'columna': 2},
+			],
+			'fila_4': [
+				{'field_name': 'id_iva', 'columna': 3},
+				{'field_name': 'cuit', 'columna': 2},
+				{'field_name': 'ingresos_bruto', 'columna': 2},
+				{'field_name': 'inicio_actividad', 'columna': 2},
+			],
+			'fila_5': [
+				{'field_name': 'cbu', 'columna': 3},
+				{'field_name': 'cbu_alias', 'columna': 4},
+				{'field_name': 'cbu_vence', 'columna': 2},
+			],
+			'fila_6': [
+				{'field_name': 'ws_archivo_crt', 'columna': 4},
+				{'field_name': 'ws_archivo_key', 'columna': 4},
+				{'field_name': 'ws_vence', 'columna': 2},
+			],
+			'fila_7': [
+				{'field_name': 'ws_expiracion', 'columna': 2},
+				{'field_name': 'ws_token', 'columna': 4},
+				{'field_name': 'ws_sign', 'columna': 4},
+			],
+			'fila_8': [
+				{'field_name': 'ws_modo', 'columna': 2},
+			],
+		}
+	},
+ 
 }
 

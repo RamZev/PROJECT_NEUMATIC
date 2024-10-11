@@ -63,14 +63,13 @@ class DataViewList():
 	paginate_by = 8
 	  
 	table_headers = {
-		'descripcion_actividad': (2, 'Descripción'),
-		'fecha_registro_actividad': (2, 'Fecha Registro'),
+		'descripcion_actividad': (10, 'Descripción'),
+		
 		'acciones': (2, 'Acciones'),
 	}
 	
 	table_data = [
 		{'field_name': 'descripcion_actividad', 'date_format': None},
-		{'field_name': 'fecha_registro_actividad', 'date_format': 'd/m/Y'},
 	]
 
 

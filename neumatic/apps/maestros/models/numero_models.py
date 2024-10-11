@@ -19,7 +19,7 @@ class Numero(ModeloBaseGenerico):
 	letra = models.CharField("Letra", max_length=1)
 	numero = models.IntegerField("Número", 
 							  	 validators=[MinValueValidator(1), 
-					   						 MaxValueValidator(999)])
+					   						 MaxValueValidator(9999999999999)])
 	lineas = models.IntegerField("Líneas", 
 							  	 validators=[MinValueValidator(1), 
 					   						 MaxValueValidator(999)])

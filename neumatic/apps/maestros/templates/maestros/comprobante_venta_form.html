@@ -31,23 +31,23 @@
 								{% csrf_token %}
 								<div class="accordion" id="accordionPanelsStayOpenExample">
 									<!-- Estructura generada -->
-
+									
 									<div class="accordion-item">
 										<h2 class="accordion-header">
 											<button 
 												class="accordion-button py-2 " 
 												type="button" 
 												data-bs-toggle="collapse" 
-												data-bs-target="#Información_General" 
+												data-bs-target="#Información_Comprobante_Venta" 
 												aria-expanded="true" 
-												aria-controls="Información_General">
+												aria-controls="Información_Comprobante_Venta">
 												<strong>Información Comprobante Venta</strong>
 											</button>
 										</h2>
 										<div class="accordion-collapse collapse show"
-											id="Información_General">
+											id="Información_Comprobante_Venta">
 											<div class="accordion-body bg-secondary-subtle">
-		
+												
 												<div class="row">
 													<div class="col-md-2">
 														<label class="form-label text-primary mb-0">
@@ -63,19 +63,11 @@
 														{{ form.codigo_comprobante_venta }}
 													</div>
 													
-													<div class="col-md-6">
+													<div class="col-md-4">
 														<label class="form-label text-primary mb-0">
 															{{ form.nombre_comprobante_venta.label }}
 														</label>
 														{{ form.nombre_comprobante_venta }}
-													</div>
-												</div>
-												<div class="row">
-													<div class="col-md-6">
-														<label class="form-label text-primary mb-0">
-															{{ form.impresion.label }}
-														</label>
-														{{ form.impresion }}
 													</div>
 													
 													<div class="col-md-4">
@@ -106,21 +98,21 @@
 														</label>
 														{{ form.mult_stock }}
 													</div>
-						
+													
 													<div class="col-md-2">
 														<label class="form-label text-primary mb-0">
 															{{ form.mult_comision.label }}
 														</label>
 														{{ form.mult_comision }}
 													</div>
-						
+													
 													<div class="col-md-2">
 														<label class="form-label text-primary mb-0">
 															{{ form.mult_caja.label }}
 														</label>
 														{{ form.mult_caja }}
 													</div>
-						
+													
 													<div class="col-md-2">
 														<label class="form-label text-primary mb-0">
 															{{ form.mult_estadistica.label }}
@@ -128,42 +120,44 @@
 														{{ form.mult_estadistica }}
 													</div>
 												</div>
-												<div class="row">
+												
+												<div class="row my-3">
 													<div class="col-md-2">
 														<label class="form-label text-primary mb-0">
+															{{ form.libro_iva }}
 															{{ form.libro_iva.label }}
 														</label>
-														{{ form.libro_iva }}
 													</div>
-						
+													
 													<div class="col-md-2">
 														<label class="form-label text-primary mb-0">
+															{{ form.estadistica }}
 															{{ form.estadistica.label }}
 														</label>
-														{{ form.estadistica }}
 													</div>
-						
+													
 													<div class="col-md-2">
 														<label class="form-label text-primary mb-0">
+															{{ form.electronica }}
 															{{ form.electronica.label }}
 														</label>
-														{{ form.electronica }}
 													</div>
-						
+													
 													<div class="col-md-2">
 														<label class="form-label text-primary mb-0">
+															{{ form.presupuesto }}
 															{{ form.presupuesto.label }}
 														</label>
-														{{ form.presupuesto }}
 													</div>
-						
+													
 													<div class="col-md-2">
 														<label class="form-label text-primary mb-0">
+															{{ form.pendiente }}
 															{{ form.pendiente.label }}
 														</label>
-														{{ form.pendiente }}
 													</div>
 												</div>
+												
 												<div class="row">
 													<div class="col-md-2">
 														<label class="form-label text-primary mb-0">
@@ -171,32 +165,35 @@
 														</label>
 														{{ form.codigo_afip_a }}
 													</div>
-						
+													
 													<div class="col-md-2">
 														<label class="form-label text-primary mb-0">
 															{{ form.codigo_afip_b.label }}
 														</label>
 														{{ form.codigo_afip_b }}
 													</div>
-						
+												</div>
+												
+												<div class="row mt-3">
 													<div class="col-md-2">
 														<label class="form-label text-primary mb-0">
+															{{ form.info_michelin_auto }}
 															{{ form.info_michelin_auto.label }}
 														</label>
-														{{ form.info_michelin_auto }}
 													</div>
-						
+													
 													<div class="col-md-2">
 														<label class="form-label text-primary mb-0">
+															{{ form.info_michelin_camion }}
 															{{ form.info_michelin_camion.label }}
 														</label>
-														{{ form.info_michelin_camion }}
 													</div>
+													
 												</div>
 											</div>
 										</div>
 									</div>
-		
+									
 								</div>
 								
 								<div class="container mt-3">

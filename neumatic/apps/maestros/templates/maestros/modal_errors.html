@@ -1,8 +1,7 @@
 <!-- Modal para mostrar errores de validación del formulario -->
 
-<div class="modal fade" id="errorModal" tabindex="-1"
-	data-has-errors="{% if form.errors %}true{% else %}false{% endif %}" aria-labelledby="errorModalLabel"
-	aria-hidden="true">
+<!-- <div class="modal fade" id="errorModal" tabindex="-1" data-has-errors="{% if form.errors %}true{% else %}false{% endif %}" aria-labelledby="errorModalLabel" aria-hidden="true"> -->
+<div class="modal fade" id="errorModal" tabindex="-1" data-has-errors="{{ data_has_errors|yesno:'true,false' }}" aria-labelledby="errorModalLabel" aria-hidden="true">
 	<div class="modal-dialog">
 		<div class="modal-content">
 			

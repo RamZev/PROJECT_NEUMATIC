@@ -30,3 +30,8 @@ def get_item(dictionary, key):
 def get_columna(field, field_name):
     extra_attrs = field.widget.attrs.get('extra_attrs', {})
     return extra_attrs.get('columna', 12)  # Si no se encuentra, se devuelve 12 por defecto
+
+@register.filter
+def get_type(value):
+    """ Devuelve el tipo de valor en formato string."""
+    return type(value).__name__

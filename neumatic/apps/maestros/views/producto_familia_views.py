@@ -63,8 +63,8 @@ class DataViewList():
 	paginate_by = 8
 	
 	table_headers = {
-		'nombre_producto_familia': (5, 'Nombre Familia'),
-		'comision_operario': (2, 'Comisión Operario'),
+		'nombre_producto_familia': (8, 'Nombre Familia'),
+		'comision_operario': (2, 'Comisión Operario(%)'),
 		'acciones': (2, 'Acciones'),
 	}
 	

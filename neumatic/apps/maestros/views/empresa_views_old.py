@@ -1,4 +1,4 @@
-# neumatic\apps\maestros\views\localidad_views.py
+# neumatic\apps\maestros\views\empresa_views.py
 from django.urls import reverse_lazy
 from ..views.cruds_views_generics import *
 from ..models.empresa_models import Empresa
@@ -23,14 +23,14 @@ class ConfigViews():
 	model_string = model.__name__.lower()  #-- Usar esta forma cuando el modelo esté compuesto de una sola palabra: Ej. Color.
 	
 	#-- Usar esta forma cuando el modelo esté compuesto por más de una palabra: Ej. TipoCambio colocar "tipo_cambio".
-	# model_string = "producto_estado"
+	#model_string = "tipo_cambio"
 	
-	# Permisos
+	#Permisos
 	permission_add = f"{app_label}.add_{model_string}"
 	permission_change = f"{app_label}.change_{model_string}"
 	permission_delete = f"{app_label}.delete_{model_string}"
 	
-	# Vistas del CRUD del modelo
+	#Vistas del CRUD del modelo
 	list_view_name = f"{model_string}_list"
 	create_view_name = f"{model_string}_create"
 	update_view_name = f"{model_string}_update"
@@ -46,24 +46,24 @@ class ConfigViews():
 	template_list = f'{app_label}/maestro_list.html'
 	
 	# Contexto de los datos de la lista
-	context_object_name	= 'objetos'
+	context_view__name = 'objetos'
 	
 	# Vista del home del proyecto
 	home_view_name = "home"
 	
-	# Nombre de la url 
+	# Nombre de la url
 	success_url = reverse_lazy(list_view_name)
-
+	
 
 class DataViewList():
-	search_fields = ['nombre_fiscal', 'nombre_comercial']
+	search_fields = ['nombre_fiscal','nombre_comercial']
 	
 	ordering = ['nombre_fiscal']
 	
 	paginate_by = 8
 	
 	table_headers = {
-		'nombre_fiscal': (4, 'Nombre Fiscal'),
+		'nombre_fiscal': (4, 'Nom. Fiscal'),
 		'cuit': (2, 'C.U.I.T.'),
 		'id_localidad': (2, 'Localidad'),
 		'telefono': (2, 'Teléfono'),
@@ -75,19 +75,18 @@ class DataViewList():
 		{'field_name': 'nombre_fiscal', 'date_format': None},
 		{'field_name': 'cuit', 'date_format': None},
 		{'field_name': 'id_localidad', 'date_format': None},
-		{'field_name': 'telefono', 'date_format': None},
+		{'field_name': 'telefono', 'date_format': None},  
 	]
 
-
-# ProvinciaListView - Inicio
+# EmpresaListView - Inicio
 class EmpresaListView(MaestroListView):
 	model = ConfigViews.model
 	template_name = ConfigViews.template_list
-	context_object_name = ConfigViews.context_object_name
-	
-	search_fields = DataViewList.search_fields
-	ordering = DataViewList.ordering
-	
+	context_object_name = ConfigViews.context_view__name
+
+	#search_fields = DataViewList.search_fields
+	#ordering = DataViewList.ordering
+
 	extra_context = {
 		"master_title": ConfigViews.model._meta.verbose_name_plural,
 		"home_view_name": ConfigViews.home_view_name,
@@ -100,42 +99,42 @@ class EmpresaListView(MaestroListView):
 	}
 
 
-# ProvinciaCreateView - Inicio
+# EmpresaCreateView - Inicio
 class EmpresaCreateView(MaestroCreateView):
 	model = ConfigViews.model
 	list_view_name = ConfigViews.list_view_name
 	form_class = ConfigViews.form_class
 	template_name = ConfigViews.template_form
 	success_url = ConfigViews.success_url
-	
+
 	#-- Indicar el permiso que requiere para ejecutar la acción.
 	# (revisar de donde lo copiaste que tienes asignado permission_change en vez de permission_add)
 	permission_required = ConfigViews.permission_add
-	
-	extra_context = {
-		"accion": f"Crear {ConfigViews.model._meta.verbose_name}",
-		"list_view_name" : ConfigViews.list_view_name
-	}
 
-
-# ProvinciaUpdateView
-class EmpresaUpdateView(MaestroUpdateView):
-	model = ConfigViews.model
-	list_view_name = ConfigViews.list_view_name
-	form_class = ConfigViews.form_class
-	template_name = ConfigViews.template_form
-	success_url = ConfigViews.success_url
-	
-	#-- Indicar el permiso que requiere para ejecutar la acción.
-	permission_required = ConfigViews.permission_change
-	
 	extra_context = {
 		"accion": f"Editar {ConfigViews.model._meta.verbose_name}",
 		"list_view_name" : ConfigViews.list_view_name
 	}
 
 
-# ProvinciaDeleteView
+# EmpresaUpdateView
+class EmpresaUpdateView(MaestroUpdateView):
+	model = ConfigViews.model
+	list_view_name = ConfigViews.list_view_name
+	form_class = ConfigViews.form_class
+	template_name = ConfigViews.template_form
+	success_url = ConfigViews.success_url
+
+	#-- Indicar el permiso que requiere para ejecutar la acción.
+	permission_required = ConfigViews.permission_change
+
+	extra_context = {
+		 "accion": f"Editar {ConfigViews.model._meta.verbose_name}",
+		"list_view_name" : ConfigViews.list_view_name
+	}
+
+
+# EmpresaDeleteView
 class EmpresaDeleteView (MaestroDeleteView):
 	model = ConfigViews.model
 	list_view_name = ConfigViews.list_view_name

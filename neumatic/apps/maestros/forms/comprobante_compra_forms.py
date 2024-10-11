@@ -21,13 +21,13 @@ class ComprobanteCompraForm(CrudGenericForm):
 				forms.TextInput(attrs={**formclasstext}),
 			
 			'mult_compra': 
-				forms.TextInput(attrs={**formclasstext}),
+				forms.NumberInput(attrs={**formclasstext, 'min': -1, 'max': 1}),
 			'mult_saldo': 
-				forms.TextInput(attrs={**formclasstext}),
+				forms.NumberInput(attrs={**formclasstext, 'min': -1, 'max': 1}),
 			'mult_stock': 
-				forms.TextInput(attrs={**formclasstext}),
+				forms.NumberInput(attrs={**formclasstext, 'min': -1, 'max': 1}),
 			'mult_caja': 
-				forms.TextInput(attrs={**formclasstext}),
+				forms.NumberInput(attrs={**formclasstext, 'min': -1, 'max': 1}),
 			
 			'libro_iva': 
 				forms.CheckboxInput(attrs={**formclasscheck}),

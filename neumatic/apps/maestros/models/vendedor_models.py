@@ -15,8 +15,12 @@ class Vendedor(ModeloBaseGenerico):
 	domicilio_vendedor = models.CharField("Domicilio", max_length=30)
 	email_vendedor = models.EmailField("Correo", max_length=50)
 	telefono_vendedor = models.CharField("Teléfono", max_length=15)
-	pje_auto = models.DecimalField("% auto", max_digits=6, decimal_places=2)
-	pje_camion = models.DecimalField("% camión", max_digits=6, decimal_places=2)
+	pje_auto = models.DecimalField("% auto", max_digits=4, decimal_places=2, 
+									validators=[MinValueValidator(0), 
+					 							MaxValueValidator(99.99)])
+	pje_camion = models.DecimalField("% camión", max_digits=4, decimal_places=2, 
+								  	  validators=[MinValueValidator(0), 
+						 						  MaxValueValidator(99.99)])
 	vence_factura = models.IntegerField("Días vcto. Fact.", 
 										validators=[MinValueValidator(1), 
 													MaxValueValidator(999)])
@@ -27,7 +31,7 @@ class Vendedor(ModeloBaseGenerico):
 									verbose_name="Sucursal")  # Relación con sucursal
 	tipo_venta = models.CharField("Tipo", max_length=1, choices=TIPO_VENTA)
 	col_descuento = models.IntegerField("Columna Dcto.", 
-										validators=[MinValueValidator(1), 
+										validators=[MinValueValidator(0), 
 													MaxValueValidator(999)])
 	email_venta = models.BooleanField("Enviar correos con Comprobantes", default=False)
 	info_saldo = models.BooleanField("Mostrar Saldo en Correos Electrónicos", default=False)
@@ -48,7 +52,7 @@ class Vendedor(ModeloBaseGenerico):
 	Línea 2
 		telefono_vendedor = models.CharField("Teléfono", max_length=15)
 		domicilio_vendedor = models.CharField("Domicilio", max_length=30)
-		email_vendedor = models.CharField("Correo", max_length=50)
+		email_vendedor = models.EmailField("Correo", max_length=50)
 	Línea 3
 		pje_auto = models.DecimalField("% auto", max_digits=6, decimal_places=2)
 		pje_camion = models.DecimalField("% camión", max_digits=6, decimal_places=2)

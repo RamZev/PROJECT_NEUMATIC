@@ -31,22 +31,23 @@
 								{% csrf_token %}
 								<div class="accordion" id="accordionPanelsStayOpenExample">
 									<!-- Estructura generada -->
-
+									
 									<div class="accordion-item">
 										<h2 class="accordion-header">
 											<button 
 												class="accordion-button py-2 " 
 												type="button" 
 												data-bs-toggle="collapse" 
-												data-bs-target="#Información_General" 
+												data-bs-target="#Información_Producto_Marca" 
 												aria-expanded="true" 
-												aria-controls="Información_General">
+												aria-controls="Información_Producto_Marca">
 												<strong>Información Producto Marca</strong>
 											</button>
 										</h2>
 										<div class="accordion-collapse collapse show"
-											id="Información_General">
+											id="Información_Producto_Marca">
 											<div class="accordion-body bg-secondary-subtle">
+												
 												<div class="row">
 													<div class="col-md-2">
 														<label class="form-label text-primary mb-0">
@@ -54,21 +55,14 @@
 														</label>
 														{{ form.estatus_producto_marca }}
 													</div>
-						
+													
 													<div class="col-md-4">
 														<label class="form-label text-primary mb-0">
 															{{ form.nombre_producto_marca.label }}
 														</label>
 														{{ form.nombre_producto_marca }}
 													</div>
-						
-													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
-															{{ form.principal.label }}
-														</label>
-														{{ form.principal }}
-													</div>
-						
+													
 													<div class="col-md-2">
 														<label class="form-label text-primary mb-0">
 															{{ form.id_moneda.label }}
@@ -76,10 +70,33 @@
 														{{ form.id_moneda }}
 													</div>
 												</div>
+												
+												<div class="row mt-3">
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0">
+															{{ form.principal }}
+															{{ form.principal.label }}
+														</label>
+													</div>
+													
+													<div class="col-md-3">
+														<label class="form-label text-primary mb-0">
+															{{ form.info_michelin_auto }}
+															{{ form.info_michelin_auto.label }}
+														</label>
+													</div>
+													
+													<div class="col-md-3">
+														<label class="form-label text-primary mb-0">
+															{{ form.info_michelin_camion }}
+															{{ form.info_michelin_camion.label }}
+														</label>
+													</div>
+												</div>
 											</div>
 										</div>
 									</div>
-		
+									
 								</div>
 								
 								<div class="container mt-3">

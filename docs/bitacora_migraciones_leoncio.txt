@@ -11,3 +11,33 @@
 		- Se cambia el campo iva de CharField a ForeignKey relacionado con TipoIva.
 		- Se cambia el atributo on_delete de campo id_localidad a PROTECT.
 		- Se cambia el atributo on_delete de campo id_provincia a PROTECT.
+
+08/10/2024:
+	* Modelo Cliente:
+		- He cambiado el atributo on_delete de unos foreinKey de CASCADE a PROTECT.
+		- He quitado los imports de los modelos relacionados y encerrado entre comillas los modelos de referencia en los foreinKey (lazy reference).
+		- Se estandariza el campo CUIT a IntegerField (Cliente, Proveedor, Empresa)
+	* Modelo Proveedor:
+		- Se estandariza el campo CUIT a IntegerField (Cliente, Proveedor, Empresa)
+	* Modelo Empresa:
+		- Se estandariza el campo CUIT a IntegerField (Cliente, Proveedor, Empresa)
+
+09/10/2024:
+	* Modelo Empresa:
+		- Se cambia el tipo de dato del campo cbu de BigInteger(máx.19chr) a CharField.
+		- Se cambia a opcional el campo id_iva (null=True, blank=True).
+	* Modelo Actividad:
+		- Se quita el campo fecha_registro_actividad.
+
+10/10/2024:
+	* Modelo Vendedor:
+		- Se ajusta la longitud de los campos pje_auto y pje_camion para que solo acepten 2 dígitos enteros y 2 decimales: 
+		  DecimalField max_digits=4, decimal_places=2.
+	* Módulo constantes_base.py:
+		- Se modifica la constante base TIPO_VENTA para que el display muestre "Mostrador" y "Revendedor".
+	* Modelo ProductoMarca:
+		- Se agregan los campos: info_michelin_auto y info_michelin_camion que faltaban.
+	* Modelo ComprobanteVenta:
+		- El campo compro_asociado (Comprobante Asociado) se establece como opcional (null=True, blank=True).
+		- El campo impresion (Impresora) se estable como opcional (null=True, blank=True).
+	

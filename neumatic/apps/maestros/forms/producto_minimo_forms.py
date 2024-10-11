@@ -16,7 +16,8 @@ class ProductoMinimoForm(CrudGenericForm):
 			'cai': 
 				forms.TextInput(attrs={**formclasstext}),
 			'minimo': 
-				forms.TextInput(attrs={**formclasstext}),
+				forms.NumberInput(attrs={**formclasstext, 
+							 	  'min': 1, 'max': 99}),
 			'id_deposito': 
 				forms.Select(attrs={**formclassselect}),
 		}

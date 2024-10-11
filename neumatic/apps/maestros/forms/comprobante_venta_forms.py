@@ -22,31 +22,31 @@ class ComprobanteVentaForm(CrudGenericForm):
 			'impresion': 
 				forms.TextInput(attrs={**formclasstext}),
 			'mult_venta': 
-				forms.TextInput(attrs={**formclasstext}),
+				forms.NumberInput(attrs={**formclasstext, 'min': -1, 'max': 1}),
 			'mult_saldo': 
-				forms.TextInput(attrs={**formclasstext}),
+				forms.NumberInput(attrs={**formclasstext, 'min': -1, 'max': 1}),
 			'mult_stock': 
-				forms.TextInput(attrs={**formclasstext}),
+				forms.NumberInput(attrs={**formclasstext, 'min': -1, 'max': 1}),
 			'mult_comision': 
-				forms.TextInput(attrs={**formclasstext}),
+				forms.NumberInput(attrs={**formclasstext, 'min': -1, 'max': 1}),
 			'mult_caja': 
-				forms.TextInput(attrs={**formclasstext}),
+				forms.NumberInput(attrs={**formclasstext, 'min': -1, 'max': 1}),
 			'mult_estadistica': 
-				forms.TextInput(attrs={**formclasstext}),
+				forms.NumberInput(attrs={**formclasstext, 'min': -1, 'max': 1}),
 			'libro_iva': 
-				forms.TextInput(attrs={**formclasscheck}),
+				forms.CheckboxInput(attrs={**formclasscheck}),
 			'estadistica': 
-				forms.TextInput(attrs={**formclasscheck}),
+				forms.CheckboxInput(attrs={**formclasscheck}),
 			'electronica': 
-				forms.TextInput(attrs={**formclasscheck}),
+				forms.CheckboxInput(attrs={**formclasscheck}),
 			'presupuesto': 
-				forms.TextInput(attrs={**formclasscheck}),
+				forms.CheckboxInput(attrs={**formclasscheck}),
 			'pendiente': 
-				forms.TextInput(attrs={**formclasscheck}),
+				forms.CheckboxInput(attrs={**formclasscheck}),
 			'info_michelin_auto': 
-				forms.TextInput(attrs={**formclasscheck}),
+				forms.CheckboxInput(attrs={**formclasscheck}),
 			'info_michelin_camion': 
-				forms.TextInput(attrs={**formclasscheck}),
+				forms.CheckboxInput(attrs={**formclasscheck}),
 			'codigo_afip_a': 
 				forms.TextInput(attrs={**formclasstext}),
 			'codigo_afip_b': 
