@@ -37,9 +37,9 @@ class Empresa(ModeloBaseGenerico):
 	
 	ws_archivo_crt = models.CharField("Archivo CRT WSAFIP", max_length=50)
 	ws_archivo_key = models.CharField("Archivo KEY WSAFIP", max_length=50)
-	ws_token = models.TextField("Token")
-	ws_sign = models.TextField("Sign")
-	ws_expiracion = models.DateField("Expiración Ticket WS")
+	ws_token = models.TextField("Token", null=True, blank=True)
+	ws_sign = models.TextField("Sign", null=True, blank=True)
+	ws_expiracion = models.DateField("Expiración Ticket WS", null=True, blank=True)
 	ws_modo = models.DecimalField("Modo", max_digits=1, decimal_places=0, 
 							   choices=WS_MODO)
 	ws_vence = models.DateField("Vcto. Certificado")

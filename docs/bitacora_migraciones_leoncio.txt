@@ -41,3 +41,6 @@
 		- El campo compro_asociado (Comprobante Asociado) se establece como opcional (null=True, blank=True).
 		- El campo impresion (Impresora) se estable como opcional (null=True, blank=True).
 	
+11/10/2024:
+	* Modelo Empresa:
+		- Los campos: ws_token, ws_sign y ws_expiracion se estabecen como opcionales (null=True, blank=True).
