@@ -18,11 +18,19 @@ class TipoRetencionIbForm(CrudGenericForm):
 			'descripcion_tipo_retencion_ib': 
 				forms.TextInput(attrs={**formclasstext}),
 			'alicuota_inscripto': 
-				forms.TextInput(attrs={**formclasstext}),
+				forms.NumberInput(attrs={**formclasstext,
+										'min': 1,
+										'max': 99.99}),
 			'alicuota_no_inscripto': 
-				forms.TextInput(attrs={**formclasstext}),
+				forms.NumberInput(attrs={**formclasstext,
+										'min': 1,
+										'max': 99.99}),
 			'monto': 
-				forms.TextInput(attrs={**formclasstext}),
+				forms.NumberInput(attrs={**formclasstext,
+										'min': 1,
+										'max': 9999999999999.99}),
 			'minimo': 
-				forms.TextInput(attrs={**formclasstext}),
+				forms.NumberInput(attrs={**formclasstext,
+										'min': 1,
+										'max': 9999999999999.99}),
 		}

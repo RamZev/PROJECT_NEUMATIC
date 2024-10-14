@@ -6,6 +6,8 @@ from .base_gen_models import ModeloBaseGenerico
 # from .sucursal_models import Sucursal
 from entorno.constantes_base import ESTATUS_GEN, CONDICION_PAGO
 
+from decimal import Decimal
+
 
 class Actividad(ModeloBaseGenerico):
 	id_actividad = models.AutoField(primary_key=True)
@@ -48,9 +50,10 @@ class ProductoFamilia(ModeloBaseGenerico):
 												   choices=ESTATUS_GEN)
 	nombre_producto_familia = models.CharField("Nombre", max_length=50)
 	comision_operario = models.DecimalField("Comisión Operario(%)",
-											max_digits=6, decimal_places=2,
+										 	default=0.00,
+											max_digits=4, decimal_places=2,
 											validators=[MinValueValidator(0),
-														MaxValueValidator(9999.99)])
+														MaxValueValidator(99.99)])
 	info_michelin_auto = models.BooleanField("Info. Michelin auto", 
 										  	 default=False)
 	info_michelin_camion = models.BooleanField("Info. Michelin camión", 
@@ -58,6 +61,21 @@ class ProductoFamilia(ModeloBaseGenerico):
 	
 	def __str__(self):
 		return self.nombre_producto_familia
+	
+	def clean(self):
+		super().clean()
+		print(f'Tipo de dato: {type(self.comision_operario)}')
+		print(f'Comisión ingresada: {self.comision_operario}')
+
+		errors = {}
+		
+		comision = Decimal(self.comision_operario)
+		
+		if comision > 99.99:
+			errors.update({"comision_operario": "El valor debe ser menor o igual a 99.99."})
+		
+		if errors:
+			raise ValidationError(errors)
 	
 	class Meta:
 		db_table = 'producto_familia'
@@ -287,8 +305,10 @@ class Moneda(ModeloBaseGenerico):
 	estatus_moneda = models.BooleanField("Estatus", default=True,
 										 choices=ESTATUS_GEN)
 	nombre_moneda = models.CharField("Nombre", max_length=20)
-	cotizacion_moneda = models.DecimalField("Cotización", max_digits=18,
-											decimal_places=4)
+	cotizacion_moneda = models.DecimalField("Cotización", max_digits=15,
+											decimal_places=4,
+											validators=[MinValueValidator(1),
+					   									MaxValueValidator(99999999999.9999)])
 	simbolo_moneda = models.CharField("Símbolo", max_length=3)
 	ws_afip = models.CharField("WS AFIP", max_length=3)
 	predeterminada = models.BooleanField("Predeterminada", null=True,
@@ -385,9 +405,15 @@ class TipoPercepcionIb(ModeloBaseGenerico):
 													 choices=ESTATUS_GEN)
 	descripcion_tipo_percepcion_ib = models.CharField("Descripción",
 													  max_length=50)
-	alicuota = models.DecimalField("Alícuota", max_digits=6, decimal_places=2)
-	monto = models.DecimalField("Monto", max_digits=18, decimal_places=2)
-	minimo = models.DecimalField("Mínimo", max_digits=18, decimal_places=2)
+	alicuota = models.DecimalField("Alícuota(%)", max_digits=4, decimal_places=2, 
+								validators=[MinValueValidator(1), 
+											MaxValueValidator(99.99)])
+	monto = models.DecimalField("Monto", max_digits=15, decimal_places=2, 
+							 validators=[MinValueValidator(1), 
+										 MaxValueValidator(9999999999999.99)])
+	minimo = models.DecimalField("Mínimo", max_digits=15, decimal_places=2, 
+							  validators=[MinValueValidator(1), 
+					 					  MaxValueValidator(9999999999999.99)])
 	neto_total = models.BooleanField("Neto total", null=True, blank=True)
 
 	def __str__(self):
@@ -406,12 +432,20 @@ class TipoRetencionIb(ModeloBaseGenerico):
 													choices=ESTATUS_GEN)
 	descripcion_tipo_retencion_ib = models.CharField("Descripción",
 													 max_length=50)
-	alicuota_inscripto = models.DecimalField("Alícuota Inscripto",
-											 max_digits=6, decimal_places=2)
-	alicuota_no_inscripto = models.DecimalField("Alícuota No Inscripto",
-												max_digits=6, decimal_places=2)
-	monto = models.DecimalField("Monto", max_digits=18, decimal_places=2)
-	minimo = models.DecimalField("Mínimo", max_digits=18, decimal_places=2)
+	alicuota_inscripto = models.DecimalField("Alícuota Inscripto(%)",
+											 max_digits=4, decimal_places=2, 
+											 validators=[MinValueValidator(1), 
+														 MaxValueValidator(99.99)])
+	alicuota_no_inscripto = models.DecimalField("Alícuota No Inscripto(%)",
+												max_digits=4, decimal_places=2, 
+												validators=[MinValueValidator(1), 
+															MaxValueValidator(99.99)])
+	monto = models.DecimalField("Monto", max_digits=15, decimal_places=2, 
+							 			 validators=[MinValueValidator(1), 
+													 MaxValueValidator(9999999999999.99)])
+	minimo = models.DecimalField("Mínimo", max_digits=15, decimal_places=2, 
+							  			   validators=[MinValueValidator(1), 
+						   							   MaxValueValidator(9999999999999.99)])
 
 	def __str__(self):
 		return self.descripcion_tipo_retencion_ib

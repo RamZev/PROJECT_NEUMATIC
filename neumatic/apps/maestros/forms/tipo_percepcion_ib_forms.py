@@ -18,11 +18,17 @@ class TipoPercepcionIbForm(CrudGenericForm):
 			'descripcion_tipo_percepcion_ib': 
 				forms.TextInput(attrs={**formclasstext}),
 			'alicuota': 
-				forms.TextInput(attrs={**formclasstext}),
+				forms.NumberInput(attrs={**formclasstext,
+										'min': 1,
+										'max': 99.99}),
 			'monto': 
-				forms.TextInput(attrs={**formclasstext}),
+				forms.NumberInput(attrs={**formclasstext,
+										'min': 1,
+										'max': 9999999999999.99}),
 			'minimo': 
-				forms.TextInput(attrs={**formclasstext}),
+				forms.NumberInput(attrs={**formclasstext,
+										'min': 1,
+										'max': 9999999999999.99}),
 			'neto_total': 
 				forms.CheckboxInput(attrs={**formclasscheck}),
 		}

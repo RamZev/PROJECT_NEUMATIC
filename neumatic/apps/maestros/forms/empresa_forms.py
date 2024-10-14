@@ -22,7 +22,7 @@ class EmpresaForm(CrudGenericForm):
 			'domicilio_empresa':
 				forms.TextInput(attrs={**formclasstext}),
 			'codigo_postal':
-				forms.NumberInput(attrs={**formclasstext}),
+				forms.TextInput(attrs={**formclasstext}),
 			'id_localidad':
 				forms.Select(attrs={**formclassselect}),
 			'id_provincia':
@@ -30,20 +30,14 @@ class EmpresaForm(CrudGenericForm):
 			'id_iva':
 				forms.Select(attrs={**formclassselect}),
 			'cuit':
-				forms.NumberInput(attrs={**formclasstext, 
-							 'min': 20999999999, 
-							 'max': 34999999999, 
-							 'maxlength': 11}),
+				forms.TextInput(attrs={**formclasstext}),
 			'ingresos_bruto':
 				forms.TextInput(attrs={**formclasstext}),
 			'inicio_actividad': 
 				forms.TextInput(attrs={**formclassdate,
 										'type': 'date' }),
 			'cbu':
-				forms.NumberInput(attrs={**formclasstext, 
-							 'min': 1, 
-							 'max': 9999999999999999999999, 
-							 'maxlength': 3}),
+				forms.TextInput(attrs={**formclasstext}),
 			'cbu_alias':
 				forms.TextInput(attrs={**formclasstext}),
 			'cbu_vence': 
@@ -64,12 +58,15 @@ class EmpresaForm(CrudGenericForm):
 			'ws_archivo_key':
 				forms.TextInput(attrs={**formclasstext}),
 			'ws_token':
-				forms.Textarea(attrs={**formclasstext, 'rows': 3, 'readonly': True}),
+				forms.Textarea(attrs={**formclasstext, 
+						  'rows': 3, 'readonly': True}),
 			'ws_sign':
-				forms.Textarea(attrs={**formclasstext, 'rows': 3, 'readonly': True}),
+				forms.Textarea(attrs={**formclasstext, 
+						  'rows': 3, 'readonly': True}),
 			'ws_expiracion':
 				forms.TextInput(attrs={**formclassdate,
-										'type': 'date', 'readonly': True}),
+										'type': 'date', 
+										'readonly': True}),
 			'ws_modo':
 				forms.Select(attrs={**formclassselect}),
 			'ws_vence':

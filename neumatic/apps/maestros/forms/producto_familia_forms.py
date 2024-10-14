@@ -19,7 +19,7 @@ class ProductoFamiliaForm(CrudGenericForm):
 				forms.TextInput(attrs={**formclasstext}),
 			'comision_operario':
 				forms.NumberInput(attrs={**formclasstext,
-										 'min': 0, 'max': 9999.99}),
+										 'min': 0, 'max': 99.99}),
 			'info_michelin_auto':
 				forms.CheckboxInput(attrs={**formclasscheck}),
 			'info_michelin_camion':

@@ -44,3 +44,22 @@
 11/10/2024:
 	* Modelo Empresa:
 		- Los campos: ws_token, ws_sign y ws_expiracion se estabecen como opcionales (null=True, blank=True).
+		- Campo ws_modo: se cambia el tipo de dato de DecimalField a IntegerField.
+		- Campo web_empresa: Se establece como opcional (null=True, blank=True).
+	
+	* Cambio longitud campos porcentajes: DecimalField(max_digits=4, decimal_places=2) en los modelos:
+		- ProductoFamilia
+		- Moneda
+		- TipoPercepcionIb
+		- TipoRetencionIb
+	
+	* Cambio longitud campos DecimalField cuya longitud es de 18 dígitos a 15 en los modelos:
+		- Moneda
+		- TipoPercepcionIb
+		- TipoRetencionIb
+		- 
+	
+	* Modelo Cliente:
+		- He colocado como opcionales (null=True, blank=True) los siguientes campos:
+		  - fax_cliente, email2_cliente, transporte_cliente, fecha_nacimiento, sub_cuenta,
+		    black_list_motivo, black_list_usuario, fecha_baja

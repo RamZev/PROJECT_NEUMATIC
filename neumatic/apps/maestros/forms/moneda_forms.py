@@ -18,7 +18,9 @@ class MonedaForm(CrudGenericForm):
 			'nombre_moneda': 
 				forms.TextInput(attrs={**formclasstext}),
 			'cotizacion_moneda': 
-				forms.TextInput(attrs={**formclasstext}),
+				forms.NumberInput(attrs={**formclasstext,
+							'min': 1,
+							'max': 99999999999.9999}),
 			'simbolo_moneda': 
 				forms.TextInput(attrs={**formclasstext}),
 			'ws_afip': 

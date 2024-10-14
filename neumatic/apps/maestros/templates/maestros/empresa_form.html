@@ -26,8 +26,6 @@
 							</div>
 						</div>
 						
-						data_has_errors: {{ data_has_errors }}
-						
 						<div class="card-body bg-body-secondary">
 							<form method="post" enctype="multipart/form-data" novalidate>
 								{% csrf_token %}
@@ -181,6 +179,7 @@
 														{{ form.cbu_vence }}
 													</div>
 												</div>
+												
 												<div class="row">
 													<div class="col-md-4">
 														<label class="form-label text-primary mb-0">
@@ -203,12 +202,21 @@
 														{{ form.ws_vence }}
 													</div>
 												</div>
+												
 												<div class="row">
 													<div class="col-md-2">
 														<label class="form-label text-primary mb-0">
 															{{ form.ws_expiracion.label }}
 														</label>
 														{{ form.ws_expiracion }}
+														
+														<div class="col-md-2 d-flex align-items-end">
+															<!-- Botón para limpiar el campo ws_expiracion -->
+															<button type="button" class="btn btn-outline-secondary" onclick="clearWsExpiracion()">
+																	Limpiar
+															</button>
+														</div>
+														
 													</div>
 													
 													<div class="col-md-4">
@@ -224,7 +232,9 @@
 														</label>
 														{{ form.ws_sign }}
 													</div>
+													
 												</div>
+												
 												<div class="row">
 													<div class="col-md-2">
 														<label class="form-label text-primary mb-0">
@@ -255,3 +265,17 @@
 		</div>
 	{% endblock principalcomponent %}
 {% endblock maincomponent %}
+
+{% block script %}
+	{{ block.super }}
+	<script>
+		function clearWsExpiracion() {
+			// Obtener el campo ws_expiracion por su ID o nombre
+			var wsExpiracionField = document.getElementById("id_ws_expiracion"); 
+			if (wsExpiracionField) {
+				// Limpiar el valor del campo
+				wsExpiracionField.value = "";
+			}
+		}
+	</script>
+{% endblock script %}
