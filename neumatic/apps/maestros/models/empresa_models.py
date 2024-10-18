@@ -51,18 +51,14 @@ class Empresa(ModeloBaseGenerico):
 		
 		errors = {}
 		
-		cuit_str = str(self.cuit)
-		cbu_str = str(self.cbu)
-		telefono_str = str(self.telefono)
-		
-		if not re.match(r'^(20|23|24|25|26|27|30|33|34|35|36)\d{9}$', cuit_str):
+		if not re.match(r'^(20|23|24|25|26|27|30|33|34|35|36)\d{9}$', str(self.cuit)):
 			errors.update({'cuit': 'El CUIT debe comenzar con 20, 23, 24, 25, 26, 27, 30, 33, 34, 35 o 36 y tener 11 dígitos en total.'})
 		
-		if not re.match(r'^\d{1,22}$', cbu_str):
-			errors.update({'cbu': 'El CBU debe contener sólo dígitos numéricos y hasta 22 dígitos en total.'})
+		if not re.match(r'^\d{1,22}$', str(self.cbu)):
+			errors.update({'cbu': 'Debe indicar sólo dígitos numéricos positivos, mínimo 1 y máximo 22.'})
 		
-		if not re.match(r'^\d{1,22}$', telefono_str):
-			errors.update({'telefono': 'El Teléfono debe contener sólo dígitos numéricos y hasta 20 dígitos en total.'})
+		if not re.match(r'^\+?\d[\d ]{0,19}$', str(self.telefono)):
+			errors.update({'telefono': 'Debe indicar sólo dígitos numéricos positivos, mínimo 1 y máximo 20, el signo + y espacios.'})
 		
 		if errors:
 			raise ValidationError(errors)

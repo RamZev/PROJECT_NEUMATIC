@@ -26,10 +26,7 @@ class ProveedorForm(CrudGenericForm):
 			'id_tipo_iva': 
 				forms.Select(attrs={**formclassselect}),
 			'cuit': 
-				forms.NumberInput(attrs={**formclasstext, 
-							 'min': 20999999999, 
-							 'max': 34999999999, 
-							 'maxlength': 11}),
+				forms.TextInput(attrs={**formclasstext}),
 			'id_tipo_retencion_ib': 
 				forms.Select(attrs={**formclassselect}),
 			'ib_numero': 
@@ -37,7 +34,8 @@ class ProveedorForm(CrudGenericForm):
 			'ib_exento': 
 				forms.CheckboxInput(attrs={**formclasscheck}),
 			'ib_alicuota': 
-				forms.TextInput(attrs={**formclasstext}),
+				forms.NumberInput(attrs={**formclasstext,
+                           'min': 0.01, 'max': 99.99}),
 			'multilateral': 
 				forms.CheckboxInput(attrs={**formclasscheck}),
 			'telefono_proveedor': 

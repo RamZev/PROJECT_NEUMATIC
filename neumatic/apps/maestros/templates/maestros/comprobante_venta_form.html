@@ -31,7 +31,7 @@
 								{% csrf_token %}
 								<div class="accordion" id="accordionPanelsStayOpenExample">
 									<!-- Estructura generada -->
-									
+
 									<div class="accordion-item">
 										<h2 class="accordion-header">
 											<button 
@@ -47,7 +47,7 @@
 										<div class="accordion-collapse collapse show"
 											id="Información_Comprobante_Venta">
 											<div class="accordion-body bg-secondary-subtle">
-												
+		
 												<div class="row">
 													<div class="col-md-2">
 														<label class="form-label text-primary mb-0">
@@ -55,21 +55,21 @@
 														</label>
 														{{ form.estatus_comprobante_venta }}
 													</div>
-													
+								
 													<div class="col-md-2">
 														<label class="form-label text-primary mb-0">
 															{{ form.codigo_comprobante_venta.label }}
 														</label>
 														{{ form.codigo_comprobante_venta }}
 													</div>
-													
+								
 													<div class="col-md-4">
 														<label class="form-label text-primary mb-0">
 															{{ form.nombre_comprobante_venta.label }}
 														</label>
 														{{ form.nombre_comprobante_venta }}
 													</div>
-													
+								
 													<div class="col-md-4">
 														<label class="form-label text-primary mb-0">
 															{{ form.compro_asociado.label }}
@@ -84,35 +84,35 @@
 														</label>
 														{{ form.mult_venta }}
 													</div>
-													
+								
 													<div class="col-md-2">
 														<label class="form-label text-primary mb-0">
 															{{ form.mult_saldo.label }}
 														</label>
 														{{ form.mult_saldo }}
 													</div>
-													
+								
 													<div class="col-md-2">
 														<label class="form-label text-primary mb-0">
 															{{ form.mult_stock.label }}
 														</label>
 														{{ form.mult_stock }}
 													</div>
-													
+								
 													<div class="col-md-2">
 														<label class="form-label text-primary mb-0">
 															{{ form.mult_comision.label }}
 														</label>
 														{{ form.mult_comision }}
 													</div>
-													
+								
 													<div class="col-md-2">
 														<label class="form-label text-primary mb-0">
 															{{ form.mult_caja.label }}
 														</label>
 														{{ form.mult_caja }}
 													</div>
-													
+								
 													<div class="col-md-2">
 														<label class="form-label text-primary mb-0">
 															{{ form.mult_estadistica.label }}
@@ -120,44 +120,52 @@
 														{{ form.mult_estadistica }}
 													</div>
 												</div>
-												
-												<div class="row my-3">
-													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
-															{{ form.libro_iva }}
-															{{ form.libro_iva.label }}
-														</label>
+												<div class="row">
+													<div class="col-md-2 d-flex align-items-center">
+														<div class="form-check mt-lg-3">
+															<label class="form-check-label form-label text-primary">
+																{{ form.libro_iva }}
+																{{ form.libro_iva.label }}
+															</label>
+														</div>
 													</div>
-													
-													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
-															{{ form.estadistica }}
-															{{ form.estadistica.label }}
-														</label>
+								
+													<div class="col-md-2 d-flex align-items-center">
+														<div class="form-check mt-lg-3">
+															<label class="form-check-label form-label text-primary">
+																{{ form.estadistica }}
+																{{ form.estadistica.label }}
+															</label>
+														</div>
 													</div>
-													
-													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
-															{{ form.electronica }}
-															{{ form.electronica.label }}
-														</label>
+								
+													<div class="col-md-2 d-flex align-items-center">
+														<div class="form-check mt-lg-3">
+															<label class="form-check-label form-label text-primary">
+																{{ form.electronica }}
+																{{ form.electronica.label }}
+															</label>
+														</div>
 													</div>
-													
-													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
-															{{ form.presupuesto }}
-															{{ form.presupuesto.label }}
-														</label>
+								
+													<div class="col-md-2 d-flex align-items-center">
+														<div class="form-check mt-lg-3">
+															<label class="form-check-label form-label text-primary">
+																{{ form.presupuesto }}
+																{{ form.presupuesto.label }}
+															</label>
+														</div>
 													</div>
-													
-													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
-															{{ form.pendiente }}
-															{{ form.pendiente.label }}
-														</label>
+								
+													<div class="col-md-2 d-flex align-items-center">
+														<div class="form-check mt-lg-3">
+															<label class="form-check-label form-label text-primary">
+																{{ form.pendiente }}
+																{{ form.pendiente.label }}
+															</label>
+														</div>
 													</div>
 												</div>
-												
 												<div class="row">
 													<div class="col-md-2">
 														<label class="form-label text-primary mb-0">
@@ -165,7 +173,7 @@
 														</label>
 														{{ form.codigo_afip_a }}
 													</div>
-													
+								
 													<div class="col-md-2">
 														<label class="form-label text-primary mb-0">
 															{{ form.codigo_afip_b.label }}
@@ -173,27 +181,29 @@
 														{{ form.codigo_afip_b }}
 													</div>
 												</div>
-												
-												<div class="row mt-3">
-													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
-															{{ form.info_michelin_auto }}
-															{{ form.info_michelin_auto.label }}
-														</label>
+												<div class="row">
+													<div class="col-md-2 d-flex align-items-center">
+														<div class="form-check mt-lg-3">
+															<label class="form-check-label form-label text-primary">
+																{{ form.info_michelin_auto }}
+																{{ form.info_michelin_auto.label }}
+															</label>
+														</div>
 													</div>
-													
-													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
-															{{ form.info_michelin_camion }}
-															{{ form.info_michelin_camion.label }}
-														</label>
+								
+													<div class="col-md-2 d-flex align-items-center">
+														<div class="form-check mt-lg-3">
+															<label class="form-check-label form-label text-primary">
+																{{ form.info_michelin_camion }}
+																{{ form.info_michelin_camion.label }}
+															</label>
+														</div>
 													</div>
-													
 												</div>
 											</div>
 										</div>
 									</div>
-									
+		
 								</div>
 								
 								<div class="container mt-3">
@@ -221,56 +231,3 @@
 	{% include 'maestros/modal_fields_requirements.html' %}
 {% endblock modals %}
 <!-- -------------------------------------------------------------------- -->
-{% block footer %}
-{% endblock footer %}
-<!-- -------------------------------------------------------------------- -->
-{% block script %}
-	<script>
-		document.addEventListener('DOMContentLoaded', function () {
-			const errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
-			const modalElement = document.getElementById('errorModal');
-			const hasErrors = modalElement.dataset.hasErrors === "true";
-			
-			// Mostrar el modal si hay errores
-			if (hasErrors) {
-				errorModal.show();
-			}
-			
-			// Validación en tiempo real: remover clases al escribir.
-			// Seleccionar inputs y selects.
-			var inputs = document.querySelectorAll('input, select');
-			console.log(inputs);
-			inputs.forEach(function (input) {
-				// Para los campos de tipo input (text, number, etc.)
-				input.addEventListener('input', function () {
-					if (input.classList.contains('is-invalid')) {
-						// Eliminar la clase de borde rojo (border-danger).
-						input.classList.remove('is-invalid', 'border-danger');
-						// Agregar la clase de borde azul (border-primary).
-						input.classList.add('border-primary');
-					}
-				});
-				// Para los combobox (select)
-				input.addEventListener('change', function () {
-					if (input.classList.contains('is-invalid')) {
-						// Eliminar la clase de borde rojo (border-danger).
-						input.classList.remove('is-invalid', 'border-danger');
-						// Agregar la clase de borde azul (border-primary).
-						input.classList.add('border-primary');
-					}
-				});
-				
-			});
-			
-			// Al cerrar el modal, enfocar el primer campo con error
-			modalElement.addEventListener('hidden.bs.modal', function () {
-				// Buscar el primer campo con la clase 'is-invalid' después de que el modal esté completamente oculto
-				const firstInvalidField = document.querySelector('.is-invalid');
-				if (firstInvalidField) {
-					firstInvalidField.focus(); // Establecer el foco en el primer campo con error
-				}
-			});
-			
-		});
-	</script>
-{% endblock script %}

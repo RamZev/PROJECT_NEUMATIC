@@ -38,14 +38,14 @@
 												class="accordion-button py-2 " 
 												type="button" 
 												data-bs-toggle="collapse" 
-												data-bs-target="#Información_General" 
+												data-bs-target="#Información_Tipo_Percepción_IB" 
 												aria-expanded="true" 
-												aria-controls="Información_General">
+												aria-controls="Información_Tipo_Percepción_IB">
 												<strong>Información Tipo Percepción IB</strong>
 											</button>
 										</h2>
 										<div class="accordion-collapse collapse show"
-											id="Información_General">
+											id="Información_Tipo_Percepción_IB">
 											<div class="accordion-body bg-secondary-subtle">
 		
 												<div class="row">
@@ -55,7 +55,7 @@
 														</label>
 														{{ form.estatus_tipo_percepcion_ib }}
 													</div>
-						
+								
 													<div class="col-md-4">
 														<label class="form-label text-primary mb-0">
 															{{ form.descripcion_tipo_percepcion_ib.label }}
@@ -70,26 +70,28 @@
 														</label>
 														{{ form.alicuota }}
 													</div>
-						
+								
 													<div class="col-md-2">
 														<label class="form-label text-primary mb-0">
 															{{ form.monto.label }}
 														</label>
 														{{ form.monto }}
 													</div>
-						
+								
 													<div class="col-md-2">
 														<label class="form-label text-primary mb-0">
 															{{ form.minimo.label }}
 														</label>
 														{{ form.minimo }}
 													</div>
-						
-													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
-															{{ form.neto_total.label }}
-														</label>
-														{{ form.neto_total }}
+								
+													<div class="col-md-2 d-flex align-items-center">
+														<div class="form-check mt-lg-4">
+															<label class="form-check-label form-label text-primary">
+																{{ form.neto_total }}
+																{{ form.neto_total.label }}
+															</label>
+														</div>
 													</div>
 												</div>
 											</div>
@@ -114,3 +116,12 @@
 		</div>
 	{% endblock principalcomponent %}
 {% endblock maincomponent %}
+<!-- -------------------------------------------------------------------- -->
+{% block modals %}
+	<!-- Modal para mostrar errores -->
+	{% include 'maestros/modal_errors.html' %}
+	
+	<!-- Modal para mostrar los requerimientos de los campos -->
+	{% include 'maestros/modal_fields_requirements.html' %}
+{% endblock modals %}
+<!-- -------------------------------------------------------------------- -->

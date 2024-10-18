@@ -38,14 +38,14 @@
 												class="accordion-button py-2 " 
 												type="button" 
 												data-bs-toggle="collapse" 
-												data-bs-target="#Información_General" 
+												data-bs-target="#Información_Comprobante_Compra" 
 												aria-expanded="true" 
-												aria-controls="Información_General">
+												aria-controls="Información_Comprobante_Compra">
 												<strong>Información Comprobante Compra</strong>
 											</button>
 										</h2>
 										<div class="accordion-collapse collapse show"
-											id="Información_General">
+											id="Información_Comprobante_Compra">
 											<div class="accordion-body bg-secondary-subtle">
 		
 												<div class="row">
@@ -55,14 +55,14 @@
 														</label>
 														{{ form.estatus_comprobante_compra }}
 													</div>
-						
+								
 													<div class="col-md-2">
 														<label class="form-label text-primary mb-0">
 															{{ form.codigo_comprobante_compra.label }}
 														</label>
 														{{ form.codigo_comprobante_compra }}
 													</div>
-						
+								
 													<div class="col-md-4">
 														<label class="form-label text-primary mb-0">
 															{{ form.nombre_comprobante_compra.label }}
@@ -77,21 +77,21 @@
 														</label>
 														{{ form.mult_compra }}
 													</div>
-						
+								
 													<div class="col-md-2">
 														<label class="form-label text-primary mb-0">
 															{{ form.mult_saldo.label }}
 														</label>
 														{{ form.mult_saldo }}
 													</div>
-						
+								
 													<div class="col-md-2">
 														<label class="form-label text-primary mb-0">
 															{{ form.mult_stock.label }}
 														</label>
 														{{ form.mult_stock }}
 													</div>
-						
+								
 													<div class="col-md-2">
 														<label class="form-label text-primary mb-0">
 															{{ form.mult_caja.label }}
@@ -106,21 +106,21 @@
 														</label>
 														{{ form.codigo_afip_a }}
 													</div>
-						
+								
 													<div class="col-md-2">
 														<label class="form-label text-primary mb-0">
 															{{ form.codigo_afip_b.label }}
 														</label>
 														{{ form.codigo_afip_b }}
 													</div>
-						
+								
 													<div class="col-md-2">
 														<label class="form-label text-primary mb-0">
 															{{ form.codigo_afip_c.label }}
 														</label>
 														{{ form.codigo_afip_c }}
 													</div>
-						
+								
 													<div class="col-md-2">
 														<label class="form-label text-primary mb-0">
 															{{ form.codigo_afip_m.label }}
@@ -129,11 +129,13 @@
 													</div>
 												</div>
 												<div class="row">
-													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
-															{{ form.libro_iva.label }}
-														</label>
-														{{ form.libro_iva }}
+													<div class="col-md-2 d-flex align-items-center">
+														<div class="form-check mt-lg-3">
+															<label class="form-check-label form-label text-primary">
+																{{ form.libro_iva }}
+																{{ form.libro_iva.label }}
+															</label>
+														</div>
 													</div>
 												</div>
 											</div>
@@ -158,3 +160,12 @@
 		</div>
 	{% endblock principalcomponent %}
 {% endblock maincomponent %}
+<!-- -------------------------------------------------------------------- -->
+{% block modals %}
+	<!-- Modal para mostrar errores -->
+	{% include 'maestros/modal_errors.html' %}
+	
+	<!-- Modal para mostrar los requerimientos de los campos -->
+	{% include 'maestros/modal_fields_requirements.html' %}
+{% endblock modals %}
+<!-- -------------------------------------------------------------------- -->

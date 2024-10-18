@@ -20,21 +20,21 @@ class ParametroForm(CrudGenericForm):
             'interes':
                 forms.NumberInput(
                     attrs={**formclasstext,
-                           'min': 0, 'max': 99, 'step': '0.01'}),
+                           'min': 0, 'max': 99.99}),
             'interes_dolar':
                 forms.NumberInput(
                     attrs={**formclasstext, 
-                           'min': 0, 'max': 99, 'step': '0.01'}),
+                           'min': 0, 'max': 99.99}),
             'cotizacion_dolar':
                 forms.NumberInput(
                     attrs={**formclasstext, 
-                           'min': 0, 'max': 9999999999999999, 'step': '0.01'}),
+                           'min': 0, 'max': 9999999999999.99}),
             'dias_vencimiento':
                 forms.NumberInput(
                     attrs={**formclasstext, 
-                           'min': 0, 'max': 99}),
+                           'min': 0, 'max': 999}),
             'descuento_maximo':
                 forms.NumberInput(
                     attrs={**formclasstext, 
-                           'min': 0, 'max': 99, 'step': '0.01'}),
+                           'min': 0, 'max': 99.99}),
         }

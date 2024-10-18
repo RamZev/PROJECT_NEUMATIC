@@ -48,7 +48,8 @@ class Cliente(ModeloBaseGenerico):
 									   null=True, blank=True)
 	id_vendedor = models.ForeignKey(Vendedor, 
 									on_delete=models.PROTECT,
-									verbose_name="Vendedor*")
+									null=True, blank=True,
+									verbose_name="Vendedor")
 	fecha_nacimiento = models.DateField("Fecha Nacimiento", 
 									 null=True, blank=True)
 	fecha_alta = models.DateField("Fecha Alta")
@@ -64,19 +65,17 @@ class Cliente(ModeloBaseGenerico):
 	id_percepcion_ib = models.ForeignKey(TipoPercepcionIb, 
 										 on_delete=models.PROTECT, 
 										 verbose_name="Percepción IB*")
-	numero_ib = models.CharField("Número IB*", max_length=15)
+	numero_ib = models.CharField("Número IB", max_length=15, null=True, blank=True)
 	vip = models.BooleanField("Cliente VIP*", 
 							  default=False,
 							  choices=CLIENTE_VIP)
 	mayorista = models.BooleanField("Mayorista*", 
 									default=False,
 									choices=CLIENTE_MAYORISTA)
-	# sub_cuenta = models.IntegerField("Sub Cuenta", null=True, blank=True)
 	sub_cuenta = models.CharField("Sub Cuenta",max_length=6,  
 							   null=True, blank=True)
 	observaciones_cliente = models.TextField("Observaciones", 
 											 blank=True, null=True)
-	# id_usuario = models.IntegerField()  # El usuario que creó el cliente
 	black_list = models.BooleanField("Black List", default=False, 
 										  choices=BLACK_LIST)
 	black_list_motivo = models.CharField("Motivo Black List", max_length=50, 
@@ -101,14 +100,14 @@ class Cliente(ModeloBaseGenerico):
 		if not re.match(r'^(20|23|24|25|26|27|30|33|34|35|36)\d{9}$', cuit_str):
 			errors.update({'cuit': 'El CUIT debe comenzar con 20, 23, 24, 25, 26, 27, 30, 33, 34, 35 o 36 y tener 11 dígitos en total.'})
 		
-		if not re.match(r'^\d{1,15}$', telefono_str):
-			errors.update({'telefono_cliente': 'El Teléfono debe contener sólo dígitos numéricos y hasta 15 dígitos en total.'})
+		if not re.match(r'^\+?\d[\d ]{0,14}$', telefono_str):
+			errors.update({'telefono_cliente': 'Debe indicar sólo dígitos numéricos positivos, mínimo 1 y máximo 15, el signo + y espacios.'})
 		
-		if not re.match(r'^\d{1,15}$', movil_cliente_str):
-			errors.update({'movil_cliente': 'El Móvil debe contener sólo dígitos numéricos y hasta 15 dígitos en total.'})
+		if not re.match(r'^\+?\d[\d ]{0,14}$', movil_cliente_str):
+			errors.update({'movil_cliente': 'Debe indicar sólo dígitos numéricos positivos, mínimo 1 y máximo 15, el signo + y espacios.'})
 		
 		if sub_cuenta_str and not re.match(r'^\d{0,6}$', sub_cuenta_str):
-			errors.update({'sub_cuenta': 'La Sub Cuenta debe contener sólo dígitos numéricos y hasta 6 dígitos en total.'})
+			errors.update({'sub_cuenta': 'Debe indicar sólo dígitos numéricos positivos, mínimo 1 y máximo 6.'})
 		
 		
 		if errors:

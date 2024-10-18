@@ -91,17 +91,30 @@ for seccion, filas in estructura_campos.items():
 				for campo in campos:
 						field_name = campo['field_name']
 						columna = campo['columna']
-			
-						html_code += f"""
+						
+						match campo.get('design'):
+							case "checkbox":
+								html_code += f"""
+													<div class="col-md-{columna} d-flex align-items-center">
+														<div class="form-check mt-lg-3">
+															<label class="form-check-label form-label text-primary">
+																{{{{ form.{field_name} }}}}
+																{{{{ form.{field_name}.label }}}}
+															</label>
+														</div>
+													</div>
+								"""
+							case _:
+								html_code += f"""
 													<div class="col-md-{columna}">
 														<label class="form-label text-primary mb-0">
 															{{{{ form.{field_name}.label }}}}
 														</label>
 														{{{{ form.{field_name} }}}}
 													</div>
-						"""
+								"""
 				
-				html_code += '						</div>'
+				html_code += '				</div>'
 		
 		html_code += """
 											</div>
@@ -140,59 +153,6 @@ html_code += """
 	{% include 'maestros/modal_fields_requirements.html' %}
 {% endblock modals %}
 <!-- -------------------------------------------------------------------- -->
-{% block footer %}
-{% endblock footer %}
-<!-- -------------------------------------------------------------------- -->
-{% block script %}
-	<script>
-		document.addEventListener('DOMContentLoaded', function () {
-			const errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
-			const modalElement = document.getElementById('errorModal');
-			const hasErrors = modalElement.dataset.hasErrors === "true";
-			
-			// Mostrar el modal si hay errores
-			if (hasErrors) {
-				errorModal.show();
-			}
-			
-			// Validación en tiempo real: remover clases al escribir.
-			// Seleccionar inputs y selects.
-			var inputs = document.querySelectorAll('input, select');
-			console.log(inputs);
-			inputs.forEach(function (input) {
-				// Para los campos de tipo input (text, number, etc.)
-				input.addEventListener('input', function () {
-					if (input.classList.contains('is-invalid')) {
-						// Eliminar la clase de borde rojo (border-danger).
-						input.classList.remove('is-invalid', 'border-danger');
-						// Agregar la clase de borde azul (border-primary).
-						input.classList.add('border-primary');
-					}
-				});
-				// Para los combobox (select)
-				input.addEventListener('change', function () {
-					if (input.classList.contains('is-invalid')) {
-						// Eliminar la clase de borde rojo (border-danger).
-						input.classList.remove('is-invalid', 'border-danger');
-						// Agregar la clase de borde azul (border-primary).
-						input.classList.add('border-primary');
-					}
-				});
-				
-			});
-			
-			// Al cerrar el modal, enfocar el primer campo con error
-			modalElement.addEventListener('hidden.bs.modal', function () {
-				// Buscar el primer campo con la clase 'is-invalid' después de que el modal esté completamente oculto
-				const firstInvalidField = document.querySelector('.is-invalid');
-				if (firstInvalidField) {
-					firstInvalidField.focus(); // Establecer el foco en el primer campo con error
-				}
-			});
-			
-		});
-	</script>
-{% endblock script %}
 """
 
 ''' Este código ya no es necesario

@@ -16,7 +16,8 @@ class ProductoForm(CrudGenericForm):
 			'estatus_producto': 
 				forms.Select(attrs={**formclassselect}),
 			'codigo_producto': 
-				forms.TextInput(attrs={**formclasstext}),
+				forms.NumberInput(attrs={**formclasstext, 
+							'min': 1, 'max': 99999}),
 			'tipo_producto': 
 				forms.Select(attrs={**formclassselect}),
 			'id_familia': 
@@ -34,21 +35,28 @@ class ProductoForm(CrudGenericForm):
 			'nombre_producto': 
 				forms.TextInput(attrs={**formclasstext}),
 			'unidad': 
-				forms.TextInput(attrs={**formclasstext}),
+				forms.NumberInput(attrs={**formclasstext, 
+							'min': 0, 'max': 999}),
 			'fecha_fabricacion': 
 				forms.TextInput(attrs={**formclasstext}),
 			'costo': 
-				forms.TextInput(attrs={**formclasstext}),
+				forms.NumberInput(attrs={**formclasstext,
+							'min':0.01, 'max': 9999999999999.99}),
 			'alicuota_iva': 
-				forms.TextInput(attrs={**formclasstext}),
+				forms.NumberInput(attrs={**formclasstext,
+							'min': 0, 'max': 99.99}),
 			'precio': 
-				forms.TextInput(attrs={**formclasstext}),
+				forms.NumberInput(attrs={**formclasstext,
+							'min':0.01, 'max': 9999999999999.99}),
 			'stock': 
-				forms.TextInput(attrs={**formclasstext}),
+				forms.NumberInput(attrs={**formclasstext,
+							'readonly': True}),
 			'minimo': 
-				forms.TextInput(attrs={**formclasstext}),
+				forms.NumberInput(attrs={**formclasstext,
+							'readonly': True}),
 			'descuento': 
-				forms.TextInput(attrs={**formclasstext}),
+				forms.NumberInput(attrs={**formclasstext,
+							'min': 0.01, 'max': 99.99}),
 			'despacho_1': 
 				forms.TextInput(attrs={**formclasstext}),
 			'despacho_2': 

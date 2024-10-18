@@ -2,11 +2,10 @@
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.core.exceptions import ValidationError
+import re
 from .base_gen_models import ModeloBaseGenerico
 # from .sucursal_models import Sucursal
 from entorno.constantes_base import ESTATUS_GEN, CONDICION_PAGO
-
-from decimal import Decimal
 
 
 class Actividad(ModeloBaseGenerico):
@@ -50,10 +49,8 @@ class ProductoFamilia(ModeloBaseGenerico):
 												   choices=ESTATUS_GEN)
 	nombre_producto_familia = models.CharField("Nombre", max_length=50)
 	comision_operario = models.DecimalField("Comisión Operario(%)",
-										 	default=0.00,
 											max_digits=4, decimal_places=2,
-											validators=[MinValueValidator(0),
-														MaxValueValidator(99.99)])
+										 	default=0.00, null=True, blank=True)
 	info_michelin_auto = models.BooleanField("Info. Michelin auto", 
 										  	 default=False)
 	info_michelin_camion = models.BooleanField("Info. Michelin camión", 
@@ -64,18 +61,17 @@ class ProductoFamilia(ModeloBaseGenerico):
 	
 	def clean(self):
 		super().clean()
-		print(f'Tipo de dato: {type(self.comision_operario)}')
-		print(f'Comisión ingresada: {self.comision_operario}')
-
+		
 		errors = {}
 		
-		comision = Decimal(self.comision_operario)
+		comision_operario_str = str(self.comision_operario) if self.comision_operario else ""
 		
-		if comision > 99.99:
-			errors.update({"comision_operario": "El valor debe ser menor o igual a 99.99."})
+		if not re.match(r'^(0|[1-9]\d{0,1})(\.\d{1,2})?$|^$', comision_operario_str):
+			errors.update({'comision_operario': 'El valor debe ser positivo, con hasta 2 dígitos enteros y hasta 2 decimales, o estar en blanco o cero.'})
 		
 		if errors:
 			raise ValidationError(errors)
+	
 	
 	class Meta:
 		db_table = 'producto_familia'

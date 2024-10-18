@@ -18,7 +18,8 @@ class SucursalForm(CrudGenericForm):
 			'nombre_sucursal':
 				forms.TextInput(attrs={**formclasstext}),
 			'codigo_michelin':
-				forms.TextInput(attrs={**formclasstext}),
+				forms.NumberInput(attrs={**formclasstext,
+							 'min':1, 'max': 99999}),
 			'domicilio_sucursal':
 				forms.TextInput(attrs={**formclasstext}),
 			'id_localidad':
@@ -26,8 +27,7 @@ class SucursalForm(CrudGenericForm):
 			'id_provincia':
 				forms.Select(attrs={**formclassselect}),
 			'telefono_sucursal':
-				forms.NumberInput(attrs={**formclasstext,
-										 'min': 1, 'max': 999999999999999}),
+				forms.TextInput(attrs={**formclasstext}),
 			'email_sucursal':
 				forms.EmailInput(attrs={**formclasstext}),
 			'inicio_actividad':

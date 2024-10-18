@@ -22,8 +22,7 @@ class VendedorForm(CrudGenericForm):
 			'email_vendedor': 
 				forms.EmailInput(attrs={**formclasstext}),
 			'telefono_vendedor': 
-				forms.NumberInput(attrs={**formclasstext, 
-								  'min': 1, 'max': 999999999999999}),
+				forms.TextInput(attrs={**formclasstext}),
 			'pje_auto': 
 				forms.NumberInput(attrs={**formclasstext, 
 							 	  'min': 0, 'max': 99.99}),
