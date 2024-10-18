@@ -41,7 +41,7 @@
 		- El campo compro_asociado (Comprobante Asociado) se establece como opcional (null=True, blank=True).
 		- El campo impresion (Impresora) se estable como opcional (null=True, blank=True).
 	
-11/10/2024:
+11/10/2024 - 16/10/2024:
 	* Modelo Empresa:
 		- Los campos: ws_token, ws_sign y ws_expiracion se estabecen como opcionales (null=True, blank=True).
 		- Campo ws_modo: se cambia el tipo de dato de DecimalField a IntegerField.
@@ -52,14 +52,30 @@
 		- Moneda
 		- TipoPercepcionIb
 		- TipoRetencionIb
+		- Producto
 	
 	* Cambio longitud campos DecimalField cuya longitud es de 18 dígitos a 15 en los modelos:
 		- Moneda
 		- TipoPercepcionIb
 		- TipoRetencionIb
-		- 
+		- Producto
 	
 	* Modelo Cliente:
 		- He colocado como opcionales (null=True, blank=True) los siguientes campos:
-		  - fax_cliente, email2_cliente, transporte_cliente, fecha_nacimiento, sub_cuenta,
+		  - id_vendedor, numero_ib, fax_cliente, email2_cliente, transporte_cliente, fecha_nacimiento, sub_cuenta,
 		    black_list_motivo, black_list_usuario, fecha_baja
+	
+	* Modelo Producto:
+		- Establecidos como opcionales (null=True, blank=True) los siguientes campos:
+		  - cai, stock, minimo, despacho_1, despacho_2.
+		- Ajustados los campos DecimalField(max_digits=15, decimal_places=2): costo y precio.
+		
+	* Modelo Proveedor:
+		- Se cambia atributo on_delete.CASCADE a on_delete.PROTECT en los ForeignKey Localidad, TipoIva y TipoRetencionIb.
+	
+	* Modelo Sucursal:
+		- Se cambia atributo on_delete.CASCADE a on_delete.PROTECT en los ForeignKey Localidad y Provincia.
+	
+	* Modelo Vendedor:
+		- Establecidos como opcionales (null=True, blank=True) los siguientes campos:
+		  - pje_auto, pje_camion, vence_factura, vence_remito, col_descuento.
