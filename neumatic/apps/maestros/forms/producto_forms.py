@@ -16,8 +16,8 @@ class ProductoForm(CrudGenericForm):
 			'estatus_producto': 
 				forms.Select(attrs={**formclassselect}),
 			'codigo_producto': 
-				forms.NumberInput(attrs={**formclasstext, 
-							'min': 1, 'max': 99999}),
+				forms.NumberInput(attrs={**formclasstext,
+							'readonly': True}),
 			'tipo_producto': 
 				forms.Select(attrs={**formclassselect}),
 			'id_familia': 

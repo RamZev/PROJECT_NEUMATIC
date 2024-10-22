@@ -185,12 +185,10 @@ class ComprobanteVenta(ModeloBaseGenerico):
 													choices=ESTATUS_GEN)  # Estatus del comprobante
 	codigo_comprobante_venta = models.CharField("Código Comprobante",
 												max_length=3)
-	nombre_comprobante_venta = models.CharField(
-		"Nombre Comprobante", max_length=50)  # Nombre del comprobante
-	impresion = models.CharField(
-		"Impresora", max_length=50, null=True, blank=True)  # Detalle de impresión
-	compro_asociado = models.CharField(
-		"Comprobate Asociado", max_length=20, null=True, blank=True)  # Comprobante asociado
+	nombre_comprobante_venta = models.CharField("Nombre Comprobante", 
+												max_length=50)  # Nombre del comprobante
+	compro_asociado = models.CharField("Comprobate Asociado", 
+										max_length=20, null=True, blank=True)  # Comprobante asociado
 	
 	mult_venta = models.IntegerField("Mult. Venta")  # Multiplicador de venta
 	mult_saldo = models.IntegerField("Mult. Saldo")  # Multiplicador de saldo
@@ -208,10 +206,10 @@ class ComprobanteVenta(ModeloBaseGenerico):
 										  	  default=False)  # Información Michelin auto
 	info_michelin_camion = models.BooleanField("Info. Michelin camión", 
 												default=False)  # Información Michelin camión
-	codigo_afip_a = models.CharField(
-		"Código AFIP A", max_length=3)  # Código AFIP A
-	codigo_afip_b = models.CharField(
-		"Código AFIP B", max_length=3)  # Código AFIP B
+	codigo_afip_a = models.CharField("Código AFIP A", 
+									max_length=3)  # Código AFIP A
+	codigo_afip_b = models.CharField("Código AFIP B", 
+									max_length=3)  # Código AFIP B
 	
 	def __str__(self):
 		return self.nombre_comprobante_venta
@@ -361,7 +359,7 @@ class TipoDocumentoIdentidad(ModeloBaseGenerico):
 	estatus_tipo_documento_identidad = models.BooleanField("Estatus",
 														   default=True,
 														   choices=ESTATUS_GEN)
-	nombre_documento_identidad = models.CharField("Nombre", max_length=4)
+	nombre_documento_identidad = models.CharField("Nombre", max_length=20)
 	tipo_documento_identidad = models.CharField("Tipo", max_length=4)
 	codigo_afip = models.CharField("Código AFIP", max_length=2)
 	ws_afip = models.CharField("WS AFIP", max_length=2)

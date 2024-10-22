@@ -52,7 +52,7 @@ class ClienteForm(CrudGenericForm):
 			'fecha_nacimiento': 
 				forms.TextInput(attrs={'type':'date', **formclassdate}),
 			'fecha_alta': 
-				forms.TextInput(attrs={'type':'date', **formclassdate}),
+				forms.TextInput(attrs={'type':'date', **formclassdate, 'readonly': True}),
    			'sexo': 
 				forms.Select(attrs={**formclassselect}),
 			'id_actividad': 

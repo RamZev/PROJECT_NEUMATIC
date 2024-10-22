@@ -20,11 +20,11 @@ class ParametroForm(CrudGenericForm):
             'interes':
                 forms.NumberInput(
                     attrs={**formclasstext,
-                           'min': 0, 'max': 99.99}),
+                           'min': -99.99, 'max': 99.99}),
             'interes_dolar':
                 forms.NumberInput(
                     attrs={**formclasstext, 
-                           'min': 0, 'max': 99.99}),
+                           'min': -99.99, 'max': 99.99}),
             'cotizacion_dolar':
                 forms.NumberInput(
                     attrs={**formclasstext, 
@@ -36,5 +36,5 @@ class ParametroForm(CrudGenericForm):
             'descuento_maximo':
                 forms.NumberInput(
                     attrs={**formclasstext, 
-                           'min': 0, 'max': 99.99}),
+                           'min': -99.99, 'max': 99.99}),
         }

@@ -21,15 +21,12 @@ class Vendedor(ModeloBaseGenerico):
 	pje_camion = models.DecimalField("% camión", max_digits=4, decimal_places=2, 
 								null=True, blank=True, default=0.00)
 	
-	vence_factura = models.IntegerField("Días vcto. Fact.", 
-									null=True, blank=True, default=0)
-	vence_remito = models.IntegerField("Días vcto. Remito", 
-									null=True, blank=True, default=0)
+	vence_factura = models.IntegerField("Días vcto. Fact.", default=0, blank=True)
+	vence_remito = models.IntegerField("Días vcto. Remito", default=0, blank=True)
 	id_sucursal = models.ForeignKey(Sucursal, on_delete=models.CASCADE, 
 									verbose_name="Sucursal")  # Relación con sucursal
 	tipo_venta = models.CharField("Tipo", max_length=1, choices=TIPO_VENTA)
-	col_descuento = models.IntegerField("Columna Dcto.", 
-									null=True, blank=True, default=0)
+	col_descuento = models.IntegerField("Columna Dcto.", default=0, blank=True)
 	email_venta = models.BooleanField("Enviar correos con Comprobantes", default=False)
 	info_saldo = models.BooleanField("Mostrar Saldo en Correos Electrónicos", default=False)
 	info_estadistica = models.BooleanField("Mostrar Saldos en Comp. Sin Estadísticas", default=False)
@@ -42,29 +39,29 @@ class Vendedor(ModeloBaseGenerico):
 		
 		errors = {}
 		
-		pje_auto_str = str(self.pje_auto) if self.pje_auto else ""
-		pje_camion_str = str(self.pje_camion) if self.pje_camion else ""
-		vence_factura_str = str(self.vence_factura) if self.vence_factura else ""
-		vence_remito_str = str(self.vence_remito) if self.vence_remito else ""
-		col_descuento_str = str(self.col_descuento) if self.col_descuento else ""
+		pje_auto_str = str(self.pje_auto) if self.pje_auto is not None else ""
+		pje_camion_str = str(self.pje_camion) if self.pje_camion is not None else ""
+		vence_factura_str = str(self.vence_factura) if self.vence_factura is not None else ""
+		vence_remito_str = str(self.vence_remito) if self.vence_remito is not None else ""
+		col_descuento_str = str(self.col_descuento) if self.col_descuento is not None else ""
 		
 		if not re.match(r'^\+?\d[\d ]{0,14}$', str(self.telefono_vendedor)):
 			errors.update({'telefono_vendedor': 'Debe indicar sólo dígitos numéricos positivos, mínimo 1 y máximo 15, el signo + y espacios.'})
 		
-		if not re.match(r'^(0|[1-9]\d{0,1})(\.\d{1,2})?$|^$', pje_auto_str):
-			errors.update({'pje_auto': 'El valor debe ser positivo, con hasta 2 dígitos enteros y hasta 2 decimales, o estar en blanco o cero.'})
+		if not re.match(r'^(0|[1-9]\d{0,1})(\.\d{1,2})?$', pje_auto_str):
+			errors.update({'pje_auto': 'El valor debe ser positivo, con hasta 2 dígitos enteros y hasta 2 decimales o cero.'})
 		
-		if not re.match(r'^(0|[1-9]\d{0,1})(\.\d{1,2})?$|^$', pje_camion_str):
-			errors.update({'pje_camion': 'El valor debe ser positivo, con hasta 2 dígitos enteros y hasta 2 decimales, o estar en blanco o cero.'})
+		if not re.match(r'^(0|[1-9]\d{0,1})(\.\d{1,2})?$', pje_camion_str):
+			errors.update({'pje_camion': 'El valor debe ser positivo, con hasta 2 dígitos enteros y hasta 2 decimales o cero.'})
 		
-		if not re.match(r'^[1-9]\d{0,2}$|^0$|^$', vence_factura_str):
-			errors.update({'vence_factura': 'El valor debe ser un número entero positivo, con hasta 3 dígitos, o estar en blanco o cero.'})
+		if not re.match(r'^[1-9]\d{0,2}$|^0$', vence_factura_str):
+			errors.update({'vence_factura': 'El valor debe ser un número entero positivo, con hasta 3 dígitos o cero.'})
 		
-		if not re.match(r'^[1-9]\d{0,2}$|^0$|^$', vence_remito_str):
-			errors.update({'vence_remito': 'El valor debe ser un número entero positivo, con hasta 3 dígitos, o estar en blanco o cero.'})
+		if not re.match(r'^[1-9]\d{0,2}$|^0$', vence_remito_str):
+			errors.update({'vence_remito': 'El valor debe ser un número entero positivo, con hasta 3 dígitos o cero.'})
 		
-		if not re.match(r'^[1-9]\d{0,2}$|^0$|^$', col_descuento_str):
-			errors.update({'col_descuento': 'El valor debe ser un número entero positivo, con hasta 3 dígitos, o estar en blanco o cero.'})
+		if not re.match(r'^[1-9]\d{0,2}$|^0$', col_descuento_str):
+			errors.update({'col_descuento': 'El valor debe ser un número entero positivo, con hasta 3 dígitos o cero.'})
 		
 		if errors:
 			raise ValidationError(errors)

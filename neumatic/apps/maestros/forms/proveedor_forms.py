@@ -35,7 +35,7 @@ class ProveedorForm(CrudGenericForm):
 				forms.CheckboxInput(attrs={**formclasscheck}),
 			'ib_alicuota': 
 				forms.NumberInput(attrs={**formclasstext,
-                           'min': 0.01, 'max': 99.99}),
+                           'min': 0, 'max': 99.99}),
 			'multilateral': 
 				forms.CheckboxInput(attrs={**formclasscheck}),
 			'telefono_proveedor': 

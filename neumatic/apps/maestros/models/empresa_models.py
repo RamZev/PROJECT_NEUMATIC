@@ -2,6 +2,8 @@
 from django.db import models
 from django.core.exceptions import ValidationError
 import re
+
+from utils.validatos.validaciones import validar_cuit
 from .base_gen_models import ModeloBaseGenerico
 from .base_models import Localidad, Provincia, TipoIva
 from entorno.constantes_base import ESTATUS_GEN, WS_MODO
@@ -51,8 +53,10 @@ class Empresa(ModeloBaseGenerico):
 		
 		errors = {}
 		
-		if not re.match(r'^(20|23|24|25|26|27|30|33|34|35|36)\d{9}$', str(self.cuit)):
-			errors.update({'cuit': 'El CUIT debe comenzar con 20, 23, 24, 25, 26, 27, 30, 33, 34, 35 o 36 y tener 11 dígitos en total.'})
+		try:
+			validar_cuit(self.cuit)
+		except ValidationError as e:
+			errors['cuit'] = e.messages
 		
 		if not re.match(r'^\d{1,22}$', str(self.cbu)):
 			errors.update({'cbu': 'Debe indicar sólo dígitos numéricos positivos, mínimo 1 y máximo 22.'})

@@ -79,3 +79,31 @@
 	* Modelo Vendedor:
 		- Establecidos como opcionales (null=True, blank=True) los siguientes campos:
 		  - pje_auto, pje_camion, vence_factura, vence_remito, col_descuento.
+
+21/10/2024 - 22/10/2024
+	* Modelo Cliente:
+		- Se establece que el campo fecha_alta tenga un valor por defecto (default=date.today).
+	
+	* Modelo Proveedor:
+		- Se establece que el campo ib_alicuota tengo un valor por defecto (default=0.00), acepte números positivos: 2 enteros y 2 decimales o ceros.
+	
+	* Modelo Producto:
+		- Se establece el campo codigo_producto como CharField max_length=7 y se modifica el método save() para que le asigne el ID del nuevo registro.
+		- El campo unidad se le establece un valor por defecto: default=0
+	
+	* Modelo Vendedor:
+		- Los campos pje_auto y pje_camion se estabecen que no admitan nulos. Solo números positivos: 2 enteros, 2 decimales o cero: 0 a 99.99
+		- Los campos vence_factura, vence_remito y col_descuento se estabecen que no admitan nulos. Solo enteros positivos o cero: 0 a 999
+	
+	* Modelo Vendedor:
+		- Los campos interes, interes_dolar y descuento_maximo se estabecen que no admitan nulos.
+		  Solo números positivos o negativos: 2 enteros, 2 decimales o cero: -99.99 a 99.99
+		- El campo cotizacion_dolar se estabece que no admita nulos. Solo positivos hasta 13 enteros y 2 decimales o cero: 0 a 9999999999999.99
+		- El campo dias_vencimiento se estabece que no admita nulos. Solo enteros positivos o cero: 0 a 999
+	
+	* Modelo TipoDocumentoIdentidad:
+		- Se amplía el campo nombre_documento_identidad a 20 caracteres.
+
+	* Modelo ComprobanteVenta:
+		- Se elimina el campo impresion.
+

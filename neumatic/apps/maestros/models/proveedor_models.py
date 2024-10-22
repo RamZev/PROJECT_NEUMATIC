@@ -2,6 +2,8 @@
 from django.db import models
 from django.core.exceptions import ValidationError
 import re
+
+from utils.validatos.validaciones import validar_cuit
 from .base_gen_models import ModeloBaseGenerico
 from .base_models import Localidad, TipoIva, TipoRetencionIb
 from entorno.constantes_base import ESTATUS_GEN
@@ -25,7 +27,7 @@ class Proveedor(ModeloBaseGenerico):
 	ib_numero = models.CharField("Ingreso Bruto*", max_length=15)
 	ib_exento = models.BooleanField("Exento Ret. Ing. Bruto")
 	ib_alicuota = models.DecimalField("Alíc. Ing. B.", max_digits=4, 
-								   decimal_places=2)
+								   decimal_places=2, default=0.00)
 	multilateral = models.BooleanField("Contrib. Conv. Multilateral")
 	telefono_proveedor = models.CharField("Taléfono", max_length=15)
 	movil_proveedor = models.CharField("Móvil", max_length=15)
@@ -41,11 +43,15 @@ class Proveedor(ModeloBaseGenerico):
 		
 		errors = {}
 		
-		if not re.match(r'^(20|23|24|25|26|27|30|33|34|35|36)\d{9}$', str(self.cuit)):
-			errors.update({'cuit': 'El CUIT debe comenzar con 20, 23, 24, 25, 26, 27, 30, 33, 34, 35 o 36 y tener 11 dígitos en total.'})
+		ib_alicuota_str = str(self.ib_alicuota) if self.ib_alicuota is not None else ""
 		
-		if not re.match(r'^(0?[1-9]\.\d{2}|[1-9]\d\.\d{2}|0?0\.[1-9]\d|0?0\.0[1-9])$', str(self.ib_alicuota)):
-			errors.update({'ib_alicuota': 'El valor debe ser positivo, con hasta 2 dígitos enteros y hasta 2 decimales.'})
+		try:
+			validar_cuit(self.cuit)
+		except ValidationError as e:
+			errors['cuit'] = e.messages
+		
+		if not re.match(r'^(0|[1-9]\d{0,1})(\.\d{1,2})?$', ib_alicuota_str):
+			errors.update({'ib_alicuota': 'El valor debe ser positivo, con hasta 2 dígitos enteros y hasta 2 decimales o cero.'})
 		
 		if not re.match(r'^\+?\d[\d ]{0,14}$', str(self.telefono_proveedor)):
 			errors.update({'telefono_proveedor': 'Debe indicar sólo dígitos numéricos positivos, mínimo 1 y máximo 15, el signo + y espacios.'})

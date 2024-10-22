@@ -10,7 +10,7 @@ class Producto(ModeloBaseGenerico):
 	id_producto = models.AutoField(primary_key=True)
 	estatus_producto = models.BooleanField("Estatus", default=True, 
 										   choices=ESTATUS_GEN)
-	codigo_producto = models.IntegerField("Código producto")
+	codigo_producto = models.CharField("Código producto", max_length=7, null=True, blank=True)
 	tipo_producto = models.CharField("Tipo producto", max_length=1, choices=TIPO_PRODUCTO_SERVICIO)
 	id_familia = models.ForeignKey(ProductoFamilia, on_delete=models.CASCADE,
 								   verbose_name="Familia")
@@ -22,7 +22,7 @@ class Producto(ModeloBaseGenerico):
 	medida = models.CharField("Medida", max_length=15)  # Medida del producto
 	segmento = models.CharField("Segmento", max_length=3)  # Segmento del producto
 	nombre_producto = models.CharField("Nombre producto", max_length=50)  # Nombre del producto
-	unidad = models.IntegerField("Unidad", null=True, blank=True)
+	unidad = models.IntegerField("Unidad", null=True, blank=True, default=0)
 	fecha_fabricacion = models.CharField("Fecha fabricación", max_length=6, 
 									null=True, blank=True)  # Fecha de fabricación
 	costo = models.DecimalField("Costo", max_digits=15, decimal_places=2,
@@ -47,6 +47,16 @@ class Producto(ModeloBaseGenerico):
 	def __str__(self):
 		return self.nombre_producto
 	
+	def save(self, *args, **kwargs):
+		#-- Llamar al método save original para que se guarde el registro y se asigne el ID.
+		super().save(*args, **kwargs)
+		
+		#-- Si no tiene código, asigna el ID con ceros a la izquierda.
+		if not self.codigo_producto:
+			self.codigo_producto = f'{self.id_producto:07d}'  # 7 dígitos con ceros a la izquierda
+			#-- Guarda nuevamente el registro con el código asignado.
+			super(Producto, self).save(*args, **kwargs)	
+	
 	def clean(self):
 		super().clean()
 		
@@ -58,8 +68,8 @@ class Producto(ModeloBaseGenerico):
 		descuento_str = str(self.descuento) if self.descuento else ""
 		dalicuota_iva_str = str(self.alicuota_iva) if self.alicuota_iva else ""
 		
-		if not re.match(r'^\d{1,5}$', str(self.codigo_producto)):
-			errors.update({'codigo_producto': 'Debe indicar sólo dígitos numéricos positivos, mínimo 1 y máximo 5.'})
+		# if not re.match(r'^\d{1,5}$', str(self.codigo_producto)):
+		# 	errors.update({'codigo_producto': 'Debe indicar sólo dígitos numéricos positivos, mínimo 1 y máximo 5.'})
 		
 		if not re.match(r'^$|^20\d{2}(0[1-9]|1[0-2])$', fecha_fabricacion_str):
 			errors.update({'fecha_fabricacion': 'Debe indicar el dato en el formato AAAAMM (AAAA para el año, MM para el mes). Indicar año y mes válidos. El año debe iniciar en 20'})

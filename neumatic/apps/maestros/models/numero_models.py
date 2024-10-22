@@ -28,17 +28,17 @@ class Numero(ModeloBaseGenerico):
 		
 		errors = {}
 		
-		if not re.match(r'^\d{1,3}$', str(self.punto_venta)):
-			errors.update({'punto_venta': 'Debe indicar sólo dígitos numéricos positivos, mínimo 1 y máximo 3.'})
+		if not re.match(r'^\d{1,5}$', str(self.punto_venta)):
+			errors.update({'punto_venta': 'Debe indicar sólo dígitos numéricos positivos, mínimo 1 y máximo 5.'})
 		
 		if not re.match(r'^\d{1,13}$', str(self.numero)):
 			errors.update({'numero': 'Debe indicar sólo dígitos numéricos positivos, mínimo 1 y máximo 13.'})
 		
-		if not re.match(r'^\d{1,3}$', str(self.lineas)):
-			errors.update({'lineas': 'Debe indicar sólo dígitos numéricos positivos, mínimo 1 y máximo 3.'})
+		if not re.match(r'^^[1-9]\d{0,1}$', str(self.lineas)):
+			errors.update({'lineas': 'Debe indicar sólo dígitos numéricos positivos, mínimo 1 y máximo 2.'})
 		
-		if not re.match(r'^\d{1,3}$', str(self.copias)):
-			errors.update({'copias': 'Debe indicar sólo dígitos numéricos positivos, mínimo 1 y máximo 3.'})
+		if not re.match(r'^[1-9]$', str(self.copias)):
+			errors.update({'copias': 'Debe indicar sólo dígitos numéricos positivos, mínimo y máximo 1.'})
 		
 		if errors:
 			raise ValidationError(errors)

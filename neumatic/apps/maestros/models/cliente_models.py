@@ -2,6 +2,9 @@
 from django.db import models
 from django.core.exceptions import ValidationError
 import re
+from datetime import date
+
+from utils.validatos.validaciones import validar_cuit
 from .base_gen_models import ModeloBaseGenerico
 from .base_models import (Actividad, Localidad, Provincia, TipoIva, 
 						  TipoDocumentoIdentidad, TipoPercepcionIb)
@@ -30,10 +33,9 @@ class Cliente(ModeloBaseGenerico):
 									choices=TIPO_PERSONA)
 	id_tipo_iva = models.ForeignKey(TipoIva, on_delete=models.PROTECT,
 									verbose_name="Tipo de Iva*")
-	id_tipo_documento_identidad = models.ForeignKey(
-		TipoDocumentoIdentidad, 
-		on_delete=models.PROTECT,
-		verbose_name="Tipo Doc. Identidad*")
+	id_tipo_documento_identidad = models.ForeignKey(TipoDocumentoIdentidad, 
+										on_delete=models.PROTECT, 
+										verbose_name="Tipo Doc. Identidad*")
 	cuit = models.IntegerField("CUIT*")
 	condicion_venta = models.IntegerField("Condición Venta*", 
 										  default=True,
@@ -52,7 +54,7 @@ class Cliente(ModeloBaseGenerico):
 									verbose_name="Vendedor")
 	fecha_nacimiento = models.DateField("Fecha Nacimiento", 
 									 null=True, blank=True)
-	fecha_alta = models.DateField("Fecha Alta")
+	fecha_alta = models.DateField("Fecha Alta", default=date.today)
 	sexo = models.CharField("Sexo*", max_length=1, 
 							default="M", 
 							choices=SEXO)
@@ -92,13 +94,14 @@ class Cliente(ModeloBaseGenerico):
 		
 		errors = {}
 		
-		cuit_str = str(self.cuit)
 		telefono_str = str(self.telefono_cliente)
 		movil_cliente_str = str(self.movil_cliente)
 		sub_cuenta_str = str(self.sub_cuenta) if self.sub_cuenta else ''
 		
-		if not re.match(r'^(20|23|24|25|26|27|30|33|34|35|36)\d{9}$', cuit_str):
-			errors.update({'cuit': 'El CUIT debe comenzar con 20, 23, 24, 25, 26, 27, 30, 33, 34, 35 o 36 y tener 11 dígitos en total.'})
+		try:
+			validar_cuit(self.cuit)
+		except ValidationError as e:
+			errors['cuit'] = e.messages
 		
 		if not re.match(r'^\+?\d[\d ]{0,14}$', telefono_str):
 			errors.update({'telefono_cliente': 'Debe indicar sólo dígitos numéricos positivos, mínimo 1 y máximo 15, el signo + y espacios.'})
