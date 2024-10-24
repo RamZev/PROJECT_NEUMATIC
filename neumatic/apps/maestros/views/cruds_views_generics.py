@@ -1,7 +1,12 @@
 # neumatic\apps\maestros\views\cruds_views_generics.py
+from typing import Any
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
 from django.db.models import Q
+# from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.http import JsonResponse
+from django.db import transaction
+from django.db.models import ProtectedError
+
 
 #-- Recursos necesarios para proteger las rutas.
 from django.utils.decorators import method_decorator
@@ -10,7 +15,7 @@ from django.contrib.auth.decorators import login_required
 #-- Recursos necesarios para los permisos de usuarios sobre modelos.
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.contrib import messages
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 
 from django.utils import timezone
 
@@ -182,6 +187,18 @@ class MaestroDeleteView(PermissionRequiredMixin, DeleteView):
 	def handle_no_permission(self):
 		messages.error(self.request, 'No tienes permiso para realizar esta acción.')
 		return redirect(self.list_view_name)
+	
+	def post(self, request, *args, **kwargs):
+		try:
+			with transaction.atomic():
+				return self.delete(request, *args, **kwargs)
+		except ProtectedError:
+			messages.error(request, 'No se puede eliminar el registro ya que está relacionado con otros.')
+			return redirect(self.success_url)
+		except Exception as e:
+			messages.error(request, f'Ocurrió un error inesperado al intentar eliminar: {str(e)}')
+			return redirect(self.success_url)
+
 # ------------------------------------------------------------------------------------
 
 

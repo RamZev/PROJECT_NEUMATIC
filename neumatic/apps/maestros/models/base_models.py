@@ -343,10 +343,10 @@ class Localidad(ModeloBaseGenerico):
 	codigo_postal = models.CharField("Código Postal", max_length=5)
 	id_provincia = models.ForeignKey('Provincia', on_delete=models.CASCADE,
 									 verbose_name="Provincia")
-
+	
 	def __str__(self):
 		return self.nombre_localidad
-
+	
 	class Meta:
 		db_table = 'localidad'
 		verbose_name = ('Localidad')

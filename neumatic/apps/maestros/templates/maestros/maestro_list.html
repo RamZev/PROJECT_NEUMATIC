@@ -165,6 +165,8 @@
 							{% block paginador %}
 								{% include 'paginador.html' %}
 							{% endblock paginador %}
+							
+							{{ messages }}
 						</div>
 					</div>
 				</div>
@@ -201,7 +203,23 @@
 		</div>
 	</div>
 	
-	<!-- Modal para el manejo de los mensajes de error sobre los permisos de usuario. -->
+	<!-- Modal para mensajes de error on_delete=models.PROTECT -->
+	<div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header bg-danger bg-opacity-25">
+					<h5 class="modal-title" id="errorModalLabel">Error</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body" id="errorModalBody">
+					<!-- Aquí se mostrará el mensaje de error -->
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+				</div>
+			</div>
+		</div>
+	</div>	
 {% endblock modals %}
 
 {% block script %}
@@ -220,15 +238,16 @@
 			modalBodyInput.textContent = recipient
 			form.action = url
 		})
-	</script>
-	
-	<script>
-		document.addEventListener('DOMContentLoaded', function () {
-			const messageList = document.getElementById('message-list');
-			if (messageList.children.length > 0) {
-				const errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
-				errorModal.show();
-			}
-		});
+		
+		// Obtener el mensaje de error de la cola de mensajes de Django
+		const errorMessage = "{% if messages %}{% for message in messages %}{{ message }}{% if not forloop.last %}<br>{% endif %}{% endfor %}{% else %} {% endif %}";
+		// Verificar si hay un mensaje de error
+		if (errorMessage.trim() !== '') {
+			// Mostrar el modal con el mensaje de error
+			const modal = new bootstrap.Modal(document.getElementById('errorModal'));
+			document.getElementById('errorModalBody').innerText = errorMessage;
+			modal.show();
+		}
+		
 	</script>
 {% endblock script %}

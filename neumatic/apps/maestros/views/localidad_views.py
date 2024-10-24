@@ -40,7 +40,7 @@ class ConfigViews():
 	template_form = f"{app_label}/{model_string}_form.html"
 	
 	# Plantilla para confirmar eliminación de un registro
-	template_delete = "base_confirm_delete.html"
+	# template_delete = "base_confirm_delete.html"
 	
 	# Plantilla de la lista del CRUD
 	template_list = f'{app_label}/maestro_list.html'
@@ -76,7 +76,7 @@ class DataViewList():
 	]
 
 
-# ProvinciaListView - Inicio
+# LocalidadListView - Inicio
 class LocalidadListView(MaestroListView):
 	model = ConfigViews.model
 	template_name = ConfigViews.template_list
@@ -97,7 +97,7 @@ class LocalidadListView(MaestroListView):
 	}
 
 
-# ProvinciaCreateView - Inicio
+# LocalidadCreateView - Inicio
 class LocalidadCreateView(MaestroCreateView):
 	model = ConfigViews.model
 	list_view_name = ConfigViews.list_view_name
@@ -115,7 +115,7 @@ class LocalidadCreateView(MaestroCreateView):
 	}
 
 
-# ProvinciaUpdateView
+# LocalidadUpdateView
 class LocalidadUpdateView(MaestroUpdateView):
 	model = ConfigViews.model
 	list_view_name = ConfigViews.list_view_name
@@ -132,11 +132,11 @@ class LocalidadUpdateView(MaestroUpdateView):
 	}
 
 
-# ProvinciaDeleteView
+# LocalidadDeleteView
 class LocalidadDeleteView (MaestroDeleteView):
 	model = ConfigViews.model
 	list_view_name = ConfigViews.list_view_name
-	template_name = ConfigViews.template_delete
+	# template_name = ConfigViews.template_delete
 	success_url = ConfigViews.success_url
 	
 	#-- Indicar el permiso que requiere para ejecutar la acción.
@@ -147,3 +147,33 @@ class LocalidadDeleteView (MaestroDeleteView):
 		"list_view_name" : ConfigViews.list_view_name,
 		"mensaje": "Estás seguro de eliminar el Registro"
 	}
+	
+	# def post(self, request, *args, **kwargs):
+	# 	isinstance = self.get_object()
+	# 	
+	# 	try:
+	# 		return self.delete(request, *args, **kwargs)
+	# 	except ProtectedError:
+	# 		print("Error: No se puede eliminar, el registro está relacionado.")
+	# 		return self.form_invalid()
+	# 	except Exception as e:
+	# 		print(f"Error inesperado: {e}")
+	# 		return self.form_invalid()
+	# 
+	# def delete(self, request, *args, **kwargs):
+	# 	instance = self.get_object()
+	# 	print(f"Intentando eliminar {instance}...")
+	# 	return super().delete(request, *args, **kwargs)
+	
+	# def delete(self, request, *args, **kwargs):
+	# 	instance = self.get_object()
+	# 	try:
+	# 		print(f"Intentando eliminar {instance}...")
+	# 		return super().delete(request, *args, **kwargs)
+	# 	except ProtectedError:
+	# 		print("Error: No se puede eliminar, el registro está relacionado")
+	# 		# Podrías redirigir a una vista de error o mostrar un mensaje en el modal
+	# 		return self.form_invalid()
+	# 	except Exception as e:
+	# 		print(f"Error inesperado: {e}")
+	# 		# Maneja otros errores aquí	
