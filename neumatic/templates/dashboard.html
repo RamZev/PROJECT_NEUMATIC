@@ -1,0 +1,109 @@
+<div id="layoutSidenav_content">
+    <main>
+        <div class="container-fluid px-4">
+            <h4 class="mt-4">Panel: Módulos e Indicadores de Gestión</h4>
+            {% comment %} <ol class="breadcrumb mb-4">
+                <li class="breadcrumb-item active">Módulos</li>
+            </ol> {% endcomment %}
+            
+            {% comment %} Módulos Start{% endcomment %}
+            <div class="row">
+                <div class="col-xl-2 col-md-3">
+                    <div class="card bg-primary bg-opacity-25 text-dark mb-4">
+                        <div class="card-body">Archivo</div>
+                        <div class="card-footer d-flex align-items-center justify-content-between">
+                            <a class="small text-blue stretched-link" href="#">Ver Detalles</a>
+                            <div class="small text-dark"><i class="fas fa-angle-right"></i></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-2 col-md-3">
+                    <div class="card bg-success bg-opacity-25 text-dark mb-4">
+                        <div class="card-body">Ventas</div>
+                        <div class="card-footer d-flex align-items-center justify-content-between">
+                            <a class="small text-blue stretched-link" href="#">Ver Detalles</a>
+                            <div class="small text-dark"><i class="fas fa-angle-right"></i></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-2 col-md-3">
+                    <div class="card bg-primary bg-opacity-25 text-dark mb-4">
+                        <div class="card-body">Compras</div>
+                        <div class="card-footer d-flex align-items-center justify-content-between">
+                            <a class="small text-blue stretched-link" href="#">Ver Detalles</a>
+                            <div class="small text-dark"><i class="fas fa-angle-right"></i></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-2 col-md-3">
+                    <div class="card bg-success bg-opacity-25 text-dark mb-4">
+                        <div class="card-body">Caja</div>
+                        <div class="card-footer d-flex align-items-center justify-content-between">
+                            <a class="small text-blue stretched-link" href="#">Ver Detalles</a>
+                            <div class="small text-dark"><i class="fas fa-angle-right"></i></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-2 col-md-3">
+                    <div class="card bg-primary bg-opacity-25 text-dark mb-4">
+                        <div class="card-body">Inventario</div>
+                        <div class="card-footer d-flex align-items-center justify-content-between">
+                            <a class="small text-blue stretched-link" href="#">Ver Detalles</a>
+                            <div class="small text-dark"><i class="fas fa-angle-right"></i></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-2 col-md-3">
+                    <div class="card bg-success bg-opacity-25 text-dark mb-4">
+                        <div class="card-body">Informes</div>
+                        <div class="card-footer d-flex align-items-center justify-content-between">
+                            <a class="small text-blue stretched-link" href="#">Ver Detalles</a>
+                            <div class="small text-dark"><i class="fas fa-angle-right"></i></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {% comment %} Módulos End{% endcomment %}
+
+            {% comment %} Gráficos Start{% endcomment %}
+            <div class="row">
+                <div class="col-xl-6">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <i class="fas fa-chart-area me-1"></i>
+                            Ventas del Mes
+                        </div>
+                        <div class="card-body"><canvas id="myAreaChart" width="100%" height="40"></canvas></div>
+                    </div>
+                </div>
+                <div class="col-xl-6">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <i class="fas fa-chart-bar me-1"></i>
+                            Gastos Mensuales
+                        </div>
+                        <div class="card-body"><canvas id="myBarChart" width="100%" height="40"></canvas></div>
+                    </div>
+                </div>
+            </div>
+            {% comment %} Gráficos End{% endcomment %}
+            
+        </div>
+    </main>
+    <footer class="py-4 bg-light mt-auto">
+        <div class="container-fluid px-4">
+            <div class="d-flex align-items-center justify-content-between small">
+                <div class="text-muted">Copyright &copy; Your Website 2023</div>
+                <div>
+                    <a href="#">Privacy Policy</a>
+                    &middot;
+                    <a href="#">Terms &amp; Conditions</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+</div>

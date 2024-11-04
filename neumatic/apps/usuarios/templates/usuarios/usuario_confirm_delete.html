@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+{% extends 'base.html' %}
+
+<!-- Block Title  ------------------------------------------------------------->
+{% block title %}
+	Usuarios
+{% endblock %}
+
+<!-- Block Header ------------------------------------------------------------->
+{% block header %}
+{% endblock %}
+
+<!-- Block Main - ------------------------------------------------------------->
+{% block main %}
+	<div class="wrapper">
+		
+		{% block sidebar %}
+			{% include 'sidebar.html' %}
+		{% endblock sidebar %}
+		
+		{% block maincomponent %}
+			<div class="main">
+			
+			{% block buttonsidebartoggle %}
+				{% include 'buttonsidebartoggle.html' %}
+			{% endblock buttonsidebartoggle %}
+			
+			{% block principalcomponent %}
+				<form method="post" class="mt-5">
+					{% csrf_token %}
+					<div class="card text-center col-md-6 offset-md-3">
+						<div class="card-header">
+							Eliminar Usuario
+						</div>
+						<div class="card-body">
+							<h5 class="card-title">Atención!</h5>
+							<p class="card-text">¿Está seguro de eliminar el grupo: <strong>{{ object.username }}</strong>?</p>
+							
+							<button class="btn btn-danger" type="submit">Eliminar</button>
+							<a class="btn btn-outline-secondary" href="{% url 'usuario_listar' %}" role="button">Cancelar</a>
+						</div>
+					</div>
+				</form>
+			{% endblock principalcomponent %}
+			
+			</div>
+		{% endblock maincomponent %}
+	
+	</div>
+{% endblock main %}
+
+<!-- Block Fotter ------------------------------------------------------------->
+{% block footer %}
+{% endblock footer %}

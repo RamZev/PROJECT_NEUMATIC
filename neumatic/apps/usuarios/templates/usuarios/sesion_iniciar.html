@@ -1,0 +1,153 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block style %}
+	body {
+		position: relative;
+		margin: 0;
+		padding: 0;
+		overflow: hidden;
+	}
+	body::before {
+		content: "";
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		/* background: url('Analyzing Business Data.jpg') no-repeat center center fixed; */
+		/* background: url('3553341.jpg') no-repeat center center fixed; */ 
+		/* background: url('6204046.jpg') no-repeat center center fixed; */
+		/* background: url('Login003.jpg') no-repeat center center fixed; */
+		background: url("{% static 'img/candado_01.jpeg' %}") no-repeat center center fixed; 
+		background-size: cover;
+		filter: blur(0.5px); /* Adjust the blur effect as needed */
+		z-index: -1;
+	}
+	.card-body {
+		backdrop-filter: blur(10px); /* Apply blur effect to the card body */
+	}	
+{% endblock style %}
+
+<!-- Block Title  ------------------------------------------------------------>
+{% block title %}
+	Iniciar Sessión
+{% endblock title %}
+
+<!-- Block Header ------------------------------------------------------------>
+{% block header %}
+	{% if user.is_authenticated %}
+		{% include 'top_nav.html' %}
+	{% endif %}
+{% endblock header %}
+
+
+{% comment %} <!-- Block Main - -------------------------------------------------------------> {% endcomment %}
+{% block main %}
+	{% block sidebar %}
+		{% if user.is_authenticated %}
+			{% include 'sidebar.html' %}
+		{% endif %}
+	{% endblock sidebar %}
+		
+	{% block maincomponent %}
+		
+		{% block principalcomponent %}
+			<!-- Login 9 - Bootstrap Brain Component -->
+			<section class="py-3 py-md-5 py-xl-8">
+				<div class="container">
+					<div class="row gy-4 align-items-center">
+						<div class="col-12 col-md-6 col-xl-7">
+							<div class="d-flex justify-content-center text-light">
+								<div class="col-12 col-xl-9">
+									<!-- <img class="img-fluid rounded mb-4" loading="lazy" src="./assets/img/bsb-logo-light.svg" width="245" height="80" alt="BootstrapBrain Logo"> -->
+									<h1>MaaSoft</h1>
+									<hr class="border-primary mb-4">
+									<h2 class="mb-4 text-light rounded-4 px-4 py-4">Creamos Soluciones que impulsan tu Negocio!</h2>
+									<p class="lead mb-5">ERP Inteligente para tu Negocio</p>
+									<div class="text-endx">
+										<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" class="bi bi-grip-horizontal" viewBox="0 0 16 16">
+										<path d="M2 8a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm0-3a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm3 3a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm0-3a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm3 3a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm0-3a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm3 3a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm0-3a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm3 3a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm0-3a1 1 0 1 1 0 2 1 1 0 0 1 0-2z" />
+										</svg>
+									</div>
+								</div>
+							</div>
+						</div>
+						
+						<div class="col-12 col-md-6 col-xl-5">
+							<div class="card border-2 border border-light rounded-4 bg-transparent">
+								<div class="card-body p-3 p-md-4 p-xl-5">
+								<div class="row">
+									<div class="col-12">
+										<div class="mb-4 text-white">
+											<h3>Iniciar Sesión</h3>
+											<p>No tienes una cuenta? <a href="#!" class="text-white">Regístrarse</a></p>
+										</div>
+									</div>
+								</div>
+
+								{% if error %}
+									<div class="alert alert-danger alert-dismissible fade show">{{ error }}</div>
+								{% endif %}
+
+								<form method="post">
+									{% csrf_token %}
+
+									<div class="row gy-3 overflow-hidden">
+										<div class="col-12">
+											<div class="form-floating mb-3">
+											<input type="text" class="form-control" name="username" id="usuario" placeholder="Nombre de Usuario" required>
+											<label for="usuario" class="form-label">Usuario</label>
+											</div>
+										</div>
+		
+										<div class="col-12">
+											<div class="form-floating mb-3">
+											<input type="password" class="form-control" name="password" id="password" value="" placeholder="Contraseña" required>
+											<label for="password" class="form-label">Contraseña</label>
+											</div>
+										</div>
+										
+										<div class="col-12">
+											<div class="form-check">
+											<input class="form-check-input" type="checkbox" value="" name="remember_me" id="remember_me">
+											<label class="form-check-label text-white" for="remember_me">
+												Mantener la sesión iniciada
+											</label>
+											</div>
+										</div>
+										
+										<div class="col-12">
+											<div class="d-grid">
+											<button type="submit" class="btn btn-primary btn-lg" type="submit">Iniciar Sesión Ahora</button>
+											</div>
+										</div>
+									</div>
+								</form>
+		
+								<div class="row">
+									<div class="col-12">
+										<div class="d-flex gap-2 gap-md-4 flex-column flex-md-row justify-content-md-end mt-4">
+											<a href="#!" class="text-white">Olvidó su contraseña?</a>
+										</div>
+									</div>
+								</div>
+								
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</section>   
+			<!--  -->
+		{% endblock principalcomponent %}
+		
+		
+	{% endblock maincomponent %}
+	
+	
+{% endblock main %}
+
+{% comment %} <!-- Block Fotter -------------------------------------------------------------> {% endcomment %}
+{% block footer %}
+{% endblock footer %}

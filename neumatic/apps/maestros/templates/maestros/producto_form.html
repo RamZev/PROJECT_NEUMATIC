@@ -1,0 +1,341 @@
+{% extends 'maestro_form.html' %}
+{% load static %}
+<!-- -------------------------------------------------------------------- -->
+{% block maincomponent %}
+	{% block principalcomponent %}
+		<div id="layoutSidenav_content">
+			<main>
+				<div class="container-fluid">
+					
+					<div class="card border-light mb-3 mt-2">
+						<div class="card-header text-white bg-primary opacity-75 d-flex 
+									justify-content-between">
+							{{ accion }}
+							<div class="flex align-items-center">
+								<a 
+									class="me-2 text-white" 
+									data-bs-toggle="modal" 
+									data-bs-target="#helpModal" 
+									style="cursor: pointer;">
+									<i class="bi bi-question-lg"></i></a>
+								
+								<button type="button" class="btn-close btn-close-white" 
+									aria-label="Close"
+									onclick="window.location.href='{% url list_view_name %}'">
+								</button>
+							</div>
+						</div>
+						
+						<div class="card-body bg-body-secondary">
+							<form method="post" enctype="multipart/form-data" novalidate>
+								{% csrf_token %}
+								<div class="accordion" id="accordionPanelsStayOpenExample">
+									<!-- Estructura generada -->
+
+									<div class="accordion-item">
+										<h2 class="accordion-header">
+											<button 
+												class="accordion-button py-2 " 
+												type="button" 
+												data-bs-toggle="collapse" 
+												data-bs-target="#Información_Producto" 
+												aria-expanded="true" 
+												aria-controls="Información_Producto">
+												<strong>Información Producto</strong>
+											</button>
+										</h2>
+										<div class="accordion-collapse collapse show"
+											id="Información_Producto">
+											<div class="accordion-body bg-secondary-subtle">
+												
+												<div class="row">
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0">
+															{{ form.estatus_producto.label }}
+														</label>
+														{{ form.estatus_producto }}
+													</div>
+						
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0">
+															{{ form.codigo_producto.label }}
+														</label>
+														{{ form.codigo_producto }}
+													</div>
+						
+													<div class="col-md-4">
+														<label class="form-label text-primary mb-0">
+															{{ form.nombre_producto.label }}
+														</label>
+														{{ form.nombre_producto }}
+													</div>
+						
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0">
+															{{ form.tipo_producto.label }}
+														</label>
+														{{ form.tipo_producto }}
+													</div>
+												</div>
+												<div class="row">
+													<div class="col-md-4">
+														<label class="form-label text-primary mb-0">
+															{{ form.id_familia.label }}
+														</label>
+														{{ form.id_familia }}
+													</div>
+						
+													<div class="col-md-4">
+														<label class="form-label text-primary mb-0">
+															{{ form.id_marca.label }}
+														</label>
+														{{ form.id_marca }}
+													</div>
+						
+													<div class="col-md-4">
+														<label class="form-label text-primary mb-0">
+															{{ form.id_modelo.label }}
+														</label>
+														{{ form.id_modelo }}
+													</div>
+												</div>
+												<div class="row">
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0">
+															{{ form.id_cai.label }}
+														</label>
+														{{ form.id_cai }}
+													</div>
+						
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0">
+															{{ form.medida.label }}
+														</label>
+														{{ form.medida }}
+													</div>
+						
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0">
+															{{ form.segmento.label }}
+														</label>
+														{{ form.segmento }}
+													</div>
+						
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0">
+															{{ form.unidad.label }}
+														</label>
+														{{ form.unidad }}
+													</div>
+						
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0">
+															{{ form.fecha_fabricacion.label }}
+														</label>
+														{{ form.fecha_fabricacion }}
+													</div>
+												</div>
+												<div class="row">
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0">
+															{{ form.costo.label }}
+														</label>
+														{{ form.costo }}
+													</div>
+						
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0">
+															{{ form.alicuota_iva.label }}
+														</label>
+														{{ form.alicuota_iva }}
+													</div>
+						
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0">
+															{{ form.precio.label }}
+														</label>
+														{{ form.precio }}
+													</div>
+						
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0">
+															{{ form.descuento.label }}
+														</label>
+														{{ form.descuento }}
+													</div>
+												</div>
+												<div class="row">
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0">
+															{{ form.stock.label }}
+														</label>
+														{{ form.stock }}
+													</div>
+						
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0">
+															{{ form.minimo.label }}
+														</label>
+														{{ form.minimo }}
+													</div>
+						
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0">
+															{{ form.despacho_1.label }}
+														</label>
+														{{ form.despacho_1 }}
+													</div>
+						
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0">
+															{{ form.despacho_2.label }}
+														</label>
+														{{ form.despacho_2 }}
+													</div>
+												</div>
+												<div class="row">
+													<div class="col-md-4">
+														<label class="form-label text-primary mb-0">
+															{{ form.descripcion_producto.label }}
+														</label>
+														{{ form.descripcion_producto }}
+													</div>
+						
+													<div class="col-md-2 d-flex align-items-center">
+														<div class="form-check mt-lg-4">
+															<label class="form-check-label form-label text-primary">
+																{{ form.carrito }}
+																{{ form.carrito.label }}
+															</label>
+														</div>
+													</div>
+												</div>
+												
+											</div>
+										</div>
+									</div>
+									
+									<div class="accordion-item">
+										<h2 class="accordion-header">
+											<button 
+												class="accordion-button py-2 collapsed" 
+												type="button" 
+												data-bs-toggle="collapse" 
+												data-bs-target="#Stock" 
+												aria-expanded="true" 
+												aria-controls="Stock">
+												<strong>Stock</strong>
+											</button>
+										</h2>
+										<div class="accordion-collapse collapse"
+											id="Stock">
+											<div class="accordion-body bg-secondary-subtle">
+												
+												
+												<div class="row">
+													
+													<!-- Tabla para ProductoStock -->
+													 <div class="col-md-6">
+														<div class="card">
+															<div class="card-header">
+																Producto Stock
+															</div>
+															<div class="card-body">
+																<div style="max-height: 250px; overflow-y: auto;">
+																	<table class="table table-sm table-bordered table-striped">
+																		<thead>
+																			<tr>
+																				<th>Depósito</th>
+																				<th>Stock</th>
+																			</tr>
+																		</thead>
+																		<tbody>
+																			{% for stock in producto_stock_list %}
+																				<tr>
+																					<td>{{ stock.id_deposito }}</td>
+																					<td>{{ stock.stock }}</td>
+																				</tr>
+																			{% empty %}
+																				<tr>
+																					<td colspan="2" class="text-center">
+																						No hay registros de Stock
+																					</td>
+																				</tr>
+																			{% endfor %}
+																		</tbody>
+																	</table>
+																</div>
+															</div>
+														</div>
+													 </div>
+													
+													<!-- Tabla para ProductoStock -->
+													<div class="col-md-6">
+														<div class="card">
+															<div class="card-header">
+																Producto Mínimo
+															</div>
+															<div class="card-body">
+																<div style="max-height: 250px; overflow-y: auto;">
+																	<table class="table table-sm table-bordered table-striped">
+																		<thead>
+																			<tr>
+																				<th>Depósito</th>
+																				<th>CAI</th>
+																				<th>Mínimo</th>
+																			</tr>
+																		</thead>
+																		<tbody>
+																			{% for minimo in producto_minimo_list %}
+																				<tr>
+																					<td>{{ minimo.id_deposito }}</td>
+																					<td>{{ minimo.id_cai }}</td>
+																					<td>{{ minimo.minimo }}</td>
+																				</tr>
+																			{% empty %}
+																				<td colspan="3" class="text-center">
+																					No hay registros de Mínimos
+																				</td>
+																			{% endfor %}
+																		</tbody>
+																	</table>
+																</div>
+															</div>
+														</div>
+													</div> 
+													
+												</div>
+												
+												
+											</div>
+										</div>
+									</div>
+									
+									
+								</div>
+								
+								<div class="container mt-3">
+									<button class="btn btn-primary" type="submit" id="guardarBtn">
+										Guardar
+									</button>
+									<a class="btn btn-secondary" href="{% url list_view_name %}">
+										Cancelar
+									</a>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+			</main>
+		</div>
+	{% endblock principalcomponent %}
+{% endblock maincomponent %}
+<!-- -------------------------------------------------------------------- -->
+{% block modals %}
+	<!-- Modal para mostrar errores -->
+	{% include 'maestros/modal_errors.html' %}
+	
+	<!-- Modal para mostrar los requerimientos de los campos -->
+	{% include 'maestros/modal_fields_requirements.html' %}
+{% endblock modals %}
+<!-- -------------------------------------------------------------------- -->
