@@ -289,44 +289,6 @@
 				codigoPostalText.value = "";
 			}
 		});
-
-		//
-		// Evento 'blur' para verificar el código postal ingresado
-    // Evento 'blur' para verificar el código postal ingresado
-    codigoPostalText.addEventListener("blur", function () {
-			const codigoPostal = codigoPostalText.value.trim();
-
-			// Verificar si el campo de código postal no está vacío
-			if (codigoPostal) {
-					const url = "{% url 'verificar_codigo_postal' %}?codigo_postal=" + encodeURIComponent(codigoPostal);
-
-					// Realizar la solicitud al servidor
-					fetch(url)
-							.then(response => response.json())
-							.then(data => {
-									if (data.existe) {
-											alert("El código postal se encontró");
-
-											// Actualizar select de provincia y disparar evento de cambio
-											provinciaSelect.value = data.provincia_id;
-											provinciaSelect.dispatchEvent(new Event("change"));
-
-											// Llenar el select de localidad con la opción correcta
-											localidadSelect.innerHTML = `<option value="${data.localidad_id}">${data.localidad_nombre}</option>`;
-											localidadSelect.value = data.localidad_id;
-									} else {
-											// Mostrar alerta si el código postal no existe
-											alert("El código postal no se encontró. Por favor, ingréselo nuevamente.");
-											codigoPostalText.value = "";  // Limpiar el campo de código postal solo si no se encuentra
-											codigoPostalText.focus();  // Enfocar el campo de código postal
-									}
-							})
-							.catch(error => {
-									console.error("Error al verificar el código postal:", error);
-							});
-			}
-		});	
-		//
 		
 	});
 </script>

@@ -9,7 +9,7 @@ def filtrar_localidad(request):
         # Filtrar las localidades según la provincia seleccionada
         localidades = Localidad.objects.filter(
             id_provincia_id=id_provincia, estatus_localidad=True
-        ).values('id_localidad', 'nombre_localidad', 'codigo_postal')
+        ).order_by('nombre_localidad').values('id_localidad', 'nombre_localidad', 'codigo_postal')
         
         # Convertir los resultados en una lista de diccionarios con nombre completo
         localidades = [
@@ -49,6 +49,12 @@ def verificar_codigo_postal(request):
         if localidad:
             # Obtener la provincia asociada a la localidad
             provincia = localidad.id_provincia
+            
+            print("provincia:", provincia)
+            print("provincia.id_provincia:", provincia.id_provincia)
+            print("localidad.id_localidad:", localidad.id_localidad)
+            print("localidad.nombre_localidad:", localidad.nombre_localidad)
+            print("localidad.codigo_postal:", localidad.codigo_postal)
 
             # Devolver datos de existencia, provincia y localidad en formato JSON
             return JsonResponse({
