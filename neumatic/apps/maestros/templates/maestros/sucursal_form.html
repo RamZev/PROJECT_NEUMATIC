@@ -148,6 +148,11 @@
 {{ block.super }}
 <script>
 	document.addEventListener("DOMContentLoaded", function () {
+			// Limpiar sessionStorage al cargar la página para evitar mantener datos previos
+			sessionStorage.removeItem("provinciaSeleccionada");
+			sessionStorage.removeItem("localidadSeleccionada");
+			sessionStorage.removeItem("codigoPostalSeleccionado");
+		
 			const codigoPostalText = document.getElementById("id_codigo_postal");
 			const provinciaSelect = document.getElementById("id_id_provincia");
 			const localidadSelect = document.getElementById("id_id_localidad");
