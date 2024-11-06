@@ -26,18 +26,6 @@ def filtrar_localidad(request):
     
     return JsonResponse({'error': 'No se proporcionó el tipo de Provincia'}, status=400)
 
-# def verificar_codigo_postal(request):
-#      codigo_postal = request.GET.get('codigo_postal')
-    
-#      if codigo_postal:
-#          # Verificar si el código postal existe en el modelo Localidad
-#          existe = Localidad.objects.filter(codigo_postal=codigo_postal).exists()
-        
-#          # Devolver el resultado en formato JSON
-#          return JsonResponse({'existe': existe})
-    
-#      return JsonResponse({'error': 'No se proporcionó el código postal'}, status=400)
-
 
 def verificar_codigo_postal(request):
     codigo_postal = request.GET.get('codigo_postal')
@@ -50,11 +38,11 @@ def verificar_codigo_postal(request):
             # Obtener la provincia asociada a la localidad
             provincia = localidad.id_provincia
             
-            print("provincia:", provincia)
-            print("provincia.id_provincia:", provincia.id_provincia)
-            print("localidad.id_localidad:", localidad.id_localidad)
-            print("localidad.nombre_localidad:", localidad.nombre_localidad)
-            print("localidad.codigo_postal:", localidad.codigo_postal)
+            # print("provincia:", provincia)
+            # print("provincia.id_provincia:", provincia.id_provincia)
+            # print("localidad.id_localidad:", localidad.id_localidad)
+            # print("localidad.nombre_localidad:", localidad.nombre_localidad)
+            # print("localidad.codigo_postal:", localidad.codigo_postal)
 
             # Devolver datos de existencia, provincia y localidad en formato JSON
             return JsonResponse({
