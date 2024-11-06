@@ -52,19 +52,19 @@
 				<div class="row justify-content-center mt-5">
 					<div class="col col-md-4">
 						
-						<div class="card border-2 border border-light rounded-4 bg-transparent">
-							<div class="card-header text-center text-white">
+						<div class="card border-2 border border-light rounded-4" style="background-color: #D1FBFA;">
+							<div class="card-header text-center text-black">
 								<h2>Cierre de Sesión</h2>
 							</div>
 
 							<div class="card-body text-center">
-								<h5 class="card-title text-white">Atención!</h5>
-								<p class="card-text text-white">¿Desea cerrar la sesión de usuario?</p>
+								<h5 class="card-title text-black">Atención!</h5>
+								<p class="card-text text-black">¿Desea cerrar la sesión de usuario?</p>
 								
 								<form method="POST" action="{% url 'cerrar_sesion' %}">
 									{% csrf_token %}
 									<button type="submit" class="btn btn-primary">Cerrar Sesión</button>
-									<a class="btn btn-outline-primary text-white" href="{% url 'home' %}">Cancelar</a>
+									<a class="btn btn-outline-primary text-black" href="{% url 'home' %}">Cancelar</a>
 								</form>
 							
 							</div>
