@@ -22,13 +22,39 @@ project_app_labels = ['usuarios', 'maestros', 'facturacion']
 #-- Vista Login. 
 class CustomLoginView(GenericLoginView):
 	template_name = 'usuarios/sesion_iniciar.html'
+	
+	def form_valid(self, form):
+		#-- Llama al método original para autenticar al usuario.
+		response = super().form_valid(form)
+		
+		#-- Obtener el usuario autenticado.
+		user = form.get_user()
+		
+		#-- Guardar los datos del usuario en la sesión.
+		self.request.session['username'] = user.username
+		self.request.session['first_name'] = user.first_name
+		self.request.session['last_name'] = user.last_name
+		self.request.session['is_superuser'] = user.is_superuser
+		self.request.session['is_staff'] = user.is_staff
+		
+		return response
 
 
 #-- Vista Logout. 
 class CustomLogoutView(GenericLogoutView):
 	template_name = 'usuarios/sesion_cerrar.html'
 	http_method_names = ["get", "post", "options"]  # He tenido que incluir el método GET para que funcione. NO DEBERÍA SER!!!
-
+	
+	def dispatch(self, request, *args, **kwargs):
+		#-- Limpiar los datos del usuario de la sesión.
+		request.session.pop('username', None)
+		request.session.pop('first_name', None)
+		request.session.pop('last_name', None)
+		request.session.pop('is_superuser', None)
+		request.session.pop('is_staff', None)
+		 
+		#-- Llama al método original para cerrar la sesión.
+		return super().dispatch(request, *args, **kwargs)
 
 #-- Vistas de Grupos de usuarios. 
 #@method_decorator(login_required, name='dispatch')

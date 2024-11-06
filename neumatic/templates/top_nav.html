@@ -21,10 +21,10 @@
 	
 	<div class="col-auto align-self-center text-white">
 		{% if user.is_authenticated %}
-			{% if user.first_name%}
-				{{user.first_name}} {{user.last_name}}
+			{% if request.session.first_name %}
+				{{ request.session.first_name }} {{ request.session.last_name }}
 			{% else %}
-				{{ user }}
+				{{ request.session.username }}
 			{% endif %}
 		{% endif %}  
 	</div>
@@ -36,7 +36,7 @@
 			<ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
 				<li><a class="dropdown-item" href="#!">Configuración</a></li>
 				<li><a class="dropdown-item" href="#!">Registro de Actividad</a></li>
-				{% if user.is_staff or user.is_superuser %}
+				{% if request.session.is_staff or request.session.is_superuser %}
 					<li><a class="dropdown-item" href="{% url 'grupo_listar' %}">Grupos</a></li>
 					<li><a class="dropdown-item" href="{% url 'usuario_listar' %}">Usuarios</a></li>
 				{% endif %}
