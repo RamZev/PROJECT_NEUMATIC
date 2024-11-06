@@ -56,7 +56,10 @@ class ConfigViews():
 
 
 class DataViewList():
-	search_fields = ['codigo_postal', 'nombre_localidad']
+	search_fields = ['codigo_postal', 
+				  	 'nombre_localidad', 
+					 'id_provincia__nombre_provincia'
+	]
 	
 	ordering = ['nombre_localidad']
 	
