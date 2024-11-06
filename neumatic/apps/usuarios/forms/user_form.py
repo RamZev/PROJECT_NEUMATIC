@@ -13,8 +13,6 @@ from diseno_base.diseno_bootstrap import (
 # -- Registrar Usuario 
 class RegistroUsuarioForm(UserCreationForm):
 	
-	email = forms.EmailField(required=True, widget=forms.TextInput(attrs=formclasstext))
-	
 	class Meta:
 		model = User
 		fields = [
@@ -63,8 +61,6 @@ class RegistroUsuarioForm(UserCreationForm):
 		}
 
 class EditarUsuarioForm(UserChangeForm):
-	
-	email = forms.EmailField(required=True)
 	
 	class Meta:
 		model = User

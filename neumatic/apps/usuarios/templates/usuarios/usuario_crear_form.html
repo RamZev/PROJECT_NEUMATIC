@@ -45,9 +45,25 @@
 								<h3 class="card-title text-center">Registro de Usuario</h3>
 								<div class="card-text">
 									{% if form.errors %}
-										<div class="alert alert-danger alert-dismissible fade show">{{ form.errors }}</div>
+										<div class="alert alert-danger alert-dismissible fade show">
+											<ul>
+												{% for field in form %}
+													{% if field.errors %}
+														<li class="text-danger">{{ field.label }}:
+															<ul>
+																{% for error in field.errors %}
+																	<li class="text-danger">{{ error }}</li>
+																{% endfor %}
+															</ul>
+														</li>
+													{% endif %}
+												{% endfor %}
+											</ul>
+										</div>
 									{% endif %}
-									<form method="post">
+									
+									
+									<form method="post" novalidate>
 										{% csrf_token %}
 										<div class="form-group">
 											<label for="usuario">Nombre de Usuario</label>
