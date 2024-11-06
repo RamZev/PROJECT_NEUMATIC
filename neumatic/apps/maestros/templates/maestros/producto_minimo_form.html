@@ -48,26 +48,47 @@
 											id="Información_General">
 											<div class="accordion-body bg-secondary-subtle">
 												<div class="row">
+													<!--  -->
+													{% comment %}
 													<div class="col-md-2">
 														<label class="form-label text-primary mb-0">
-															{{ form.cai.label }}
+															{{ form.id_cai.label }}
 														</label>
-														{{ form.cai }}
+														{{ form.id_cai }}
 													</div>
-						
+													{% endcomment %}
 													<div class="col-md-2">
 														<label class="form-label text-primary mb-0">
-															{{ form.minimo.label }}
+															{{ form.id_cai.label }}
 														</label>
-														{{ form.minimo }}
+														<input type="text" name="tp" value="{{ form.instance.id_cai }}" class="form-control form-control-sm border border-primary mb-2" disabled>
 													</div>
-						
+													<!--  -->
+													
+													<!--  -->
+													{% comment %}
 													<div class="col-md-4">
 														<label class="form-label text-primary mb-0">
 															{{ form.id_deposito.label }}
 														</label>
 														{{ form.id_deposito }}
 													</div>
+													{% endcomment %}
+													<div class="col-md-4">
+														<label class="form-label text-primary mb-0">
+															{{ form.id_deposito.label }}
+														</label>
+														<input type="text" name="tp" value="{{ form.instance.id_deposito }}" class="form-control form-control-sm border border-primary mb-2" disabled>
+													</div>
+													<!--  -->
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0">
+															{{ form.minimo.label }}
+														</label>
+														{{ form.minimo }}
+													</div>
+													
 												</div>
 											</div>
 										</div>

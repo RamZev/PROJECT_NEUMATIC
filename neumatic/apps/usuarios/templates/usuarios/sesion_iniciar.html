@@ -85,14 +85,14 @@
 										</div>
 									</div>
 								</div>
-
+								
 								{% if error %}
 									<div class="alert alert-danger alert-dismissible fade show">{{ error }}</div>
 								{% endif %}
-
+								
 								<form method="post">
 									{% csrf_token %}
-
+									
 									<div class="row gy-3 overflow-hidden">
 										<div class="col-12">
 											<div class="form-floating mb-3">
@@ -100,7 +100,7 @@
 											<label for="usuario" class="form-label">Usuario</label>
 											</div>
 										</div>
-		
+										
 										<div class="col-12">
 											<div class="form-floating mb-3">
 											<input type="password" class="form-control" name="password" id="password" value="" placeholder="Contraseña" required>
@@ -124,7 +124,7 @@
 										</div>
 									</div>
 								</form>
-		
+								
 								<div class="row">
 									<div class="col-12">
 										<div class="d-flex gap-2 gap-md-4 flex-column flex-md-row justify-content-md-end mt-4">

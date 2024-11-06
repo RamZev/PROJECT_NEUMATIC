@@ -125,7 +125,7 @@ class ProductoDepositoCreateView(MaestroCreateView):
 		
 		for producto in productos:
 			#-- Solo registrar si el tipo de producto es 'p'.
-			if producto.tipo_producto == 'p':
+			if producto.tipo_producto.lower() == 'p':
 				#-- Registrar en ProductoStock con stock = 0.
 				ProductoStock.objects.create(
 					id_producto=producto,
@@ -136,17 +136,17 @@ class ProductoDepositoCreateView(MaestroCreateView):
 				)
 				
 				#-- Si el producto tiene CAI, registrar en ProductoMinimo.
-				if producto.cai:
+				if producto.id_cai:
 					#-- Verificar si ya existe un registro en ProductoMinimo para ese CAI y depósito.
 					existe_cai = ProductoMinimo.objects.filter(
-						cai=producto.cai,
+						id_cai=producto.id_cai,
 						id_deposito=deposito
 					).exists()
 					
 					if not existe_cai:
 						#-- Registrar en ProductoMinimo con el mínimo del producto.
 						ProductoMinimo.objects.create(
-							cai=producto.cai,
+							id_cai=producto.id_cai,
 							id_deposito=deposito,
 							minimo=producto.minimo
 						)

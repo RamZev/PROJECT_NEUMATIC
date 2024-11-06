@@ -4,7 +4,7 @@ from .crud_forms_generics import CrudGenericForm
 from ..models.base_models import *
 from ..models.cliente_models import Cliente
 from diseno_base.diseno_bootstrap import (
-	formclasstext, formclassselect, formclasscheck, formclassdate)
+	formclasstext, formclassselect, formclassdate)
 
 class ClienteForm(CrudGenericForm):
 		
@@ -78,9 +78,9 @@ class ClienteForm(CrudGenericForm):
 			'black_list_motivo': 
 				forms.TextInput(attrs={**formclasstext}),
 			'black_list_usuario': 
-				forms.TextInput(attrs={**formclasstext}),
+				forms.TextInput(attrs={**formclasstext, 'readonly': True}),
 			'fecha_baja': 
-				forms.TextInput(attrs={'type':'date', **formclassdate}),
+				forms.TextInput(attrs={'type':'date', **formclassdate, 'readonly': True}),
 	
 		}
 	

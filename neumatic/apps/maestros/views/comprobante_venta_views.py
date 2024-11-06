@@ -26,9 +26,9 @@ class ConfigViews():
 	model_string = "comprobante_venta"
 	
 	# Permisos
-	permission_add = f"{app_label}.add_{model_string}"
-	permission_change = f"{app_label}.change_{model_string}"
-	permission_delete = f"{app_label}.delete_{model_string}"
+	permission_add = f"{app_label}.add_{model.__name__.lower()}"
+	permission_change = f"{app_label}.change_{model.__name__.lower()}"
+	permission_delete = f"{app_label}.delete_{model.__name__.lower()}"
 	
 	# Vistas del CRUD del modelo
 	list_view_name = f"{model_string}_list"

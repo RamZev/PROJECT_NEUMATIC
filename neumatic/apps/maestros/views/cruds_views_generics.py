@@ -121,8 +121,13 @@ class MaestroCreateView(PermissionRequiredMixin, CreateView):
 	list_view_name = None
 	
 	def form_valid(self, form):
-		#-- Pasa el usuario autenticado al guardar el formulario.
-		form.instance.save(user=self.request.user)
+		#-- # Accede al usuario evaluado.
+		user = self.request.user
+		
+		#-- Asigna el usuario directamente en el modelo.
+		form.instance.id_user = user
+		form.instance.usuario = user.username
+		
 		return super().form_valid(form)
 	
 	def form_invalid(self, form):
@@ -163,8 +168,13 @@ class MaestroUpdateView(PermissionRequiredMixin, UpdateView):
 	list_view_name = None
 	
 	def form_valid(self, form):
-		#-- Pasa el usuario autenticado al guardar el formulario.
-		form.instance.save(user=self.request.user)
+		#-- Accede al usuario evaluado.
+		user = self.request.user
+		
+		#-- Asigna el usuario directamente en el modelo.
+		form.instance.id_user = user
+		form.instance.usuario = user.username
+		
 		return super().form_valid(form)
 	
 	def form_invalid(self, form):

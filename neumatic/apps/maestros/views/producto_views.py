@@ -122,9 +122,9 @@ class ProductoCreateView(MaestroCreateView):
 	
 	def form_valid(self, form):
 		response = super().form_valid(form)
-		
 		producto = self.object
-		if producto.tipo_producto == 'p':
+		
+		if producto.tipo_producto.lower() == 'p':
 			#-- Obtener todos los depósitos.
 			depositos = ProductoDeposito.objects.all()
 			

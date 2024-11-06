@@ -26,9 +26,9 @@ class ConfigViews():
 	model_string = "producto_minimo"
 	
 	# Permisos
-	permission_add = f"{app_label}.add_{model_string}"
-	permission_change = f"{app_label}.change_{model_string}"
-	permission_delete = f"{app_label}.delete_{model_string}"
+	permission_add = f"{app_label}.add_{model.__name__.lower()}"
+	permission_change = f"{app_label}.change_{model.__name__.lower()}"
+	permission_delete = f"{app_label}.delete_{model.__name__.lower()}"
 	
 	# Vistas del CRUD del modelo
 	list_view_name = f"{model_string}_list"
@@ -56,23 +56,24 @@ class ConfigViews():
 
 
 class DataViewList():
-	search_fields = ['cai']
+	search_fields = ['id_cai__cai', 'id_deposito__nombre_producto_deposito']
 	
-	ordering = ['cai']
+	ordering = ['id_cai']
 	
 	paginate_by = 8
 	
 	table_headers = {
-		'cai': (2, 'CAI'),
-		'minimo': (2, 'Mínimo'),
+		'id_cai': (2, 'CAI'),
 		'id_deposito': (5, 'Depósito'),
+		'minimo': (2, 'Mínimo'),
+		
 		'acciones': (2, 'Acciones'),
 	}
 	
 	table_data = [
-		{'field_name': 'cai', 'date_format': None},
-		{'field_name': 'minimo', 'date_format': None},
+		{'field_name': 'id_cai', 'date_format': None},
 		{'field_name': 'id_deposito', 'date_format': None},
+		{'field_name': 'minimo', 'date_format': None},
 	]
 
 

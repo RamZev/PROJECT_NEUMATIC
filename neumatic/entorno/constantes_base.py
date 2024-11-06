@@ -27,7 +27,7 @@ SEXO = [
 ]
 
 TIPO_PRODUCTO_SERVICIO = [
-	('p', 'Producto'),
+	('P', 'Producto'),
 	('S', 'Servicio')
 ]
 

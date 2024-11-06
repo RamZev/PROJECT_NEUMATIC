@@ -22,15 +22,6 @@ class ModeloBaseGenerico(models.Model):
 	
 	def save(self, *args, **kwargs):
 		
-		#-- Obtiene el usuario desde kwargs, si está disponible.
-		user = kwargs.pop('user', None)
-		
-		if user:
-			self.user_id = user
-			self.usuario = user.username
-		else:
-			self.usuario ="UserPrueba"
-		
 		#-- Obtiene el nombre del equipo (estación) en Windows.
 		if not self.estacion:
 			self.estacion = socket.gethostname()

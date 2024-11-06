@@ -408,7 +408,34 @@
 				codigoPostalText.value = "";
 			}
 		});
-
+		
+		
+		// Nueva funcionalidad para el combobox black_list
+		const blackListSelect = document.getElementById("id_black_list");
+		const blackListMotivoInput = document.getElementById("id_black_list_motivo");
+		const blackListUsuarioInput = document.getElementById("id_black_list_usuario");
+		const fechaBajaInput = document.getElementById("id_fecha_baja");
+		
+		// Obtener el usuario autenticado desde el contexto de Django
+		const usuarioAutenticado = "{{ request.user.username }}";  // Asegúrate de que esto está disponible en el contexto
+		
+		// Función para manejar el cambio en el combobox de black_list
+		function manejarCambioBlackList() {
+			if (blackListSelect.value === "True") {
+				// Llenar los campos si el valor es True
+				blackListUsuarioInput.value = usuarioAutenticado;  // Llenar con el usuario autenticado
+				fechaBajaInput.value = new Date().toISOString().slice(0, 10); // Llenar con la fecha actual en formato YYYY-MM-DD
+			} else {
+				// Limpiar los campos si el valor es False
+				blackListMotivoInput.value = "";
+				blackListUsuarioInput.value = "";
+				fechaBajaInput.value = "";
+			}
+		}
+		
+		// Agregar un listener al cambio del select de black_list
+		blackListSelect.addEventListener("change", manejarCambioBlackList);		
+		
 	});
 </script>
 

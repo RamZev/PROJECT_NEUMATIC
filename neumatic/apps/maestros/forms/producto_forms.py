@@ -8,7 +8,24 @@ from diseno_base.diseno_bootstrap import (
 
 class ProductoForm(CrudGenericForm):
 	
-		
+	def __init__(self, *args, **kwargs):
+		super().__init__(*args, **kwargs)
+		#-- Si se está editando un producto existente, deshabilitar el campo tipo_producto.
+		if self.instance and self.instance.pk:
+			self.fields['tipo_producto'].widget = forms.HiddenInput()
+			self.fields['tipo_producto'].required = False  # Desactiva la validación
+			self.initial['tipo_producto'] = self.instance.tipo_producto  # Asegurar valor inicial
+	
+	def clean(self):
+		cleaned_data = super().clean()
+		# Asignar automáticamente tipo_producto si el formulario está en modo edición
+		if self.instance.pk:
+			cleaned_data['tipo_producto'] = self.instance.tipo_producto
+			# Remover tipo_producto de la validación en modo edición
+			self._errors.pop('tipo_producto', None)
+		return cleaned_data
+	
+	
 	class Meta:
 		model = Producto
 		fields = '__all__'

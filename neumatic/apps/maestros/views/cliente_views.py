@@ -3,6 +3,8 @@ from django.urls import reverse_lazy
 from ..views.cruds_views_generics import *
 from ..models.cliente_models import Cliente
 from ..forms.cliente_forms import ClienteForm
+from django.utils import timezone
+
 
 class ConfigViews():
 	# Modelo
@@ -25,9 +27,9 @@ class ConfigViews():
 	#model_string = "tipo_cambio"
 	
 	# Permisos
-	permission_add = f"{app_label}.add_{model_string}"
-	permission_change = f"{app_label}.change_{model_string}"
-	permission_delete = f"{app_label}.delete_{model_string}"
+	permission_add = f"{app_label}.add_{model.__name__.lower()}"
+	permission_change = f"{app_label}.change_{model.__name__.lower()}"
+	permission_delete = f"{app_label}.delete_{model.__name__.lower()}"
 	
 	# Vistas del CRUD del modelo
 	list_view_name = f"{model_string}_list"
@@ -54,7 +56,6 @@ class ConfigViews():
 	success_url = reverse_lazy(list_view_name)
 
 
-
 class DataViewList():
 	search_fields = ['nombre_cliente', 'cuit']
 	
@@ -65,16 +66,16 @@ class DataViewList():
 	table_headers = {
 		'estatus_cliente': (2, 'Estatus'),
 		'nombre_cliente': (4, 'Nombre Cliente'),
-    'tipo_persona': (2, 'Tipo'),
-    'cuit': (2, 'CUIT'),
+	'tipo_persona': (2, 'Tipo'),
+	'cuit': (2, 'CUIT'),
 		'acciones': (2, 'Acciones'),
 	}
 	
 	table_data = [
 		{'field_name': 'estatus_cliente', 'date_format': None},
-    {'field_name': 'nombre_cliente', 'date_format': None},
+	{'field_name': 'nombre_cliente', 'date_format': None},
 		{'field_name': 'tipo_persona', 'date_format': None},
-    {'field_name': 'cuit', 'date_format': None},
+	{'field_name': 'cuit', 'date_format': None},
 	]
 
 
@@ -108,13 +109,18 @@ class ClienteCreateView(MaestroCreateView):
 	success_url = ConfigViews.success_url
 	
 	#-- Indicar el permiso que requiere para ejecutar la acción.
-	# (revisar de donde lo copiaste que tienes asignado permission_change en vez de permission_add)
 	permission_required = ConfigViews.permission_add
 	
 	extra_context = {
 		"accion": f"Crear {ConfigViews.model._meta.verbose_name}",
 		"list_view_name" : ConfigViews.list_view_name
 	}
+	
+	def get_initial(self):
+		initial = super().get_initial()
+		#-- Asignar la sucursal del usuario autenticado como valor inicial.
+		initial['id_sucursal'] = self.request.user.id_sucursal
+		return initial
 
 
 # ClienteUpdateView
