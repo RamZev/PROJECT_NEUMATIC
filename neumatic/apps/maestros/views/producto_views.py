@@ -1,10 +1,15 @@
 # neumatic\apps\maestros\views\operario_views.py
 from django.urls import reverse_lazy
+
+from django.views.decorators.http import require_POST
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
+
 from ..views.cruds_views_generics import *
 from ..models.producto_models import Producto
 from ..forms.producto_forms import ProductoForm
 from ..models.base_models import (ProductoDeposito, ProductoStock, 
-								  ProductoMinimo, ProductoCai)
+								  ProductoMinimo)
 
 
 class ConfigViews():
@@ -201,7 +206,9 @@ class ProductoUpdateView(MaestroUpdateView):
 		
 		#-- Consultar registros de ProductoStock y ProductoMinimo relacionados al producto.
 		context['producto_stock_list'] = ProductoStock.objects.filter(id_producto=producto).order_by('id_deposito__nombre_producto_deposito')
-		context['producto_minimo_list'] = ProductoMinimo.objects.filter(id_cai=producto.id_cai).order_by('id_deposito__nombre_producto_deposito')
+		context['producto_minimo_list'] = ProductoMinimo.objects.filter(id_cai=producto.id_cai)\
+			.values('id_deposito__id_producto_deposito', 'id_deposito__nombre_producto_deposito', 'id_cai__id_cai', 'id_cai__cai', 'minimo')\
+			.order_by('id_deposito__nombre_producto_deposito')
 		
 		#-- Agregar datos adicionales al contexto.
 		context.update({
@@ -245,3 +252,23 @@ class ProductoDeleteView (MaestroDeleteView):
 			ProductoMinimo.objects.filter(id_cai=cai).delete()
 		
 		return response	
+
+
+@require_POST
+def actualizar_minimo(request):
+    id_cai = request.POST.get('id_cai')
+    id_deposito = request.POST.get('id_deposito')
+    minimo = request.POST.get('minimo')
+    
+    try:
+        #-- Busca el registro correspondiente.
+        producto_minimo = get_object_or_404(ProductoMinimo, id_cai=id_cai, id_deposito=id_deposito)
+        
+        #-- Actualiza el campo `minimo`.
+        producto_minimo.minimo = minimo
+        producto_minimo.save()
+        
+        return JsonResponse({'success': True, 'message': 'El mínimo se actualizó correctamente.'})
+    
+    except Exception as e:
+        return JsonResponse({'success': False, 'message': str(e)})

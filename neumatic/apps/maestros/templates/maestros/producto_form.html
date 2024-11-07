@@ -243,11 +243,9 @@
 											id="Stock">
 											<div class="accordion-body bg-secondary-subtle">
 												
-												
 												<div class="row">
-													
 													<!-- Tabla para ProductoStock -->
-													 <div class="col-md-6">
+													 <div class="col-md-5">
 														<div class="card">
 															<div class="card-header">
 																Producto Stock
@@ -258,14 +256,14 @@
 																		<thead>
 																			<tr>
 																				<th>Depósito</th>
-																				<th>Stock</th>
+																				<th class="col-1 text-center">Stock</th>
 																			</tr>
 																		</thead>
 																		<tbody>
 																			{% for stock in producto_stock_list %}
 																				<tr>
 																					<td>{{ stock.id_deposito }}</td>
-																					<td>{{ stock.stock }}</td>
+																					<td class="text-end">{{ stock.stock }}</td>
 																				</tr>
 																			{% empty %}
 																				<tr>
@@ -282,7 +280,7 @@
 													 </div>
 													
 													<!-- Tabla para ProductoStock -->
-													<div class="col-md-6">
+													<div class="col-md-7">
 														<div class="card">
 															<div class="card-header">
 																Producto Mínimo
@@ -292,17 +290,35 @@
 																	<table class="table table-sm table-bordered table-striped">
 																		<thead>
 																			<tr>
+																				{% comment %} <th>id Dep.</th> {% endcomment %}
 																				<th>Depósito</th>
-																				<th>CAI</th>
-																				<th>Mínimo</th>
+																				{% comment %} <th class="col-3">id_cai</th> {% endcomment %}
+																				<th class="col-3">CAI</th>
+																				<th class="col-1">Mínimo</th>
+																				<th></th>
 																			</tr>
 																		</thead>
 																		<tbody>
 																			{% for minimo in producto_minimo_list %}
 																				<tr>
-																					<td>{{ minimo.id_deposito }}</td>
-																					<td>{{ minimo.id_cai }}</td>
-																					<td>{{ minimo.minimo }}</td>
+																					<td>{{ minimo.id_deposito__nombre_producto_deposito }}</td>
+																					<td>{{ minimo.id_cai__cai }}</td>
+																					<td class="text-end" data-deposito-cell-id="{{ minimo.id_deposito__id_producto_deposito }}" data-cai-cell-id="{{ minimo.id_cai__id_cai }}">
+																						{{ minimo.minimo }}
+																					</td>
+																					<td class="text-center">
+																						
+																						<button type="button" class="btn btn-link p-0" data-bs-toggle="modal" 
+																								data-bs-target="#editMinimoModal" 
+																								data-deposito-id="{{ minimo.id_deposito__id_producto_deposito }}" 
+																								data-deposito-nombre="{{ minimo.id_deposito__nombre_producto_deposito }}" 
+																								data-cai-id="{{ minimo.id_cai__id_cai }}" 
+																								data-cai-descripcion="{{ minimo.id_cai__cai }}" 
+																								data-minimo="{{ minimo.minimo }}">
+																								<i class="fa fa-edit"></i>
+																						</button>																						
+																						
+																					</td>
 																				</tr>
 																			{% empty %}
 																				<td colspan="3" class="text-center">
@@ -318,12 +334,9 @@
 													
 												</div>
 												
-												
 											</div>
 										</div>
 									</div>
-									
-									
 								</div>
 								
 								<div class="container mt-3">
@@ -349,5 +362,172 @@
 	
 	<!-- Modal para mostrar los requerimientos de los campos -->
 	{% include 'maestros/modal_fields_requirements.html' %}
+	
+	<!-- Modal para editar Producto Mínimo -->
+	<div class="modal fade" id="editMinimoModal" tabindex="-1" aria-labelledby="editMinimoModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				
+				<div class="modal-header text-white bg-primary opacity-75">
+					<h5 class="modal-title" id="editMinimoModalLabel">Editar Producto Mínimo</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				
+				<div class="modal-body">
+					<form id="editMinimoForm">
+						<div class="mb-3">
+							<label for="editDepositoNombre" class="form-label">Depósito</label>
+							<input type="text" class="form-control" id="editDepositoNombre" readonly>
+							<input type="hidden" id="editDepositoId">
+						</div>
+						<div class="mb-3">
+							<label for="editCaiDescripcion" class="form-label">CAI</label>
+							<input type="text" class="form-control" id="editCaiDescripcion" readonly>
+							<input type="hidden" id="editCaiId">
+						</div>
+						<div class="mb-3">
+							<label for="editMinimo" class="form-label">Mínimo</label>
+							<input type="number" class="form-control" id="editMinimo" name="minimo">
+						</div>
+					</form>
+				</div>
+							
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+					<button type="button" class="btn btn-primary" id="saveChanges">Guardar</button>
+				</div>
+			</div>
+		</div>
+	</div>	
 {% endblock modals %}
 <!-- -------------------------------------------------------------------- -->
+{% block script %}
+	{{ block.super }}
+	
+	<script>
+		document.addEventListener('DOMContentLoaded', function () {
+			var editMinimoModal = document.getElementById('editMinimoModal');
+			
+			editMinimoModal.addEventListener('show.bs.modal', function (event) {
+				var button = event.relatedTarget;
+				
+				// Obtener los nombres y IDs
+				var depositoNombre = button.getAttribute('data-deposito-nombre');
+				var depositoId = button.getAttribute('data-deposito-id');
+				var caiDescripcion = button.getAttribute('data-cai-descripcion');
+				var caiId = button.getAttribute('data-cai-id');
+				var minimo = button.getAttribute('data-minimo');
+				
+				// Asigna el nombre y descripción al modal
+				document.getElementById('editDepositoNombre').value = depositoNombre;
+				document.getElementById('editCaiDescripcion').value = caiDescripcion;
+				document.getElementById('editMinimo').value = minimo;
+				
+				// Almacena los IDs en campos ocultos
+				document.getElementById('editDepositoId').value = depositoId;
+				document.getElementById('editCaiId').value = caiId;
+			});
+			
+			document.getElementById('saveChanges').addEventListener('click', function () {
+				var depositoId = document.getElementById('editDepositoId').value;
+				var caiId = document.getElementById('editCaiId').value;
+				var minimo = document.getElementById('editMinimo').value;
+				
+				fetch("{% url 'actualizar_minimo' %}", {
+					method: 'POST',
+					headers: {
+						'X-CSRFToken': '{{ csrf_token }}',
+						'Content-Type': 'application/x-www-form-urlencoded'
+					},
+					body: new URLSearchParams({
+						'id_deposito': depositoId,
+						'id_cai': caiId,
+						'minimo': minimo
+					})
+				})
+				.then(response => response.json())
+				.then(data => {
+					if (data.success) {
+						// alert(data.message);
+						var modal = bootstrap.Modal.getInstance(editMinimoModal);
+						modal.hide();
+						
+						// Actualiza el valor en la tabla sin recargar la página
+						// Selecciona la celda correcta con el atributo data-deposito-id y data-cai-id
+						var updatedCell = document.querySelector(`[data-deposito-cell-id="${depositoId}"][data-cai-cell-id="${caiId}"]`);
+						if (updatedCell) {
+							updatedCell.textContent = minimo; // Actualiza la celda correspondiente
+						}
+					} else {
+						alert("Error: " + data.message);
+					}
+				});
+			});
+		});
+	</script>	
+	
+{% endblock script %}
+
+
+
+<!-- 
+	<script>
+		document.addEventListener('DOMContentLoaded', function () {
+			var editMinimoModal = document.getElementById('editMinimoModal');
+			
+			editMinimoModal.addEventListener('show.bs.modal', function (event) {
+				var button = event.relatedTarget;
+				
+				// Obtener los nombres y IDs
+				var depositoNombre = button.getAttribute('data-deposito-nombre');
+				var depositoId = button.getAttribute('data-deposito-id');
+				var caiDescripcion = button.getAttribute('data-cai-descripcion');
+				var caiId = button.getAttribute('data-cai-id');
+				var minimo = button.getAttribute('data-minimo');
+				
+				// Asigna el nombre y descripción al modal
+				document.getElementById('editDepositoNombre').value = depositoNombre;
+				document.getElementById('editCaiDescripcion').value = caiDescripcion;
+				document.getElementById('editMinimo').value = minimo;
+				
+				// Almacena los IDs en campos ocultos
+				document.getElementById('editDepositoId').value = depositoId;
+				document.getElementById('editCaiId').value = caiId;
+			});
+			
+			document.getElementById('saveChanges').addEventListener('click', function () {
+				var depositoId = document.getElementById('editDepositoId').value;
+				var caiId = document.getElementById('editCaiId').value;
+				var minimo = document.getElementById('editMinimo').value;
+				
+				fetch("{% url 'actualizar_minimo' %}", {
+					method: 'POST',
+					headers: {
+						'X-CSRFToken': '{{ csrf_token }}',
+						'Content-Type': 'application/x-www-form-urlencoded'
+					},
+					body: new URLSearchParams({
+						'id_deposito': depositoId,
+						'id_cai': caiId,
+						'minimo': minimo
+					})
+				})
+				.then(response => response.json())
+				.then(data => {
+					if (data.success) {
+						alert(data.message);
+						var modal = bootstrap.Modal.getInstance(editMinimoModal);
+						modal.hide();
+						
+						// Actualiza el valor en la tabla sin recargar la página
+						document.querySelector(`[data-deposito-id="${depositoId}"][data-cai-id="${caiId}"]`).textContent = minimo;
+					} else {
+						alert("Error: " + data.message);
+					}
+				});
+			});
+		});
+	</script>	
+
+
+-->

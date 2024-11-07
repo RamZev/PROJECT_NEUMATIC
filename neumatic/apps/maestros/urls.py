@@ -22,19 +22,20 @@ from .views.tipo_percepcion_ib_views import *
 from .views.tipo_retencion_ib_views import *
 from .views.operario_views import *
 from .views.medio_pago_views import *
+from .views.punto_venta_views import *
 
 #-- Catálogos
 from .views.cliente_views import *
 from .views.proveedor_views import *
 from .views.producto_views import *
 from .views.cliente_views import *
-
 from .views.vendedor_views import *
 from .views.empresa_views import *
 from .views.sucursal_views import *
 from .views.parametro_views import *
 from .views.numero_views import *
 
+#-- Otras rutas.
 from .views.consulta_views_maestros import filtrar_localidad
 from .views.consulta_views_maestros import verificar_codigo_postal
 
@@ -209,7 +210,16 @@ urlpatterns = [
 	path('medio_pago/<int:pk>/editar/', MedioPagoUpdateView.as_view(), name='medio_pago_update'),
 	path('medio_pago/<int:pk>/eliminar/', MedioPagoDeleteView.as_view(), name='medio_pago_delete'),
  
+	#-- PuntoVenta.
+	path('punto_venta/', PuntoVentaListView.as_view(), name='punto_venta_list'),
+	path('punto_venta/nueva/', PuntoVentaCreateView.as_view(), name='punto_venta_create'),
+	path('punto_venta/<int:pk>/editar/', PuntoVentaUpdateView.as_view(), name='punto_venta_update'),
+	path('punto_venta/<int:pk>/eliminar/', PuntoVentaDeleteView.as_view(), name='punto_venta_delete'),
+ 
+	#-- Otras rutas.
 	path('filtrar-localidad/', filtrar_localidad, name='filtrar_localidad'),
 	path('verificar-codigo-postal/', verificar_codigo_postal, name='verificar_codigo_postal'),
+	
+	path('actualizar_minimo/', actualizar_minimo, name='actualizar_minimo'),	
 
 ]
