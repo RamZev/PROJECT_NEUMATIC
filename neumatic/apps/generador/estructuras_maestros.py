@@ -610,4 +610,14 @@ estructura_campos = {
 		}
 	},
 	
+	'punto_venta': {
+		'Información del Punto de Venta': {
+			'fila_1': [
+				{'field_name': 'estatus_punto_venta', 'columna': 2, 'design': None},
+				{'field_name': 'punto_venta', 'columna': 2, 'design': None},
+				{'field_name': 'descripcion_punto_venta', 'columna': 4, 'design': None},
+			],
+		}
+	},
+	
 }
