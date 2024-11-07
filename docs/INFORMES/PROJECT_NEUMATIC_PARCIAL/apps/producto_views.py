@@ -1,17 +1,16 @@
-# neumatic\apps\maestros\views\producto_stock_views.py
+# neumatic\apps\maestros\views\producto_views.py
 from django.urls import reverse_lazy
 from ..views.cruds_views_generics import *
-from ..models.base_models import ProductoDeposito, ProductoStock, ProductoMinimo
 from ..models.producto_models import Producto
-from ..forms.producto_deposito_forms import ProductoDepositoForm
+from ..forms.producto_forms import ProductoForm
 
 
 class ConfigViews():
 	# Modelo
-	model = ProductoDeposito
+	model = Producto
 	
 	# Formulario asociado al modelo
-	form_class = ProductoDepositoForm
+	form_class = ProductoForm
 	
 	# Aplicación asociada al modelo
 	app_label = model._meta.app_label
@@ -21,15 +20,15 @@ class ConfigViews():
 	# master_title = model._meta.verbose_name_plural
 	
 	#-- Usar esta forma cuando el modelo esté compuesto de una sola palabra: Ej. Color.
-	# model_string = model.__name__.lower()  #-- Usar esta forma cuando el modelo esté compuesto de una sola palabra: Ej. Color.
+	model_string = model.__name__.lower()  #-- Usar esta forma cuando el modelo esté compuesto de una sola palabra: Ej. Color.
 	
 	#-- Usar esta forma cuando el modelo esté compuesto por más de una palabra: Ej. TipoCambio colocar "tipo_cambio".
-	model_string = "producto_deposito"
+	#model_string = "tipo_cambio"
 	
 	# Permisos
-	permission_add = f"{app_label}.add_{model.__name__.lower()}"
-	permission_change = f"{app_label}.change_{model.__name__.lower()}"
-	permission_delete = f"{app_label}.delete_{model.__name__.lower()}"
+	permission_add = f"{app_label}.add_{model_string}"
+	permission_change = f"{app_label}.change_{model_string}"
+	permission_delete = f"{app_label}.delete_{model_string}"
 	
 	# Vistas del CRUD del modelo
 	list_view_name = f"{model_string}_list"
@@ -57,26 +56,35 @@ class ConfigViews():
 
 
 class DataViewList():
-	search_fields = ['nombre_producto_deposito', 'id_sucursal__nombre_sucursal']
+	search_fields = ['nombre_producto']
 	
-	ordering = ['nombre_producto_deposito']
+	ordering = ['nombre_producto']
 	
 	paginate_by = 8
-	
+	  
 	table_headers = {
-		'nombre_producto_deposito': (5, 'Depósito'),
-		'id_sucursal': (5, 'Sucursal'),
+		'codigo_producto': (2, 'Código'),
+		'nombre_producto': (2, 'Nombre'),
+        'tipo_producto': (2, 'Tip. Producto'),
+        'precio': (2, 'Precio'),
+        'costo': (1, 'Costo'),
+        'stock': (1, 'Sctok'),
 		'acciones': (2, 'Acciones'),
 	}
-	
+
 	table_data = [
-		{'field_name': 'nombre_producto_deposito', 'date_format': None},
-		{'field_name': 'id_sucursal', 'date_format': None},
+		{'field_name': 'codigo_producto', 'date_format': None},
+        {'field_name': 'nombre_producto', 'date_format': None},
+        {'field_name': 'tipo_producto', 'date_format': None},
+        {'field_name': 'precio', 'date_format': None},
+        {'field_name': 'costo', 'date_format': None},
+        {'field_name': 'stock', 'date_format': None},
+        
+		
 	]
 
-
-# ActividadListView - Inicio
-class ProductoDepositoListView(MaestroListView):
+# VendedorListView - Inicio
+class ProductoListView(MaestroListView):
 	model = ConfigViews.model
 	template_name = ConfigViews.template_list
 	context_object_name = ConfigViews.context_object_name
@@ -96,8 +104,8 @@ class ProductoDepositoListView(MaestroListView):
 	}
 
 
-# ActividadCreateView - Inicio
-class ProductoDepositoCreateView(MaestroCreateView):
+# ProductoCreateView - Inicio
+class ProductoCreateView(MaestroCreateView):
 	model = ConfigViews.model
 	list_view_name = ConfigViews.list_view_name
 	form_class = ConfigViews.form_class
@@ -109,13 +117,13 @@ class ProductoDepositoCreateView(MaestroCreateView):
 	permission_required = ConfigViews.permission_add
 	
 	extra_context = {
-		"accion": f"Crear {ConfigViews.model._meta.verbose_name}",
+		"accion": f"Editar {ConfigViews.model._meta.verbose_name}",
 		"list_view_name" : ConfigViews.list_view_name
 	}
 
 
-# ActividadUpdateView
-class ProductoDepositoUpdateView(MaestroUpdateView):
+# ProductoUpdateView
+class ProductoUpdateView(MaestroUpdateView):
 	model = ConfigViews.model
 	list_view_name = ConfigViews.list_view_name
 	form_class = ConfigViews.form_class
@@ -126,13 +134,13 @@ class ProductoDepositoUpdateView(MaestroUpdateView):
 	permission_required = ConfigViews.permission_change
 	
 	extra_context = {
-		"accion": f"Editar {ConfigViews.model._meta.verbose_name}",
+		 "accion": f"Editar {ConfigViews.model._meta.verbose_name}",
 		"list_view_name" : ConfigViews.list_view_name
 	}
 
 
-# ActividadDeleteView
-class ProductoDepositoDeleteView (MaestroDeleteView):
+# ProductoDeleteView
+class ProductoDeleteView (MaestroDeleteView):
 	model = ConfigViews.model
 	list_view_name = ConfigViews.list_view_name
 	template_name = ConfigViews.template_delete

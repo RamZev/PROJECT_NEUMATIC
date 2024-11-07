@@ -514,3 +514,22 @@ class MedioPago(ModeloBaseGenerico):
 		ordering = ['nombre_medio_pago']
 
 
+class PuntoVenta(ModeloBaseGenerico):
+	id_punto_venta = models.AutoField(primary_key=True)
+	estatus_punto_venta = models.BooleanField("Estatus", default=True,
+											choices=ESTATUS_GEN)
+	punto_venta = models.CharField("Punto de Venta", max_length=5)
+	descripcion_punto_venta = models.CharField("Descripción Pto. Venta", 
+											max_length=50, null=True, 
+											blank=True)
+	
+	def __str__(self):
+		return self.punto_venta
+	
+	
+	class Meta:
+		db_table = 'punto_venta'
+		verbose_name = 'Punto de Venta'
+		verbose_name_plural = 'Puntos de Venta'
+		ordering = ['punto_venta']
+	
