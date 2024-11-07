@@ -17,3 +17,4 @@ class MaestrosConfig(AppConfig):
         import apps.maestros.models.proveedor_models
         import apps.maestros.models.sucursal_models
         import apps.maestros.models.vendedor_models
+        import apps.maestros.signals.signals

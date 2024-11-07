@@ -112,6 +112,46 @@ class ProductoDepositoCreateView(MaestroCreateView):
 		"accion": f"Crear {ConfigViews.model._meta.verbose_name}",
 		"list_view_name" : ConfigViews.list_view_name
 	}
+	
+	def form_valid(self, form):
+		#-- Guardar el depósito primero.
+		response = super().form_valid(form)
+		
+		#-- Obtener el depósito recién creado.
+		deposito = self.object
+		
+		#-- Obtener todos los productos en la tabla Producto.
+		productos = Producto.objects.all()
+		
+		for producto in productos:
+			#-- Solo registrar si el tipo de producto es 'p'.
+			if producto.tipo_producto.lower() == 'p':
+				#-- Registrar en ProductoStock con stock = 0.
+				ProductoStock.objects.create(
+					id_producto=producto,
+					id_deposito=deposito,
+					stock=0,
+					minimo=0,
+					fecha_producto_stock=timezone.now()
+				)
+				
+				#-- Si el producto tiene CAI, registrar en ProductoMinimo.
+				if producto.id_cai:
+					#-- Verificar si ya existe un registro en ProductoMinimo para ese CAI y depósito.
+					existe_cai = ProductoMinimo.objects.filter(
+						id_cai=producto.id_cai,
+						id_deposito=deposito
+					).exists()
+					
+					if not existe_cai:
+						#-- Registrar en ProductoMinimo con el mínimo del producto.
+						ProductoMinimo.objects.create(
+							id_cai=producto.id_cai,
+							id_deposito=deposito,
+							minimo=producto.minimo
+						)
+		
+		return response
 
 
 # ActividadUpdateView
