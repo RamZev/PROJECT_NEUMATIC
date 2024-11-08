@@ -526,6 +526,27 @@ class PuntoVenta(ModeloBaseGenerico):
 	def __str__(self):
 		return self.punto_venta
 	
+	def clean(self):
+		errors = {}
+
+		#-- Limpiar y formatear el valor de `punto_venta` con ceros a la izquierda.
+		if self.punto_venta:
+			try:
+				#-- Convertir a entero y luego a string para evitar ceros iniciales no deseados.
+				self.punto_venta = str(int(self.punto_venta)).zfill(5)
+				print(self.punto_venta)
+			except ValueError:
+				errors.update({'punto_venta': 'Debe ser un número entero positivo.'})
+		
+		#-- Validar el formato después de formatear el valor.
+		if not re.match(r'^\d{5}$', self.punto_venta):
+			errors.update({'punto_venta': 'Debe indicar un número de hasta 5 dígitos.'})
+		
+		if errors:
+			raise ValidationError(errors)
+
+		return super().clean()
+	
 	
 	class Meta:
 		db_table = 'punto_venta'
