@@ -26,21 +26,10 @@ class User(AbstractUser):
 									null=True, blank=True,
 									verbose_name="Vendedor")
 	id_sucursal = models.ForeignKey('maestros.Sucursal', on_delete=models.PROTECT,
-									verbose_name="Sucursal", null=True, blank=True)
-	punto_venta = models.IntegerField("Punto de Venta", null=True, blank=True)
+									verbose_name="Sucursal")
+	id_punto_venta = models.ForeignKey('maestros.PuntoVenta', on_delete=models.PROTECT,
+									verbose_name="Punto de Venta")
 
-	def clean(self):
-		super().clean()
-		
-		errors = {}
-		
-		punto_venta_str = str(self.punto_venta) if self.punto_venta is not None else ""
-		
-		if not re.match(r'^[1-9]\d{0,4}$|^0$|^$', punto_venta_str):
-			errors.update({'punto_venta': 'El valor debe ser un número entero positivo, con hasta 5 dígitos, cero o vacío.'})
-		
-		if errors:
-			raise ValidationError(errors)
 
 # -- Al crear un nuevo usuario este quede activo por defecto.
 @receiver(post_save, sender=User)

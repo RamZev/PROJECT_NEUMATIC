@@ -13,6 +13,16 @@ from diseno_base.diseno_bootstrap import (
 # -- Registrar Usuario 
 class RegistroUsuarioForm(UserCreationForm):
 	
+	password1 = forms.CharField(
+		label="Contraseña",
+		widget=forms.PasswordInput(attrs={**formclasstext})
+	)
+	password2 = forms.CharField(
+		label="Confirmar Contraseña",
+		widget=forms.PasswordInput(attrs={**formclasstext})
+	)
+	
+	
 	class Meta:
 		model = User
 		fields = [
@@ -28,7 +38,9 @@ class RegistroUsuarioForm(UserCreationForm):
 			'jerarquia',
 			'id_vendedor',
 			'id_sucursal',
-			'punto_venta',
+			'id_punto_venta',
+			'password1',
+			'password2',
 		]
 		
 		widgets = {
@@ -52,8 +64,8 @@ class RegistroUsuarioForm(UserCreationForm):
 				forms.TextInput(attrs={**formclasstext}),
 			'jerarquia': 
 				forms.TextInput(attrs={**formclasstext}),
-			'punto_venta': 
-				forms.TextInput(attrs={**formclasstext}),
+			'id_punto_venta': 
+				forms.Select(attrs={**formclassselect}),
 			'id_vendedor': 
 				forms.Select(attrs={**formclassselect}),
 			'id_sucursal': 
@@ -77,7 +89,7 @@ class EditarUsuarioForm(UserChangeForm):
 			'jerarquia',
 			'id_vendedor',
 			'id_sucursal',
-			'punto_venta',
+			'id_punto_venta',
 		]
 		
 		widgets = {
@@ -101,8 +113,8 @@ class EditarUsuarioForm(UserChangeForm):
 				forms.TextInput(attrs={**formclasstext}),
 			'jerarquia': 
 				forms.TextInput(attrs={**formclasstext}),
-			'punto_venta': 
-				forms.TextInput(attrs={**formclasstext}),
+			'id_punto_venta': 
+				forms.Select(attrs={**formclassselect}),
 			'id_vendedor': 
 				forms.Select(attrs={**formclassselect}),
 			'id_sucursal': 
