@@ -73,6 +73,27 @@ class EmpresaForm(CrudGenericForm):
 			'ws_vence':
 				forms.TextInput(attrs={**formclassdate,
 										'type': 'date' }),
+			
+			'interes':
+				forms.NumberInput(
+					attrs={**formclasstext,
+						   'min': -99.99, 'max': 99.99}),
+			'interes_dolar':
+				forms.NumberInput(
+					attrs={**formclasstext, 
+						   'min': -99.99, 'max': 99.99}),
+			'cotizacion_dolar':
+				forms.NumberInput(
+					attrs={**formclasstext, 
+						   'min': 0, 'max': 9999999999999.99}),
+			'dias_vencimiento':
+				forms.NumberInput(
+					attrs={**formclasstext, 
+						   'min': 0, 'max': 999}),
+			'descuento_maximo':
+				forms.NumberInput(
+					attrs={**formclasstext, 
+						   'min': -99.99, 'max': 99.99}),
 		}
 	
 	def __init__(self, *args, **kwargs):
@@ -80,20 +101,20 @@ class EmpresaForm(CrudGenericForm):
 		# Verifica si estamos editando un registro con provincia ya seleccionada
 		if self.instance and self.instance.pk and self.instance.id_provincia:
 			# self.fields['id_localidad'].queryset = Localidad.objects.filter(id_provincia=self.instance.id_provincia).order_by('nombre_localidad')
-   
+			
 			localidades = Localidad.objects.filter(id_provincia=self.instance.id_provincia).order_by('nombre_localidad')
-
+			
 			# Configura el campo para mostrar 'nombre_localidad - codigo_postal'
 			self.fields['id_localidad'].choices = [
 				(loc.id_localidad, f"{loc.nombre_localidad} - {loc.codigo_postal}")
 				for loc in localidades
 			]
-   
+		
 		else:
 			# En caso de nuevo registro o provincia no seleccionada, muestra un queryset vacío
 			# self.fields['id_localidad'].queryset = Localidad.objects.none()
 			self.fields['id_localidad'].choices = []
-			
+		
 		# Opcional: si quieres que se muestre un mensaje de "Seleccione una localidad"
 		# self.fields['id_localidad'].empty_label = "Seleccione una localidad"
 		self.fields['id_localidad'].empty_label = "Seleccione una localidad"

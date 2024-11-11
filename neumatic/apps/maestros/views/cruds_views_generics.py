@@ -121,7 +121,7 @@ class MaestroCreateView(PermissionRequiredMixin, CreateView):
 	list_view_name = None
 	
 	def form_valid(self, form):
-		#-- # Accede al usuario evaluado.
+		#-- Accede al usuario evaluado.
 		user = self.request.user
 		
 		#-- Asigna el usuario directamente en el modelo.

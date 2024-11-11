@@ -1,12 +1,12 @@
 # neumatic\apps\maestros\signals\signals.py
+
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils import timezone
 from ..models.producto_models import Producto
 from ..models.base_models import (ProductoDeposito, 
                                   ProductoStock, 
-                                  ProductoMinimo,
-                                  ProductoCai)
+                                  ProductoMinimo,)
 
 BATCH_SIZE = 1000  # Tamaño del lote para inserción masiva
 
@@ -39,8 +39,7 @@ def trasladar_productos_a_stock_y_minimo(sender, instance, created, **kwargs):
         producto_minimo_instances = [
             ProductoMinimo(
                 id_deposito=instance,
-                #id_cai=producto["id_cai"],
-                id_cai=ProductoCai.objects.get(pk=producto["id_cai"]),
+                id_cai=producto["id_cai"],
                 minimo=0
             )
             for producto in productos_minimo

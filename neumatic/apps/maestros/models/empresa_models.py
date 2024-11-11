@@ -21,7 +21,6 @@ class Empresa(ModeloBaseGenerico):
 								  verbose_name="Localidad*")
 	id_provincia = models.ForeignKey(Provincia, on_delete=models.PROTECT, 
 								  verbose_name="Provincia*")
-	# iva = models.CharField(max_length=3)
 	id_iva = models.ForeignKey(TipoIva, on_delete=models.PROTECT, 
 						 verbose_name="Tipo I.V.A.", null=True, blank=True)
 	cuit = models.IntegerField("C.U.I.T.*", )
@@ -45,6 +44,21 @@ class Empresa(ModeloBaseGenerico):
 	ws_modo = models.IntegerField("Modo*", choices=WS_MODO)
 	ws_vence = models.DateField("Vcto. Certificado*")
 	
+	#-- Parámetros.
+	interes = models.DecimalField("Intereses(%)", max_digits=5,
+								decimal_places=2, default=0.00, blank=True)
+	interes_dolar = models.DecimalField("Intereses Dólar(%)", max_digits=5,
+										decimal_places=2, default=0.00,
+										blank=True)
+	cotizacion_dolar = models.DecimalField("Cotización Dólar",
+										max_digits=15, decimal_places=2, 
+										default=0.00, blank=True)
+	dias_vencimiento = models.IntegerField("Días Vcto.", default=0, 
+										blank=True)
+	descuento_maximo = models.DecimalField("Dcto. Máximo(%)",
+										max_digits=5, decimal_places=2, 
+										default=0.00, blank=True)
+	
 	def __str__(self):
 		return self.nombre_fiscal
 	
@@ -52,6 +66,12 @@ class Empresa(ModeloBaseGenerico):
 		super().clean()
 		
 		errors = {}
+		
+		interes_str = str(self.interes) if self.interes is not None else ""
+		interes_dolar_str = str(self.interes_dolar) if self.interes_dolar is not None else ""
+		cotizacion_dolar_str = str(self.cotizacion_dolar) if self.cotizacion_dolar is not None else ""
+		dias_vencimiento_str = str(self.dias_vencimiento) if self.dias_vencimiento is not None else ""
+		descuento_maximo_str = str(self.descuento_maximo) if self.descuento_maximo is not None else ""
 		
 		try:
 			validar_cuit(self.cuit)
@@ -63,6 +83,21 @@ class Empresa(ModeloBaseGenerico):
 		
 		if not re.match(r'^\+?\d[\d ]{0,19}$', str(self.telefono)):
 			errors.update({'telefono': 'Debe indicar sólo dígitos numéricos positivos, mínimo 1 y máximo 20, el signo + y espacios.'})
+		
+		if not re.match(r'^-?(0|[1-9]\d{0,1})(\.\d{1,2})?$', interes_str):
+			errors.update({'interes': 'El valor debe ser un número negativo o positivo, con hasta 2 dígitos enteros y hasta 2 decimales o cero.'})
+		
+		if not re.match(r'^-?(0|[1-9]\d{0,1})(\.\d{1,2})?$', interes_dolar_str):
+			errors.update({'interes_dolar': 'El valor debe ser un número negativo o positivo, con hasta 2 dígitos enteros y hasta 2 decimales o cero.'})
+		
+		if not re.match(r'^(0|[1-9]\d{0,13})(\.\d{1,2})?$', cotizacion_dolar_str):
+			errors.update({'cotizacion_dolar': 'El valor debe ser positivo, con hasta 13 dígitos enteros y hasta 2 decimales o cero.'})
+		
+		if not re.match(r'^[1-9]\d{0,2}$|^0$', dias_vencimiento_str):
+			errors.update({'dias_vencimiento': 'El valor debe ser un número entero positivo, con hasta 3 dígitos o cero.'})
+		
+		if not re.match(r'^-?(0|[1-9]\d{0,1})(\.\d{1,2})?$', descuento_maximo_str):
+			errors.update({'descuento_maximo': 'El valor debe ser un número negativo o positivo, con hasta 2 dígitos enteros y hasta 2 decimales o cero.'})
 		
 		if errors:
 			raise ValidationError(errors)

@@ -607,7 +607,16 @@ estructura_campos = {
 			'fila_8': [
 				{'field_name': 'ws_modo', 'columna': 2, 'design': None},
 			],
-		}
+		},
+		'Parámetros': {
+			'fila_1': [
+				{'field_name': 'interes', 'columna': 2, 'design': None},
+				{'field_name': 'interes_dolar', 'columna': 2, 'design': None},
+				{'field_name': 'cotizacion_dolar', 'columna': 2, 'design': None},
+				{'field_name': 'dias_vencimiento', 'columna': 2, 'design': None},
+				{'field_name': 'descuento_maximo', 'columna': 2, 'design': None},
+			],
+		},
 	},
 	
 	'punto_venta': {
