@@ -4,7 +4,7 @@ from django.core.exceptions import ValidationError
 import re
 from django.utils import timezone
 from .base_gen_models import ModeloBaseGenerico
-from .base_models import (ProductoFamilia, ProductoMarca, ProductoModelo, ProductoCai)
+from .base_models import (ProductoFamilia, ProductoMarca, ProductoModelo, ProductoCai, AlicuotaIva)
 from entorno.constantes_base import ESTATUS_GEN, TIPO_PRODUCTO_SERVICIO
 
 from .base_models import ProductoDeposito, ProductoStock, ProductoMinimo
@@ -35,6 +35,9 @@ class Producto(ModeloBaseGenerico):
 	alicuota_iva = models.DecimalField("Alícuota IVA", max_digits=4, 
 									   decimal_places=2, default=0.00,
 									   null=True, blank=True)  # Alicuota IVA
+	
+	id_alicuota_iva = models.ForeignKey(AlicuotaIva, on_delete=models.PROTECT, verbose_name="Alíc. IVA", default=1)
+	
 	precio = models.DecimalField("Precio", max_digits=15, decimal_places=2,
 							default=0.00, null=True, blank=True)  # Precio del producto
 	stock = models.IntegerField("Stock", null=True, blank=True)  # Stock disponible
@@ -103,7 +106,7 @@ class Producto(ModeloBaseGenerico):
 		unidad_str = str(self.unidad) if self.unidad else ""
 		costo_str = str(self.costo) if self.costo else ""
 		descuento_str = str(self.descuento) if self.descuento else ""
-		dalicuota_iva_str = str(self.alicuota_iva) if self.alicuota_iva else ""
+		# dalicuota_iva_str = str(self.alicuota_iva) if self.alicuota_iva else ""
 		
 		# if not re.match(r'^\d{1,5}$', str(self.codigo_producto)):
 		# 	errors.update({'codigo_producto': 'Debe indicar sólo dígitos numéricos positivos, mínimo 1 y máximo 5.'})
@@ -120,8 +123,8 @@ class Producto(ModeloBaseGenerico):
 		if not re.match(r'^(0|[1-9]\d{0,13})(\.\d{1,2})?$|^$', descuento_str):
 			errors.update({'descuento': 'El valor debe ser positivo, con hasta 13 dígitos enteros y hasta 2 decimales, o estar en blanco o cero.'})
 		
-		if not re.match(r'^(0|[1-9]\d{0,1})(\.\d{1,2})?$|^$', dalicuota_iva_str):
-			errors.update({'alicuota_iva': 'El valor debe ser positivo, con hasta 2 dígitos enteros y hasta 2 decimales, o estar en blanco o cero.'})
+		# if not re.match(r'^(0|[1-9]\d{0,1})(\.\d{1,2})?$|^$', dalicuota_iva_str):
+		# 	errors.update({'alicuota_iva': 'El valor debe ser positivo, con hasta 2 dígitos enteros y hasta 2 decimales, o estar en blanco o cero.'})
 		
 		#-- Valida que mínimo sea: 0.01 y hasta 99.99
 		# if not re.match(r'^(0?[1-9]\.\d{2}|[1-9]\d\.\d{2}|0?0\.[1-9]\d|0?0\.0[1-9])$', str(self.alicuota_iva)):

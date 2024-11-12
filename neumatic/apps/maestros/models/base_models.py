@@ -534,7 +534,6 @@ class PuntoVenta(ModeloBaseGenerico):
 			try:
 				#-- Convertir a entero y luego a string para evitar ceros iniciales no deseados.
 				self.punto_venta = str(int(self.punto_venta)).zfill(5)
-				print(self.punto_venta)
 			except ValueError:
 				errors.update({'punto_venta': 'Debe ser un número entero positivo.'})
 		
@@ -553,4 +552,44 @@ class PuntoVenta(ModeloBaseGenerico):
 		verbose_name = 'Punto de Venta'
 		verbose_name_plural = 'Puntos de Venta'
 		ordering = ['punto_venta']
+
+
+class AlicuotaIva(ModeloBaseGenerico):
+	id_alicuota_iva = models.AutoField(primary_key=True)
+	estatus_alicuota_iva = models.BooleanField("Estatus", default=True,
+											choices=ESTATUS_GEN)
+	codigo_alicuota = models.CharField("Cód. Alíc. IVA", max_length=4)
+	alicuota_iva = models.DecimalField("Alícuota IVA(%)", max_digits=5, decimal_places=2, default=0.0)
+	descripcion_alicuota_iva = models.CharField("Descripción Alíc. IVA", 
+											max_length=50, null=True, 
+											blank=True)
 	
+	def __str__(self):
+		return f"{self.codigo_alicuota} - {self.alicuota_iva:3.2f}%"
+	
+	def clean(self):
+		errors = {}
+
+		#-- Limpiar y formatear el valor de `codigo_alicuota` con ceros a la izquierda.
+		if self.codigo_alicuota:
+			try:
+				#-- Convertir a entero y luego a string para evitar ceros iniciales no deseados.
+				self.codigo_alicuota = str(int(self.codigo_alicuota)).zfill(4)
+			except ValueError:
+				errors.update({'codigo_alicuota': 'Debe ser un número entero positivo.'})
+		
+		#-- Validar el formato después de formatear el valor.
+		if not re.match(r'^\d{4}$', self.codigo_alicuota):
+			errors.update({'codigo_alicuota': 'Debe indicar un número de hasta 4 dígitos.'})
+		
+		if errors:
+			raise ValidationError(errors)
+
+		return super().clean()
+	
+	
+	class Meta:
+		db_table = 'codigo_alicuota'
+		verbose_name = 'Alícuota IVA'
+		verbose_name_plural = 'Alícuotas IVA'
+		ordering = ['alicuota_iva']

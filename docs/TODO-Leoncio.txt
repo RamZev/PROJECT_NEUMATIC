@@ -1,0 +1,5 @@
+-------------------------------------------------------------------------------
+2024/11/11
+-------------------------------------------------------------------------------
+- Se crea el CRUD de Alícuotas IVA.
+- CRUD Clientes: Se deshabilita el combobox sucursal para que se asigne del usuario autenticado.

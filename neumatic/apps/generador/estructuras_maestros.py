@@ -629,4 +629,15 @@ estructura_campos = {
 		}
 	},
 	
+	'alicuota_iva': {
+		'Información de Alícuotas de IVA': {
+			'fila_1': [
+				{'field_name': 'estatus_alicuota_iva', 'columna': 2, 'design': None},
+				{'field_name': 'codigo_alicuota', 'columna': 2, 'design': None},
+				{'field_name': 'alicuota_iva', 'columna': 2, 'design': None},
+				{'field_name': 'descripcion_alicuota_iva', 'columna': 4, 'design': None},
+			],
+		}
+	},
+	
 }
