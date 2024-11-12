@@ -18,6 +18,7 @@ from .views.provincia_views import *
 from .views.localidad_views import *
 from .views.tipo_documento_identidad_views import *
 from .views.tipo_iva_views import *
+from .views.alicuota_iva_views import *
 from .views.tipo_percepcion_ib_views import *
 from .views.tipo_retencion_ib_views import *
 from .views.operario_views import *
@@ -136,6 +137,12 @@ urlpatterns = [
 	path('tipo_iva/nueva/', TipoIvaCreateView.as_view(), name='tipo_iva_create'),
 	path('tipo_iva/<int:pk>/editar/', TipoIvaUpdateView.as_view(), name='tipo_iva_update'),
 	path('tipo_iva/<int:pk>/eliminar/', TipoIvaDeleteView.as_view(), name='tipo_iva_delete'),
+	
+	#-- AlicuotaIva.
+	path('alicuota_iva/', AlicuotaIvaListView.as_view(), name='alicuota_iva_list'),
+	path('alicuota_iva/nueva/', AlicuotaIvaCreateView.as_view(), name='alicuota_iva_create'),
+	path('alicuota_iva/<int:pk>/editar/', AlicuotaIvaUpdateView.as_view(), name='alicuota_iva_update'),
+	path('alicuota_iva/<int:pk>/eliminar/', AlicuotaIvaDeleteView.as_view(), name='alicuota_iva_delete'),
 	
 	#-- TipoPercepcionIb.
 	path('tipo_percepcion_ib/', TipoPercepcionIbListView.as_view(), name='tipo_percepcion_ib_list'),

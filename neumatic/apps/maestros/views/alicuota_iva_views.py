@@ -1,16 +1,16 @@
 # neumatic\apps\maestros\views\punto_venta_views.py
 from django.urls import reverse_lazy
 from ..views.cruds_views_generics import *
-from ..models.base_models import PuntoVenta
-from ..forms.punto_venta_forms import PuntoVentaForm
+from ..models.base_models import AlicuotaIva
+from ..forms.alicuota_iva_forms import AlicuotaIvaForm
 
 
 class ConfigViews():
 	# Modelo
-	model = PuntoVenta
+	model = AlicuotaIva
 	
 	# Formulario asociado al modelo
-	form_class = PuntoVentaForm
+	form_class = AlicuotaIvaForm
 	
 	# Aplicación asociada al modelo
 	app_label = model._meta.app_label
@@ -23,7 +23,7 @@ class ConfigViews():
 	# model_string = model.__name__.lower()  #-- Usar esta forma cuando el modelo esté compuesto de una sola palabra: Ej. Color.
 	
 	#-- Usar esta forma cuando el modelo esté compuesto por más de una palabra: Ej. TipoCambio colocar "tipo_cambio".
-	model_string = "punto_venta"
+	model_string = "alicuota_iva"
 	
 	# Permisos
 	permission_add = f"{app_label}.add_{model.__name__.lower()}"
@@ -56,29 +56,31 @@ class ConfigViews():
 
 
 class DataViewList():
-	search_fields = ['punto_venta', 
-				  	 'descripcion_punto_venta'
+	search_fields = ['codigo_alicuota', 
+				  	 'alicuota_iva', 
+					 'descripcion_alicuota_iva'
 	]
 	
-	ordering = ['punto_venta']
+	ordering = ['codigo_alicuota']
 	
 	paginate_by = 8
 	
 	table_headers = {
-		'punto_venta': (2, 'Punto de Venta'),
-		'descripcion_punto_venta': (8, 'Descripción Pto. Venta'),
+		'codigo_alicuota': (2, 'Cód. Alíc. IVA'),
+		'alicuota_iva': (2, 'Alíc. IVA(%)'),
+		'descripcion_alicuota_iva': (6, 'Descripción Alíc. IVA'),
 		
 		'acciones': (2, 'Acciones'),
 	}
 	
 	table_data = [
-		{'field_name': 'punto_venta', 'date_format': None},
-		{'field_name': 'descripcion_punto_venta', 'date_format': None},
+		{'field_name': 'codigo_alicuota', 'date_format': None},
+		{'field_name': 'alicuota_iva', 'date_format': None},
+		{'field_name': 'descripcion_alicuota_iva', 'date_format': None},
 	]
 
 
-# ProvinciaListView - Inicio
-class PuntoVentaListView(MaestroListView):
+class AlicuotaIvaListView(MaestroListView):
 	model = ConfigViews.model
 	template_name = ConfigViews.template_list
 	context_object_name = ConfigViews.context_object_name
@@ -98,8 +100,7 @@ class PuntoVentaListView(MaestroListView):
 	}
 
 
-# ProvinciaCreateView - Inicio
-class PuntoVentaCreateView(MaestroCreateView):
+class AlicuotaIvaCreateView(MaestroCreateView):
 	model = ConfigViews.model
 	list_view_name = ConfigViews.list_view_name
 	form_class = ConfigViews.form_class
@@ -115,8 +116,7 @@ class PuntoVentaCreateView(MaestroCreateView):
 	}
 
 
-# ProvinciaUpdateView
-class PuntoVentaUpdateView(MaestroUpdateView):
+class AlicuotaIvaUpdateView(MaestroUpdateView):
 	model = ConfigViews.model
 	list_view_name = ConfigViews.list_view_name
 	form_class = ConfigViews.form_class
@@ -132,8 +132,7 @@ class PuntoVentaUpdateView(MaestroUpdateView):
 	}
 
 
-# ProvinciaDeleteView
-class PuntoVentaDeleteView (MaestroDeleteView):
+class AlicuotaIvaDeleteView (MaestroDeleteView):
 	model = ConfigViews.model
 	list_view_name = ConfigViews.list_view_name
 	template_name = ConfigViews.template_delete
