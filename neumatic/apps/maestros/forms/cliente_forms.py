@@ -108,28 +108,22 @@ class ClienteForm(CrudGenericForm):
 		self.fields['id_localidad'].empty_label = "Seleccione una localidad"
 		
 		###################################################################################
-		# #-- Si se está editando un cliente existente, deshabilitar el campo id_sucursal.
-		# if self.instance and self.instance.pk:
-		# 	self.fields['id_sucursal'].widget = forms.HiddenInput()
-		# 	self.fields['id_sucursal'].required = False  # Desactiva la validación
-		# 	self.initial['id_sucursal'] = self.instance.id_sucursal  # Asegurar valor inicial
-		
-		if not self.instance.pk:  # Si es un nuevo registro
+		#-- Si es un nuevo registro.
+		if not self.instance.pk:
 			self.fields['id_sucursal'].initial = self.initial.get('id_sucursal')
-			self.fields['id_sucursal'].widget.attrs['disabled'] = True  # Deshabilita el campo
+			#-- Deshabilita el campo.
+			self.fields['id_sucursal'].widget.attrs['disabled'] = True
 		else:
-			# Configuración en modo edición
+			#-- Configuración en modo edición.
 			self.fields['id_sucursal'].widget = forms.HiddenInput()
 			self.fields['id_sucursal'].required = False
 			self.initial['id_sucursal'] = self.instance.id_sucursal		
 	
 	def clean(self):
 		cleaned_data = super().clean()
-		# Asignar automáticamente id_sucursal si el formulario está en modo edición
+		#-- Asignar automáticamente id_sucursal si el formulario está en modo edición.
 		if self.instance.pk:
 			cleaned_data['id_sucursal'] = self.instance.id_sucursal
-			# Remover tipo_producto de la validación en modo edición
+			#-- Remover tipo_producto de la validación en modo edición.
 			self._errors.pop('id_sucursal', None)
 		return cleaned_data
-		
-

@@ -3,3 +3,6 @@
 -------------------------------------------------------------------------------
 - Se crea el CRUD de Alícuotas IVA.
 - CRUD Clientes: Se deshabilita el combobox sucursal para que se asigne del usuario autenticado.
+- Corregida la actualización del mínimo en la tabla y el modal de Productos Mínimos en Productos.
+
+
