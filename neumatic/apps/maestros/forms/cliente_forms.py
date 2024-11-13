@@ -104,7 +104,6 @@ class ClienteForm(CrudGenericForm):
 			self.fields['id_localidad'].choices = []
 			
 		# Opcional: si quieres que se muestre un mensaje de "Seleccione una localidad"
-		# self.fields['id_localidad'].empty_label = "Seleccione una localidad"
 		self.fields['id_localidad'].empty_label = "Seleccione una localidad"
 		
 		###################################################################################
@@ -124,6 +123,6 @@ class ClienteForm(CrudGenericForm):
 		#-- Asignar automáticamente id_sucursal si el formulario está en modo edición.
 		if self.instance.pk:
 			cleaned_data['id_sucursal'] = self.instance.id_sucursal
-			#-- Remover tipo_producto de la validación en modo edición.
+			#-- Remover id_sucursal de la validación en modo edición.
 			self._errors.pop('id_sucursal', None)
 		return cleaned_data

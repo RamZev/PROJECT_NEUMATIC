@@ -20,6 +20,7 @@ class Cliente(ModeloBaseGenerico):
 	id_cliente = models.AutoField(primary_key=True)
 	estatus_cliente = models.BooleanField("Estatus*", default=True, 
 										  choices=ESTATUS_GEN)
+	codigo_cliente = models.SmallIntegerField("Código", null=True, blank=True)
 	nombre_cliente = models.CharField("Nombre Cliente*", max_length=50)
 	domicilio_cliente = models.CharField("Domicilio Cliente*", 
 										 max_length=50)
@@ -42,7 +43,7 @@ class Cliente(ModeloBaseGenerico):
 										  choices=CONDICION_VENTA)
 	telefono_cliente = models.CharField("Teléfono*", max_length=15)
 	fax_cliente = models.CharField("Fax", max_length=15, null=True, blank=True)
-	movil_cliente = models.CharField("Móvil*", max_length=15)
+	movil_cliente = models.CharField("Móvil", max_length=15, null=True, blank=True)
 	email_cliente = models.EmailField("Email*", max_length=50)
 	email2_cliente = models.EmailField("Email 2", max_length=50, 
 									null=True, blank=True)
