@@ -1,6 +1,5 @@
 {% extends 'base.html' %}
 {% load static %}
-
 {% load custom_tags %}
 
 <!-- Block Title -->
@@ -9,29 +8,27 @@
 {% endblock title %}
 
 {% block style %}
-		body {
-			background-color: rgb(0, 204, 255);
-		}
-		
-		.tbl-container {
-			 
-		}
-		
-		.tbl-fixed {
-			overflow-x: scroll;
-			overflow-y: scroll;
-			height: fit-content;
-			max-height: 60vh;
-			margin-top: 0px;
-			font-size: 80%;
-		}
-		table {
-			min-width: max-content;
-		}
-		table th {
-			position: sticky;
-			top: 0px;
-		}
+	body {
+		background-color: rgb(0, 204, 255);
+	}
+	.tbl-container {
+		 
+	}
+	.tbl-fixed {
+		overflow-x: scroll;
+		overflow-y: scroll;
+		height: fit-content;
+		max-height: 60vh;
+		margin-top: 0px;
+		font-size: 80%;
+	}
+	table {
+		min-width: max-content;
+	}
+	table th {
+		position: sticky;
+		top: 0px;
+	}
 {% endblock style %}
 
 {% debug %}
@@ -70,9 +67,9 @@
 						<div class="card-body">
 							<div class="row">
 								<div class="col col-12">
-									{% include 'buscador_informes.html' %}
+									<!-- Incluir el buscador específico pasado como variable de contexto -->
+									{% include buscador_template %}
 								</div>
-
 							</div>
 							
 							<div class="row tbl-fixed my-2 mx-1">
@@ -94,16 +91,6 @@
 									<tbody>
 										{% for objeto in objetos %}
 											<tr>
-												{% comment %} {% for data_info in table_data %}
-													{% if  %}
-														{% if data_info.date_format %}
-															<td>{{ objeto|get_attribute:data_info.field_name|default:"" |date:data_info.date_format }}</td>
-														{% else %}
-															<td>{{ objeto|get_attribute:data_info.field_name|default:"" }}</td>
-														{% endif %}
-													{% endif %}
-												{% endfor %} {% endcomment %}
-												
 												{% for data_info in table_data %}
 													{% with objeto|get_attribute:data_info.field_name as field_value %}
 														{% if field_value|get_type == 'bool' %}
@@ -116,14 +103,13 @@
 															</td>															
 														{% else %}
 															{% if data_info.date_format %}
-																<td>{{ objeto|get_attribute:data_info.field_name|default:"" |date:data_info.date_format }}</td>
+																<td>{{ field_value|default:"" |date:data_info.date_format }}</td>
 															{% else %}
-																<td>{{ objeto|get_attribute:data_info.field_name|default:"" }}</td>
+																<td>{{ field_value|default:"" }}</td>
 															{% endif %}
 														{% endif %}
 													{% endwith %}
 												{% endfor %}
-												
 											</tr>
 										{% endfor %}
 									</tbody>

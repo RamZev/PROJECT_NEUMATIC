@@ -7,8 +7,8 @@ ESTATUS_GEN = [
 ]
 
 TIPO_PERSONA = [
-    ("N", 'Natural'),
     ("F", 'Física'),
+    ("J", 'Jurídica'),
 ]
 
 CONDICION_VENTA = [
