@@ -41,8 +41,7 @@
 	{% endif %}
 {% endblock header %}
 
-
-{% comment %} <!-- Block Main - -------------------------------------------------------------> {% endcomment %}
+<!-- Block Main - ------------------------------------------------------------>
 {% block main %}
 	{% block sidebar %}
 		{% if user.is_authenticated %}
@@ -81,21 +80,29 @@
 												<p>No tienes una cuenta? <a href="#!" class="text-black">Regístrarse</a></p>
 											</div>
 										</div>
-
+										
 										<div class="col-6">
 											<div class="col-12 d-flex justify-content-center">
 												<img src="{% static 'img/escudo_01.png' %}" alt="Escudo" style="width: 40%; height: auto;">
 											</div>
 										</div>
 									</div>
-
-									{% if error %}
-										<div class="alert alert-danger alert-dismissible fade show">{{ error }}</div>
+									
+									<!-- ********************************************************** -->
+									{% if messages %}
+										<div class="alert alert-danger alert-dismissible fade show">
+											<ul>
+												{% for message in messages %}
+													<li class="text-danger">{{ message }}</li>
+												{% endfor %}
+											</ul>
+										</div>
 									{% endif %}
-
-									<form method="post">
+									<!-- ********************************************************** -->
+									
+									<form method="post" novalidate>
 										{% csrf_token %}
-
+										
 										<div class="row gy-3 overflow-hidden">
 											<div class="col-12">
 												<div class="form-floating mb-3">
@@ -103,7 +110,7 @@
 												<label for="usuario" class="form-label">Usuario</label>
 												</div>
 											</div>
-			
+											
 											<div class="col-12">
 												<div class="form-floating mb-3">
 												<input type="password" class="form-control" name="password" id="password" value="" placeholder="Contraseña" required>
@@ -127,7 +134,7 @@
 											</div>
 										</div>
 									</form>
-		
+									
 									<div class="row">
 										<div class="col-12">
 											<div class="d-flex gap-2 gap-md-4 flex-column flex-md-row justify-content-md-end mt-4">
@@ -135,7 +142,7 @@
 											</div>
 										</div>
 									</div>
-
+									
 								</div>
 							</div>
 						</div>
@@ -145,12 +152,6 @@
 			<!--  -->
 		{% endblock principalcomponent %}
 		
-		
 	{% endblock maincomponent %}
 	
-	
 {% endblock main %}
-
-{% comment %} <!-- Block Fotter -------------------------------------------------------------> {% endcomment %}
-{% block footer %}
-{% endblock footer %}

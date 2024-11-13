@@ -16,11 +16,14 @@
 									class="me-2 text-white" 
 									data-bs-toggle="modal" 
 									data-bs-target="#helpModal" 
+									title="Ayuda"
 									style="cursor: pointer;">
 									<i class="bi bi-question-lg"></i></a>
 								
-								<button type="button" class="btn-close btn-close-white" 
+								<button type="button" 
+									class="btn-close btn-close-white" 
 									aria-label="Close"
+									title="Cerrar"
 									onclick="window.location.href='{% url list_view_name %}'">
 								</button>
 							</div>
@@ -72,19 +75,24 @@
 													
 													<!-- ******** -->
 													{% if form.instance.pk %}
-													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
-															{{ form.tipo_producto.label }}
-														</label>
-														<input type="text" name="tp" value="{{ form.instance.get_tipo_producto_display }}" class="form-control form-control-sm border border-primary mb-2" disabled>
-													</div>
+														<div class="col-md-2">
+															<label class="form-label text-primary mb-0">
+																{{ form.tipo_producto.label }}
+															</label>
+															<input 
+																type="text" 
+																name="tp" 
+																value="{{ form.instance.get_tipo_producto_display }}" 
+																class="form-control form-control-sm border border-primary mb-2" 
+																disabled>
+														</div>
 													{% else %}
-													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
-															{{ form.tipo_producto.label }}
-														</label>
-														{{ form.tipo_producto }}
-													</div>
+														<div class="col-md-2">
+															<label class="form-label text-primary mb-0">
+																{{ form.tipo_producto.label }}
+															</label>
+															{{ form.tipo_producto }}
+														</div>
 													{% endif %}
 													<!-- ******** -->
 													
@@ -155,15 +163,6 @@
 														{{ form.costo }}
 													</div>
 													
-													<!--  -->
-													<!--
-													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
-															{{ form.alicuota_iva.label }}
-														</label>
-														{{ form.alicuota_iva }}
-													</div>
-													-->
 													<div class="col-md-2">
 														<label class="form-label text-primary mb-0">
 															{{ form.id_alicuota_iva.label }}
@@ -171,14 +170,13 @@
 														{{ form.id_alicuota_iva }}
 													</div>
 													
-													<!--  -->
 													<div class="col-md-2">
 														<label class="form-label text-primary mb-0">
 															{{ form.precio.label }}
 														</label>
 														{{ form.precio }}
 													</div>
-						
+													
 													<div class="col-md-2">
 														<label class="form-label text-primary mb-0">
 															{{ form.descuento.label }}
@@ -193,21 +191,21 @@
 														</label>
 														{{ form.stock }}
 													</div>
-						
+													
 													<div class="col-md-2">
 														<label class="form-label text-primary mb-0">
 															{{ form.minimo.label }}
 														</label>
 														{{ form.minimo }}
 													</div>
-						
+													
 													<div class="col-md-2">
 														<label class="form-label text-primary mb-0">
 															{{ form.despacho_1.label }}
 														</label>
 														{{ form.despacho_1 }}
 													</div>
-						
+													
 													<div class="col-md-2">
 														<label class="form-label text-primary mb-0">
 															{{ form.despacho_2.label }}
@@ -222,7 +220,7 @@
 														</label>
 														{{ form.descripcion_producto }}
 													</div>
-						
+													
 													<div class="col-md-2 d-flex align-items-center">
 														<div class="form-check mt-lg-4">
 															<label class="form-check-label form-label text-primary">
@@ -289,7 +287,7 @@
 														</div>
 													 </div>
 													
-													<!-- Tabla para ProductoStock -->
+													<!-- Tabla para ProductoMinimo -->
 													<div class="col-md-7">
 														<div class="card">
 															<div class="card-header">
@@ -318,14 +316,17 @@
 																					</td>
 																					<td class="text-center">
 																						
-																						<button type="button" class="btn btn-link p-0" data-bs-toggle="modal" 
+																						<!-- <button type="button" class="btn btn-link p-0 edit-btn"  -->
+																						<button type="button" class="btn btn-link p-0" 
+																								data-bs-toggle="modal" 
 																								data-bs-target="#editMinimoModal" 
 																								data-deposito-id="{{ minimo.id_deposito__id_producto_deposito }}" 
 																								data-deposito-nombre="{{ minimo.id_deposito__nombre_producto_deposito }}" 
 																								data-cai-id="{{ minimo.id_cai__id_cai }}" 
 																								data-cai-descripcion="{{ minimo.id_cai__cai }}" 
-																								data-minimo="{{ minimo.minimo }}">
-																								<i class="fa fa-edit"></i>
+																								data-minimo="{{ minimo.minimo }}"
+																								title="Editar">
+																							<i class="fa fa-edit"></i>
 																						</button>																						
 																						
 																					</td>
@@ -462,11 +463,25 @@
 						var modal = bootstrap.Modal.getInstance(editMinimoModal);
 						modal.hide();
 						
+						// Convierte el valor minimo a un número, eliminando ceros a la izquierda
+						var minimoSinCeros = parseInt(minimo, 10);
+						
 						// Actualiza el valor en la tabla sin recargar la página
 						// Selecciona la celda correcta con el atributo data-deposito-id y data-cai-id
 						var updatedCell = document.querySelector(`[data-deposito-cell-id="${depositoId}"][data-cai-cell-id="${caiId}"]`);
 						if (updatedCell) {
-							updatedCell.textContent = minimo; // Actualiza la celda correspondiente
+							// Actualiza la celda correspondiente
+							updatedCell.textContent = minimoSinCeros;
+						}
+						
+						// Actualiza el atributo data-minimo en el botón de edición para que el valor se refleje en futuras ediciones
+						var editButton = document.querySelector(`[data-deposito-id="${depositoId}"][data-cai-id="${caiId}"]`);
+						if (editButton) {
+							// Actualiza el valor del atributo data-minimo con el valor sin ceros a la izquierda
+							editButton.setAttribute('data-minimo', minimoSinCeros);
+							
+							// Si también necesitas que el valor en el modal se muestre sin ceros, actualiza el campo también
+							document.getElementById('editMinimo').value = minimoSinCeros;
 						}
 					} else {
 						alert("Error: " + data.message);
@@ -477,67 +492,3 @@
 	</script>	
 	
 {% endblock script %}
-
-
-
-<!-- 
-	<script>
-		document.addEventListener('DOMContentLoaded', function () {
-			var editMinimoModal = document.getElementById('editMinimoModal');
-			
-			editMinimoModal.addEventListener('show.bs.modal', function (event) {
-				var button = event.relatedTarget;
-				
-				// Obtener los nombres y IDs
-				var depositoNombre = button.getAttribute('data-deposito-nombre');
-				var depositoId = button.getAttribute('data-deposito-id');
-				var caiDescripcion = button.getAttribute('data-cai-descripcion');
-				var caiId = button.getAttribute('data-cai-id');
-				var minimo = button.getAttribute('data-minimo');
-				
-				// Asigna el nombre y descripción al modal
-				document.getElementById('editDepositoNombre').value = depositoNombre;
-				document.getElementById('editCaiDescripcion').value = caiDescripcion;
-				document.getElementById('editMinimo').value = minimo;
-				
-				// Almacena los IDs en campos ocultos
-				document.getElementById('editDepositoId').value = depositoId;
-				document.getElementById('editCaiId').value = caiId;
-			});
-			
-			document.getElementById('saveChanges').addEventListener('click', function () {
-				var depositoId = document.getElementById('editDepositoId').value;
-				var caiId = document.getElementById('editCaiId').value;
-				var minimo = document.getElementById('editMinimo').value;
-				
-				fetch("{% url 'actualizar_minimo' %}", {
-					method: 'POST',
-					headers: {
-						'X-CSRFToken': '{{ csrf_token }}',
-						'Content-Type': 'application/x-www-form-urlencoded'
-					},
-					body: new URLSearchParams({
-						'id_deposito': depositoId,
-						'id_cai': caiId,
-						'minimo': minimo
-					})
-				})
-				.then(response => response.json())
-				.then(data => {
-					if (data.success) {
-						alert(data.message);
-						var modal = bootstrap.Modal.getInstance(editMinimoModal);
-						modal.hide();
-						
-						// Actualiza el valor en la tabla sin recargar la página
-						document.querySelector(`[data-deposito-id="${depositoId}"][data-cai-id="${caiId}"]`).textContent = minimo;
-					} else {
-						alert("Error: " + data.message);
-					}
-				});
-			});
-		});
-	</script>	
-
-
--->

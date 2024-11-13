@@ -3,3 +3,8 @@
 -------------------------------------------------------------------------------
 - Se crea el CRUD de Alícuotas IVA.
 - CRUD Clientes: Se deshabilita el combobox sucursal para que se asigne del usuario autenticado.
+- Corregida la actualización del mínimo en la tabla y el modal de Productos Mínimos en Productos.
+
+- Modelo Cliente:
+	- Se crea campo temporal codigo_cliente (para efectos de migraciones).
+	- El campo movil_cliente se establece como opcional (null=True, blank=True).

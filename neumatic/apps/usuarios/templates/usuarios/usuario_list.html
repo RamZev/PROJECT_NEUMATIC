@@ -108,7 +108,15 @@
 												<td>{{ usuario.first_name }}</td>
 												<td>{{ usuario.last_name }}</td>
 												<td>{{ usuario.email }}</td>
-												<td>{{ usuario.is_active }}</td>
+												<td>
+													{% if usuario.is_active %}
+														<!-- Ícono de check verde -->
+														<i class="fa fa-check text-success"></i>
+													{% else %}
+														<!-- Ícono de "X" roja -->
+														<i class="fa fa-times text-danger"></i>
+													{% endif %}
+												</td>
 												<td>
 													<!-- Botón Editar -->
 													<a class="btn btn-outline-primary" href="{% url 'usuario_editar' usuario.id %}"

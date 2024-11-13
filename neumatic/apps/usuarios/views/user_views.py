@@ -1,4 +1,4 @@
-# D:\PROJECT_NEUMATIC\neumatic\apps\usuarios\views\user_views.py
+# neumatic\apps\usuarios\views\user_views.py
 from django.urls import reverse_lazy
 
 #from django.contrib.auth import authenticate, login, logout
@@ -7,6 +7,9 @@ from django.urls import reverse_lazy
 from django.contrib.auth.models import Group, Permission
 from django.contrib.contenttypes.models import ContentType
 #from django.contrib.auth.decorators import login_required
+
+from django.contrib.auth import authenticate
+from django.contrib import messages
 
 from .user_views_generics import *
 from apps.usuarios.forms.user_form import *
@@ -38,6 +41,34 @@ class CustomLoginView(GenericLoginView):
 		self.request.session['is_staff'] = user.is_staff
 		
 		return response
+	
+	def form_invalid(self, form):
+		#-- Obtiene el nombre de usuario y contraseña enviados.
+		username = form.data.get("username")
+		password = form.data.get("password")
+		
+		#-- Verifica si el campo de usuario está vacío.
+		if not username:
+			messages.error(self.request, "El campo de usuario es obligatorio.")
+		elif not password:
+			messages.error(self.request, "El campo de contraseña es obligatorio.")
+		else:
+			#-- Verifica si el usuario existe en la base de datos.
+			try:
+				user = User.objects.get(username=username)
+				#-- Verifica si el usuario está activo.
+				if not user.is_active:
+					messages.error(self.request, "El usuario no está activo.")
+				else:
+					#-- Si el usuario está activo, intenta autenticar.
+					user = authenticate(username=username, password=password)
+					if not user:
+						messages.error(self.request, "Contraseña incorrecta.")
+			except User.DoesNotExist:
+				messages.error(self.request, "El usuario no existe.")
+		
+		#-- Llama a form_invalid para manejar el error.
+		return super().form_invalid(form)
 
 
 #-- Vista Logout. 

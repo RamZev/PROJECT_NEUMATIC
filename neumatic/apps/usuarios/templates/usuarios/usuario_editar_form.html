@@ -171,17 +171,16 @@
 										<h6 class="py-2 px-1 text-white">Permisos</h6>
 									</div>
 									
-									<div class="form-check">
-										<input class="form-check-input" type="checkbox" id="activo" name="is_active" {% if form.is_active.value %}checked{% endif %}>
-										<label class="form-check-label" for="activo">
-											Activo
+									<div class="col-12">
+										<label class="form-label text-primary mb-0">
+											{{ form.is_active }}
+											{{ form.is_active.label }}
 										</label>
 									</div>
-									
-									<div class="form-check">
-										<input class="form-check-input" type="checkbox" id="activo" name="is_staff" {% if form.is_staff.value %}checked{% endif %}>
-										<label class="form-check-label" for="activo">
-											Staff
+									<div class="col-12">
+										<label class="form-label text-primary mb-0">
+											{{ form.is_staff }}
+											{{ form.is_staff.label }}
 										</label>
 									</div>
 									

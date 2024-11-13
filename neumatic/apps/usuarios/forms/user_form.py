@@ -8,7 +8,7 @@ from django.contrib.auth.models import Group
 from apps.usuarios.models import User
 
 from diseno_base.diseno_bootstrap import (
-	formclasstext, formclassselect)
+	formclasstext, formclassselect, formclasscheck)
 
 # -- Registrar Usuario 
 class RegistroUsuarioForm(UserCreationForm):
@@ -57,9 +57,9 @@ class RegistroUsuarioForm(UserCreationForm):
 			'telefono': 
 				forms.TextInput(attrs={**formclasstext}),
 			'is_active': 
-				forms.TextInput(attrs={**formclasstext}),
+				forms.CheckboxInput(attrs={**formclasscheck}),
 			'is_staff': 
-				forms.TextInput(attrs={**formclasstext}),
+				forms.CheckboxInput(attrs={**formclasscheck}),
 			'iniciales': 
 				forms.TextInput(attrs={**formclasstext}),
 			'jerarquia': 
@@ -106,9 +106,9 @@ class EditarUsuarioForm(UserChangeForm):
 			'telefono': 
 				forms.TextInput(attrs={**formclasstext}),
 			'is_active': 
-				forms.TextInput(attrs={**formclasstext}),
+				forms.CheckboxInput(attrs={**formclasscheck}),
 			'is_staff': 
-				forms.TextInput(attrs={**formclasstext}),
+				forms.CheckboxInput(attrs={**formclasscheck}),
 			'iniciales': 
 				forms.TextInput(attrs={**formclasstext}),
 			'jerarquia': 

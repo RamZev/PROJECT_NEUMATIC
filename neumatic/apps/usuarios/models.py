@@ -3,11 +3,6 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from django.core.exceptions import ValidationError
-import re
-
-# from apps.maestros.models.vendedor_models import Vendedor
-# from apps.maestros.models.sucursal_models import Sucursal
 
 
 class User(AbstractUser):
