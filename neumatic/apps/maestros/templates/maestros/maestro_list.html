@@ -247,15 +247,10 @@
 			modal.show();
 		}
 		
-	</script>
-	
-	<script>
-		window.onload = function() {
-				// Limpiar los datos de sessionStorage si existe alguna condición
-				sessionStorage.removeItem("provinciaSeleccionada");
-				sessionStorage.removeItem("localidadSeleccionada");
-				sessionStorage.removeItem("codigoPostalSeleccionado");
-		};
-</script>
+		// Limpiar los datos de sessionStorage si existe alguna condición
+		sessionStorage.removeItem("provinciaSeleccionada");
+		sessionStorage.removeItem("localidadSeleccionada");
+		sessionStorage.removeItem("codigoPostalSeleccionado");
 
+	</script>
 {% endblock script %}
