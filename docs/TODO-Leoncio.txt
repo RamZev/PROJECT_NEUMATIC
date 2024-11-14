@@ -8,3 +8,13 @@
 - Modelo Cliente:
 	- Se crea campo temporal codigo_cliente (para efectos de migraciones).
 	- El campo movil_cliente se establece como opcional (null=True, blank=True).
+	
+- Modelo Proveedor:
+	- El campo movil_proveedor se establece como opcional (null=True, blank=True).
+
+- Modelo AlicuotaIva:
+	- Se modifica el __str__() para que solo devuelva la alícuota: return f"{self.alicuota_iva:3.2f}%"
+
+- Modelo Numero:
+	Se cambia el campo punto_venta por id_punto_venta.
+

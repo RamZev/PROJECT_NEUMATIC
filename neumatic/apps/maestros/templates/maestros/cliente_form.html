@@ -347,13 +347,13 @@
 {% endblock maincomponent %}
 
 {% block script %}
-{{ block.super }}
-<script>
-	document.addEventListener("DOMContentLoaded", function () {
+	{{ block.super }}
+	<script>
+		document.addEventListener("DOMContentLoaded", function () {
 			// Limpiar sessionStorage al cargar la página para evitar mantener datos previos
-			sessionStorage.removeItem("provinciaSeleccionada");
-			sessionStorage.removeItem("localidadSeleccionada");
-			sessionStorage.removeItem("codigoPostalSeleccionado");
+			// sessionStorage.removeItem("provinciaSeleccionada");
+			// sessionStorage.removeItem("localidadSeleccionada");
+			// sessionStorage.removeItem("codigoPostalSeleccionado");
 			
 			const codigoPostalText = document.getElementById("id_codigo_postal");
 			const provinciaSelect = document.getElementById("id_id_provincia");
@@ -361,88 +361,88 @@
 			
 			// Validar si se obtuvieron correctamente los elementos
 			if (!codigoPostalText) {
-					console.log('El elemento con id "id_codigo_postal" no se encontró');
-					return;
+				console.log('El elemento con id "id_codigo_postal" no se encontró');
+				return;
 			}
 			
 			if (!provinciaSelect) {
-					console.log('El elemento con id "id_id_provincia" no se encontró');
-					return;
+				console.log('El elemento con id "id_id_provincia" no se encontró');
+				return;
 			}
 			
 			if (!localidadSelect) {
-					console.log('El elemento con id "id_id_localidad" no se encontró');
-					return;
+				console.log('El elemento con id "id_id_localidad" no se encontró');
+				return;
 			}
 			
 			// Función para resetear el select de localidad y el campo de código postal
 			function resetLocalidadSelect(defaultText) {
-					localidadSelect.innerHTML = `<option value="">${defaultText}</option>`;
-					localidadSelect.disabled = true;
-					codigoPostalText.value = "";  // Limpiar el código postal
+				localidadSelect.innerHTML = `<option value="">${defaultText}</option>`;
+				localidadSelect.disabled = true;
+				codigoPostalText.value = "";  // Limpiar el código postal
 			}
-
+			
 			// Almacena el código postal de cada localidad
 			let localidadesData = {};
-
+			
 			// Función para cargar las localidades y seleccionar la correcta
 			function cargarLocalidades(provinciaId, localidadSeleccionadaId = null) {
-					
-					const url = "{% url 'filtrar_localidad' %}?id_provincia=" + provinciaId;
-					
-					resetLocalidadSelect("Seleccionar Localidad");
-					
-					if (provinciaId) {
-							fetch(url)
-									.then(response => response.json())
-									.then(data => {
-											localidadSelect.disabled = false;
-											localidadesData = {}; // Reiniciar datos de localidad
-											
-											data.localidad.forEach(localidad => {
-													localidadesData[localidad.id_localidad] = localidad.codigo_postal;
-													const option = new Option(localidad.nombre_completo, localidad.id_localidad);
-													localidadSelect.add(option);
-											});
-											
-											// Si hay una localidad seleccionada (al editar o al volver de la modal)
-											if (localidadSeleccionadaId && localidadesData[localidadSeleccionadaId]) {
-													localidadSelect.value = localidadSeleccionadaId;
-													codigoPostalText.value = localidadesData[localidadSeleccionadaId];
-													
-													console.log("localidadSeleccionadaId", localidadSeleccionadaId)
-													
-											}
-									});
-					}
+				
+				const url = "{% url 'filtrar_localidad' %}?id_provincia=" + provinciaId;
+				
+				resetLocalidadSelect("Seleccionar Localidad");
+				
+				if (provinciaId) {
+					fetch(url)
+						.then(response => response.json())
+						.then(data => {
+							localidadSelect.disabled = false;
+							localidadesData = {}; // Reiniciar datos de localidad
+							
+							data.localidad.forEach(localidad => {
+								localidadesData[localidad.id_localidad] = localidad.codigo_postal;
+								const option = new Option(localidad.nombre_completo, localidad.id_localidad);
+								localidadSelect.add(option);
+							});
+							
+							// Si hay una localidad seleccionada (al editar o al volver de la modal)
+							if (localidadSeleccionadaId && localidadesData[localidadSeleccionadaId]) {
+								localidadSelect.value = localidadSeleccionadaId;
+								codigoPostalText.value = localidadesData[localidadSeleccionadaId];
+							}
+						});
+				}
 			}
 			
 			// Escucha el cambio en Provincia y carga las localidades correspondientes
 			provinciaSelect.addEventListener("change", function () {
-					const provinciaId = this.value;
-					
-					// Guardar selección de provincia en sessionStorage
-					sessionStorage.setItem("provinciaSeleccionada", provinciaId);
-					sessionStorage.removeItem("localidadSeleccionada"); // Resetear localidad en sesión
-					
-					cargarLocalidades(provinciaId);  // Llamar sin localidad seleccionada
+				const provinciaId = this.value;
+				
+				// Guardar selección de provincia en sessionStorage
+				sessionStorage.setItem("provinciaSeleccionada", provinciaId);
+				sessionStorage.removeItem("localidadSeleccionada"); // Resetear localidad en sesión
+				
+				cargarLocalidades(provinciaId);  // Llamar sin localidad seleccionada
 			});
 			
 			// Escucha el cambio en Localidad y actualiza el código postal
 			localidadSelect.addEventListener("change", function () {
-					const localidadId = this.value;
+				const localidadId = this.value;
+				
+				console.log("localidadId", localidadId)
+				
+				if (localidadId) {
+					codigoPostalText.value = localidadesData[localidadId] || "";
 					
-					if (localidadId) {
-							codigoPostalText.value = localidadesData[localidadId] || "";
-							
-							// Guardar selección de localidad y código postal en sessionStorage
-							sessionStorage.setItem("localidadSeleccionada", localidadId);
-							sessionStorage.setItem("codigoPostalSeleccionado", codigoPostalText.value);
-					} else {
-							codigoPostalText.value = "";
-							sessionStorage.removeItem("localidadSeleccionada"); // Limpiar localidad de sesión
-							sessionStorage.removeItem("codigoPostalSeleccionado"); // Limpiar código postal de sesión
-					}
+					// Guardar selección de localidad y código postal en sessionStorage
+					sessionStorage.setItem("localidadSeleccionada", localidadId);
+					sessionStorage.setItem("codigoPostalSeleccionado", codigoPostalText.value);
+					
+				} else {
+					codigoPostalText.value = "";
+					sessionStorage.removeItem("localidadSeleccionada"); // Limpiar localidad de sesión
+					sessionStorage.removeItem("codigoPostalSeleccionado"); // Limpiar código postal de sesión
+				}
 			});
 			
 			// Detectar valores iniciales (para el caso de actualizar o volver de la modal)
@@ -450,44 +450,49 @@
 			const localidadSeleccionada = sessionStorage.getItem("localidadSeleccionada") || localidadSelect.value;
 			const codigoPostalSeleccionado = sessionStorage.getItem("codigoPostalSeleccionado") || codigoPostalText.value;
 			
-			// console.log("sessionStorage provinciaSeleccionada", provinciaSeleccionada);
-			// console.log("sessionStorage localidadSeleccionada", localidadSeleccionada);
-			// console.log("sessionStorage codigoPostalSeleccionado", codigoPostalSeleccionado);
+			console.log("--------------------------------")
+			console.log("Provincia:")
+			console.log("sessionStorage.getItem('provinciaSeleccionada')", sessionStorage.getItem("provinciaSeleccionada"))
+			console.log("provinciaSelect.value", provinciaSelect.value)
 			
+			console.log("Localidad:")
+			console.log('sessionStorage.getItem("localidadSeleccionada")', sessionStorage.getItem("localidadSeleccionada"))
+			console.log('localidadSelect.value', localidadSelect.value)
 			
 			// Cargar localidades y seleccionar automáticamente la localidad al cargar la página
 			if (provinciaSeleccionada) {
-					cargarLocalidades(provinciaSeleccionada, localidadSeleccionada);
-					codigoPostalText.value = codigoPostalSeleccionado;  // Setear el código postal guardado
+				cargarLocalidades(provinciaSeleccionada, localidadSeleccionada);
+				codigoPostalText.value = codigoPostalSeleccionado;  // Setear el código postal guardado
 			}
-		
-		// Nueva funcionalidad para el combobox black_list
-		const blackListSelect = document.getElementById("id_black_list");
-		const blackListMotivoInput = document.getElementById("id_black_list_motivo");
-		const blackListUsuarioInput = document.getElementById("id_black_list_usuario");
-		const fechaBajaInput = document.getElementById("id_fecha_baja");
-		
-		// Obtener el usuario autenticado desde el contexto de Django
-		const usuarioAutenticado = "{{ request.user.username }}";  // Asegúrate de que esto está disponible en el contexto
-		
-		// Función para manejar el cambio en el combobox de black_list
-		function manejarCambioBlackList() {
-			if (blackListSelect.value === "True") {
-				// Llenar los campos si el valor es True
-				blackListUsuarioInput.value = usuarioAutenticado;  // Llenar con el usuario autenticado
-				fechaBajaInput.value = new Date().toISOString().slice(0, 10); // Llenar con la fecha actual en formato YYYY-MM-DD
-			} else {
-				// Limpiar los campos si el valor es False
-				blackListMotivoInput.value = "";
-				blackListUsuarioInput.value = "";
-				fechaBajaInput.value = "";
+			
+			
+			///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+			// Nueva funcionalidad para el combobox black_list
+			const blackListSelect = document.getElementById("id_black_list");
+			const blackListMotivoInput = document.getElementById("id_black_list_motivo");
+			const blackListUsuarioInput = document.getElementById("id_black_list_usuario");
+			const fechaBajaInput = document.getElementById("id_fecha_baja");
+			
+			// Obtener el usuario autenticado desde el contexto de Django
+			const usuarioAutenticado = "{{ request.user.username }}";  // Asegúrate de que esto está disponible en el contexto
+			
+			// Función para manejar el cambio en el combobox de black_list
+			function manejarCambioBlackList() {
+				if (blackListSelect.value === "True") {
+					// Llenar los campos si el valor es True
+					blackListUsuarioInput.value = usuarioAutenticado;  // Llenar con el usuario autenticado
+					fechaBajaInput.value = new Date().toISOString().slice(0, 10); // Llenar con la fecha actual en formato YYYY-MM-DD
+				} else {
+					// Limpiar los campos si el valor es False
+					blackListMotivoInput.value = "";
+					blackListUsuarioInput.value = "";
+					fechaBajaInput.value = "";
+				}
 			}
-		}
-		
-		// Agregar un listener al cambio del select de black_list
-		blackListSelect.addEventListener("change", manejarCambioBlackList);		
-		
-	});
-</script>
-
+			
+			// Agregar un listener al cambio del select de black_list
+			blackListSelect.addEventListener("change", manejarCambioBlackList);		
+			
+		});
+	</script>
 {% endblock script %}

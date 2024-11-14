@@ -17,8 +17,8 @@ class NumeroForm(CrudGenericForm):
 				forms.Select(attrs={**formclassselect}),
 			'id_sucursal': 
 				forms.Select(attrs={**formclassselect}),
-			'punto_venta': 
-				forms.NumberInput(attrs={**formclasstext, 'min': 1, 'max': 99999}),
+			'id_punto_venta': 
+				forms.Select(attrs={**formclassselect}),
 			'comprobante': 
 				forms.TextInput(attrs={**formclasstext}),
 			'letra': 

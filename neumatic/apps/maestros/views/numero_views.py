@@ -56,15 +56,15 @@ class ConfigViews():
 
 
 class DataViewList():
-	search_fields = ['comprobante', 'punto_venta']
+	search_fields = ['comprobante', 'id_punto_venta__punto_venta']
 	
-	ordering = ['punto_venta', 'comprobante']
+	ordering = ['id_punto_venta__punto_venta', 'comprobante']
 	
 	paginate_by = 8
 	
 	table_headers = {
 		'comprobante': (2, 'Comprobante'),
-		'punto_venta': (2, 'Punto de Venta'),
+		'id_punto_venta': (2, 'Punto de Venta'),
 		'id_sucursal': (4, 'Sucursal'),
 		
 		'acciones': (2, 'Acciones'),
@@ -72,7 +72,7 @@ class DataViewList():
 	
 	table_data = [
 		{'field_name': 'comprobante', 'date_format': None},
-		{'field_name': 'punto_venta', 'date_format': None},
+		{'field_name': 'id_punto_venta', 'date_format': None},
 		{'field_name': 'id_sucursal', 'date_format': None},
 	]
 
