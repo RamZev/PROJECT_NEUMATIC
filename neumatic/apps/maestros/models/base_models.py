@@ -565,7 +565,7 @@ class AlicuotaIva(ModeloBaseGenerico):
 											blank=True)
 	
 	def __str__(self):
-		return f"{self.codigo_alicuota} - {self.alicuota_iva:3.2f}%"
+		return f"{self.alicuota_iva:3.2f}%"
 	
 	def clean(self):
 		errors = {}

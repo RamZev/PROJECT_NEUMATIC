@@ -327,14 +327,14 @@
 	<script>
 		document.addEventListener("DOMContentLoaded", function () {
 				// Limpiar sessionStorage al cargar la página para evitar mantener datos previos
-				sessionStorage.removeItem("provinciaSeleccionada");
-				sessionStorage.removeItem("localidadSeleccionada");
-				sessionStorage.removeItem("codigoPostalSeleccionado");
-			
+				// sessionStorage.removeItem("provinciaSeleccionada");
+				// sessionStorage.removeItem("localidadSeleccionada");
+				// sessionStorage.removeItem("codigoPostalSeleccionado");
+				
 				const codigoPostalText = document.getElementById("id_codigo_postal");
 				const provinciaSelect = document.getElementById("id_id_provincia");
 				const localidadSelect = document.getElementById("id_id_localidad");
-			
+				
 				// Validar si se obtuvieron correctamente los elementos
 				if (!codigoPostalText) {
 						console.log('El elemento con id "id_codigo_postal" no se encontró');
@@ -373,13 +373,13 @@
 										.then(data => {
 												localidadSelect.disabled = false;
 												localidadesData = {}; // Reiniciar datos de localidad
-	
+												
 												data.localidad.forEach(localidad => {
 														localidadesData[localidad.id_localidad] = localidad.codigo_postal;
 														const option = new Option(localidad.nombre_completo, localidad.id_localidad);
 														localidadSelect.add(option);
 												});
-	
+												
 												// Si hay una localidad seleccionada (al editar o al volver de la modal)
 												if (localidadSeleccionadaId && localidadesData[localidadSeleccionadaId]) {
 														localidadSelect.value = localidadSeleccionadaId;
@@ -388,7 +388,7 @@
 										});
 						}
 				}
-	
+				
 				// Escucha el cambio en Provincia y carga las localidades correspondientes
 				provinciaSelect.addEventListener("change", function () {
 						const provinciaId = this.value;
@@ -396,10 +396,10 @@
 						// Guardar selección de provincia en sessionStorage
 						sessionStorage.setItem("provinciaSeleccionada", provinciaId);
 						sessionStorage.removeItem("localidadSeleccionada"); // Resetear localidad en sesión
-	
+						
 						cargarLocalidades(provinciaId);  // Llamar sin localidad seleccionada
 				});
-	
+				
 				// Escucha el cambio en Localidad y actualiza el código postal
 				localidadSelect.addEventListener("change", function () {
 						const localidadId = this.value;
@@ -415,12 +415,12 @@
 								sessionStorage.removeItem("codigoPostalSeleccionado"); // Limpiar código postal de sesión
 						}
 				});
-	
+				
 				// Detectar valores iniciales (para el caso de actualizar o volver de la modal)
 				const provinciaSeleccionada = sessionStorage.getItem("provinciaSeleccionada") || provinciaSelect.value;
 				const localidadSeleccionada = sessionStorage.getItem("localidadSeleccionada") || localidadSelect.value;
 				const codigoPostalSeleccionado = sessionStorage.getItem("codigoPostalSeleccionado") || codigoPostalText.value;
-	
+				
 				// Cargar localidades y seleccionar automáticamente la localidad al cargar la página
 				if (provinciaSeleccionada) {
 						cargarLocalidades(provinciaSeleccionada, localidadSeleccionada);
@@ -428,5 +428,4 @@
 				}
 		});
 	</script>
-	
 {% endblock script %}
