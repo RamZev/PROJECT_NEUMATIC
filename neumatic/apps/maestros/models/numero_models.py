@@ -3,6 +3,7 @@ from django.db import models
 from django.core.exceptions import ValidationError
 import re
 from .base_gen_models import ModeloBaseGenerico
+from .base_models import PuntoVenta
 from .sucursal_models import Sucursal
 from entorno.constantes_base import ESTATUS_GEN
 
@@ -13,7 +14,9 @@ class Numero(ModeloBaseGenerico):
 										 choices=ESTATUS_GEN)
 	id_sucursal = models.ForeignKey(Sucursal, on_delete=models.CASCADE, 
 									verbose_name="Sucursal")
-	punto_venta = models.IntegerField("Punto de Venta")
+	# punto_venta = models.IntegerField("Punto de Venta")
+	id_punto_venta = models.ForeignKey(PuntoVenta, on_delete=models.PROTECT, 
+									verbose_name="Punto de Venta")
 	comprobante = models.CharField("Comprobante", max_length=3)
 	letra = models.CharField("Letra", max_length=1)
 	numero = models.IntegerField("Número")
@@ -27,9 +30,6 @@ class Numero(ModeloBaseGenerico):
 		super().clean()
 		
 		errors = {}
-		
-		if not re.match(r'^\d{1,5}$', str(self.punto_venta)):
-			errors.update({'punto_venta': 'Debe indicar sólo dígitos numéricos positivos, mínimo 1 y máximo 5.'})
 		
 		if not re.match(r'^\d{1,13}$', str(self.numero)):
 			errors.update({'numero': 'Debe indicar sólo dígitos numéricos positivos, mínimo 1 y máximo 13.'})
@@ -48,4 +48,4 @@ class Numero(ModeloBaseGenerico):
 		db_table = 'numero'
 		verbose_name = 'Número de Comprobante'
 		verbose_name_plural = 'Números de Comprobante'
-		ordering = ['punto_venta', 'comprobante']
+		ordering = ['id_punto_venta__punto_venta', 'comprobante']

@@ -32,10 +32,11 @@ class Proveedor(ModeloBaseGenerico):
 								   decimal_places=2, default=0.00)
 	multilateral = models.BooleanField("Contrib. Conv. Multilateral")
 	telefono_proveedor = models.CharField("Taléfono", max_length=15)
-	movil_proveedor = models.CharField("Móvil", max_length=15)
+	movil_proveedor = models.CharField("Móvil", max_length=15, 
+										null=True, blank=True)
 	email_proveedor = models.EmailField("Correo", max_length=50)
 	observacion_proveedor = models.TextField("Observaciones", blank=True, 
-										  null=True)
+											null=True)
 	
 	def __str__(self):
 		return self.nombre_proveedor
@@ -58,8 +59,8 @@ class Proveedor(ModeloBaseGenerico):
 		if not re.match(r'^\+?\d[\d ]{0,14}$', str(self.telefono_proveedor)):
 			errors.update({'telefono_proveedor': 'Debe indicar sólo dígitos numéricos positivos, mínimo 1 y máximo 15, el signo + y espacios.'})
 		
-		if not re.match(r'^\+?\d[\d ]{0,14}$', str(self.movil_proveedor)):
-			errors.update({'movil_proveedor': 'Debe indicar sólo dígitos numéricos positivos, mínimo 1 y máximo 15, el signo + y espacios.'})
+		if self.movil_proveedor and not re.match(r'^\+?\d[\d ]{0,14}$', str(self.movil_proveedor)):
+			errors.update({'movil_proveedor': 'Debe indicar sólo dígitos numéricos positivos, mínimo 1 y máximo 15, el signo +, espacios o vacío.'})
 		
 		if errors:
 			raise ValidationError(errors)

@@ -95,8 +95,8 @@ class Cliente(ModeloBaseGenerico):
 		
 		errors = {}
 		
-		telefono_str = str(self.telefono_cliente)
-		movil_cliente_str = str(self.movil_cliente)
+		telefono_str = str(self.telefono_cliente) if self.telefono_cliente else ''
+		movil_cliente_str = str(self.movil_cliente) if self.movil_cliente else ''
 		sub_cuenta_str = str(self.sub_cuenta) if self.sub_cuenta else ''
 		
 		try:
@@ -107,8 +107,8 @@ class Cliente(ModeloBaseGenerico):
 		if not re.match(r'^\+?\d[\d ]{0,14}$', telefono_str):
 			errors.update({'telefono_cliente': 'Debe indicar sólo dígitos numéricos positivos, mínimo 1 y máximo 15, el signo + y espacios.'})
 		
-		if not re.match(r'^\+?\d[\d ]{0,14}$', movil_cliente_str):
-			errors.update({'movil_cliente': 'Debe indicar sólo dígitos numéricos positivos, mínimo 1 y máximo 15, el signo + y espacios.'})
+		if movil_cliente_str and not re.match(r'^\+?\d[\d ]{0,14}$', movil_cliente_str):
+			errors.update({'movil_cliente': 'Debe indicar sólo dígitos numéricos positivos, mínimo 1 y máximo 15, el signo +, espacios o vacío.'})
 		
 		if sub_cuenta_str and not re.match(r'^\d{0,6}$', sub_cuenta_str):
 			errors.update({'sub_cuenta': 'Debe indicar sólo dígitos numéricos positivos, mínimo 1 y máximo 6.'})
