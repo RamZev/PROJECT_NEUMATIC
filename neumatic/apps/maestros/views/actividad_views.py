@@ -63,12 +63,16 @@ class DataViewList():
 	paginate_by = 8
 	  
 	table_headers = {
-		'descripcion_actividad': (10, 'Descripción'),
+		'estatus_actividad': (1, 'Estatus'),
+		'id_actividad': (1, 'ID'),
+		'descripcion_actividad': (8, 'Descripción'),
 		
 		'acciones': (2, 'Acciones'),
 	}
 	
 	table_data = [
+		{'field_name': 'estatus_actividad', 'date_format': None},
+		{'field_name': 'id_actividad', 'date_format': None},
 		{'field_name': 'descripcion_actividad', 'date_format': None},
 	]
 
@@ -106,10 +110,10 @@ class ActividadCreateView(MaestroCreateView):
 	# (revisar de donde lo copiaste que tienes asignado permission_change en vez de permission_add)
 	permission_required = ConfigViews.permission_add
 	
-	extra_context = {
-		"accion": f"Crear {ConfigViews.model._meta.verbose_name}",
-		"list_view_name" : ConfigViews.list_view_name
-	}
+	# extra_context = {
+	# 	"accion": f"Crear {ConfigViews.model._meta.verbose_name}",
+	# 	"list_view_name" : ConfigViews.list_view_name
+	# }
 
 
 # ActividadUpdateView
@@ -122,11 +126,11 @@ class ActividadUpdateView(MaestroUpdateView):
 	
 	#-- Indicar el permiso que requiere para ejecutar la acción.
 	permission_required = ConfigViews.permission_change
-	
-	extra_context = {
-		"accion": f"Editar {ConfigViews.model._meta.verbose_name}",
-		"list_view_name" : ConfigViews.list_view_name
-	}
+	# 
+	# extra_context = {
+	# 	"accion": f"Editar {ConfigViews.model._meta.verbose_name}",
+	# 	"list_view_name" : ConfigViews.list_view_name
+	# }
 
 
 # ActividadDeleteView
@@ -139,8 +143,8 @@ class ActividadDeleteView (MaestroDeleteView):
 	#-- Indicar el permiso que requiere para ejecutar la acción.
 	permission_required = ConfigViews.permission_delete
 	
-	extra_context = {
-		"accion": f"Eliminar {ConfigViews.model._meta.verbose_name}",
-		"list_view_name" : ConfigViews.list_view_name,
-		"mensaje": "Estás seguro de eliminar el Registro"
-	}
+	# extra_context = {
+	# 	"accion": f"Eliminar {ConfigViews.model._meta.verbose_name}",
+	# 	"list_view_name" : ConfigViews.list_view_name,
+	# 	"mensaje": "Estás seguro de eliminar el Registro"
+	# }

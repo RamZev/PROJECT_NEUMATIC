@@ -63,16 +63,20 @@ class DataViewList():
 	paginate_by = 8
 	
 	table_headers = {
+		'estatus_tipo_retencion_ib': (1, 'Estatus'),
+		'id_tipo_retencion_ib': (1, 'ID'),
 		'descripcion_tipo_retencion_ib': (4, 'Descripción'),
 		'alicuota_inscripto': (1, 'Alícuota Inscripto'),
 		'alicuota_no_inscripto': (1, 'Alícuota No Inscripto'),
-		'monto': (2, 'Monto'),
-		'minimo': (2, 'Mínimo'),
+		'monto': (1, 'Monto'),
+		'minimo': (1, 'Mínimo'),
 		
 		'acciones': (2, 'Acciones'),
 	}
 	
 	table_data = [
+		{'field_name': 'estatus_tipo_retencion_ib', 'date_format': None},
+		{'field_name': 'id_tipo_retencion_ib', 'date_format': None},
 		{'field_name': 'descripcion_tipo_retencion_ib', 'date_format': None},
 		{'field_name': 'alicuota_inscripto', 'date_format': None},
 		{'field_name': 'alicuota_no_inscripto', 'date_format': None},
@@ -114,10 +118,10 @@ class TipoRetencionIbCreateView(MaestroCreateView):
 	# (revisar de donde lo copiaste que tienes asignado permission_change en vez de permission_add)
 	permission_required = ConfigViews.permission_add
 	
-	extra_context = {
-		"accion": f"Crear {ConfigViews.model._meta.verbose_name}",
-		"list_view_name" : ConfigViews.list_view_name
-	}
+	# extra_context = {
+	# 	"accion": f"Crear {ConfigViews.model._meta.verbose_name}",
+	# 	"list_view_name" : ConfigViews.list_view_name
+	# }
 
 
 # ProvinciaUpdateView
@@ -131,10 +135,10 @@ class TipoRetencionIbUpdateView(MaestroUpdateView):
 	#-- Indicar el permiso que requiere para ejecutar la acción.
 	permission_required = ConfigViews.permission_change
 	
-	extra_context = {
-		"accion": f"Editar {ConfigViews.model._meta.verbose_name}",
-		"list_view_name" : ConfigViews.list_view_name
-	}
+	# extra_context = {
+	# 	"accion": f"Editar {ConfigViews.model._meta.verbose_name}",
+	# 	"list_view_name" : ConfigViews.list_view_name
+	# }
 
 
 # ProvinciaDeleteView
@@ -147,8 +151,8 @@ class TipoRetencionIbDeleteView (MaestroDeleteView):
 	#-- Indicar el permiso que requiere para ejecutar la acción.
 	permission_required = ConfigViews.permission_delete
 	
-	extra_context = {
-		"accion": f"Eliminar {ConfigViews.model._meta.verbose_name}",
-		"list_view_name" : ConfigViews.list_view_name,
-		"mensaje": "Estás seguro de eliminar el Registro"
-	}
+	# extra_context = {
+	# 	"accion": f"Eliminar {ConfigViews.model._meta.verbose_name}",
+	# 	"list_view_name" : ConfigViews.list_view_name,
+	# 	"mensaje": "Estás seguro de eliminar el Registro"
+	# }

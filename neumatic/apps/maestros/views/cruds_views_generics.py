@@ -145,6 +145,12 @@ class MaestroCreateView(PermissionRequiredMixin, CreateView):
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
 		
+		#-- Agregar datos comunes al contexto.
+		context.update({
+			"accion": f"Crear {self.model._meta.verbose_name}",
+			"list_view_name": self.list_view_name,
+		})		
+		
 		#-- Controlar mostrar o no el modal con los errors de validación.
 		#-- Inicialmente, no hay errores.
 		if 'data_has_errors' not in context:
@@ -192,6 +198,15 @@ class MaestroUpdateView(PermissionRequiredMixin, UpdateView):
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
 		
+		#-- Obtener el objeto que se está editando.
+		registro = self.get_object()
+		
+		#-- Agregar información personalizada al contexto.
+		context.update({
+			"accion": f"Editar {self.model._meta.verbose_name} - {registro.pk}",
+			"list_view_name": self.list_view_name,
+		})
+		
 		#-- Controlar mostrar o no el modal con los errors de validación.
 		#-- Inicialmente, no hay errores.
 		if 'data_has_errors' not in context:
@@ -213,6 +228,22 @@ class MaestroUpdateView(PermissionRequiredMixin, UpdateView):
 @method_decorator(login_required, name='dispatch')
 class MaestroDeleteView(PermissionRequiredMixin, DeleteView):
 	list_view_name = None
+	
+	# def get_context_data(self, **kwargs):
+	# 	#-- Llamar al contexto base.
+	# 	context = super().get_context_data(**kwargs)
+	# 	
+	# 	#-- Obtener el objeto que se está eliminando.
+	# 	registro = self.get_object()
+	# 	
+	# 	#-- Agregar datos comunes al contexto.
+	# 	context.update({
+	# 		"accion": f"Eliminar {self.model._meta.verbose_name} - {registro.pk}",
+	# 		"list_view_name": self.list_view_name,
+	# 		"mensaje": "Estás seguro de eliminar el Registro"
+	# 	})
+	# 	
+	# 	return context	
 	
 	#-- Método que agrega mensaje cuando no tiene permiso de eliminar.
 	def handle_no_permission(self):

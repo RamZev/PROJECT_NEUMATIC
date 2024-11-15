@@ -73,7 +73,9 @@ class DataViewList():
 	paginate_by = 8
 	
 	table_headers = {
-		'nombre_producto': (6, 'Nombre producto'),
+		'estatus_producto': (1, 'Estatus'),
+		'id_producto': (1, 'ID'),
+		'nombre_producto': (4, 'Nombre producto'),
 		'medida': (2, 'Medida'),
 		'id_cai': (2, 'CAI'),
 		
@@ -81,6 +83,8 @@ class DataViewList():
 	}
 	
 	table_data = [
+		{'field_name': 'estatus_producto', 'date_format': None},
+		{'field_name': 'id_producto', 'date_format': None},
 		{'field_name': 'nombre_producto', 'date_format': None},
 		{'field_name': 'medida', 'date_format': None},
 		{'field_name': 'id_cai', 'date_format': None},
@@ -120,10 +124,10 @@ class ProductoCreateView(MaestroCreateView):
 	# (revisar de donde lo copiaste que tienes asignado permission_change en vez de permission_add)
 	permission_required = ConfigViews.permission_add
 	
-	extra_context = {
-		"accion": f"Crear {ConfigViews.model._meta.verbose_name}",
-		"list_view_name" : ConfigViews.list_view_name
-	}
+	# extra_context = {
+	# 	"accion": f"Crear {ConfigViews.model._meta.verbose_name}",
+	# 	"list_view_name" : ConfigViews.list_view_name
+	# }
 	
 	def form_valid(self, form):
 		response = super().form_valid(form)
@@ -210,11 +214,11 @@ class ProductoUpdateView(MaestroUpdateView):
 			.values('id_deposito__id_producto_deposito', 'id_deposito__nombre_producto_deposito', 'id_cai__id_cai', 'id_cai__cai', 'minimo')\
 			.order_by('id_deposito__nombre_producto_deposito')
 		
-		#-- Agregar datos adicionales al contexto.
-		context.update({
-			"accion": f"Editar {ConfigViews.model._meta.verbose_name}",
-			"list_view_name": ConfigViews.list_view_name,
-		})
+		# #-- Agregar datos adicionales al contexto.
+		# context.update({
+		# 	"accion": f"Editar {ConfigViews.model._meta.verbose_name}",
+		# 	"list_view_name": ConfigViews.list_view_name,
+		# })
 		
 		return context
 
@@ -228,11 +232,11 @@ class ProductoDeleteView (MaestroDeleteView):
 	#-- Indicar el permiso que requiere para ejecutar la acción.
 	permission_required = ConfigViews.permission_delete
 	
-	extra_context = {
-		"accion": f"Eliminar {ConfigViews.model._meta.verbose_name}",
-		"list_view_name" : ConfigViews.list_view_name,
-		"mensaje": "Estás seguro de eliminar el Registro"
-	}
+	# extra_context = {
+	# 	"accion": f"Eliminar {ConfigViews.model._meta.verbose_name}",
+	# 	"list_view_name" : ConfigViews.list_view_name,
+	# 	"mensaje": "Estás seguro de eliminar el Registro"
+	# }
 	
 	def delete(self, request, *args, **kwargs):
 		producto = self.get_object()

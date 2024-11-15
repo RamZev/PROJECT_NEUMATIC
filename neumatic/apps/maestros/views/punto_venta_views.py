@@ -65,13 +65,17 @@ class DataViewList():
 	paginate_by = 8
 	
 	table_headers = {
+		'estatus_punto_venta': (1, 'Estatus'),
+		'id_punto_venta': (1, 'ID'),
 		'punto_venta': (2, 'Punto de Venta'),
-		'descripcion_punto_venta': (8, 'Descripción Pto. Venta'),
+		'descripcion_punto_venta': (6, 'Descripción Pto. Venta'),
 		
 		'acciones': (2, 'Acciones'),
 	}
 	
 	table_data = [
+		{'field_name': 'estatus_punto_venta', 'date_format': None},
+		{'field_name': 'id_punto_venta', 'date_format': None},
 		{'field_name': 'punto_venta', 'date_format': None},
 		{'field_name': 'descripcion_punto_venta', 'date_format': None},
 	]
@@ -109,10 +113,10 @@ class PuntoVentaCreateView(MaestroCreateView):
 	#-- Indicar el permiso que requiere para ejecutar la acción.
 	permission_required = ConfigViews.permission_add
 	
-	extra_context = {
-		"accion": f"Crear {ConfigViews.model._meta.verbose_name}",
-		"list_view_name" : ConfigViews.list_view_name
-	}
+	# extra_context = {
+	# 	"accion": f"Crear {ConfigViews.model._meta.verbose_name}",
+	# 	"list_view_name" : ConfigViews.list_view_name
+	# }
 
 
 # ProvinciaUpdateView
@@ -126,10 +130,10 @@ class PuntoVentaUpdateView(MaestroUpdateView):
 	#-- Indicar el permiso que requiere para ejecutar la acción.
 	permission_required = ConfigViews.permission_change
 	
-	extra_context = {
-		"accion": f"Editar {ConfigViews.model._meta.verbose_name}",
-		"list_view_name" : ConfigViews.list_view_name
-	}
+	# extra_context = {
+	# 	"accion": f"Editar {ConfigViews.model._meta.verbose_name}",
+	# 	"list_view_name" : ConfigViews.list_view_name
+	# }
 
 
 # ProvinciaDeleteView
@@ -142,8 +146,8 @@ class PuntoVentaDeleteView (MaestroDeleteView):
 	#-- Indicar el permiso que requiere para ejecutar la acción.
 	permission_required = ConfigViews.permission_delete
 	
-	extra_context = {
-		"accion": f"Eliminar {ConfigViews.model._meta.verbose_name}",
-		"list_view_name" : ConfigViews.list_view_name,
-		"mensaje": "Estás seguro de eliminar el Registro"
-	}
+	# extra_context = {
+	# 	"accion": f"Eliminar {ConfigViews.model._meta.verbose_name}",
+	# 	"list_view_name" : ConfigViews.list_view_name,
+	# 	"mensaje": "Estás seguro de eliminar el Registro"
+	# }

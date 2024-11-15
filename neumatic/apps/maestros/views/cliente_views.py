@@ -64,18 +64,21 @@ class DataViewList():
 	paginate_by = 8
 	  
 	table_headers = {
-		'estatus_cliente': (2, 'Estatus'),
+		'estatus_cliente': (1, 'Estatus'),
+		'id_cliente': (1, 'ID'),
 		'nombre_cliente': (4, 'Nombre Cliente'),
-	'tipo_persona': (2, 'Tipo'),
-	'cuit': (2, 'CUIT'),
+		'tipo_persona': (2, 'Tipo'),
+		'cuit': (2, 'CUIT'),
+		
 		'acciones': (2, 'Acciones'),
 	}
 	
 	table_data = [
 		{'field_name': 'estatus_cliente', 'date_format': None},
-	{'field_name': 'nombre_cliente', 'date_format': None},
+		{'field_name': 'id_cliente', 'date_format': None},
+		{'field_name': 'nombre_cliente', 'date_format': None},
 		{'field_name': 'tipo_persona', 'date_format': None},
-	{'field_name': 'cuit', 'date_format': None},
+		{'field_name': 'cuit', 'date_format': None},
 	]
 
 
@@ -111,10 +114,10 @@ class ClienteCreateView(MaestroCreateView):
 	#-- Indicar el permiso que requiere para ejecutar la acción.
 	permission_required = ConfigViews.permission_add
 	
-	extra_context = {
-		"accion": f"Crear {ConfigViews.model._meta.verbose_name}",
-		"list_view_name" : ConfigViews.list_view_name
-	}
+	# extra_context = {
+	# 	"accion": f"Crear {ConfigViews.model._meta.verbose_name}",
+	# 	"list_view_name" : ConfigViews.list_view_name
+	# }
 	
 	def get_initial(self):
 		initial = super().get_initial()
@@ -134,10 +137,21 @@ class ClienteUpdateView(MaestroUpdateView):
 	#-- Indicar el permiso que requiere para ejecutar la acción.
 	permission_required = ConfigViews.permission_change
 	
-	extra_context = {
-		"accion": f"Editar {ConfigViews.model._meta.verbose_name}",
-		"list_view_name" : ConfigViews.list_view_name
-	}
+	
+	# def get_context_data(self, **kwargs):
+	# 	#-- Llamar al contexto base de la clase genérica.
+	# 	context = super().get_context_data(**kwargs)
+	# 	
+	# 	# Obtener el objeto que se está editando
+	# 	registro = self.get_object()
+	# 	
+	# 	#-- Actualizar el contexto con el ID.
+	# 	context.update({
+	# 		"accion": f"Editar {ConfigViews.model._meta.verbose_name} - {registro.pk}",
+	# 		"list_view_name" : ConfigViews.list_view_name
+	# 	})
+	# 	
+	# 	return context
 
 
 # ClienteDeleteView
@@ -150,8 +164,8 @@ class ClienteDeleteView (MaestroDeleteView):
 	#-- Indicar el permiso que requiere para ejecutar la acción.
 	permission_required = ConfigViews.permission_delete
 	
-	extra_context = {
-		"accion": f"Eliminar {ConfigViews.model._meta.verbose_name}",
-		"list_view_name" : ConfigViews.list_view_name,
-		"mensaje": "Estás seguro de eliminar el Registro"
-	}
+	# extra_context = {
+	# 	"accion": f"Eliminar {ConfigViews.model._meta.verbose_name}",
+	# 	"list_view_name" : ConfigViews.list_view_name,
+	# 	"mensaje": "Estás seguro de eliminar el Registro"
+	# }

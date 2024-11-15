@@ -429,8 +429,6 @@
 			localidadSelect.addEventListener("change", function () {
 				const localidadId = this.value;
 				
-				console.log("localidadId", localidadId)
-				
 				if (localidadId) {
 					codigoPostalText.value = localidadesData[localidadId] || "";
 					
@@ -449,15 +447,6 @@
 			const provinciaSeleccionada = sessionStorage.getItem("provinciaSeleccionada") || provinciaSelect.value;
 			const localidadSeleccionada = sessionStorage.getItem("localidadSeleccionada") || localidadSelect.value;
 			const codigoPostalSeleccionado = sessionStorage.getItem("codigoPostalSeleccionado") || codigoPostalText.value;
-			
-			console.log("--------------------------------")
-			console.log("Provincia:")
-			console.log("sessionStorage.getItem('provinciaSeleccionada')", sessionStorage.getItem("provinciaSeleccionada"))
-			console.log("provinciaSelect.value", provinciaSelect.value)
-			
-			console.log("Localidad:")
-			console.log('sessionStorage.getItem("localidadSeleccionada")', sessionStorage.getItem("localidadSeleccionada"))
-			console.log('localidadSelect.value', localidadSelect.value)
 			
 			// Cargar localidades y seleccionar automáticamente la localidad al cargar la página
 			if (provinciaSeleccionada) {
