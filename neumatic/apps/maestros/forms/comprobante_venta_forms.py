@@ -54,3 +54,11 @@ class ComprobanteVentaForm(CrudGenericForm):
 			'compro_asociado': 
 				forms.TextInput(attrs={**formclasstext}),
 		}
+		
+		error_messages = {
+			'codigo_comprobante_venta': {
+				'unique': 'Este Código de Comprobante de Venta ya existe.',
+				# 'required': 'Debe completar este campo.',
+				# 'invalid': 'Ingrese un valor válido.'
+			},
+		}

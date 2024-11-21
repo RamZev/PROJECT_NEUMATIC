@@ -20,3 +20,11 @@ class CaiForm(CrudGenericForm):
 			'descripcion_cai': 
 				forms.TextInput(attrs={**formclasstext}),
 		}
+		
+		error_messages = {
+			'cai':{
+				'unique': 'Este CAI ya existe.',
+				# 'required': 'Debe completar este campo.',
+				# 'invalid': 'Ingrese un valor válido.'
+			},
+		}

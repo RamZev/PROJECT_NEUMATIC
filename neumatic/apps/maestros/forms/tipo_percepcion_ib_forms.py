@@ -19,15 +19,15 @@ class TipoPercepcionIbForm(CrudGenericForm):
 				forms.TextInput(attrs={**formclasstext}),
 			'alicuota': 
 				forms.NumberInput(attrs={**formclasstext,
-										'min': 1,
+										'min': 0,
 										'max': 99.99}),
 			'monto': 
 				forms.NumberInput(attrs={**formclasstext,
-										'min': 1,
+										'min': 0,
 										'max': 9999999999999.99}),
 			'minimo': 
 				forms.NumberInput(attrs={**formclasstext,
-										'min': 1,
+										'min': 0,
 										'max': 9999999999999.99}),
 			'neto_total': 
 				forms.CheckboxInput(attrs={**formclasscheck}),

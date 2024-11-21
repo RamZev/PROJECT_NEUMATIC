@@ -1,8 +1,6 @@
 # neumatic\apps\maestros\views\cruds_views_generics.py
-from typing import Any
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
 from django.db.models import Q
-# from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.http import JsonResponse
 from django.db import transaction
 from django.db.models import ProtectedError
@@ -15,7 +13,7 @@ from django.contrib.auth.decorators import login_required
 #-- Recursos necesarios para los permisos de usuarios sobre modelos.
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.contrib import messages
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect
 
 from django.utils import timezone
 
@@ -128,16 +126,24 @@ class MaestroCreateView(PermissionRequiredMixin, CreateView):
 		form.instance.id_user = user
 		form.instance.usuario = user.username
 		
-		return super().form_valid(form)
+		try:
+			#-- Manejo de transacciones.
+			with transaction.atomic():
+				return super().form_valid(form)
+		
+		except Exception as e:
+			#-- Captura el error de transacción.
+			context = self.get_context_data(form)
+			context['data_has_erors'] = True
+			context['transaction_error'] = str(e)
+			return self.render_to_response(context)
 	
 	def form_invalid(self, form):
 		"""
 		Si el formulario no es válido, renderiza el formulario con los errores.
 		"""
 		
-		#-- Establecer el contexto con la información sobre errores.
 		context = self.get_context_data(form=form)
-		#-- Indicar que hay errores.
 		context['data_has_errors'] = True
 		
 		return self.render_to_response(context)
@@ -153,12 +159,10 @@ class MaestroCreateView(PermissionRequiredMixin, CreateView):
 		
 		#-- Controlar mostrar o no el modal con los errors de validación.
 		#-- Inicialmente, no hay errores.
-		if 'data_has_errors' not in context:
-			context['data_has_errors'] = False
+		context['data_has_errors'] = False
 		
 		#-- Asegurarse de que el formulario en el contexto sea el mismo que se validó
-		if 'form' not in context:
-			context['form'] = self.get_form()
+		context['form'] = self.get_form()
 		context['requerimientos'] = obtener_requerimientos_modelo(self.model)
 		
 		return context
@@ -209,12 +213,10 @@ class MaestroUpdateView(PermissionRequiredMixin, UpdateView):
 		
 		#-- Controlar mostrar o no el modal con los errors de validación.
 		#-- Inicialmente, no hay errores.
-		if 'data_has_errors' not in context:
-			context['data_has_errors'] = False
+		context['data_has_errors'] = False
 		
 		#-- Asegurarse de que el formulario en el contexto sea el mismo que se validó
-		if 'form' not in context:
-			context['form'] = self.get_form()
+		context['form'] = self.get_form()
 		context['requerimientos'] = obtener_requerimientos_modelo(self.model)
 		
 		return context

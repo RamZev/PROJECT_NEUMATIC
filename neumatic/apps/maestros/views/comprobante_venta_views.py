@@ -66,8 +66,7 @@ class DataViewList():
 	
 	table_headers = {
 		'estatus_comprobante_venta': (1, 'Estatus'),
-		'id_comprobante_venta': (1, 'ID'),
-		'nombre_comprobante_venta': (4, 'Nombre Comprobante'),
+		'nombre_comprobante_venta': (5, 'Nombre Comprobante'),
 		'codigo_comprobante_venta': (4, 'Código Comprobante'),
 		
 		'acciones': (2, 'Acciones'),
@@ -75,7 +74,6 @@ class DataViewList():
 	
 	table_data = [
 		{'field_name': 'estatus_comprobante_venta', 'date_format': None},
-		{'field_name': 'id_comprobante_venta', 'date_format': None},
 		{'field_name': 'nombre_comprobante_venta', 'date_format': None},
 		{'field_name': 'codigo_comprobante_venta', 'date_format': None},
 	]

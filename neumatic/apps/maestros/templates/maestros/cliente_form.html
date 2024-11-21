@@ -350,11 +350,6 @@
 	{{ block.super }}
 	<script>
 		document.addEventListener("DOMContentLoaded", function () {
-			// Limpiar sessionStorage al cargar la página para evitar mantener datos previos
-			// sessionStorage.removeItem("provinciaSeleccionada");
-			// sessionStorage.removeItem("localidadSeleccionada");
-			// sessionStorage.removeItem("codigoPostalSeleccionado");
-			
 			const codigoPostalText = document.getElementById("id_codigo_postal");
 			const provinciaSelect = document.getElementById("id_id_provincia");
 			const localidadSelect = document.getElementById("id_id_localidad");
@@ -387,10 +382,8 @@
 			
 			// Función para cargar las localidades y seleccionar la correcta
 			function cargarLocalidades(provinciaId, localidadSeleccionadaId = null) {
-				
 				const url = "{% url 'filtrar_localidad' %}?id_provincia=" + provinciaId;
-				
-				resetLocalidadSelect("Seleccionar Localidad");
+				resetLocalidadSelect("Seleccione una localidad");
 				
 				if (provinciaId) {
 					fetch(url)
@@ -398,6 +391,9 @@
 						.then(data => {
 							localidadSelect.disabled = false;
 							localidadesData = {}; // Reiniciar datos de localidad
+							
+							// Insertar la opción inicial
+							localidadSelect.innerHTML = `<option value="">Seleccione una localidad</option>`;
 							
 							data.localidad.forEach(localidad => {
 								localidadesData[localidad.id_localidad] = localidad.codigo_postal;
@@ -417,11 +413,6 @@
 			// Escucha el cambio en Provincia y carga las localidades correspondientes
 			provinciaSelect.addEventListener("change", function () {
 				const provinciaId = this.value;
-				
-				// Guardar selección de provincia en sessionStorage
-				sessionStorage.setItem("provinciaSeleccionada", provinciaId);
-				sessionStorage.removeItem("localidadSeleccionada"); // Resetear localidad en sesión
-				
 				cargarLocalidades(provinciaId);  // Llamar sin localidad seleccionada
 			});
 			
@@ -431,29 +422,25 @@
 				
 				if (localidadId) {
 					codigoPostalText.value = localidadesData[localidadId] || "";
-					
-					// Guardar selección de localidad y código postal en sessionStorage
-					sessionStorage.setItem("localidadSeleccionada", localidadId);
-					sessionStorage.setItem("codigoPostalSeleccionado", codigoPostalText.value);
-					
 				} else {
 					codigoPostalText.value = "";
-					sessionStorage.removeItem("localidadSeleccionada"); // Limpiar localidad de sesión
-					sessionStorage.removeItem("codigoPostalSeleccionado"); // Limpiar código postal de sesión
 				}
 			});
 			
 			// Detectar valores iniciales (para el caso de actualizar o volver de la modal)
-			const provinciaSeleccionada = sessionStorage.getItem("provinciaSeleccionada") || provinciaSelect.value;
-			const localidadSeleccionada = sessionStorage.getItem("localidadSeleccionada") || localidadSelect.value;
-			const codigoPostalSeleccionado = sessionStorage.getItem("codigoPostalSeleccionado") || codigoPostalText.value;
+			const provinciaSeleccionada = provinciaSelect.value;
+			const localidadSeleccionada = localidadSelect.value;
+			const codigoPostalSeleccionado = codigoPostalText.value;
 			
 			// Cargar localidades y seleccionar automáticamente la localidad al cargar la página
 			if (provinciaSeleccionada) {
 				cargarLocalidades(provinciaSeleccionada, localidadSeleccionada);
 				codigoPostalText.value = codigoPostalSeleccionado;  // Setear el código postal guardado
 			}
-			
+			else{
+				// Si no hay una provincia seleccionada, deshabilitar el combo de localidades
+				cargarLocalidades(provinciaSeleccionada);  // Llamar sin localidad seleccionada
+			}
 			
 			///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			// Nueva funcionalidad para el combobox black_list
@@ -463,7 +450,7 @@
 			const fechaBajaInput = document.getElementById("id_fecha_baja");
 			
 			// Obtener el usuario autenticado desde el contexto de Django
-			const usuarioAutenticado = "{{ request.user.username }}";  // Asegúrate de que esto está disponible en el contexto
+			const usuarioAutenticado = "{{ request.user.username }}";
 			
 			// Función para manejar el cambio en el combobox de black_list
 			function manejarCambioBlackList() {
@@ -481,6 +468,7 @@
 			
 			// Agregar un listener al cambio del select de black_list
 			blackListSelect.addEventListener("change", manejarCambioBlackList);		
+			///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			
 		});
 	</script>

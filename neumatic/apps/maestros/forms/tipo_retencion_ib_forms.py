@@ -19,18 +19,18 @@ class TipoRetencionIbForm(CrudGenericForm):
 				forms.TextInput(attrs={**formclasstext}),
 			'alicuota_inscripto': 
 				forms.NumberInput(attrs={**formclasstext,
-										'min': 1,
+										'min': 0,
 										'max': 99.99}),
 			'alicuota_no_inscripto': 
 				forms.NumberInput(attrs={**formclasstext,
-										'min': 1,
+										'min': 0,
 										'max': 99.99}),
 			'monto': 
 				forms.NumberInput(attrs={**formclasstext,
-										'min': 1,
+										'min': 0,
 										'max': 9999999999999.99}),
 			'minimo': 
 				forms.NumberInput(attrs={**formclasstext,
-										'min': 1,
+										'min': 0,
 										'max': 9999999999999.99}),
 		}

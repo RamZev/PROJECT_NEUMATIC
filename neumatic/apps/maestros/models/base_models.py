@@ -146,13 +146,14 @@ class ProductoModelo(ModeloBaseGenerico):
 class ProductoCai(ModeloBaseGenerico):
 	id_cai = models.AutoField(primary_key=True)
 	estatus_cai = models.BooleanField("Estatus*", default=True,
-										   choices=ESTATUS_GEN)
-	cai = models.CharField("CAI*", max_length=20)
+										choices=ESTATUS_GEN)
+	cai = models.CharField("CAI*", max_length=20, unique=True)
 	descripcion_cai = models.CharField("Descripción CAI", max_length=50, 
 										null=True, blank=True)
 	
 	def __str__(self):
 		return self.cai
+	
 	
 	class Meta:
 		db_table = 'producto_cai'
@@ -166,9 +167,7 @@ class ProductoMinimo(ModeloBaseGenerico):
 	# cai = models.CharField("CAI", max_length=20)
 	id_cai = models.ForeignKey(ProductoCai, on_delete=models.PROTECT, 
 								verbose_name="CAI")
-	minimo = models.IntegerField("Mínimo",
-								 validators=[MinValueValidator(1),
-											 MaxValueValidator(99)])
+	minimo = models.IntegerField("Mínimo", default=0)
 	id_deposito = models.ForeignKey('ProductoDeposito',
 									on_delete=models.CASCADE,
 									verbose_name="Depósito")
@@ -189,12 +188,8 @@ class ProductoStock(ModeloBaseGenerico):
 									verbose_name="Producto")
 	id_deposito = models.ForeignKey('ProductoDeposito', on_delete=models.CASCADE,
 									verbose_name="Depósito")
-	stock = models.IntegerField("Stock",
-								validators=[MinValueValidator(1),
-											MaxValueValidator(999)])
-	minimo = models.IntegerField("Mínimo",
-								 validators=[MinValueValidator(1),
-											 MaxValueValidator(999)])
+	stock = models.IntegerField("Stock", default=0)
+	minimo = models.IntegerField("Mínimo",default=0)
 	fecha_producto_stock = models.DateField("Fecha Stock")
 
 	def __str__(self):
@@ -226,40 +221,39 @@ class ProductoEstado(ModeloBaseGenerico):
 class ComprobanteVenta(ModeloBaseGenerico):
 	id_comprobante_venta = models.AutoField(primary_key=True)
 	estatus_comprobante_venta = models.BooleanField("Estatus", default=True,
-													choices=ESTATUS_GEN)  # Estatus del comprobante
+													choices=ESTATUS_GEN)
 	codigo_comprobante_venta = models.CharField("Código Comprobante",
-												max_length=3)
+												max_length=3, unique=True)
 	nombre_comprobante_venta = models.CharField("Nombre Comprobante", 
-												max_length=50)  # Nombre del comprobante
+												max_length=50)
 	compro_asociado = models.CharField("Comprobate Asociado", 
-										max_length=20, null=True, blank=True)  # Comprobante asociado
-	
-	mult_venta = models.IntegerField("Mult. Venta")  # Multiplicador de venta
-	mult_saldo = models.IntegerField("Mult. Saldo")  # Multiplicador de saldo
-	mult_stock = models.IntegerField("Mult. Stock")  # Multiplicador de stock
-	mult_comision = models.IntegerField("Mult. Comisión")  # Multiplicador de comisión
-	mult_caja = models.IntegerField("Mult. Caja")  # Multiplicador de caja
-	mult_estadistica = models.IntegerField("Mult. Estadísticas")  # Multiplicador de estadísticas
-	
-	libro_iva = models.BooleanField("Libro IVA", default=False)  # Libro IVA asociado
-	estadistica = models.BooleanField("Estadísticas", default=False)  # Indicador de estadísticas
-	electronica = models.BooleanField("Electrónica", default=False)  # Comprobante electrónico
-	presupuesto = models.BooleanField("Presupuesto", default=False)  # Presupuesto
-	pendiente = models.BooleanField("Pendiente", default=False)  # Indicador de pendiente
+										max_length=20, null=True, blank=True)
+	mult_venta = models.IntegerField("Mult. Venta")
+	mult_saldo = models.IntegerField("Mult. Saldo")
+	mult_stock = models.IntegerField("Mult. Stock")
+	mult_comision = models.IntegerField("Mult. Comisión")
+	mult_caja = models.IntegerField("Mult. Caja")
+	mult_estadistica = models.IntegerField("Mult. Estadísticas")
+	libro_iva = models.BooleanField("Libro IVA", default=False)
+	estadistica = models.BooleanField("Estadísticas", default=False)
+	electronica = models.BooleanField("Electrónica", default=False)
+	presupuesto = models.BooleanField("Presupuesto", default=False)
+	pendiente = models.BooleanField("Pendiente", default=False)
 	info_michelin_auto = models.BooleanField("Info. Michelin auto", 
-										  	  default=False)  # Información Michelin auto
+										  	default=False)
 	info_michelin_camion = models.BooleanField("Info. Michelin camión", 
-												default=False)  # Información Michelin camión
-	codigo_afip_a = models.CharField("Código AFIP A", 
-									max_length=3)  # Código AFIP A
-	codigo_afip_b = models.CharField("Código AFIP B", 
-									max_length=3)  # Código AFIP B
+												default=False)
+	codigo_afip_a = models.CharField("Código AFIP A", max_length=3)
+	codigo_afip_b = models.CharField("Código AFIP B", max_length=3)
 	
 	def __str__(self):
 		return self.nombre_comprobante_venta
 	
 	def clean(self):
 		errors = {}
+		
+		if not self.codigo_comprobante_venta.isupper():
+			errors.update({'codigo_comprobante_venta': 'Debe ingresar solo mayúsculas.'})
 		
 		if self.mult_venta != -1 and self.mult_venta != 0 and self.mult_venta != 1:
 			errors.update({'mult_venta': "Los valores permitidos son: -1, 0 y 1"})
@@ -296,7 +290,7 @@ class ComprobanteCompra(ModeloBaseGenerico):
 	estatus_comprobante_compra = models.BooleanField("Estatus", default=True,
 													 choices=ESTATUS_GEN)
 	codigo_comprobante_compra = models.CharField("Código comprobante",
-												 max_length=3)
+												 max_length=3, unique=True)
 	nombre_comprobante_compra = models.CharField("Nombre", max_length=30)
 	mult_compra = models.IntegerField("Mult. Compra")
 	mult_saldo = models.IntegerField("Mult. Saldo")
@@ -313,6 +307,9 @@ class ComprobanteCompra(ModeloBaseGenerico):
 	
 	def clean(self):
 		errors = {}
+		
+		if not self.codigo_comprobante_compra.isupper():
+			errors.update({'codigo_comprobante_compra': 'Debe ingresar solo mayúsculas.'})
 		
 		if self.mult_compra != -1 and self.mult_compra != 0 and self.mult_compra != 1:
 			errors.update({"mult_compra": "Los valores permitidos son: -1, 0 y 1"})
@@ -342,7 +339,7 @@ class Provincia(ModeloBaseGenerico):
 	id_provincia = models.AutoField(primary_key=True)
 	estatus_provincia = models.BooleanField("Estatus", default=True,
 											choices=ESTATUS_GEN)
-	codigo_provincia = models.CharField("Código", max_length=1)
+	codigo_provincia = models.CharField("Código", max_length=2, unique=True)
 	nombre_provincia = models.CharField("Nombre", max_length=30)
 
 	def __str__(self):
@@ -380,7 +377,8 @@ class TipoDocumentoIdentidad(ModeloBaseGenerico):
 														   default=True,
 														   choices=ESTATUS_GEN)
 	nombre_documento_identidad = models.CharField("Nombre", max_length=20)
-	tipo_documento_identidad = models.CharField("Tipo", max_length=4)
+	tipo_documento_identidad = models.CharField("Tipo", max_length=4, 
+												unique=True)
 	codigo_afip = models.CharField("Código AFIP", max_length=2)
 	ws_afip = models.CharField("WS AFIP", max_length=2)
 
@@ -398,7 +396,7 @@ class TipoIva(ModeloBaseGenerico):
 	id_tipo_iva = models.AutoField(primary_key=True)
 	estatus_tipo_iva = models.BooleanField("Estatus", default=True,
 										   choices=ESTATUS_GEN)
-	codigo_iva = models.CharField("Código IVA", max_length=4)
+	codigo_iva = models.CharField("Código IVA", max_length=4, unique=True)
 	nombre_iva = models.CharField("Nombre", max_length=25)
 	discrimina_iva = models.BooleanField("Discrimina IVA", null=True,
 										 blank=True)
@@ -406,6 +404,18 @@ class TipoIva(ModeloBaseGenerico):
 	def __str__(self):
 		return self.nombre_iva
 
+	def clean(self):
+		errors = {}
+		
+		if not self.codigo_iva.isupper():
+			errors.update({'codigo_iva': 'Debe ingresar solo mayúsculas.'})
+		
+		if errors:
+			raise ValidationError(errors)
+		
+		return super().clean()
+	
+	
 	class Meta:
 		db_table = 'tipo_iva'
 		verbose_name = ('Tipo de IVA')
@@ -420,14 +430,11 @@ class TipoPercepcionIb(ModeloBaseGenerico):
 	descripcion_tipo_percepcion_ib = models.CharField("Descripción",
 													  max_length=50)
 	alicuota = models.DecimalField("Alícuota(%)", max_digits=4, decimal_places=2, 
-								validators=[MinValueValidator(1), 
-											MaxValueValidator(99.99)])
+								null=True, blank=True, default=0.00)
 	monto = models.DecimalField("Monto", max_digits=15, decimal_places=2, 
-							 validators=[MinValueValidator(1), 
-										 MaxValueValidator(9999999999999.99)])
+								null=True, blank=True, default=0.00)
 	minimo = models.DecimalField("Mínimo", max_digits=15, decimal_places=2, 
-							  validators=[MinValueValidator(1), 
-					 					  MaxValueValidator(9999999999999.99)])
+								null=True, blank=True, default=0.00)
 	neto_total = models.BooleanField("Neto total", null=True, blank=True)
 
 	def __str__(self):
@@ -439,6 +446,27 @@ class TipoPercepcionIb(ModeloBaseGenerico):
 		verbose_name_plural = ('Tipos de Percepción IB')
 		ordering = ['descripcion_tipo_percepcion_ib']
 
+	def clean(self):
+		super().clean()
+		
+		errors = {}
+		
+		alicuota_str = str(self.alicuota) if self.alicuota is not None else ""
+		monto_str = str(self.monto) if self.monto is not None else ""
+		minimo_str = str(self.minimo) if self.minimo is not None else ""
+		
+		if not re.match(r'^(0|[1-9]\d{0,1})(\.\d{1,2})?$', alicuota_str):
+			errors.update({'alicuota': 'El valor debe ser positivo, con hasta 2 dígitos enteros y hasta 2 decimales o cero.'})
+		
+		if not re.match(r'^(0|[1-9]\d{0,13})(\.\d{1,2})?$', monto_str):
+			errors.update({'monto': 'El valor debe ser positivo, con hasta 13 dígitos enteros y hasta 2 decimales o cero.'})
+		
+		if not re.match(r'^(0|[1-9]\d{0,13})(\.\d{1,2})?$', minimo_str):
+			errors.update({'minimo': 'El valor debe ser positivo, con hasta 13 dígitos enteros y hasta 2 decimales o cero.'})
+		
+		if errors:
+			raise ValidationError(errors)
+
 
 class TipoRetencionIb(ModeloBaseGenerico):
 	id_tipo_retencion_ib = models.AutoField(primary_key=True)
@@ -446,23 +474,45 @@ class TipoRetencionIb(ModeloBaseGenerico):
 													choices=ESTATUS_GEN)
 	descripcion_tipo_retencion_ib = models.CharField("Descripción",
 													 max_length=50)
-	alicuota_inscripto = models.DecimalField("Alícuota Inscripto(%)",
-											 max_digits=4, decimal_places=2, 
-											 validators=[MinValueValidator(1), 
-														 MaxValueValidator(99.99)])
-	alicuota_no_inscripto = models.DecimalField("Alícuota No Inscripto(%)",
+	alicuota_inscripto = models.DecimalField("Alícuota Inscripto(%)", 
+											max_digits=4, decimal_places=2, 
+											null=True, blank=True, default=0.00)
+	alicuota_no_inscripto = models.DecimalField("Alícuota No Inscripto(%)", 
 												max_digits=4, decimal_places=2, 
-												validators=[MinValueValidator(1), 
-															MaxValueValidator(99.99)])
+												null=True, blank=True, default=0.00)
 	monto = models.DecimalField("Monto", max_digits=15, decimal_places=2, 
-							 			 validators=[MinValueValidator(1), 
-													 MaxValueValidator(9999999999999.99)])
+								null=True, blank=True, default=0.00)
 	minimo = models.DecimalField("Mínimo", max_digits=15, decimal_places=2, 
-							  			   validators=[MinValueValidator(1), 
-						   							   MaxValueValidator(9999999999999.99)])
+								null=True, blank=True, default=0.00)
 
 	def __str__(self):
 		return self.descripcion_tipo_retencion_ib
+	
+	def clean(self):
+		super().clean()
+		
+		errors = {}
+		
+		alicuota_inscripto_str = str(self.alicuota_inscripto) if self.alicuota_inscripto is not None else ""
+		alicuota_no_inscripto_str = str(self.alicuota_no_inscripto) if self.alicuota_no_inscripto is not None else ""
+		monto_str = str(self.monto) if self.monto is not None else ""
+		minimo_str = str(self.minimo) if self.minimo is not None else ""
+		
+		if not re.match(r'^(0|[1-9]\d{0,1})(\.\d{1,2})?$', alicuota_inscripto_str):
+			errors.update({'alicuota_inscripto': 'El valor debe ser positivo, con hasta 2 dígitos enteros y hasta 2 decimales o cero.'})
+		
+		if not re.match(r'^(0|[1-9]\d{0,1})(\.\d{1,2})?$', alicuota_no_inscripto_str):
+			errors.update({'alicuota_no_inscripto': 'El valor debe ser positivo, con hasta 2 dígitos enteros y hasta 2 decimales o cero.'})
+		
+		if not re.match(r'^(0|[1-9]\d{0,13})(\.\d{1,2})?$', monto_str):
+			errors.update({'monto': 'El valor debe ser positivo, con hasta 13 dígitos enteros y hasta 2 decimales o cero.'})
+		
+		if not re.match(r'^(0|[1-9]\d{0,13})(\.\d{1,2})?$', minimo_str):
+			errors.update({'minimo': 'El valor debe ser positivo, con hasta 13 dígitos enteros y hasta 2 decimales o cero.'})
+		
+		if errors:
+			raise ValidationError(errors)
+
 
 	class Meta:
 		db_table = 'tipo_retencion_ib'
@@ -518,7 +568,7 @@ class PuntoVenta(ModeloBaseGenerico):
 	id_punto_venta = models.AutoField(primary_key=True)
 	estatus_punto_venta = models.BooleanField("Estatus", default=True,
 											choices=ESTATUS_GEN)
-	punto_venta = models.CharField("Punto de Venta", max_length=5)
+	punto_venta = models.CharField("Punto de Venta", max_length=5, unique=True)
 	descripcion_punto_venta = models.CharField("Descripción Pto. Venta", 
 											max_length=50, null=True, 
 											blank=True)
@@ -528,7 +578,7 @@ class PuntoVenta(ModeloBaseGenerico):
 	
 	def clean(self):
 		errors = {}
-
+		
 		#-- Limpiar y formatear el valor de `punto_venta` con ceros a la izquierda.
 		if self.punto_venta:
 			try:
@@ -543,7 +593,7 @@ class PuntoVenta(ModeloBaseGenerico):
 		
 		if errors:
 			raise ValidationError(errors)
-
+		
 		return super().clean()
 	
 	
@@ -558,8 +608,10 @@ class AlicuotaIva(ModeloBaseGenerico):
 	id_alicuota_iva = models.AutoField(primary_key=True)
 	estatus_alicuota_iva = models.BooleanField("Estatus", default=True,
 											choices=ESTATUS_GEN)
-	codigo_alicuota = models.CharField("Cód. Alíc. IVA", max_length=4)
-	alicuota_iva = models.DecimalField("Alícuota IVA(%)", max_digits=5, decimal_places=2, default=0.0)
+	codigo_alicuota = models.CharField("Cód. Alíc. IVA", max_length=4, unique=True)
+	alicuota_iva = models.DecimalField("Alícuota IVA(%)", unique=True, 
+										max_digits=5, decimal_places=2, 
+										default=0.0)
 	descripcion_alicuota_iva = models.CharField("Descripción Alíc. IVA", 
 											max_length=50, null=True, 
 											blank=True)

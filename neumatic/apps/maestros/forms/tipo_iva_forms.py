@@ -22,3 +22,11 @@ class TipoIvaForm(CrudGenericForm):
 			'discrimina_iva': 
 				forms.CheckboxInput(attrs={**formclasscheck}),
 		}
+		
+		error_messages = {
+			'codigo_iva': {
+				'unique': 'Ya existe un tipo de IVA con el mismo código.',
+				# 'required': 'Debe completar este campo.',
+				# 'invalid': 'Ingrese un valor válido.'
+			},
+		}

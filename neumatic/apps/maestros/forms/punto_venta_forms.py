@@ -20,3 +20,11 @@ class PuntoVentaForm(CrudGenericForm):
 			'descripcion_punto_venta': 
 				forms.TextInput(attrs={**formclasstext}),
 		}
+		
+		error_messages = {
+			'punto_venta': {
+				'unique': 'Este Punto de Venta ya existe.',
+				# 'required': 'Debe completar este campo.',
+				# 'invalid': 'Ingrese un valor válido.'
+			},
+		}

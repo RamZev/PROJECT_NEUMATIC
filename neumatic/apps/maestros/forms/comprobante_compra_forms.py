@@ -19,7 +19,6 @@ class ComprobanteCompraForm(CrudGenericForm):
 				forms.TextInput(attrs={**formclasstext}),
 			'nombre_comprobante_compra': 
 				forms.TextInput(attrs={**formclasstext}),
-			
 			'mult_compra': 
 				forms.NumberInput(attrs={**formclasstext, 'min': -1, 'max': 1}),
 			'mult_saldo': 
@@ -28,10 +27,8 @@ class ComprobanteCompraForm(CrudGenericForm):
 				forms.NumberInput(attrs={**formclasstext, 'min': -1, 'max': 1}),
 			'mult_caja': 
 				forms.NumberInput(attrs={**formclasstext, 'min': -1, 'max': 1}),
-			
 			'libro_iva': 
 				forms.CheckboxInput(attrs={**formclasscheck}),
-			
 			'codigo_afip_a': 
 				forms.TextInput(attrs={**formclasstext}),
 			'codigo_afip_b': 
@@ -40,4 +37,12 @@ class ComprobanteCompraForm(CrudGenericForm):
 				forms.TextInput(attrs={**formclasstext}),
 			'codigo_afip_m': 
 				forms.TextInput(attrs={**formclasstext}),
+		}
+		
+		error_messages = {
+			'codigo_comprobante_compra': {
+				'unique': 'Este Código de Comprobante de Compra ya existe.',
+				# 'required': 'Debe completar este campo.',
+				# 'invalid': 'Ingrese un valor válido.'
+			},
 		}

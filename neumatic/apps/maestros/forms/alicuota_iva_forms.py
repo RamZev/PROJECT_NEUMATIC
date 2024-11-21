@@ -22,3 +22,16 @@ class AlicuotaIvaForm(CrudGenericForm):
 			'descripcion_alicuota_iva': 
 				forms.TextInput(attrs={**formclasstext}),
 		}
+		
+		error_messages = {
+			'codigo_alicuota': {
+				'unique': 'Ya existe una Alícuota de IVA con el mismo código.',
+				# 'required': 'Debe completar este campo.',
+				# 'invalid': 'Ingrese un valor válido.'
+			},
+			'alicuota_iva': {
+				'unique': 'La Alícuota ya está registrada.',
+				# 'required': 'Debe completar este campo.',
+				# 'invalid': 'Ingrese un valor válido.'
+			},
+		}

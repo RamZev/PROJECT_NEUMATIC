@@ -73,7 +73,6 @@ class EmpresaForm(CrudGenericForm):
 			'ws_vence':
 				forms.TextInput(attrs={**formclassdate,
 										'type': 'date' }),
-			
 			'interes':
 				forms.NumberInput(
 					attrs={**formclasstext,
@@ -98,23 +97,36 @@ class EmpresaForm(CrudGenericForm):
 	
 	def __init__(self, *args, **kwargs):
 		super().__init__(*args, **kwargs)
-		# Verifica si estamos editando un registro con provincia ya seleccionada
-		if self.instance and self.instance.pk and self.instance.id_provincia:
-			# self.fields['id_localidad'].queryset = Localidad.objects.filter(id_provincia=self.instance.id_provincia).order_by('nombre_localidad')
+		
+		self.fields['id_localidad'].choices = []
+		
+		#-- Verificar si el formulario se llama con datos (POST).
+		if self.is_bound:
+			#-- Obtener el valor enviado de id_provincia_tarjeta.
+			provincia_id = self.data.get('id_provincia')
+			localidad_id = self.data.get('id_localidad', '')
 			
+			if provincia_id:
+				#-- Filtrar localidades según la provincia enviada.
+				localidades = Localidad.objects.filter(id_provincia=provincia_id).order_by('nombre_localidad')
+				self.fields['id_localidad'].choices = [("", "Seleccione una localidad")] + [
+					(loc.id_localidad, f"{loc.nombre_localidad} - {loc.codigo_postal}") for loc in localidades
+				]
+				self.initial['id_localidad'] = localidad_id
+			else:
+				self.fields['id_localidad'].choices = [("", "Seleccione una localidad")]
+			
+		#-- Si se está editando un registro existente.
+		elif self.instance and self.instance.pk and self.instance.id_provincia:
 			localidades = Localidad.objects.filter(id_provincia=self.instance.id_provincia).order_by('nombre_localidad')
-			
-			# Configura el campo para mostrar 'nombre_localidad - codigo_postal'
 			self.fields['id_localidad'].choices = [
 				(loc.id_localidad, f"{loc.nombre_localidad} - {loc.codigo_postal}")
 				for loc in localidades
 			]
+			
+			#-- Establecer localidad seleccionada inicialmente.
+			if self.instance.id_localidad:
+				self.initial['id_localidad'] = self.instance.id_localidad.id_localidad
 		
-		else:
-			# En caso de nuevo registro o provincia no seleccionada, muestra un queryset vacío
-			# self.fields['id_localidad'].queryset = Localidad.objects.none()
-			self.fields['id_localidad'].choices = []
-		
-		# Opcional: si quieres que se muestre un mensaje de "Seleccione una localidad"
-		# self.fields['id_localidad'].empty_label = "Seleccione una localidad"
-		self.fields['id_localidad'].empty_label = "Seleccione una localidad"
+		#-- Asegurar que exista una opción inicial en cualquier caso.
+		self.fields['id_localidad'].choices.insert(0, ("", "Seleccione una localidad"))

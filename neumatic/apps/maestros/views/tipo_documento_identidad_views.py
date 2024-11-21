@@ -67,8 +67,7 @@ class DataViewList():
 	
 	table_headers = {
 		'estatus_tipo_documento_identidad': (1, 'Estatus'),
-		'id_tipo_documento_identidad': (1, 'ID'),
-		'nombre_documento_identidad': (2, 'Nombre'),
+		'nombre_documento_identidad': (3, 'Nombre'),
 		'tipo_documento_identidad': (2, 'Tipo'),
 		'codigo_afip': (2, 'Código AFIP'),
 		'ws_afip': (2, 'WS AFIP'),
@@ -78,7 +77,6 @@ class DataViewList():
 	
 	table_data = [
 		{'field_name': 'estatus_tipo_documento_identidad', 'date_format': None},
-		{'field_name': 'id_tipo_documento_identidad', 'date_format': None},
 		{'field_name': 'nombre_documento_identidad', 'date_format': None},
 		{'field_name': 'tipo_documento_identidad', 'date_format': None},
 		{'field_name': 'codigo_afip', 'date_format': None},
