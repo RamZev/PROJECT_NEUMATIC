@@ -67,17 +67,15 @@ class DataViewList():
 	
 	table_headers = {
 		'estatus_alicuota_iva': (1, 'Estatus'),
-		'id_alicuota_iva': (1, 'ID'),
 		'codigo_alicuota': (2, 'Cód. Alíc. IVA'),
 		'alicuota_iva': (2, 'Alíc. IVA(%)'),
-		'descripcion_alicuota_iva': (4, 'Descripción Alíc. IVA'),
+		'descripcion_alicuota_iva': (5, 'Descripción Alíc. IVA'),
 		
 		'acciones': (2, 'Acciones'),
 	}
 	
 	table_data = [
 		{'field_name': 'estatus_alicuota_iva', 'date_format': None},
-		{'field_name': 'id_alicuota_iva', 'date_format': None},
 		{'field_name': 'codigo_alicuota', 'date_format': None},
 		{'field_name': 'alicuota_iva', 'date_format': None},
 		{'field_name': 'descripcion_alicuota_iva', 'date_format': None},

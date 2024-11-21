@@ -20,3 +20,11 @@ class ProvinciaForm(CrudGenericForm):
 			'nombre_provincia': 
 				forms.TextInput(attrs={**formclasstext}),
 		}
+		
+		error_messages = {
+			'codigo_provincia': {
+				'unique': 'Ya existe una provincia con este código.',
+				# 'required': 'Debe completar este campo.',
+				# 'invalid': 'Ingrese un valor válido.'
+			},
+		}

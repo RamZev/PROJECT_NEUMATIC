@@ -24,3 +24,11 @@ class TipoDocumentoIdentidadForm(CrudGenericForm):
 			'ws_afip': 
 				forms.TextInput(attrs={**formclasstext}),
 		}
+		
+		error_messages = {
+			'tipo_documento_identidad': {
+				'unique': 'Ya existe un documento de identidad con el mismo tipo.',
+				# 'required': 'Debe completar este campo.',
+				# 'invalid': 'Ingrese un valor válido.'
+			},
+		}

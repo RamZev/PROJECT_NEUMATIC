@@ -1,8 +1,7 @@
 # neumatic\apps\maestros\views\producto_stock_views.py
 from django.urls import reverse_lazy
 from ..views.cruds_views_generics import *
-from ..models.base_models import ProductoDeposito, ProductoStock, ProductoMinimo
-from ..models.producto_models import Producto
+from ..models.base_models import ProductoDeposito
 from ..forms.producto_deposito_forms import ProductoDepositoForm
 
 
@@ -57,25 +56,28 @@ class ConfigViews():
 
 
 class DataViewList():
-	search_fields = ['nombre_producto_deposito', 'id_sucursal__nombre_sucursal']
+	search_fields = ['nombre_producto_deposito', 
+				  	 'id_sucursal__nombre_sucursal'
+	]
 	
-	ordering = ['nombre_producto_deposito']
+	ordering = ['id_sucursal__nombre_sucursal', 
+			 	'nombre_producto_deposito']
 	
 	paginate_by = 8
 	
 	table_headers = {
 		'estatus_producto_deposito': (1, 'Estatus'),
 		'id_producto_deposito': (1, 'ID'),
-		'nombre_producto_deposito': (4, 'Depósito'),
 		'id_sucursal': (4, 'Sucursal'),
+		'nombre_producto_deposito': (4, 'Depósito'),
 		'acciones': (2, 'Acciones'),
 	}
 	
 	table_data = [
 		{'field_name': 'estatus_producto_deposito', 'date_format': None},
 		{'field_name': 'id_producto_deposito', 'date_format': None},
-		{'field_name': 'nombre_producto_deposito', 'date_format': None},
 		{'field_name': 'id_sucursal', 'date_format': None},
+		{'field_name': 'nombre_producto_deposito', 'date_format': None},
 	]
 
 

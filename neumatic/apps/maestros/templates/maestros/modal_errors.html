@@ -12,6 +12,7 @@
 			
 			<div class="modal-body">
 				<ul>
+					<!-- Errores específicos de validación de campos -->
 					{% for field in form %}
 						{% if field.errors %}
 							<li class="text-danger">{{ field.label }}:
@@ -23,6 +24,7 @@
 							</li>
 						{% endif %}
 					{% endfor %}
+					<!-- Errores no específicos -->
 					{% if form.non_field_errors %}
 						<li>Errores generales:
 							<ul>
@@ -32,6 +34,14 @@
 							</ul>
 						</li>
 					{% endif %}
+					<!-- Errores de transacciones -->
+					{% if transaction_error %}
+						<li class="text-danger">Error de transacción:
+							<ul>
+								<li>{{ transaction_error }}</li>
+							</ul>
+						</li>
+					{% endif %}										 
 				</ul>
 			</div>
 			
