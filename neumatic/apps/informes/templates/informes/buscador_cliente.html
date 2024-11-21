@@ -84,5 +84,42 @@
               </div>
           </div>
       </form>
+      <button class="btn btn-outline-success me-2 mt-3" id="generar">Generar</button>
   </div>
 </div>
+
+<script>
+
+    const generar = document.getElementById("generar")
+    generar.addEventListener("click", ()=>{
+        const vistaPDFSeleccionada = document.getElementById('pdf_preliminar').checked;
+        const envioEmailSeleccionado = document.getElementById('email_envio').checked;
+        if (vistaPDFSeleccionada) {
+            window.open("{% url 'cliente_informe_pdf' %}", '_blank');
+        } 
+
+        if (envioEmailSeleccionado) {
+        // Obtener los checkboxes seleccionados
+        const selectedFormats = [];
+        document.querySelectorAll('input[type="checkbox"]:checked').forEach(checkbox => {
+            selectedFormats.push(checkbox.value);
+        });
+
+        if (selectedFormats.length === 0) {
+            alert("Por favor, selecciona al menos un formato.");
+            return;
+        }
+
+        // Crear la URL con los formatos seleccionados
+        const baseUrl = "{% url 'cliente_informe_generado' %}";
+        const queryParams = selectedFormats.map(format => `formatos[]=${format}`).join('&');
+        const fullUrl = `${baseUrl}?${queryParams}`;
+
+        // Redirigir a la URL para descargar el ZIP
+        window.location.href = fullUrl;
+    }
+
+
+
+     })
+</script>

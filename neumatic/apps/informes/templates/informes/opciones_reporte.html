@@ -57,8 +57,64 @@
 </div>
 
 <script>
-  function selectAllFormats() {
-      const formatCheckboxes = document.querySelectorAll('[name="formato_envio"]');
-      formatCheckboxes.forEach(checkbox => checkbox.checked = true);
-  }
+    // Función para manejar la lógica de habilitar/deshabilitar y seleccionar automáticamente PDF
+    const selectAllFormats = () => {
+        const formatCheckboxes = document.querySelectorAll('[name="formato_envio"]');
+        //Variable especifica para marcar por defecto el formato PDF
+        const pdfCheckbox = document.querySelector('[name="formato_envio"][value="PDF"]');
+        const emailField = document.getElementById('email');
+        const celularField = document.getElementById('celular');
+        const selectedOption = document.querySelector('input[name="tipo_salida"]:checked').value;
+
+
+        formatCheckboxes.forEach(checkbox => {
+            // Deshabilitar o habilitar los checkboxes según la selección
+            checkbox.disabled = (selectedOption === "tabla" || selectedOption === "pdf_preliminar");
+            if (checkbox.disabled) {
+                checkbox.checked = false; // Desmarcar si están deshabilitados
+            }
+        });
+
+        // Habilitar/deshabilitar campos según la opción seleccionada
+        emailField.disabled = (selectedOption !== "email");
+        celularField.disabled = (selectedOption !== "whatsapp");
+
+        // Seleccionar ael checkbox de PDF si se elige "email" o "whatsapp"
+        if (selectedOption === "email" || selectedOption === "whatsapp") {
+            pdfCheckbox.checked = true;
+
+        }
+    }
+
+    // Inicializar el estado por defecto
+    const initializeDefaults = () => {
+        const formatCheckboxes = document.querySelectorAll('[name="formato_envio"]');
+        const emailField = document.getElementById('email');
+        const celularField = document.getElementById('celular');
+
+        // Deshabilitar checkboxes
+        formatCheckboxes.forEach(checkbox => {
+            checkbox.disabled = true;
+            checkbox.checked = false;
+        });
+
+        // Deshabilitar los campos de envio
+        emailField.disabled = true;
+        celularField.disabled = true;
+    }
+
+    //evento 'change' para los cambios 
+    document.querySelectorAll('input[name="tipo_salida"]').forEach(radio => {
+        radio.addEventListener('change', selectAllFormats);
+    });
+
+    //  cargar la página
+    document.addEventListener('DOMContentLoaded', () => {
+        const vistaTabla = document.querySelector('input[name="tipo_salida"][value="tabla"]');
+
+        if (vistaTabla) {
+            vistaTabla.checked = true; // Seleccionar Vista Preliminar en Tabla por defecto
+        }
+        initializeDefaults();
+    });
 </script>
