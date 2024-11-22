@@ -64,8 +64,8 @@ class DataViewList():
 	
 	table_headers = {
 		'estatus_tipo_percepcion_ib': (1, 'Estatus'),
-		'id_tipo_percepcion_ib': (1, 'ID'),
-		'descripcion_tipo_percepcion_ib': (3, 'Descripción'),
+		# 'id_tipo_percepcion_ib': (1, 'ID'),
+		'descripcion_tipo_percepcion_ib': (4, 'Descripción'),
 		'alicuota': (1, 'Alícuota'),
 		'monto': (2, 'Monto'),
 		'minimo': (2, 'Mínimo'),
@@ -75,7 +75,7 @@ class DataViewList():
 	
 	table_data = [
 		{'field_name': 'estatus_tipo_percepcion_ib', 'date_format': None},
-		{'field_name': 'id_tipo_percepcion_ib', 'date_format': None},
+		# {'field_name': 'id_tipo_percepcion_ib', 'date_format': None},
 		{'field_name': 'descripcion_tipo_percepcion_ib', 'date_format': None},
 		{'field_name': 'alicuota', 'date_format': None},
 		{'field_name': 'monto', 'date_format': None},

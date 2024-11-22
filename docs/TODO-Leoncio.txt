@@ -58,3 +58,6 @@
 - Modelo ProductoCai:
 	- El campo cai se establece como único (unique=True).
 
+- Modelo ProductoEstado:
+	- Se arega el campo estatus_producto_estado (BooleanField).
+

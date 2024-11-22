@@ -64,8 +64,8 @@ class DataViewList():
 	
 	table_headers = {
 		'estatus_moneda': (1, 'Estatus'),
-		'id_moneda': (1, 'ID'),
-		'nombre_moneda': (2, 'Moneda'),
+		# 'id_moneda': (1, 'ID'),
+		'nombre_moneda': (3, 'Moneda'),
 		'simbolo_moneda': (1, 'Sómbolo'),
 		'ws_afip': (2, 'WS AFIP'),
 		'cotizacion_moneda': (2, 'Cotización'),
@@ -76,7 +76,7 @@ class DataViewList():
 	
 	table_data = [
 		{'field_name': 'estatus_moneda', 'date_format': None},
-		{'field_name': 'id_moneda', 'date_format': None},
+		# {'field_name': 'id_moneda', 'date_format': None},
 		{'field_name': 'nombre_moneda', 'date_format': None},
 		{'field_name': 'simbolo_moneda', 'date_format': None},
 		{'field_name': 'ws_afip', 'date_format': None},

@@ -1,7 +1,11 @@
 from django.core.exceptions import ValidationError
+from django.http import JsonResponse
 import re
 
+# from apps.maestros.models.cliente_models import Cliente
 
+
+#-- Vista que verifica si el CUIT es válido (bien escrito).
 def calcular_digito_verificador(cuit_base):
 	coeficientes = [5, 4, 3, 2, 7, 6, 5, 4, 3, 2]
 	cuit_digits = [int(digit) for digit in str(cuit_base)]
@@ -32,3 +36,19 @@ def validar_cuit(cuit):
 	#-- Validar el dígito verificador.
 	if digito_verificador != digito_calculado:
 		raise ValidationError("El CUIT no es válido.")
+
+# #-- Vista que comprueba si existe más de un cliente con el mismo CUIT.
+# def buscar_cuit(request):
+# 	cuit = request.GET.get('cuit', None)
+# 	if cuit:
+# 		clientes = Cliente.objects.filter(cuit=cuit).values('id_cliente', 'nombre_cliente')
+# 		if clientes.exists():
+# 			data = {
+# 				'existe': True,
+# 				'clientes': list(clientes),
+# 			}
+# 		else:
+# 			data = {'existe': False}
+# 	else:
+# 		data = {'existe': False, 'error': 'CUIT no proporcionado'}
+# 	return JsonResponse(data)

@@ -189,6 +189,7 @@ estructura_campos = {
 	'producto_estado': {
 		'Información Producto Estado': {
 			'fila_1': [
+				{'field_name': 'estatus_producto_estado', 'columna': 2, 'design': None},
 				{'field_name': 'estado_producto', 'columna': 2, 'design': None},
 				{'field_name': 'nombre_producto_estado', 'columna': 3, 'design': None},
 			]

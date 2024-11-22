@@ -66,16 +66,16 @@ class DataViewList():
 	
 	table_headers = {
 		'estatus_punto_venta': (1, 'Estatus'),
-		'id_punto_venta': (1, 'ID'),
+		# 'id_punto_venta': (1, 'ID'),
 		'punto_venta': (2, 'Punto de Venta'),
-		'descripcion_punto_venta': (6, 'Descripción Pto. Venta'),
+		'descripcion_punto_venta': (7, 'Descripción Pto. Venta'),
 		
 		'acciones': (2, 'Acciones'),
 	}
 	
 	table_data = [
 		{'field_name': 'estatus_punto_venta', 'date_format': None},
-		{'field_name': 'id_punto_venta', 'date_format': None},
+		# {'field_name': 'id_punto_venta', 'date_format': None},
 		{'field_name': 'punto_venta', 'date_format': None},
 		{'field_name': 'descripcion_punto_venta', 'date_format': None},
 	]

@@ -67,8 +67,8 @@ class DataViewList():
 	
 	table_headers = {
 		'estatus_localidad': (1, 'Estatus'),
-		'id_localidad': (1, 'ID'),
-		'nombre_localidad': (3, 'Nombre Localidad'),
+		# 'id_localidad': (1, 'ID'),
+		'nombre_localidad': (4, 'Nombre Localidad'),
 		'codigo_postal': (2, 'Código Postal'),
 		'id_provincia': (3, 'Provincia'),
 		
@@ -77,7 +77,7 @@ class DataViewList():
 	
 	table_data = [
 		{'field_name': 'estatus_localidad', 'date_format': None},
-		{'field_name': 'id_localidad', 'date_format': None},
+		# {'field_name': 'id_localidad', 'date_format': None},
 		{'field_name': 'nombre_localidad', 'date_format': None},
 		{'field_name': 'codigo_postal', 'date_format': None},
 		{'field_name': 'id_provincia', 'date_format': None},

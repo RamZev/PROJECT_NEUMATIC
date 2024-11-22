@@ -205,12 +205,27 @@ class ProductoStock(ModeloBaseGenerico):
 
 class ProductoEstado(ModeloBaseGenerico):
 	id_producto_estado = models.AutoField(primary_key=True)
-	estado_producto = models.CharField("Estado Producto", max_length=1)
+	estatus_producto_estado = models.BooleanField("Estatus", default=True,
+												choices=ESTATUS_GEN)
+	estado_producto = models.CharField("Estado Producto", max_length=1, 
+										unique=True)
 	nombre_producto_estado = models.CharField("Nombre", max_length=15)
-
+	
 	def __str__(self):
 		return self.nombre_producto_estado
-
+	
+	def clean(self):
+		errors = {}
+		
+		if not self.estado_producto.isupper():
+			errors.update({'estado_producto': 'Debe ingresar solo mayúsculas.'})
+		
+		if errors:
+			raise ValidationError(errors)
+		
+		return super().clean()
+	
+	
 	class Meta:
 		db_table = 'producto_estado'
 		verbose_name = 'Estado de Producto'

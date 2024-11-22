@@ -4,7 +4,7 @@ from django.core.exceptions import ValidationError
 import re
 from datetime import date
 
-from utils.validatos.validaciones import validar_cuit
+from utils.validator.validaciones import validar_cuit
 from .base_gen_models import ModeloBaseGenerico
 from .base_models import (Actividad, Localidad, Provincia, TipoIva, 
 						  TipoDocumentoIdentidad, TipoPercepcionIb)

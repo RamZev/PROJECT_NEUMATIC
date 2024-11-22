@@ -64,16 +64,16 @@ class DataViewList():
 	  
 	table_headers = {
 		'estatus_cai': (1, 'Estatus'),
-		'id_cai': (1, 'ID'),
+		# 'id_cai': (1, 'ID'),
 		'cai': (3, 'CAI'),
-		'descripcion_cai': (5, 'Descripción CAI'),
+		'descripcion_cai': (6, 'Descripción CAI'),
 		
 		'acciones': (2, 'Acciones'),
 	}
 	
 	table_data = [
 		{'field_name': 'estatus_cai', 'date_format': None},
-		{'field_name': 'id_cai', 'date_format': None},
+		# {'field_name': 'id_cai', 'date_format': None},
 		{'field_name': 'cai', 'date_format': None},
 		{'field_name': 'descripcion_cai', 'date_format': None},
 	]

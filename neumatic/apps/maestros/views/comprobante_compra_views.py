@@ -58,7 +58,7 @@ class ConfigViews():
 class DataViewList():
 	search_fields = ['codigo_comprobante_compra', 
 					 'nombre_comprobante_compra'
-					]
+	]
 	
 	ordering = ['nombre_comprobante_compra']
 	
