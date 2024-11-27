@@ -177,6 +177,18 @@ class MaestroCreateView(PermissionRequiredMixin, CreateView):
 class MaestroUpdateView(PermissionRequiredMixin, UpdateView):
 	list_view_name = None
 	
+	def get_form_kwargs(self):
+		"""
+		Pasa los argumentos adicionales al formulario solo si son necesarios.
+		"""
+		kwargs = super().get_form_kwargs()
+		
+		#-- Verificar si el formulario soporta el argumento 'user'.
+		if hasattr(self.form_class, '__ini__') and 'user' in self.form_class.__init__.__code__.co_varnames:
+			kwargs['user'] = self.request.user  # Pasar el usuario autenticado al formulario
+		
+		return kwargs
+	
 	def form_valid(self, form):
 		#-- Accede al usuario evaluado.
 		user = self.request.user

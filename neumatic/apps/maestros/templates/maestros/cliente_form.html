@@ -133,20 +133,21 @@
 													</div>
 												</div>
 												<div class="row">
+													
 													<div class="col-md-2">
 														<label class="form-label text-primary mb-0">
 															{{ form.telefono_cliente.label }}
 														</label>
 														{{ form.telefono_cliente }}
 													</div>
-						
+													
 													<div class="col-md-2">
 														<label class="form-label text-primary mb-0">
 															{{ form.fax_cliente.label }}
 														</label>
 														{{ form.fax_cliente }}
 													</div>
-						
+													
 													<div class="col-md-2">
 														<label class="form-label text-primary mb-0">
 															{{ form.movil_cliente.label }}
@@ -354,8 +355,8 @@
 	<div class="modal fade" id="alertModal" tabindex="-1" aria-labelledby="alertModalLabel" aria-hidden="true">
 		<div class="modal-dialog">
 			<div class="modal-content">
-				<div class="modal-header">
-					<h5 class="modal-title" id="alertModalLabel">Advertencia de CUIT</h5>
+				<div class="modal-header text-bg-warning">
+					<h5 class="modal-title" id="alertModalLabel">Atención!</h5>
 					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 				</div>
 				<div class="modal-body" id="modalContent">
@@ -503,38 +504,77 @@
 			// Funcionalidad para Buscar CUIT.
 			// *******************************************************
 			
-// 			const cuitInput = document.getElementById("id_cuit");
-// 
-// 			if (cuitInput) {
-// 				cuitInput.addEventListener("blur", function () {
-// 					const cuit = cuitInput.value.trim();
-// 					if (cuit) {
-// 						const url = "{% url 'buscar_cuit' %}?cuit=" + encodeURIComponent(cuit);
-// 						fetch(url)
-// 							.then(response => response.json())
-// 							.then(data => {
-// 								if (data.existe) {
-// 									mostrarModalClientes(data.clientes);
-// 								}
-// 							})
-// 							.catch(error => {
-// 								console.error("Error al verificar el CUIT:", error);
-// 							});
-// 					}
-// 				});
-// 			}
-// 			
-// 			function mostrarModalClientes(clientes) {
-// 				const modalContent = document.getElementById("modalContent");
-// 				modalContent.innerHTML = `
-// 					<p>Ya existe(n) cliente(s) con el CUIT ingresado:</p>
-// 					<ul>
-// 						${clientes.map(cliente => `<li>${cliente.nombre_cliente} (ID: ${cliente.id})</li>`).join("")}
-// 					</ul>
-// 				`;
-// 				const modal = new bootstrap.Modal(document.getElementById("alertModal"));
-// 				modal.show();
-// 			}
+			const cuitInput = document.getElementById("id_cuit");
+			
+			if (cuitInput) {
+				// cuitInput.addEventListener("change", function () {
+				cuitInput.addEventListener("blur", function () {
+					const cuit = cuitInput.value.trim();
+					if (cuit) {
+						const url = "{% url 'buscar_cuit' %}?cuit=" + encodeURIComponent(cuit);
+						fetch(url)
+							.then(response => response.json())
+							.then(data => {
+								let mens;
+								if (data.existe) {
+									mens = `
+										<p>Ya existe(n) cliente(s) con el CUIT ingresado:</p>
+										<ul>
+											${data.clientes.map(cliente => `<li>${cliente.nombre_cliente} (ID: ${cliente.id_cliente})</li>`).join("")}
+										</ul>
+									`;
+									mostrarModalMensajes(mens);
+								}
+							})
+							.catch(error => {
+								console.error("Error al verificar el CUIT:", error);
+							});
+					}
+				});
+			}
+			
+			function mostrarModalMensajes(mens) {
+				const modalContent = document.getElementById("modalContent");
+				modalContent.innerHTML = mens;
+				const modal = new bootstrap.Modal(document.getElementById("alertModal"));
+				modal.show();
+			}
+			
+			// *******************************************************
+			// Funcionalidad para Buscar un cliente por el Id.
+			// *******************************************************
+			
+			const idClienteSubCuenta = document.getElementById("id_sub_cuenta");
+			
+			if (idClienteSubCuenta) {
+				// idClienteSubCuenta.addEventListener("change", function () {
+					idClienteSubCuenta.addEventListener("blur", function () {
+					const idSubCuenta = idClienteSubCuenta.value.trim();
+					if (idSubCuenta) {
+						const url = "{% url 'buscar_cliente_id' %}?id_cliente=" + encodeURIComponent(idSubCuenta);
+						fetch(url)
+							.then(response => response.json())
+							.then(data => {
+								let mens;
+								if (data.existe) {
+									mens = `<p>La Sub Cuenta pertenece al cliente :</p>`;
+									mens += `<p><b>${data.cliente}</b></p>`;
+									
+								}else{
+									if (data.error){
+										mens = `<p>${data.error}</p>`;
+									}else{
+										mens = `<p>No existe un cliente con la Sub Cuenta indicada</p>`;
+									}
+								}
+								mostrarModalMensajes(mens);
+							})
+							.catch(error => {
+								console.error("Error al verificar el Id del cliente (Sub Cuenta):", error);
+							});
+					}
+				});
+			}
 			
 		});
 	</script>

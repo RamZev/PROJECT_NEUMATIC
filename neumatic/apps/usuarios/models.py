@@ -4,6 +4,7 @@ from django.contrib.auth.models import AbstractUser
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
+from entorno.constantes_base import JERARQUIA
 
 class User(AbstractUser):
 	email = models.EmailField("Correo electrónico")
@@ -15,6 +16,7 @@ class User(AbstractUser):
 	iniciales = models.CharField("Iniciales", max_length=3,
 								null=True, blank=True)
 	jerarquia = models.CharField("Jerarquía", max_length=1,
+								choices=JERARQUIA, default="Z",
 								null=True, blank=True)
 	# vendedor = models.BooleanField(default=False, null=True, blank=True)
 	id_vendedor = models.ForeignKey('maestros.Vendedor', on_delete=models.PROTECT,

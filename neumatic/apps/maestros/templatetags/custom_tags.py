@@ -1,5 +1,8 @@
 # neumatic\apps\usuarios\templates\usuarios
 from django import template
+from decimal import Decimal
+import locale
+
 
 register = template.Library()
 
@@ -35,3 +38,25 @@ def get_columna(field, field_name):
 def get_type(value):
     """ Devuelve el tipo de valor en formato string."""
     return type(value).__name__
+
+@register.filter
+def formato_es_ar(value):
+    """
+    Formatea un número con el formato de Argentina:
+    Separador de miles: punto (.)
+    Separador decimal: coma (,)
+    Compatible con float y Decimal.
+    """
+    try:
+        #-- Configura el locale para números en es_AR.
+        locale.setlocale(locale.LC_NUMERIC, 'es_AR.UTF-8')
+        
+        #-- Convierte a float si el valor es Decimal.
+        if isinstance(value, Decimal):
+            value = float(value)
+        
+        #-- Formatea con separadores de miles y 2 decimales.
+        return locale.format_string('%.2f', value, grouping=True)
+    except (ValueError, TypeError):
+        #-- Devuelve el valor sin formatear si no es un número válido.
+        return value

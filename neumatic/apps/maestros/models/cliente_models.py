@@ -4,7 +4,7 @@ from django.core.exceptions import ValidationError
 import re
 from datetime import date
 
-from utils.validator.validaciones import validar_cuit
+from utils.validator.validaciones import validar_cuit, buscar_cliente_id
 from .base_gen_models import ModeloBaseGenerico
 from .base_models import (Actividad, Localidad, Provincia, TipoIva, 
 						  TipoDocumentoIdentidad, TipoPercepcionIb)
@@ -112,7 +112,8 @@ class Cliente(ModeloBaseGenerico):
 		
 		if sub_cuenta_str and not re.match(r'^\d{0,6}$', sub_cuenta_str):
 			errors.update({'sub_cuenta': 'Debe indicar sólo dígitos numéricos positivos, mínimo 1 y máximo 6.'})
-		
+		elif sub_cuenta_str and not buscar_cliente_id(self.sub_cuenta):
+			errors.update({'sub_cuenta': 'No existe un cliente con la Sub Cuenta indicada.'})
 		
 		if errors:
 			raise ValidationError(errors)

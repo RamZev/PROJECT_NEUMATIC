@@ -60,13 +60,8 @@ class ProductoForm(CrudGenericForm):
 			'costo': 
 				forms.NumberInput(attrs={**formclasstext,
 							'min':0.01, 'max': 9999999999999.99}),
-			
-			# 'alicuota_iva': 
-			# 	forms.NumberInput(attrs={**formclasstext,
-			# 				'min': 0, 'max': 99.99}),
 			'id_alicuota_iva': 
 				forms.Select(attrs={**formclassselect}),
-			
 			'precio': 
 				forms.NumberInput(attrs={**formclasstext,
 							'min':0.01, 'max': 9999999999999.99}),
