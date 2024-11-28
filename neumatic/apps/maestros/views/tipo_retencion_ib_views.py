@@ -64,8 +64,8 @@ class DataViewList():
 	
 	table_headers = {
 		'estatus_tipo_retencion_ib': (1, 'Estatus'),
-		'id_tipo_retencion_ib': (1, 'ID'),
-		'descripcion_tipo_retencion_ib': (4, 'Descripción'),
+		# 'id_tipo_retencion_ib': (1, 'ID'),
+		'descripcion_tipo_retencion_ib': (5, 'Descripción'),
 		'alicuota_inscripto': (1, 'Alícuota Inscripto'),
 		'alicuota_no_inscripto': (1, 'Alícuota No Inscripto'),
 		'monto': (1, 'Monto'),
@@ -76,7 +76,7 @@ class DataViewList():
 	
 	table_data = [
 		{'field_name': 'estatus_tipo_retencion_ib', 'date_format': None},
-		{'field_name': 'id_tipo_retencion_ib', 'date_format': None},
+		# {'field_name': 'id_tipo_retencion_ib', 'date_format': None},
 		{'field_name': 'descripcion_tipo_retencion_ib', 'date_format': None},
 		{'field_name': 'alicuota_inscripto', 'date_format': None},
 		{'field_name': 'alicuota_no_inscripto', 'date_format': None},

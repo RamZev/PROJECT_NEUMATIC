@@ -38,23 +38,31 @@
 												class="accordion-button py-2 " 
 												type="button" 
 												data-bs-toggle="collapse" 
-												data-bs-target="#Información_General" 
+												data-bs-target="#Información_Producto_Estado" 
 												aria-expanded="true" 
-												aria-controls="Información_General">
+												aria-controls="Información_Producto_Estado">
 												<strong>Información Producto Estado</strong>
 											</button>
 										</h2>
 										<div class="accordion-collapse collapse show"
-											id="Información_General">
+											id="Información_Producto_Estado">
 											<div class="accordion-body bg-secondary-subtle">
+		
 												<div class="row">
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0">
+															{{ form.estatus_producto_estado.label }}
+														</label>
+														{{ form.estatus_producto_estado }}
+													</div>
+								
 													<div class="col-md-2">
 														<label class="form-label text-primary mb-0">
 															{{ form.estado_producto.label }}
 														</label>
 														{{ form.estado_producto }}
 													</div>
-						
+								
 													<div class="col-md-3">
 														<label class="form-label text-primary mb-0">
 															{{ form.nombre_producto_estado.label }}
@@ -84,3 +92,12 @@
 		</div>
 	{% endblock principalcomponent %}
 {% endblock maincomponent %}
+<!-- -------------------------------------------------------------------- -->
+{% block modals %}
+	<!-- Modal para mostrar errores -->
+	{% include 'maestros/modal_errors.html' %}
+	
+	<!-- Modal para mostrar los requerimientos de los campos -->
+	{% include 'maestros/modal_fields_requirements.html' %}
+{% endblock modals %}
+<!-- -------------------------------------------------------------------- -->

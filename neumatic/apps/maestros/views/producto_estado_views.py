@@ -63,7 +63,8 @@ class DataViewList():
 	paginate_by = 8
 	
 	table_headers = {
-		'id_producto_estado': (1, 'ID'),
+		'estatus_producto_estado': (1, 'Estatus'),
+		# 'id_producto_estado': (1, 'ID'),
 		'estado_producto': (2, 'Estado Producto'),
 		'nombre_producto_estado': (7, 'Nombre'),
 		
@@ -71,7 +72,8 @@ class DataViewList():
 	}
 	
 	table_data = [
-		{'field_name': 'id_producto_estado', 'date_format': None},
+		{'field_name': 'estatus_producto_estado', 'date_format': None},
+		# {'field_name': 'id_producto_estado', 'date_format': None},
 		{'field_name': 'estado_producto', 'date_format': None},
 		{'field_name': 'nombre_producto_estado', 'date_format': None},
 	]

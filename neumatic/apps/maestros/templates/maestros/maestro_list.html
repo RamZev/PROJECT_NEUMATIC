@@ -9,29 +9,34 @@
 {% endblock title %}
 
 {% block style %}
-		body {
-			background-color: rgb(0, 204, 255);
-		}
+	body {
+		background-color: rgb(0, 204, 255);
+	}
+	
+	.tbl-container {
 		
-		.tbl-container {
-			 
-		}
-		
-		.tbl-fixed {
-			overflow-x: scroll;
-			overflow-y: scroll;
-			height: fit-content;
-			max-height: 60vh;
-			margin-top: 0px;
-			font-size: 80%;
-		}
-		table {
-			min-width: max-content;
-		}
-		table th {
-			position: sticky;
-			top: 0px;
-		}
+	}
+	
+	.tbl-fixed {
+		overflow-x: scroll;
+		overflow-y: scroll;
+		height: fit-content;
+		max-height: 60vh;
+		margin-top: 0px;
+		font-size: 80%;
+	}
+	table {
+		min-width: max-content;
+	}
+	table th {
+		position: sticky;
+		top: 0px;
+	}
+	
+	.decimal {
+		text-align: right;
+		font-familily: monospace;
+	}
 {% endblock style %}
 
 {% debug %}
@@ -100,16 +105,6 @@
 									<tbody>
 										{% for objeto in objetos %}
 											<tr>
-												{% comment %} {% for data_info in table_data %}
-													{% if  %}
-														{% if data_info.date_format %}
-															<td>{{ objeto|get_attribute:data_info.field_name|default:"" |date:data_info.date_format }}</td>
-														{% else %}
-															<td>{{ objeto|get_attribute:data_info.field_name|default:"" }}</td>
-														{% endif %}
-													{% endif %}
-												{% endfor %} {% endcomment %}
-												
 												{% for data_info in table_data %}
 													{% with objeto|get_attribute:data_info.field_name as field_value %}
 														{% if field_value|get_type == 'bool' %}
@@ -119,7 +114,11 @@
 																{% else %}
 																	<i class="fa fa-times text-danger"></i> <!-- Ícono de "X" roja -->
 																{% endif %}
-															</td>															
+															</td>
+														{% elif field_value|get_type == 'float' or field_value|get_type == 'Decimal' %}
+															<td class="decimal">{{ objeto|get_attribute:data_info.field_name|formato_es_ar }}</td>
+														{% elif field_value|get_type == 'int' %}
+															<td>{{ objeto|get_attribute:data_info.field_name }}</td>
 														{% else %}
 															{% if data_info.date_format %}
 																<td>{{ objeto|get_attribute:data_info.field_name|default:"" |date:data_info.date_format }}</td>
@@ -141,7 +140,7 @@
 													
 													<!-- Botón Eliminar -->
 													<button type="button" class="btn btn-outline-danger btn-sm btn-delete boton-oculto" 
-															data-bs-toggle="modal" data-bs-target="#deleteModal" 
+															data-bs-toggle="modal" title="Eliminar Registro" data-bs-target="#deleteModal" 
 															data-bs-whatever-url="{% url delete_view_name objeto.pk %}" data-bs-whatever-name="{{ objeto }}"
 															style="font-size: 80%; padding: 0.3rem 0.6rem;">
 														<i class="fa fa-trash-alt"></i>
@@ -246,12 +245,6 @@
 			document.getElementById('errorModalBody').innerText = errorMessage;
 			modal.show();
 		}
-		
-		// // Limpiar los datos de sessionStorage si existe alguna condición
-		// sessionStorage.removeItem("provinciaSeleccionada");
-		// sessionStorage.removeItem("localidadSeleccionada");
-		// sessionStorage.removeItem("codigoPostalSeleccionado");
-		
 	</script>
 	
 {% endblock script %}

@@ -64,8 +64,8 @@ class DataViewList():
 	
 	table_headers = {
 		'estatus_provincia': (1, 'Estatus'),
-		'id_provincia': (1, 'ID'),
-		'nombre_provincia': (4, 'Nombre'),
+		# 'id_provincia': (1, 'ID'),
+		'nombre_provincia': (5, 'Nombre'),
 		'codigo_provincia': (4, 'Código'),
 		
 		'acciones': (2, 'Acciones'),
@@ -73,7 +73,7 @@ class DataViewList():
 	
 	table_data = [
 		{'field_name': 'estatus_provincia', 'date_format': None},
-		{'field_name': 'id_provincia', 'date_format': None},
+		# {'field_name': 'id_provincia', 'date_format': None},
 		{'field_name': 'nombre_provincia', 'date_format': None},
 		{'field_name': 'codigo_provincia', 'date_format': None},
 	]

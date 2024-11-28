@@ -85,6 +85,7 @@ class ClienteForm(CrudGenericForm):
 		}
 	
 	def __init__(self, *args, **kwargs):
+		self.user = kwargs.pop('user', None)  # Extraer el usuario autenticado
 		super().__init__(*args, **kwargs)
 		
 		self.fields['id_localidad'].choices = []
@@ -130,8 +131,17 @@ class ClienteForm(CrudGenericForm):
 			#-- Configuración en modo edición.
 			self.fields['id_sucursal'].widget = forms.HiddenInput()
 			self.fields['id_sucursal'].required = False
-			self.initial['id_sucursal'] = self.instance.id_sucursal		
-	
+			self.initial['id_sucursal'] = self.instance.id_sucursal
+		
+		##########################################################################
+		#-- Restricciones por jerarquía.
+		if self.user and self.user.jerarquia >= "L":
+			campos_restringidos = ['id_vendedor', 'telefono_cliente', 'movil_cliente', 'email_cliente', 'email2_cliente']
+			for campo in campos_restringidos:
+				if campo in self.fields:
+					self.fields[campo].widget.attrs['readonly'] = True
+					self.fields[campo].required = False  # Evitar validaciones innecesarias			
+		
 	def clean(self):
 		cleaned_data = super().clean()
 		#-- Asignar automáticamente id_sucursal si el formulario está en modo edición.

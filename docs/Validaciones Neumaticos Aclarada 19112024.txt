@@ -2,20 +2,20 @@ Punto de Venta [SOLUCIONADO]
 [SOLUCIONADO] - Al dar de alta un punto de venta me deja duplicarlo
 
 -------------------------------------------------------------------------------------------------------------------------------
-Clientes
-- En clientes cuando Ingreso un CUIT debe verificar si existe y pedir si quiere modificar el existente o agregar uno nuevo  ???
+Clientes [SOLUCIONADO]
+[SOLUCIONADO] - En clientes cuando Ingreso un CUIT debe verificar si existe y pedir si quiere modificar el existente o agregar uno nuevo  ???
 	Cuando se crea: Si se duplica que de una advertencia, pero lo permita
 	Cuando se actualiza: Si se duplica que de una advertencia, pero lo permita
 
-- En clientes si es nuevo ingreso el operador o usuario puede cargar todos los campos ahora si es una modificacion hay campos 
+[SOLUCIONADO] - En clientes si es nuevo ingreso, el operador o usuario puede cargar todos los campos, ahora, si es una modificacion hay campos 
   que no los puede modificar o el usuario debe tener un nivel < K (A - K) - 
-
+	
 	Usar la jerarquía para deshabilitar esos elementos
 	Usar un choice (contante) para seleccionar la jerarquía
-  
+	
 	Los campos protegidos son Vendedor, Telefonos, mail (con la jerarquía)
-
-- En clientes cuando se ingresa la sub cuenta debe ser validado el cliente ingresado
+	
+[SOLUCIONADO] - En clientes cuando se ingresa la sub cuenta debe ser validado el cliente ingresado
 	Validar por el ID
 
 [SOLUCIONADO] - En el buscador agregar el ID para buscar 
@@ -36,7 +36,7 @@ Depositos
 [SOLUCIONADO] - Ordenar por Sucursal en el listado inicial
 
 -------------------------------------------------------------------------------------------------------------------------------
-Estados de Productos
+Estados de Productos [SOLUCIONADO]
 (Faltante, Disponible, Pocos, Ofertas, )
 	D: Disponibles.
 	E: Entrantes.
@@ -44,8 +44,9 @@ Estados de Productos
 	O: Ofertas.
 	P: Pocas.
 
-- Falta el campo Estatus y hay uno que dice estado, seguramente es el codigo de estado,  si es el codigo estado deberia permitir solo mayusculas
-- Me esta dejando duplicar el estado 
+[SOLUCIONADO] - Falta el campo Estatus y hay uno que dice estado, seguramente es el codigo de estado, si es el codigo 
+				estado deberia permitir solo mayusculas
+[SOLUCIONADO] - Me esta dejando duplicar el estado
 
 -------------------------------------------------------------------------------------------------------------------------------
 Codigos de Ventas [SOLUCIONADO]

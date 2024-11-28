@@ -63,7 +63,7 @@ class RegistroUsuarioForm(UserCreationForm):
 			'iniciales': 
 				forms.TextInput(attrs={**formclasstext}),
 			'jerarquia': 
-				forms.TextInput(attrs={**formclasstext}),
+				forms.Select(attrs={**formclassselect}),
 			'id_punto_venta': 
 				forms.Select(attrs={**formclassselect}),
 			'id_vendedor': 
@@ -112,7 +112,7 @@ class EditarUsuarioForm(UserChangeForm):
 			'iniciales': 
 				forms.TextInput(attrs={**formclasstext}),
 			'jerarquia': 
-				forms.TextInput(attrs={**formclasstext}),
+				forms.Select(attrs={**formclassselect}),
 			'id_punto_venta': 
 				forms.Select(attrs={**formclassselect}),
 			'id_vendedor': 

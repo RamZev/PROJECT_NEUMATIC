@@ -3,7 +3,7 @@ from django.db import models
 from django.core.exceptions import ValidationError
 import re
 
-from utils.validatos.validaciones import validar_cuit
+from utils.validator.validaciones import validar_cuit
 from .base_gen_models import ModeloBaseGenerico
 from .base_models import Localidad, Provincia, TipoIva
 from entorno.constantes_base import ESTATUS_GEN, WS_MODO

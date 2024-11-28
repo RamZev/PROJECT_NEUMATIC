@@ -11,7 +11,7 @@ class MonedaForm(CrudGenericForm):
 	class Meta:
 		model = Moneda
 		fields = '__all__'
-
+		
 		widgets = {
 			'estatus_moneda': 
 				forms.Select(attrs={**formclassselect}),

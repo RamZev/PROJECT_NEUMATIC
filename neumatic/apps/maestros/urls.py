@@ -39,6 +39,7 @@ from .views.numero_views import *
 #-- Otras rutas.
 from .views.consulta_views_maestros import filtrar_localidad
 from .views.consulta_views_maestros import verificar_codigo_postal
+from utils.validator.validaciones import buscar_cuit_view, buscar_cliente_id_view
 
 urlpatterns = [
 	#-- Tablas:
@@ -227,6 +228,8 @@ urlpatterns = [
 	path('filtrar-localidad/', filtrar_localidad, name='filtrar_localidad'),
 	path('verificar-codigo-postal/', verificar_codigo_postal, name='verificar_codigo_postal'),
 	
-	path('actualizar_minimo/', actualizar_minimo, name='actualizar_minimo'),	
+	path('actualizar_minimo/', actualizar_minimo, name='actualizar_minimo'),
+	path('buscar-cuit/', buscar_cuit_view, name='buscar_cuit'),
+	path('buscar-cliente-id/', buscar_cliente_id_view, name='buscar_cliente_id'),
 
 ]
