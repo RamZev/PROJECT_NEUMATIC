@@ -93,8 +93,10 @@ class Cliente(ModeloBaseGenerico):
 	def clean(self):
 		super().clean()
 		
+		# Diccionario contenedor de errores
 		errors = {}
 		
+		# Convertir a string los valores de los campos previo a la validación
 		telefono_str = str(self.telefono_cliente) if self.telefono_cliente else ''
 		movil_cliente_str = str(self.movil_cliente) if self.movil_cliente else ''
 		sub_cuenta_str = str(self.sub_cuenta) if self.sub_cuenta else ''
@@ -102,10 +104,12 @@ class Cliente(ModeloBaseGenerico):
 		try:
 			validar_cuit(self.cuit)
 		except ValidationError as e:
+			# Agrego el error al dicciobario errors
 			errors['cuit'] = e.messages
 		
 		if not re.match(r'^\+?\d[\d ]{0,14}$', telefono_str):
-			errors.update({'telefono_cliente': 'Debe indicar sólo dígitos numéricos positivos, mínimo 1 y máximo 15, el signo + y espacios.'})
+			errors.update({'telefono_cliente': 'Debe indicar sólo dígitos numéricos positivos, \
+       			mínimo 1 y máximo 15, el signo + y espacios.'})
 		
 		if movil_cliente_str and not re.match(r'^\+?\d[\d ]{0,14}$', movil_cliente_str):
 			errors.update({'movil_cliente': 'Debe indicar sólo dígitos numéricos positivos, mínimo 1 y máximo 15, el signo +, espacios o vacío.'})
@@ -115,6 +119,7 @@ class Cliente(ModeloBaseGenerico):
 		
 		
 		if errors:
+			# Lanza el conjunto de excepciones
 			raise ValidationError(errors)
 	
 	

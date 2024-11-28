@@ -91,7 +91,11 @@ class ClienteInformeListView(InformeListView):
         
         # Filtrar según los campos personalizados
         estatus_cliente = self.request.GET.get('estatus_cliente')
+        nombre_cliente = self.request.GET.get('nombre_cliente')
         tipo_persona = self.request.GET.get('tipo_persona')
+        
+        if nombre_cliente:
+            queryset = queryset.filter(nombre_cliente=nombre_cliente)
 
         if estatus_cliente:
             queryset = queryset.filter(estatus_cliente=estatus_cliente)

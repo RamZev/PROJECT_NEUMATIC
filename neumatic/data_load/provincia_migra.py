@@ -3,7 +3,6 @@ import csv
 import os
 import sys
 import django
-from django.db import connection
 
 # Añadir el directorio base del proyecto al sys.path
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -16,54 +15,30 @@ django.setup()
 from apps.maestros.models.base_models import Provincia
 
 def cargar_provincias_desde_csv(archivo_csv):
-    """Carga los datos de provincias desde un archivo CSV y los ordena por código de provincia numéricamente antes de migrar."""
-    # Crear un conjunto para almacenar las provincias únicas
-    provincias_unicas = set()
-
-    # Abrir el archivo CSV y leer su contenido
-    with open(archivo_csv, newline='', encoding='utf-8') as csvfile:
+    """Carga los datos de provincias desde el archivo provincia.csv."""
+    with open(archivo_csv, mode='r', encoding='utf-8') as csvfile:
         reader = csv.DictReader(csvfile, delimiter=';')
 
-        # Iterar sobre cada fila del archivo CSV
+        # Resetear la tabla Provincia (eliminar los datos existentes)
+        # Provincia.objects.all().delete()
+        # print("Datos existentes eliminados.")
+
+        # Leer cada fila y crear las instancias
         for row in reader:
-            # Extraer los valores de 'Provincia' y 'Cod_Provincia'
-            nombre_provincia = row['Provincia'].strip()
-            codigo_provincia = row['Cod_Provincia'].strip()
+            print(row['Cod_Provincia'], row['Provincia'])
+            
+            # Provincia.objects.create(
+            Provincia.objects.get_or_create(
+                estatus_provincia=True,  # Estatus por defecto
+                codigo_provincia=row['Cod_Provincia'].strip(),
+                nombre_provincia=row['Provincia'].strip()
+            )
 
-            # Añadir una tupla única al conjunto
-            provincias_unicas.add((nombre_provincia, codigo_provincia))
-
-    # Ordenar el conjunto de provincias numéricamente por 'codigo_provincia' antes de migrar
-    provincias_ordenadas = sorted(provincias_unicas, key=lambda x: int(x[1]))  # Convertir 'codigo_provincia' a entero para ordenarlo numéricamente
-
-    # Resetear la tabla Provincia (eliminar los datos existentes)
-    reset_provincias()
-
-    # Recorrer la lista de provincias ordenadas y migrarlas al modelo Provincia
-    for nombre_provincia, codigo_provincia in provincias_ordenadas:
-        # Crear el registro en la base de datos
-        Provincia.objects.create(
-            estatus_provincia=True,  # Establecer el estatus en True
-            codigo_provincia=codigo_provincia,
-            nombre_provincia=nombre_provincia
-        )
-
-    print(f"Se han migrado {len(provincias_ordenadas)} provincias de forma exitosa.")
-
-def reset_provincias():
-    """Elimina los datos existentes en la tabla Provincia y resetea su ID en SQLite."""
-    # Eliminar los datos existentes en la tabla
-    Provincia.objects.all().delete()
-
-    # Reiniciar el autoincremento en SQLite
-    with connection.cursor() as cursor:
-        cursor.execute("DELETE FROM sqlite_sequence WHERE name='provincia';")  # Ajustar el nombre de la tabla según sea necesario
-
-    print("Datos de la tabla Provincia eliminados y autoincremento reseteado.")
+        print(f"Provincias migradas correctamente desde {archivo_csv}.")
 
 if __name__ == '__main__':
     # Ruta del archivo CSV
-    archivo_csv = os.path.join(BASE_DIR, 'data_load', 'Codigos-Postales-Argentina.csv')
+    archivo_csv = os.path.join(os.path.dirname(__file__), 'provincia.csv')
 
     # Ejecutar la migración
     cargar_provincias_desde_csv(archivo_csv)
