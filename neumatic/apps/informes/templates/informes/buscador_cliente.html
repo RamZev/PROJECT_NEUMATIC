@@ -1,125 +1,60 @@
 <div class="card">
-  <div class="card-header bg-secondary text-white">
-      <h5>Filtros de Búsqueda - Cliente</h5>
-  </div>
-  
-  <div class="card-body">
-      <form method="GET" action="{% url list_view_name %}">
-          <!-- Opciones generales de reporte -->
-          {% include 'informes/opciones_reporte.html' %}
-
-          <div class="row">
-              <!-- Filtro por Nombre Cliente -->
-              <div class="col-md-4 mb-3">
-                  <label for="nombre_cliente" class="form-label">Nombre Cliente</label>
-                  <input type="text" class="form-control" id="nombre_cliente" name="nombre_cliente" value="{{ request.GET.nombre_cliente }}">
-              </div>
-              
-              <!-- Filtro por CUIT -->
-              <div class="col-md-4 mb-3">
-                  <label for="cuit" class="form-label">CUIT</label>
-                  <input type="text" class="form-control" id="cuit" name="cuit" value="{{ request.GET.cuit }}">
-              </div>
-
-              <!-- Filtro por Provincia -->
-              <div class="col-md-4 mb-3">
-                  <label for="id_provincia" class="form-label">Provincia</label>
-                  <select class="form-select" id="id_provincia" name="id_provincia">
-                      <option value="">Seleccione una provincia</option>
-                      {% for provincia in provincias %}
-                          <option value="{{ provincia.id }}" {% if request.GET.id_provincia == provincia.id|stringformat:"s" %}selected{% endif %}>
-                              {{ provincia.nombre }}
-                          </option>
-                      {% endfor %}
-                  </select>
-              </div>
-          </div>
-          
-          <div class="row">
-              <!-- Filtro por Tipo de Persona -->
-              <div class="col-md-4 mb-3">
-                  <label for="tipo_persona" class="form-label">Tipo de Persona</label>
-                  <select class="form-select" id="tipo_persona" name="tipo_persona">
-                      <option value="">Seleccione tipo de persona</option>
-                      {% for key, label in tipo_persona_choices %}
-                          <option value="{{ key }}" {% if request.GET.tipo_persona == key|stringformat:"s" %}selected{% endif %}>
-                              {{ label }}
-                          </option>
-                      {% endfor %}
-                  </select>
-              </div>
-
-              <!-- Filtro por Estatus Cliente -->
-              <div class="col-md-4 mb-3">
-                  <label for="estatus_cliente" class="form-label">Estatus Cliente</label>
-                  <select class="form-select" id="estatus_cliente" name="estatus_cliente">
-                      <option value="">Seleccione estatus</option>
-                      {% for key, label in estatus_cliente_choices %}
-                          <option value="{{ key }}" {% if request.GET.estatus_cliente == key|stringformat:"s" %}selected{% endif %}>
-                              {{ label }}
-                          </option>
-                      {% endfor %}
-                  </select>
-              </div>
-
-              <!-- Filtro por Vendedor -->
-              <div class="col-md-4 mb-3">
-                  <label for="id_vendedor" class="form-label">Vendedor</label>
-                  <select class="form-select" id="id_vendedor" name="id_vendedor">
-                      <option value="">Seleccione un vendedor</option>
-                      {% for vendedor in vendedores %}
-                          <option value="{{ vendedor.id }}" {% if request.GET.id_vendedor == vendedor.id|stringformat:"s" %}selected{% endif %}>
-                              {{ vendedor.nombre }}
-                          </option>
-                      {% endfor %}
-                  </select>
-              </div>
-          </div>
-
-          <!-- Botones de acción -->
-          <div class="row mt-3">
-              <div class="col-md-12">
-                  <button type="submit" class="btn btn-primary">Buscar</button>
-                  <a href="{% url list_view_name %}" class="btn btn-secondary">Limpiar filtros</a>
-              </div>
-          </div>
-      </form>
-      <button class="btn btn-outline-success me-2 mt-3" id="generar">Generar</button>
-  </div>
+	<div class="card-header bg-secondary text-white">
+		<h5>Filtros de Búsqueda - Cliente</h5>
+	</div>
+	
+	<div class="card-body">
+		<form method="GET" novalidate>
+			<!-- Opciones generales de reporte -->
+			{% include 'informes/opciones_reporte.html' %}
+			
+			<div class="row">
+				
+				<div class="col-md-4">
+					{{ form.orden.label }}
+					{{ form.orden }}
+				</div>
+				
+				<div class="col-md-4">
+					{{ form.desde.label }}
+					{{ form.desde }}
+				</div>
+				
+				<div class="col-md-4">
+					{{ form.hasta.label }}
+					{{ form.hasta }}
+				</div>
+				
+			</div>
+			
+			<div class="row">
+				
+				<div class="col-md-4">
+					{{ form.vendedor.label }}
+					{{ form.vendedor }}
+				</div>
+				
+				<div class="col-md-4">
+					{{ form.provincia.label }}
+					{{ form.provincia }}
+				</div>
+				
+				<div class="col-md-4">
+					{{ form.localidad.label }}
+					{{ form.localidad }}
+				</div>
+				
+			</div>
+			
+			<!-- Botones de acción -->
+			<div class="row mt-3">
+				<div class="col-md-12">
+					<button type="submit" class="btn btn-primary">Buscar</button>
+					<button type="reset" class="btn btn-secondary">Limpiar Filtros</button>
+				</div>
+			</div>
+			
+		</form>
+		<button class="btn btn-outline-success me-2 mt-3" id="generar">Generar</button>
+	</div>
 </div>
-
-<script>
-
-    const generar = document.getElementById("generar")
-    generar.addEventListener("click", ()=>{
-        const vistaPDFSeleccionada = document.getElementById('pdf_preliminar').checked;
-        const envioEmailSeleccionado = document.getElementById('email_envio').checked;
-        if (vistaPDFSeleccionada) {
-            window.open("{% url 'cliente_informe_pdf' %}", '_blank');
-        } 
-
-        if (envioEmailSeleccionado) {
-        // Obtener los checkboxes seleccionados
-        const selectedFormats = [];
-        document.querySelectorAll('input[type="checkbox"]:checked').forEach(checkbox => {
-            selectedFormats.push(checkbox.value);
-        });
-
-        if (selectedFormats.length === 0) {
-            alert("Por favor, selecciona al menos un formato.");
-            return;
-        }
-
-        // Crear la URL con los formatos seleccionados
-        const baseUrl = "{% url 'cliente_informe_generado' %}";
-        const queryParams = selectedFormats.map(format => `formatos[]=${format}`).join('&');
-        const fullUrl = `${baseUrl}?${queryParams}`;
-
-        // Redirigir a la URL para descargar el ZIP
-        window.location.href = fullUrl;
-    }
-
-
-
-     })
-</script>

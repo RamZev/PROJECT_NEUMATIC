@@ -34,6 +34,8 @@
 
 <!-- Block JavaScrip ----------------------------------------------------- -->
 {% block script %}
+	{{ block.super }}
+	
 	<script>
 		document.addEventListener('DOMContentLoaded', function () {
 			const errorModal = new bootstrap.Modal(document.getElementById('errorModal'));

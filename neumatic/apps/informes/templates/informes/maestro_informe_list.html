@@ -29,6 +29,11 @@
 		position: sticky;
 		top: 0px;
 	}
+	
+	.decimal {
+		text-align: right;
+		familily-font: monospace;
+	}
 {% endblock style %}
 
 {% debug %}
@@ -48,7 +53,7 @@
 	
 	{% block maincomponent %}
 	<!-- Main Component Start -->
-			
+		
 		<!-- Main principalcomponent Start -->
 		{% block principalcomponent %}
 		<div id="layoutSidenav_content">
@@ -100,7 +105,11 @@
 																{% else %}
 																	<i class="fa fa-times text-danger"></i> <!-- Ícono de "X" roja -->
 																{% endif %}
-															</td>															
+															</td>
+														{% elif field_value|get_type == 'float' or field_value|get_type == 'Decimal' %}
+															<td class="decimal">{{ objeto|get_attribute:data_info.field_name|formato_es_ar }}</td>
+														{% elif field_value|get_type == 'int' %}
+															<td>{{ objeto|get_attribute:data_info.field_name }}</td>
 														{% else %}
 															{% if data_info.date_format %}
 																<td>{{ field_value|default:"" |date:data_info.date_format }}</td>
@@ -133,9 +142,16 @@
 {% endblock main %}
 
 {% block modals %}
+	<!-- Modal para mostrar errores -->
+	{% include 'informes/modal_errors.html' %}
 	
 {% endblock modals %}
 
 {% block script %}
+	{{ block.super }}
+	
+	{% if js_file %}
+		<script src="{% static js_file %}"></script>
+	{% endif %}
 	
 {% endblock script %}
