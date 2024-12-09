@@ -65,8 +65,8 @@ document.addEventListener("DOMContentLoaded", function () {
 	
 	// Script adicional para el botón "Generar".
 	const generar = document.getElementById("generar");
-	const clienteInformePdfUrl = "/informes/cliente_vista_pdf/";      // URL para vista previa PDF.
-	const clienteInformeGeneradoUrl = "/informes/cliente_generado/";  // URL para descarga ZIP.
+	const clienteInformePdfUrl = "/informes/proveedor_vista_pdf/";      // URL para vista previa PDF.
+	const clienteInformeGeneradoUrl = "/informes/proveedor_generado/";  // URL para descarga ZIP.
 	
 	generar.addEventListener("click", () => {
 		const vistaPDFSeleccionada = document.getElementById("pdf_preliminar").checked;

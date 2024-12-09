@@ -29,6 +29,7 @@ class InformeListView(ListView):
 	search_fields = []
 	ordering = []
 	
+	report_title = ""
 	table_headers = {}
 	table_data = []
 	pagination_options = [8, 20, 30, 40, 50]

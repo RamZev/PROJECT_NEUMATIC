@@ -13,17 +13,16 @@ from django.db.models import Q
 from utils.helpers.export_helpers import ExportHelper
 
 from ..views.list_views_generics import *
-from apps.maestros.models.cliente_models import Cliente
-from ..forms.buscador_cliente_forms import BuscadorClienteForm
-# from apps.maestros.models.base_models import *
+from apps.maestros.models.proveedor_models import Proveedor
+from ..forms.buscador_proveedor_forms import BuscadorProveedorForm
 
 
 class ConfigViews:
 	# Modelo
-	model = Cliente
+	model = Proveedor
 	
 	# Formulario asociado al modelo
-	form_class = BuscadorClienteForm
+	form_class = BuscadorProveedorForm
 	
 	# Aplicación asociada al modelo
 	app_label = "informes"
@@ -47,43 +46,43 @@ class ConfigViews:
 	success_url = reverse_lazy(list_view_name)
 	
 	# Archivo JavaScript específico.
-	js_file = 'js/filtro_cliente.js'
+	js_file = 'js/filtro_proveedor.js'
 
 
 class DataViewList:
-	search_fields = ['nombre_cliente', 'cuit']
+	search_fields = []
 	
-	ordering = ['nombre_cliente']
+	ordering = ['nombre_proveedor']
 	
 	paginate_by = 8
 	
-	report_title = "Reporte de Clientes"
+	report_title = "Reporte de Proveedores"
 	
 	table_headers = {
-		'id_cliente': (1, 'Código'),
-		'nombre_cliente': (3, 'Nombre Cliente'),
-		'domicilio_cliente': (3, 'Domicilio'),
+		'id_proveedor': (1, 'Código'),
+		'nombre_proveedor': (3, 'Nombre Proveedor'),
+		'domicilio_proveedor': (3, 'Domicilio'),
 		'id_localidad': (1, 'Localidad'),
 		'id_localidad.codigo_postal': (1, 'C.P.'),
 		'id_tipo_iva.codigo_iva': (1, 'IVA'),
 		'cuit': (1, 'CUIT'),
-		'telefono_cliente': (1, 'Teléfono'),
+		'telefono_proveedor': (1, 'Teléfono'),
 	}
 	
 	table_data = [
-		{'field_name': 'id_cliente', 'date_format': None},
-		{'field_name': 'nombre_cliente', 'date_format': None},
-		{'field_name': 'domicilio_cliente', 'date_format': None},
+		{'field_name': 'id_proveedor', 'date_format': None},
+		{'field_name': 'nombre_proveedor', 'date_format': None},
+		{'field_name': 'domicilio_proveedor', 'date_format': None},
 		{'field_name': 'id_localidad', 'date_format': None},
 		{'field_name': 'id_localidad.codigo_postal', 'date_format': None},
 		{'field_name': 'id_tipo_iva.codigo_iva', 'date_format': None},
 		{'field_name': 'cuit', 'date_format': None},
-		{'field_name': 'telefono_cliente', 'date_format': None},
+		{'field_name': 'telefono_proveedor', 'date_format': None},
 	]
 
 
 # ClienteListView - Inicio
-class ClienteInformeListView(InformeListView):
+class ProveedorInformeListView(InformeListView):
 	model = ConfigViews.model
 	form_class = ConfigViews.form_class
 	template_name = ConfigViews.template_list
@@ -109,21 +108,33 @@ class ClienteInformeListView(InformeListView):
 		
 		if form.is_valid():
 			
-			orden = form.cleaned_data.get('orden', 'nombre_cliente')
+			estatus = form.cleaned_data.get('estatus')
+			orden = form.cleaned_data.get('orden', 'nombre_proveedor')
 			desde = form.cleaned_data.get('desde', '').lower()
 			hasta = form.cleaned_data.get('hasta', '').lower()
-			vendedor = form.cleaned_data.get('vendedor')
-			provincia = form.cleaned_data.get('provincia')
-			localidad = form.cleaned_data.get('localidad')
 			
-			if orden not in ['nombre_cliente', 'id_cliente']:
-				orden = 'nombre_cliente'
+			if orden not in ['nombre_proveedor', 'id_proveedor']:
+				orden = 'nombre_proveedor'
+			
+			if estatus not in ['activos', 'inactivos', 'todos']:
+				estatus = 'activos'
+			
+			print('estatus', estatus)
+			
+			if estatus:
+				match estatus:
+					case "activos":
+						queryset = queryset.filter(estatus_proveedor=True)
+						print("filtró por activos")
+					case "inactivos":
+						queryset = queryset.filter(estatus_proveedor=False)
+						print("filtró por inactivos")
 			
 			queryset = queryset.order_by(orden)
 			
-			if orden == 'nombre_cliente':
+			if orden == 'nombre_proveedor':
 				#-- Anotar un campo en minúsculas para la comparación insensible a mayúsculas/minúsculas.
-				queryset = queryset.annotate(nombre_lower=Lower('nombre_cliente'))
+				queryset = queryset.annotate(nombre_lower=Lower('nombre_proveedor'))
 				
 				if desde and hasta:
 					#-- Filtrar clientes cuyos nombres comienzan con letras en el rango desde-hasta.
@@ -139,23 +150,14 @@ class ClienteInformeListView(InformeListView):
 					queryset = queryset.filter(nombre_lower__lt=chr(ord(hasta[0]) + 1))
 				
 				
-			elif orden == 'id_cliente':
+			elif orden == 'id_proveedor':
 				if desde and hasta:
-					queryset = queryset.filter(id_cliente__range=(desde, hasta))
+					queryset = queryset.filter(id_proveedor__range=(desde, hasta))
 				elif desde:
-					queryset = queryset.filter(id_cliente__gte=desde)
+					queryset = queryset.filter(id_proveedor__gte=desde)
 				elif hasta:
-					queryset = queryset.filter(id_cliente__lte=hasta)
+					queryset = queryset.filter(id_proveedor__lte=hasta)
 			
-			
-			if vendedor:
-				queryset = queryset.filter(id_vendedor=vendedor)
-			
-			if provincia:
-				queryset = queryset.filter(id_provincia=provincia)
-			
-			if localidad:
-				queryset = queryset.filter(id_localidad=localidad)
 		else:
 			#-- Agregar clases css a los campos con errores.
 			print("El form no es válido (desde la vista)")
@@ -166,7 +168,7 @@ class ClienteInformeListView(InformeListView):
 	
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
-		form = BuscadorClienteForm(self.request.GET or None)
+		form = BuscadorProveedorForm(self.request.GET or None)
 		
 		context["form"] = form
 		
@@ -177,7 +179,7 @@ class ClienteInformeListView(InformeListView):
 		return context
 
 
-class ClienteInformesView(View):
+class ProveedorInformesView(View):
 	"""Vista para gestionar informes de clientes, exportaciones y envíos por correo."""
 	
 	def get(self, request, *args, **kwargs):
@@ -193,7 +195,7 @@ class ClienteInformesView(View):
 		email = request.GET.get("email", "")
 		
 		#-- Obtener el queryset filtrado.
-		queryset_filtrado = ClienteInformeListView()
+		queryset_filtrado = ProveedorInformeListView()
 		queryset_filtrado.request = request
 		queryset = queryset_filtrado.get_queryset()
 		
@@ -237,7 +239,7 @@ class ClienteInformesView(View):
 		buffer.seek(0)
 		response = HttpResponse(buffer, content_type="application/zip")
 		response["Content-Disposition"] = f'attachment; filename="informe_{ConfigViews.model_string}s.zip"'
-		# response["Content-Disposition"] = 'attachment; filename="informe_clientes.zip"'
+		# response["Content-Disposition"] = 'attachment; filename="informe_proveedores.zip"'
 		
 		return response
 	
@@ -264,7 +266,7 @@ class ClienteInformesView(View):
 					   "application/vnd.openxmlformats-officedocument.wordprocessingml.document"))
 			# attachments.append(("informe_clientes.docx", helper.generar_word(), 
 			# 		   "application/vnd.openxmlformats-officedocument.wordprocessingml.document"))
-		
+		 
 		if "excel" in formatos:
 			attachments.append((f"informe_{ConfigViews.model_string}s.xlsx", helper.generar_excel(), 
 					   "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
@@ -273,7 +275,7 @@ class ClienteInformesView(View):
 		
 		#-- Crear y enviar el correo.
 		subject = DataViewList.report_title
-		# subject = "Informe de Clientes"
+		# subject = "Informe de Proveedores"
 		body = "Adjunto encontrarás el informe solicitado."
 		email_message = EmailMessage(subject, body, to=[email])
 		for filename, content, mime_type in attachments:
@@ -285,11 +287,11 @@ class ClienteInformesView(View):
 		return JsonResponse({"success": True, "message": "Informe enviado correctamente al correo."})
 
 
-class ClienteInformePDFView(View):
+class ProveedorInformePDFView(View):
 	
 	def get(self, request, *args, **kwargs):
 		#-- Obtener el queryset (el listado de clientes) ya filtrado.
-		queryset_filtrado = ClienteInformeListView()
+		queryset_filtrado = ProveedorInformeListView()
 		queryset_filtrado.request = request
 		queryset = queryset_filtrado.get_queryset()
 		

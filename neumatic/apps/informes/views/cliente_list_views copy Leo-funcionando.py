@@ -1,22 +1,29 @@
 # neumatic\apps\informes\views\cliente_list_views.py
 from django.urls import reverse_lazy
+from ..views.list_views_generics import *
+from apps.maestros.models.cliente_models import Cliente
+from ..forms.buscador_cliente_forms import BuscadorClienteForm
+
+# from apps.maestros.models.base_models import *
+# from django.utils import timezone
+
 from django.http import HttpResponse, JsonResponse
 from django.views import View
+from reportlab.lib.pagesizes import letter
+from io import BytesIO, TextIOWrapper
 from zipfile import ZipFile
-from io import BytesIO
-
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
+from reportlab.pdfgen import canvas
+from reportlab.lib import colors
+from docx import Document
+from openpyxl import Workbook
+import csv
+import io
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from django.core.mail import EmailMessage
 
 from django.db.models.functions import Lower
 from django.db.models import Q
-
-from utils.helpers.export_helpers import ExportHelper
-
-from ..views.list_views_generics import *
-from apps.maestros.models.cliente_models import Cliente
-from ..forms.buscador_cliente_forms import BuscadorClienteForm
-# from apps.maestros.models.base_models import *
-
 
 class ConfigViews:
 	# Modelo
@@ -56,9 +63,7 @@ class DataViewList:
 	ordering = ['nombre_cliente']
 	
 	paginate_by = 8
-	
-	report_title = "Reporte de Clientes"
-	
+	  
 	table_headers = {
 		'id_cliente': (1, 'Código'),
 		'nombre_cliente': (3, 'Nombre Cliente'),
@@ -193,9 +198,9 @@ class ClienteInformesView(View):
 		email = request.GET.get("email", "")
 		
 		#-- Obtener el queryset filtrado.
-		queryset_filtrado = ClienteInformeListView()
-		queryset_filtrado.request = request
-		queryset = queryset_filtrado.get_queryset()
+		cliente_list_view = ClienteInformeListView()
+		cliente_list_view.request = request
+		queryset = cliente_list_view.get_queryset()
 		
 		#-- Generar y retornar el archivo ZIP.
 		if action == "email":
@@ -210,70 +215,56 @@ class ClienteInformesView(View):
 		
 		buffer = BytesIO()
 		with ZipFile(buffer, "w") as zip_file:
-			helper = ExportHelper(queryset, DataViewList.table_headers, DataViewList.report_title)
+			helper = ExportHelper(queryset)
 			
 			#-- Generar los formatos seleccionados.
 			if "pdf" in formatos:
 				pdf_content = helper.export_to_pdf()
-				zip_file.writestr(f"informe_{ConfigViews.model_string}s.pdf", pdf_content)
-				# zip_file.writestr("informe_clientes.pdf", pdf_content)
+				zip_file.writestr("informe_clientes.pdf", pdf_content)
 			
 			if "csv" in formatos:
 				csv_content = helper.export_to_csv()
-				zip_file.writestr(f"informe_{ConfigViews.model_string}s.csv", csv_content)
-				# zip_file.writestr("informe_clientes.csv", csv_content)
+				zip_file.writestr("informe_clientes.csv", csv_content)
 			
 			if "word" in formatos:
 				word_content = helper.export_to_word()
-				zip_file.writestr(f"informe_{ConfigViews.model_string}s.docx", word_content)
-				# zip_file.writestr("informe_clientes.docx", word_content)
+				zip_file.writestr("informe_clientes.docx", word_content)
 			
 			if "excel" in formatos:
 				excel_content = helper.export_to_excel()
-				zip_file.writestr(f"informe_{ConfigViews.model_string}s.xlsx", excel_content)
-				# zip_file.writestr("informe_clientes.xlsx", excel_content)
+				zip_file.writestr("informe_clientes.xlsx", excel_content)
 		
 		#-- Preparar respuesta para descargar el archivo ZIP.
 		buffer.seek(0)
 		response = HttpResponse(buffer, content_type="application/zip")
-		response["Content-Disposition"] = f'attachment; filename="informe_{ConfigViews.model_string}s.zip"'
-		# response["Content-Disposition"] = 'attachment; filename="informe_clientes.zip"'
+		response["Content-Disposition"] = 'attachment; filename="informe_clientes.zip"'
 		
 		return response
 	
 	def enviar_por_email(self, queryset, formatos, email):
 		"""Enviar los informes seleccionados por correo electrónico."""
-		helper = ExportHelper(queryset, DataViewList.table_headers, DataViewList.report_title)
+		helper = ExportHelper(queryset)
 		attachments = []
 		
 		#-- Generar los formatos seleccionados y añadirlos como adjuntos.
 		if "pdf" in formatos:
-			attachments.append((f"informe_{ConfigViews.model_string}s.pdf", helper.generar_pdf(), 
+			attachments.append(("informe_clientes.pdf", helper.generar_pdf(), 
 					   "application/pdf"))
-			# attachments.append(("informe_clientes.pdf", helper.generar_pdf(), 
-			# 		   "application/pdf"))
 		
 		if "csv" in formatos:
-			attachments.append((f"informe_{ConfigViews.model_string}s.csv", helper.generar_csv(), 
+			attachments.append(("informe_clientes.csv", helper.generar_csv(), 
 					   "text/csv"))
-			# attachments.append(("informe_clientes.csv", helper.generar_csv(), 
-			# 		   "text/csv"))
 		
 		if "word" in formatos:
-			attachments.append((f"informe_{ConfigViews.model_string}s.docx", helper.generar_word(), 
+			attachments.append(("informe_clientes.docx", helper.generar_word(), 
 					   "application/vnd.openxmlformats-officedocument.wordprocessingml.document"))
-			# attachments.append(("informe_clientes.docx", helper.generar_word(), 
-			# 		   "application/vnd.openxmlformats-officedocument.wordprocessingml.document"))
 		
 		if "excel" in formatos:
-			attachments.append((f"informe_{ConfigViews.model_string}s.xlsx", helper.generar_excel(), 
+			attachments.append(("informe_clientes.xlsx", helper.generar_excel(), 
 					   "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
-			# attachments.append(("informe_clientes.xlsx", helper.generar_excel(), 
-			# 		   "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
 		
 		#-- Crear y enviar el correo.
-		subject = DataViewList.report_title
-		# subject = "Informe de Clientes"
+		subject = "Informe de Clientes"
 		body = "Adjunto encontrarás el informe solicitado."
 		email_message = EmailMessage(subject, body, to=[email])
 		for filename, content, mime_type in attachments:
@@ -289,17 +280,158 @@ class ClienteInformePDFView(View):
 	
 	def get(self, request, *args, **kwargs):
 		#-- Obtener el queryset (el listado de clientes) ya filtrado.
-		queryset_filtrado = ClienteInformeListView()
-		queryset_filtrado.request = request
-		queryset = queryset_filtrado.get_queryset()
+		cliente_list_view = ClienteInformeListView()
+		cliente_list_view.request = request
+		queryset = cliente_list_view.get_queryset()
 		
 		#-- Generar el pdf.
-		helper = ExportHelper(queryset, DataViewList.table_headers, DataViewList.report_title)
+		helper = ExportHelper(queryset)
 		buffer = helper.export_to_pdf()
 		
 		#-- Preparar la respuesta HTTP.
 		response = HttpResponse(buffer, content_type='application/pdf')
-		response['Content-Disposition'] = f'inline; filename="informe_{ConfigViews.model_string}s.pdf"'
-		# response['Content-Disposition'] = 'inline; filename="informe_clientes.pdf"'
+		response['Content-Disposition'] = 'inline; filename="informe_clientes.pdf"'
 		
 		return response
+
+
+class ExportHelper:
+	
+	def __init__(self, queryset):
+		self.queryset = queryset
+	
+	def _safe_str(self, value):
+		return str(value) if value is not None else ""
+	
+	def export_to_pdf(self):
+		buffer = BytesIO()
+		doc = SimpleDocTemplate(buffer, pagesize=letter)
+		elements = []
+		
+		# Encabezado
+		elements.append(Paragraph("Reporte de Clientes", getSampleStyleSheet()['Title']))
+		elements.append(Spacer(1, 12))
+		
+		# Tabla
+		table_data = [[
+			"Código", "Nombre", "Domicilio", "Localidad", 
+			"C.P.", "IVA", "CUIT", "Teléfono"
+		]]
+		for obj in self.queryset:
+			table_data.append([
+				obj.id_cliente, obj.nombre_cliente, obj.domicilio_cliente,
+				obj.id_localidad, obj.id_localidad.codigo_postal,
+				obj.id_tipo_iva.codigo_iva, obj.cuit, obj.telefono_cliente
+			])
+		table = Table(table_data)
+		table.setStyle(TableStyle([
+			('BACKGROUND', (0, 0), (-1, 0), colors.grey),
+			('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+			('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+			('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+			('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+			('BACKGROUND', (0, 1), (-1, -1), colors.beige),
+			('GRID', (0, 0), (-1, -1), 1, colors.black),
+		]))
+		elements.append(table)
+		
+		doc.build(elements)
+		buffer.seek(0)
+		
+		return buffer.getvalue()
+	
+	def export_to_csv(self):
+		#-- Crear buffer binario.
+		buffer = BytesIO()
+		
+		#-- Crear envoltura de texto.
+		text_buffer = TextIOWrapper(buffer, encoding="utf-8", newline="")
+		
+		#-- Escribir el BOM manualmente para indicar UTF-8.
+		text_buffer.write('\ufeff')  # Agregar el BOM al archivo como texto.
+		
+		writer = csv.writer(text_buffer)
+		writer.writerow([
+			"Código", "Nombre", "Domicilio", "Localidad",
+			"C.P.", "IVA", "CUIT", "Teléfono"
+		])
+		for obj in self.queryset:
+			writer.writerow([
+				obj.id_cliente, obj.nombre_cliente, obj.domicilio_cliente,
+				obj.id_localidad, obj.id_localidad.codigo_postal,
+				obj.id_tipo_iva.codigo_iva, obj.cuit, obj.telefono_cliente
+			])
+		#-- Vaciar contenido al buffer binario.
+		text_buffer.flush()
+		buffer.seek(0)
+		
+		#-- Obtener el contenido en bytes.
+		csv_bytes = buffer.getvalue()		
+		
+		#-- Cerrar buffers.
+		text_buffer.close()
+		buffer.close()
+		
+		return csv_bytes
+	
+	def export_to_word(self):
+		
+		doc = Document()
+		doc.add_heading("Reporte de Clientes", level=1)
+		
+		table = doc.add_table(rows=1, cols=8)
+		hdr_cells = table.rows[0].cells
+		headers = [
+			"Código", "Nombre", "Domicilio", "Localidad",
+			"C.P.", "IVA", "CUIT", "Teléfono"
+		]
+		for i, header in enumerate(headers):
+			hdr_cells[i].text = header
+		
+		for obj in self.queryset:
+			row_cells = table.add_row().cells
+			row_cells[0].text = self._safe_str(obj.id_cliente)
+			row_cells[1].text = self._safe_str(obj.nombre_cliente)
+			row_cells[2].text = self._safe_str(obj.domicilio_cliente)
+			row_cells[3].text = self._safe_str(obj.id_localidad)
+			row_cells[4].text = self._safe_str(obj.id_localidad.codigo_postal)
+			row_cells[5].text = self._safe_str(obj.id_tipo_iva.codigo_iva)
+			row_cells[6].text = self._safe_str(obj.cuit)
+			row_cells[7].text = self._safe_str(obj.telefono_cliente)
+		
+		buffer = BytesIO()
+		doc.save(buffer)
+		buffer.seek(0)
+		
+		return buffer.getvalue()
+	
+	def export_to_excel(self):
+		wb = Workbook()
+		ws = wb.active
+		ws.title = "Clientes"
+		
+		#-- Encabezados.
+		headers = [
+			"Código", "Nombre", "Domicilio", "Localidad",
+			"C.P.", "IVA", "CUIT", "Teléfono"
+		]
+		ws.append(headers)
+		
+		#-- Datos.
+		for obj in self.queryset:
+			ws.append([
+				obj.id_cliente, 
+				self._safe_str(obj.nombre_cliente), 
+				self._safe_str(obj.domicilio_cliente),
+				self._safe_str(obj.id_localidad), 
+				self._safe_str(obj.id_localidad.codigo_postal),
+				self._safe_str(obj.id_tipo_iva.codigo_iva), 
+				self._safe_str(obj.cuit), 
+				self._safe_str(obj.telefono_cliente)
+			])
+		
+		buffer = BytesIO()
+		wb.save(buffer)
+		buffer.seek(0)
+		
+		return buffer.getvalue()
