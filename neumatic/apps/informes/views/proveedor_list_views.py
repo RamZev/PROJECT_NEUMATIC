@@ -46,7 +46,14 @@ class ConfigViews:
 	success_url = reverse_lazy(list_view_name)
 	
 	# Archivo JavaScript específico.
-	js_file = 'js/filtro_proveedor.js'
+	js_file = None
+	
+	# URL de la vista que genera el .zip con los informes.
+	url_zip = f"{model_string}_informe_generado"
+	
+	# URL de la vista que genera el .pdf.
+	url_pdf = f"{model_string}_informe_pdf"
+	
 
 
 class DataViewList:
@@ -81,7 +88,6 @@ class DataViewList:
 	]
 
 
-# ClienteListView - Inicio
 class ProveedorInformeListView(InformeListView):
 	model = ConfigViews.model
 	form_class = ConfigViews.form_class
@@ -97,9 +103,10 @@ class ProveedorInformeListView(InformeListView):
 		"list_view_name": ConfigViews.list_view_name,
 		"table_headers": DataViewList.table_headers,
 		"table_data": DataViewList.table_data,
-		# "buscador_template": "informes/buscador_cliente.html",  # Se agrega el nombre de la plantilla buscador
-		"buscador_template": f"{ConfigViews.app_label}/buscador_{ConfigViews.model_string}.html",  # Se agrega el nombre de la plantilla buscador,
-		"js_file": ConfigViews.js_file
+		"buscador_template": f"{ConfigViews.app_label}/buscador_{ConfigViews.model_string}.html",
+		"js_file": ConfigViews.js_file,
+		"url_zip": ConfigViews.url_zip,
+		"url_pdf": ConfigViews.url_pdf,
 	}
 	
 	def get_queryset(self):
@@ -109,26 +116,24 @@ class ProveedorInformeListView(InformeListView):
 		if form.is_valid():
 			
 			estatus = form.cleaned_data.get('estatus')
-			orden = form.cleaned_data.get('orden', 'nombre_proveedor')
+			orden = form.cleaned_data.get('orden', 'nombre')
 			desde = form.cleaned_data.get('desde', '').lower()
 			hasta = form.cleaned_data.get('hasta', '').lower()
 			
-			if orden not in ['nombre_proveedor', 'id_proveedor']:
-				orden = 'nombre_proveedor'
-			
 			if estatus not in ['activos', 'inactivos', 'todos']:
 				estatus = 'activos'
-			
-			print('estatus', estatus)
 			
 			if estatus:
 				match estatus:
 					case "activos":
 						queryset = queryset.filter(estatus_proveedor=True)
-						print("filtró por activos")
 					case "inactivos":
 						queryset = queryset.filter(estatus_proveedor=False)
-						print("filtró por inactivos")
+			
+			if orden not in ['nombre', 'codigo']:
+				orden = 'nombre'
+			
+			orden = "nombre_proveedor" if orden == "nombre" else "id_proveedor"
 			
 			queryset = queryset.order_by(orden)
 			
@@ -189,7 +194,7 @@ class ProveedorInformesView(View):
 		action = request.GET.get("action", "download")
 		
 		#-- Formatos seleccionados por el usuario.
-		formatos = request.GET.getlist("formatos[]")
+		formatos = request.GET.getlist("formato_envio")
 		
 		#-- Email si aplica envío.
 		email = request.GET.get("email", "")
@@ -217,29 +222,24 @@ class ProveedorInformesView(View):
 			#-- Generar los formatos seleccionados.
 			if "pdf" in formatos:
 				pdf_content = helper.export_to_pdf()
-				zip_file.writestr(f"informe_{ConfigViews.model_string}s.pdf", pdf_content)
-				# zip_file.writestr("informe_clientes.pdf", pdf_content)
+				zip_file.writestr(f"informe_{ConfigViews.model_string}.pdf", pdf_content)
 			
 			if "csv" in formatos:
 				csv_content = helper.export_to_csv()
-				zip_file.writestr(f"informe_{ConfigViews.model_string}s.csv", csv_content)
-				# zip_file.writestr("informe_clientes.csv", csv_content)
+				zip_file.writestr(f"informe_{ConfigViews.model_string}.csv", csv_content)
 			
 			if "word" in formatos:
 				word_content = helper.export_to_word()
-				zip_file.writestr(f"informe_{ConfigViews.model_string}s.docx", word_content)
-				# zip_file.writestr("informe_clientes.docx", word_content)
+				zip_file.writestr(f"informe_{ConfigViews.model_string}.docx", word_content)
 			
 			if "excel" in formatos:
 				excel_content = helper.export_to_excel()
-				zip_file.writestr(f"informe_{ConfigViews.model_string}s.xlsx", excel_content)
-				# zip_file.writestr("informe_clientes.xlsx", excel_content)
+				zip_file.writestr(f"informe_{ConfigViews.model_string}.xlsx", excel_content)
 		
 		#-- Preparar respuesta para descargar el archivo ZIP.
 		buffer.seek(0)
 		response = HttpResponse(buffer, content_type="application/zip")
-		response["Content-Disposition"] = f'attachment; filename="informe_{ConfigViews.model_string}s.zip"'
-		# response["Content-Disposition"] = 'attachment; filename="informe_proveedores.zip"'
+		response["Content-Disposition"] = f'attachment; filename="informe_{ConfigViews.model_string}.zip"'
 		
 		return response
 	
@@ -250,32 +250,23 @@ class ProveedorInformesView(View):
 		
 		#-- Generar los formatos seleccionados y añadirlos como adjuntos.
 		if "pdf" in formatos:
-			attachments.append((f"informe_{ConfigViews.model_string}s.pdf", helper.generar_pdf(), 
+			attachments.append((f"informe_{ConfigViews.model_string}.pdf", helper.generar_pdf(), 
 					   "application/pdf"))
-			# attachments.append(("informe_clientes.pdf", helper.generar_pdf(), 
-			# 		   "application/pdf"))
 		
 		if "csv" in formatos:
-			attachments.append((f"informe_{ConfigViews.model_string}s.csv", helper.generar_csv(), 
+			attachments.append((f"informe_{ConfigViews.model_string}.csv", helper.generar_csv(), 
 					   "text/csv"))
-			# attachments.append(("informe_clientes.csv", helper.generar_csv(), 
-			# 		   "text/csv"))
 		
 		if "word" in formatos:
-			attachments.append((f"informe_{ConfigViews.model_string}s.docx", helper.generar_word(), 
+			attachments.append((f"informe_{ConfigViews.model_string}.docx", helper.generar_word(), 
 					   "application/vnd.openxmlformats-officedocument.wordprocessingml.document"))
-			# attachments.append(("informe_clientes.docx", helper.generar_word(), 
-			# 		   "application/vnd.openxmlformats-officedocument.wordprocessingml.document"))
 		 
 		if "excel" in formatos:
-			attachments.append((f"informe_{ConfigViews.model_string}s.xlsx", helper.generar_excel(), 
+			attachments.append((f"informe_{ConfigViews.model_string}.xlsx", helper.generar_excel(), 
 					   "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
-			# attachments.append(("informe_clientes.xlsx", helper.generar_excel(), 
-			# 		   "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
 		
 		#-- Crear y enviar el correo.
 		subject = DataViewList.report_title
-		# subject = "Informe de Proveedores"
 		body = "Adjunto encontrarás el informe solicitado."
 		email_message = EmailMessage(subject, body, to=[email])
 		for filename, content, mime_type in attachments:
@@ -301,7 +292,6 @@ class ProveedorInformePDFView(View):
 		
 		#-- Preparar la respuesta HTTP.
 		response = HttpResponse(buffer, content_type='application/pdf')
-		response['Content-Disposition'] = f'inline; filename="informe_{ConfigViews.model_string}s.pdf"'
-		# response['Content-Disposition'] = 'inline; filename="informe_clientes.pdf"'
+		response['Content-Disposition'] = f'inline; filename="informe_{ConfigViews.model_string}.pdf"'
 		
 		return response

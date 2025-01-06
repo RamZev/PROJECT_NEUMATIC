@@ -64,7 +64,6 @@ class DataViewList():
 	  
 	table_headers = {
 		'estatus_medio_pago': (1, 'Estatus'),
-		# 'id_medio_pago': (1, 'ID'),
 		'nombre_medio_pago': (5, 'Medio de Pago'),
     	'condicion_medio_pago': (2, 'Condición'),
 		
@@ -73,9 +72,8 @@ class DataViewList():
 	
 	table_data = [
 		{'field_name': 'estatus_medio_pago', 'date_format': None},
-		# {'field_name': 'id_medio_pago', 'date_format': None},
 		{'field_name': 'nombre_medio_pago', 'date_format': None},
-	    {'field_name': 'condicion_medio_pago', 'date_format': None},
+	    {'field_name': 'condicion_medio_pago_display', 'date_format': None},
 	]
 
 

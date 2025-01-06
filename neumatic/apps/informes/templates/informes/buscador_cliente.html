@@ -1,7 +1,9 @@
 <div class="card">
+	{% comment %}
 	<div class="card-header bg-secondary text-white">
 		<h5>{{ master_title }}</h5>
 	</div>
+	{% endcomment %}
 	
 	<div class="card-body">
 		<form method="GET" novalidate>
@@ -10,7 +12,12 @@
 			
 			<div class="row">
 				
-				<div class="col-md-4">
+				<div class="col-md-2">
+					{{ form.estatus.label }}
+					{{ form.estatus }}
+				</div>
+				
+				<div class="col-md-2">
 					{{ form.orden.label }}
 					{{ form.orden }}
 				</div>
@@ -54,7 +61,15 @@
 				</div>
 			</div>
 			
+			<button 
+					class="btn btn-outline-success me-2 mt-3" 
+					id="generar"
+					data-zip-url="{% url url_zip %}?{{ request.GET.urlencode }}"
+					data-pdf-url="{% url url_pdf %}?{{ request.GET.urlencode }}"
+				>
+				Generar
+			</button>
+			
 		</form>
-		<button class="btn btn-outline-success me-2 mt-3" id="generar">Generar</button>
 	</div>
 </div>

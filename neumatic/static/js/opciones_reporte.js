@@ -1,6 +1,53 @@
-// neumatic\static\js\filtro_cliente.js
+// neumatic\static\js\opciones_reporte.js
 
 document.addEventListener("DOMContentLoaded", function () {
+	// Función para llenar localidades basadas en la provincia seleccionada.
+	const updateLocalidades = async (provinciaId) => {
+		const localidadSelect = document.querySelector('[name="localidad"]');
+		
+		// Limpiar el select de localidades.
+		localidadSelect.innerHTML = '<option value="">Selecciones una localidad...</option>';
+		
+		if (!provinciaId) {
+			return;
+		}
+		
+		try {
+			// Llamada a la vista para obtener las localidades filtradas por provincia.
+			const url = `/informes/filtrar-localidad/?id_provincia=${provinciaId}`;
+			const response = await fetch(url);
+			
+			if (response.ok) {
+				const data = await response.json();
+				
+				const localidades = data.localidad;
+				// Rellenar el select con las localidades obtenidas.
+				localidades.forEach(localidad => {
+					const option = document.createElement("option");
+					option.value = localidad.id_localidad;
+					option.textContent = localidad.nombre_completo;
+					localidadSelect.appendChild(option);
+				});
+			} else {
+				console.log("Error al obtener localidades:", response.statusText);
+			}
+			
+		} catch (error) {
+			console.log("Error en la petición de localidades:", error);
+		}
+	};
+	
+	// Event listener para el select de provincias
+	const provinciaSelect = document.querySelector('[name="provincia"]');
+	if (provinciaSelect) {
+		provinciaSelect.addEventListener("change", function () {
+			const selectedProvincia = this.value;
+			updateLocalidades(selectedProvincia);
+		});
+	}
+	
+	/////////////////////////////////////////////////////////////////////////////////////////////
+	
 	// Función para manejar la lógica de habilitar/deshabilitar y seleccionar automáticamente PDF
 	const selectAllFormats = () => {
 		const formatCheckboxes = document.querySelectorAll('[name="formato_envio"]');
@@ -12,6 +59,7 @@ document.addEventListener("DOMContentLoaded", function () {
 		const selectedOption = document.querySelector('input[name="tipo_salida"]:checked').value;
 		
 		formatCheckboxes.forEach((checkbox) => {
+			
 			// Deshabilitar o habilitar los checkboxes según la selección
 			checkbox.disabled = selectedOption === "tabla" || selectedOption === "pdf_preliminar";
 			if (checkbox.disabled) {
@@ -48,57 +96,65 @@ document.addEventListener("DOMContentLoaded", function () {
 		celularField.disabled = true;
 	};
 	
-	//evento 'change' para los cambios
+	// evento 'change' para los cambios
 	document.querySelectorAll('input[name="tipo_salida"]').forEach((radio) => {
 		radio.addEventListener("change", selectAllFormats);
 	});
 	
-	//  cargar la página
-	// document.addEventListener("DOMContentLoaded", () => {
-		const vistaTabla = document.querySelector('input[name="tipo_salida"][value="tabla"]');
-		if (vistaTabla) {
-			vistaTabla.checked = true; // Seleccionar Vista Preliminar en Tabla por defecto
-		}
-		initializeDefaults();
-	// });
+	// cargar la página
+	const vistaTabla = document.querySelector('input[name="tipo_salida"][value="tabla"]');
+	if (vistaTabla) {
+		vistaTabla.checked = true; // Seleccionar Vista Preliminar en Tabla por defecto
+	}
+	initializeDefaults();
 	
-	// Script adicional para el botón "Generar"
+	// Script adicional para el botón "Generar".
 	const generar = document.getElementById("generar");
-	const clienteInformePdfUrl = "/informes/cliente_vista_pdf/";
-	const clienteInformeGeneradoUrl = "/informes/cliente_generado/";
 	
-	generar.addEventListener("click", () => {
-		const vistaPDFSeleccionada = document.getElementById("pdf_preliminar").checked;
-		const envioEmailSeleccionado = document.getElementById("email_envio").checked;
-		
-		if (vistaPDFSeleccionada) {
-			window.open(clienteInformePdfUrl, "_blank");
-			// window.open("{% url 'cliente_informe_pdf' %}", "_blank");
-		}
-		
-		if (envioEmailSeleccionado) {
-			// Obtener los checkboxes seleccionados
-			const selectedFormats = [];
-			document.querySelectorAll('input[type="checkbox"]:checked').forEach((checkbox) => {
-				selectedFormats.push(checkbox.value);
-			});
+	if (generar){
+		generar.addEventListener("click", function (event) {
+			// Previene el envío del formulario al hacer clic en "Generar".
+			event.preventDefault();
 			
-			if (selectedFormats.length === 0) {
-				alert("Por favor, selecciona al menos un formato.");
-				return;
+			// Obtener el formulario de filtros.
+			const form = this.closest("form");
+			const formData = new FormData(form);
+			const params = new URLSearchParams(formData).toString();
+			
+			// URLs extraídas de los atributos data-
+			const clienteInformePdfUrl = this.getAttribute("data-pdf-url").split("?")[0];
+			const clienteInformeGeneradoUrl = this.getAttribute("data-zip-url").split("?")[0];
+			
+			// Determinar si es para vista previa PDF o generación ZIP.
+			const vistaPDFSeleccionada = document.getElementById("pdf_preliminar")?.checked;
+			const envioEmailSeleccionado = document.getElementById("email_envio")?.checked;
+			
+			if (vistaPDFSeleccionada) {
+				// Abrir la vista previa en PDF.
+				const fullUrl = `${clienteInformePdfUrl}?${params}&format=pdf`;
+				window.open(fullUrl, "_blank");
 			}
-			
-			// Crear la URL con los formatos seleccionados
-			// const baseUrl = "{% url 'cliente_informe_generado' %}";
-			const queryParams = selectedFormats.map((format) => `formatos[]=${format}`).join("&");
-			// const fullUrl = `${baseUrl}?${queryParams}`;
-			const fullUrl = `${clienteInformeGeneradoUrl}?${queryParams}`;
-			
-			// Redirigir a la URL para descargar el ZIP
-			window.location.href = fullUrl;
-		}
-	});
-	
+			if (envioEmailSeleccionado) {
+				
+				// Obtener los checkboxes seleccionados
+				const selectedFormats = [];
+				document.querySelectorAll('input[type="checkbox"]:checked').forEach((checkbox) => {
+					selectedFormats.push(checkbox.value);
+				});
+				
+				if (selectedFormats.length === 0) {
+					alert("Por favor, selecciona al menos un formato.");
+					return;
+				}
+				
+				// Crear la URL para el archivo ZIP.
+				const fullUrl = `${clienteInformeGeneradoUrl}?${params}`;
+				
+				// Redirigir a la URL para descargar el ZIP.
+				window.location.href = fullUrl;
+			}
+		});
+	}
 	// -------------------------------------------------------------------------------
 	// Funcionalidad para mostrar modal con los errores de validación del formulario.
 	// -------------------------------------------------------------------------------

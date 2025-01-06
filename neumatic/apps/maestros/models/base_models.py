@@ -310,7 +310,7 @@ class ComprobanteCompra(ModeloBaseGenerico):
 	mult_compra = models.IntegerField("Mult. Compra")
 	mult_saldo = models.IntegerField("Mult. Saldo")
 	mult_stock = models.IntegerField("Mult. Stock")
-	mult_caja = models.IntegerField("Mult. IVA")
+	mult_caja = models.IntegerField("Mult. Caja")
 	libro_iva = models.BooleanField("Libreo IVA", default=False)
 	codigo_afip_a = models.CharField("Código AFIP A", max_length=3)
 	codigo_afip_b = models.CharField("Código AFIP B", max_length=3)

@@ -51,89 +51,144 @@
 		{% endif %}
 	{% endblock sidebar %}
 	
-	{% block maincomponent %}
 	<!-- Main Component Start -->
+	{% block maincomponent %}
 		
 		<!-- Main principalcomponent Start -->
 		{% block principalcomponent %}
-		<div id="layoutSidenav_content">
-			<main>	
-				<div class="container-fluid tbl-container">
-					<div class="card border-secondary mb-3 mt-2">
-						<div class="card-header bg-primary bg-opacity-25 text-dark d-flex 
-								justify-content-between p-1">
-							<h4>{{ master_title }}</h4>
-							<!-- Botón cerrar lista -->
-							<button type="button" class="btn-close btn-close-blue" 
-								aria-label="Close"
-								onclick="window.location.href='{% url home_view_name %}'">
-							</button>
-						</div>
-						<div class="card-body">
-							<div class="row">
-								<div class="col col-12">
-									<!-- Incluir el buscador específico pasado como variable de contexto -->
-									{% include buscador_template %}
-								</div>
+			<div id="layoutSidenav_content">
+				<main>	
+					<div class="container-fluid tbl-container">
+						
+						<div class="card border-secondary mb-3 mt-2">
+							<div class="card-header bg-primary bg-opacity-25 text-dark d-flex justify-content-between p-1">
+								<h4>{{ master_title }}</h4>
+								<!-- Botón cerrar lista -->
+								<button type="button" class="btn-close btn-close-blue" 
+									aria-label="Close"
+									onclick="window.location.href='{% url home_view_name %}'">
+								</button>
 							</div>
-							
-							<div class="row tbl-fixed my-2 mx-1">
-								<!-- Inicio Tabla de Maestro -->
-								<table class="table table-bordered table-striped table-hover">
-									<thead class="table-primary">
-										{% for key, value in table_headers.items %}
-											<th class="col-{{ value.0 }}">
-												<a href="{% url list_view_name %}?order_by={{ key }}">
-													{{ value.1 }}
-													{% if key == order_by %}
-														▲
-													{% endif %}
-												</a>
-											</th>
-										{% endfor %}
-									</thead>
+							<div class="card-body">
+								
+								<div class="accordion" id="accordionPanelsStayOpenExample">
 									
-									<tbody>
-										{% for objeto in objetos %}
-											<tr>
-												{% for data_info in table_data %}
-													{% with objeto|get_attribute:data_info.field_name as field_value %}
-														{% if field_value|get_type == 'bool' %}
-															<td>
-																{% if field_value %}
-																	<i class="fa fa-check text-success"></i> <!-- Ícono de check verde -->
-																{% else %}
-																	<i class="fa fa-times text-danger"></i> <!-- Ícono de "X" roja -->
-																{% endif %}
-															</td>
-														{% elif field_value|get_type == 'float' or field_value|get_type == 'Decimal' %}
-															<td class="decimal">{{ objeto|get_attribute:data_info.field_name|formato_es_ar }}</td>
-														{% elif field_value|get_type == 'int' %}
-															<td>{{ objeto|get_attribute:data_info.field_name }}</td>
-														{% else %}
-															{% if data_info.date_format %}
-																<td>{{ field_value|default:"" |date:data_info.date_format }}</td>
-															{% else %}
-																<td>{{ field_value|default:"" }}</td>
-															{% endif %}
-														{% endif %}
-													{% endwith %}
-												{% endfor %}
-											</tr>
-										{% endfor %}
-									</tbody>
-								</table>
-								<!-- Final Tabla de Maestro -->
+									<!-- ************************************** -->
+									<div class="accordion-item">
+										
+										<h2 class="accordion-header">
+											<button 
+												class="accordion-button py-2 " 
+												type="button" 
+												data-bs-toggle="collapse" 
+												data-bs-target="#Parámetros_de_Filtro" 
+												aria-expanded="true" 
+												aria-controls="Parámetros_de_Filtro">
+												<strong>Parámetros de Filtro</strong>
+											</button>
+										</h2>
+										<div class="accordion-collapse collapse" id="Parámetros_de_Filtro">
+											<div class="accordion-body bg-secondary-subtle">
+												
+												<div class="row">
+													<div class="col col-12">
+														<!-- Incluir el buscador específico pasado como variable de contexto -->
+														{% include buscador_template %}
+													</div>
+												</div>
+												
+											</div>
+										</div>
+										
+									</div>
+									
+									<!-- ************************************** -->
+									 
+									<div class="accordion-item">
+										
+										<h2 class="accordion-header">
+											<button 
+												class="accordion-button py-2 " 
+												type="button" 
+												data-bs-toggle="collapse" 
+												data-bs-target="#Resultado" 
+												aria-expanded="true" 
+												aria-controls="Resultado">
+												<strong>Resultado</strong>
+											</button>
+										</h2>
+										<div class="accordion-collapse collapse show" id="Resultado">
+											<div class="accordion-body bg-secondary-subtle">
+												
+												<div class="row tbl-fixed my-2 mx-1">
+													<!-- Inicio Tabla de Maestro -->
+													<table class="table table-bordered table-striped table-hover">
+														<thead class="table-primary">
+															{% for key, value in table_headers.items %}
+																<th class="col-{{ value.0 }}">
+																	{% comment %} <a href="{% url list_view_name %}?order_by={{ key }}"> {% endcomment %}
+																	<a href="#">
+																		{{ value.1 }}
+																		{% if key == order_by %}
+																			▲
+																		{% endif %}
+																	</a>
+																</th>
+															{% endfor %}
+														</thead>
+														
+														<tbody>
+															{% for objeto in objetos %}
+																<tr>
+																	{% for data_info in table_data %}
+																		{% with objeto|get_attribute:data_info.field_name as field_value %}
+																			{% if field_value|get_type == 'bool' %}
+																				<td>
+																					{% if field_value %}
+																						<i class="fa fa-check text-success"></i> <!-- Ícono de check verde -->
+																					{% else %}
+																						<i class="fa fa-times text-danger"></i> <!-- Ícono de "X" roja -->
+																					{% endif %}
+																				</td>
+																			{% elif field_value|get_type == 'float' or field_value|get_type == 'Decimal' %}
+																				<td class="decimal">{{ objeto|get_attribute:data_info.field_name|formato_es_ar }}</td>
+																			{% elif field_value|get_type == 'int' %}
+																				<td>{{ objeto|get_attribute:data_info.field_name }}</td>
+																			{% else %}
+																				{% if data_info.date_format %}
+																					<td>{{ field_value|default:"" |date:data_info.date_format }}</td>
+																				{% else %}
+																					<td>{{ field_value|default:"" }}</td>
+																				{% endif %}
+																			{% endif %}
+																		{% endwith %}
+																	{% endfor %}
+																</tr>
+															{% endfor %}
+														</tbody>
+													</table>
+													<!-- Final Tabla de Maestro -->
+												</div>
+												
+												{% block paginador %}
+													{% include 'paginador.html' %}
+												{% endblock paginador %}
+												
+											</div>
+										</div>
+										
+									</div>
+									<!-- ************************************** -->
+									
+								</div>
+								
+								
 							</div>
-							
-							{% block paginador %}
-								{% include 'paginador.html' %}
-							{% endblock paginador %}
 						</div>
+						
 					</div>
-				</div>
-			</main>
-		</div>
+				</main>
+			</div>
 		{% endblock principalcomponent %}
 		<!-- Main principalcomponent End -->
 		
@@ -149,6 +204,8 @@
 
 {% block script %}
 	{{ block.super }}
+	
+	<script src="{% static 'js/opciones_reporte.js' %}"></script>
 	
 	{% if js_file %}
 		<script src="{% static js_file %}"></script>

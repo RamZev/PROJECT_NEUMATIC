@@ -10,8 +10,8 @@ from openpyxl import Workbook
 import csv
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from datetime import datetime
-# import io
-
+from decimal import Decimal
+from apps.maestros.templatetags.custom_tags import formato_es_ar
 
 
 class ExportHelper:
@@ -26,17 +26,28 @@ class ExportHelper:
 	
 	def _get_headers_and_fields(self):
 		"""Obtener nombres de encabezados y los campos correspondientes del diccionario table_headers."""
+		
 		headers = [header[1] for header in self.table_headers.values()]
 		fields = list(self.table_headers.keys())
 		return headers, fields
 	
 	def _resolve_field(self, obj, field_name):
 		"""Resuelve el valor de un campo, incluso si es un campo anidado."""
+		
 		try:
 			fields = field_name.split('.')  #-- Separar los niveles de anidación.
 			value = obj
+			
 			for field in fields:
 				value = getattr(value, field, None)  #-- Obtener el siguiente nivel.
+				
+				if isinstance(value, bool) and "estatus" in field:
+					value = "Activo" if value else "Inactivo"
+				elif isinstance(value, bool):
+					value = "Sí" if value else "No"
+				elif isinstance(value, (float, Decimal)):
+					value = formato_es_ar(value)  # Aplica el formato de número				
+					
 			return self._safe_str(value)  #-- Convertir el valor a una cadena segura.
 		except AttributeError:
 			return ""  #-- Si no se puede resolver el campo, devolver una cadena vacía.
@@ -63,7 +74,7 @@ class ExportHelper:
 			table_data.append([self._resolve_field(obj, field) for field in fields])
 		
 		table = Table(table_data)
-		table.setStyle(TableStyle([
+		table_style = TableStyle([
 			('FONTNAME', (0, 0), (-1, -1), 'Helvetica'),
 			('FONTSIZE', (0, 0), (-1, -1), 8),
 			# ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
@@ -74,15 +85,20 @@ class ExportHelper:
 			('LINEBELOW', (0, 0), (-1, 0), 1, colors.black),
 			('TEXTCOLOR', (0, 0), (-1, 0), colors.black),
 			
-			
-			
 			# ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
 			# ('ALIGN', (0, 0), (-1, 0), 'CENTER'),
 			# ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
 			# ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
 			# ('GRID', (0, 0), (-1, -1), 1, colors.black),
 			
-		]))
+		])
+			
+		#-- Identificar las columnas que contienen números para alinear a la derecha.
+		for col_idx, field in enumerate(fields):
+			if any(isinstance(getattr(obj, field.split('.')[0], None), (int, float, Decimal)) for obj in self.queryset):
+				table_style.add('ALIGN', (col_idx, 1), (col_idx, -1), 'RIGHT')
+		
+		table.setStyle(table_style)
 		
 		#-- Repite la primera fila (headers) en cada página.
 		table.repeatRows = 1
@@ -207,7 +223,7 @@ class CustomCanvas(canvas.Canvas):
 		y_position = 20
 		
 		# Extremo izquierdo: texto fijo
-		self.setFont("Helvetica", 10)
+		self.setFont("Helvetica", 8)
 		self.setFillColor(colors.black)
 		
 		self.drawString(30, y_position, "M.A.A.Soft")
@@ -216,7 +232,8 @@ class CustomCanvas(canvas.Canvas):
 		self.page_number += 1
 		
 		# Centro: numeración de páginas
-		page_text = f"Página {self.page_number}/{self.total_pages}"
+		# page_text = f"Página {self.page_number}/{self.total_pages}"
+		page_text = f"- {self.page_number} -"
 		self.drawCentredString(300, y_position, page_text)
 		
 		# Extremo derecho: fecha del reporte

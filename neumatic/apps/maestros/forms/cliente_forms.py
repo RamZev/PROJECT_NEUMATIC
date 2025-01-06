@@ -92,7 +92,7 @@ class ClienteForm(CrudGenericForm):
 		
 		#-- Verificar si el formulario se llama con datos (POST).
 		if self.is_bound:
-			#-- Obtener el valor enviado de id_provincia_tarjeta.
+			#-- Obtener el valor enviado de id_provincia.
 			provincia_id = self.data.get('id_provincia')
 			localidad_id = self.data.get('id_localidad', '')
 			

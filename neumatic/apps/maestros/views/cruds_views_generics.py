@@ -82,12 +82,23 @@ class MaestroListView(ListView):
 	
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
-		context["busqueda"] = self.request.GET.get('busqueda', '')
+		# context["busqueda"] = self.request.GET.get('busqueda', '') #-- No hace falta porque ya está en query_params.
 		
 		#-- Agregar valores de paginación y valor seleccionado.
 		context['pagination_options'] = self.pagination_options
 		context['selected_pagination'] = int(self.paginate_by)
-		# Para pasar la fecha a la lista del maestro		
+		
+		#-- Agregar los filtros actuales al contexto.
+		#-- Con esto se garantiza que la paginación funcione bien con
+		#-- los datos filtrados.
+		query_params = self.request.GET.copy()
+		if 'page' in query_params:
+			#-- Remover el parámetro de paginación actual.
+			query_params.pop('page')
+		
+		context['query_params'] = query_params.urlencode()
+		
+		#-- Para pasar la fecha a la lista del maestro.
 		context['fecha'] = timezone.now()
 
 		return context

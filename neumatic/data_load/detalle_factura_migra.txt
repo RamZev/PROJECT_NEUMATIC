@@ -1,0 +1,16 @@
+id_detalle_factura (PK) (int): automático
+id_factura FK(Factura): ID (int)
+id_producto FK(Producto): instanciar con el valor de CODIGO
+codigo (string): CODIGO (string)
+cantidad (decimal): CANTIDAD (decimal)
+costo (decimal): COSTO (decimal)
+precio (decimal): PRECIO (decimal)
+descuento (decimal): DESCUENTO (decimal)
+gravado (decimal): GRAVADO (decimal)
+alic_iva (decimal): ALICIVA (decimal)
+iva (decimal): IVA (decimal)
+total (decimal): TOTAL (decimal)
+reventa (string): REVENTA (decimal)
+stock (decimal): STOCK (decimal)
+act_stock (boolean): ACTSTOCK (logico)
+id_operario FK(Operario): OPERARIO (string)

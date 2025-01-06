@@ -1,0 +1,160 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load custom_tags %}
+
+<!-- Block Title -->
+{% block title %}
+	{{ master_title }}
+{% endblock title %}
+
+{% block style %}
+	body {
+		background-color: rgb(0, 204, 255);
+	}
+	.tbl-container {
+		 
+	}
+	.tbl-fixed {
+		overflow-x: scroll;
+		overflow-y: scroll;
+		height: fit-content;
+		max-height: 60vh;
+		margin-top: 0px;
+		font-size: 80%;
+	}
+	table {
+		min-width: max-content;
+	}
+	table th {
+		position: sticky;
+		top: 0px;
+	}
+	
+	.decimal {
+		text-align: right;
+		familily-font: monospace;
+	}
+{% endblock style %}
+
+{% debug %}
+
+<!-- Block Header -->
+{% block header %}
+	{% include 'top_nav.html' %}
+{% endblock header %}
+
+<!-- Block Main -->
+{% block main %}
+	{% block sidebar %}
+		{% if user.is_authenticated %} 
+			{% include 'sidebar.html' %}
+		{% endif %}
+	{% endblock sidebar %}
+	
+	{% block maincomponent %}
+	<!-- Main Component Start -->
+		
+		<!-- Main principalcomponent Start -->
+		{% block principalcomponent %}
+		<div id="layoutSidenav_content">
+			<main>	
+				<div class="container-fluid tbl-container">
+					<div class="card border-secondary mb-3 mt-2">
+						<div class="card-header bg-primary bg-opacity-25 text-dark d-flex 
+								justify-content-between p-1">
+							<h4>{{ master_title }}</h4>
+							<!-- Botón cerrar lista -->
+							<button type="button" class="btn-close btn-close-blue" 
+								aria-label="Close"
+								onclick="window.location.href='{% url home_view_name %}'">
+							</button>
+						</div>
+						<div class="card-body">
+							<div class="row">
+								<div class="col col-12">
+									<!-- Incluir el buscador específico pasado como variable de contexto -->
+									{% include buscador_template %}
+								</div>
+							</div>
+							
+							<div class="row tbl-fixed my-2 mx-1">
+								<!-- Inicio Tabla de Maestro -->
+								<table class="table table-bordered table-striped table-hover">
+									<thead class="table-primary">
+										{% for key, value in table_headers.items %}
+											<th class="col-{{ value.0 }}">
+												{% comment %} <a href="{% url list_view_name %}?order_by={{ key }}"> {% endcomment %}
+												<a href="#">
+													{{ value.1 }}
+													{% if key == order_by %}
+														▲
+													{% endif %}
+												</a>
+											</th>
+										{% endfor %}
+									</thead>
+									
+									<tbody>
+										{% for objeto in objetos %}
+											<tr>
+												{% for data_info in table_data %}
+													{% with objeto|get_attribute:data_info.field_name as field_value %}
+														{% if field_value|get_type == 'bool' %}
+															<td>
+																{% if field_value %}
+																	<i class="fa fa-check text-success"></i> <!-- Ícono de check verde -->
+																{% else %}
+																	<i class="fa fa-times text-danger"></i> <!-- Ícono de "X" roja -->
+																{% endif %}
+															</td>
+														{% elif field_value|get_type == 'float' or field_value|get_type == 'Decimal' %}
+															<td class="decimal">{{ objeto|get_attribute:data_info.field_name|formato_es_ar }}</td>
+														{% elif field_value|get_type == 'int' %}
+															<td>{{ objeto|get_attribute:data_info.field_name }}</td>
+														{% else %}
+															{% if data_info.date_format %}
+																<td>{{ field_value|default:"" |date:data_info.date_format }}</td>
+															{% else %}
+																<td>{{ field_value|default:"" }}</td>
+															{% endif %}
+														{% endif %}
+													{% endwith %}
+												{% endfor %}
+											</tr>
+										{% endfor %}
+									</tbody>
+								</table>
+								<!-- Final Tabla de Maestro -->
+							</div>
+							
+							{% block paginador %}
+								{% include 'paginador.html' %}
+							{% endblock paginador %}
+						</div>
+					</div>
+				</div>
+			</main>
+		</div>
+		{% endblock principalcomponent %}
+		<!-- Main principalcomponent End -->
+		
+	{% endblock maincomponent %}
+	
+{% endblock main %}
+
+{% block modals %}
+	<!-- Modal para mostrar errores -->
+	{% include 'informes/modal_errors.html' %}
+	
+{% endblock modals %}
+
+{% block script %}
+	{{ block.super }}
+	
+	<script src="{% static 'js/opciones_reporte.js' %}"></script>
+	
+	{% if js_file %}
+		<script src="{% static js_file %}"></script>
+	{% endif %}
+	
+{% endblock script %}

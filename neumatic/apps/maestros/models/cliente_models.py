@@ -20,7 +20,7 @@ class Cliente(ModeloBaseGenerico):
 	id_cliente = models.AutoField(primary_key=True)
 	estatus_cliente = models.BooleanField("Estatus*", default=True, 
 										  choices=ESTATUS_GEN)
-	codigo_cliente = models.SmallIntegerField("Código", null=True, blank=True)
+	codigo_cliente = models.IntegerField("Código", null=True, blank=True)
 	nombre_cliente = models.CharField("Nombre Cliente*", max_length=50)
 	domicilio_cliente = models.CharField("Domicilio Cliente*", 
 										 max_length=50)
@@ -30,14 +30,14 @@ class Cliente(ModeloBaseGenerico):
 	id_localidad = models.ForeignKey(Localidad, on_delete=models.PROTECT,
 									 verbose_name="Localidad*")
 	tipo_persona = models.CharField("Tipo de Persona*", max_length=1,
-									default="N", 
+									default="F", 
 									choices=TIPO_PERSONA)
 	id_tipo_iva = models.ForeignKey(TipoIva, on_delete=models.PROTECT,
 									verbose_name="Tipo de Iva*")
 	id_tipo_documento_identidad = models.ForeignKey(TipoDocumentoIdentidad, 
 										on_delete=models.PROTECT, 
 										verbose_name="Tipo Doc. Identidad*")
-	cuit = models.IntegerField("CUIT*")
+	cuit = models.IntegerField("CUIT", null=True, blank=True)
 	condicion_venta = models.IntegerField("Condición Venta*", 
 										  default=True,
 										  choices=CONDICION_VENTA)

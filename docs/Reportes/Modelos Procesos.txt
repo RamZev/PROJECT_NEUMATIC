@@ -1,0 +1,77 @@
+=================================================================
+ Reportes más urgentes
+=================================================================
+ * Saldos de Clientes.
+ 	Modelos requeridos:
+ 	- FACTURAS  => Facturas
+ 	- CLIENTES  => Clientes
+ 	- CODVEN    => ComprobanteVenta
+ 
+ * Resumen de Cuenta Corriente.
+ 	Modelos requeridos:
+ 	- FACTURAS  => Facturas
+ 	- CLIENTES  => Clientes
+ 	- CODVEN    => ComprobanteVenta
+ 
+ * Mercadería por Cliente.
+ 	Modelos requeridos:
+ 	- FACTURAS  => Facturas
+ 	- MARCAS    => ProductoMarca
+	- LISTA     => Producto
+	- DETVEN    => DetalleFactura
+
+
+
+=================================================================
+ Observaciones a los modelos.
+=================================================================
+Modelo FACTURAS
+===============
+  - compro. Debe ser un FK. ==> ComprobanteVenta
+  - condicion. { blanco, 1, 2}
+  - estado. {blanco, C, D, F, G, R, V} [Según doc. Remitos: F=Facturado o vacío=Pendientte; Facturas: C=Canceladas o vacío=Pendiente]
+  - marca. {blanco, *, 0, C, F, X, º}
+X - codimp. numérico 2, 0 {1, 2, 3, 10} ??  # Ya no es necesario.
+  - operador. Debe ser un FK. ==> Operario
+? - comision. {blanco, 9, C, X}             # Ya no es necesario. (por confirmar)
+? - codcomis. Entero  ??                    # Ya no es necesario. (por confirmar)
+X - nombre. ??                              # Ya no es necesario.
+X - sitiva. Debe ser un FK. ==> TipoIva     # Ya no es necesario.
+? - cuit. Para qué??
+  - noestadist. {blanco, T, F}
+X - usuario. Debe ser un FK. ==> User
+  - sucimp. ??
+  - cae.  # Código que devuelve la AFIP después de reg. el comprobante.
+  - stockclie. {blanco, T, F} ?
+  - deposito. Debe ser un FK. ==> ProductoDeposito
+  
+  campos no necesarios ya:
+  -*acrece (Cambiar por table de detalle de alícuotas y sus montos gravados)
+  -*impint
+  -*codimp
+  - comision (por confirmar) Primer video (Video 10, min 1:04:00) dice que no se utiliza mas, pero el de hoy (20/12/2024 min: 30:19) está por confirmar.
+  - codcomis (por confirmar) Primer video (Video 10, min 1:04:00) dice que no se utiliza mas, pero el de hoy (20/12/2024 min: 30:19) está por confirmar.
+  -*nombre
+  -*sitiva
+  -*usuario
+
+
+
+Modelo DETVEN
+===============
+  - id. Debe ser un FK. ==> Facturas
+  - codigo. Debe ser un FK. ==> Producto
+  - reventa. caracter {R, M}
+X - nuevo. numérico 6, 0 {vacío} ?? # no es necesario
+? - stock. numérico 10, 2 [parece un número correlativo desde negativos hasta positivos y con decimales.] ??
+  - operario. Debe ser un FK. ==> Operario.
+  
+  campos no necesarios ya:
+  -*nuevo
+  - actstock En el primer video (video 10, min: 1:40:00) dice que no es necesario.
+  
+
+
+==================================================================
+Consultas (Reportes acceso directo):
+Mercadería por cliente: 40319, 115753, 157924, 60438, 157648, 2920

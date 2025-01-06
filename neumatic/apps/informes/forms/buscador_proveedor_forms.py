@@ -5,20 +5,10 @@ from django.core.exceptions import ValidationError
 from .informes_generics_forms import InformesGenericForm
 from apps.maestros.models.proveedor_models import Proveedor
 from diseno_base.diseno_bootstrap import (formclasstext, formclassselect)
+from entorno.constantes_base import ESTATUS_CHOICES, ORDEN_CHOICES
 
 
 class BuscadorProveedorForm(InformesGenericForm):
-	
-	ESTATUS_CHOICES = [ 
-		('activos', 'Activos'),
-		('inactivos', 'Inactivos'), 
-		('todos', 'Todos'), 
-	]
-	
-	ORDEN_CHOICES = [ 
-		('nombre_proveedor', 'Nombre'),
-		('id_proveedor', 'Código'), 
-	]
 	
 	estatus = forms.ChoiceField(
 		choices=ESTATUS_CHOICES, 
@@ -52,11 +42,10 @@ class BuscadorProveedorForm(InformesGenericForm):
 		cleaned_data = super().clean()
 		
 		orden = cleaned_data.get('orden')
-		estatus = cleaned_data.get('estatus')
 		desde = cleaned_data.get('desde')
 		hasta = cleaned_data.get('hasta')
 		
-		if orden == "id_cliente":
+		if orden == "codigo":
 			if desde and not desde.isdigit():
 				raise ValidationError({"desde": "El campo debe ser un número entero positivo cuando se ordena por código."})
 			

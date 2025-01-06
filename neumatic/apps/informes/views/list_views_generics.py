@@ -2,11 +2,6 @@
 from typing import Any
 from django.views.generic import ListView
 from django.db.models import Q
-# from django.http import HttpRequest, HttpResponse, JsonResponse
-# from django.http import JsonResponse
-# from django.db import transaction
-# from django.db.models import ProtectedError
-
 
 #-- Recursos necesarios para proteger las rutas.
 from django.utils.decorators import method_decorator
@@ -51,27 +46,38 @@ class InformeListView(ListView):
 			except ValueError:
 				pass
 		
-		#-- Obtener la cadena de filtro (Propuesto y recomendado por ChatGPT).
-		query = self.request.GET.get('busqueda', None)
-		
-		if query:
-			#-- Generar filtros dinámicamente.
-			search_conditions = Q()
-			for field in self.search_fields:
-				search_conditions |= Q(**{f"{field}__icontains": query})
-			
-			queryset = queryset.filter(search_conditions)
+		# #-- Obtener la cadena de filtro (Propuesto y recomendado por ChatGPT).
+		# query = self.request.GET.get('busqueda', None)
+		# 
+		# if query:
+		# 	#-- Generar filtros dinámicamente.
+		# 	search_conditions = Q()
+		# 	for field in self.search_fields:
+		# 		search_conditions |= Q(**{f"{field}__icontains": query})
+		# 	
+		# 	queryset = queryset.filter(search_conditions)
 		
 		return queryset.order_by(*self.ordering)
 		
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
-		context["busqueda"] = self.request.GET.get('busqueda', '')
+		# context["busqueda"] = self.request.GET.get('busqueda', '')
 		
 		#-- Agregar valores de paginación y valor seleccionado.
 		context['pagination_options'] = self.pagination_options
 		context['selected_pagination'] = int(self.paginate_by)
-		# Para pasar la fecha a la lista del maestro		
+		
+		#-- Agregar los filtros actuales al contexto.
+		#-- Con esto se garantiza que la paginación funcione bien con
+		#-- los datos filtrados.
+		query_params = self.request.GET.copy()
+		if 'page' in query_params:
+			#-- Remover el parámetro de paginación actual.
+			query_params.pop('page')
+		
+		context['query_params'] = query_params.urlencode()
+		
+		#-- Para pasar la fecha a la lista del maestro.
 		context['fecha'] = timezone.now()
 		
 		return context

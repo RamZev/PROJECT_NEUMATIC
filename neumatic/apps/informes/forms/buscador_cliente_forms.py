@@ -4,18 +4,19 @@ from django.core.exceptions import ValidationError
 
 from .informes_generics_forms import InformesGenericForm
 from apps.maestros.models.vendedor_models import Vendedor
-from apps.maestros.models.base_models import Provincia
-from apps.maestros.models.base_models import Localidad
+from apps.maestros.models.base_models import Provincia, Localidad
 from diseno_base.diseno_bootstrap import (formclasstext, formclassselect)
+from entorno.constantes_base import ESTATUS_CHOICES, ORDEN_CHOICES
 
 
 class BuscadorClienteForm(InformesGenericForm):
 	
-	ORDEN_CHOICES = [ 
-		('nombre_cliente', 'Nombre'),
-		('id_cliente', 'Código'), 
-	]
-	
+	estatus = forms.ChoiceField(
+		choices=ESTATUS_CHOICES, 
+		label="Estatus", 
+		required=False,
+		widget=forms.Select(attrs={**formclassselect})
+	)
 	orden = forms.ChoiceField(
 		choices=ORDEN_CHOICES, 
 		label="Ordenar por", 
@@ -47,11 +48,31 @@ class BuscadorClienteForm(InformesGenericForm):
 		widget=forms.Select(attrs={**formclassselect})
 	)
 	localidad = forms.ModelChoiceField(
-		queryset=Localidad.objects.filter(id_provincia=1), 
+		queryset=Localidad.objects.none(), 
 		required=False,
 		label="Localidad",
 		widget=forms.Select(attrs={**formclassselect})
 	)
+	
+	def __init__(self, *args, **kwargs):
+		super().__init__(*args, **kwargs)
+		
+		#-- Obtener provincia del GET.
+		provincia = self.data.get('provincia')
+		if provincia:
+			#-- Filtrar las localidades según la provincia seleccionada.
+			localidades = Localidad.objects.filter(
+				id_provincia_id=provincia, estatus_localidad=True
+			).order_by('nombre_localidad')
+			
+			#-- Asignar el queryset filtrado al campo 'localidad'.
+			self.fields['localidad'].queryset = localidades
+			
+			#-- Personalizar la representación de las opciones del campo.
+			self.fields['localidad'].label_from_instance = lambda obj: f"{obj.nombre_localidad} - {obj.codigo_postal}"
+		else:
+			#-- Vaciar el queryset si no hay provincia seleccionada.
+			self.fields['localidad'].queryset = Localidad.objects.none()
 	
 	def clean(self):
 		"""
@@ -63,7 +84,7 @@ class BuscadorClienteForm(InformesGenericForm):
 		desde = cleaned_data.get('desde')
 		hasta = cleaned_data.get('hasta')
 		
-		if orden == "id_cliente":
+		if orden == "codigo":
 			if desde and not desde.isdigit():
 				raise ValidationError({"desde": "El campo debe ser un número entero positivo cuando se ordena por código."})
 			

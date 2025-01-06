@@ -91,3 +91,14 @@ JERARQUIA = [
 	('Z', 'Z'),
 ]
 
+ESTATUS_CHOICES = [ 
+	('activos', 'Activos'),
+	('inactivos', 'Inactivos'), 
+	('todos', 'Todos'), 
+]
+
+ORDEN_CHOICES = [ 
+	('nombre', 'Nombre'),
+	('codigo', 'Código'), 
+]
+
