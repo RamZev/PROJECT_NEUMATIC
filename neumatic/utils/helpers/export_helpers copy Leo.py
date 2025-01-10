@@ -16,11 +16,10 @@ from apps.maestros.templatetags.custom_tags import formato_es_ar
 
 class ExportHelper:
 	
-	def __init__(self, queryset, table_headers, report_title, total_columns=None):
+	def __init__(self, queryset, table_headers, report_title):
 		self.queryset = queryset
 		self.table_headers = table_headers
 		self.report_title = report_title
-		self.total_columns = total_columns if total_columns else {}  # Diccionario con texto y columnas a totalizar
 	
 	def _safe_str(self, value):
 		return str(value) if value is not None else ""
@@ -53,33 +52,6 @@ class ExportHelper:
 		except AttributeError:
 			return ""  #-- Si no se puede resolver el campo, devolver una cadena vacía.
 	
-	def _calculate_totals(self, fields):
-		"""Calcula los totales para las columnas especificadas en total_columns y genera la fila de totales."""
-		
-		totals = [""] * len(fields)  # Inicializa la fila de totales vacía
-		
-		for total_text, columns in self.total_columns.items():
-			# Encuentra la primera columna para colocar el texto
-			first_col = None
-			for col in columns:
-				if col in fields:
-					col_index = fields.index(col)
-					total = sum(
-						getattr(obj, col.split('.')[0], 0) or 0
-						for obj in self.queryset
-					)
-					#-- Formatear el total.
-					totals[col_index] = formato_es_ar(total)
-					
-					if first_col is None:  # Coloca el texto solo una vez
-						first_col = col_index
-			
-			# Coloca el texto en la primera columna encontrada
-			if first_col is not None:
-				totals[first_col - 1 if first_col > 0 else 0] = total_text
-		
-		return totals
-	
 	def export_to_pdf(self):
 		"""Exporta los datos del queryset a un archivo PDF."""
 		
@@ -100,11 +72,6 @@ class ExportHelper:
 		#-- Agregar los datos desde el queryset.
 		for obj in self.queryset:
 			table_data.append([self._resolve_field(obj, field) for field in fields])
-		
-		#-- Calcular y agregar la fila de totales.
-		if self.total_columns:
-			totals_row = self._calculate_totals(fields)
-			table_data.append(totals_row)
 		
 		table = Table(table_data)
 		table_style = TableStyle([
@@ -131,23 +98,6 @@ class ExportHelper:
 			if any(isinstance(getattr(obj, field.split('.')[0], None), (int, float, Decimal)) for obj in self.queryset):
 				table_style.add('ALIGN', (col_idx, 1), (col_idx, -1), 'RIGHT')
 		
-		#-- Alinear la fila de totales y aplicar negritas.
-		if self.total_columns:
-			totals_row_index = len(table_data) - 1  # Índice de la fila de totales (última fila)
-			
-			#-- Negritas en toda la fila de totales.
-			table_style.add('FONTNAME', (0, totals_row_index), (-1, totals_row_index), 'Helvetica-Bold')
-			
-			#-- Agregar línea horizontal encima de la fila de totales.
-			table_style.add('LINEABOVE', (0, -1), (-1, -1), 1, colors.black)
-			
-			#-- Alinear columnas numéricas a la derecha en la fila de totales.
-			for total_text, columns in self.total_columns.items():
-				for col in columns:
-					if col in fields:
-						col_index = fields.index(col)
-						table_style.add('ALIGN', (col_index, -1), (col_index, -1), 'RIGHT')
-			
 		table.setStyle(table_style)
 		
 		#-- Repite la primera fila (headers) en cada página.

@@ -11,16 +11,16 @@ from datetime import date
 from utils.helpers.export_helpers import ExportHelper
 
 from ..views.list_views_generics import *
-from apps.informes.models import VLSaldosClientes
-from ..forms.buscador_saldosclientes_forms import BuscadorSaldosClientesForm
+from apps.informes.models import VLResumenCtaCte
+from ..forms.buscador_resumenctacte_forms import BuscadorResumenCtaCteForm
 
 
 class ConfigViews:
 	# Modelo
-	model = VLSaldosClientes
+	model = VLResumenCtaCte
 	
 	# Formulario asociado al modelo
-	form_class = BuscadorSaldosClientesForm
+	form_class = BuscadorResumenCtaCteForm
 	
 	# Aplicación asociada al modelo
 	app_label = "informes"
@@ -44,7 +44,7 @@ class ConfigViews:
 	success_url = reverse_lazy(list_view_name)
 	
 	# Archivo JavaScript específico.
-	js_file = "js/filtros_saldos_clientes.js"
+	js_file = "js/filtros_resumen_cta_cte.js"
 	
 	# URL de la vista que genera el .zip con los informes.
 	url_zip = f"{model_string}_informe_generado"
@@ -60,39 +60,37 @@ class DataViewList:
 	
 	paginate_by = 8
 	
-	report_title = "Saldos de Clientes"
+	report_title = "Resumen Cta. Cte."
 	
 	table_headers = {
-		'id_cliente_id': (1, 'Código'),
-		'nombre_cliente': (3, 'Cliente'),
-		'domicilio_cliente': (2, 'Domicilio'),
-		'codigo_postal': (1, 'C.P.'),
-		'nombre_localidad': (1, 'Localidad'),
-		'telefono_cliente': (1, 'Teléfono'),
-		'saldo': (1, 'Saldo'),
-		'primer_fact_impaga': (1, '1er. Comp. Pendiente'),
-		'ultimo_pago': (1, 'Último Pago'),
-		'sub_cuenta': (1, 'Sub Cuenta'),
+		'nombre_comprobante_venta': (2, 'Comprobante'),
+		'numero': (2, 'Número'),
+		'fecha_comprobante': (1, 'Fecha'),
+		'remito': (1, 'Remito'),
+		'condicion_comprobante': (1, 'Cond. Venta'),
+		'total': (1, 'Total Comp.'),
+		'entrega': (1, 'Entrega'),
+		'saldo_acumulado': (1, 'Saldo'),
+		'intereses': (1, 'Intereses'),
 	}
 	
 	table_data = [
-		{'field_name': 'id_cliente_id', 'date_format': None},
-		{'field_name': 'nombre_cliente', 'date_format': None},
-		{'field_name': 'domicilio_cliente', 'date_format': None},
-		{'field_name': 'codigo_postal', 'date_format': None},
-		{'field_name': 'nombre_localidad', 'date_format': None},
-		{'field_name': 'telefono_cliente', 'date_format': None},
-		{'field_name': 'saldo', 'date_format': None},
-		{'field_name': 'primer_fact_impaga', 'date_format': None},
-		{'field_name': 'ultimo_pago', 'date_format': None},
-		{'field_name': 'sub_cuenta', 'date_format': None},
+		{'field_name': 'nombre_comprobante_venta', 'date_format': None},
+		{'field_name': 'numero', 'date_format': None},
+		{'field_name': 'fecha_comprobante', 'date_format': 'd/m/Y'},
+		{'field_name': 'remito', 'date_format': None},
+		{'field_name': 'condicion_comprobante', 'date_format': None},
+		{'field_name': 'total', 'date_format': None},
+		{'field_name': 'entrega', 'date_format': None},
+		{'field_name': 'saldo_acumulado', 'date_format': None},
+		{'field_name': 'intereses', 'date_format': None},
 	]
 	
 	#-- Texto de totalización y Columnas a totalizar.
-	total_columns = {"Total Pendiente: ": ['saldo']}
+	# total_columns = {"Total Pendiente: ": ['saldo']}
 
 
-class VLSaldosClientesInformeListView(InformeListView):
+class VLResumenCtaCteInformeListView(InformeListView):
 	model = ConfigViews.model
 	form_class = ConfigViews.form_class
 	template_name = ConfigViews.template_list
@@ -108,6 +106,7 @@ class VLSaldosClientesInformeListView(InformeListView):
 		"table_headers": DataViewList.table_headers,
 		"table_data": DataViewList.table_data,
 		"buscador_template": f"{ConfigViews.app_label}/buscador_{ConfigViews.model_string}.html",
+		# "buscador_template": f"{ConfigViews.app_label}/buscador_vlfactpendiente.html",
 		"js_file": ConfigViews.js_file,
 		"url_zip": ConfigViews.url_zip,
 		"url_pdf": ConfigViews.url_pdf,
@@ -117,17 +116,49 @@ class VLSaldosClientesInformeListView(InformeListView):
 		# queryset = super().get_queryset()
 		form = self.form_class(self.request.GET)
 		
+		x = not self.request.GET
+		y = not form.is_valid()
+		print("not self.request.GET", x)
+		print("not form.is_valid()", y)
+		
+		# if not self.request.GET or not form.is_valid():
+		# 	print("entró acá")
+		# 	return VLResumenCtaCte.objects.none()
+		# else:
+		# 	print("NO entra.....")
+		
 		if form.is_valid():
+			resumen_pendiente = form.cleaned_data.get('resumen_pendiente')
+			fecha_desde = form.cleaned_data.get('fecha_desde', date(date.today().year, 1, 1))
 			fecha_hasta = form.cleaned_data.get('fecha_hasta', date.today())
-			vendedor = form.cleaned_data.get('vendedor', None)
+			cliente = form.cleaned_data.get('cliente', None)
 			
-			if not fecha_hasta:
-				fecha_hasta = date.today()
+			print(f"{resumen_pendiente = }")
+			print(f"{fecha_desde = }")
+			print(f"{fecha_hasta = }")
 			
-			if vendedor:
-				queryset = VLSaldosClientes.objects.obtener_saldos_clientes(fecha_hasta, vendedor.id_vendedor)
+			
+			if not resumen_pendiente:
+				print("Pendientes....")
+				if not fecha_desde:
+					fecha_hasta = date(date.today().year, 1, 1)
+				
+				if not fecha_hasta:
+					fecha_hasta = date.today()
+				
+				if cliente:
+					id_cliente = cliente.id_cliente
+				else:
+					id_cliente = 9
+				
+				if cliente:
+					print(f"entró: {cliente.id_cliente = }")
+				
+				# queryset = VLResumenCtaCte.objects.obtener_fact_pendientes(fecha_desde, fecha_hasta, cliente.id_cliente)
+				queryset = VLResumenCtaCte.objects.obtener_resumen_cta_cte(id_cliente, fecha_desde, fecha_hasta)
 			else:
-				queryset = VLSaldosClientes.objects.obtener_saldos_clientes(fecha_hasta)
+				print("Resumen Cta Cte...")
+				queryset = VLResumenCtaCte.objects.obtener_fact_pendientes(9)
 		
 		else:
 			#-- Agregar clases css a los campos con errores.
@@ -139,7 +170,7 @@ class VLSaldosClientesInformeListView(InformeListView):
 	
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
-		form = BuscadorSaldosClientesForm(self.request.GET or None)
+		form = BuscadorResumenCtaCteForm(self.request.GET or None)
 		
 		context["form"] = form
 		
@@ -150,7 +181,7 @@ class VLSaldosClientesInformeListView(InformeListView):
 		return context
 
 
-class VLSaldosClientesInformesView(View):
+class VLResumenCtaCteInformesView(View):
 	"""Vista para gestionar informes de clientes, exportaciones y envíos por correo."""
 	
 	def get(self, request, *args, **kwargs):
@@ -166,7 +197,7 @@ class VLSaldosClientesInformesView(View):
 		email = request.GET.get("email", "")
 		
 		#-- Obtener el queryset filtrado.
-		queryset_filtrado = VLSaldosClientesInformeListView()
+		queryset_filtrado = VLResumenCtaCteInformeListView()
 		queryset_filtrado.request = request
 		queryset = queryset_filtrado.get_queryset()
 		
@@ -183,7 +214,7 @@ class VLSaldosClientesInformesView(View):
 		
 		buffer = BytesIO()
 		with ZipFile(buffer, "w") as zip_file:
-			helper = ExportHelper(queryset, DataViewList.table_headers, DataViewList.report_title)
+			helper = ExportHelper(queryset, DataViewList.table_headers, DataViewList.report_title, DataViewList.total_columns)
 			
 			#-- Generar los formatos seleccionados.
 			if "pdf" in formatos:
@@ -211,7 +242,7 @@ class VLSaldosClientesInformesView(View):
 	
 	def enviar_por_email(self, queryset, formatos, email):
 		"""Enviar los informes seleccionados por correo electrónico."""
-		helper = ExportHelper(queryset, DataViewList.table_headers, DataViewList.report_title)
+		helper = ExportHelper(queryset, DataViewList.table_headers, DataViewList.report_title, DataViewList.total_columns)
 		attachments = []
 		
 		#-- Generar los formatos seleccionados y añadirlos como adjuntos.
@@ -244,11 +275,11 @@ class VLSaldosClientesInformesView(View):
 		return JsonResponse({"success": True, "message": "Informe enviado correctamente al correo."})
 
 
-class VLSaldosClientesInformePDFView(View):
+class VLResumenCtaCteInformePDFView(View):
 	
 	def get(self, request, *args, **kwargs):
 		#-- Obtener el queryset (el listado de clientes) ya filtrado.
-		queryset_filtrado = VLSaldosClientesInformeListView()
+		queryset_filtrado = VLResumenCtaCteInformeListView()
 		queryset_filtrado.request = request
 		queryset = queryset_filtrado.get_queryset()
 		

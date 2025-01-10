@@ -164,6 +164,8 @@
 																		{% endwith %}
 																	{% endfor %}
 																</tr>
+															{% empty %}
+            													<tr><td colspan="100%" class="text-center">No se encontraron resultados.</td></tr>
 															{% endfor %}
 														</tbody>
 													</table>
@@ -202,6 +204,7 @@
 	
 {% endblock modals %}
 
+{% comment %} 
 {% block script %}
 	{{ block.super }}
 	
@@ -211,4 +214,38 @@
 		<script src="{% static js_file %}"></script>
 	{% endif %}
 	
+{% endblock script %}
+{% endcomment %}
+
+{% block script %}
+	{{ block.super }}
+	
+	<script>
+		document.addEventListener("DOMContentLoaded", function () {
+			//-- Cargar y ejecutar el JS común.
+			const scriptOpciones = document.createElement('script');
+			scriptOpciones.src = "{% static 'js/opciones_reporte.js' %}";
+			scriptOpciones.onload = function() {
+				console.log("opciones_reporte.js cargado y ejecutado.");
+			};
+			scriptOpciones.onerror = function() {
+				console.error("Error al cargar opciones_reporte.js.");
+			};
+			document.head.appendChild(scriptOpciones);
+			
+			//-- Cargar el JS específico si está definido.
+			{% if js_file %}
+				const scriptEspecifico = document.createElement('script');
+				scriptEspecifico.src = "{% static js_file %}";
+				scriptEspecifico.onload = function() {
+					console.log("JS específico cargado y ejecutado.");
+				};
+				scriptEspecifico.onerror = function() {
+					console.error("Error al cargar el JS específico.");
+				};
+				document.head.appendChild(scriptEspecifico);
+			{% endif %}
+		});
+	</script>
+		
 {% endblock script %}
