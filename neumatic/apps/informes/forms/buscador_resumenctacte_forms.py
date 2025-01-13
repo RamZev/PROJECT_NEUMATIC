@@ -48,8 +48,8 @@ class BuscadorResumenCtaCteForm(InformesGenericForm):
 	# 	widget=forms.Select(attrs={**formclassselect})
 	# )
 	cliente = forms.ModelChoiceField(
-		queryset=Cliente.objects.all(), 
-		required=False,
+		queryset=Cliente.objects.filter(estatus_cliente=True), 
+		required=True,
 		label="Cliente",
 		widget=forms.Select(attrs={**formclassselect})
 	)
@@ -60,6 +60,12 @@ class BuscadorResumenCtaCteForm(InformesGenericForm):
 	)
 	
 	def __init__(self, *args, **kwargs):
+		"""
+		Inicializa el formulario con valores predeterminados:
+		- `fecha_desde` se establece en el 1 de enero del año actual.
+		- `fecha_hasta` se establece en la fecha actual.
+		"""
+		
 		super().__init__(*args, **kwargs)
 		
 		if "fecha_desde" not in self.initial:
@@ -70,3 +76,29 @@ class BuscadorResumenCtaCteForm(InformesGenericForm):
 			fecha_actual = date.today()
 			self.fields["fecha_hasta"].initial = fecha_actual
 			self.fields["fecha_hasta"].widget.attrs["value"] = fecha_actual
+	
+	def clean(self):
+		cleaned_data = super().clean()
+		
+		#-- Verificar si hay datos enviados (para evitar errores al cargar la página).
+		#-- Evitar validaciones si el formulario no tiene datos enviados (primera carga).
+		#-- Evitar validaciones si el formulario no tiene datos significativos.
+		if not self.data.get('condicion_venta') and not self.data.get('cliente') and not self.data.get('fecha_desde') and not self.data.get('fecha_hasta') and not self.data.get('resumen_pendiente'):
+			return cleaned_data
+		else:
+			print("No para bolas")
+		
+		cliente = cleaned_data.get("cliente")
+		fecha_desde = cleaned_data.get("fecha_desde")
+		fecha_hasta = cleaned_data.get("fecha_hasta")
+		
+		#-- Validar que se haya indicado un cliente solo si hay datos enviados.
+		if not cliente:
+			self.add_error("cliente", "Debe indicar un cliente.")
+		
+		#-- Validar rango de fechas.
+		if fecha_desde and fecha_hasta and fecha_desde > fecha_hasta:
+			self.add_error("fecha_hasta", "La fecha hasta no puede ser anterior a la fecha desde.")
+		
+		return cleaned_data
+	

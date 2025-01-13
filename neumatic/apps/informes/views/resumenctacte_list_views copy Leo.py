@@ -106,61 +106,13 @@ class VLResumenCtaCteInformeListView(InformeListView):
 		"table_headers": DataViewList.table_headers,
 		"table_data": DataViewList.table_data,
 		"buscador_template": f"{ConfigViews.app_label}/buscador_{ConfigViews.model_string}.html",
+		# "buscador_template": f"{ConfigViews.app_label}/buscador_vlfactpendiente.html",
 		"js_file": ConfigViews.js_file,
 		"url_zip": ConfigViews.url_zip,
 		"url_pdf": ConfigViews.url_pdf,
 	}
 	
-	def get(self, request, *args, **kwargs):
-		# Si se está accediendo con GET, cargamos un formulario vacío o con los datos anteriores.
-		form = BuscadorResumenCtaCteForm(request.GET or None)
-
-		# Mostrar el formulario en el contexto.
-		context = self.get_context_data(form=form)
-
-		return self.render_to_response(context)
-	
-	def post(self, request, *args, **kwargs):
-		# Validar y procesar el formulario con los datos POST.
-		form = BuscadorResumenCtaCteForm(request.POST)
-		
-		if form.is_valid():
-			# Si el formulario es válido, filtramos los datos según los valores.
-			resumen_pendiente = form.cleaned_data.get('resumen_pendiente')
-			fecha_desde = form.cleaned_data.get('fecha_desde') or date(date.today().year, 1, 1)
-			fecha_hasta = form.cleaned_data.get('fecha_hasta') or date.today()
-			cliente = form.cleaned_data.get('cliente', None)
-			
-			# Realizamos el filtrado basado en los valores del formulario
-			queryset = self.get_queryset(resumen_pendiente, fecha_desde, fecha_hasta, cliente)
-			context = self.get_context_data(form=form, objetos=queryset)
-			return self.render_to_response(context)
-		else:
-			# Si el formulario no es válido, mostramos los errores.
-			context = self.get_context_data(form=form)
-			return self.render_to_response(context)
-	
-	def get_queryset(self, resumen_pendiente=None, fecha_desde=None, fecha_hasta=None, cliente=None):
-		# Este método solo debe devolver el queryset filtrado según los parámetros del formulario.
-		queryset = VLResumenCtaCte.objects.none()
-		
-		if resumen_pendiente:
-			queryset = VLResumenCtaCte.objects.obtener_fact_pendientes(9)
-		else:
-			if not fecha_desde:
-				fecha_desde = date(date.today().year, 1, 1)
-			if not fecha_hasta:
-				fecha_hasta = date.today()
-			
-			if cliente:
-				queryset = VLResumenCtaCte.objects.obtener_resumen_cta_cte(cliente.id_cliente, fecha_desde, fecha_hasta)
-			else:
-				queryset = VLResumenCtaCte.objects.obtener_resumen_cta_cte(9, fecha_desde, fecha_hasta)
-			
-		return queryset
-
-
-	def old_get_queryset(self):
+	def get_queryset(self):
 		# queryset = super().get_queryset()
 		
 		#-- Inicializa el queryset con un queryset vacío por defecto.
@@ -219,17 +171,13 @@ class VLResumenCtaCteInformeListView(InformeListView):
 	
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
-		# form = BuscadorResumenCtaCteForm(self.request.GET or None)
-		form = kwargs.get('form', BuscadorResumenCtaCteForm(self.request.GET or None))
+		form = BuscadorResumenCtaCteForm(self.request.GET or None)
 		
 		context["form"] = form
 		
 		#-- Si el formulario tiene errores, pasa los errores al contexto.
 		if form.errors:
 			context["data_has_errors"] = True
-		
-		#-- Mantener el nombre de contexto por defecto en la vista base.
-		context["object_list"] = kwargs.get('objetos', [])
 		
 		return context
 
