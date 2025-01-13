@@ -76,7 +76,7 @@ class ResumenCtaCteManager(models.Manager):
 
 	def obtener_fact_pendientes(self, id_cliente):
 		#-- Se crea la consulta parametrizada.
-		query = "SELECT * FROM VLFactPendiente WHERE id_cliente_id = %s"
+		query = "SELECT * FROM VLResumenCtaCte WHERE id_cliente_id = %s AND total <> entrega"
 		
 		#-- Se añade el parámetro.
 		params = [id_cliente]
@@ -84,12 +84,15 @@ class ResumenCtaCteManager(models.Manager):
 		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
 		return self.raw(query, params)
 	
-	def obtener_resumen_cta_cte(self, id_cliente, fecha_desde, fecha_hasta):
+	def obtener_resumen_cta_cte(self, id_cliente, fecha_desde, fecha_hasta, condicion_venta1, condicion_venta2):
 		#-- Se crea la consulta parametrizada.
-		query = "SELECT * FROM VLFactPendiente WHERE id_cliente_id = %s AND fecha_comprobante BETWEEN %s AND %s"
+		query = """SELECT * FROM VLResumenCtaCte 
+					WHERE id_cliente_id = %s AND 
+						fecha_comprobante BETWEEN %s AND %s AND 
+						condicion_comprobante BETWEEN %s AND %s"""
 		
 		#-- Se añade los parámetros.
-		params = [id_cliente, fecha_desde, fecha_hasta]
+		params = [id_cliente, fecha_desde, fecha_hasta, condicion_venta1, condicion_venta2]
 		
 		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
 		return self.raw(query, params)
@@ -116,7 +119,7 @@ class VLResumenCtaCte(models.Model):
 	
 	class Meta:
 		managed = False
-		db_table = 'VLFactPendiente'
+		db_table = 'VLResumenCtaCte'
 		verbose_name = ('Facturas Pendientes')
 		verbose_name_plural = ('Facturas Pendientes')
 		ordering = ['razon_social']

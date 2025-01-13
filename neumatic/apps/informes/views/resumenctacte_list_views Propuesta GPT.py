@@ -10,10 +10,6 @@ from datetime import date
 # from django.db.models import Q
 from utils.helpers.export_helpers import ExportHelper
 
-from datetime import datetime
-from django.template.loader import render_to_string
-from weasyprint import HTML
-
 from ..views.list_views_generics import *
 from apps.informes.models import VLResumenCtaCte
 from ..forms.buscador_resumenctacte_forms import BuscadorResumenCtaCteForm
@@ -110,13 +106,61 @@ class VLResumenCtaCteInformeListView(InformeListView):
 		"table_headers": DataViewList.table_headers,
 		"table_data": DataViewList.table_data,
 		"buscador_template": f"{ConfigViews.app_label}/buscador_{ConfigViews.model_string}.html",
-		# "buscador_template": f"{ConfigViews.app_label}/buscador_vlfactpendiente.html",
 		"js_file": ConfigViews.js_file,
 		"url_zip": ConfigViews.url_zip,
 		"url_pdf": ConfigViews.url_pdf,
 	}
 	
-	def get_queryset(self):
+	def get(self, request, *args, **kwargs):
+		# Si se está accediendo con GET, cargamos un formulario vacío o con los datos anteriores.
+		form = BuscadorResumenCtaCteForm(request.GET or None)
+
+		# Mostrar el formulario en el contexto.
+		context = self.get_context_data(form=form)
+
+		return self.render_to_response(context)
+	
+	def post(self, request, *args, **kwargs):
+		# Validar y procesar el formulario con los datos POST.
+		form = BuscadorResumenCtaCteForm(request.POST)
+		
+		if form.is_valid():
+			# Si el formulario es válido, filtramos los datos según los valores.
+			resumen_pendiente = form.cleaned_data.get('resumen_pendiente')
+			fecha_desde = form.cleaned_data.get('fecha_desde') or date(date.today().year, 1, 1)
+			fecha_hasta = form.cleaned_data.get('fecha_hasta') or date.today()
+			cliente = form.cleaned_data.get('cliente', None)
+			
+			# Realizamos el filtrado basado en los valores del formulario
+			queryset = self.get_queryset(resumen_pendiente, fecha_desde, fecha_hasta, cliente)
+			context = self.get_context_data(form=form, objetos=queryset)
+			return self.render_to_response(context)
+		else:
+			# Si el formulario no es válido, mostramos los errores.
+			context = self.get_context_data(form=form)
+			return self.render_to_response(context)
+	
+	def get_queryset(self, resumen_pendiente=None, fecha_desde=None, fecha_hasta=None, cliente=None):
+		# Este método solo debe devolver el queryset filtrado según los parámetros del formulario.
+		queryset = VLResumenCtaCte.objects.none()
+		
+		if resumen_pendiente:
+			queryset = VLResumenCtaCte.objects.obtener_fact_pendientes(9)
+		else:
+			if not fecha_desde:
+				fecha_desde = date(date.today().year, 1, 1)
+			if not fecha_hasta:
+				fecha_hasta = date.today()
+			
+			if cliente:
+				queryset = VLResumenCtaCte.objects.obtener_resumen_cta_cte(cliente.id_cliente, fecha_desde, fecha_hasta)
+			else:
+				queryset = VLResumenCtaCte.objects.obtener_resumen_cta_cte(9, fecha_desde, fecha_hasta)
+			
+		return queryset
+
+
+	def old_get_queryset(self):
 		# queryset = super().get_queryset()
 		
 		#-- Inicializa el queryset con un queryset vacío por defecto.
@@ -134,42 +178,58 @@ class VLResumenCtaCteInformeListView(InformeListView):
 		
 		if form.is_valid():
 			resumen_pendiente = form.cleaned_data.get('resumen_pendiente')
-			condicion_venta = form.cleaned_data.get('condicion_venta')
 			fecha_desde = form.cleaned_data.get('fecha_desde', date(date.today().year, 1, 1))
 			fecha_hasta = form.cleaned_data.get('fecha_hasta', date.today())
 			cliente = form.cleaned_data.get('cliente', None)
 			
-			if resumen_pendiente:
-				queryset = VLResumenCtaCte.objects.obtener_fact_pendientes(cliente.id_cliente)
-			else:
+			print(f"{resumen_pendiente = }")
+			print(f"{fecha_desde = }")
+			print(f"{fecha_hasta = }")
+			
+			
+			if not resumen_pendiente:
+				print("Pendientes....")
 				if not fecha_desde:
 					fecha_hasta = date(date.today().year, 1, 1)
 				
 				if not fecha_hasta:
 					fecha_hasta = date.today()
 				
-				if condicion_venta == "0":
-					queryset = VLResumenCtaCte.objects.obtener_resumen_cta_cte(cliente.id_cliente, fecha_desde, fecha_hasta, 1, 2)
+				if cliente:
+					id_cliente = cliente.id_cliente
 				else:
-					queryset = VLResumenCtaCte.objects.obtener_resumen_cta_cte(cliente.id_cliente, fecha_desde, fecha_hasta, condicion_venta, condicion_venta)
+					id_cliente = 9
+				
+				if cliente:
+					print(f"entró: {cliente.id_cliente = }")
+				
+				# queryset = VLResumenCtaCte.objects.obtener_fact_pendientes(fecha_desde, fecha_hasta, cliente.id_cliente)
+				queryset = VLResumenCtaCte.objects.obtener_resumen_cta_cte(id_cliente, fecha_desde, fecha_hasta)
+			else:
+				print("Resumen Cta Cte...")
+				queryset = VLResumenCtaCte.objects.obtener_fact_pendientes(9)
 		
 		else:
 			#-- Agregar clases css a los campos con errores.
-			# print("El form no es válido (desde la vista)")
-			# print(f"{form.errors = }")
+			print("El form no es válido (desde la vista)")
+			print(f"{form.errors = }")
 			form.add_error_classes()
 		
 		return queryset
 	
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
-		form = BuscadorResumenCtaCteForm(self.request.GET or None)
+		# form = BuscadorResumenCtaCteForm(self.request.GET or None)
+		form = kwargs.get('form', BuscadorResumenCtaCteForm(self.request.GET or None))
 		
 		context["form"] = form
 		
 		#-- Si el formulario tiene errores, pasa los errores al contexto.
 		if form.errors:
 			context["data_has_errors"] = True
+		
+		#-- Mantener el nombre de contexto por defecto en la vista base.
+		context["object_list"] = kwargs.get('objetos', [])
 		
 		return context
 
@@ -270,7 +330,6 @@ class VLResumenCtaCteInformesView(View):
 
 class VLResumenCtaCteInformePDFView(View):
 	
-	"""
 	def get(self, request, *args, **kwargs):
 		#-- Obtener el queryset (el listado de clientes) ya filtrado.
 		queryset_filtrado = VLResumenCtaCteInformeListView()
@@ -284,34 +343,5 @@ class VLResumenCtaCteInformePDFView(View):
 		#-- Preparar la respuesta HTTP.
 		response = HttpResponse(buffer, content_type='application/pdf')
 		response['Content-Disposition'] = f'inline; filename="informe_{ConfigViews.model_string}.pdf"'
-		
-		return response
-	"""
-	
-	def get(self, request, *args, **kwargs):
-		#-- Obtener el queryset ya filtrado.
-		queryset_filtrado = VLResumenCtaCteInformeListView()
-		queryset_filtrado.request = request
-		queryset = queryset_filtrado.get_queryset()
-		
-		fecha_hora_reporte = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-		
-		# Renderizar la plantilla HTML con los datos
-		html_string = render_to_string('informes/reportes/resumen_cta_cte_pdf.html', {
-			'objetos': queryset,
-			'fecha_hora_reporte': fecha_hora_reporte,
-			'titulo': "Resumen de Cuenta Corriente",
-			'parametros': "Cliente: Nombre del cliente | Fechas: 01/01/2025 - 13/01/2025",
-		})
-		
-		#-- Preparar la respuesta HTTP.
-		response = HttpResponse(content_type='application/pdf')
-		response['Content-Disposition'] = f'inline; filename="informe_{ConfigViews.model_string}.pdf"'
-		HTML(string=html_string).write_pdf(response)
-		
-		try:
-			HTML(string=html_string).write_pdf(response)
-		except Exception as e:
-			return HttpResponse(f"Error generando el PDF: {str(e)}", status=500)
 		
 		return response

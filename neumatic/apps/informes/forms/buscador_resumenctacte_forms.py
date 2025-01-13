@@ -10,9 +10,9 @@ from apps.maestros.models.cliente_models import Cliente
 class BuscadorResumenCtaCteForm(InformesGenericForm):
 	
 	CONDICION_VENTA = [
-		('contado', 'Contado'),
-		('cta_cte', 'Cuenta Corriente'),
-		('ambos', 'Ambos'),
+		(1, 'Contado'),
+		(2, 'Cuenta Corriente'),
+		(0, 'Ambos'),
 	]
 	
 	# FILTRO_CLIENTE = [

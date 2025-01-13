@@ -29,7 +29,7 @@ class InformeListView(ListView):
 	table_data = []
 	pagination_options = [8, 20, 30, 40, 50]
 	
-	context_object_name = 'objetos'  # Cambia object_list por objetos
+	# context_object_name = 'objetos'  # Cambia object_list por objetos
 	
 	def get_queryset(self):
 		#-- Acá ya determina el Modelo con el que se trabaja.
