@@ -60,7 +60,6 @@ class VLSaldosClientes(models.Model):
 	
 	objects = SaldosClientesManager()
 	
-	
 	class Meta:
 		managed = False  #-- No gestionamos la creación/edición de la vista (Ignorado para migraciones).
 		db_table = 'VLSaldosClientes'  #-- Nombre de la vista en la base de datos.
@@ -75,24 +74,126 @@ class VLSaldosClientes(models.Model):
 class ResumenCtaCteManager(models.Manager):
 
 	def obtener_fact_pendientes(self, id_cliente):
+		""" Se determina los comprobantes pendientes de un cliente determinado. """
+		
 		#-- Se crea la consulta parametrizada.
-		query = "SELECT * FROM VLResumenCtaCte WHERE id_cliente_id = %s AND total <> entrega"
+		query = """
+			WITH acumulado AS (
+				SELECT 
+					id_cliente_id,
+					fecha_comprobante,
+					numero_comprobante,
+					(total - entrega) AS saldo, 
+					ROW_NUMBER() OVER (
+						PARTITION BY id_cliente_id 
+						ORDER BY fecha_comprobante, numero_comprobante
+					) AS row_num
+				FROM VLResumenCtaCte
+				WHERE id_cliente_id = %s
+				AND total <> entrega
+			)
+			SELECT 
+				r.id_cliente_id, 
+				r.razon_social, 
+				r.nombre_comprobante_venta, 
+				r.letra_comprobante, 
+				r.numero_comprobante, 
+				r.numero, 
+				r.fecha_comprobante, 
+				r.remito, 
+				r.condicion_comprobante, 
+				r.condicion, 
+				r.total, 
+				r.entrega, 
+				CASE
+					WHEN r.total >= 0 THEN r.total * 1.0
+					ELSE ''
+				END AS debe,
+				CASE
+					WHEN r.total < 0 THEN r.total * 1.0
+					ELSE ''
+				END AS haber,
+				(
+					SELECT SUM(a.saldo)
+					FROM acumulado a
+					WHERE a.id_cliente_id = r.id_cliente_id
+					AND a.row_num <= (
+						SELECT row_num 
+						FROM acumulado 
+						WHERE id_cliente_id = r.id_cliente_id 
+						AND fecha_comprobante = r.fecha_comprobante
+						AND numero_comprobante = r.numero_comprobante
+					)
+				) AS saldo_acumulado,
+				r.intereses
+			FROM VLResumenCtaCte r
+			WHERE r.id_cliente_id = %s 
+			AND r.total <> r.entrega
+			ORDER BY r.fecha_comprobante, r.numero_comprobante;
+			"""
 		
 		#-- Se añade el parámetro.
-		params = [id_cliente]
+		params = [id_cliente, id_cliente]
 		
 		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
 		return self.raw(query, params)
 	
 	def obtener_resumen_cta_cte(self, id_cliente, fecha_desde, fecha_hasta, condicion_venta1, condicion_venta2):
+		""" Determina el Resumen de Cuenta Corriente de un cliente y período determinados. """
+		
 		#-- Se crea la consulta parametrizada.
-		query = """SELECT * FROM VLResumenCtaCte 
-					WHERE id_cliente_id = %s AND 
-						fecha_comprobante BETWEEN %s AND %s AND 
-						condicion_comprobante BETWEEN %s AND %s"""
+		query = """
+			SELECT 
+				r.id_cliente_id, 
+				r.razon_social, 
+				r.nombre_comprobante_venta, 
+				r.letra_comprobante, 
+				r.numero_comprobante, 
+				r.numero, 
+				r.fecha_comprobante, 
+				r.remito, 
+				r.condicion_comprobante, 
+				r.condicion, 
+				r.total, 
+				r.entrega, 
+				CASE
+					WHEN r.total >= 0 THEN r.total * 1.0
+					ELSE ''
+				END AS debe,
+				CASE
+					WHEN r.total < 0 THEN r.total * 1.0
+					ELSE ''
+				END AS haber,
+				SUM(r.total) OVER (
+					PARTITION BY r.id_cliente_id 
+					ORDER BY r.fecha_comprobante, r.numero_comprobante
+				) AS saldo_acumulado,
+				r.intereses
+			FROM VLResumenCtaCte r
+			WHERE r.id_cliente_id = %s 
+			AND r.fecha_comprobante BETWEEN %s AND %s 
+			AND r.condicion_comprobante BETWEEN %s AND %s
+			ORDER BY r.fecha_comprobante, r.numero_comprobante;
+		"""
 		
 		#-- Se añade los parámetros.
 		params = [id_cliente, fecha_desde, fecha_hasta, condicion_venta1, condicion_venta2]
+		
+		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
+		return self.raw(query, params)
+	
+	def obtener_saldo_anterior(self, id_cliente, fecha_desde):
+		""" Método que calcula y devuelve el saldo anterior a la fecha desde de un cliente dado. """
+		
+		#-- Se crea la consulta parametrizada.
+		query = """
+			SELECT v.id_cliente_id, COALESCE(SUM(v.total * 1.0), 0.0) AS saldo_anterior 
+				FROM VLResumenCtaCte v 
+				WHERE v.id_cliente_id = %s AND v.fecha_comprobante < %s;
+		"""
+		
+		#-- Se añade los parámetros.
+		params = [id_cliente, fecha_desde]
 		
 		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
 		return self.raw(query, params)
@@ -116,10 +217,57 @@ class VLResumenCtaCte(models.Model):
 	
 	objects = ResumenCtaCteManager()
 	
-	
 	class Meta:
 		managed = False
 		db_table = 'VLResumenCtaCte'
 		verbose_name = ('Facturas Pendientes')
 		verbose_name_plural = ('Facturas Pendientes')
 		ordering = ['razon_social']
+
+
+#-----------------------------------------------------------------------------
+# Mercadería por Cliente
+#-----------------------------------------------------------------------------
+class MercaderiaPorClienteManager(models.Manager):
+
+	def obtener_fact_pendientes(self, id_cliente, fecha_desde, fecha_hasta):
+		""" Se determina los comprobantes pendientes de un cliente determinado. """
+		
+		#-- Se crea la consulta parametrizada.
+		query = """
+			SELECT * 
+				FROM VLMercaderiaPorCliente v 
+				WHERE v.id_cliente_id = %s AND v.fecha_comprobante BETWEEN %s AND %s;
+		"""
+		
+		#-- Se añade los parámetros.
+		params = [id_cliente, fecha_desde, fecha_hasta]
+		
+		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
+		return self.raw(query, params)
+
+		
+class VLMercaderiaPorCliente(models.Model):
+	id_cliente_id = models.IntegerField(primary_key=True)
+	nombre_comprobante_venta = models.CharField(max_length=50)
+	letra_comprobante = models.CharField(max_length=1)
+	numero_comprobante = models.IntegerField()
+	numero = models.CharField(max_length=13)
+	fecha_comprobante = models.DateField()
+	nombre_producto_marca = models.CharField(max_length=50)
+	medida = models.CharField(max_length=15)
+	id_producto_id = models.IntegerField()
+	nombre_producto = models.CharField(max_length=50)
+	cantidad = models.DecimalField(max_digits=7, decimal_places=2)
+	precio = models.DecimalField(max_digits=12, decimal_places=2)
+	descuento = models.DecimalField(max_digits=6, decimal_places=2)
+	total = models.DecimalField(max_digits=14, decimal_places=2)
+	
+	objects = MercaderiaPorClienteManager()
+	
+	class Meta:
+		managed = False
+		db_table = 'VLMercaderiaPorCliente'
+		verbose_name = ('Mercadería por Cliente')
+		verbose_name_plural = ('Mercadería por Cliente')
+		ordering = ['id_cliente_id', 'fecha_comprobante']

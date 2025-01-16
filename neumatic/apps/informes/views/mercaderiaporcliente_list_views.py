@@ -14,16 +14,16 @@ from django.template.loader import render_to_string
 from weasyprint import HTML
 
 from ..views.list_views_generics import *
-from apps.informes.models import VLResumenCtaCte
-from ..forms.buscador_resumenctacte_forms import BuscadorResumenCtaCteForm
+from apps.informes.models import VLMercaderiaPorCliente
+from ..forms.buscador_mercaderiaporcliente_forms import BuscadorMercaderiaPorClienteForm
 
 
 class ConfigViews:
 	# Modelo
-	model = VLResumenCtaCte
+	model = VLMercaderiaPorCliente
 	
 	# Formulario asociado al modelo
-	form_class = BuscadorResumenCtaCteForm
+	form_class = BuscadorMercaderiaPorClienteForm
 	
 	# Aplicación asociada al modelo
 	app_label = "informes"
@@ -47,7 +47,7 @@ class ConfigViews:
 	success_url = reverse_lazy(list_view_name)
 	
 	# Archivo JavaScript específico.
-	js_file = "js/filtros_resumen_cta_cte.js"
+	js_file = None
 	
 	# URL de la vista que genera el .zip con los informes.
 	url_zip = f"{model_string}_informe_generado"
@@ -63,41 +63,35 @@ class DataViewList:
 	
 	paginate_by = 8
 	
-	report_title = "Resumen Cta. Cte."
+	report_title = "Mercadería por Cliente"
 	
 	table_headers = {
-		'nombre_comprobante_venta': (2, 'Comprobante'),
-		'numero': (2, 'Número'),
+		'nombre_comprobante_venta': (1, 'Comprobante'),
+		'numero': (1, 'Número'),
 		'fecha_comprobante': (1, 'Fecha'),
-		'remito': (1, 'Remito'),
-		'condicion': (1, 'Cond. Venta'),
-		# 'total': (1, 'Total Comp.'),
-		# 'entrega': (1, 'Entrega'),
-		'debe': (1, 'Debe'),
-		'haber': (1, 'Haber'),
-		'saldo_acumulado': (1, 'Saldo'),
-		'intereses': (1, 'Intereses'),
+		'nombre_producto_marca': (1, 'Marca'),
+		'nombre_producto': (1, 'Producto'),
+		'cantidad': (1, 'Cantidad'),
+		'precio': (1, 'Precio'),
+		'total': (1, 'Total'),
 	}
 	
 	table_data = [
 		{'field_name': 'nombre_comprobante_venta', 'date_format': None},
 		{'field_name': 'numero', 'date_format': None},
 		{'field_name': 'fecha_comprobante', 'date_format': 'd/m/Y'},
-		{'field_name': 'remito', 'date_format': None},
-		{'field_name': 'condicion', 'date_format': None},
-		# {'field_name': 'total', 'date_format': None},
-		# {'field_name': 'entrega', 'date_format': None},
-		{'field_name': 'debe', 'date_format': None},
-		{'field_name': 'haber', 'date_format': None},
-		{'field_name': 'saldo_acumulado', 'date_format': None},
-		{'field_name': 'intereses', 'date_format': None},
+		{'field_name': 'nombre_producto_marca', 'date_format': None},
+		{'field_name': 'nombre_producto', 'date_format': None},
+		{'field_name': 'cantidad', 'date_format': None},
+		{'field_name': 'precio', 'date_format': None},
+		{'field_name': 'total', 'date_format': None},
 	]
 	
 	#-- Texto de totalización y Columnas a totalizar.
 	# total_columns = {"Total Pendiente: ": ['saldo']}
 
 
-class VLResumenCtaCteInformeListView(InformeListView):
+class VLMercaderiaPorClienteInformeListView(InformeListView):
 	model = ConfigViews.model
 	form_class = ConfigViews.form_class
 	template_name = ConfigViews.template_list
@@ -113,7 +107,6 @@ class VLResumenCtaCteInformeListView(InformeListView):
 		"table_headers": DataViewList.table_headers,
 		"table_data": DataViewList.table_data,
 		"buscador_template": f"{ConfigViews.app_label}/buscador_{ConfigViews.model_string}.html",
-		# "buscador_template": f"{ConfigViews.app_label}/buscador_vlfactpendiente.html",
 		"js_file": ConfigViews.js_file,
 		"url_zip": ConfigViews.url_zip,
 		"url_pdf": ConfigViews.url_pdf,
@@ -123,39 +116,31 @@ class VLResumenCtaCteInformeListView(InformeListView):
 		# queryset = super().get_queryset()
 		
 		#-- Inicializa el queryset con un queryset vacío por defecto.
-		queryset = VLResumenCtaCte.objects.none()		
+		queryset = VLMercaderiaPorCliente.objects.none()		
 		
 		# form = self.form_class(self.request.GET)
 		
 		# Comprobamos si hay datos GET (parámetros de la URL)
 		if any(value for key, value in self.request.GET.items() if value):
-			form = BuscadorResumenCtaCteForm(self.request.GET)
+			form = BuscadorMercaderiaPorClienteForm(self.request.GET)
 			print("Entra al IF: Hay datos en el GET")
 		else:
-			form = BuscadorResumenCtaCteForm()  # Formulario vacío para la carga inicial
+			form = BuscadorMercaderiaPorClienteForm()  # Formulario vacío para la carga inicial
 			print("Entra al ELSE: No hay datos útiles en el GET")	
 		
 		if form.is_valid():
-			resumen_pendiente = form.cleaned_data.get('resumen_pendiente')
-			condicion_venta = form.cleaned_data.get('condicion_venta')
+			cliente = form.cleaned_data.get('cliente', None)
 			fecha_desde = form.cleaned_data.get('fecha_desde', date(date.today().year, 1, 1))
 			fecha_hasta = form.cleaned_data.get('fecha_hasta', date.today())
-			cliente = form.cleaned_data.get('cliente', None)
 			
-			if resumen_pendiente:
-				queryset = VLResumenCtaCte.objects.obtener_fact_pendientes(cliente.id_cliente)
-			else:
-				if not fecha_desde:
-					fecha_hasta = date(date.today().year, 1, 1)
-				
-				if not fecha_hasta:
-					fecha_hasta = date.today()
-				
-				if condicion_venta == "0":
-					queryset = VLResumenCtaCte.objects.obtener_resumen_cta_cte(cliente.id_cliente, fecha_desde, fecha_hasta, 1, 2)
-				else:
-					queryset = VLResumenCtaCte.objects.obtener_resumen_cta_cte(cliente.id_cliente, fecha_desde, fecha_hasta, condicion_venta, condicion_venta)
-		
+			if not fecha_desde:
+				fecha_hasta = date(date.today().year, 1, 1)
+			
+			if not fecha_hasta:
+				fecha_hasta = date.today()
+			
+			queryset = VLMercaderiaPorCliente.objects.obtener_fact_pendientes(cliente.id_cliente, fecha_desde, fecha_hasta)
+			
 		else:
 			#-- Agregar clases css a los campos con errores.
 			# print("El form no es válido (desde la vista)")
@@ -166,7 +151,7 @@ class VLResumenCtaCteInformeListView(InformeListView):
 	
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
-		form = BuscadorResumenCtaCteForm(self.request.GET or None)
+		form = BuscadorMercaderiaPorClienteForm(self.request.GET or None)
 		
 		context["form"] = form
 		
@@ -177,7 +162,7 @@ class VLResumenCtaCteInformeListView(InformeListView):
 		return context
 
 
-class VLResumenCtaCteInformesView(View):
+class VLMercaderiaPorClienteInformesView(View):
 	"""Vista para gestionar informes de clientes, exportaciones y envíos por correo."""
 	
 	def get(self, request, *args, **kwargs):
@@ -193,7 +178,7 @@ class VLResumenCtaCteInformesView(View):
 		email = request.GET.get("email", "")
 		
 		#-- Obtener el queryset filtrado.
-		queryset_filtrado = VLResumenCtaCteInformeListView()
+		queryset_filtrado = VLMercaderiaPorClienteInformeListView()
 		queryset_filtrado.request = request
 		queryset = queryset_filtrado.get_queryset()
 		
@@ -271,16 +256,16 @@ class VLResumenCtaCteInformesView(View):
 		return JsonResponse({"success": True, "message": "Informe enviado correctamente al correo."})
 
 
-class VLResumenCtaCteInformePDFView(View):
+class VLMercaderiaPorClienteInformePDFView(View):
 	
 	def get(self, request, *args, **kwargs):
 		#-- Obtener el queryset ya filtrado.
-		queryset_filtrado = VLResumenCtaCteInformeListView()
+		queryset_filtrado = VLMercaderiaPorClienteInformeListView()
 		queryset_filtrado.request = request
 		queryset = queryset_filtrado.get_queryset()
 		
 		#-- Inicializar el formulario con los datos GET.
-		form = BuscadorResumenCtaCteForm(request.GET or None)
+		form = BuscadorMercaderiaPorClienteForm(request.GET or None)
 		
 		if form.is_valid():
 			cliente = form.cleaned_data.get("cliente", None)
@@ -315,12 +300,11 @@ class VLResumenCtaCteInformePDFView(View):
 						param["Condición"] = "Ambos"
 				
 				#-- Determinar Saldo Anterior.
-				saldo_anterior_queryset = VLResumenCtaCte.objects.obtener_saldo_anterior(cliente.id_cliente, fecha_desde)
+				# saldo_anterior_queryset = VLResumenCtaCte.objects.obtener_saldo_anterior(cliente.id_cliente, fecha_desde)
 				#-- Extraer el saldo desde el queryset.
 				# saldo_anterior = saldo_anterior_queryset[0].saldo_anterior if saldo_anterior_queryset else 0.0
-				saldo_anterior = next(iter(saldo_anterior_queryset), None).saldo_anterior if saldo_anterior_queryset else Decimal('0.0')
+				# saldo_anterior = next(iter(saldo_anterior_queryset), None).saldo_anterior if saldo_anterior_queryset else Decimal('0.0')
 				saldo_anterior = Decimal(saldo_anterior or 0.0)  # Conversión explícita
-				print(f"{saldo_anterior = }")
 			
 			#-- Validar que el cliente exista antes de acceder a sus datos.
 			cliente_data = {}

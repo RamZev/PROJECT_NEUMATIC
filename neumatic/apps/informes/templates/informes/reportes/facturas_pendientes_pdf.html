@@ -138,28 +138,24 @@
 						<th>Número</th>
 						<th>Fecha</th>
 						<th>Remito</th>
-						<th>Cond. Venta</th>
-						<th class="numeric">Debe</th>
-						<th class="numeric">Haber</th>
+						<th class="numeric">Total Comp.</th>
+						<th class="numeric">Entrega</th>
 						<th class="numeric">Saldo</th>
+						<th class="numeric">Intereses</th>
 					</tr>
 				</thead>
 				<tbody>
 					
-					<tr>
-						<td class="numeric" colspan="7"><strong>Saldo anterior:</strong></td>
-						<td class="numeric"><strong>{{ saldo_anterior|formato_es_ar }}</strong></td>
-					</tr>
 					{% for obj in objetos %}
 						<tr>
 							<td>{{ obj.nombre_comprobante_venta }}</td>
 							<td>{{ obj.numero }}</td>
 							<td>{{ obj.fecha_comprobante|date:"d/m/Y" }}</td>
 							<td>{{ obj.remito }}</td>
-							<td>{{ obj.condicion }}</td>
-							<td class="numeric">{{ obj.debe|formato_es_ar }}</td>
-							<td class="numeric">{{ obj.haber|formato_es_ar }}</td>
+							<td class="numeric">{{ obj.total|formato_es_ar }}</td>
+							<td class="numeric">{{ obj.entrega|formato_es_ar }}</td>
 							<td class="numeric">{{ obj.saldo_acumulado|formato_es_ar }}</td>
+							<td class="numeric">{{ obj.intereses|formato_es_ar }}</td>
 						</tr>
 					{% endfor %}
 					<tr>

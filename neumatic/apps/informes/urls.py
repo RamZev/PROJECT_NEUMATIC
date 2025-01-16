@@ -32,6 +32,7 @@ from .views.puntoventa_list_views import *
 from apps.maestros.views.consulta_views_maestros import filtrar_localidad
 from apps.informes.views.saldosclientes_list_views import *
 from apps.informes.views.resumenctacte_list_views import *
+from apps.informes.views.mercaderiaporcliente_list_views import *
 
 urlpatterns = [
 	#-- Catálogos.
@@ -260,6 +261,15 @@ urlpatterns = [
 		 name='vlresumenctacte_informe_generado'),
 	path('vlresumenctacte_vista_pdf/', VLResumenCtaCteInformePDFView.as_view(),
 		 name='vlresumenctacte_informe_pdf'),
+	
+	#-- VL Mercadería por Cliente.
+	path('vlmercaderiaporcliente_informe/', VLMercaderiaPorClienteInformeListView.as_view(),
+		 name='vlmercaderiaporcliente_informe_list'),
+	
+	path('vlmercaderiaporcliente_generado/', VLMercaderiaPorClienteInformesView.as_view(),
+		 name='vlmercaderiaporcliente_informe_generado'),
+	path('vlmercaderiaporcliente_vista_pdf/', VLMercaderiaPorClienteInformePDFView.as_view(),
+		 name='vlmercaderiaporcliente_informe_pdf'),
 	
 	#-- Otras rutas.
 	path('filtrar-localidad/', filtrar_localidad, name='filtrar_localidad'),
