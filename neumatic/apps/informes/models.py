@@ -271,3 +271,96 @@ class VLMercaderiaPorCliente(models.Model):
 		verbose_name = ('Mercadería por Cliente')
 		verbose_name_plural = ('Mercadería por Cliente')
 		ordering = ['id_cliente_id', 'fecha_comprobante']
+
+
+#-----------------------------------------------------------------------------
+# Remitos por Cliente
+#-----------------------------------------------------------------------------
+class RemitosPorClienteManager(models.Manager):
+
+	def obtener_remitos_por_cliente(self, id_cliente, fecha_desde, fecha_hasta):
+		""" Se determina los comprobantes pendientes de un cliente determinado. """
+		
+		#-- Se crea la consulta parametrizada.
+		query = """
+			SELECT * 
+				FROM VLRemitosPorCliente v 
+				WHERE v.id_cliente_id = %s AND v.fecha_comprobante BETWEEN %s AND %s;
+		"""
+		
+		#-- Se añade los parámetros.
+		params = [id_cliente, fecha_desde, fecha_hasta]
+		
+		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
+		return self.raw(query, params)
+
+
+class VLRemitosPorCliente(models.Model):
+	id_cliente_id = models.IntegerField(primary_key=True)
+	fecha_comprobante = models.DateField()
+	id_comprobante_venta_id = models.IntegerField()
+	compro = models.CharField(max_length=3)
+	letra_comprobante = models.CharField(max_length=1)
+	numero_comprobante = models.IntegerField()
+	numero = models.CharField(max_length=13)
+	nombre_producto = models.CharField(max_length=50)
+	medida = models.CharField(max_length=15)
+	cantidad = models.DecimalField(max_digits=7, decimal_places=2)
+	precio = models.DecimalField(max_digits=12, decimal_places=2)
+	total = models.DecimalField(max_digits=14, decimal_places=2)
+	
+	objects = RemitosPorClienteManager()
+	
+	class Meta:
+		managed = False
+		db_table = 'VLMercaderiaPorCliente'
+		verbose_name = ('Mercadería por Cliente')
+		verbose_name_plural = ('Mercadería por Cliente')
+		ordering = ['id_cliente_id', 'fecha_comprobante']
+
+"""
+SELECT 
+	f.id_cliente_id, 
+	f.fecha_comprobante,
+	f.id_comprobante_venta_id, 
+	f.compro, 
+	f.letra_comprobante, 
+	f.numero_comprobante, 
+	p.nombre_producto, 
+	p.medida, 
+	df.cantidad,
+	df.precio, 
+	df.total*cv.mult_stock*-1 AS total
+ FROM factura f 
+	JOIN detalle_factura df ON df.id_factura_id = f.id_factura
+ 	JOIN comprobante_venta cv ON cv.id_comprobante_venta = f.id_comprobante_venta_id
+	JOIN producto p ON p.id_producto = df.id_producto_id = p.id_producto
+ WHERE 
+	f.compro BETWEEN "RD" AND "RT" AND cv.mult_venta = 0
+ ORDER BY f.fecha_comprobante, f.numero_comprobante
+
+SELECT 
+	Detven.compro, 
+	Detven.letra, 
+	Detven.numero, 
+	Facturas.fecha,
+	Facturas.cliente, 
+	Lista.nombre, 
+	Lista.medida, 
+	Detven.cantidad,
+	Detven.precio, 
+	Detven.descuento,
+	Detven.total*Codven.mult_sto*-1 AS total
+ FROM facturas, codven,
+	detven INNER JOIN lista ON  Detven.codigo = Lista.codigo;
+ WHERE Detven.compro = Facturas.compro;
+   AND Detven.letra = Facturas.letra;
+   AND Detven.numero = Facturas.numero;
+   AND Detven.compro = Codven.compro;
+   AND (Detven.compro BETWEEN "RD" AND "RT";
+   AND Facturas.cliente = ?nCliente;
+   AND Codven.mult_ven = 0);
+ ORDER BY Facturas.fecha, Detven.numero
+
+
+"""

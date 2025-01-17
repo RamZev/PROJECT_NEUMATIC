@@ -1,4 +1,4 @@
-# neumatic\apps\informes\views\cliente_list_views.py
+# neumatic\apps\informes\views\mercaderiaporcliente_list_views.py
 from django.urls import reverse_lazy
 from django.http import HttpResponse, JsonResponse
 from django.views import View
@@ -264,47 +264,31 @@ class VLMercaderiaPorClienteInformePDFView(View):
 		queryset_filtrado.request = request
 		queryset = queryset_filtrado.get_queryset()
 		
+		# ------------------------------------------------------------------------------
+		#-- Agrupar los objetos por el número de comprobante.
+		grouped_data = {}
+		for obj in queryset:
+			comprobante_num = obj.numero_comprobante  # Este es el campo que agrupa los datos
+			if comprobante_num not in grouped_data:
+				grouped_data[comprobante_num] = []
+			grouped_data[comprobante_num].append(obj)
+		
+		# ------------------------------------------------------------------------------
+		
 		#-- Inicializar el formulario con los datos GET.
 		form = BuscadorMercaderiaPorClienteForm(request.GET or None)
 		
 		if form.is_valid():
 			cliente = form.cleaned_data.get("cliente", None)
-			
-			resumen_pendiente = form.cleaned_data.get("resumen_pendiente", None)
-			condicion_venta = form.cleaned_data.get("condicion_venta", None)
 			fecha_desde = form.cleaned_data.get("fecha_desde", None)
 			fecha_hasta = form.cleaned_data.get("fecha_hasta", None)
-			observaciones = form.cleaned_data.get("observaciones", None)
 			
-			saldo_anterior = 0
-			
-			param = {}
-			if resumen_pendiente:
-				#-- Reporte Resumen de Cuenta Pendiente.
-				reporte = 'informes/reportes/facturas_pendientes_pdf.html'
-				param["Tipo"] = "Resumen de Cuenta Pendiente"
-			else:
-				#-- Reporte Resumen de Cuenta Cuenta Corriente.
-				reporte = 'informes/reportes/resumen_cta_cte_pdf.html'
-				param = {
-					"Desde": fecha_desde,
-					"Hasta": fecha_hasta,
-				}
-				
-				match condicion_venta:
-					case "1":
-						param["Condición"] = "Contado"
-					case "2":
-						param["Condición"] = "Cuenta Corriente"
-					case "0":
-						param["Condición"] = "Ambos"
-				
-				#-- Determinar Saldo Anterior.
-				# saldo_anterior_queryset = VLResumenCtaCte.objects.obtener_saldo_anterior(cliente.id_cliente, fecha_desde)
-				#-- Extraer el saldo desde el queryset.
-				# saldo_anterior = saldo_anterior_queryset[0].saldo_anterior if saldo_anterior_queryset else 0.0
-				# saldo_anterior = next(iter(saldo_anterior_queryset), None).saldo_anterior if saldo_anterior_queryset else Decimal('0.0')
-				saldo_anterior = Decimal(saldo_anterior or 0.0)  # Conversión explícita
+			reporte = 'informes/reportes/mercaderiaporcliente_pdf.html'
+			titulo_reporte = "Mercadería por Cliente"
+			param = {
+				"Desde": fecha_desde,
+				"Hasta": fecha_hasta,
+			}
 			
 			#-- Validar que el cliente exista antes de acceder a sus datos.
 			cliente_data = {}
@@ -312,43 +296,20 @@ class VLMercaderiaPorClienteInformePDFView(View):
 				cliente_data = {
 					"id_cliente": cliente.id_cliente,
 					"nombre_cliente": cliente.nombre_cliente,
-					"domicilio_cliente": cliente.domicilio_cliente,
-					"telefono_cliente": cliente.telefono_cliente,
-					"codigo_postal": cliente.codigo_postal,
-					"localidad": cliente.id_localidad.nombre_localidad if cliente.id_localidad else "",
-					"provincia": cliente.id_provincia.nombre_provincia if cliente.id_provincia else "",
-					"nombre_vendedor": cliente.id_vendedor.nombre_vendedor if cliente.id_vendedor else "",
 				}
 			else:
 				#-- Si el formulario no es válido, manejar errores o enviar respuesta.
 				return HttpResponse(f"Error en el formulario: {form.errors}", status=400)
 		
-			#-- Obtener el saldo total desde el último registro del queryset.
-			# saldo_total = queryset.last().saldo_acumulado if queryset.exists() else 0
-			saldo_total = queryset[-1].saldo_acumulado if queryset else 0
-			
-			#-- Calcular la sumatoria de los intereses.
-			intereses_total = sum(item.intereses for item in queryset)
-			
 		fecha_hora_reporte = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
 		
 		#-- Renderizar la plantilla HTML con los datos.
-		print(f"{saldo_anterior = } {type(saldo_anterior) = }")
-		print(f"{saldo_total = } {type(saldo_total) = }")
-		print(f"{intereses_total = } {type(intereses_total) = }")
-		
-		
 		html_string = render_to_string(reporte, {
-			'objetos': queryset,
+			'objetos': grouped_data,
 			'cliente': cliente_data,
 			'parametros': param,
 			'fecha_hora_reporte': fecha_hora_reporte,
-			'titulo': "Resumen de Cuenta Corriente",
-			'observaciones': observaciones,
-			'saldo_total': saldo_total,
-			'intereses_total': intereses_total,
-			'total_general': saldo_anterior + saldo_total + intereses_total,
-			"saldo_anterior": saldo_anterior,
+			'titulo': titulo_reporte,
 		})
 		
 		#-- Preparar la respuesta HTTP.
@@ -362,3 +323,10 @@ class VLMercaderiaPorClienteInformePDFView(View):
 			return HttpResponse(f"Error generando el PDF: {str(e)}", status=500)
 		
 		return response
+
+"""
+{2600001647: [ <VLMercaderiaPorCliente: VLMercaderiaPorCliente object (2)>, <VLMercaderiaPorCliente: VLMercaderiaPorCliente object (2)>], 
+ 2600022788: [<VLMercaderiaPorCliente: VLMercaderiaPorCliente object (2)>, <VLMercaderiaPorCliente: VLMercaderiaPorCliente object (2)>], 
+ 2600022887: [<VLMercaderiaPorCliente: VLMercaderiaPorCliente object (2)>], 
+ 2600022888: [<VLMercaderiaPorCliente: VLMercaderiaPorCliente object (2)>, <VLMercaderiaPorCliente: VLMercaderiaPorCliente object (2)>]}
+"""
