@@ -1,103 +1,18 @@
-<!-- neumatic\apps\informes\templates\informes\reportes\facturas_pendientes_pdf.html -->
-<!DOCTYPE html>
-<html lang="es">
-	<head>
-		<meta charset="UTF-8">
-		{% load static %}
-		{% load custom_tags %}
-		<title>{{ titulo }}</title>
-		<style>
-			body {
-				font-family: Arial, sans-serif;
-				font-size: 8pt;
-				margin: 0;
-				padding: 0;
-			}
-			header {
-				position: fixed;
-				top: 0;
-				left: 0;
-				right: 0;
-				height: 100px;
-				padding: 10px;
-				/* border-bottom: 1px solid #1f0ada; */
-			}
-			footer {
-				position: fixed;
-				bottom: 0;
-				left: 0;
-				right: 0;
-				padding: 5px 10px;  /* Reducir el padding */
-				border-top: 1px solid #000;
-				font-size: 8pt;
-				line-height: 0.8;
-				display: flex;
-				justify-content: space-between;
-				align-items: center;
-			}
-			footer .page-number {
-				text-align: center; /* Centra el número de página */
-				flex-grow: 1; /* Hace que el número de página ocupe el espacio disponible */
-				content: counter(page);
-			}
-			@page {
-				size: A4;
-				counter-increment: page;
-				margin: 0.5cm;
-			}
-			.page-number::before {
-				content: "Pagina " counter(page);
-			}
-			footer .fecha-hora {
-				margin-left: auto;  /* Alinea la fecha y hora a la derecha */
-			}
-			footer .left-text {
-				margin-right: auto;  /* Alinea el texto a la izquierda */
-			}
-			main {
-				margin: 120px 20px 70px 20px;
-			}
-			table {
-				width: 100%;
-				border-collapse: collapse;
-				margin-top: 20px;
-			}
-			th, td {
-				padding: 5px;
-				text-align: center;
-			}
-			th {
-				background-color:#c9c4c4 ;
-			}
-			.page-number {
-				text-align: right;
-			}
-			
-			table th, table td {
-				text-align: left; /* Alineación por defecto */
-			}
-			table th.numeric, table td.numeric {
-				text-align: right; /* Alineación para columnas numéricas */
-			}
-			.compact-line-spacing {
-				line-height: 0.5; /* Ajusta este valor según necesites */
-			}
-			
-			.seccion {
-				display: flex; 
-				justify-content: space-between; 
-				margin-top: 4px; 
-				border-top: 1px solid #000;
-				border-bottom: 1px solid #000; 
-				padding-bottom: 10px;
-				padding-left: 5px;
-				padding-right: 5px;
-			}
-		</style>
-	</head>
-	<body>
+<!-- neumatic\apps\informes\templates\informes\reportes\mercaderiaporcliente_pdf.html -->
+
+{% extends 'informes/reportes/base_reportes.html' %}
+{% load static %}
+{% load custom_tags %}
+
+{% block title %} Reporte {% endblock %}
+
+{% block content %}
+
 		<header>
-			<img src="{% static 'img/logo_01.png' %}" alt="Logo" style="height: 50px; float: left;">
+			{% comment %} <img src="{% static 'img/logo_01.png' %}" alt="Logo" style="height: 50px; float: left;"> {% endcomment %}
+			
+			<img src="{{ logo_url }}" alt="Logo" style="height: 50px; float: left;">
+			
 			<div style="float: right; text-align: right;">
 				{% for param, valor in parametros.items %}
 					<!-- <p class="compact-line-spacing"><strong>{{ param }}:</strong> {{ valor }}</p> -->
@@ -124,7 +39,7 @@
 				
 				<!-- Sección derecha -->
 				<div style="flex: 1; text-align: right;">
-					<h2>{{ titulo }}</h2>
+					<h2><i>{{ titulo }}</i></h2>
 				</div>
 			</div>			
 			
@@ -170,27 +85,4 @@
 				</tbody>
 			</table>
 		</main>
-	</body>
-</html>
-
-
-{% comment %} 
-
-					{% for obj in objetos %}
-						<tr>
-							<td>{{ obj.nombre_comprobante_venta }}</td>
-							<td>{{ obj.numero }}</td>
-							<td>{{ obj.fecha_comprobante|date:"d/m/Y" }}</td>
-							
-							<td>{{ obj.nombre_producto_marca }}</td>
-							<td>{{ obj.medida }}</td>
-							<td>{{ obj.id_producto_id }}</td>
-							<td>{{ obj.nombre_producto }}</td>
-							<td class="numeric">{{ obj.cantidad|formato_es_ar }}</td>
-							<td class="numeric">{{ obj.precio|formato_es_ar }}</td>
-							<td class="numeric">{{ obj.descuento|formato_es_ar }}</td>
-							<td class="numeric">{{ obj.total|formato_es_ar }}</td>
-						</tr>
-					{% endfor %}
-
-{% endcomment %}
+{% endblock content %}

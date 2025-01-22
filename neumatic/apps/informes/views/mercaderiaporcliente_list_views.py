@@ -12,6 +12,7 @@ from utils.helpers.export_helpers import ExportHelper
 from datetime import datetime
 from django.template.loader import render_to_string
 from weasyprint import HTML
+from django.templatetags.static import static
 
 from ..views.list_views_generics import *
 from apps.informes.models import VLMercaderiaPorCliente
@@ -123,10 +124,8 @@ class VLMercaderiaPorClienteInformeListView(InformeListView):
 		# Comprobamos si hay datos GET (parámetros de la URL)
 		if any(value for key, value in self.request.GET.items() if value):
 			form = BuscadorMercaderiaPorClienteForm(self.request.GET)
-			print("Entra al IF: Hay datos en el GET")
 		else:
 			form = BuscadorMercaderiaPorClienteForm()  # Formulario vacío para la carga inicial
-			print("Entra al ELSE: No hay datos útiles en el GET")	
 		
 		if form.is_valid():
 			cliente = form.cleaned_data.get('cliente', None)
@@ -139,7 +138,7 @@ class VLMercaderiaPorClienteInformeListView(InformeListView):
 			if not fecha_hasta:
 				fecha_hasta = date.today()
 			
-			queryset = VLMercaderiaPorCliente.objects.obtener_fact_pendientes(cliente.id_cliente, fecha_desde, fecha_hasta)
+			queryset = VLMercaderiaPorCliente.objects.obtener_mercaderia_por_cliente(cliente.id_cliente, fecha_desde, fecha_hasta)
 			
 		else:
 			#-- Agregar clases css a los campos con errores.
@@ -284,7 +283,6 @@ class VLMercaderiaPorClienteInformePDFView(View):
 			fecha_hasta = form.cleaned_data.get("fecha_hasta", None)
 			
 			reporte = 'informes/reportes/mercaderiaporcliente_pdf.html'
-			titulo_reporte = "Mercadería por Cliente"
 			param = {
 				"Desde": fecha_desde,
 				"Hasta": fecha_hasta,
@@ -304,12 +302,16 @@ class VLMercaderiaPorClienteInformePDFView(View):
 		fecha_hora_reporte = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
 		
 		#-- Renderizar la plantilla HTML con los datos.
+		dominio = f"http://{request.get_host()}"
+		
 		html_string = render_to_string(reporte, {
 			'objetos': grouped_data,
 			'cliente': cliente_data,
 			'parametros': param,
 			'fecha_hora_reporte': fecha_hora_reporte,
-			'titulo': titulo_reporte,
+			'titulo': DataViewList.report_title,
+			'logo_url': f"{dominio}{static('img/logo_01.png')}",
+			'css_url': f"{dominio}{static('css/reportes.css')}",
 		})
 		
 		#-- Preparar la respuesta HTTP.
@@ -323,10 +325,3 @@ class VLMercaderiaPorClienteInformePDFView(View):
 			return HttpResponse(f"Error generando el PDF: {str(e)}", status=500)
 		
 		return response
-
-"""
-{2600001647: [ <VLMercaderiaPorCliente: VLMercaderiaPorCliente object (2)>, <VLMercaderiaPorCliente: VLMercaderiaPorCliente object (2)>], 
- 2600022788: [<VLMercaderiaPorCliente: VLMercaderiaPorCliente object (2)>, <VLMercaderiaPorCliente: VLMercaderiaPorCliente object (2)>], 
- 2600022887: [<VLMercaderiaPorCliente: VLMercaderiaPorCliente object (2)>], 
- 2600022888: [<VLMercaderiaPorCliente: VLMercaderiaPorCliente object (2)>, <VLMercaderiaPorCliente: VLMercaderiaPorCliente object (2)>]}
-"""

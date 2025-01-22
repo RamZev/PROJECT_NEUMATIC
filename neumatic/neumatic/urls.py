@@ -28,4 +28,9 @@ urlpatterns = [
     path('maestros/', include('apps.maestros.urls')),
     path('ventas/', include('apps.ventas.urls')),
     path('informes/', include('apps.informes.urls')),
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+]
+
+#-- Manejo de archivos estáticos en modo DEBUG.
+if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -33,6 +33,10 @@ from apps.maestros.views.consulta_views_maestros import filtrar_localidad
 from apps.informes.views.saldosclientes_list_views import *
 from apps.informes.views.resumenctacte_list_views import *
 from apps.informes.views.mercaderiaporcliente_list_views import *
+from apps.informes.views.remitosclientes_list_views import *
+from apps.informes.views.totalremitosclientes_list_views import *
+from apps.informes.views.ventacomprolocalidad_list_views import *
+from apps.informes.views.ventamostrador_list_views import *
 
 urlpatterns = [
 	#-- Catálogos.
@@ -270,6 +274,42 @@ urlpatterns = [
 		 name='vlmercaderiaporcliente_informe_generado'),
 	path('vlmercaderiaporcliente_vista_pdf/', VLMercaderiaPorClienteInformePDFView.as_view(),
 		 name='vlmercaderiaporcliente_informe_pdf'),
+	
+	#-- VL Remitos por Cliente.
+	path('vlremitosclientes_informe/', VLRemitosClientesInformeListView.as_view(),
+		 name='vlremitosclientes_informe_list'),
+	
+	path('vlremitosclientes_generado/', VLRemitosClientesInformesView.as_view(),
+		 name='vlremitosclientes_informe_generado'),
+	path('vlremitosclientes_vista_pdf/', VLRemitosClientesInformePDFView.as_view(),
+		 name='vlremitosclientes_informe_pdf'),
+	
+	#-- VL Total Remitos por Cliente.
+	path('vltotalremitosclientes_informe/', VLTotalRemitosClientesInformeListView.as_view(),
+		 name='vltotalremitosclientes_informe_list'),
+	
+	path('vltotalremitosclientes_generado/', VLTotalRemitosClientesInformesView.as_view(),
+		 name='vltotalremitosclientes_informe_generado'),
+	path('vltotalremitosclientes_vista_pdf/', VLTotalRemitosClientesInformePDFView.as_view(),
+		 name='vltotalremitosclientes_informe_pdf'),
+	
+	#-- VL Venta Compro Localidad.
+	path('vlventacomprolocalidad_informe/', VLVentaComproLocalidadInformeListView.as_view(),
+		 name='vlventacomprolocalidad_informe_list'),
+	
+	path('vlventacomprolocalidad_generado/', VLVentaComproLocalidadInformesView.as_view(),
+		 name='vlventacomprolocalidad_informe_generado'),
+	path('vlventacomprolocalidad_vista_pdf/', VLVentaComproLocalidadInformePDFView.as_view(),
+		 name='vlventacomprolocalidad_informe_pdf'),
+	
+	#-- VL Venta Mostrador.
+	path('vlventamostrador_informe/', VLVentaMostradorInformeListView.as_view(),
+		 name='vlventamostrador_informe_list'),
+	
+	path('vlventamostrador_generado/', VLVentaMostradorInformesView.as_view(),
+		 name='vlventamostrador_informe_generado'),
+	path('vlventamostrador_vista_pdf/', VLVentaMostradorInformePDFView.as_view(),
+		 name='vlventamostrador_informe_pdf'),
 	
 	#-- Otras rutas.
 	path('filtrar-localidad/', filtrar_localidad, name='filtrar_localidad'),

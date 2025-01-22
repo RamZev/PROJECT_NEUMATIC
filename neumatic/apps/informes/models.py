@@ -230,7 +230,7 @@ class VLResumenCtaCte(models.Model):
 #-----------------------------------------------------------------------------
 class MercaderiaPorClienteManager(models.Manager):
 
-	def obtener_fact_pendientes(self, id_cliente, fecha_desde, fecha_hasta):
+	def obtener_mercaderia_por_cliente(self, id_cliente, fecha_desde, fecha_hasta):
 		""" Se determina los comprobantes pendientes de un cliente determinado. """
 		
 		#-- Se crea la consulta parametrizada.
@@ -274,32 +274,36 @@ class VLMercaderiaPorCliente(models.Model):
 
 
 #-----------------------------------------------------------------------------
-# Remitos por Cliente
+# Remitos por Clientes
 #-----------------------------------------------------------------------------
-class RemitosPorClienteManager(models.Manager):
+class RemitosClientesManager(models.Manager):
 
 	def obtener_remitos_por_cliente(self, id_cliente, fecha_desde, fecha_hasta):
-		""" Se determina los comprobantes pendientes de un cliente determinado. """
+		""" Se determina los Remitos de un cliente determinado. """
 		
 		#-- Se crea la consulta parametrizada.
 		query = """
 			SELECT * 
-				FROM VLRemitosPorCliente v 
-				WHERE v.id_cliente_id = %s AND v.fecha_comprobante BETWEEN %s AND %s;
+				FROM VLRemitosClientes v 
+				WHERE 
+					v.id_cliente_id = %s AND 
+					v.codigo_comprobante_venta BETWEEN %s AND %s AND
+					v.fecha_comprobante BETWEEN %s AND %s;
 		"""
 		
 		#-- Se añade los parámetros.
-		params = [id_cliente, fecha_desde, fecha_hasta]
+		params = [id_cliente, "RD", "RT", fecha_desde, fecha_hasta]
 		
 		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
 		return self.raw(query, params)
 
 
-class VLRemitosPorCliente(models.Model):
+class VLRemitosClientes(models.Model):
 	id_cliente_id = models.IntegerField(primary_key=True)
-	fecha_comprobante = models.DateField()
 	id_comprobante_venta_id = models.IntegerField()
-	compro = models.CharField(max_length=3)
+	codigo_comprobante_venta = models.CharField(max_length=3)
+	nombre_comprobante_venta = models.CharField(max_length=50)
+	fecha_comprobante = models.DateField()
 	letra_comprobante = models.CharField(max_length=1)
 	numero_comprobante = models.IntegerField()
 	numero = models.CharField(max_length=13)
@@ -307,60 +311,214 @@ class VLRemitosPorCliente(models.Model):
 	medida = models.CharField(max_length=15)
 	cantidad = models.DecimalField(max_digits=7, decimal_places=2)
 	precio = models.DecimalField(max_digits=12, decimal_places=2)
+	descuento = models.DecimalField(max_digits=6, decimal_places=2)
 	total = models.DecimalField(max_digits=14, decimal_places=2)
 	
-	objects = RemitosPorClienteManager()
+	objects = RemitosClientesManager()
 	
 	class Meta:
 		managed = False
-		db_table = 'VLMercaderiaPorCliente'
-		verbose_name = ('Mercadería por Cliente')
-		verbose_name_plural = ('Mercadería por Cliente')
-		ordering = ['id_cliente_id', 'fecha_comprobante']
-
-"""
-SELECT 
-	f.id_cliente_id, 
-	f.fecha_comprobante,
-	f.id_comprobante_venta_id, 
-	f.compro, 
-	f.letra_comprobante, 
-	f.numero_comprobante, 
-	p.nombre_producto, 
-	p.medida, 
-	df.cantidad,
-	df.precio, 
-	df.total*cv.mult_stock*-1 AS total
- FROM factura f 
-	JOIN detalle_factura df ON df.id_factura_id = f.id_factura
- 	JOIN comprobante_venta cv ON cv.id_comprobante_venta = f.id_comprobante_venta_id
-	JOIN producto p ON p.id_producto = df.id_producto_id = p.id_producto
- WHERE 
-	f.compro BETWEEN "RD" AND "RT" AND cv.mult_venta = 0
- ORDER BY f.fecha_comprobante, f.numero_comprobante
-
-SELECT 
-	Detven.compro, 
-	Detven.letra, 
-	Detven.numero, 
-	Facturas.fecha,
-	Facturas.cliente, 
-	Lista.nombre, 
-	Lista.medida, 
-	Detven.cantidad,
-	Detven.precio, 
-	Detven.descuento,
-	Detven.total*Codven.mult_sto*-1 AS total
- FROM facturas, codven,
-	detven INNER JOIN lista ON  Detven.codigo = Lista.codigo;
- WHERE Detven.compro = Facturas.compro;
-   AND Detven.letra = Facturas.letra;
-   AND Detven.numero = Facturas.numero;
-   AND Detven.compro = Codven.compro;
-   AND (Detven.compro BETWEEN "RD" AND "RT";
-   AND Facturas.cliente = ?nCliente;
-   AND Codven.mult_ven = 0);
- ORDER BY Facturas.fecha, Detven.numero
+		db_table = 'VLRemitosClientes'
+		verbose_name = ('Remitos por Clientes')
+		verbose_name_plural = ('Remitos por Clientes')
+		ordering = ['id_cliente_id', 'fecha_comprobante', 'numero_comprobante']
 
 
-"""
+#-----------------------------------------------------------------------------
+# Total Remitos por Clientes
+#-----------------------------------------------------------------------------
+class TotalRemitosClientesManager(models.Manager):
+
+	def obtener_total_remitos_cliente(self, id_cliente, fecha_desde, fecha_hasta):
+		""" Se determina los Totales de Remitos por clientes. """
+		
+		#-- Se crea la consulta parametrizada.
+		if id_cliente:
+			query = """
+				SELECT 
+						id_cliente_id, 
+						fecha_comprobante, 
+						nombre_cliente, 
+						domicilio_cliente, 
+						codigo_postal, 
+						nombre_iva, 
+						cuit, 
+						telefono_cliente, 
+						SUM(total) AS total
+					FROM VLTotalRemitosClientes 
+					WHERE 
+						id_cliente_id = %s AND 
+						fecha_comprobante BETWEEN %s AND %s
+					GROUP BY
+						id_cliente_id;
+			"""
+			#-- Se añade los parámetros.
+			params = [id_cliente, fecha_desde, fecha_hasta]
+		else:
+			query = """
+				SELECT 
+						id_cliente_id, 
+						fecha_comprobante, 
+						nombre_cliente, 
+						domicilio_cliente, 
+						codigo_postal, 
+						nombre_iva, 
+						cuit, 
+						telefono_cliente, 
+						SUM(total) AS total
+					FROM VLTotalRemitosClientes 
+					WHERE 
+						fecha_comprobante BETWEEN %s AND %s
+					GROUP BY
+						id_cliente_id;
+			"""
+			#-- Se añade los parámetros.
+			params = [fecha_desde, fecha_hasta]
+		
+		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
+		return self.raw(query, params)
+
+
+class VLTotalRemitosClientes(models.Model):
+	id_cliente_id = models.IntegerField(primary_key=True)
+	fecha_comprobante = models.DateField()
+	nombre_cliente = models.CharField(max_length=50)
+	domicilio_cliente = models.CharField(max_length=50)
+	codigo_postal = models.CharField(max_length=5)
+	nombre_iva = models.CharField(max_length=25)
+	cuit = models.IntegerField()
+	telefono_cliente = models.CharField(max_length=15)
+	total = models.DecimalField(max_digits=14, decimal_places=2)
+	
+	objects = TotalRemitosClientesManager()
+	
+	class Meta:
+		managed = False
+		db_table = 'VLTotalRemitosClientes'
+		verbose_name = ('Totales de Remitos por Clientes')
+		verbose_name_plural = ('Totales de Remitos por Clientes')
+		ordering = ['nombre_cliente']
+
+
+#-----------------------------------------------------------------------------
+# Ventas por Localidad
+#-----------------------------------------------------------------------------
+class VentaComproLocalidadManager(models.Manager):
+
+	def obtener_venta_compro_localidad(self, fecha_desde, fecha_hasta):
+		""" Se determina las Ventas por un rango de fechas. """
+		
+		#-- Se crea la consulta parametrizada.
+		query = """
+			SELECT *
+				FROM VLVentaComproLocalidad 
+				WHERE 
+					fecha_comprobante BETWEEN %s AND %s
+		"""
+		#-- Se añade los parámetros.
+		params = [fecha_desde, fecha_hasta]
+		
+		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
+		return self.raw(query, params)
+
+
+class VLVentaComproLocalidad(models.Model):
+	id_cliente_id = models.IntegerField(primary_key=True)
+	id_sucursal_id = models.IntegerField()
+	fecha_comprobante = models.DateField()
+	nombre_cliente = models.CharField(max_length=50)
+	cuit = models.IntegerField()
+	codigo_postal = models.CharField(max_length=5)
+	codigo_comprobante_venta = models.CharField(max_length=3)
+	nombre_comprobante_venta = models.CharField(max_length=50)
+	letra_comprobante = models.CharField(max_length=1)
+	numero_comprobante = models.IntegerField()
+	comprobante = models.CharField(max_length=17)
+	gravado = models.DecimalField(max_digits=14, decimal_places=2)
+	exento = models.DecimalField(max_digits=14, decimal_places=2)
+	iva = models.DecimalField(max_digits=14, decimal_places=2)
+	percep_ib = models.DecimalField(max_digits=14, decimal_places=2)
+	total = models.DecimalField(max_digits=14, decimal_places=2)
+	iniciales = models.CharField(max_length=3)
+	
+	objects = VentaComproLocalidadManager()
+	
+	class Meta:
+		managed = False
+		db_table = 'VLVentaComproLocalidad'
+		verbose_name = ('Ventas por Localidad')
+		verbose_name_plural = ('Ventas por Localidad')
+		ordering = ['fecha_comprobante']
+
+
+#-----------------------------------------------------------------------------
+# Ventas por Mostrador
+#-----------------------------------------------------------------------------
+class VentaMostradorManager(models.Manager):
+
+	def obtener_venta_mostrador(self, fecha_desde, fecha_hasta, sucursal=None, tipo_venta=None, tipo_cliente=None, tipo_producto=None):
+		""" Se determina las Ventas por Mostrador por un rango de fechas, aplicando filtros. """
+		
+		#-- Se crea la consulta parametrizada.
+		query = """
+			SELECT *
+				FROM VLVentaMostrador 
+				WHERE 
+					fecha_comprobante BETWEEN %s AND %s
+		"""
+		
+		#-- Se añade los parámetros.
+		params = [fecha_desde, fecha_hasta]
+		
+		#-- Agrega filtros opcionales.
+		if sucursal:
+			query += " AND id_sucursal_id = %s"
+			params.append(sucursal.id_sucursal)
+		
+		if tipo_venta and tipo_venta != "T":
+			query += " AND reventa = %s"
+			params.append(tipo_venta)
+		
+		if tipo_cliente == "M":
+			query += " AND mayorista = %s"
+			params.append(True)
+		elif tipo_cliente == "R":
+			query += " AND mayorista = %s"
+			params.append(False)
+		
+		if tipo_producto and tipo_producto != "T":
+			query += " AND tipo_producto = %s"
+			params.append(tipo_producto)		
+		
+		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
+		return self.raw(query, params)
+
+
+class VLVentaMostrador(models.Model):
+	id_detalle_factura = models.IntegerField(primary_key=True)
+	nombre_comprobante_venta = models.CharField(max_length=50)
+	codigo_comprobante_venta = models.CharField(max_length=3)
+	letra_comprobante = models.CharField(max_length=1)
+	numero_comprobante = models.IntegerField()
+	comprobante = models.CharField(max_length=17)
+	fecha_comprobante = models.DateField()
+	id_cliente_id = models.IntegerField()
+	nombre_cliente = models.CharField(max_length=50)
+	mayorista = models.BooleanField()
+	reventa = models.CharField(max_length=1)
+	id_producto_id = models.IntegerField()
+	nombre_producto = models.CharField(max_length=50)
+	tipo_producto = models.CharField(max_length=1)
+	cantidad = models.DecimalField(max_digits=7, decimal_places=2)
+	precio = models.DecimalField(max_digits=12, decimal_places=2)
+	total = models.DecimalField(max_digits=14, decimal_places=2)
+	id_sucursal_id = models.IntegerField()
+	
+	objects = VentaMostradorManager()
+	
+	class Meta:
+		managed = False
+		db_table = 'VLVentaMostrador'
+		verbose_name = ('Ventas por Mostrador')
+		verbose_name_plural = ('Ventas por Mostrador')
+		ordering = ['fecha_comprobante', 'numero_comprobante']

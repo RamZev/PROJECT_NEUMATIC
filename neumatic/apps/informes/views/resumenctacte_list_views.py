@@ -320,7 +320,6 @@ class VLResumenCtaCteInformePDFView(View):
 				# saldo_anterior = saldo_anterior_queryset[0].saldo_anterior if saldo_anterior_queryset else 0.0
 				saldo_anterior = next(iter(saldo_anterior_queryset), None).saldo_anterior if saldo_anterior_queryset else Decimal('0.0')
 				saldo_anterior = Decimal(saldo_anterior or 0.0)  # Conversión explícita
-				print(f"{saldo_anterior = }")
 			
 			#-- Validar que el cliente exista antes de acceder a sus datos.
 			cliente_data = {}
@@ -349,11 +348,6 @@ class VLResumenCtaCteInformePDFView(View):
 		fecha_hora_reporte = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
 		
 		#-- Renderizar la plantilla HTML con los datos.
-		print(f"{saldo_anterior = } {type(saldo_anterior) = }")
-		print(f"{saldo_total = } {type(saldo_total) = }")
-		print(f"{intereses_total = } {type(intereses_total) = }")
-		
-		
 		html_string = render_to_string(reporte, {
 			'objetos': queryset,
 			'cliente': cliente_data,

@@ -1,0 +1,177 @@
+<!-- neumatic\apps\informes\templates\informes\reportes\mercaderiaporcliente_pdf.html -->
+<!DOCTYPE html>
+<html lang="es">
+	<head>
+		<meta charset="UTF-8">
+		{% load static %}
+		{% load custom_tags %}
+		<title>{{ titulo }}</title>
+		<!-- <style>
+			body {
+				font-family: Arial, sans-serif;
+				font-size: 8pt;
+				margin: 0;
+				padding: 0;
+			}
+			header {
+				position: fixed;
+				top: 0;
+				left: 0;
+				right: 0;
+				height: 100px;
+				padding: 10px;
+				/* border-bottom: 1px solid #1f0ada; */
+			}
+			footer {
+				position: fixed;
+				bottom: 0;
+				left: 0;
+				right: 0;
+				padding: 5px 10px;  /* Reducir el padding */
+				border-top: 1px solid #000;
+				font-size: 8pt;
+				line-height: 0.8;
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+			}
+			footer .page-number {
+				text-align: center; /* Centra el número de página */
+				flex-grow: 1; /* Hace que el número de página ocupe el espacio disponible */
+				content: counter(page);
+			}
+			@page {
+				size: A4;
+				counter-increment: page;
+				margin: 0.5cm;
+			}
+			.page-number::before {
+				content: "Pagina " counter(page);
+			}
+			footer .fecha-hora {
+				margin-left: auto;  /* Alinea la fecha y hora a la derecha */
+			}
+			footer .left-text {
+				margin-right: auto;  /* Alinea el texto a la izquierda */
+			}
+			main {
+				margin: 120px 20px 70px 20px;
+			}
+			table {
+				width: 100%;
+				border-collapse: collapse;
+				margin-top: 20px;
+			}
+			th, td {
+				padding: 5px;
+				text-align: center;
+			}
+			th {
+				background-color:#c9c4c4 ;
+			}
+			.page-number {
+				text-align: right;
+			}
+			
+			table th, table td {
+				text-align: left; /* Alineación por defecto */
+				font-size: 9px;
+			}
+			table th.numeric, table td.numeric {
+				text-align: right; /* Alineación para columnas numéricas */
+			}
+			.compact-line-spacing {
+				line-height: 0.5; /* Ajusta este valor según necesites */
+				/*line-height: 1.0; /* Ajusta este valor según necesites */
+			}
+			
+			.seccion {
+				display: flex; 
+				justify-content: space-between; 
+				margin-top: 4px; 
+				border-top: 1px solid #000;
+				border-bottom: 1px solid #000; 
+				padding-bottom: 10px;
+				padding-left: 5px;
+				padding-right: 5px;
+			} 
+		</style>-->
+		<link rel="stylesheet" href="{% static 'css/reportes.css' %}">
+	</head>
+	<body>
+		<header>
+			<img src="{% static 'img/logo_01.png' %}" alt="Logo" style="height: 50px; float: left;">
+			<div style="float: right; text-align: right;">
+				{% for param, valor in parametros.items %}
+					<!-- <p class="compact-line-spacing"><strong>{{ param }}:</strong> {{ valor }}</p> -->
+					<p><strong>{{ param }}:</strong> {{ valor|date:"d/m/Y" }}</p>
+				{% endfor %}
+			</div>
+		</header>
+		
+		<footer>
+			<div style="float: left;">M.A.A.S Soft</div>
+			<div class="page-number"><span class="pageNumber"></span></div>
+			<div class="fecha-hora" style="float: right;">{{ fecha_hora_reporte }}</div>
+		</footer>
+		
+		<main>
+			
+			<!-- <div class="compact-line-spacing" style="display: flex; justify-content: space-between; margin-top: 4px; border-bottom: 1px solid #1f0ada; padding-bottom: 6px;"> -->
+			<div class="seccion compact-line-spacing">
+				<!-- Sección izquierda -->
+				<div style="flex: 1; padding-right: 10px;">
+					<p><strong>Cliente:</strong></p>
+					<p style="font-size: 12px;">[{{ cliente.id_cliente }}] {{ cliente.nombre_cliente }}</p>
+				</div>
+				
+				<!-- Sección derecha -->
+				<div style="flex: 1; text-align: right;">
+					<h2><i>{{ titulo }}</i></h2>
+				</div>
+			</div>			
+			
+			<table>
+				<thead>
+					<tr>
+						<th>Marca</th>
+						<th>Medida</th>
+						<th>Código</th>
+						<th>Descripción</th>
+						<th class="numeric">Cantidad</th>
+						<th class="numeric">Precio</th>
+						<th class="numeric">Desc.</th>
+						<th class="numeric">Total</th>
+					</tr>
+				</thead>
+				<tbody>
+					
+					{% for comprobante_num, productos in objetos.items %}
+						<!-- Fila con los datos del comprobante -->
+						<tr class="comprobante-row">
+							<td colspan="8">
+								<strong>{{ productos.0.nombre_comprobante_venta }}</strong> 
+								<strong>{{ productos.0.numero }}</strong> 
+								<strong>{{ productos.0.fecha_comprobante|date:"d/m/Y" }}</strong> 
+							</td>
+						</tr>
+						<!-- Filas con el detalle del comprobante -->
+						{% for producto in productos %}
+							<tr class="compact-line-spacing">
+								<td>{{ producto.nombre_producto_marca }}</td>
+								<td>{{ producto.medida }}</td>
+								<td>{{ producto.id_producto_id }}</td>
+								<td>{{ producto.nombre_producto }}</td>
+								<td class="numeric">{{ producto.cantidad|formato_es_ar }}</td>
+								<td class="numeric">{{ producto.precio|formato_es_ar }}</td>
+								<td class="numeric">{{ producto.descuento|formato_es_ar }}</td>
+								<td class="numeric">{{ producto.total|formato_es_ar }}</td>
+							</tr>
+						{% endfor %}
+					{% endfor %}
+					
+				</tbody>
+			</table>
+		</main>
+	</body>
+</html>
