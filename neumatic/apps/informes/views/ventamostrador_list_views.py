@@ -73,7 +73,7 @@ class DataViewList:
 		'nombre_cliente': (2, 'Nombre'),
 		'rv_tp': (1, 'R/TP'),
 		'id_producto_id': (1, 'Prod.'),
-		'nombre_producto': (2, 'Gravado'),
+		'nombre_producto': (2, 'Descripción'),
 		'cantidad': (1, 'Cantidad'),
 		'precio': (1, 'Precio'),
 		'total': (1, 'Total'),

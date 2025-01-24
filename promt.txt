@@ -1,0 +1,113 @@
+ok, necesito obtener los datos del modelo según los parámetros de filtro pero estructurados de tal forma que:
+
+1.- El reporte debe tener los siguientes datos (columnas):
+	Comprobante	Fecha				Condición	Cliente			Nombre			Contado			Cta. Cte.
+	------------------------------------------------------------------------------------------------------
+	nombre_comprobante_venta1
+	comprobante	fecha_comprobante	condicion	id_cliente_id	nombre_cliente	total			total
+	comprobante	fecha_comprobante	condicion	id_cliente_id	nombre_cliente	total			total
+	comprobante	fecha_comprobante	condicion	id_cliente_id	nombre_cliente	total			total
+	comprobante	fecha_comprobante	condicion	id_cliente_id	nombre_cliente	total			total
+															----------------------------------------------
+																Sub Total:	SUM(total)		SUM(total)
+																Gravado:	SUM(gravado)	SUM(gravado)
+																I.V.A.:		SUM(iva)		SUM(iva)
+																Pecep. IB:	SUM(percep_ib)	SUM(percep_ib)
+	nombre_comprobante_venta2
+	comprobante	fecha_comprobante	condicion	id_cliente_id	nombre_cliente	total			total
+	comprobante	fecha_comprobante	condicion	id_cliente_id	nombre_cliente	total			total
+	comprobante	fecha_comprobante	condicion	id_cliente_id	nombre_cliente	total			total
+	comprobante	fecha_comprobante	condicion	id_cliente_id	nombre_cliente	total			total
+															----------------------------------------------
+																Sub Total:	SUM(total)		SUM(total)
+																Gravado:	SUM(gravado)	SUM(gravado)
+																I.V.A.:		SUM(iva)		SUM(iva)
+																Pecep. IB:	SUM(percep_ib)	SUM(percep_ib)
+															----------------------------------------------
+															Total General:	total_contado	total_cta_cte
+															----------------------------------------------
+
+2.- Estén ordenados por nombre_comprobante_venta, y se debe calcular por cada tipo de comprobante de venta los totales de los sus columnas: gravado, iva, percep_ib y total.
+3.- Los totales por tipo de comprobante es sumar las respectivas columnas.
+4.- El totla general es la sumatoria de todos los sub totales del campo total según la condición (Contado|Cta Cte).
+4.- los mosntos debe ir en la columna respectiva, si condicion es "Contado" deben reflejarse en la columna Contado de lo contrario en la columna Cta. Cte.
+
+Espero haberme explicado correctamente.
+
+
+Estos sería los datos de ejemplo del queryset:
+
+id_factura|nombre_comprobante_venta|letra_comprobante|numero_comprobante|comprobante	   |fecha_comprobante|condicion_comprobante|condicion|id_cliente_id|nombre_cliente					|gravado	|IVA		|percep_ib	|total		|id_sucursal_id
+10		  |FACTURA ELECTRONICA     |A				 |	2600022788		|FF A 0026-00022788|2024-08-14		 |2					   |Cta. Cte.|2			   |Cliente nuevo					|233057.85	|48942.15	|0.0		|282000		|11
+11		  |FACTURA ELECTRONICA     |A				 |	2600022887		|FF A 0026-00022887|2024-08-22		 |2					   |Cta. Cte.|2			   |Cliente nuevo					|19958.68	|4191.32	|0.0		|24150		|11
+12		  |FACTURA ELECTRONICA     |A				 |	2600022888		|FF A 0026-00022888|2024-08-22		 |2					   |Cta. Cte.|2			   |Cliente nuevo					|28527.28	|5990.72	|0.0		|34518		|11
+6		  |FACTURA ELECTRONICA     |A				 |	4300004729		|FF A 0043-00004729|2025-01-09		 |2					   |Cta. Cte.|9			   |AdmiraPlus Cargo Logistics, SAC	|0.0		|0.0		|0.0		|4000		|11
+1		  |FACTURA ELECTRONICA     |B				 |	2100014151		|FF B 0021-00014151|2024-12-01		 |2					   |Cta. Cte.|1			   |CLIENTE DE PRUEBA 1				|0.0		|0.0		|0.0		|1000		|11
+5		  |FACTURA ELECTRONICA     |B				 |	2200037268		|FF B 0022-00037268|2025-01-08		 |2					   |Cta. Cte.|9			   |AdmiraPlus Cargo Logistics, SAC	|0.0		|0.0		|0.0		|3000		|11
+9		  |NOTA DE CREDITO ELEC    |A				 |	2600001647		|CF A 0026-00001647|2024-08-24		 |2					   |Cta. Cte.|2			   |Cliente nuevo					|-233057.85	|-48942.15	|-5826.45	|-287826.45	|11
+8		  |NOTA DE CREDITO ELEC    |A				 |	2600991647		|CF A 0026-00991647|2025-01-08		 |2					   |Cta. Cte.|9			   |AdmiraPlus Cargo Logistics, SAC	|0.0		|0.0		|0.0		|-100		|11
+2		  |NOTA DE DEBITO ELECT    |A				 |	2100002355		|DF A 0021-00002355|2024-12-05		 |2					   |Cta. Cte.|1			   |CLIENTE DE PRUEBA 1				|0.0		|0.0		|0.0		|2000		|11
+4		  |RECIBO				   |R				 |	100136062		|RB R 0001-00136062|2025-01-06		 |2					   |Cta. Cte.|1			   |CLIENTE DE PRUEBA 1				|0.0		|0.0		|0.0		|200		|11
+7		  |RECIBO				   |R				 |	200147031		|RB R 0002-00147031|2025-01-09		 |2					   |Cta. Cte.|9			   |AdmiraPlus Cargo Logistics, SAC	|0.0		|0.0		|0.0		|1200		|11
+3		  |RECIBO				   |R				 |	800024559		|RB R 0008-00024559|2024-12-01		 |2					   |Cta. Cte.|1			   |CLIENTE DE PRUEBA 1				|0.0		|0.0		|0.0		|500		|11
+13		  |REMITO				   |R				 |	3300007993		|RF R 0033-00007993|2024-06-24		 |2					   |Cta. Cte.|9			   |AdmiraPlus Cargo Logistics, SAC	|0.0		|0.0		|0.0		|0.0		|11
+15		  |REMITO				   |R				 |	3300008602		|RF R 0033-00008602|2024-08-12		 |2					   |Cta. Cte.|9			   |AdmiraPlus Cargo Logistics, SAC	|0.0		|0.0		|0.0		|0.0		|11
+14		  |REMITO				   |R				 |	4200003037		|RF R 0042-00003037|2024-07-12		 |2					   |Cta. Cte.|9			   |AdmiraPlus Cargo Logistics, SAC	|0.0		|0.0		|0.0		|0.0		|12
+
+
+El reporte debería salir así:
+
+Comprobante			Fecha		Condición	Cliente	Nombre								  Contado		 Cta. Cte.
+-------------------------------------------------------------------------------------------------------------------
+FACTURA ELECTRONICA
+FF A 0026-00022788	14/08/2024	Cta. Cte.	2		Cliente nuevo					   		 0,00		282.000,00
+FF A 0026-00022887	22/08/2024	Cta. Cte.	2		Cliente nuevo							 0,00	     24.150,00
+FF A 0026-00022888	22/08/2024	Cta. Cte.	2		Cliente nuevo							 0,00		 34.518,00
+FF A 0043-00004729	09/01/2025	Cta. Cte.	9		AdmiraPlus Cargo Logistics, SAC			 0,00		  4.000,00
+FF B 0021-00014151	01/12/2024	Cta. Cte.	1		CLIENTE DE PRUEBA 1						 0,00		  1.000,00
+FF B 0022-00037268	08/01/2025	Cta. Cte.	9		AdmiraPlus Cargo Logistics, SAC			 0,00		  3.000,00
+																					-------------------------------
+																		Sub Total:  		 0,00		348.668,00
+																		  Gravado:			 0,00		281.543,81
+																		   I.V.A.:			 0,00		 59.124.19
+																   Percepción IB.:			 0,00			  0,00
+
+NOTA DE CREDITO ELEC
+CF A 0026-00001647	24/08/2024	Cta. Cte.	2		Cliente nuevo				  	  		 0,00	   -287.826,45
+CF A 0026-00991647	08/01/2025	Cta. Cte.	9		AdmiraPlus Cargo Logistics, SAC			 0,00		   -100,00
+																					-------------------------------
+																		Sub Total:  		 0,00	   -287.926,45
+																		  Gravado:			 0,00	   -233.057,85
+																		   I.V.A.:			 0,00		-48.942,15
+																   Percepción IB.:			 0,00		 -5.826,45
+
+NOTA DE DEBITO ELECT
+DF A 0021-00002355	05/12/2024	Cta. Cte.	1		CLIENTE DE PRUEBA 1						 0,00		  2.000,00
+																					-------------------------------
+																		Sub Total:  		 0,00		  2.000,00
+																		  Gravado:			 0,00			  0,00
+																		   I.V.A.:			 0,00			  0,00
+																   Percepción IB.:			 0,00			  0,00
+
+RECIBO
+RB R 0001-00136062	06/01/2025	Cta. Cte.	1		CLIENTE DE PRUEBA 1						 0,00			200,00
+RB R 0002-00147031	09/01/2025	Cta. Cte.	9		AdmiraPlus Cargo Logistics, SAC			 0,00		  1.200,00
+RB R 0008-00024559	01/12/2024	Cta. Cte.	1		CLIENTE DE PRUEBA 1						 0,00			500,00
+																					-------------------------------
+																		Sub Total:  		 0,00		  1.900,00
+																		  Gravado:			 0,00			  0,00
+																		   I.V.A.:			 0,00			  0,00
+																   Percepción IB.:			 0,00			  0,00
+
+REMITO
+RF R 0033-00007993	24/06/2024	Cta. Cte.	9		AdmiraPlus Cargo Logistics, SAC			 0,00			  0,00
+RF R 0033-00008602	12/08/2024	Cta. Cte.	9		AdmiraPlus Cargo Logistics, SAC			 0,00			  0,00
+RF R 0042-00003037	12/07/2024	Cta. Cte.	9		AdmiraPlus Cargo Logistics, SAC			 0,00			  0,00
+																					-------------------------------
+																		Sub Total:  		 0,00			  0,00
+																		  Gravado:			 0,00			  0,00
+																		   I.V.A.:			 0,00			  0,00
+																   Percepción IB.:			 0,00			  0,00
+																					-------------------------------
+																	Total General:  		 0,00		 64.641,55
+																					-------------------------------

@@ -510,7 +510,7 @@ class VLVentaMostrador(models.Model):
 	nombre_producto = models.CharField(max_length=50)
 	tipo_producto = models.CharField(max_length=1)
 	cantidad = models.DecimalField(max_digits=7, decimal_places=2)
-	precio = models.DecimalField(max_digits=12, decimal_places=2)
+	precio = models.DecimalField(max_digits=14, decimal_places=2)
 	total = models.DecimalField(max_digits=14, decimal_places=2)
 	id_sucursal_id = models.IntegerField()
 	
@@ -522,3 +522,58 @@ class VLVentaMostrador(models.Model):
 		verbose_name = ('Ventas por Mostrador')
 		verbose_name_plural = ('Ventas por Mostrador')
 		ordering = ['fecha_comprobante', 'numero_comprobante']
+
+
+#-----------------------------------------------------------------------------
+# Ventas por Comprobantes
+#-----------------------------------------------------------------------------
+class VentaComproManager(models.Manager):
+
+	def obtener_venta_compro(self, fecha_desde, fecha_hasta, sucursal=None):
+		""" Se determina las Ventas por Comprobante por un rango de fechas, aplicando filtros. """
+		
+		#-- Se crea la consulta parametrizada.
+		query = """
+			SELECT *
+				FROM VLVentaCompro 
+				WHERE 
+					fecha_comprobante BETWEEN %s AND %s
+		"""
+		
+		#-- Se añade los parámetros.
+		params = [fecha_desde, fecha_hasta]
+		
+		#-- Agrega filtros opcionales.
+		if sucursal:
+			query += " AND id_sucursal_id = %s"
+			params.append(sucursal.id_sucursal)
+		
+		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
+		return self.raw(query, params)
+
+
+class VLVentaCompro(models.Model):
+	id_factura = models.IntegerField(primary_key=True)
+	nombre_comprobante_venta = models.CharField(max_length=50)
+	codigo_comprobante_venta = models.CharField(max_length=3)
+	letra_comprobante = models.CharField(max_length=1)
+	numero_comprobante = models.IntegerField()
+	comprobante = models.CharField(max_length=17)
+	fecha_comprobante = models.DateField()
+	condicion = models.CharField(max_length=9)
+	id_cliente_id = models.IntegerField()
+	nombre_cliente = models.CharField(max_length=50)
+	gravado = models.DecimalField(max_digits=14, decimal_places=2)
+	iva = models.DecimalField(max_digits=14, decimal_places=2)
+	percep_ib = models.DecimalField(max_digits=14, decimal_places=2)
+	total = models.DecimalField(max_digits=14, decimal_places=2)
+	id_sucursal_id = models.IntegerField()
+	
+	objects = VentaComproManager()
+	
+	class Meta:
+		managed = False
+		db_table = 'VLVentaCompro'
+		verbose_name = ('Ventas por Comprobantes')
+		verbose_name_plural = ('Ventas por Comprobantes')
+		ordering = ['comprobante']
