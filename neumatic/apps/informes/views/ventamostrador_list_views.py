@@ -300,16 +300,12 @@ class VLVentaMostradorInformePDFView(View):
 			tipo_cliente_dict = {"T": "Todos", "M": "Minoristas", "R": "Revendedores"}
 			tipo_producto_dict = {"T": "Todos", "P": "Producto", "S": "Servicio"}
 			
-			
 			param = {
 				"Sucursal": sucursal.nombre_sucursal if sucursal else "Todas",
-				"Desde": fecha_desde,
-				"Hasta": fecha_hasta,
-				# "Tipo Venta": tv,
+				"Desde": fecha_desde.strftime("%d/%m/%Y"),
+				"Hasta": fecha_hasta.strftime("%d/%m/%Y"),
 				"Tipo Venta": tipo_venta_dict.get(tipo_venta, "Desconocido"),
-				# "Tipo Cliente": tc,
 				"Tipo Cliente": tipo_cliente_dict.get(tipo_cliente, "Desconocido"),
-				# "Tipo Producto": tp,
 				"Tipo Producto": tipo_producto_dict.get(tipo_producto, "Desconocido"),
 			}
 			

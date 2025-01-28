@@ -25,7 +25,7 @@ class BuscadorVentaComproForm(InformesGenericForm):
 		label="Hasta Fecha",
 		widget=forms.TextInput(attrs={'type':'date', **formclassdate})
 	)
-	totales_comprobante = forms.BooleanField(
+	solo_totales_comprobante = forms.BooleanField(
 		label="Solo Totales por Comprobante",
 		required=False,
 		widget=forms.CheckboxInput(attrs={**formclasscheck})

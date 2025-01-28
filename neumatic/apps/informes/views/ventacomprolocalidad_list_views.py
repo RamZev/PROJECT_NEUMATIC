@@ -295,8 +295,8 @@ class VLVentaComproLocalidadInformePDFView(View):
 			reporte = 'informes/reportes/ventacomprolocalidad_pdf.html'
 			
 			param = {
-				"Desde": fecha_desde,
-				"Hasta": fecha_hasta,
+				"Desde": fecha_desde.strftime("%d/%m/%Y"),
+				"Hasta": fecha_hasta.strftime("%d/%m/%Y"),
 			}
 			
 			param.update({"C.P.": codigo_postal if codigo_postal else "Todos"})

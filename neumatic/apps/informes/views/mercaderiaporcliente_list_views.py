@@ -284,8 +284,8 @@ class VLMercaderiaPorClienteInformePDFView(View):
 			
 			reporte = 'informes/reportes/mercaderiaporcliente_pdf.html'
 			param = {
-				"Desde": fecha_desde,
-				"Hasta": fecha_hasta,
+				"Desde": fecha_desde.strftime("%d/%m/%Y"),
+				"Hasta": fecha_hasta.strftime("%d/%m/%Y"),
 			}
 			
 			#-- Validar que el cliente exista antes de acceder a sus datos.

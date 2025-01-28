@@ -30,7 +30,6 @@
 		
 		<main>
 			
-			<!-- <div class="compact-line-spacing" style="display: flex; justify-content: space-between; margin-top: 4px; border-bottom: 1px solid #1f0ada; padding-bottom: 6px;"> -->
 			<div class="seccion compact-line-spacing">
 				<!-- Sección izquierda -->
 				<div style="flex: 1; padding-right: 10px;">
@@ -61,58 +60,65 @@
 				</thead>
 				
 				<tbody>
-					{% for tipo, datos in objetos.items %}
+					{% for grupo in objetos %}
 						<tr>
-								<td colspan="6"><strong>{{ tipo }}</strong></td>
+								<td colspan="6"><strong>{{ grupo.tipo }}</strong></td>
 						</tr>
-						{% for comprobante in datos.comprobantes %}
-							<tr>
-								<td>{{ comprobante.comprobante }}</td>
-								<td>{{ comprobante.fecha|date:"d/m/Y" }}</td>
-								<td>{{ comprobante.condicion }}</td>
-								<td>{{ comprobante.cliente_id }}</td>
-								<td>{{ comprobante.cliente_nombre }}</td>
-								<td class="numeric">
-									{% if comprobante.columna == "contado" %}
-										{{ comprobante.total|formato_es_ar }}
-									{% else %}
-										0,00
-									{% endif %}
-								</td>
-								<td class="numeric">
-									{% if comprobante.columna == "cta_cte" %}
-										{{ comprobante.total|formato_es_ar }}
-									{% else %}
-										0,00
-									{% endif %}
-								</td>
-							</tr>
-						{% endfor %}
-						<tr>
-							<td colspan="5">Sub Total:</td>
-							<td class="numeric">{{ datos.subtotal.contado.total|formato_es_ar }}</td>
-							<td class="numeric">{{ datos.subtotal.cta_cte.total|formato_es_ar }}</td>
+						
+						{% if not solo_totales_comprobante %}
+							{% for comprobante in grupo.comprobantes %}
+								<tr class="compact-line-spacing">
+									<td>{{ comprobante.comprobante }}</td>
+									<td>{{ comprobante.fecha|date:"d/m/Y" }}</td>
+									<td>{{ comprobante.condicion }}</td>
+									<td>{{ comprobante.cliente_id }}</td>
+									<td>{{ comprobante.cliente_nombre }}</td>
+									<td class="numeric">
+										{% if comprobante.condicion == "Contado" %}
+											{{ comprobante.total|formato_es_ar }}
+										{% else %}
+											0,00
+										{% endif %}
+									</td>
+									<td class="numeric">
+										{% if comprobante.condicion == "Cta. Cte." %}
+											{{ comprobante.total|formato_es_ar }}
+										{% else %}
+											0,00
+										{% endif %}
+									</td>
+								</tr>
+							{% endfor %}
+						{% endif %}
+						
+						<tr class="compact-line-spacing">
+							<td style="text-align: right;" colspan="5"><strong>Sub Total:</strong></td>
+							<td class="numeric" style="border-top: 1px solid;"><strong>{{ grupo.subtotal.contado.total|formato_es_ar }}</strong></td>
+							<td class="numeric" style="border-top: 1px solid;"><strong>{{ grupo.subtotal.cta_cte.total|formato_es_ar }}</strong></td>
 						</tr>
-						<tr>
-							<td colspan="5">Gravado:</td>
-							<td class="numeric">{{ datos.subtotal.contado.gravado|formato_es_ar }}</td>
-							<td class="numeric">{{ datos.subtotal.cta_cte.gravado|formato_es_ar }}</td>
+						<tr class="compact-line-spacing">
+							<td style="text-align: right;" colspan="5">Gravado:</td>
+							<td class="numeric">{{ grupo.subtotal.contado.gravado|formato_es_ar }}</td>
+							<td class="numeric">{{ grupo.subtotal.cta_cte.gravado|formato_es_ar }}</td>
 						</tr>
-						<tr>
-							<td colspan="5">I.V.A.:</td>
-							<td class="numeric">{{ datos.subtotal.contado.iva|formato_es_ar }}</td>
-							<td class="numeric">{{ datos.subtotal.cta_cte.iva|formato_es_ar }}</td>
+						<tr class="compact-line-spacing">
+							<td style="text-align: right;" colspan="5">I.V.A.:</td>
+							<td class="numeric">{{ grupo.subtotal.contado.iva|formato_es_ar }}</td>
+							<td class="numeric">{{ grupo.subtotal.cta_cte.iva|formato_es_ar }}</td>
 						</tr>
-						<tr>
-							<td colspan="5">Percepción IB:</td>
-							<td class="numeric">{{ datos.subtotal.contado.percep_ib|formato_es_ar }}</td>
-							<td class="numeric">{{ datos.subtotal.cta_cte.percep_ib|formato_es_ar }}</td>
+						<tr class="compact-line-spacing">
+							<td style="text-align: right;" colspan="5">Percepción IB:</td>
+							<td class="numeric">{{ grupo.subtotal.contado.percep_ib|formato_es_ar }}</td>
+							<td class="numeric">{{ grupo.subtotal.cta_cte.percep_ib|formato_es_ar }}</td>
 						</tr>
+						
 					{% endfor %}
-					<tr>
-						<td colspan="5"><strong>Total General:</strong></td>
-						<td class="numeric"><strong>{{ total_general.contado.total|formato_es_ar }}</strong></td>
-						<td class="numeric"><strong>{{ total_general.cta_cte.total|formato_es_ar }}</strong></td>
+					<tr style="border-top: 2px double; ">
+						<td style="text-align: right;" colspan="5"><strong>Total General:</strong></td>
+						<!-- <td class="numeric"><strong>{{ total_general.contado.total|formato_es_ar }}</strong></td>
+						<td class="numeric"><strong>{{ total_general.cta_cte.total|formato_es_ar }}</strong></td> -->
+						<td class="numeric"><strong>{{ total_general.contado|formato_es_ar }}</strong></td>
+						<td class="numeric"><strong>{{ total_general.cta_cte|formato_es_ar }}</strong></td>
 					</tr>
 					
 				</tbody>

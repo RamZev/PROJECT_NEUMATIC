@@ -14,7 +14,6 @@ from django.template.loader import render_to_string
 from weasyprint import HTML
 from django.templatetags.static import static
 from collections import defaultdict
-import pprint
 
 from .list_views_generics import *
 from apps.informes.models import VLVentaCompro
@@ -279,20 +278,28 @@ class VLVentaComproInformePDFView(View):
 			sucursal = form.cleaned_data.get('sucursal', None)
 			fecha_desde = form.cleaned_data.get('fecha_desde', date(date.today().year, 1, 1))
 			fecha_hasta = form.cleaned_data.get('fecha_hasta', date.today())
-			totales_comprobante = form.cleaned_data.get('totales_comprobante', None)
+			solo_totales_comprobante = form.cleaned_data.get('solo_totales_comprobante', None)
 			
 			reporte = 'informes/reportes/ventacompro_pdf.html'
 			
 			param = {
 				"Sucursal": sucursal.nombre_sucursal if sucursal else "Todas",
-				"Desde": fecha_desde,
-				"Hasta": fecha_hasta,
+				"Desde": fecha_desde.strftime("%d/%m/%Y"),
+				"Hasta": fecha_hasta.strftime("%d/%m/%Y"),
 			}
 			
 			fecha_hora_reporte = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
 			
 			#-- Estructura para agrupar los datos.
-			datos = defaultdict(lambda: {
+			datos_agrupados = []
+			totales_generales = {
+				# "contado": {"gravado": Decimal(0), "iva": Decimal(0), "percep_ib": Decimal(0), "total": Decimal(0)},
+				# "cta_cte": {"gravado": Decimal(0), "iva": Decimal(0), "percep_ib": Decimal(0), "total": Decimal(0)},
+				"contado": Decimal(0),
+				"cta_cte": Decimal(0),
+			}
+			
+			agrupados = defaultdict(lambda: {
 				"comprobantes": [],
 				"subtotal": {
 					"contado": {"gravado": Decimal(0), "iva": Decimal(0), "percep_ib": Decimal(0), "total": Decimal(0)},
@@ -300,19 +307,13 @@ class VLVentaComproInformePDFView(View):
 				},
 			})
 			
-			#-- Total general.
-			total_general = {
-				"contado": {"gravado": Decimal(0), "iva": Decimal(0), "percep_ib": Decimal(0), "total": Decimal(0)},
-				"cta_cte": {"gravado": Decimal(0), "iva": Decimal(0), "percep_ib": Decimal(0), "total": Decimal(0)},
-			}
-			
 			for item in queryset:
 				tipo = item.nombre_comprobante_venta
 				condicion = "contado" if item.condicion == "Contado" else "cta_cte"
 				monto_total = Decimal(item.total)
 				
-				#-- Agregar el comprobante al grupo.
-				datos[tipo]["comprobantes"].append({
+				#-- Agregar el comprobante.
+				agrupados[tipo]["comprobantes"].append({
 					"comprobante": item.comprobante,
 					"fecha": item.fecha_comprobante,
 					"condicion": item.condicion,
@@ -322,30 +323,32 @@ class VLVentaComproInformePDFView(View):
 					"iva": Decimal(item.iva),
 					"percep_ib": Decimal(item.percep_ib),
 					"total": monto_total,
-					"columna": condicion,  # Para identificar si va en Contado o Cta. Cte.
 				})
 				
-				# Actualizar subtotales por condición
-				datos[tipo]["subtotal"][condicion]["gravado"] += Decimal(item.gravado)
-				datos[tipo]["subtotal"][condicion]["iva"] += Decimal(item.iva)
-				datos[tipo]["subtotal"][condicion]["percep_ib"] += Decimal(item.percep_ib)
-				datos[tipo]["subtotal"][condicion]["total"] += monto_total
+				#-- Actualizar subtotales.
+				agrupados[tipo]["subtotal"][condicion]["gravado"] += Decimal(item.gravado)
+				agrupados[tipo]["subtotal"][condicion]["iva"] += Decimal(item.iva)
+				agrupados[tipo]["subtotal"][condicion]["percep_ib"] += Decimal(item.percep_ib)
+				agrupados[tipo]["subtotal"][condicion]["total"] += monto_total
 				
-				# Actualizar totales generales
-				total_general[condicion]["gravado"] += Decimal(item.gravado)
-				total_general[condicion]["iva"] += Decimal(item.iva)
-				total_general[condicion]["percep_ib"] += Decimal(item.percep_ib)
-				total_general[condicion]["total"] += monto_total			
-			
-			# pprint.pprint(datos)
-			print(datos)
+				#-- Actualizar totales generales.
+				# totales_generales[condicion]["gravado"] += Decimal(item.gravado)
+				# totales_generales[condicion]["iva"] += Decimal(item.iva)
+				# totales_generales[condicion]["percep_ib"] += Decimal(item.percep_ib)
+				# totales_generales[condicion]["total"] += monto_total
+				totales_generales[condicion] += monto_total
+				
+			#-- Convertir a lista para facilitar la iteración en la plantilla.
+			for tipo, datos in agrupados.items():
+				datos_agrupados.append({"tipo": tipo, **datos})
 			
 			#-- Renderizar la plantilla HTML con los datos.
 			dominio = f"http://{request.get_host()}"
 			
 			html_string = render_to_string(reporte, {
-				'objetos': datos,
-				'total_general': total_general,
+				'objetos': datos_agrupados,
+				'total_general': totales_generales,
+				'solo_totales_comprobante': solo_totales_comprobante,
 				'parametros': param,
 				'fecha_hora_reporte': fecha_hora_reporte,
 				'titulo': DataViewList.report_title,
@@ -356,8 +359,6 @@ class VLVentaComproInformePDFView(View):
 			#-- Preparar la respuesta HTTP.
 			response = HttpResponse(content_type='application/pdf')
 			response['Content-Disposition'] = f'inline; filename="informe_{ConfigViews.model_string}.pdf"'
-			HTML(string=html_string).write_pdf(response)
-			
 			try:
 				HTML(string=html_string).write_pdf(response)
 			except Exception as e:
@@ -367,34 +368,3 @@ class VLVentaComproInformePDFView(View):
 		else:
 			# Manejar errores del formulario
 			return HttpResponse(f"Error en el formulario: {form.errors}", status=400)
-
-
-
-"""
-{'FACTURA ELECTRONICA': {'comprobantes': [{'comprobante': 'FF A 0026-00022788', 'fecha': datetime.date(2024, 8, 14), 'condicion': 'Cta. Cte.', 'cliente_id': 2, 'cliente_nombre': 'Cliente nuevo', 'gravado': Decimal('233057.85'), 'iva': Decimal('48942.15'),'percep_ib': Decimal('0.00'), 'total': Decimal('282000.00'), 'columna': 'cta_cte'},
-										  {'comprobante': 'FF A 0026-00022887', 'fecha': datetime.date(2024, 8, 22), 'condicion': 'Cta. Cte.', 'cliente_id': 2, 'cliente_nombre': 'Cliente nuevo', 'gravado': Decimal('19958.68'), 'iva': Decimal('4191.32'), 'percep_ib': Decimal('0.00'), 'total': Decimal('24150.00'), 'columna': 'cta_cte'}, 
-										  {'comprobante': 'FF A 0026-00022888', 'fecha': datetime.date(2024, 8, 22), 'condicion': 'Cta. Cte.', 'cliente_id': 2, 'cliente_nombre': 'Cliente nuevo', 'gravado': Decimal('28527.28'), 'iva': Decimal('5990.72'), 'percep_ib': Decimal('0.00'), 'total': Decimal('34518.00'), 'columna': 'cta_cte'}, 
-										  {'comprobante': 'FF A 0043-00004729', 'fecha': datetime.date(2025, 1, 9), 'condicion': 'Cta. Cte.', 'cliente_id': 9, 'cliente_nombre': 'AdmiraPlus Cargo Logistics, SAC', 'gravado': Decimal('0.00'), 'iva': Decimal('0.00'), 'percep_ib': Decimal('0.00'), 'total': Decimal('4000.00'), 'columna': 'cta_cte'}, 
-										  {'comprobante': 'FF B 0021-00014151', 'fecha': datetime.date(2024, 12, 1), 'condicion': 'Cta. Cte.', 'cliente_id': 1, 'cliente_nombre': 'CLIENTE DE PRUEBA 1', 'gravado': Decimal('0.00'), 'iva': Decimal('0.00'), 'percep_ib': Decimal('0.00'), 'total': Decimal('1000.00'), 'columna': 'cta_cte'}, 
-										  {'comprobante': 'FF B 0022-00037268', 'fecha': datetime.date(2025, 1, 8), 'condicion': 'Cta. Cte.', 'cliente_id': 9, 'cliente_nombre': 'AdmiraPlus Cargo Logistics, SAC', 'gravado': Decimal('0.00'), 'iva': Decimal('0.00'), 'percep_ib': Decimal('0.00'), 'total': Decimal('3000.00'), 'columna': 'cta_cte'}], 
-						 'subtotal': {'contado': {'gravado': Decimal('0'), 'iva': Decimal('0'), 'percep_ib': Decimal('0'), 'total': Decimal('0')}, 
-									  'cta_cte': {'gravado': Decimal('281543.81'), 'iva': Decimal('59124.19'), 'percep_ib': Decimal('0.00'), 'total': Decimal('348668.00')}}}, 
- 'NOTA DE CREDITO ELEC': {'comprobantes': [{'comprobante': 'CF A 0026-00001647', 'fecha': datetime.date(2024, 8, 24), 'condicion': 'Cta. Cte.', 'cliente_id': 2, 'cliente_nombre': 'Cliente nuevo', 'gravado': Decimal('-233057.85'), 'iva': Decimal('-48942.15'), 'percep_ib': Decimal('-5826.45'), 'total': Decimal('-287826.45'), 'columna': 'cta_cte'}, 
-										   {'comprobante': 'CF A 0026-00991647', 'fecha': datetime.date(2025, 1, 8), 'condicion': 'Cta. Cte.', 'cliente_id': 9, 'cliente_nombre': 'AdmiraPlus Cargo Logistics, SAC', 'gravado': Decimal('0.00'), 'iva': Decimal('0.00'), 'percep_ib': Decimal('0.00'), 'total': Decimal('-100.00'), 'columna': 'cta_cte'}], 
-						  'subtotal': {'contado': {'gravado': Decimal('0'), 'iva': Decimal('0'), 'percep_ib': Decimal('0'), 'total': Decimal('0')}, 
-					 				   'cta_cte': {'gravado': Decimal('-233057.85'), 'iva': Decimal('-48942.15'), 'percep_ib': Decimal('-5826.45'), 'total': Decimal('-287926.45')}}}, 
- 'NOTA DE DEBITO ELECT': {'comprobantes': [{'comprobante': 'DF A 0021-00002355', 'fecha': datetime.date(2024, 12, 5), 'condicion': 'Cta. Cte.', 'cliente_id': 1, 'cliente_nombre': 'CLIENTE DE PRUEBA 1', 'gravado': Decimal('0.00'), 'iva': Decimal('0.00'), 'percep_ib': Decimal('0.00'), 'total': Decimal('2000.00'), 'columna': 'cta_cte'}], 
-						  'subtotal': {'contado': {'gravado': Decimal('0'), 'iva': Decimal('0'), 'percep_ib': Decimal('0'), 'total': Decimal('0')}, 
-					 				   'cta_cte': {'gravado': Decimal('0.00'), 'iva': Decimal('0.00'), 'percep_ib': Decimal('0.00'), 'total': Decimal('2000.00')}}}, 
- 'RECIBO': {'comprobantes': [{'comprobante': 'RB R 0001-00136062', 'fecha': datetime.date(2025, 1, 6), 'condicion': 'Cta. Cte.', 'cliente_id': 1, 'cliente_nombre': 'CLIENTE DE PRUEBA 1', 'gravado': Decimal('0.00'), 'iva': Decimal('0.00'), 'percep_ib': Decimal('0.00'), 'total': Decimal('200.00'), 'columna': 'cta_cte'}, 
-							 {'comprobante': 'RB R 0002-00147031', 'fecha': datetime.date(2025, 1, 9), 'condicion': 'Cta. Cte.', 'cliente_id': 9, 'cliente_nombre': 'AdmiraPlus Cargo Logistics, SAC', 'gravado': Decimal('0.00'), 'iva': Decimal('0.00'), 'percep_ib': Decimal('0.00'), 'total': Decimal('1200.00'), 'columna': 'cta_cte'}, 
-							 {'comprobante': 'RB R 0008-00024559', 'fecha': datetime.date(2024, 12, 1), 'condicion': 'Cta. Cte.', 'cliente_id': 1, 'cliente_nombre': 'CLIENTE DE PRUEBA 1', 'gravado': Decimal('0.00'), 'iva': Decimal('0.00'), 'percep_ib': Decimal('0.00'), 'total': Decimal('500.00'), 'columna': 'cta_cte'}], 
-			'subtotal': {'contado': {'gravado': Decimal('0'), 'iva': Decimal('0'), 'percep_ib': Decimal('0'), 'total': Decimal('0')}, 
-						 'cta_cte': {'gravado': Decimal('0.00'), 'iva': Decimal('0.00'), 'percep_ib': Decimal('0.00'), 'total': Decimal('1900.00')}}}, 
-'REMITO': {'comprobantes': [{'comprobante': 'RF R 0033-00007993', 'fecha': datetime.date(2024, 6, 24), 'condicion': 'Cta. Cte.', 'cliente_id': 9, 'cliente_nombre': 'AdmiraPlus Cargo Logistics, SAC', 'gravado': Decimal('0.00'), 'iva': Decimal('0.00'), 'percep_ib': Decimal('0.00'), 'total': Decimal('0.00'), 'columna': 'cta_cte'}, 
-							{'comprobante': 'RF R 0033-00008602', 'fecha': datetime.date(2024, 8, 12), 'condicion': 'Cta. Cte.', 'cliente_id': 9, 'cliente_nombre': 'AdmiraPlus Cargo Logistics, SAC', 'gravado': Decimal('0.00'), 'iva': Decimal('0.00'), 'percep_ib': Decimal('0.00'), 'total': Decimal('0.00'), 'columna': 'cta_cte'}, 
-							{'comprobante': 'RF R 0042-00003037', 'fecha': datetime.date(2024, 7, 12), 'condicion': 'Cta. Cte.', 'cliente_id': 9, 'cliente_nombre': 'AdmiraPlus Cargo Logistics, SAC', 'gravado': Decimal('0.00'), 'iva': Decimal('0.00'), 'percep_ib': Decimal('0.00'), 'total': Decimal('0.00'), 'columna': 'cta_cte'}], 
-		   'subtotal': {'contado': {'gravado': Decimal('0'), 'iva': Decimal('0'), 'percep_ib': Decimal('0'), 'total': Decimal('0')}, 
-				  		'cta_cte': {'gravado': Decimal('0.00'), 'iva': Decimal('0.00'), 'percep_ib': Decimal('0.00'), 'total': Decimal('0.00')}}}}
-
-"""
