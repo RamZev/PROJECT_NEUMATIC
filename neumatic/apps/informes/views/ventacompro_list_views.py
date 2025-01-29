@@ -118,6 +118,7 @@ class VLVentaComproInformeListView(InformeListView):
 	
 	def get_queryset(self):
 		# queryset = super().get_queryset()
+		print("Entró a get_queryset")
 		
 		#-- Inicializa el queryset con un queryset vacío por defecto.
 		queryset = VLVentaCompro.objects.none()		
@@ -131,6 +132,8 @@ class VLVentaComproInformeListView(InformeListView):
 			form = BuscadorVentaComproForm()  # Formulario vacío para la carga inicial
 		
 		if form.is_valid():
+			print("Entró a form.is_valid()")
+			
 			sucursal = form.cleaned_data.get('sucursal', None)
 			fecha_desde = form.cleaned_data.get('fecha_desde', date(date.today().year, 1, 1))
 			fecha_hasta = form.cleaned_data.get('fecha_hasta', date.today())
@@ -147,6 +150,10 @@ class VLVentaComproInformeListView(InformeListView):
 				fecha_hasta, 
 				sucursal=sucursal
 			)
+			
+			print("*******************")
+			print(list(queryset))
+			print("*******************")
 			
 		else:
 			#-- Agregar clases css a los campos con errores.

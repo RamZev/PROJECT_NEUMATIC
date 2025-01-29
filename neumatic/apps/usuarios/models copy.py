@@ -9,26 +9,24 @@ from entorno.constantes_base import JERARQUIA
 class User(AbstractUser):
 	email = models.EmailField("Correo electrónico")
 	email_alt = models.EmailField("Correo alternativo", max_length=50,
-                               null=True, blank=True)
+							   null=True, blank=True)
 	telefono = models.CharField("Teléfono", max_length=15,
-                             null=True, blank=True)
+							 null=True, blank=True)
 	iniciales = models.CharField("Iniciales", max_length=3,
 								null=True, blank=True)
 	jerarquia = models.CharField("Jerarquía", max_length=1,
 								choices=JERARQUIA, default="Z",
 								null=True, blank=True)
 	id_vendedor = models.ForeignKey('maestros.Vendedor', 
-                                  on_delete=models.PROTECT,
-                                  null=True, blank=True,
-                                  verbose_name="Vendedor")
+								  on_delete=models.PROTECT,
+								  null=True, blank=True,
+								  verbose_name="Vendedor")
 	id_sucursal = models.ForeignKey('maestros.Sucursal', 
-                                  on_delete=models.PROTECT,
-                                  null=True, blank=True,
-                                  verbose_name="Sucursal")
+								  on_delete=models.PROTECT,
+								  verbose_name="Sucursal")
 	id_punto_venta = models.ForeignKey('maestros.PuntoVenta', 
-                                     on_delete=models.PROTECT,
-                                     null=True, blank=True,
-                                     verbose_name="Punto de Venta")
+									 on_delete=models.PROTECT,
+									 verbose_name="Punto de Venta")
 
 
 # -- Al crear un nuevo usuario este quede activo por defecto.

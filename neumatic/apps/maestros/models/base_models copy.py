@@ -310,7 +310,7 @@ class ComprobanteCompra(ModeloBaseGenerico):
 	mult_compra = models.IntegerField("Mult. Compra")
 	mult_saldo = models.IntegerField("Mult. Saldo")
 	mult_stock = models.IntegerField("Mult. Stock")
-	mult_caja = models.IntegerField("Mult. IVA")
+	mult_caja = models.IntegerField("Mult. Caja")
 	libro_iva = models.BooleanField("Libreo IVA", default=False)
 	codigo_afip_a = models.CharField("Código AFIP A", max_length=3)
 	codigo_afip_b = models.CharField("Código AFIP B", max_length=3)
@@ -583,16 +583,13 @@ class PuntoVenta(ModeloBaseGenerico):
 	id_punto_venta = models.AutoField(primary_key=True)
 	estatus_punto_venta = models.BooleanField("Estatus", default=True,
 											choices=ESTATUS_GEN)
-	id_sucursal = models.ForeignKey('Sucursal', on_delete=models.PROTECT,
-                                 verbose_name="Sucursal",
-                                 null=True, blank=True)
 	punto_venta = models.CharField("Punto de Venta", max_length=5, unique=True)
-	descripcion_punto_venta = models.CharField("Descripción Pto. Venta",
-                                            max_length=50, 
-                                            null=True, blank=True)
+	descripcion_punto_venta = models.CharField("Descripción Pto. Venta", 
+											max_length=50, null=True, 
+											blank=True)
 	
 	def __str__(self):
-		return f'{self.id_sucursal} {self.punto_venta}'
+		return self.punto_venta
 	
 	def clean(self):
 		errors = {}
