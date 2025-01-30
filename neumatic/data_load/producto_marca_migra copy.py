@@ -13,7 +13,7 @@ sys.path.append(BASE_DIR)
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'neumatic.settings')
 django.setup()
 
-from apps.maestros.models.base_models import ProductoMarca, Moneda
+from apps.maestros.models.base_models import ProductoMarca
 
 def reset_producto_marca():
     """Elimina los datos existentes en la tabla ProductoMarca y resetea su ID en SQLite."""
@@ -33,8 +33,6 @@ def cargar_datos():
 
     # Abrir la tabla de Visual FoxPro usando dbfread y ordenarla por CODIGO
     table = sorted(DBF(dbf_path, encoding='latin-1'), key=lambda r: r['CODIGO'])
-    
-    print("tamaño de la Tabla:", len(table))
 
     expected_codigo = 1  # El código esperado para asegurar consecutividad
 
@@ -43,49 +41,34 @@ def cargar_datos():
 
         # Revisar si el código es consecutivo
         while expected_codigo < codigo:
-            # Obtener la instancia de moneda por defecto
-            moneda_default = Moneda.objects.filter(pk=1).first()
-
+            # Insertar un registro pendiente si hay un salto en el código
             ProductoMarca.objects.create(
                 estatus_producto_marca=True,
                 nombre_producto_marca="PENDIENTE DE ELIMINACIÓN",
                 principal=False,
                 info_michelin_auto=False,
                 info_michelin_camion=False,
-                id_moneda=moneda_default  # Instancia de Moneda
+                id_moneda=1  # Moneda por defecto
             )
             expected_codigo += 1
 
-        # Obtener la instancia de moneda según el valor en el registro
+        # Crear el registro actual
         moneda = record['MONEDA'].strip()
-
-        # Determinar el ID de la moneda según el valor de MONEDA
         id_moneda = 1 if moneda == "P" else 2 if moneda == "D" else 4
 
-        # Instanciar la moneda directamente con su ID
-        id_moneda_instancia = Moneda.objects.filter(pk=id_moneda).first()
-
-        # Verificar si se encontró la instancia
-        if not id_moneda_instancia:
-            print(f"Error: No se encontró la moneda para el registro {codigo}. Omitiendo.")
-            continue
-
-        # Crear el registro
         ProductoMarca.objects.create(
             estatus_producto_marca=True,
             nombre_producto_marca=record['NOMBRE'].strip(),
             principal=False,
             info_michelin_auto=False,
             info_michelin_camion=False,
-            id_moneda=id_moneda_instancia  # Instancia de Moneda
+            id_moneda=id_moneda
         )
-
 
         expected_codigo += 1
 
     # Eliminar los registros marcados como "PENDIENTE DE ELIMINACIÓN"
     ProductoMarca.objects.filter(nombre_producto_marca="PENDIENTE DE ELIMINACIÓN").delete()
-
 
 if __name__ == '__main__':
     cargar_datos()

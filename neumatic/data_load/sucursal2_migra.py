@@ -31,6 +31,7 @@ codigo_inicio = 1
 # codigo_final = None
 codigo_final = 10
 
+# Filtrar y ordenal la tabla DBF
 # Filtrar y ordenar la tabla DBF
 table = sorted(
     [
@@ -94,3 +95,5 @@ for idx, record in enumerate(table):
         inicio_actividad = record.get('INICIOACT', None)
             
     )
+    
+   

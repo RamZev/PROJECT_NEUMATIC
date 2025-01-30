@@ -1,0 +1,61 @@
+<!-- neumatic/apps/informes/templates/informes/reportes/base_reportes.html -->
+{% comment %}{% endcomment %}
+
+<!DOCTYPE html>
+<html lang="es">
+	<head>
+		<meta charset="UTF-8">
+		{% load static %}
+		{% load custom_tags %}
+		<title>{% block title %}Reporte{% endblock %}</title>
+		<link rel="stylesheet" href="{{ css_url }}">
+	</head>
+	<body class="{{ orientation }}">
+		<!-- Header con dos secciones: top y bottom -->
+		{% block header %}
+		<header>
+			<!-- Sección Superior (25% | 75%) -->
+			<div class="header-top">
+				<div class="logo-section">
+					{% block logo_block %}
+						<img src="{{ logo_url }}" alt="Logo" class="logo">
+					{% endblock %}
+				</div>
+				<div class="title-section align-right">
+					{% block title_block %}
+						<h2><i>{{ titulo }}</i></h2>
+					{% endblock %}
+				</div>
+			</div>
+			
+			<!-- Sección Inferior (50% | 50%) -->
+			<div class="header-bottom parametros">
+				<div class="left-content align-left">
+					{% block header_bottom_left %}
+						<!-- Contenido izquierdo dinámico (ej: datos del cliente) -->
+					{% endblock %}
+				</div>
+				<div class="right-content align-right">
+					{% block header_bottom_right %}
+						<!-- Contenido derecho dinámico (ej: parámetros del reporte) -->
+					{% endblock %}
+				</div>
+			</div>
+		</header>
+		{% endblock %}
+		
+		<!-- Contenido Principal -->
+		<main>
+			{% block content %}{% endblock %}
+		</main>
+		
+		<!-- Footer -->
+		{% block footer %}
+			{% comment %}
+			<div class="left">M.A.A.S Soft</div>
+			<div class="center">Página {{ page_number }} de {{ page_count }}</div>
+			<div class="right">{{ fecha_hora_reporte }}</div>
+			{% endcomment %}
+		{% endblock %}
+	</body>
+</html>

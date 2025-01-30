@@ -65,7 +65,7 @@
 				<tbody>
 					{% for obj in objetos %}
 						<tr class="compact-line-spacing">
-							<td>{{ obj.fecha_comprobante }}</td>
+							<td>{{ obj.fecha_comprobante|date:'d/m/Y' }}</td>
 							<td>{{ obj.comprobante }}</td>
 							<td>{{ obj.id_cliente_id }}</td>
 							<td>{{ obj.nombre_cliente }}</td>

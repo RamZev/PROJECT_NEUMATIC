@@ -44,67 +44,74 @@ def cargar_datos():
     print(f"Total de registros a procesar: {total_registros}")
 
     for idx, record in enumerate(table):
-        codigo = int(record['CODIGO'])
+        codigo = record['CODIGO']
+
+        # Revisar si el código es consecutivo
+        while expected_codigo < codigo:
+            # Insertar un registro pendiente si hay un salto en el código
+            Producto.objects.create(
+                estatus_producto=True,
+                codigo_producto=9999999,
+                tipo_producto="P",  # Valor temporal hasta que se corrija el código
+                id_familia=ProductoFamilia.objects.get(pk=6),  # Usar instancia de ProductoFamilia
+                id_marca=ProductoMarca.objects.get(pk=1),  # Usar instancia de ProductoMarca
+                id_modelo=ProductoModelo.objects.get(pk=1),  # Usar instancia de ProductoModelo
+                cai="",
+                medida="",
+                segmento="",
+                nombre_producto="PENDIENTE POR ELIMINAR",
+                unidad=1,
+                fecha_fabricacion="",
+                costo=0.0,
+                alicuota_iva=0.0,
+                precio=0.0,
+                stock=1,
+                minimo=1,
+                descuento=0.0,
+                despacho_1="",
+                despacho_2="",
+                descripcion_producto="",
+                carrito=False
+            )
+            expected_codigo += 1
 
         # Obtener instancias relacionadas para ProductoFamilia, ProductoMarca y ProductoModelo
         try:
-            familia = ProductoFamilia.objects.get(pk=record.get('ARTICULO'))
-            marca = ProductoMarca.objects.get(pk=record.get('MARCA'))
-            modelo = ProductoModelo.objects.get(pk=record.get('MODELO'))
+            familia = ProductoFamilia.objects.get(pk=record['ARTICULO'])
+            marca = ProductoMarca.objects.get(pk=record['MARCA'])
+            modelo = ProductoModelo.objects.get(pk=record['MODELO'])
         except ProductoFamilia.DoesNotExist:
-            print(f"Código {codigo}: Error en articulo {record.get('ARTICULO')}")
-            continue
+            continue  # Saltar al siguiente registro si hay un error
         except ProductoMarca.DoesNotExist:
-            print(f"Código {codigo}: Error en marca {record.get('MARCA')}")
             continue
         except ProductoModelo.DoesNotExist:
-            print(f"Código {codigo}: Error en modelo {record.get('MODELO')}")
             continue
-
-        # Validar y obtener valores con predeterminados si son nulos
-        tipo_producto = record.get('TIPO', '').strip()
-        cai = record.get('CODFABRICA', '').strip()
-        medida = record.get('MEDIDA', '').strip()
-        segmento = record.get('SEGMENTO', '').strip()
-        nombre_producto = record.get('NOMBRE', 'Sin Nombre').strip()
-        unidad = record.get('UNIDAD', 0) or 0
-        fecha_fabricacion = record.get('FECHA', '').strip()
-        costo = record.get('COSTO', 0.00) or 0.00
-        alicuota_iva = record.get('IVA', 0.00) or 0.00
-        precio = record.get('PRECIO', 0.00) or 0.00
-        stock = record.get('STOCK', 0) or 0
-        minimo = record.get('MINIMO', 0) or 0
-        descuento = record.get('DESCUENTO', 0.00) or 0.00
-        despacho_1 = record.get('DESPACHO1', '').strip()
-        despacho_2 = record.get('DESPACHO2', '').strip()
-        descripcion_producto = record.get('DETALLE', '').strip()
-        carrito = record.get('CARRITO', False) or False
 
         # Crear el registro actual
         Producto.objects.create(
-            id_producto=codigo,
             estatus_producto=True,
-            codigo_producto=str(codigo).strip(),
-            tipo_producto=tipo_producto,
-            id_familia=familia,
-            id_marca=marca,
-            id_modelo=modelo,
-            cai=cai,
-            medida=medida,
-            segmento=segmento,
-            nombre_producto=nombre_producto,
-            unidad=unidad,
-            fecha_fabricacion=fecha_fabricacion,
-            costo=costo,
-            alicuota_iva=alicuota_iva,
-            precio=precio,
-            stock=stock,
-            minimo=minimo,
-            descuento=descuento,
-            despacho_1=despacho_1,
-            despacho_2=despacho_2,
-            descripcion_producto=descripcion_producto,
-            carrito=carrito
+            codigo_producto=9999999,
+            tipo_producto=record['TIPO'].strip(),
+            id_familia=familia,  # Asignar la instancia de ProductoFamilia
+            id_marca=marca,  # Asignar la instancia de ProductoMarca
+            id_modelo=modelo,  # Asignar la instancia de ProductoModelo
+            # id_cai
+            cai=record['CODFABRICA'].strip(),
+            medida=record['MEDIDA'].strip(),
+            segmento=record['SEGMENTO'].strip(),
+            nombre_producto=record['NOMBRE'].strip(),
+            unidad=record['UNIDAD'],
+            fecha_fabricacion=record['FECHA'].strip(),
+            costo=record['COSTO'],
+            alicuota_iva=record['IVA'],
+            precio=record['PRECIO'],
+            stock=record['STOCK'],
+            minimo=record['MINIMO'],
+            descuento=record['DESCUENTO'],
+            despacho_1=record['DESPACHO1'].strip(),
+            despacho_2=record['DESPACHO2'].strip(),
+            descripcion_producto=record['DETALLE'].strip(),
+            carrito=record['CARRITO']
         )
 
         expected_codigo += 1
@@ -113,7 +120,8 @@ def cargar_datos():
         if (idx + 1) % 100 == 0:
             print(f"{idx + 1} registros procesados...")
 
-
+    # Eliminar los registros marcados como "PENDIENTE POR ELIMINAR"
+    Producto.objects.filter(nombre_producto="PENDIENTE POR ELIMINAR").delete()
 
 if __name__ == '__main__':
     start_time = time.time()  # Empezar el control de tiempo
