@@ -10,6 +10,7 @@ from apps.maestros.models.base_models import (ComprobanteVenta,
 from apps.maestros.models.sucursal_models import Sucursal
 from apps.maestros.models.cliente_models import Cliente
 from apps.maestros.models.producto_models import Producto
+from apps.maestros.models.vendedor_models import Vendedor
 
 
 class Factura(ModeloBaseGenerico):
@@ -110,11 +111,20 @@ class Factura(ModeloBaseGenerico):
 		blank=True
 	)
  
+	movil_factura = models.CharField("Móvil", max_length=15, null=True, blank=True)
+	email_factura = models.EmailField("Email*", max_length=50, null=True, blank=True)
+ 
 	condicion_comprobante = models.IntegerField(
 		verbose_name="Condición de Venta",
 		default=1,
 		choices=CONDICION_VENTA
 	)
+ 
+	id_vendedor = models.ForeignKey(Vendedor, 
+									on_delete=models.PROTECT,
+									null=True, blank=True,
+									verbose_name="Vendedor")
+ 
 	gravado = models.DecimalField(
 		verbose_name="Gravado",
 		max_digits=14,
@@ -328,6 +338,14 @@ class DetalleFactura(ModeloBaseGenerico):
 		null=True,
 		blank=True
 	)
+ 
+	producto_venta = models.CharField(
+     	"Nombre producto", 
+      	max_length=50,
+		null=True,
+		blank=True
+    )
+ 
 	cantidad = models.DecimalField(
 		verbose_name="Cantidad",
 		max_digits=7,
