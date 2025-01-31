@@ -12,6 +12,7 @@ from utils.helpers.export_helpers import ExportHelper
 from datetime import datetime
 from django.template.loader import render_to_string
 from weasyprint import HTML
+from django.templatetags.static import static
 
 from ..views.list_views_generics import *
 from apps.informes.models import VLResumenCtaCte
@@ -63,7 +64,7 @@ class DataViewList:
 	
 	paginate_by = 8
 	
-	report_title = "Resumen Cta. Cte."
+	report_title = "Resumen de Cuenta Corriente"
 	
 	table_headers = {
 		'nombre_comprobante_venta': (2, 'Comprobante'),
@@ -113,7 +114,6 @@ class VLResumenCtaCteInformeListView(InformeListView):
 		"table_headers": DataViewList.table_headers,
 		"table_data": DataViewList.table_data,
 		"buscador_template": f"{ConfigViews.app_label}/buscador_{ConfigViews.model_string}.html",
-		# "buscador_template": f"{ConfigViews.app_label}/buscador_vlfactpendiente.html",
 		"js_file": ConfigViews.js_file,
 		"url_zip": ConfigViews.url_zip,
 		"url_pdf": ConfigViews.url_pdf,
@@ -130,10 +130,8 @@ class VLResumenCtaCteInformeListView(InformeListView):
 		# Comprobamos si hay datos GET (parámetros de la URL)
 		if any(value for key, value in self.request.GET.items() if value):
 			form = BuscadorResumenCtaCteForm(self.request.GET)
-			print("Entra al IF: Hay datos en el GET")
 		else:
 			form = BuscadorResumenCtaCteForm()  # Formulario vacío para la carga inicial
-			print("Entra al ELSE: No hay datos útiles en el GET")	
 		
 		if form.is_valid():
 			resumen_pendiente = form.cleaned_data.get('resumen_pendiente')
@@ -345,30 +343,38 @@ class VLResumenCtaCteInformePDFView(View):
 			#-- Calcular la sumatoria de los intereses.
 			intereses_total = sum(item.intereses for item in queryset)
 			
-		fecha_hora_reporte = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+			fecha_hora_reporte = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+			
+			#-- Renderizar la plantilla HTML con los datos.
+			dominio = f"http://{request.get_host()}"
+			
+			#-- Renderizar la plantilla HTML con los datos.
+			html_string = render_to_string(reporte, {
+				'objetos': queryset,
+				'saldo_total': saldo_total,
+				'intereses_total': intereses_total,
+				'total_general': saldo_anterior + saldo_total + intereses_total,
+				"saldo_anterior": saldo_anterior,
+				'observaciones': observaciones,
+				'cliente': cliente_data,
+				'parametros': param,
+				'fecha_hora_reporte': fecha_hora_reporte,
+				'titulo': DataViewList.report_title,
+				'logo_url': f"{dominio}{static('img/logo_01.png')}",
+				'css_url': f"{dominio}{static('css/reportes.css')}",
+			})
+			
+			#-- Preparar la respuesta HTTP.
+			response = HttpResponse(content_type='application/pdf')
+			response['Content-Disposition'] = f'inline; filename="informe_{ConfigViews.model_string}.pdf"'
+			
+			try:
+				HTML(string=html_string).write_pdf(response)
+			except Exception as e:
+				return HttpResponse(f"Error generando el PDF: {str(e)}", status=500)
+			
+			return response
 		
-		#-- Renderizar la plantilla HTML con los datos.
-		html_string = render_to_string(reporte, {
-			'objetos': queryset,
-			'cliente': cliente_data,
-			'parametros': param,
-			'fecha_hora_reporte': fecha_hora_reporte,
-			'titulo': "Resumen de Cuenta Corriente",
-			'observaciones': observaciones,
-			'saldo_total': saldo_total,
-			'intereses_total': intereses_total,
-			'total_general': saldo_anterior + saldo_total + intereses_total,
-			"saldo_anterior": saldo_anterior,
-		})
-		
-		#-- Preparar la respuesta HTTP.
-		response = HttpResponse(content_type='application/pdf')
-		response['Content-Disposition'] = f'inline; filename="informe_{ConfigViews.model_string}.pdf"'
-		HTML(string=html_string).write_pdf(response)
-		
-		try:
-			HTML(string=html_string).write_pdf(response)
-		except Exception as e:
-			return HttpResponse(f"Error generando el PDF: {str(e)}", status=500)
-		
-		return response
+		else:
+			# Manejar errores del formulario
+			return HttpResponse(f"Error en el formulario: {form.errors}", status=400)

@@ -4,127 +4,104 @@
 {% load static %}
 {% load custom_tags %}
 
-{% block title %} Reporte {% endblock %}
+<!-- Blque Header -------------------------------------------------------------------------- -->
+ 
+<!-- Contenido Inferior Izquierdo -->
+{% block header_bottom_left %}
+	{% comment %}
+	<p><strong>Cliente:</strong> {{ cliente.nombre }}</p>
+	<p><strong>RUC:</strong> {{ cliente.ruc }}</p>
+	<p><strong>Dirección:</strong> {{ cliente.direccion|truncatechars:30 }}</p>
+	{% endcomment %}
+{% endblock %}
+
+<!-- Contenido Inferior Derecho -->
+{% block header_bottom_right %}
+	{% for param, valor in parametros.items %}
+		<p class="compact-line-spacing"><strong>{{ param }}:</strong> {{ valor }}</p>
+	{% endfor %}
+{% endblock %}
+
+<!-- Bloque Content ------------------------------------------------------------------------ -->
 
 {% block content %}
-	<header>
-		<img src="{{ logo_url }}" alt="Logo" style="height: 50px; margin-left: 10px">
+	<table>
 		
-		<div class="compact-line-spacing" style="float: right; text-align: right;">
-			<h2><i>{{ titulo }}</i></h2>
-			<p>Generado: {{ fecha_hora_reporte }}</p>
-		</div>
+		<thead>
+			<tr>
+				<th>Comprobante</th>
+				<th>Fecha</th>
+				<th>Condición</th>
+				<th>Cliente</th>
+				<th>Nombre</th>
+				<th class="numeric">Contado</th>
+				<th class="numeric">Cta. Cte.</th>
+			</tr>
+		</thead>
 		
-	</header>
-	
-	{% comment %} 
-	<div style="position: fixed; bottom: 0; width: 100%;">
-		<footer>
-			<div style="float: left;">M.A.A.S Soft</div>
-			<div class="page-number"><span class="pageNumber"></span></div>
-			<div class="fecha-hora" style="float: right;">{{ fecha_hora_reporte }}</div>
-		</footer>
-	</div>
-	{% endcomment %}
-	
-	<main>
-		
-		<div class="seccion compact-line-spacing">
-			<!-- Sección izquierda -->
-			<div style="flex: 1; padding-right: 10px;">
-				{% comment %} 
-				<p><strong>Cliente:</strong></p>
-				<p style="font-size: 12px;">[{{ cliente.id_cliente }}] {{ cliente.nombre_cliente }}</p>
-				{% endcomment %}
-			</div>
-			
-			<!-- Sección derecha -->
-			<div style="flex: 1; text-align: right;">
-				{% for param, valor in parametros.items %}
-					<p><strong>{{ param }}:</strong> {{ valor }}</p>
-				{% endfor %}
-			</div>
-		</div>
-		
-		<table>
-			
-			<thead>
+		<tbody>
+			{% for grupo in objetos %}
 				<tr>
-					<th>Comprobante</th>
-					<th>Fecha</th>
-					<th>Condición</th>
-					<th>Cliente</th>
-					<th>Nombre</th>
-					<th class="numeric">Contado</th>
-					<th class="numeric">Cta. Cte.</th>
-				</tr>
-			</thead>
-			
-			<tbody>
-				{% for grupo in objetos %}
-					<tr>
-							<td colspan="6"><strong>{{ grupo.tipo }}</strong></td>
-					</tr>
-					
-					{% if not solo_totales_comprobante %}
-						{% for comprobante in grupo.comprobantes %}
-							<tr class="compact-line-spacing">
-								<td>{{ comprobante.comprobante }}</td>
-								<td>{{ comprobante.fecha|date:"d/m/Y" }}</td>
-								<td>{{ comprobante.condicion }}</td>
-								<td>{{ comprobante.cliente_id }}</td>
-								<td>{{ comprobante.cliente_nombre }}</td>
-								<td class="numeric">
-									{% if comprobante.condicion == "Contado" %}
-										{{ comprobante.total|formato_es_ar }}
-									{% else %}
-										0,00
-									{% endif %}
-								</td>
-								<td class="numeric">
-									{% if comprobante.condicion == "Cta. Cte." %}
-										{{ comprobante.total|formato_es_ar }}
-									{% else %}
-										0,00
-									{% endif %}
-								</td>
-							</tr>
-						{% endfor %}
-					{% endif %}
-					
-					<tr class="compact-line-spacing">
-						<td style="text-align: right;" colspan="5"><strong>Sub Total:</strong></td>
-						<td class="numeric" style="border-top: 1px solid;"><strong>{{ grupo.subtotal.contado.total|formato_es_ar }}</strong></td>
-						<td class="numeric" style="border-top: 1px solid;"><strong>{{ grupo.subtotal.cta_cte.total|formato_es_ar }}</strong></td>
-					</tr>
-					<tr class="compact-line-spacing">
-						<td style="text-align: right;" colspan="5">Gravado:</td>
-						<td class="numeric">{{ grupo.subtotal.contado.gravado|formato_es_ar }}</td>
-						<td class="numeric">{{ grupo.subtotal.cta_cte.gravado|formato_es_ar }}</td>
-					</tr>
-					<tr class="compact-line-spacing">
-						<td style="text-align: right;" colspan="5">I.V.A.:</td>
-						<td class="numeric">{{ grupo.subtotal.contado.iva|formato_es_ar }}</td>
-						<td class="numeric">{{ grupo.subtotal.cta_cte.iva|formato_es_ar }}</td>
-					</tr>
-					<tr class="compact-line-spacing">
-						<td style="text-align: right;" colspan="5">Percepción IB:</td>
-						<td class="numeric">{{ grupo.subtotal.contado.percep_ib|formato_es_ar }}</td>
-						<td class="numeric">{{ grupo.subtotal.cta_cte.percep_ib|formato_es_ar }}</td>
-					</tr>
-					
-				{% endfor %}
-				<tr style="border-top: 2px double; ">
-					<td style="text-align: right;" colspan="5"><strong>Total General:</strong></td>
-					<!-- <td class="numeric"><strong>{{ total_general.contado.total|formato_es_ar }}</strong></td>
-					<td class="numeric"><strong>{{ total_general.cta_cte.total|formato_es_ar }}</strong></td> -->
-					<td class="numeric"><strong>{{ total_general.contado|formato_es_ar }}</strong></td>
-					<td class="numeric"><strong>{{ total_general.cta_cte|formato_es_ar }}</strong></td>
+						<td colspan="7"><strong>{{ grupo.tipo }}</strong></td>
 				</tr>
 				
-			</tbody>
+				{% if not solo_totales_comprobante %}
+					{% for comprobante in grupo.comprobantes %}
+						<tr class="compact-line-spacing">
+							<td>{{ comprobante.comprobante }}</td>
+							<td>{{ comprobante.fecha|date:"d/m/Y" }}</td>
+							<td>{{ comprobante.condicion }}</td>
+							<td>{{ comprobante.cliente_id }}</td>
+							<td>{{ comprobante.cliente_nombre }}</td>
+							<td class="numeric">
+								{% if comprobante.condicion == "Contado" %}
+									{{ comprobante.total|formato_es_ar }}
+								{% else %}
+									0,00
+								{% endif %}
+							</td>
+							<td class="numeric">
+								{% if comprobante.condicion == "Cta. Cte." %}
+									{{ comprobante.total|formato_es_ar }}
+								{% else %}
+									0,00
+								{% endif %}
+							</td>
+						</tr>
+					{% endfor %}
+				{% endif %}
+				
+				<tr class="compact-line-spacing">
+					<td style="text-align: right;" colspan="5"><strong>Sub Total:</strong></td>
+					<td class="numeric" style="border-top: 1px solid;"><strong>{{ grupo.subtotal.contado.total|formato_es_ar }}</strong></td>
+					<td class="numeric" style="border-top: 1px solid;"><strong>{{ grupo.subtotal.cta_cte.total|formato_es_ar }}</strong></td>
+				</tr>
+				<tr class="compact-line-spacing">
+					<td style="text-align: right;" colspan="5">Gravado:</td>
+					<td class="numeric">{{ grupo.subtotal.contado.gravado|formato_es_ar }}</td>
+					<td class="numeric">{{ grupo.subtotal.cta_cte.gravado|formato_es_ar }}</td>
+				</tr>
+				<tr class="compact-line-spacing">
+					<td style="text-align: right;" colspan="5">I.V.A.:</td>
+					<td class="numeric">{{ grupo.subtotal.contado.iva|formato_es_ar }}</td>
+					<td class="numeric">{{ grupo.subtotal.cta_cte.iva|formato_es_ar }}</td>
+				</tr>
+				<tr class="compact-line-spacing">
+					<td style="text-align: right;" colspan="5">Percepción IB:</td>
+					<td class="numeric">{{ grupo.subtotal.contado.percep_ib|formato_es_ar }}</td>
+					<td class="numeric">{{ grupo.subtotal.cta_cte.percep_ib|formato_es_ar }}</td>
+				</tr>
+				
+			{% endfor %}
+			<tr style="border-top: 2px double; ">
+				<td style="text-align: right;" colspan="5"><strong>Total General:</strong></td>
+				<!-- <td class="numeric"><strong>{{ total_general.contado.total|formato_es_ar }}</strong></td>
+				<td class="numeric"><strong>{{ total_general.cta_cte.total|formato_es_ar }}</strong></td> -->
+				<td class="numeric"><strong>{{ total_general.contado|formato_es_ar }}</strong></td>
+				<td class="numeric"><strong>{{ total_general.cta_cte|formato_es_ar }}</strong></td>
+			</tr>
 			
-		</table>
+		</tbody>
 		
-	</main>
+	</table>
 {% endblock content %}
