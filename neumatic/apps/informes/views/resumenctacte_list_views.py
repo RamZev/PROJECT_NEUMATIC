@@ -17,6 +17,7 @@ from django.templatetags.static import static
 from ..views.list_views_generics import *
 from apps.informes.models import VLResumenCtaCte
 from ..forms.buscador_resumenctacte_forms import BuscadorResumenCtaCteForm
+from apps.maestros.models.cliente_models import Cliente
 
 
 class ConfigViews:
@@ -138,10 +139,10 @@ class VLResumenCtaCteInformeListView(InformeListView):
 			condicion_venta = form.cleaned_data.get('condicion_venta')
 			fecha_desde = form.cleaned_data.get('fecha_desde', date(date.today().year, 1, 1))
 			fecha_hasta = form.cleaned_data.get('fecha_hasta', date.today())
-			cliente = form.cleaned_data.get('cliente', None)
+			id_cliente = form.cleaned_data.get('id_cliente', None)
 			
 			if resumen_pendiente:
-				queryset = VLResumenCtaCte.objects.obtener_fact_pendientes(cliente.id_cliente)
+				queryset = VLResumenCtaCte.objects.obtener_fact_pendientes(id_cliente)
 			else:
 				if not fecha_desde:
 					fecha_hasta = date(date.today().year, 1, 1)
@@ -150,9 +151,9 @@ class VLResumenCtaCteInformeListView(InformeListView):
 					fecha_hasta = date.today()
 				
 				if condicion_venta == "0":
-					queryset = VLResumenCtaCte.objects.obtener_resumen_cta_cte(cliente.id_cliente, fecha_desde, fecha_hasta, 1, 2)
+					queryset = VLResumenCtaCte.objects.obtener_resumen_cta_cte(id_cliente, fecha_desde, fecha_hasta, 1, 2)
 				else:
-					queryset = VLResumenCtaCte.objects.obtener_resumen_cta_cte(cliente.id_cliente, fecha_desde, fecha_hasta, condicion_venta, condicion_venta)
+					queryset = VLResumenCtaCte.objects.obtener_resumen_cta_cte(id_cliente, fecha_desde, fecha_hasta, condicion_venta, condicion_venta)
 		
 		else:
 			#-- Agregar clases css a los campos con errores.
@@ -281,7 +282,7 @@ class VLResumenCtaCteInformePDFView(View):
 		form = BuscadorResumenCtaCteForm(request.GET or None)
 		
 		if form.is_valid():
-			cliente = form.cleaned_data.get("cliente", None)
+			id_cliente = form.cleaned_data.get("id_cliente", None)
 			
 			resumen_pendiente = form.cleaned_data.get("resumen_pendiente", None)
 			condicion_venta = form.cleaned_data.get("condicion_venta", None)
@@ -313,15 +314,16 @@ class VLResumenCtaCteInformePDFView(View):
 						param["Condición"] = "Ambos"
 				
 				#-- Determinar Saldo Anterior.
-				saldo_anterior_queryset = VLResumenCtaCte.objects.obtener_saldo_anterior(cliente.id_cliente, fecha_desde)
+				saldo_anterior_queryset = VLResumenCtaCte.objects.obtener_saldo_anterior(id_cliente, fecha_desde)
+				
 				#-- Extraer el saldo desde el queryset.
-				# saldo_anterior = saldo_anterior_queryset[0].saldo_anterior if saldo_anterior_queryset else 0.0
 				saldo_anterior = next(iter(saldo_anterior_queryset), None).saldo_anterior if saldo_anterior_queryset else Decimal('0.0')
 				saldo_anterior = Decimal(saldo_anterior or 0.0)  # Conversión explícita
 			
 			#-- Validar que el cliente exista antes de acceder a sus datos.
 			cliente_data = {}
-			if cliente:
+			if id_cliente:
+				cliente = Cliente.objects.get(pk=id_cliente)
 				cliente_data = {
 					"id_cliente": cliente.id_cliente,
 					"nombre_cliente": cliente.nombre_cliente,
@@ -337,7 +339,6 @@ class VLResumenCtaCteInformePDFView(View):
 				return HttpResponse(f"Error en el formulario: {form.errors}", status=400)
 		
 			#-- Obtener el saldo total desde el último registro del queryset.
-			# saldo_total = queryset.last().saldo_acumulado if queryset.exists() else 0
 			saldo_total = queryset[-1].saldo_acumulado if queryset else 0
 			
 			#-- Calcular la sumatoria de los intereses.

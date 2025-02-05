@@ -39,6 +39,8 @@ from apps.informes.views.ventacomprolocalidad_list_views import *
 from apps.informes.views.ventamostrador_list_views import *
 from apps.informes.views.ventacompro_list_views import *
 
+from apps.informes.views.consultas_informes_views import *
+
 urlpatterns = [
 	#-- Catálogos.
 	#-- Clientes.
@@ -323,6 +325,8 @@ urlpatterns = [
 	
 	#-- Otras rutas.
 	path('filtrar-localidad/', filtrar_localidad, name='filtrar_localidad'),
+	path('buscar/cliente/id/', buscar_cliente_id, name='buscar_cliente_id'),
+	path('buscar/cliente/', buscar_cliente, name='buscar_cliente'),
 	
 	
 

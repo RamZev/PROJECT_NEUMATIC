@@ -24,11 +24,14 @@ class Cliente(ModeloBaseGenerico):
 	nombre_cliente = models.CharField("Nombre Cliente*", max_length=50)
 	domicilio_cliente = models.CharField("Domicilio Cliente*", 
 										 max_length=50)
-	codigo_postal = models.CharField("Código Postal*", max_length=5)
+	codigo_postal = models.CharField("Código Postal*", max_length=5,
+                                  null=True, blank=True)
 	id_provincia = models.ForeignKey(Provincia, on_delete=models.PROTECT, 
-									 verbose_name="Provincia*")
+									verbose_name="Provincia*",
+          							null=True, blank=True)
 	id_localidad = models.ForeignKey(Localidad, on_delete=models.PROTECT,
-									 verbose_name="Localidad*")
+									verbose_name="Localidad*",
+         							null=True, blank=True)
 	tipo_persona = models.CharField("Tipo de Persona*", max_length=1,
 									default="F", 
 									choices=TIPO_PERSONA)
@@ -55,19 +58,23 @@ class Cliente(ModeloBaseGenerico):
 									verbose_name="Vendedor")
 	fecha_nacimiento = models.DateField("Fecha Nacimiento", 
 									 null=True, blank=True)
-	fecha_alta = models.DateField("Fecha Alta", default=date.today)
+	fecha_alta = models.DateField("Fecha Alta", default=date.today,
+                               null=True, blank=True)
 	sexo = models.CharField("Sexo*", max_length=1, 
 							default="M", 
 							choices=SEXO)
 	id_actividad = models.ForeignKey(Actividad, 
-									 on_delete=models.PROTECT,
-									 verbose_name="Actividad*")
+									on_delete=models.PROTECT,
+									null=True, blank=True,
+									verbose_name="Actividad*")
 	id_sucursal = models.ForeignKey(Sucursal, 
 									on_delete=models.CASCADE,
+									null=True, blank=True,
 									verbose_name="Sucursal*")
 	id_percepcion_ib = models.ForeignKey(TipoPercepcionIb, 
-										 on_delete=models.PROTECT, 
-										 verbose_name="Percepción IB*")
+										on_delete=models.PROTECT,
+										null=True, blank=True,
+										verbose_name="Percepción IB*",)
 	numero_ib = models.CharField("Número IB", max_length=15, null=True, blank=True)
 	vip = models.BooleanField("Cliente VIP*", 
 							  default=False,

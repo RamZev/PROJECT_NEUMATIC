@@ -36,7 +36,10 @@ class SaldosClientesManager(models.Manager):
 		#-- Se agrega la clausula GROUP BY y ORDER BY.
 		query += """
 		GROUP BY 
-			id_cliente_id
+			id_cliente_id, nombre_cliente, domicilio_cliente, nombre_localidad, 
+			codigo_postal, telefono_cliente, sub_cuenta
+		HAVING 
+			ROUND(SUM(total * (mult_saldo * 1.00)), 2) <> 0
 		ORDER BY
 			nombre_cliente
 		"""
@@ -220,8 +223,8 @@ class VLResumenCtaCte(models.Model):
 	class Meta:
 		managed = False
 		db_table = 'VLResumenCtaCte'
-		verbose_name = ('Facturas Pendientes')
-		verbose_name_plural = ('Facturas Pendientes')
+		verbose_name = ('Resumen de Cta. Cte.')
+		verbose_name_plural = ('Resumen de Cta. Cte.')
 		ordering = ['razon_social']
 
 

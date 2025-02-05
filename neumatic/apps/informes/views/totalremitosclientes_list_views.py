@@ -128,7 +128,7 @@ class VLTotalRemitosClientesInformeListView(InformeListView):
 			form = BuscadorTotalRemitosClientesForm()  # Formulario vacío para la carga inicial
 		
 		if form.is_valid():
-			cliente = form.cleaned_data.get('cliente', None)
+			id_cliente = form.cleaned_data.get('id_cliente', None)
 			fecha_desde = form.cleaned_data.get('fecha_desde', date(date.today().year, 1, 1))
 			fecha_hasta = form.cleaned_data.get('fecha_hasta', date.today())
 			
@@ -138,11 +138,10 @@ class VLTotalRemitosClientesInformeListView(InformeListView):
 			if not fecha_hasta:
 				fecha_hasta = date.today()
 			
-			if cliente:
-				queryset = VLTotalRemitosClientes.objects.obtener_total_remitos_cliente(cliente.id_cliente, fecha_desde, fecha_hasta)
+			if id_cliente:
+				queryset = VLTotalRemitosClientes.objects.obtener_total_remitos_cliente(id_cliente, fecha_desde, fecha_hasta)
 			else:
 				queryset = VLTotalRemitosClientes.objects.obtener_total_remitos_cliente(None, fecha_desde, fecha_hasta)
-				
 			
 		else:
 			#-- Agregar clases css a los campos con errores.
@@ -285,8 +284,6 @@ class VLTotalRemitosClientesInformePDFView(View):
 			}
 			
 			#-- Calcular el total general.
-			# Calcular el total general manualmente, ya que no se puede usar aggregate
-			# total_general = sum(item["total"] for item in queryset if "total" in item)
 			total_general = sum(item.total for item in queryset if hasattr(item, "total"))
 			
 			fecha_hora_reporte = datetime.now().strftime("%d/%m/%Y %H:%M:%S")

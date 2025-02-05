@@ -82,8 +82,7 @@ class Cliente(ModeloBaseGenerico):
 	mayorista = models.BooleanField("Mayorista*", 
 									default=False,
 									choices=CLIENTE_MAYORISTA)
-	sub_cuenta = models.CharField("Sub Cuenta",max_length=6,  
-							   null=True, blank=True)
+	sub_cuenta = models.IntegerField("Código", null=True, blank=True)
 	observaciones_cliente = models.TextField("Observaciones", 
 											 blank=True, null=True)
 	black_list = models.BooleanField("Black List", default=False, 

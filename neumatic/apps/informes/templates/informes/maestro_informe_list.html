@@ -15,8 +15,10 @@
 		 
 	}
 	.tbl-fixed {
-		overflow-x: scroll;
-		overflow-y: scroll;
+		/*overflow-x: scroll;*/
+		overflow-x: auto;
+		/*overflow-y: scroll;*/
+		overflow-y: auto;
 		height: fit-content;
 		max-height: 60vh;
 		margin-top: 0px;
@@ -202,20 +204,10 @@
 	<!-- Modal para mostrar errores -->
 	{% include 'informes/modal_errors.html' %}
 	
+	<!-- Modal para buscar y seleccionar cliente -->
+	{% include 'informes/modal_buscar_cliente.html' %}
+	
 {% endblock modals %}
-
-{% comment %} 
-{% block script %}
-	{{ block.super }}
-	
-	<script src="{% static 'js/opciones_reporte.js' %}"></script>
-	
-	{% if js_file %}
-		<script src="{% static js_file %}"></script>
-	{% endif %}
-	
-{% endblock script %}
-{% endcomment %}
 
 {% block script %}
 	{{ block.super }}

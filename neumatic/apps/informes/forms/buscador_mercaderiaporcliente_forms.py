@@ -3,18 +3,12 @@ from django import forms
 from datetime import date
 
 from .informes_generics_forms import InformesGenericForm
-from diseno_base.diseno_bootstrap import formclassselect, formclassdate
+from diseno_base.diseno_bootstrap import formclasstext, formclassdate
 from apps.maestros.models.cliente_models import Cliente
 
 
 class BuscadorMercaderiaPorClienteForm(InformesGenericForm):
 	
-	cliente = forms.ModelChoiceField(
-		queryset=Cliente.objects.filter(estatus_cliente=True), 
-		required=True,
-		label="Cliente",
-		widget=forms.Select(attrs={**formclassselect})
-	)
 	fecha_desde = forms.DateField(
 		required=False, 
 		label="Desde Fecha",
@@ -24,6 +18,16 @@ class BuscadorMercaderiaPorClienteForm(InformesGenericForm):
 		required=False, 
 		label="Hasta Fecha",
 		widget=forms.TextInput(attrs={'type':'date', **formclassdate})
+	)
+	id_cliente = forms.IntegerField(
+		label="Cód. Cliente",
+		required=True,
+		widget=forms.NumberInput(attrs={**formclasstext})
+	)
+	nombre_cliente = forms.CharField(
+		label="Cliente",
+		required=False,
+		widget=forms.TextInput(attrs={**formclasstext, 'readonly': 'readonly'})
 	)
 	
 	def __init__(self, *args, **kwargs):
@@ -47,13 +51,13 @@ class BuscadorMercaderiaPorClienteForm(InformesGenericForm):
 	def clean(self):
 		cleaned_data = super().clean()
 		
-		cliente = cleaned_data.get("cliente")
+		id_cliente = cleaned_data.get("id_cliente")
 		fecha_desde = cleaned_data.get("fecha_desde")
 		fecha_hasta = cleaned_data.get("fecha_hasta")
 		
 		#-- Validar que se haya indicado un cliente solo si hay datos enviados.
-		if not cliente:
-			self.add_error("cliente", "Debe indicar un cliente.")
+		if not id_cliente:
+			self.add_error("id_cliente", "Debe indicar un Código de Cliente.")
 		
 		#-- Validar rango de fechas.
 		if fecha_desde and fecha_hasta and fecha_desde > fecha_hasta:

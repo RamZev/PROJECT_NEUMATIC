@@ -17,6 +17,7 @@ from django.templatetags.static import static
 from ..views.list_views_generics import *
 from apps.informes.models import VLMercaderiaPorCliente
 from ..forms.buscador_mercaderiaporcliente_forms import BuscadorMercaderiaPorClienteForm
+from apps.maestros.models.cliente_models import Cliente
 
 
 class ConfigViews:
@@ -128,7 +129,7 @@ class VLMercaderiaPorClienteInformeListView(InformeListView):
 			form = BuscadorMercaderiaPorClienteForm()  # Formulario vacío para la carga inicial
 		
 		if form.is_valid():
-			cliente = form.cleaned_data.get('cliente', None)
+			id_cliente = form.cleaned_data.get('id_cliente', None)
 			fecha_desde = form.cleaned_data.get('fecha_desde', date(date.today().year, 1, 1))
 			fecha_hasta = form.cleaned_data.get('fecha_hasta', date.today())
 			
@@ -138,7 +139,7 @@ class VLMercaderiaPorClienteInformeListView(InformeListView):
 			if not fecha_hasta:
 				fecha_hasta = date.today()
 			
-			queryset = VLMercaderiaPorCliente.objects.obtener_mercaderia_por_cliente(cliente.id_cliente, fecha_desde, fecha_hasta)
+			queryset = VLMercaderiaPorCliente.objects.obtener_mercaderia_por_cliente(id_cliente, fecha_desde, fecha_hasta)
 			
 		else:
 			#-- Agregar clases css a los campos con errores.
@@ -278,7 +279,7 @@ class VLMercaderiaPorClienteInformePDFView(View):
 		form = BuscadorMercaderiaPorClienteForm(request.GET or None)
 		
 		if form.is_valid():
-			cliente = form.cleaned_data.get("cliente", None)
+			id_cliente = form.cleaned_data.get("id_cliente", None)
 			fecha_desde = form.cleaned_data.get("fecha_desde", None)
 			fecha_hasta = form.cleaned_data.get("fecha_hasta", None)
 			
@@ -290,7 +291,8 @@ class VLMercaderiaPorClienteInformePDFView(View):
 			
 			#-- Validar que el cliente exista antes de acceder a sus datos.
 			cliente_data = {}
-			if cliente:
+			if id_cliente:
+				cliente = Cliente.objects.get(pk=id_cliente)
 				cliente_data = {
 					"id_cliente": cliente.id_cliente,
 					"nombre_cliente": cliente.nombre_cliente,

@@ -360,13 +360,6 @@ class DetalleFactura(ModeloBaseGenerico):
 		null=True,
 		blank=True
 	)
-	precio_lista = models.DecimalField(
-		verbose_name="Precio",
-		max_digits=12,
-		decimal_places=2,
-		null=True,
-		blank=True
-	)
 	precio = models.DecimalField(
 		verbose_name="Precio",
 		max_digits=12,
@@ -375,13 +368,6 @@ class DetalleFactura(ModeloBaseGenerico):
 		blank=True
 	)
 	descuento = models.DecimalField(
-		verbose_name="Descuento(%)",
-		max_digits=6,
-		decimal_places=2,
-		null=True,
-		blank=True
-	)
-	desc_vendedor = models.DecimalField(
 		verbose_name="Descuento(%)",
 		max_digits=6,
 		decimal_places=2,
