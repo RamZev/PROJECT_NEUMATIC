@@ -1,0 +1,11 @@
+Ok, estoy intentando organizar toda la funcionalidad para generar listados, los cuales algunos tienen cierta complejidad y otro más sencillos y la mayoría pueden contar con muchas páginas, es decir, son listados extensos. 
+Como estoy en desarrollo, estoy utilizando sqlite3 como motor de base de datos, para cada listado he creado una vista sql y la he asociado a mi proyecto a través de un modelo el cual le creo un Manager para poder obtener los datos de su respectiva vista sql con los filtros y condiciones requeridos por cada listado.
+Quiero establecer unas bases para que esta funcionalidad me sirva replicándola a cada listado que necesito elaborar. 
+Lo que tengo en mente es una vez se seleccione la opción del reporte en el menú, se desplique en pantalla un plantilla que renderice un formulario con los campos para las condiciones de filtro de los datos a listar que serán los parámetros pasados a la consulta sobre la vista sql y en esta misma pantalla, así como las opciones de filtro, también muestre las opciones de salida del reporte las cuales podrán ser:
+- Vista Preliminar (pantalla).
+- Vista Preliminar en PDF.
+- Envío por eMail.
+- Envío por WhatsApp.
+Tanto el formulario con los campos que sería los parámetros de filtro como las opciones de salida ya los tengo elaborados, los cuales te los suministraré para que te guíes y tengas en cuanta lo que quiero. Loq ue requiero de tí es cómo puedo organizar mis vistas para renderizar todo esto. Si la vista para renderizar el formulario y las opciones de salidas del listado debe ser vistas basadas en clases y de cuál vista genérica heredar.
+
+Te voy a pasar uno de los formularios y las plantillas que quiero utilizar para renderizar esa primera pantalla para establecer los parámetros de filtrado y salida del reporte.

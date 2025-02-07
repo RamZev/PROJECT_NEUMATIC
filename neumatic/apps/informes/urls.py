@@ -39,6 +39,10 @@ from apps.informes.views.ventacomprolocalidad_list_views import *
 from apps.informes.views.ventamostrador_list_views import *
 from apps.informes.views.ventacompro_list_views import *
 
+
+from apps.informes.views.ventacompro_list_views_prop import *
+
+
 from apps.informes.views.consultas_informes_views import *
 
 urlpatterns = [
@@ -322,6 +326,14 @@ urlpatterns = [
 		 name='vlventacompro_informe_generado'),
 	path('vlventacompro_vista_pdf/', VLVentaComproInformePDFView.as_view(),
 		 name='vlventacompro_informe_pdf'),
+	
+	
+	#-- VL Venta Compro Propuesta nueva.
+	path('vlventacompro_informe_prop/', VLVentaComproInformeView.as_view(),
+		 name='vlventacompro_informe_list_prop'),
+	path('ventacompro/vista-preliminar/', VistaPreliminarPantallaView.as_view(), 
+	  	 name='ventacompro_preliminar_pantalla'),
+	
 	
 	#-- Otras rutas.
 	path('filtrar-localidad/', filtrar_localidad, name='filtrar_localidad'),

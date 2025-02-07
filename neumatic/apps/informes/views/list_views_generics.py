@@ -1,16 +1,9 @@
 # neumatic\apps\informes\views\list_views_generics.py
-from typing import Any
 from django.views.generic import ListView
-from django.db.models import Q
 
 #-- Recursos necesarios para proteger las rutas.
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
-
-#-- Recursos necesarios para los permisos de usuarios sobre modelos.
-# from django.contrib.auth.mixins import PermissionRequiredMixin
-# from django.contrib import messages
-# from django.shortcuts import redirect, render
 
 from django.utils import timezone
 
