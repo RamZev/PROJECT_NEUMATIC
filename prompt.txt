@@ -6,6 +6,11 @@ Lo que tengo en mente es una vez se seleccione la opción del reporte en el men�
 - Vista Preliminar en PDF.
 - Envío por eMail.
 - Envío por WhatsApp.
-Tanto el formulario con los campos que sería los parámetros de filtro como las opciones de salida ya los tengo elaborados, los cuales te los suministraré para que te guíes y tengas en cuanta lo que quiero. Loq ue requiero de tí es cómo puedo organizar mis vistas para renderizar todo esto. Si la vista para renderizar el formulario y las opciones de salidas del listado debe ser vistas basadas en clases y de cuál vista genérica heredar.
+Tanto el formulario con los campos que sería los parámetros de filtro como las opciones de salida ya los tengo elaborados, los cuales te los suministraré para que te guíes y tengas en cuanta lo que quiero. Lo que requiero de tí es cómo puedo organizar mis vistas para renderizar todo esto. Si la vista para renderizar el formulario y las opciones de salidas del listado debe ser vistas basadas en clases y de cuál vista genérica heredar.
 
 Te voy a pasar uno de los formularios y las plantillas que quiero utilizar para renderizar esa primera pantalla para establecer los parámetros de filtrado y salida del reporte.
+
+---------------------------
+
+Ok, de las ditintas opciones de salida vamos a concentrarnos, por ahora, en las opciones de salida a pantalla y a pdf.
+Cuando se selecciones alguna de estas opciones, quiero que se abra una pestaña nueva en el navegador y allí se renderice la salida a pantalla o muestre el pdf generado y de ser posible todo esto ocurra en un hilo aparte para no bloquear la aplicación, porque hay listados que son extensos.

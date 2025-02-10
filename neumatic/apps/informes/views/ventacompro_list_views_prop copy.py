@@ -83,121 +83,106 @@ class VLVentaComproInformeView(InformeFormView):
 		# "url_pdf": ConfigViews.url_pdf,
 	}
 	
-	def obtener_queryset(self, cleaned_data):
-		fecha_desde = cleaned_data.get("fecha_desde")
-		fecha_hasta = cleaned_data.get("fecha_hasta")
-		sucursal = cleaned_data.get("sucursal")
-		
-		return VLVentaCompro.objects.obtener_venta_compro(fecha_desde, fecha_hasta, sucursal)
-	
-	def obtener_contexto_reporte(self, queryset, cleaned_data):
+	def get(self, request, *args, **kwargs):
 		"""
-		Aquí se estructura el contexto para el reporte, agrupando los comprobantes,
-		calculando subtotales y totales generales, tal como se requiere para el listado.
+		Maneja las solicitudes GET.
+		Si se ha seleccionado una opción de salida, redirige a la vista correspondiente.
 		"""
 		
-		#-- Parámetros del listado.
-		fecha_desde = cleaned_data.get("fecha_desde")
-		fecha_hasta = cleaned_data.get("fecha_hasta")
-		solo_totales_comprobante = cleaned_data.get("solo_totales_comprobante", False)
-		sucursal = cleaned_data.get("sucursal").nombre_sucursal if cleaned_data.get("sucursal") else "Todas"
+		tipo_salida = request.GET.get('tipo_salida', 'pantalla')
 		
-		param = {
-			"Sucursal": sucursal,
-			"Desde": fecha_desde.strftime("%d/%m/%Y"),
-			"Hasta": fecha_hasta.strftime("%d/%m/%Y"),
-		}
+		print(tipo_salida)
 		
-		fecha_hora_reporte = datetime.now().strftime("%d/%m/%Y %H:%M:%S")		
+		# if tipo_salida != 'pantalla' and any(value for key, value in request.GET.items() if value):
+		# 	return self.redirigir_a_opcion_salida(tipo_salida)
+		# else:
+		# 	return redirect(reverse("ventacompro_preliminar_pantalla") + f"?{request.GET.urlencode()}")
 		
-		dominio = f"http://{self.request.get_host()}"
+		#-- Verificar si hay parámetros en la URL.
+		if any(value for key, value in request.GET.items() if value):
+			return self.redirigir_a_opcion_salida(tipo_salida)
 		
-		#-- Agrupar y estructurar datos del queryset.
-		datos_agrupados = []
-		totales_generales = {"contado": Decimal(0), "cta_cte": Decimal(0)}
-		agrupados = defaultdict(lambda: {
-			"comprobantes": [],
-			"subtotal": {
-				"contado": {"gravado": Decimal(0), "iva": Decimal(0), "percep_ib": Decimal(0), "total": Decimal(0)},
-				"cta_cte": {"gravado": Decimal(0), "iva": Decimal(0), "percep_ib": Decimal(0), "total": Decimal(0)},
-			},
-		})
-		
-		for item in queryset:
-			tipo = item.nombre_comprobante_venta
-			condicion = "contado" if item.condicion == "Contado" else "cta_cte"
-			monto_total = Decimal(item.total)
-			
-			agrupados[tipo]["comprobantes"].append({
-				"comprobante": item.comprobante,
-				"fecha": item.fecha_comprobante,
-				"condicion": item.condicion,
-				"cliente_id": item.id_cliente_id,
-				"cliente_nombre": item.nombre_cliente,
-				"gravado": Decimal(item.gravado),
-				"iva": Decimal(item.iva),
-				"percep_ib": Decimal(item.percep_ib),
-				"total": monto_total,
-			})
-			
-			agrupados[tipo]["subtotal"][condicion]["gravado"] += Decimal(item.gravado)
-			agrupados[tipo]["subtotal"][condicion]["iva"] += Decimal(item.iva)
-			agrupados[tipo]["subtotal"][condicion]["percep_ib"] += Decimal(item.percep_ib)
-			agrupados[tipo]["subtotal"][condicion]["total"] += monto_total
-			totales_generales[condicion] += monto_total
-		
-		for tipo, datos in agrupados.items():
-			datos_agrupados.append({"tipo": tipo, **datos})
-		
-		# Se retorna un contexto que será consumido tanto para la vista en pantalla como para la generación del PDF.
-		return {
-			"objetos": datos_agrupados,
-			"total_general": totales_generales,
-			"solo_totales_comprobante": solo_totales_comprobante,
-			"parametros": param,
-			'fecha_hora_reporte': fecha_hora_reporte,
-			'titulo': ConfigViews.report_title,
-			'logo_url': f"{dominio}{static('img/logo_01.png')}",
-			'css_url': f"{dominio}{static('css/reportes.css')}",
-		}
+		#-- Si no hay parámetros, mostrar solo el formulario.
+		return self.render_to_response(self.get_context_data())
 	
-	# def get_context_data(self, **kwargs):
-	# 	context = super().get_context_data(**kwargs)
-	# 	# Si se pasa el formulario en kwargs, se utiliza; de lo contrario, se instancia usando self.request.GET.
-	# 	form = kwargs.get("form") or self.form_class(self.request.GET or None)
-	# 	
-	# 	print("Entró al get_context_data")
-	# 	print(f"{form.errors = }")
-	# 	
-	# 	context["form"] = form
-	# 	if form.errors:
-	# 		context["data_has_errors"] = True
-	# 	print(context)
-	# 	return context
-
-	# def get_context_data(self, **kwargs):
-	# 	"""
-	# 	Agrega el formulario y los datos filtrados al contexto.
-	# 	"""
-	# 	
-	# 	context = super().get_context_data(**kwargs)
-	# 	
-	# 	#-- Obtiene el queryset filtrado.
-	# 	queryset = self.get_queryset()
-	# 	
-	# 	#-- Obtiene el formulario.
-	# 	form = self.form_class(self.request.GET or None)
-	#	form = kwargs.get("form") or self.form_class(self.request.GET or None)
-	# 	
-	# 	#-- Agrega el formulario y los datos al contexto.
-	# 	context["form"] = form
-	# 	context["objetos"] = queryset
-	# 	
-	# 	#-- Si el formulario tiene errores, pasa los errores al contexto.
-	# 	if form.errors:
-	# 		context["data_has_errors"] = True
-	# 	
-	# 	return context
+	def redirigir_a_opcion_salida(self, tipo_salida):
+		"""
+		Redirige a la vista correspondiente según la opción de salida seleccionada.
+		"""
+		if tipo_salida == 'pantalla':
+			return redirect(reverse("ventacompro_preliminar_pantalla") + f"?{self.request.GET.urlencode()}")
+		elif tipo_salida == 'pdf_preliminar':
+			return redirect(reverse('generar_pdf') + f"?{self.request.GET.urlencode()}")
+		elif tipo_salida == 'email':
+			return redirect(reverse('enviar_email') + f"?{self.request.GET.urlencode()}")
+		elif tipo_salida == 'whatsapp':
+			return redirect(reverse('enviar_whatsapp') + f"?{self.request.GET.urlencode()}")
+		else:
+			return redirect(reverse('vlventacompro_informe_list_prop'))	
+			# return redirect(reverse('buscador_ventacompro'))
+	
+	def get_queryset(self):
+		"""
+		Obtiene el queryset filtrado según los parámetros del formulario.
+		Solo devuelve datos si el formulario ha sido enviado (si hay parámetros GET).
+		"""
+		
+		print("Se ejecutó el método get_queryset")
+		
+		#-- Inicializa el queryset con un queryset vacío por defecto.
+		queryset = VLVentaCompro.objects.none()		
+		
+		#-- Comprobamos si hay datos GET (parámetros de la URL).
+		if any(value for key, value in self.request.GET.items() if value):
+			form = self.form_class(self.request.GET)
+		else:
+			form = self.form_class()  # Formulario vacío para la carga inicial
+			return queryset  # No devuelve datos en la primera carga
+		
+		if form.is_valid():
+			#-- Obtener los datos del formulario (parámetros).
+			sucursal = form.cleaned_data.get('sucursal', None)
+			fecha_desde = form.cleaned_data.get('fecha_desde', datetime(datetime.today().year, 1, 1))
+			fecha_hasta = form.cleaned_data.get('fecha_hasta', datetime.today())
+			solo_totales_comprobante = form.cleaned_data.get('solo_totales_comprobante', None)
+			
+			#-- Aplica los filtros al queryset.
+			queryset = VLVentaCompro.objects.obtener_venta_compro(
+				fecha_desde, 
+				fecha_hasta, 
+				sucursal=sucursal
+			)
+			
+			print(list(queryset))
+			
+		else:
+			#-- Agregar clases css a los campos con errores.
+			form.add_error_classes()
+		
+		return queryset
+	
+	def get_context_data(self, **kwargs):
+		"""
+		Agrega el formulario y los datos filtrados al contexto.
+		"""
+		
+		context = super().get_context_data(**kwargs)
+		
+		#-- Obtiene el queryset filtrado.
+		queryset = self.get_queryset()
+		
+		#-- Obtiene el formulario.
+		form = self.form_class(self.request.GET or None)
+		
+		#-- Agrega el formulario y los datos al contexto.
+		context["form"] = form
+		context["objetos"] = queryset
+		
+		#-- Si el formulario tiene errores, pasa los errores al contexto.
+		if form.errors:
+			context["data_has_errors"] = True
+		
+		return context
 
 
 class VLVentaComproPantallaView(InformeTemplateView):

@@ -331,7 +331,7 @@ urlpatterns = [
 	#-- VL Venta Compro Propuesta nueva.
 	path('vlventacompro_informe_prop/', VLVentaComproInformeView.as_view(),
 		 name='vlventacompro_informe_list_prop'),
-	path('ventacompro/vista-preliminar/', VistaPreliminarPantallaView.as_view(), 
+	path('ventacompro/vista-preliminar/', VLVentaComproPantallaView.as_view(), 
 	  	 name='ventacompro_preliminar_pantalla'),
 	
 	
