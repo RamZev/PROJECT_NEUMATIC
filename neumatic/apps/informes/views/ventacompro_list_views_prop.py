@@ -14,8 +14,8 @@ from decimal import Decimal
 # from utils.helpers.export_helpers import ExportHelper
 
 from datetime import datetime
-# from django.template.loader import render_to_string
-# from weasyprint import HTML
+from django.template.loader import render_to_string
+from weasyprint import HTML
 # from django.templatetags.static import static
 from collections import defaultdict
 
@@ -77,7 +77,8 @@ class VLVentaComproInformeView(InformeFormView):
 		# "list_view_name": ConfigViews.list_view_name,
 		# "table_headers": DataViewList.table_headers,
 		# "table_data": DataViewList.table_data,
-		"buscador_template": f"{ConfigViews.app_label}/buscador_{ConfigViews.model_string}.html",
+		# "buscador_template": f"{ConfigViews.app_label}/buscador_{ConfigViews.model_string}.html",
+		"buscador_template": f"{ConfigViews.app_label}/buscador_{ConfigViews.model_string}_prop.html",
 		"js_file": ConfigViews.js_file,
 		# "url_zip": ConfigViews.url_zip,
 		# "url_pdf": ConfigViews.url_pdf,
@@ -149,7 +150,7 @@ class VLVentaComproInformeView(InformeFormView):
 		for tipo, datos in agrupados.items():
 			datos_agrupados.append({"tipo": tipo, **datos})
 		
-		# Se retorna un contexto que será consumido tanto para la vista en pantalla como para la generación del PDF.
+		#-- Se retorna un contexto que será consumido tanto para la vista en pantalla como para la generación del PDF.
 		return {
 			"objetos": datos_agrupados,
 			"total_general": totales_generales,
@@ -161,46 +162,18 @@ class VLVentaComproInformeView(InformeFormView):
 			'css_url': f"{dominio}{static('css/reportes.css')}",
 		}
 	
-	# def get_context_data(self, **kwargs):
-	# 	context = super().get_context_data(**kwargs)
-	# 	# Si se pasa el formulario en kwargs, se utiliza; de lo contrario, se instancia usando self.request.GET.
-	# 	form = kwargs.get("form") or self.form_class(self.request.GET or None)
-	# 	
-	# 	print("Entró al get_context_data")
-	# 	print(f"{form.errors = }")
-	# 	
-	# 	context["form"] = form
-	# 	if form.errors:
-	# 		context["data_has_errors"] = True
-	# 	print(context)
-	# 	return context
-
-	# def get_context_data(self, **kwargs):
-	# 	"""
-	# 	Agrega el formulario y los datos filtrados al contexto.
-	# 	"""
-	# 	
-	# 	context = super().get_context_data(**kwargs)
-	# 	
-	# 	#-- Obtiene el queryset filtrado.
-	# 	queryset = self.get_queryset()
-	# 	
-	# 	#-- Obtiene el formulario.
-	# 	form = self.form_class(self.request.GET or None)
-	#	form = kwargs.get("form") or self.form_class(self.request.GET or None)
-	# 	
-	# 	#-- Agrega el formulario y los datos al contexto.
-	# 	context["form"] = form
-	# 	context["objetos"] = queryset
-	# 	
-	# 	#-- Si el formulario tiene errores, pasa los errores al contexto.
-	# 	if form.errors:
-	# 		context["data_has_errors"] = True
-	# 	
-	# 	return context
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
+		form = kwargs.get("form") or self.get_form()
+		
+		context["form"] = form
+		if form.errors:
+			context["data_has_errors"] = True
+		return context
 
 
 class VLVentaComproPantallaView(InformeTemplateView):
+	
 	template_name = "informes/reportes/ventacompro_list.html"
 	
 	def get(self, request, *args, **kwargs):
@@ -298,3 +271,35 @@ class VLVentaComproPantallaView(InformeTemplateView):
 		}
 		
 		return render(request, self.template_name, context)
+
+
+def ventacompro_vista_pantalla(request):
+	token = request.GET.get("token")
+	
+	if not token:
+		return HttpResponse("Token no proporcionado")
+	
+	# Recuperar y eliminar el contexto de la sesión
+	contexto_reporte = request.session.pop(token, None)
+	if not contexto_reporte:
+		return HttpResponse("Contexto no encontrado o expirado", status=400)
+	
+	# Renderizar la plantilla con el contexto recuperado
+	return render(request, "informes/reportes/ventacompro_list.html", contexto_reporte)
+
+
+def ventacompro_vista_pdf(request):
+	token = request.GET.get("token")
+	if not token:
+		return HttpResponse("Token no proporcionado", status=400)
+	
+	contexto_reporte = request.session.pop(token, None)
+	if not contexto_reporte:
+		return HttpResponse("Contexto no encontrado o expirado", status=400)
+	
+	# Renderiza el HTML usando la misma plantilla
+	html_string = render_to_string("informes/reportes/ventacompro_list.html", contexto_reporte, request=request)
+	# Genera el PDF (puedes ajustar opciones de WeasyPrint si es necesario)
+	pdf_file = HTML(string=html_string, base_url=request.build_absolute_uri()).write_pdf()
+	
+	return HttpResponse(pdf_file, content_type="application/pdf")

@@ -112,86 +112,53 @@ if (vistaPantalla) {
 }
 initializeDefaults();
 
+// Script adicional para el botón "Generar".
+const generar = document.getElementById("generar");
 
-
-
-
-// // Script adicional para el botón "Generar".
-// const generar = document.getElementById("generar");
-// if (generar) {
-// 	generar.addEventListener("click", function (event) {
-// 		event.preventDefault();
-// 		
-// 		// Obtener el formulario de filtros.
-// 		const form = this.closest("form");
-// 		const formData = new FormData(form);
-// 		const params = new URLSearchParams(formData).toString();
-// 		
-// 		// Obtener el valor seleccionado para 'tipo_salida'
-// 		const tipoSalidaElem = document.querySelector('input[name="tipo_salida"]:checked');
-// 		if (!tipoSalidaElem) {
-// 			alert("Por favor, seleccione un tipo de salida.");
-// 			return;
-// 		}
-// 		const tipoSalida = tipoSalidaElem.value.toLowerCase();
-// 		
-// 		// Según el valor de 'tipo_salida', se utiliza la URL correspondiente.
-// 		let fullUrl = "";
-// 		if (tipoSalida === "pantalla") {
-// 			const urlPantalla = this.getAttribute("data-pantalla-url");
-// 			fullUrl = `${urlPantalla}?${params}`;
-// 		} else if (tipoSalida === "pdf_preliminar") {
-// 			const urlPdf = this.getAttribute("data-pdf-url");
-// 			// Agrega un parámetro extra si es necesario (por ejemplo, &format=pdf)
-// 			fullUrl = `${urlPdf}?${params}&format=pdf`;
-// 		} else {
-// 			// Si se selecciona otra opción (email, whatsapp) puedes mostrar un mensaje o redirigir a otra acción.
-// 			alert("La opción seleccionada aún no está implementada.");
-// 			return;
-// 		}
-// 		
-// 		// Abrir la URL en una nueva pestaña.
-// 		window.open(fullUrl, "_blank");
-// 	});
-// }
-document.getElementById("generar").addEventListener("click", async function (event) {
-    event.preventDefault();
-    
-    const form = this.closest("form");
-    const formData = new FormData(form);
-    
-    // Enviar el formulario vía AJAX
-    try {
-        const response = await fetch(form.action, {
-            method: "GET", // o "POST" si se prefiere; aquí usamos GET según la configuración
-            headers: {
-                "X-Requested-With": "XMLHttpRequest"
-            },
-            body: formData
-        });
-        const data = await response.json();
-        if (data.success) {
-            // Si es exitoso, abrir la nueva pestaña con la URL recibida
-            window.open(data.url, "_blank");
-        } else {
-            // Si hay errores, actualizar el contenido del modal y mostrarlo
-            const modalElement = document.getElementById("errorModal");
-            modalElement.innerHTML = data.html;
-            const errorModal = new bootstrap.Modal(modalElement);
-            errorModal.show();
-        }
-    } catch (error) {
-        console.error("Error en la solicitud AJAX:", error);
-    }
-});
-
-
-
-
-
-
-
-
+if (generar){
+	generar.addEventListener("click", function (event) {
+		// Previene el envío del formulario al hacer clic en "Generar".
+		event.preventDefault();
+		
+		// Obtener el formulario de filtros.
+		const form = this.closest("form");
+		const formData = new FormData(form);
+		const params = new URLSearchParams(formData).toString();
+		
+		// URLs extraídas de los atributos data-
+		const clienteInformePdfUrl = this.getAttribute("data-pdf-url").split("?")[0];
+		const clienteInformeGeneradoUrl = this.getAttribute("data-zip-url").split("?")[0];
+		
+		// Determinar si es para vista previa PDF o generación ZIP.
+		const vistaPDFSeleccionada = document.getElementById("pdf_preliminar")?.checked;
+		const envioEmailSeleccionado = document.getElementById("email_envio")?.checked;
+		
+		if (vistaPDFSeleccionada) {
+			// Abrir la vista previa en PDF.
+			const fullUrl = `${clienteInformePdfUrl}?${params}&format=pdf`;
+			window.open(fullUrl, "_blank");
+		}
+		if (envioEmailSeleccionado) {
+			
+			// Obtener los checkboxes seleccionados
+			const selectedFormats = [];
+			document.querySelectorAll('input[type="checkbox"]:checked').forEach((checkbox) => {
+				selectedFormats.push(checkbox.value);
+			});
+			
+			if (selectedFormats.length === 0) {
+				alert("Por favor, selecciona al menos un formato.");
+				return;
+			}
+			
+			// Crear la URL para el archivo ZIP.
+			const fullUrl = `${clienteInformeGeneradoUrl}?${params}`;
+			
+			// Redirigir a la URL para descargar el ZIP.
+			window.location.href = fullUrl;
+		}
+	});
+}
 // ---------------------------------------------------------------------------
 // Funcionalidad para mostrar modal con los errores de validación
 // del formulario.

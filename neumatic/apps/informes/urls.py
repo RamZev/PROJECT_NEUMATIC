@@ -331,8 +331,10 @@ urlpatterns = [
 	#-- VL Venta Compro Propuesta nueva.
 	path('vlventacompro_informe_prop/', VLVentaComproInformeView.as_view(),
 		 name='vlventacompro_informe_list_prop'),
-	path('ventacompro/vista-preliminar/', VLVentaComproPantallaView.as_view(), 
-	  	 name='ventacompro_preliminar_pantalla'),
+	
+	path('ventacompro/vista-preliminar/', ventacompro_vista_pantalla, name="ventacompro_vista_pantalla"),
+	path("ventacompro/vista-pdf/", ventacompro_vista_pdf, name="ventacompro_vista_pdf"),
+	
 	
 	
 	#-- Otras rutas.

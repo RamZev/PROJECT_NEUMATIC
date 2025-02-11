@@ -1,8 +1,11 @@
 # neumatic\apps\informes\views\list_views_generics_prop.py
 
 import asyncio
+import uuid
 from asgiref.sync import sync_to_async
-from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotAllowed
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotAllowed, JsonResponse
+from django.urls import reverse
+from django.template.loader import render_to_string
 
 from django.views.generic import FormView, TemplateView
 
@@ -31,20 +34,6 @@ class InformeFormView(FormView):
 	async def dispatch(self, request, *args, **kwargs):
 		return await super().dispatch(request, *args, **kwargs)
 	
-	# async def setup(self, request, *args, **kwargs):
-	# 	await sync_to_async(super().setup)(request, *args, **kwargs)
-	
-# 	async def trace(self, request, *args, **kwargs):
-# 		# Si el método TRACE no está permitido, devolvemos http_method_not_allowed.
-# 		return await self.http_method_not_allowed(request, *args, **kwargs)
-# 	
-# 	async def head(self, request, *args, **kwargs):
-# 		# Usa la implementación síncrona de head envuelta en sync_to_async.
-# 		return await sync_to_async(super().head)(request, *args, **kwargs)
-# 
-# 	async def options(self, request, *args, **kwargs):
-# 		return await sync_to_async(super().options)(request, *args, **kwargs)
-	
 	async def post(self, request, *args, **kwargs):
 		return await self.get(request, *args, **kwargs)
 	
@@ -54,7 +43,6 @@ class InformeFormView(FormView):
 		
 		if request.GET and any(value for key, value in request.GET.items() if value):
 			if form.is_valid():
-				print("** El formulario es válido **")
 				#-- Se ejecuta la consulta en un hilo aparte.
 				queryset = await sync_to_async(self.obtener_queryset)(form.cleaned_data)
 				#-- Obtiene el contexto del reporte; por defecto, puede ser simplemente el queryset.
@@ -62,34 +50,63 @@ class InformeFormView(FormView):
 				#-- Procesa la salida.
 				return await self.procesar_reporte_async(contexto_reporte, form.cleaned_data)
 			else:
-				print("** El formulario NO es válido **")
 				return await self.form_invalid(form)
-				return await sync_to_async(self.form_invalid)(form)
 		
 		#-- Si no hay parámetros, se renderiza la respuesta con el formulario.
 		context_data = await sync_to_async(self.get_context_data)(form=form)
 		return await sync_to_async(self.render_to_response)(context_data)
 	
-	# # Sobrescribir http_method_not_allowed para que sea async
-	# async def http_method_not_allowed(self, request, *args, **kwargs):
-	# 	allowed = self._allowed_methods()
-	# 	return HttpResponseNotAllowed(allowed)	
+	def get_form_kwargs(self):
+		kwargs = super().get_form_kwargs()
+		#-- Sólo asignar data si la querystring contiene datos.
+		if len(self.request.GET) > 0:
+			kwargs['data'] = self.request.GET
+		return kwargs	
 	
-	# # Métodos asíncronos que envuelven a los métodos heredados síncronos:
-	# async def get_context_data_async(self, **kwargs):
-	# 	return await sync_to_async(super().get_context_data)(**kwargs)
-	# 
-	# async def render_to_response_async(self, context, **response_kwargs):
-	# 	return await sync_to_async(super().render_to_response)(context, **response_kwargs)
-	 
+	# async def form_invalid(self, form):
+	# 	#-- Obtener el contexto usando la versión síncrona de get_context_data.
+	# 	context = await sync_to_async(self.get_context_data)(form=form)
+	# 	#-- Agrega la bandera de errores.
+	# 	context["data_has_errors"] = True
+	# 	#-- Renderiza la respuesta con el contexto actualizado.
+	# 	return await sync_to_async(super().render_to_response)(context)
 	async def form_invalid(self, form):
 		#-- Obtener el contexto usando la versión síncrona de get_context_data.
 		context = await sync_to_async(self.get_context_data)(form=form)
 		#-- Agrega la bandera de errores.
 		context["data_has_errors"] = True
-		#-- Renderiza la respuesta con el contexto actualizado.
-		return await sync_to_async(super().render_to_response)(context)
+        # Renderiza el HTML (por ejemplo, puedes renderizar el fragmento del modal de errores)
+		html = await sync_to_async(render_to_string)(self.template_name, context, request=self.request)
+		# Si la solicitud es AJAX, devuelve JSON con el HTML de error
+		return JsonResponse({"success": False, "html": html})
 	
+	# async def procesar_reporte_async(self, contexto_reporte, cleaned_data):
+	# 	"""
+	# 	Procesa la salida según 'tipo_salida'. Por ejemplo:
+	# 	  - 'pantalla': renderiza la plantilla con el contexto.
+	# 	  - 'pdf_preliminar': genera el PDF usando la función generar_pdf.
+	# 	  - Otros: email, whatsapp (placeholders).
+	# 	"""
+	# 	tipo_salida = cleaned_data.get("tipo_salida", "pantalla").lower()
+	# 	
+	# 	print("Entra acá***")
+	# 	
+	# 	if tipo_salida == "pantalla":
+	# 		context = await sync_to_async(self.get_context_data)(**contexto_reporte)
+	# 		return await sync_to_async(self.render_to_response)(context)
+	# 	elif tipo_salida == "pdf_preliminar":
+	# 		html_string = await sync_to_async(render_to_string)(self.template_name, contexto_reporte)
+	# 		pdf_file = await sync_to_async(HTML(string=html_string, base_url=self.request.build_absolute_uri()).write_pdf)()
+	# 		return HttpResponse(pdf_file, content_type="application/pdf")
+	# 	# elif tipo_salida == "email":
+	# 	#     enviar_email_reporte(contexto_reporte, cleaned_data.get("email"))
+	# 	#     return HttpResponseRedirect(self.get_success_url())
+	# 	# elif tipo_salida == "whatsapp":
+	# 	#     enviar_whatsapp_reporte(contexto_reporte, cleaned_data.get("celular"))
+	# 	#     return HttpResponseRedirect(self.get_success_url())
+	# 	else:
+	# 		context = await sync_to_async(self.get_context_data)(**contexto_reporte)
+	# 		return await sync_to_async(self.render_to_response)(context)
 	async def procesar_reporte_async(self, contexto_reporte, cleaned_data):
 		"""
 		Procesa la salida según 'tipo_salida'. Por ejemplo:
@@ -98,23 +115,27 @@ class InformeFormView(FormView):
 		  - Otros: email, whatsapp (placeholders).
 		"""
 		tipo_salida = cleaned_data.get("tipo_salida", "pantalla").lower()
-
+		
+		# Genera un token único
+		token = str(uuid.uuid4())
+		# Guarda el contexto en la sesión (asegúrate de que el contexto sea serializable o almacena solo los parámetros necesarios)
+		self.request.session[token] = contexto_reporte
+		
+		# Construir la URL según el tipo de salida
 		if tipo_salida == "pantalla":
-			context = await sync_to_async(self.get_context_data)(**contexto_reporte)
-			return await sync_to_async(self.render_to_response)(context)
-		# elif tipo_salida == "pdf_preliminar":
-		#     pdf_file = generar_pdf(contexto_reporte)
-		#     return HttpResponse(pdf_file, content_type="application/pdf")
-		# elif tipo_salida == "email":
-		#     enviar_email_reporte(contexto_reporte, cleaned_data.get("email"))
-		#     return HttpResponseRedirect(self.get_success_url())
-		# elif tipo_salida == "whatsapp":
-		#     enviar_whatsapp_reporte(contexto_reporte, cleaned_data.get("celular"))
-		#     return HttpResponseRedirect(self.get_success_url())
+			# Por ejemplo, asumamos que la URL de salida para pantalla es 'ventacompro_vista_pantalla'
+			url = reverse("ventacompro_vista_pantalla") + f"?token={token}"
+		elif tipo_salida == "pdf_preliminar":
+			url = reverse("ventacompro_vista_pdf") + f"?token={token}&format=pdf"
 		else:
-			context = await sync_to_async(self.get_context_data)(**contexto_reporte)
-			return await sync_to_async(self.render_to_response)(context)
-	
+			# Para otros casos, redirige a pantalla
+			url = reverse("ventacompro_vista_pantalla") + f"?token={token}"
+		
+		if self.request.headers.get("X-Requested-With") == "XMLHttpRequest":
+			return JsonResponse({"success": True, "url": url})
+		else:
+			return HttpResponseRedirect(url)
+		
 	def obtener_queryset(self, cleaned_data):
 		"""
 		Debe devolver el queryset filtrado según los datos del formulario.
