@@ -283,3 +283,41 @@ class VLVentaComproPantallaView(InformeTemplateView):
 		}
 		
 		return render(request, self.template_name, context)
+
+
+
+
+
+# Copiadas acá por respaldo------------------------------------------------------
+def ventacompro_vista_pantalla(request):
+	token = request.GET.get("token")
+	print("Está  entrando a imprimir por pantalla")
+	print(f"{token = }")
+	
+	if not token:
+		return HttpResponse("Token no proporcionado")
+	
+	# Recuperar y eliminar el contexto de la sesión
+	contexto_reporte = request.session.pop(token, None)
+	if not contexto_reporte:
+		return HttpResponse("Contexto no encontrado o expirado", status=400)
+	
+	# Renderizar la plantilla con el contexto recuperado
+	return render(request, "informes/reportes/ventacompro_list.html", contexto_reporte)
+
+
+def ventacompro_vista_pdf(request):
+	token = request.GET.get("token")
+	if not token:
+		return HttpResponse("Token no proporcionado", status=400)
+	
+	contexto_reporte = request.session.pop(token, None)
+	if not contexto_reporte:
+		return HttpResponse("Contexto no encontrado o expirado", status=400)
+	
+	# Renderiza el HTML usando la misma plantilla
+	html_string = render_to_string("informes/reportes/ventacompro_list.html", contexto_reporte, request=request)
+	# Genera el PDF (puedes ajustar opciones de WeasyPrint si es necesario)
+	pdf_file = HTML(string=html_string, base_url=request.build_absolute_uri()).write_pdf()
+	
+	return HttpResponse(pdf_file, content_type="application/pdf")

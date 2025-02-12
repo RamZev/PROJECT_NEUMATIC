@@ -172,134 +172,24 @@ class VLVentaComproInformeView(InformeFormView):
 		return context
 
 
-class VLVentaComproPantallaView(InformeTemplateView):
-	
-	template_name = "informes/reportes/ventacompro_list.html"
-	
-	def get(self, request, *args, **kwargs):
-		
-		# Obtener los parámetros del formulario desde la URL
-		form_data = request.GET
-		
-		# Procesar los datos del formulario (similar a get_queryset en VLVentaComproInformeView)
-		sucursal = form_data.get('sucursal')
-		fecha_desde = form_data.get('fecha_desde', datetime(datetime.today().year, 1, 1))
-		fecha_hasta = form_data.get('fecha_hasta', datetime.today())
-		solo_totales_comprobante = form_data.get('solo_totales_comprobante', False)
-		
-		# Aplicar los filtros al queryset
-		queryset = VLVentaCompro.objects.obtener_venta_compro(
-			fecha_desde, 
-			fecha_hasta, 
-			sucursal=sucursal
-		)
-		
-		param = {
-			"Sucursal": sucursal.nombre_sucursal if sucursal else "Todas",
-			"Desde": fecha_desde.strftime("%d/%m/%Y"),
-			"Hasta": fecha_hasta.strftime("%d/%m/%Y"),
-		}
-		
-		fecha_hora_reporte = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-		
-		#-- Estructura para agrupar los datos.
-		datos_agrupados = []
-		totales_generales = {
-			# "contado": {"gravado": Decimal(0), "iva": Decimal(0), "percep_ib": Decimal(0), "total": Decimal(0)},
-			# "cta_cte": {"gravado": Decimal(0), "iva": Decimal(0), "percep_ib": Decimal(0), "total": Decimal(0)},
-			"contado": Decimal(0),
-			"cta_cte": Decimal(0),
-		}
-		
-		agrupados = defaultdict(lambda: {
-			"comprobantes": [],
-			"subtotal": {
-				"contado": {"gravado": Decimal(0), "iva": Decimal(0), "percep_ib": Decimal(0), "total": Decimal(0)},
-				"cta_cte": {"gravado": Decimal(0), "iva": Decimal(0), "percep_ib": Decimal(0), "total": Decimal(0)},
-			},
-		})
-		
-		for item in queryset:
-			tipo = item.nombre_comprobante_venta
-			condicion = "contado" if item.condicion == "Contado" else "cta_cte"
-			monto_total = Decimal(item.total)
-			
-			#-- Agregar el comprobante.
-			agrupados[tipo]["comprobantes"].append({
-				"comprobante": item.comprobante,
-				"fecha": item.fecha_comprobante,
-				"condicion": item.condicion,
-				"cliente_id": item.id_cliente_id,
-				"cliente_nombre": item.nombre_cliente,
-				"gravado": Decimal(item.gravado),
-				"iva": Decimal(item.iva),
-				"percep_ib": Decimal(item.percep_ib),
-				"total": monto_total,
-			})
-			
-			#-- Actualizar subtotales.
-			agrupados[tipo]["subtotal"][condicion]["gravado"] += Decimal(item.gravado)
-			agrupados[tipo]["subtotal"][condicion]["iva"] += Decimal(item.iva)
-			agrupados[tipo]["subtotal"][condicion]["percep_ib"] += Decimal(item.percep_ib)
-			agrupados[tipo]["subtotal"][condicion]["total"] += monto_total
-			
-			#-- Actualizar totales generales.
-			# totales_generales[condicion]["gravado"] += Decimal(item.gravado)
-			# totales_generales[condicion]["iva"] += Decimal(item.iva)
-			# totales_generales[condicion]["percep_ib"] += Decimal(item.percep_ib)
-			# totales_generales[condicion]["total"] += monto_total
-			totales_generales[condicion] += monto_total
-			
-		#-- Convertir a lista para facilitar la iteración en la plantilla.
-		for tipo, datos in agrupados.items():
-			datos_agrupados.append({"tipo": tipo, **datos})
-		
-		
-		dominio = f"http://{request.get_host()}"
-		
-		# Pasar los datos a la plantilla
-		context = {
-			'objetos': datos_agrupados,
-			'total_general': totales_generales,
-			'solo_totales_comprobante': solo_totales_comprobante,
-			'parametros': param,
-			'fecha_hora_reporte': fecha_hora_reporte,
-			'titulo': ConfigViews.report_title,
-			'logo_url': f"{dominio}{static('img/logo_01.png')}",
-			'css_url': f"{dominio}{static('css/reportes.css')}",
-			
-		}
-		
-		return render(request, self.template_name, context)
-
-
 def ventacompro_vista_pantalla(request):
 	token = request.GET.get("token")
+	print(f"token en salida: {token = }")
 	
-	if not token:
-		return HttpResponse("Token no proporcionado")
-	
-	# Recuperar y eliminar el contexto de la sesión
-	contexto_reporte = request.session.pop(token, None)
-	if not contexto_reporte:
-		return HttpResponse("Contexto no encontrado o expirado", status=400)
-	
-	# Renderizar la plantilla con el contexto recuperado
-	return render(request, "informes/reportes/ventacompro_list.html", contexto_reporte)
-
-
-def ventacompro_vista_pdf(request):
-	token = request.GET.get("token")
 	if not token:
 		return HttpResponse("Token no proporcionado", status=400)
-	
 	contexto_reporte = request.session.pop(token, None)
 	if not contexto_reporte:
 		return HttpResponse("Contexto no encontrado o expirado", status=400)
-	
-	# Renderiza el HTML usando la misma plantilla
-	html_string = render_to_string("informes/reportes/ventacompro_list.html", contexto_reporte, request=request)
-	# Genera el PDF (puedes ajustar opciones de WeasyPrint si es necesario)
-	pdf_file = HTML(string=html_string, base_url=request.build_absolute_uri()).write_pdf()
-	
-	return HttpResponse(pdf_file, content_type="application/pdf")
+	return render(request, "informes/reportes/ventacompro_list.html", contexto_reporte)
+
+def ventacompro_vista_pdf(request):
+    token = request.GET.get("token")
+    if not token:
+        return HttpResponse("Token no proporcionado", status=400)
+    contexto_reporte = request.session.pop(token, None)
+    if not contexto_reporte:
+        return HttpResponse("Contexto no encontrado o expirado", status=400)
+    html_string = render_to_string("informes/reportes/ventacompro_pdf.html", contexto_reporte, request=request)
+    pdf_file = HTML(string=html_string, base_url=request.build_absolute_uri()).write_pdf()
+    return HttpResponse(pdf_file, content_type="application/pdf")

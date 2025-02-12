@@ -100,8 +100,10 @@ const initializeDefaults = () => {
 };
 
 // evento 'change' para los cambios
-document.querySelectorAll('input[name="tipo_salida"]').forEach((radio) => {
-	radio.addEventListener("change", selectAllFormats);
+const radios = document.querySelectorAll('input[name="tipo_salida"]');
+radios.forEach(radio => {
+    radio.removeEventListener("change", selectAllFormats); // Evita duplicados
+    radio.addEventListener("change", selectAllFormats);
 });
 
 // cargar la página
@@ -114,6 +116,44 @@ initializeDefaults();
 
 
 
+
+
+// document.getElementById("formulario").addEventListener("submit", function(event) {
+//     // Si el formulario es válido, establece target a "_blank" para abrir la respuesta en nueva pestaña
+//     if (this.checkValidity()) {
+//         this.target = "_blank";
+//     } else {
+//         // Si no es válido, evita el envío y muestra los mensajes de error nativos
+//         event.preventDefault();
+//         this.reportValidity();
+//     }
+// });
+
+// // Script para enviar el formulario vía AJAX
+// document.getElementById("generar").addEventListener("click", async function (event) {
+// 	event.preventDefault();
+// 	const form = this.closest("form");
+// 	const formData = new FormData(form);
+// 	const urlParams = new URLSearchParams(formData).toString();
+// 	const fullUrlForAjax = form.action + "?" + urlParams;
+// 	try {
+// 		const response = await fetch(fullUrlForAjax, {
+// 			method: "GET",
+// 			headers: { "X-Requested-With": "XMLHttpRequest" }
+// 		});
+// 		const data = await response.json();
+// 		if (data.success) {
+// 			window.open(data.url, "_blank");
+// 		} else {
+// 			const modalElement = document.getElementById("errorModal");
+// 			modalElement.innerHTML = data.html;
+// 			const errorModal = new bootstrap.Modal(modalElement);
+// 			errorModal.show();
+// 		}
+// 	} catch (error) {
+// 		console.error("Error en la solicitud AJAX:", error);
+// 	}
+// });
 
 
 // // Script adicional para el botón "Generar".
@@ -154,37 +194,38 @@ initializeDefaults();
 // 		window.open(fullUrl, "_blank");
 // 	});
 // }
-document.getElementById("generar").addEventListener("click", async function (event) {
-	event.preventDefault();
-	
-	const form = this.closest("form");
-	const formData = new FormData(form);
-	const params = new URLSearchParams(formData).toString();
-	const fullUrlForAjax = form.action + "?" + params;
-	
-	// Enviar el formulario vía AJAX
-	try {
-		const response = await fetch(fullUrlForAjax, {
-			method: "GET", // o "POST" si se prefiere; aquí usamos GET según la configuración
-			headers: {
-				"X-Requested-With": "XMLHttpRequest"
-			},
-		});
-		const data = await response.json();
-		if (data.success) {
-			// Si es exitoso, abrir la nueva pestaña con la URL recibida
-			window.open(data.url, "_blank");
-		} else {
-			// Si hay errores, actualizar el contenido del modal y mostrarlo
-			const modalElement = document.getElementById("errorModal");
-			modalElement.innerHTML = data.html;
-			const errorModal = new bootstrap.Modal(modalElement);
-			errorModal.show();
-		}
-	} catch (error) {
-		console.error("Error en la solicitud AJAX:", error);
-	}
-});
+
+// document.getElementById("generar").addEventListener("click", async function (event) {
+// 	event.preventDefault();
+// 	
+// 	const form = this.closest("form");
+// 	const formData = new FormData(form);
+// 	const params = new URLSearchParams(formData).toString();
+// 	const fullUrlForAjax = form.action + "?" + params;
+// 	
+// 	// Enviar el formulario vía AJAX
+// 	try {
+// 		const response = await fetch(fullUrlForAjax, {
+// 			method: "GET", // o "POST" si se prefiere; aquí usamos GET según la configuración
+// 			headers: {
+// 				"X-Requested-With": "XMLHttpRequest"
+// 			},
+// 		});
+// 		const data = await response.json();
+// 		if (data.success) {
+// 			// Si es exitoso, abrir la nueva pestaña con la URL recibida
+// 			window.open(data.url, "_blank");
+// 		} else {
+// 			// Si hay errores, actualizar el contenido del modal y mostrarlo
+// 			const modalElement = document.getElementById("errorModal");
+// 			modalElement.innerHTML = data.html;
+// 			const errorModal = new bootstrap.Modal(modalElement);
+// 			errorModal.show();
+// 		}
+// 	} catch (error) {
+// 		console.error("Error en la solicitud AJAX:", error);
+// 	}
+// });
 
 
 
