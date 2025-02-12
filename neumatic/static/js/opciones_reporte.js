@@ -155,34 +155,35 @@ initializeDefaults();
 // 	});
 // }
 document.getElementById("generar").addEventListener("click", async function (event) {
-    event.preventDefault();
-    
-    const form = this.closest("form");
-    const formData = new FormData(form);
-    
-    // Enviar el formulario vía AJAX
-    try {
-        const response = await fetch(form.action, {
-            method: "GET", // o "POST" si se prefiere; aquí usamos GET según la configuración
-            headers: {
-                "X-Requested-With": "XMLHttpRequest"
-            },
-            body: formData
-        });
-        const data = await response.json();
-        if (data.success) {
-            // Si es exitoso, abrir la nueva pestaña con la URL recibida
-            window.open(data.url, "_blank");
-        } else {
-            // Si hay errores, actualizar el contenido del modal y mostrarlo
-            const modalElement = document.getElementById("errorModal");
-            modalElement.innerHTML = data.html;
-            const errorModal = new bootstrap.Modal(modalElement);
-            errorModal.show();
-        }
-    } catch (error) {
-        console.error("Error en la solicitud AJAX:", error);
-    }
+	event.preventDefault();
+	
+	const form = this.closest("form");
+	const formData = new FormData(form);
+	const params = new URLSearchParams(formData).toString();
+	const fullUrlForAjax = form.action + "?" + params;
+	
+	// Enviar el formulario vía AJAX
+	try {
+		const response = await fetch(fullUrlForAjax, {
+			method: "GET", // o "POST" si se prefiere; aquí usamos GET según la configuración
+			headers: {
+				"X-Requested-With": "XMLHttpRequest"
+			},
+		});
+		const data = await response.json();
+		if (data.success) {
+			// Si es exitoso, abrir la nueva pestaña con la URL recibida
+			window.open(data.url, "_blank");
+		} else {
+			// Si hay errores, actualizar el contenido del modal y mostrarlo
+			const modalElement = document.getElementById("errorModal");
+			modalElement.innerHTML = data.html;
+			const errorModal = new bootstrap.Modal(modalElement);
+			errorModal.show();
+		}
+	} catch (error) {
+		console.error("Error en la solicitud AJAX:", error);
+	}
 });
 
 
@@ -243,26 +244,47 @@ modalElement.addEventListener('hidden.bs.modal', function () {
 // Funcionalidad para buscar un Cliente por su Id.
 // ---------------------------------------------------------------------------
 const idClienteInput = document.getElementById("id_id_cliente");
-const nombreClienteInput = document.getElementById("id_nombre_cliente");
 
-idClienteInput.addEventListener("change", function() {
-	const idCliente = idClienteInput.value.trim();
+if (idClienteInput){
+	const nombreClienteInput = document.getElementById("id_nombre_cliente");
 	
-	if (idCliente) {
-		fetch(`/informes/buscar/cliente/id/?id_cliente=${idCliente}`)
-			.then(response => response.json())
-			.then(data => {
-				if (data.error) {
-					nombreClienteInput.value = "Cliente no encontrado";
-				} else {
-					nombreClienteInput.value = data.nombre_cliente;
-				}
-			})
-			.catch(error => console.error("Error al obtener cliente:", error));
-	} else {
-		nombreClienteInput.value = "";
-	}
-});
+	idClienteInput.addEventListener("change", function() {
+		const idCliente = idClienteInput.value.trim();
+	
+		if (idCliente) {
+			fetch(`/informes/buscar/cliente/id/?id_cliente=${idCliente}`)
+				.then(response => response.json())
+				.then(data => {
+					if (data.error) {
+						nombreClienteInput.value = "Cliente no encontrado";
+					} else {
+						nombreClienteInput.value = data.nombre_cliente;
+					}
+				})
+				.catch(error => console.error("Error al obtener cliente:", error));
+		} else {
+			nombreClienteInput.value = "";
+		}
+	});
+}
+// idClienteInput.addEventListener("change", function() {
+// 	const idCliente = idClienteInput.value.trim();
+	
+// 	if (idCliente) {
+// 		fetch(`/informes/buscar/cliente/id/?id_cliente=${idCliente}`)
+// 			.then(response => response.json())
+// 			.then(data => {
+// 				if (data.error) {
+// 					nombreClienteInput.value = "Cliente no encontrado";
+// 				} else {
+// 					nombreClienteInput.value = data.nombre_cliente;
+// 				}
+// 			})
+// 			.catch(error => console.error("Error al obtener cliente:", error));
+// 	} else {
+// 		nombreClienteInput.value = "";
+// 	}
+// });
 
 // ---------------------------------------------------------------------------
 // Funcionalidad que muestra el Modal para buscar un Cliente por filtrado.

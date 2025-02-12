@@ -50,7 +50,12 @@ class InformeFormView(FormView):
 				#-- Procesa la salida.
 				return await self.procesar_reporte_async(contexto_reporte, form.cleaned_data)
 			else:
-				return await self.form_invalid(form)
+				# Devuelve el HTML de errores en JSON
+				context = await sync_to_async(self.get_context_data)(form=form)
+				context["data_has_errors"] = True
+				html = await sync_to_async(render_to_string)(self.template_name, context, request=request)
+				return JsonResponse({"success": False, "html": html})
+				# return await self.form_invalid(form)
 		
 		#-- Si no hay parámetros, se renderiza la respuesta con el formulario.
 		context_data = await sync_to_async(self.get_context_data)(form=form)
@@ -70,15 +75,15 @@ class InformeFormView(FormView):
 	# 	context["data_has_errors"] = True
 	# 	#-- Renderiza la respuesta con el contexto actualizado.
 	# 	return await sync_to_async(super().render_to_response)(context)
-	async def form_invalid(self, form):
-		#-- Obtener el contexto usando la versión síncrona de get_context_data.
-		context = await sync_to_async(self.get_context_data)(form=form)
-		#-- Agrega la bandera de errores.
-		context["data_has_errors"] = True
-        # Renderiza el HTML (por ejemplo, puedes renderizar el fragmento del modal de errores)
-		html = await sync_to_async(render_to_string)(self.template_name, context, request=self.request)
-		# Si la solicitud es AJAX, devuelve JSON con el HTML de error
-		return JsonResponse({"success": False, "html": html})
+	# async def form_invalid(self, form):
+	# 	#-- Obtener el contexto usando la versión síncrona de get_context_data.
+	# 	context = await sync_to_async(self.get_context_data)(form=form)
+	# 	#-- Agrega la bandera de errores.
+	# 	context["data_has_errors"] = True
+    #     # Renderiza el HTML (por ejemplo, puedes renderizar el fragmento del modal de errores)
+	# 	html = await sync_to_async(render_to_string)(self.template_name, context, request=self.request)
+	# 	# Si la solicitud es AJAX, devuelve JSON con el HTML de error
+	# 	return JsonResponse({"success": False, "html": html})
 	
 	# async def procesar_reporte_async(self, contexto_reporte, cleaned_data):
 	# 	"""
