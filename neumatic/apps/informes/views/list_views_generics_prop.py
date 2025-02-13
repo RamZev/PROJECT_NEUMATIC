@@ -11,7 +11,7 @@ from django.views.generic import FormView, TemplateView
 #-- Recursos necesarios para proteger las rutas.
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
-
+from utils.utils import serializar_datos
 
 # -- Vistas Genéricas Basada en Clases -----------------------------------------------
 @method_decorator(login_required, name='dispatch')
@@ -32,9 +32,11 @@ class InformeFormView(FormView):
 		form = self.get_form()
 		if request.GET and any(value for key, value in request.GET.items() if value):
 			if form.is_valid():
+				tipo_salida = request.GET.get("tipo_salida")
 				queryset = self.obtener_queryset(form.cleaned_data)
 				contexto_reporte = self.obtener_contexto_reporte(queryset, form.cleaned_data)
-				return self.procesar_reporte(contexto_reporte, form.cleaned_data)
+				# return self.procesar_reporte(contexto_reporte, form.cleaned_data)
+				return self.procesar_reporte(contexto_reporte, tipo_salida)
 			else:
 				return self.form_invalid(form)
 		
@@ -49,6 +51,8 @@ class InformeFormView(FormView):
 		return kwargs	
 	
 	def form_invalid(self, form):
+		print("Luego pasa por acá desde la vista genérica***")
+		
 		#-- Obtener el contexto de get_context_data.
 		context = self.get_context_data(form=form)
 		#-- Agrega la bandera de errores.
@@ -56,35 +60,30 @@ class InformeFormView(FormView):
 		#-- Renderiza la respuesta con el contexto actualizado.
 		return super().render_to_response(context)
 	
-	def procesar_reporte(self, contexto_reporte, cleaned_data):
+	def procesar_reporte(self, contexto_reporte, tipo_salida):
 		"""
 		Una vez validado el formulario, genera un token, guarda el contexto en la sesión y
 		devuelve un JSON con la URL de salida (para pantalla o PDF).
 		"""
+		#-- Limpiar posibles reportes previos en la sesión.
+		for key in list(self.request.session.keys()):
+			if key.startswith("reporte_"):  # Opcional: usa un prefijo para identificar tokens de reportes
+				del self.request.session[key]
 		
-		tipo_salida = cleaned_data.get("tipo_salida", "pantalla").lower()
-		token = str(uuid.uuid4())
-		self.request.session[token] = contexto_reporte
-		
-		print(f"{tipo_salida = }")
-		print(f"{token = }")
-		print(f"{self.request.session.items() = }")
-		print(f"X-Requested-With: {self.request.headers.get('X-Requested-With')}")
-
+		token = f"reporte_{uuid.uuid4()}"  # Agregar prefijo para fácil identificación
+		self.request.session[token] = serializar_datos(contexto_reporte)
 		
 		if tipo_salida == "pantalla":
 			url = reverse("ventacompro_vista_pantalla") + f"?token={token}"
 		elif tipo_salida == "pdf_preliminar":
-			url = reverse("ventacompro_vista_pdf") + f"?token={token}&format=pdf"
+			# url = reverse("ventacompro_vista_pdf") + f"?token={token}&format=pdf"
+			url = reverse("ventacompro_vista_pdf") + f"?token={token}"
 		else:
 			url = reverse("ventacompro_vista_pantalla") + f"?token={token}"
-		
-		print(f"{url = }")
 		
 		if self.request.headers.get("X-Requested-With") == "XMLHttpRequest":
 			return JsonResponse({"success": True, "url": url})
 		else:
-			print("Llega hasta acá")
 			return HttpResponseRedirect(url)
 	
 	def obtener_queryset(self, cleaned_data):
@@ -105,8 +104,3 @@ class InformeFormView(FormView):
 		debe sobreescribir este método.
 		"""
 		return {"objetos": queryset}
-
-
-@method_decorator(login_required, name='dispatch')
-class InformeTemplateView(TemplateView):
-	pass

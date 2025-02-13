@@ -22,7 +22,7 @@ from collections import defaultdict
 from .list_views_generics_prop import *    # <== Cambiar acá!.
 from apps.informes.models import VLVentaCompro
 from ..forms.buscador_ventacompro_forms import BuscadorVentaComproForm
-
+from utils.utils import deserializar_datos
 
 class ConfigViews:
 	
@@ -163,6 +163,7 @@ class VLVentaComproInformeView(InformeFormView):
 		}
 	
 	def get_context_data(self, **kwargs):
+		print("También Pasa por acá desde la vista específica***")
 		context = super().get_context_data(**kwargs)
 		form = kwargs.get("form") or self.get_form()
 		
@@ -173,23 +174,58 @@ class VLVentaComproInformeView(InformeFormView):
 
 
 def ventacompro_vista_pantalla(request):
+	#-- Obtener el token de la querystring.
 	token = request.GET.get("token")
-	print(f"token en salida: {token = }")
+	print(f"token en salida PANTALLA: {token = }")
 	
 	if not token:
 		return HttpResponse("Token no proporcionado", status=400)
-	contexto_reporte = request.session.pop(token, None)
+	
+	#-- Obtener el contexto(datos) previamente guardados en la sesión.
+	# contexto_reporte = request.session.pop(token, None)
+	contexto_reporte = deserializar_datos(request.session.pop(token, None))
+	
 	if not contexto_reporte:
 		return HttpResponse("Contexto no encontrado o expirado", status=400)
+	
+	#-- Generar el listado a pantalla.
 	return render(request, "informes/reportes/ventacompro_list.html", contexto_reporte)
 
+
 def ventacompro_vista_pdf(request):
-    token = request.GET.get("token")
-    if not token:
-        return HttpResponse("Token no proporcionado", status=400)
-    contexto_reporte = request.session.pop(token, None)
-    if not contexto_reporte:
-        return HttpResponse("Contexto no encontrado o expirado", status=400)
-    html_string = render_to_string("informes/reportes/ventacompro_pdf.html", contexto_reporte, request=request)
-    pdf_file = HTML(string=html_string, base_url=request.build_absolute_uri()).write_pdf()
-    return HttpResponse(pdf_file, content_type="application/pdf")
+	#-- Obtener el token de la querystring.
+	token = request.GET.get("token")
+	print("**********************")
+	print(f"token en salida PDF: {token = }")
+	
+	if not token:
+		return HttpResponse("Token no proporcionado", status=400)
+	
+	#-- Obtener el contexto(datos) previamente guardados en la sesión.
+	# contexto_reporte = deserializar_datos(request.session.pop(token, None))
+	contexto_reporte = deserializar_datos(request.session.get(token, None))
+	
+	if not contexto_reporte:
+		return HttpResponse("Contexto no encontrado o expirado", status=400)
+	
+	#-- Preparar la respuesta HTTP.
+	html_string = render_to_string("informes/reportes/ventacompro_pdf.html", contexto_reporte, request=request)
+	pdf_file = HTML(string=html_string, base_url=request.build_absolute_uri()).write_pdf()
+
+	response = HttpResponse(pdf_file, content_type="application/pdf")
+	response["Content-Disposition"] = f'inline; filename="informe_{ConfigViews.model_string}.pdf"'
+	
+	print("Ha terminado de generar el pdf.")
+	print("=====================")
+	
+	return response
+	
+	# html_string = render_to_string("informes/reportes/ventacompro_pdf.html", contexto_reporte, request=request)
+	# pdf_file = HTML(string=html_string, base_url=request.build_absolute_uri()).write_pdf()
+	# 
+	# response = HttpResponse(pdf_file, content_type="application/pdf")
+	# # del request.session[token]  # Borra el token después de enviar el PDF
+	# print("Ha terminado de crear el PDF, elimina el contexto de la sesión")
+	# print("=====================")
+	# return response
+	# return HttpResponse(pdf_file, content_type="application/pdf")

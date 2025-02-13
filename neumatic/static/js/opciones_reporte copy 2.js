@@ -119,33 +119,47 @@ initializeDefaults();
 
 
 // Script adicional para el botón "Generar".
-const btnGenerar = document.getElementById("generar");
-btnGenerar.addEventListener("click", function (e) {
-	e.preventDefault();  // Prevenir el envío normal del formulario
-	const form = document.getElementById("formulario");
-	// Se construye la URL con los parámetros del formulario
-	const formData = new FormData(form);
-	const params = new URLSearchParams(formData).toString();
-	const url = form.action + "?" + params;
-	
-	// Se hace la petición AJAX, enviando el header que indica petición AJAX
-	fetch(url, {
-		headers: { "X-Requested-With": "XMLHttpRequest" }
-	})
-	.then(response => response.json())
-	.then(data => {
-		if (data.success) {
-			// Abre la URL en una nueva pestaña
-			window.open(data.url, "_blank");
-		} else {
-			// Actualiza el contenido del modal con los errores y lo muestra
-			document.getElementById("errorModal").innerHTML = data.html;
-			const errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
-			errorModal.show();
+
+const form = document.getElementById("formulario");
+const generarBtn = document.getElementById("generar");
+const errorModalElement = document.getElementById('errorModal');
+const errorModal = new bootstrap.Modal(errorModalElement);
+
+generarBtn.addEventListener("click", function (event) {
+	event.preventDefault(); // Evita el envío inmediato del formulario
+
+	// Forzar la validación del formulario sin enviarlo
+	if (!form.checkValidity()) {
+		event.stopPropagation();
+		form.classList.add('was-validated'); // Para estilos de validación en Bootstrap
+		errorModal.show(); // Muestra el modal de errores
+		return; // Detiene la ejecución para evitar que se abra la nueva pestaña
+	}
+
+	let tipoSalida = document.querySelector('input[name="tipo_salida"]:checked');
+	let actionUrl = form.action;
+	let params = new URLSearchParams(new FormData(form)).toString();
+
+	if (tipoSalida) {
+		if (tipoSalida.value === "pantalla") {
+			actionUrl = generarBtn.dataset.pantallaUrl;
+		} else if (tipoSalida.value === "pdf_preliminar") {
+			actionUrl = generarBtn.dataset.pdfUrl;
 		}
-	})
-	.catch(error => console.error("Error en la petición:", error));
+	}
+
+	if (tipoSalida && (tipoSalida.value === "pantalla" || tipoSalida.value === "pdf_preliminar")) {
+		// Abre en nueva pestaña
+		window.open(actionUrl + "?" + params, "_blank");
+	} else {
+		// Envía el formulario normalmente
+		form.submit();
+	}
 });
+
+
+
+
 
 
 // ---------------------------------------------------------------------------
