@@ -11,7 +11,7 @@ class BuscadorVentaComproForm(InformesGenericForm):
 	
 	sucursal = forms.ModelChoiceField(
 		queryset=Sucursal.objects.filter(estatus_sucursal=True), 
-		required=True,
+		required=False,
 		label="Sucursal",
 		widget=forms.Select(attrs={**formclassselect})
 	)

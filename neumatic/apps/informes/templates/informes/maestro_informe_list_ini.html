@@ -216,7 +216,7 @@
 		document.addEventListener("DOMContentLoaded", function () {
 			//-- Cargar y ejecutar el JS común.
 			const scriptOpciones = document.createElement('script');
-			scriptOpciones.src = "{% static 'js/opciones_reporte_original.js' %}";
+			scriptOpciones.src = "{% static 'js/opciones_reporte.js' %}";
 			scriptOpciones.onload = function() {
 				console.log("*---opciones_reporte.js cargado y ejecutado.---*");
 			};

@@ -138,10 +138,16 @@ btnGenerar.addEventListener("click", function (e) {
 			// Abre la URL en una nueva pestaña
 			window.open(data.url, "_blank");
 		} else {
-			// Actualiza el contenido del modal con los errores y lo muestra
-			document.getElementById("errorModal").innerHTML = data.html;
-			const errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
-			errorModal.show();
+			// Remover el modal existente
+			const oldModal = document.getElementById("errorModal");
+			if (oldModal) {
+				oldModal.remove();
+			}
+			// Insertar el nuevo HTML del modal al final del body
+			document.body.insertAdjacentHTML('beforeend', data.html);
+			// Crear una nueva instancia del modal y mostrarlo
+			const newErrorModal = new bootstrap.Modal(document.getElementById('errorModal'));
+			newErrorModal.show();
 		}
 	})
 	.catch(error => console.error("Error en la petición:", error));

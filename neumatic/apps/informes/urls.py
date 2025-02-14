@@ -39,10 +39,6 @@ from apps.informes.views.ventacomprolocalidad_list_views import *
 from apps.informes.views.ventamostrador_list_views import *
 from apps.informes.views.ventacompro_list_views import *
 
-
-from apps.informes.views.ventacompro_list_views_prop import *
-
-
 from apps.informes.views.consultas_informes_views import *
 
 urlpatterns = [
@@ -283,57 +279,84 @@ urlpatterns = [
 		 name='vlmercaderiaporcliente_informe_pdf'),
 	
 	#-- VL Remitos por Cliente.
-	path('vlremitosclientes_informe/', VLRemitosClientesInformeListView.as_view(),
+	# path('vlremitosclientes_informe/', VLRemitosClientesInformeListView.as_view(),
+	# 	 name='vlremitosclientes_informe_list'),
+	# 
+	# path('vlremitosclientes_generado/', VLRemitosClientesInformesView.as_view(),
+	# 	 name='vlremitosclientes_informe_generado'),
+	# path('vlremitosclientes_vista_pdf/', VLRemitosClientesInformePDFView.as_view(),
+	# 	 name='vlremitosclientes_informe_pdf'),
+	path('vlremitosclientes_informe/', VLRemitosClientesInformeView.as_view(), 
 		 name='vlremitosclientes_informe_list'),
+	path('vlremitosclientes/vista-preliminar/', vlremitosclientes_vista_pantalla, 
+		 name="vlremitosclientes_vista_pantalla"),
+	path("vlremitosclientes/vista-pdf/", vlremitosclientes_vista_pdf, 
+		 name="vlremitosclientes_vista_pdf"),
 	
-	path('vlremitosclientes_generado/', VLRemitosClientesInformesView.as_view(),
-		 name='vlremitosclientes_informe_generado'),
-	path('vlremitosclientes_vista_pdf/', VLRemitosClientesInformePDFView.as_view(),
-		 name='vlremitosclientes_informe_pdf'),
 	
 	#-- VL Total Remitos por Cliente.
-	path('vltotalremitosclientes_informe/', VLTotalRemitosClientesInformeListView.as_view(),
+	# path('vltotalremitosclientes_informe/', VLTotalRemitosClientesInformeListView.as_view(),
+	# 	 name='vltotalremitosclientes_informe_list'),
+	# 
+	# path('vltotalremitosclientes_generado/', VLTotalRemitosClientesInformesView.as_view(),
+	# 	 name='vltotalremitosclientes_informe_generado'),
+	# path('vltotalremitosclientes_vista_pdf/', VLTotalRemitosClientesInformePDFView.as_view(),
+	# 	 name='vltotalremitosclientes_informe_pdf'),
+	path('vltotalremitosclientes_informe/', VLTotalRemitosClientesInformeView.as_view(), 
 		 name='vltotalremitosclientes_informe_list'),
+	path('vltotalremitosclientes/vista-preliminar/', vltotalremitosclientes_vista_pantalla, 
+		 name="vltotalremitosclientes_vista_pantalla"),
+	path("vltotalremitosclientes/vista-pdf/", vltotalremitosclientes_vista_pdf, 
+		 name="vltotalremitosclientes_vista_pdf"),
 	
-	path('vltotalremitosclientes_generado/', VLTotalRemitosClientesInformesView.as_view(),
-		 name='vltotalremitosclientes_informe_generado'),
-	path('vltotalremitosclientes_vista_pdf/', VLTotalRemitosClientesInformePDFView.as_view(),
-		 name='vltotalremitosclientes_informe_pdf'),
 	
 	#-- VL Venta Compro Localidad.
-	path('vlventacomprolocalidad_informe/', VLVentaComproLocalidadInformeListView.as_view(),
+	# path('vlventacomprolocalidad_informe/', VLVentaComproLocalidadInformeListView.as_view(),
+	# 	 name='vlventacomprolocalidad_informe_list'),
+	# 
+	# path('vlventacomprolocalidad_generado/', VLVentaComproLocalidadInformesView.as_view(),
+	# 	 name='vlventacomprolocalidad_informe_generado'),
+	# path('vlventacomprolocalidad_vista_pdf/', VLVentaComproLocalidadInformePDFView.as_view(),
+	# 	 name='vlventacomprolocalidad_informe_pdf'),
+	path('vlventacomprolocalidad_informe/', VLVentaComproLocalidadInformeView.as_view(), 
 		 name='vlventacomprolocalidad_informe_list'),
+	path('vlventacomprolocalidad/vista-preliminar/', vlventacomprolocalidad_vista_pantalla, 
+		 name="vlventacomprolocalidad_vista_pantalla"),
+	path("vlventacomprolocalidad/vista-pdf/", vlventacomprolocalidad_vista_pdf, 
+		 name="vlventacomprolocalidad_vista_pdf"),
 	
-	path('vlventacomprolocalidad_generado/', VLVentaComproLocalidadInformesView.as_view(),
-		 name='vlventacomprolocalidad_informe_generado'),
-	path('vlventacomprolocalidad_vista_pdf/', VLVentaComproLocalidadInformePDFView.as_view(),
-		 name='vlventacomprolocalidad_informe_pdf'),
 	
 	#-- VL Venta Mostrador.
-	path('vlventamostrador_informe/', VLVentaMostradorInformeListView.as_view(),
+	# path('vlventamostrador_informe/', VLVentaMostradorInformeListView.as_view(),
+	# 	 name='vlventamostrador_informe_list'),
+	# 
+	# path('vlventamostrador_generado/', VLVentaMostradorInformesView.as_view(),
+	# 	 name='vlventamostrador_informe_generado'),
+	# path('vlventamostrador_vista_pdf/', VLVentaMostradorInformePDFView.as_view(),
+	# 	 name='vlventamostrador_informe_pdf'),
+	path('vlventamostrador_informe/', VLVentaMostradorInformeView.as_view(), 
 		 name='vlventamostrador_informe_list'),
+	path('vlventamostrador/vista-preliminar/', vlventamostrador_vista_pantalla, 
+		 name="vlventamostrador_vista_pantalla"),
+	path("vlventamostrador/vista-pdf/", vlventamostrador_vista_pdf, 
+		 name="vlventamostrador_vista_pdf"),
 	
-	path('vlventamostrador_generado/', VLVentaMostradorInformesView.as_view(),
-		 name='vlventamostrador_informe_generado'),
-	path('vlventamostrador_vista_pdf/', VLVentaMostradorInformePDFView.as_view(),
-		 name='vlventamostrador_informe_pdf'),
-	
-	#-- VL Venta Compro.
-	path('vlventacompro_informe/', VLVentaComproInformeListView.as_view(),
-		 name='vlventacompro_informe_list'),
-	
-	path('vlventacompro_generado/', VLVentaComproInformesView.as_view(),
-		 name='vlventacompro_informe_generado'),
-	path('vlventacompro_vista_pdf/', VLVentaComproInformePDFView.as_view(),
-		 name='vlventacompro_informe_pdf'),
-	
+	# #-- VL Venta Compro.
+	# path('vlventacompro_informe/', VLVentaComproInformeListView.as_view(),
+	# 	 name='vlventacompro_informe_list'),
+	# 
+	# path('vlventacompro_generado/', VLVentaComproInformesView.as_view(),
+	# 	 name='vlventacompro_informe_generado'),
+	# path('vlventacompro_vista_pdf/', VLVentaComproInformePDFView.as_view(),
+	# 	 name='vlventacompro_informe_pdf'),
 	
 	#-- VL Venta Compro Propuesta nueva.
-	path('vlventacompro_informe_prop/', VLVentaComproInformeView.as_view(),
-		 name='vlventacompro_informe_list_prop'),
-	
-	path('ventacompro/vista-preliminar/', ventacompro_vista_pantalla, name="ventacompro_vista_pantalla"),
-	path("ventacompro/vista-pdf/", ventacompro_vista_pdf, name="ventacompro_vista_pdf"),
+	path('vlventacompro_informe/', VLVentaComproInformeView.as_view(), 
+		 name='vlventacompro_informe_list'),
+	path('vlventacompro/vista-preliminar/', vlventacompro_vista_pantalla, 
+		 name="vlventacompro_vista_pantalla"),
+	path("vlventacompro/vista-pdf/", vlventacompro_vista_pdf, 
+		 name="vlventacompro_vista_pdf"),
 	
 	
 	

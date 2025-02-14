@@ -1,12 +1,14 @@
 # neumatic\apps\informes\views\list_views_generics_prop.py
 
 import uuid
-from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotAllowed, JsonResponse
+# from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotAllowed, JsonResponse
+from django.http import HttpResponseRedirect, JsonResponse
 from django.urls import reverse
 from django.template.loader import render_to_string
 from weasyprint import HTML
 
-from django.views.generic import FormView, TemplateView
+# from django.views.generic import FormView, TemplateView
+from django.views.generic import FormView
 
 #-- Recursos necesarios para proteger las rutas.
 from django.utils.decorators import method_decorator
@@ -33,9 +35,11 @@ class InformeFormView(FormView):
 		if request.GET and any(value for key, value in request.GET.items() if value):
 			if form.is_valid():
 				tipo_salida = request.GET.get("tipo_salida")
+				#-- Se ejecuta la consulta a la Base de Datos.
 				queryset = self.obtener_queryset(form.cleaned_data)
+				#-- Obtiene el contexto del reporte; por defecto, puede ser simplemente el queryset.
 				contexto_reporte = self.obtener_contexto_reporte(queryset, form.cleaned_data)
-				# return self.procesar_reporte(contexto_reporte, form.cleaned_data)
+				#-- Procesa la salida.
 				return self.procesar_reporte(contexto_reporte, tipo_salida)
 			else:
 				return self.form_invalid(form)
@@ -51,14 +55,14 @@ class InformeFormView(FormView):
 		return kwargs	
 	
 	def form_invalid(self, form):
-		print("Luego pasa por acá desde la vista genérica***")
-		
-		#-- Obtener el contexto de get_context_data.
 		context = self.get_context_data(form=form)
-		#-- Agrega la bandera de errores.
 		context["data_has_errors"] = True
-		#-- Renderiza la respuesta con el contexto actualizado.
-		return super().render_to_response(context)
+		if self.request.headers.get("X-Requested-With") == "XMLHttpRequest":
+			#-- Renderizar el modal con los errores de validación y enviado en la respuesta JSON.
+			html = render_to_string("informes/modal_errors.html", context, request=self.request)
+			return JsonResponse({"success": False, "html": html})
+		else:
+			return super().render_to_response(context)
 	
 	def procesar_reporte(self, contexto_reporte, tipo_salida):
 		"""
@@ -67,19 +71,18 @@ class InformeFormView(FormView):
 		"""
 		#-- Limpiar posibles reportes previos en la sesión.
 		for key in list(self.request.session.keys()):
-			if key.startswith("reporte_"):  # Opcional: usa un prefijo para identificar tokens de reportes
+			if key.startswith("reporte_"):  #-- Opcional: prefijo para identificar tokens de reportes.
 				del self.request.session[key]
 		
-		token = f"reporte_{uuid.uuid4()}"  # Agregar prefijo para fácil identificación
+		token = f"reporte_{uuid.uuid4()}"  #-- Agregar prefijo para fácil identificación.
 		self.request.session[token] = serializar_datos(contexto_reporte)
 		
 		if tipo_salida == "pantalla":
-			url = reverse("ventacompro_vista_pantalla") + f"?token={token}"
+			url = reverse(self.config.url_pantalla) + f"?token={token}"
 		elif tipo_salida == "pdf_preliminar":
-			# url = reverse("ventacompro_vista_pdf") + f"?token={token}&format=pdf"
-			url = reverse("ventacompro_vista_pdf") + f"?token={token}"
+			url = reverse(self.config.url_pdf) + f"?token={token}"
 		else:
-			url = reverse("ventacompro_vista_pantalla") + f"?token={token}"
+			url = reverse(self.config.url_pantalla) + f"?token={token}"
 		
 		if self.request.headers.get("X-Requested-With") == "XMLHttpRequest":
 			return JsonResponse({"success": True, "url": url})

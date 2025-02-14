@@ -1,4 +1,5 @@
 <!-- neumatic\apps\informes\templates\informes\maestro_informe_list_prop.html -->
+
 {% extends 'base.html' %}
 {% load static %}
 {% load custom_tags %}
@@ -50,12 +51,41 @@
 							</div>
 							
 							<div class="card-body">
-								<div class="row">
-									<div class="col col-12">
-										<!-- Incluir el buscador específico pasado como variable de contexto -->
-										{% include buscador_template %}
+								
+								{% comment %} <form method="GET" action="{% url 'vlventacompro_informe_list_prop' %}" id="formulario" novalidate> {% endcomment %}
+								<form method="GET" id="formulario" novalidate>
+									
+									<!-- Opciones de salida (opciones_reporte)-->
+									<!-- Opciones generales de reporte -->
+									<div class="row mb-2">
+										{% include 'informes/opciones_reporte_prop.html' %}
 									</div>
-								</div>
+									
+									<!-- Formulario de parámetros de filtro del reporte (buscador_<model>) -->
+									<div class="row">
+										<div class="col col-12">
+											<!-- Incluir el buscador específico pasado como variable de contexto -->
+											{% include buscador_template %}
+										</div>
+									</div>
+									
+									<!-- Botones -->
+									<div class="row mt-3">
+										<div class="col-md-12">
+											<button type="button" class="btn btn-secondary" onclick="limpiarFiltros()">Limpiar Filtros</button>
+											<button 
+												type="submit" 
+												class="btn btn-primary" 
+												id="generar"
+												data-pantalla-url="{% url url_pantalla %}"
+  												data-pdf-url="{% url url_pdf %}"
+												>
+												Generar
+											</button>
+										</div>
+									</div>
+								
+								</form>
 							</div>
 							
 						</div>

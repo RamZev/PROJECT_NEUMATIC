@@ -408,20 +408,28 @@ class VLTotalRemitosClientes(models.Model):
 #-----------------------------------------------------------------------------
 class VentaComproLocalidadManager(models.Manager):
 
-	def obtener_venta_compro_localidad(self, fecha_desde, fecha_hasta):
-		""" Se determina las Ventas por un rango de fechas. """
+	def obtener_venta_compro_localidad(self, fecha_desde, fecha_hasta, sucursal=None, codigo_postal=None):
+		"""
+		Retorna un RawQuerySet con las ventas dentro del rango de fechas, y opcionalmente
+		filtra por sucursal y código postal, aplicando todo el filtrado directamente en SQL.
+		"""
 		
-		#-- Se crea la consulta parametrizada.
 		query = """
 			SELECT *
-				FROM VLVentaComproLocalidad 
-				WHERE 
-					fecha_comprobante BETWEEN %s AND %s
+			FROM VLVentaComproLocalidad 
+			WHERE fecha_comprobante BETWEEN %s AND %s
 		"""
-		#-- Se añade los parámetros.
+		
 		params = [fecha_desde, fecha_hasta]
 		
-		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
+		if sucursal:
+			query += " AND id_sucursal_id = %s"
+			params.append(sucursal.id_sucursal)
+		
+		if codigo_postal:
+			query += " AND codigo_postal = %s"
+			params.append(codigo_postal)
+		
 		return self.raw(query, params)
 
 

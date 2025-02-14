@@ -1,4 +1,5 @@
 <!-- neumatic\apps\informes\templates\informes\maestro_informe_list_prop.html -->
+
 {% extends 'base.html' %}
 {% load static %}
 {% load custom_tags %}
@@ -51,12 +52,13 @@
 							
 							<div class="card-body">
 								
-								<form method="GET" action="{% url 'vlventacompro_informe_list_prop' %}" id="formulario" novalidate>
+								{% comment %} <form method="GET" action="{% url 'vlventacompro_informe_list_prop' %}" id="formulario" novalidate> {% endcomment %}
+								<form method="GET" id="formulario" novalidate>
 									
 									<!-- Opciones de salida (opciones_reporte)-->
 									<!-- Opciones generales de reporte -->
 									<div class="row mb-2">
-										{% include 'informes/opciones_reporte_prop.html' %}
+										{% include 'informes/opciones_reporte_new.html' %}
 									</div>
 									
 									<!-- Formulario de parámetros de filtro del reporte (buscador_<model>) -->
@@ -75,8 +77,8 @@
 												type="submit" 
 												class="btn btn-primary" 
 												id="generar"
-												data-pantalla-url="{% url 'ventacompro_vista_pantalla' %}"
-  												data-pdf-url="{% url 'ventacompro_vista_pdf' %}"
+												data-pantalla-url="{% url url_pantalla %}"
+  												data-pdf-url="{% url url_pdf %}"
 												>
 												Generar
 											</button>

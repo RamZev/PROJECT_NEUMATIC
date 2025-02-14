@@ -1,28 +1,27 @@
 # neumatic\apps\informes\views\ventacompro_list_views_prop.py
-from django.urls import reverse_lazy, reverse
-from django.shortcuts import redirect, render
+# from django.urls import reverse_lazy, reverse
+# from django.shortcuts import redirect, render
+from django.urls import reverse_lazy
+from django.shortcuts import render
 
-from django.templatetags.static import static
-
-# from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse
 # from django.views import View
 # from zipfile import ZipFile
 # from io import BytesIO
 # from django.core.mail import EmailMessage
 # from datetime import date
 from decimal import Decimal
-# from utils.helpers.export_helpers import ExportHelper
-
 from datetime import datetime
 from django.template.loader import render_to_string
 from weasyprint import HTML
-# from django.templatetags.static import static
+from django.templatetags.static import static
 from collections import defaultdict
 
-from .list_views_generics_prop import *    # <== Cambiar acá!.
+from .list_views_generics import *
 from apps.informes.models import VLVentaCompro
 from ..forms.buscador_ventacompro_forms import BuscadorVentaComproForm
 from utils.utils import deserializar_datos
+
 
 class ConfigViews:
 	
@@ -47,9 +46,6 @@ class ConfigViews:
 	#-- Plantilla base.
 	template_list = f'{app_label}/maestro_informe_list_prop.html'
 	
-	# # Contexto de los datos de la lista
-	# context_object_name = 'objetos'
-	
 	#-- Vista del home del proyecto.
 	home_view_name = "home"
 	
@@ -62,11 +58,15 @@ class ConfigViews:
 	# #-- URL de la vista que genera el .zip con los informes.
 	# url_zip = f"{model_string}_informe_generado"
 	
-	# #-- URL de la vista que genera el .pdf.
-	# url_pdf = f"{model_string}_informe_pdf"
+	#-- URL de la vista que genera la salida a pantalla.
+	url_pantalla = f"{model_string}_vista_pantalla"
+	
+	#-- URL de la vista que genera el .pdf.
+	url_pdf = f"{model_string}_vista_pdf"
 
 
 class VLVentaComproInformeView(InformeFormView):
+	config = ConfigViews  #-- Ahora la configuración estará disponible en self.config.
 	form_class = ConfigViews.form_class
 	template_name = ConfigViews.template_list
 	success_url = ConfigViews.success_url
@@ -80,8 +80,8 @@ class VLVentaComproInformeView(InformeFormView):
 		# "buscador_template": f"{ConfigViews.app_label}/buscador_{ConfigViews.model_string}.html",
 		"buscador_template": f"{ConfigViews.app_label}/buscador_{ConfigViews.model_string}_prop.html",
 		"js_file": ConfigViews.js_file,
-		# "url_zip": ConfigViews.url_zip,
-		# "url_pdf": ConfigViews.url_pdf,
+		"url_pantalla": ConfigViews.url_pantalla,
+		"url_pdf": ConfigViews.url_pdf,
 	}
 	
 	def obtener_queryset(self, cleaned_data):
@@ -163,7 +163,6 @@ class VLVentaComproInformeView(InformeFormView):
 		}
 	
 	def get_context_data(self, **kwargs):
-		print("También Pasa por acá desde la vista específica***")
 		context = super().get_context_data(**kwargs)
 		form = kwargs.get("form") or self.get_form()
 		
@@ -173,10 +172,9 @@ class VLVentaComproInformeView(InformeFormView):
 		return context
 
 
-def ventacompro_vista_pantalla(request):
+def vlventacompro_vista_pantalla(request):
 	#-- Obtener el token de la querystring.
 	token = request.GET.get("token")
-	print(f"token en salida PANTALLA: {token = }")
 	
 	if not token:
 		return HttpResponse("Token no proporcionado", status=400)
@@ -192,11 +190,9 @@ def ventacompro_vista_pantalla(request):
 	return render(request, "informes/reportes/ventacompro_list.html", contexto_reporte)
 
 
-def ventacompro_vista_pdf(request):
+def vlventacompro_vista_pdf(request):
 	#-- Obtener el token de la querystring.
 	token = request.GET.get("token")
-	print("**********************")
-	print(f"token en salida PDF: {token = }")
 	
 	if not token:
 		return HttpResponse("Token no proporcionado", status=400)
@@ -215,17 +211,4 @@ def ventacompro_vista_pdf(request):
 	response = HttpResponse(pdf_file, content_type="application/pdf")
 	response["Content-Disposition"] = f'inline; filename="informe_{ConfigViews.model_string}.pdf"'
 	
-	print("Ha terminado de generar el pdf.")
-	print("=====================")
-	
 	return response
-	
-	# html_string = render_to_string("informes/reportes/ventacompro_pdf.html", contexto_reporte, request=request)
-	# pdf_file = HTML(string=html_string, base_url=request.build_absolute_uri()).write_pdf()
-	# 
-	# response = HttpResponse(pdf_file, content_type="application/pdf")
-	# # del request.session[token]  # Borra el token después de enviar el PDF
-	# print("Ha terminado de crear el PDF, elimina el contexto de la sesión")
-	# print("=====================")
-	# return response
-	# return HttpResponse(pdf_file, content_type="application/pdf")

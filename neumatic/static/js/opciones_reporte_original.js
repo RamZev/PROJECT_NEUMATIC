@@ -100,10 +100,8 @@ const initializeDefaults = () => {
 };
 
 // evento 'change' para los cambios
-const radios = document.querySelectorAll('input[name="tipo_salida"]');
-radios.forEach(radio => {
-    radio.removeEventListener("change", selectAllFormats); // Evita duplicados
-    radio.addEventListener("change", selectAllFormats);
+document.querySelectorAll('input[name="tipo_salida"]').forEach((radio) => {
+	radio.addEventListener("change", selectAllFormats);
 });
 
 // cargar la página
@@ -114,54 +112,53 @@ if (vistaPantalla) {
 }
 initializeDefaults();
 
-
-
-
-
 // Script adicional para el botón "Generar".
+const generar = document.getElementById("generar");
 
-const form = document.getElementById("formulario");
-const generarBtn = document.getElementById("generar");
-const errorModalElement = document.getElementById('errorModal');
-const errorModal = new bootstrap.Modal(errorModalElement);
-
-generarBtn.addEventListener("click", function (event) {
-	event.preventDefault(); // Evita el envío inmediato del formulario
-
-	// Forzar la validación del formulario sin enviarlo
-	if (!form.checkValidity()) {
-		event.stopPropagation();
-		form.classList.add('was-validated'); // Para estilos de validación en Bootstrap
-		errorModal.show(); // Muestra el modal de errores
-		return; // Detiene la ejecución para evitar que se abra la nueva pestaña
-	}
-
-	let tipoSalida = document.querySelector('input[name="tipo_salida"]:checked');
-	let actionUrl = form.action;
-	let params = new URLSearchParams(new FormData(form)).toString();
-
-	if (tipoSalida) {
-		if (tipoSalida.value === "pantalla") {
-			actionUrl = generarBtn.dataset.pantallaUrl;
-		} else if (tipoSalida.value === "pdf_preliminar") {
-			actionUrl = generarBtn.dataset.pdfUrl;
+if (generar){
+	generar.addEventListener("click", function (event) {
+		// Previene el envío del formulario al hacer clic en "Generar".
+		event.preventDefault();
+		
+		// Obtener el formulario de filtros.
+		const form = this.closest("form");
+		const formData = new FormData(form);
+		const params = new URLSearchParams(formData).toString();
+		
+		// URLs extraídas de los atributos data-
+		const clienteInformePdfUrl = this.getAttribute("data-pdf-url").split("?")[0];
+		const clienteInformeGeneradoUrl = this.getAttribute("data-zip-url").split("?")[0];
+		
+		// Determinar si es para vista previa PDF o generación ZIP.
+		const vistaPDFSeleccionada = document.getElementById("pdf_preliminar")?.checked;
+		const envioEmailSeleccionado = document.getElementById("email_envio")?.checked;
+		
+		if (vistaPDFSeleccionada) {
+			// Abrir la vista previa en PDF.
+			const fullUrl = `${clienteInformePdfUrl}?${params}&format=pdf`;
+			window.open(fullUrl, "_blank");
 		}
-	}
-
-	if (tipoSalida && (tipoSalida.value === "pantalla" || tipoSalida.value === "pdf_preliminar")) {
-		// Abre en nueva pestaña
-		window.open(actionUrl + "?" + params, "_blank");
-	} else {
-		// Envía el formulario normalmente
-		form.submit();
-	}
-});
-
-
-
-
-
-
+		if (envioEmailSeleccionado) {
+			
+			// Obtener los checkboxes seleccionados
+			const selectedFormats = [];
+			document.querySelectorAll('input[type="checkbox"]:checked').forEach((checkbox) => {
+				selectedFormats.push(checkbox.value);
+			});
+			
+			if (selectedFormats.length === 0) {
+				alert("Por favor, selecciona al menos un formato.");
+				return;
+			}
+			
+			// Crear la URL para el archivo ZIP.
+			const fullUrl = `${clienteInformeGeneradoUrl}?${params}`;
+			
+			// Redirigir a la URL para descargar el ZIP.
+			window.location.href = fullUrl;
+		}
+	});
+}
 // ---------------------------------------------------------------------------
 // Funcionalidad para mostrar modal con los errores de validación
 // del formulario.
@@ -213,47 +210,26 @@ modalElement.addEventListener('hidden.bs.modal', function () {
 // Funcionalidad para buscar un Cliente por su Id.
 // ---------------------------------------------------------------------------
 const idClienteInput = document.getElementById("id_id_cliente");
+const nombreClienteInput = document.getElementById("id_nombre_cliente");
 
-if (idClienteInput){
-	const nombreClienteInput = document.getElementById("id_nombre_cliente");
+idClienteInput.addEventListener("change", function() {
+	const idCliente = idClienteInput.value.trim();
 	
-	idClienteInput.addEventListener("change", function() {
-		const idCliente = idClienteInput.value.trim();
-	
-		if (idCliente) {
-			fetch(`/informes/buscar/cliente/id/?id_cliente=${idCliente}`)
-				.then(response => response.json())
-				.then(data => {
-					if (data.error) {
-						nombreClienteInput.value = "Cliente no encontrado";
-					} else {
-						nombreClienteInput.value = data.nombre_cliente;
-					}
-				})
-				.catch(error => console.error("Error al obtener cliente:", error));
-		} else {
-			nombreClienteInput.value = "";
-		}
-	});
-}
-// idClienteInput.addEventListener("change", function() {
-// 	const idCliente = idClienteInput.value.trim();
-	
-// 	if (idCliente) {
-// 		fetch(`/informes/buscar/cliente/id/?id_cliente=${idCliente}`)
-// 			.then(response => response.json())
-// 			.then(data => {
-// 				if (data.error) {
-// 					nombreClienteInput.value = "Cliente no encontrado";
-// 				} else {
-// 					nombreClienteInput.value = data.nombre_cliente;
-// 				}
-// 			})
-// 			.catch(error => console.error("Error al obtener cliente:", error));
-// 	} else {
-// 		nombreClienteInput.value = "";
-// 	}
-// });
+	if (idCliente) {
+		fetch(`/informes/buscar/cliente/id/?id_cliente=${idCliente}`)
+			.then(response => response.json())
+			.then(data => {
+				if (data.error) {
+					nombreClienteInput.value = "Cliente no encontrado";
+				} else {
+					nombreClienteInput.value = data.nombre_cliente;
+				}
+			})
+			.catch(error => console.error("Error al obtener cliente:", error));
+	} else {
+		nombreClienteInput.value = "";
+	}
+});
 
 // ---------------------------------------------------------------------------
 // Funcionalidad que muestra el Modal para buscar un Cliente por filtrado.
