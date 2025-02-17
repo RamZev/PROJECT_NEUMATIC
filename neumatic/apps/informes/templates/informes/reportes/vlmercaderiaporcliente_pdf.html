@@ -1,15 +1,15 @@
-<!-- neumatic\apps\informes\templates\informes\reportes\remitosclientes_pdf.html -->
+<!-- neumatic\apps\informes\templates\informes\reportes\mercaderiaporcliente_pdf.html -->
 
 {% extends 'informes/reportes/base_reportes.html' %}
 {% load static %}
 {% load custom_tags %}
 
-<!-- Blque Header -------------------------------------------------------------------------- -->
+<!-- Bloque Header ------------------------------------------------------------------------- -->
  
 <!-- Contenido Inferior Izquierdo -->
 {% block header_bottom_left %}
 	<p><strong>Cliente:</strong></p>
-	<p>[{{ cliente.id_cliente }}] {{ cliente.nombre_cliente }}</p>
+	<p><strong>[{{ cliente.id_cliente }}] {{ cliente.nombre_cliente }}</p>
 {% endblock %}
 
 <!-- Contenido Inferior Derecho -->
@@ -23,44 +23,44 @@
 
 {% block content %}
 	<table>
-		
 		<thead>
 			<tr>
-				<th>Fecha</th>
-				<th>Número</th>
-				<th>Descripción</th>
+				<th>Marca</th>
 				<th>Medida</th>
+				<th>Código</th>
+				<th>Descripción</th>
 				<th class="numeric">Cantidad</th>
 				<th class="numeric">Precio</th>
+				<th class="numeric">Desc.</th>
 				<th class="numeric">Total</th>
 			</tr>
 		</thead>
-		
 		<tbody>
-			{% for comprobante_num, data in objetos.items %}
-				{% for producto in data.productos %}
+			
+			{% for comprobante_num, productos in objetos.items %}
+				<!-- Fila con los datos del comprobante -->
+				<tr class="comprobante-row">
+					<td colspan="8" style="padding-top: 5px;">
+						<strong>{{ productos.0.nombre_comprobante_venta }}</strong> 
+						<strong>{{ productos.0.numero }}</strong> 
+						<strong>{{ productos.0.fecha_comprobante|date:"d/m/Y" }}</strong> 
+					</td>
+				</tr>
+				<!-- Filas con el detalle del comprobante -->
+				{% for producto in productos %}
 					<tr class="compact-line-spacing">
-						<td>{{ producto.fecha_comprobante|date:"d/m/Y" }}</td>
-						<td>{{ producto.numero }}</td>
-						<td>{{ producto.nombre_producto }}</td>
+						<td>{{ producto.nombre_producto_marca }}</td>
 						<td>{{ producto.medida }}</td>
+						<td>{{ producto.id_producto_id }}</td>
+						<td>{{ producto.nombre_producto }}</td>
 						<td class="numeric">{{ producto.cantidad|formato_es_ar }}</td>
 						<td class="numeric">{{ producto.precio|formato_es_ar }}</td>
+						<td class="numeric">{{ producto.descuento|formato_es_ar }}</td>
 						<td class="numeric">{{ producto.total|formato_es_ar }}</td>
 					</tr>
 				{% endfor %}
-				<tr class="subtotal">
-					<td colspan="6" style="text-align: right;"><strong>Total Comprobante:</strong></td>
-					<td class="numeric"><strong>{{ data.subtotal|formato_es_ar }}</strong></td>
-				</tr>
 			{% endfor %}
 			
-			<tr class="total-general" style="border-top: 1px solid #000;">
-				<td class="numeric" colspan="6"><strong>Total Remitado:</strong></td>
-				<td class="numeric"><strong>{{ total_general|formato_es_ar }}</strong></td>
-			</tr>
-		
 		</tbody>
-		
 	</table>
 {% endblock content %}

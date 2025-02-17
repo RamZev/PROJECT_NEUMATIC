@@ -40,7 +40,7 @@
 			{% for comprobante_num, data in objetos.items %}
 				{% for producto in data.productos %}
 					<tr class="compact-line-spacing">
-						<td>{{ producto.fecha_comprobante }}</td>
+						<td>{{ producto.fecha_comprobante|date:"d/m/Y" }}</td>
 						<td>{{ producto.numero }}</td>
 						<td>{{ producto.nombre_producto }}</td>
 						<td>{{ producto.medida }}</td>

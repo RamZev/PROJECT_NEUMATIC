@@ -1,22 +1,14 @@
 # # neumatic\apps\informes\views\totalremitosclientes_list_views.py
 
-# from django.urls import reverse_lazy, reverse
-# from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
 from django.shortcuts import render
-
 from django.http import HttpResponse
-# from django.views import View
-# from zipfile import ZipFile
-# from io import BytesIO
-# from django.core.mail import EmailMessage
-# from datetime import date
 from decimal import Decimal
 from datetime import datetime
 from django.template.loader import render_to_string
 from weasyprint import HTML
 from django.templatetags.static import static
-from django.forms.models import model_to_dict
+# from django.forms.models import model_to_dict
 
 from .report_views_generics import *
 from apps.informes.models import VLRemitosClientes
@@ -79,7 +71,6 @@ class VLRemitosClientesInformeView(InformeFormView):
 		# "list_view_name": ConfigViews.list_view_name,
 		# "table_headers": DataViewList.table_headers,
 		# "table_data": DataViewList.table_data,
-		# "buscador_template": f"{ConfigViews.app_label}/buscador_{ConfigViews.model_string}.html",
 		"buscador_template": f"{ConfigViews.app_label}/buscador_{ConfigViews.model_string}.html",
 		"js_file": ConfigViews.js_file,
 		"url_pantalla": ConfigViews.url_pantalla,
@@ -123,7 +114,8 @@ class VLRemitosClientesInformeView(InformeFormView):
 			"nombre_cliente": cliente.nombre_cliente,
 		}
 		
-		# Agrupar los objetos por el número de comprobante.
+		# **************************************************
+		#-- Agrupar los objetos por el número de comprobante.
 		grouped_data = {}
 		total_general = Decimal(0)
 		
@@ -134,27 +126,23 @@ class VLRemitosClientesInformeView(InformeFormView):
 					'productos': [],
 					'subtotal': Decimal(0),
 				}
-			# Añadir el producto al grupo.
+			#-- Añadir el producto al grupo.
 			grouped_data[comprobante_num]['productos'].append(obj)
-			# Calcular el subtotal por comprobante.
+			#-- Calcular el subtotal por comprobante.
 			grouped_data[comprobante_num]['subtotal'] += obj.total
-			# Acumular el total general.
+			#-- Acumular el total general.
 			total_general += obj.total
 		
-		# Convertir cada grupo a un diccionario serializable.
-		objetos_serializables = []
+		#-- Convertir los datos agrupados a un formato serializable:
+		# Se recorre cada grupo y se convierte cada producto a diccionario usando raw_to_dict.
 		for comprobante, data in grouped_data.items():
-			# Convertir cada producto a diccionario usando raw_to_dict en lugar de model_to_dict.
-			productos_serializables = [raw_to_dict(producto) for producto in data['productos']]
-			objetos_serializables.append({
-				'numero_comprobante': comprobante,
-				'productos': productos_serializables,
-				'subtotal': float(data['subtotal']),  # Convertir a float para la serialización.
-			})	
+			data['productos'] = [raw_to_dict(producto) for producto in data['productos']]
+			data['subtotal'] = float(data['subtotal'])
 		
+		# **************************************************
 		#-- Se retorna un contexto que será consumido tanto para la vista en pantalla como para la generación del PDF.
 		return {
-			"objetos": objetos_serializables,
+			"objetos": grouped_data,
 			"total_general": total_general,
 			'cliente': cliente_data,
 			"parametros": param,

@@ -1,4 +1,4 @@
-# neumatic\apps\informes\views\list_views_generics.py
+# neumatic\apps\informes\views\report_views_generics.py
 
 import uuid
 from django.views.generic import FormView
@@ -65,6 +65,7 @@ class InformeFormView(FormView):
 		Una vez validado el formulario, genera un token, guarda el contexto en la sesión y
 		devuelve un JSON con la URL de salida (para pantalla o PDF).
 		"""
+		
 		#-- Limpiar posibles reportes previos en la sesión.
 		for key in list(self.request.session.keys()):
 			if key.startswith("reporte_"):  #-- Opcional: prefijo para identificar tokens de reportes.

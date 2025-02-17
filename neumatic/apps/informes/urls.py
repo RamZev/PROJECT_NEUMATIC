@@ -261,22 +261,36 @@ urlpatterns = [
 		 name='vlsaldosclientes_informe_pdf'),
 	
 	#-- VL Resumen Cuenta Corriente.
-	path('vlresumenctacte_informe/', VLResumenCtaCteInformeListView.as_view(),
-		 name='vlresumenctacte_informe_list'),
+	# path('vlresumenctacte_informe/', VLResumenCtaCteInformeListView.as_view(),
+	# 	 name='vlresumenctacte_informe_list'),
 	
-	path('vlresumenctacte_generado/', VLResumenCtaCteInformesView.as_view(),
-		 name='vlresumenctacte_informe_generado'),
-	path('vlresumenctacte_vista_pdf/', VLResumenCtaCteInformePDFView.as_view(),
-		 name='vlresumenctacte_informe_pdf'),
+	# path('vlresumenctacte_generado/', VLResumenCtaCteInformesView.as_view(),
+	# 	 name='vlresumenctacte_informe_generado'),
+	# path('vlresumenctacte_vista_pdf/', VLResumenCtaCteInformePDFView.as_view(),
+	# 	 name='vlresumenctacte_informe_pdf'),
+	path('vlresumenctacte_informe/', VLResumenCtaCteInformeView.as_view(), 
+		 name='vlresumenctacte_informe_list'),
+	path('vlresumenctacte/vista-preliminar/', vlresumenctacte_vista_pantalla, 
+		 name="vlresumenctacte_vista_pantalla"),
+	path("vlresumenctacte/vista-pdf/", vlresumenctacte_vista_pdf, 
+		 name="vlresumenctacte_vista_pdf"),	
+	
 	
 	#-- VL Mercadería por Cliente.
-	path('vlmercaderiaporcliente_informe/', VLMercaderiaPorClienteInformeListView.as_view(),
-		 name='vlmercaderiaporcliente_informe_list'),
+	# path('vlmercaderiaporcliente_informe/', VLMercaderiaPorClienteInformeListView.as_view(),
+	# 	 name='vlmercaderiaporcliente_informe_list'),
 	
-	path('vlmercaderiaporcliente_generado/', VLMercaderiaPorClienteInformesView.as_view(),
-		 name='vlmercaderiaporcliente_informe_generado'),
-	path('vlmercaderiaporcliente_vista_pdf/', VLMercaderiaPorClienteInformePDFView.as_view(),
-		 name='vlmercaderiaporcliente_informe_pdf'),
+	# path('vlmercaderiaporcliente_generado/', VLMercaderiaPorClienteInformesView.as_view(),
+	# 	 name='vlmercaderiaporcliente_informe_generado'),
+	# path('vlmercaderiaporcliente_vista_pdf/', VLMercaderiaPorClienteInformePDFView.as_view(),
+	# 	 name='vlmercaderiaporcliente_informe_pdf'),
+	path('vlmercaderiaporcliente_informe/', VLMercaderiaPorClienteInformeView.as_view(), 
+		 name='vlmercaderiaporcliente_informe_list'),
+	path('vlmercaderiaporcliente/vista-preliminar/', vlmercaderiaporcliente_vista_pantalla, 
+		 name="vlmercaderiaporcliente_vista_pantalla"),
+	path("vlmercaderiaporcliente/vista-pdf/", vlmercaderiaporcliente_vista_pdf, 
+		 name="vlmercaderiaporcliente_vista_pdf"),
+	
 	
 	#-- VL Remitos por Cliente.
 	# path('vlremitosclientes_informe/', VLRemitosClientesInformeListView.as_view(),
