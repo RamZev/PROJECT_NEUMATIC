@@ -4,7 +4,8 @@ from django.contrib.auth.models import AbstractUser
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
-from entorno.constantes_base import JERARQUIA
+from entorno.constantes_base import JERARQUIA, PRECIO_DESCRIPCION
+
 
 class User(AbstractUser):
 	email = models.EmailField("Correo electrónico")
@@ -29,6 +30,10 @@ class User(AbstractUser):
                                      on_delete=models.PROTECT,
                                      null=True, blank=True,
                                      verbose_name="Punto de Venta")
+	cambia_precio_descripcion = models.BooleanField("Cambia Precio y Descripción", 
+                                                 default=False,
+                                                 null=True, blank=True,
+                                                 choices=PRECIO_DESCRIPCION)
 
 
 # -- Al crear un nuevo usuario este quede activo por defecto.

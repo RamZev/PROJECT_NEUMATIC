@@ -15,6 +15,8 @@ class PuntoVentaForm(CrudGenericForm):
 		widgets = {
 			'estatus_punto_venta': 
 				forms.Select(attrs={**formclassselect}),
+			'id_sucursal': 
+				forms.Select(attrs={**formclassselect}),
 			'punto_venta': 
 				forms.TextInput(attrs={**formclasstext}),
 			'descripcion_punto_venta': 

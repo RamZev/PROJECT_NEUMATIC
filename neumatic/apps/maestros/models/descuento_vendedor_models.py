@@ -1,4 +1,4 @@
-# neumatic\apps\maestros\models\decuento_vendedor_models.py
+# neumatic\apps\maestros\models\descuento_vendedor_models.py
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.core.exceptions import ValidationError

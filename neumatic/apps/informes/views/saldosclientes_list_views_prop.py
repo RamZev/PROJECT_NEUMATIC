@@ -125,8 +125,6 @@ class VLSaldosClientesInformeView_prop(InformeFormView):
 		# objetos_serializables = [model_to_dict(item) for item in queryset]
 		objetos_serializables = [raw_to_dict(item) for item in queryset]
 		
-		print(objetos_serializables)
-		
 		#-- Se retorna un contexto que será consumido tanto para la vista en pantalla como para la generación del PDF.
 		return {
 			"objetos": objetos_serializables,

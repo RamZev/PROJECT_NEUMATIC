@@ -52,7 +52,7 @@
 					<td>{{ obj.telefono_cliente }}</td>
 					<td class="numeric" style="padding-right: 10px;">{{ obj.saldo|formato_es_ar }}</td>
 					<td>{{ obj.primer_fact_impaga|date:"d/m/Y" }}</td>
-					<td>{{ obj.ultimo_pago }}</td>
+					<td>{{ obj.ultimo_pago|date:"d/m/Y" }}</td>
 					<td>{{ obj.sub_cuenta }}</td>
 				</tr>
 			{% endfor %}

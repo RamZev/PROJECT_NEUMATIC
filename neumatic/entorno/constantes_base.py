@@ -49,6 +49,7 @@ BLACK_LIST = [
 TIPO_VENTA = [
 	('M', 'Mostrador'),
 	('R', 'Revendedor'),
+	('E', 'E-Commerce'),
 ]
 
 WS_MODO = [
@@ -102,3 +103,12 @@ ORDEN_CHOICES = [
 	('codigo', 'Código'), 
 ]
 
+ORDEN_CHOICES = [ 
+	('nombre', 'Nombre'),
+	('codigo', 'Código'), 
+]
+
+PRECIO_DESCRIPCION = [
+	(True, 'SI'),
+	(False, 'NO')
+]

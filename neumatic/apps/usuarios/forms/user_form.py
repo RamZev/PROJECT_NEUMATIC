@@ -10,6 +10,8 @@ from apps.usuarios.models import User
 from diseno_base.diseno_bootstrap import (
 	formclasstext, formclassselect, formclasscheck)
 
+from entorno.constantes_base import PRECIO_DESCRIPCION
+
 # -- Registrar Usuario 
 class RegistroUsuarioForm(UserCreationForm):
 	
@@ -41,6 +43,7 @@ class RegistroUsuarioForm(UserCreationForm):
 			'id_punto_venta',
 			'password1',
 			'password2',
+			'cambia_precio_descripcion',
 		]
 		
 		widgets = {
@@ -70,6 +73,8 @@ class RegistroUsuarioForm(UserCreationForm):
 				forms.Select(attrs={**formclassselect}),
 			'id_sucursal': 
 				forms.Select(attrs={**formclassselect}),
+			'cambia_precio_descripcion':
+				forms.Select(attrs={**formclassselect}),
 		}
 
 class EditarUsuarioForm(UserChangeForm):
@@ -90,6 +95,7 @@ class EditarUsuarioForm(UserChangeForm):
 			'id_vendedor',
 			'id_sucursal',
 			'id_punto_venta',
+			'cambia_precio_descripcion',
 		]
 		
 		widgets = {
@@ -118,6 +124,10 @@ class EditarUsuarioForm(UserChangeForm):
 			'id_vendedor': 
 				forms.Select(attrs={**formclassselect}),
 			'id_sucursal': 
+				forms.Select(attrs={**formclassselect}),
+			'cambia_precio_descripcion':
+				forms.Select(attrs={**formclassselect}),
+			'cambia_precio_descripcion':
 				forms.Select(attrs={**formclassselect}),
 		}
 

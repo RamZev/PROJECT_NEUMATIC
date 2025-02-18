@@ -171,18 +171,32 @@
 										<h6 class="py-2 px-1 text-white">Permisos</h6>
 									</div>
 									
-									<div class="col-12">
-										<label class="form-label text-primary mb-0">
-											{{ form.is_active }}
-											{{ form.is_active.label }}
-										</label>
+									<div class="row mt-3">
+										<div class="col-md-2">
+											<label class="form-label text-primary mb-0">
+												{{ form.is_active }}
+												{{ form.is_active.label }}
+											</label>
+										</div>
+
+										<div class="col-md-2">
+											<label class="form-label text-primary mb-0">
+												{{ form.is_staff }}
+												{{ form.is_staff.label }}
+											</label>
+										</div>
+
+										<div class="col-md-4">
+											<label class="form-label text-primary mb-0">
+												{{ form.cambia_precio_descripcion.label }}
+											</label>
+										</div>
+
+										<div class="col-md-4">
+											{{ form.cambia_precio_descripcion }}
+										</div>
 									</div>
-									<div class="col-12">
-										<label class="form-label text-primary mb-0">
-											{{ form.is_staff }}
-											{{ form.is_staff.label }}
-										</label>
-									</div>
+									
 									
 									<!-- Permisos por Grupos -->
 									<div class="card mt-3">
