@@ -1,16 +1,27 @@
-Ok, estoy intentando organizar toda la funcionalidad para generar listados, los cuales algunos tienen cierta complejidad y otro más sencillos y la mayoría pueden contar con muchas páginas, es decir, son listados extensos. 
-Como estoy en desarrollo, estoy utilizando sqlite3 como motor de base de datos, para cada listado he creado una vista sql y la he asociado a mi proyecto a través de un modelo el cual le creo un Manager para poder obtener los datos de su respectiva vista sql con los filtros y condiciones requeridos por cada listado.
-Quiero establecer unas bases para que esta funcionalidad me sirva replicándola a cada listado que necesito elaborar. 
-Lo que tengo en mente es una vez se seleccione la opción del reporte en el menú, se desplique en pantalla un plantilla que renderice un formulario con los campos para las condiciones de filtro de los datos a listar que serán los parámetros pasados a la consulta sobre la vista sql y en esta misma pantalla, así como las opciones de filtro, también muestre las opciones de salida del reporte las cuales podrán ser:
-- Vista Preliminar (pantalla).
-- Vista Preliminar en PDF.
-- Envío por eMail.
-- Envío por WhatsApp.
-Tanto el formulario con los campos que sería los parámetros de filtro como las opciones de salida ya los tengo elaborados, los cuales te los suministraré para que te guíes y tengas en cuanta lo que quiero. Lo que requiero de tí es cómo puedo organizar mis vistas para renderizar todo esto. Si la vista para renderizar el formulario y las opciones de salidas del listado debe ser vistas basadas en clases y de cuál vista genérica heredar.
+Estructura básica de los reporte
+-----------------------------------
+Ok, antes de pasarte parte del código de mi proyecto involucrado para generar estos reportes te voy a explicar lo que requiero.
+Son una serie de reportes, cada uno distinto del otro, son reportes que por lo general son voluminosos en cuanto a la cantidad de registros que pueden conformarlos porque hay data de mucho tiempo. Los reportes deben tener una estructura básica: Hoja (tamaño, orientación y márgenes), encabezado (header), cuerpo (body) y pie de página (footer).
 
-Te voy a pasar uno de los formularios y las plantillas que quiero utilizar para renderizar esa primera pantalla para establecer los parámetros de filtrado y salida del reporte.
+Hoja: 
+- Poder definir el tamaño de la hoja (A4, Letter, etc)
+- Poder definir la orientación (vertical, horizontal)
+- Poder definir los márgenes (superior, inferior, izquierdo y derecho)
 
----------------------------
+Encabezado: 
+Debe estar en la parte superior de la hoja y abarcar todo el ancho respetando los márgenes superior, izquierdo y derecho.
+Debe estar seccionado en encabezado superior (header-top) y encabezado inferior (header-bottom) ambos del mismo ancho.
+- Encabezado superior: debe tener una altura fija y dividido en dos secciones, la sección izquierda (header-top-left) de un ancho entre el 25% y 30% del ancho del encabezado en el que se renderizará el logotipo centrado verticalmente y justificado o alineado a la izquierda y la sección derecha (header-top-right) cuyo ancho es el resto del espacio en el que se renderizará el título del reporte justificado o alineado a la derecha.
+- Encabezado inferior: este de contar con 2 secciones, la sección izquierda (header-bottom-left) y la sección derecha (header-bottom-right) ambas del mismo ancho pero la altura se pueda ajusta a la cantidad de líneas a renderizar dentro de cada una de las secciones, pero que crezcan hacia abajo al mismo novel ambas, si una teine más información se debe ajustar a ese tamaño y la otra igualmente para que se mantengan univormes en el tamaño vertical. La sección izquierda la informacióndebe estar justificada a la izquierda y la sección derecha debe justificar su contenido a la derecha.
 
-Ok, de las ditintas opciones de salida vamos a concentrarnos, por ahora, en las opciones de salida a pantalla y a pdf.
-Cuando se selecciones alguna de estas opciones, quiero que se abra una pestaña nueva en el navegador y allí se renderice la salida a pantalla o muestre el pdf generado y de ser posible todo esto ocurra en un hilo aparte para no bloquear la aplicación, porque hay listados que son extensos.
+El cuerpo: 
+Es para renderizar la información que se obtiene de la consulta y que en algunos casa hay que estructurar los dato, agruparlos, sub totalizar y totalizar. Las columnas para enderizar estos datos deben contemplar el desbordamiento de información, que si no cabe en la columna que esta siga en la siguiente línea y empujar hacia abajo los datos de la siguiente línea sin descuadrar el reporte.
+
+Pie de página: 
+El pie de página (footer) debe tener tres secciones:
+- Sección izquierda (footer-left) la cual renderizará el literal "M.A.A.Soft" en cursiva justificado a la izquierda.
+- Sección central (footer-center) la cual renderizará el número de página, de ser posible "Página xxx/xxx" o "- xxx/xxx -" si no es posible de esa forma entonces solo en número de página.
+- Sección derecha (fotter-right) la cual renderizará la fecha y hora actual del reporte en formato dd/mm/aaaa HH:mm
+
+------------------------------------------------
+

@@ -40,6 +40,7 @@ SELECT
     f.numero_comprobante, 
     (f.letra_comprobante || ' ' || SUBSTR(printf('%012d', f.numero_comprobante), 1, 4) || '-' || SUBSTR(printf('%012d', f.numero_comprobante), 5)) AS numero, 
     f.fecha_comprobante, 
+	f.remito,
     f.condicion_comprobante, 
     CASE 
         WHEN f.condicion_comprobante = 1 THEN 'Contado'

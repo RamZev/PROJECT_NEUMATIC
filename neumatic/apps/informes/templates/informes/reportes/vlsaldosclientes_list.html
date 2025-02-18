@@ -16,7 +16,7 @@
 
 <!-- Contenido Inferior Derecho -->
 {% block header_bottom_right %}
-	<p><strong>Vendedor:</strong> {{ cliente.nombre_vendedor }}</p>
+	{% comment %} <p><strong>Vendedor:</strong> {{ cliente.nombre_vendedor }}</p> {% endcomment %}
 	{% for param, valor in parametros.items %}
 		<p class="compact-line-spacing"><strong>{{ param }}:</strong> {{ valor }}</p>
 	{% endfor %}

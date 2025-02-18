@@ -57,6 +57,12 @@ class ConfigViews:
 	
 	#-- URL de la vista que genera el .pdf.
 	url_pdf = f"{model_string}_vista_pdf"
+	
+	#-- Plantilla Vista Preliminar Pantalla.
+	reporte_pantalla = f"informes/reportes/{model_string}_list.html"
+	
+	#-- Plantilla Vista Preliminar PDF.
+	reporte_pdf = f"informes/reportes/{model_string}_pdf.html"
 
 
 class VLRemitosClientesInformeView(InformeFormView):
@@ -177,7 +183,8 @@ def vlremitosclientes_vista_pantalla(request):
 		return HttpResponse("Contexto no encontrado o expirado", status=400)
 	
 	#-- Generar el listado a pantalla.
-	return render(request, "informes/reportes/remitosclientes_list.html", contexto_reporte)
+	return render(request, ConfigViews.reporte_pantalla, contexto_reporte)
+	# return render(request, "informes/reportes/remitosclientes_list.html", contexto_reporte)
 
 
 def vlremitosclientes_vista_pdf(request):
@@ -195,14 +202,14 @@ def vlremitosclientes_vista_pdf(request):
 		return HttpResponse("Contexto no encontrado o expirado", status=400)
 	
 	#-- Preparar la respuesta HTTP.
-	html_string = render_to_string("informes/reportes/remitosclientes_pdf.html", contexto_reporte, request=request)
+	# html_string = render_to_string("informes/reportes/remitosclientes_pdf.html", contexto_reporte, request=request)
+	html_string = render_to_string(ConfigViews.reporte_pdf, contexto_reporte, request=request)
 	pdf_file = HTML(string=html_string, base_url=request.build_absolute_uri()).write_pdf()
 
 	response = HttpResponse(pdf_file, content_type="application/pdf")
 	response["Content-Disposition"] = f'inline; filename="informe_{ConfigViews.model_string}.pdf"'
 	
 	return response
-
 
 
 def raw_to_dict(instance):
