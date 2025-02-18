@@ -1,7 +1,6 @@
 # neumatic\apps\informes\forms\buscador_actividad_forms.py
 from django import forms
 from datetime import date
-
 from .informes_generics_forms import InformesGenericForm
 from diseno_base.diseno_bootstrap import formclassselect, formclassdate, formclasscheck, formclasstext
 
@@ -28,12 +27,12 @@ class BuscadorResumenCtaCteForm(InformesGenericForm):
 	fecha_desde = forms.DateField(
 		required=False, 
 		label="Desde Fecha",
-		widget=forms.TextInput(attrs={'type':'date', **formclassdate})
+		widget=forms.TextInput(attrs={'type':'date', **formclassdate}),
 	)
 	fecha_hasta = forms.DateField(
 		required=False, 
 		label="Hasta Fecha",
-		widget=forms.TextInput(attrs={'type':'date', **formclassdate})
+		widget=forms.TextInput(attrs={'type':'date', **formclassdate}),
 	)
 	id_cliente = forms.IntegerField(
 		label="Cód. Cliente",
@@ -71,17 +70,26 @@ class BuscadorResumenCtaCteForm(InformesGenericForm):
 	def clean(self):
 		cleaned_data = super().clean()
 		
+		resumen_pendiente = cleaned_data.get('resumen_pendiente')
 		id_cliente = cleaned_data.get("id_cliente")
 		fecha_desde = cleaned_data.get("fecha_desde")
 		fecha_hasta = cleaned_data.get("fecha_hasta")
+		
+		#-- Si resumen_pendiente no está marcado (False), se requieren las fechas y la condición de venta.
+		if not resumen_pendiente:
+			if not fecha_desde:
+				self.add_error('fecha_desde', "Debe indicar una fecha válida.")
+			if not fecha_hasta:
+				self.add_error('fecha_hasta', "Debe indicar una fecha válida.")
+		
+			#-- Validar rango de fechas.
+			if fecha_desde and fecha_hasta and fecha_desde > fecha_hasta:
+				self.add_error("fecha_hasta", "La fecha hasta no puede ser anterior a la fecha desde.")
 		
 		#-- Validar que se haya indicado un cliente solo si hay datos enviados.
 		if not id_cliente:
 			self.add_error("id_cliente", "Debe indicar un Código de Cliente.")
 		
-		#-- Validar rango de fechas.
-		if fecha_desde and fecha_hasta and fecha_desde > fecha_hasta:
-			self.add_error("fecha_hasta", "La fecha hasta no puede ser anterior a la fecha desde.")
 		
 		return cleaned_data
 	

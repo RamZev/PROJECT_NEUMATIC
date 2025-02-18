@@ -189,10 +189,15 @@ class ResumenCtaCteManager(models.Manager):
 		""" Método que calcula y devuelve el saldo anterior a la fecha desde de un cliente dado. """
 		
 		#-- Se crea la consulta parametrizada.
+		# query = """
+		# 	SELECT v.id_cliente_id, COALESCE(SUM(v.total * 1.0), 0.0) AS saldo_anterior 
+		# 		FROM VLResumenCtaCte v 
+		# 		WHERE v.id_cliente_id = %s AND v.fecha_comprobante < %s;
+		# """
 		query = """
-			SELECT v.id_cliente_id, COALESCE(SUM(v.total * 1.0), 0.0) AS saldo_anterior 
-				FROM VLResumenCtaCte v 
-				WHERE v.id_cliente_id = %s AND v.fecha_comprobante < %s;
+			SELECT v.id_cliente_id, COALESCE(ROUND(SUM(v.total * 1.0), 2), 0.00) AS saldo_anterior 
+			FROM VLResumenCtaCte v 
+			WHERE v.id_cliente_id = %s AND v.fecha_comprobante < %s;
 		"""
 		
 		#-- Se añade los parámetros.
@@ -214,7 +219,7 @@ class VLResumenCtaCte(models.Model):
 	condicion_comprobante = models.IntegerField()
 	total = models.DecimalField(max_digits=14, decimal_places=2)
 	entrega = models.DecimalField(max_digits=14, decimal_places=2)
-	saldo = models.DecimalField(max_digits=14, decimal_places=2)
+	# saldo = models.DecimalField(max_digits=14, decimal_places=2)
 	saldo_acumulado = models.DecimalField(max_digits=14, decimal_places=2)
 	intereses = models.DecimalField(max_digits=14, decimal_places=2)
 	
