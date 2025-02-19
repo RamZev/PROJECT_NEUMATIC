@@ -39,10 +39,28 @@ def obtener_instancia(modelo, valor, default=None):
 
 def procesar_registro(record):
     """Procesa un registro individual de la tabla DBF."""
+    tipos_iva = {
+        "CF": 1,
+        "EXE": 2,
+        "RMT": 3,
+        "RI": 4
+    }
+    
+    tipos_doc_id = {
+        "CI": 2,
+        "CUIT": 1,
+        "DNI":5,
+        "LC":6,
+        "LE":6
+    }
+    
+    id_tipo_iva = tipos_iva[record.get('SITIVA').strip()]
+    id_tipo_doc = tipos_doc_id[record.get('TIPODOC').strip()]
+    
     try:
         # Claves foráneas
-        id_tipo_iva_instancia = obtener_instancia(TipoIva, record.get('TIPO_IVA', 1))
-        id_tipo_documento_identidad_instancia = obtener_instancia(TipoDocumentoIdentidad, record.get('TIPO_DOC', 1))
+        id_tipo_iva_instancia = obtener_instancia(TipoIva, id_tipo_iva)
+        id_tipo_documento_identidad_instancia = obtener_instancia(TipoDocumentoIdentidad, id_tipo_doc)
         id_vendedor_instancia = obtener_instancia(Vendedor, record.get('VENDEDOR'))
         id_actividad_instancia = obtener_instancia(Actividad, record.get('ACTIVIDAD'))
         id_sucursal_instancia = obtener_instancia(Sucursal, record.get('SUCURSAL'))
@@ -81,7 +99,7 @@ def procesar_registro(record):
             id_tipo_iva=id_tipo_iva_instancia,
             id_tipo_documento_identidad=id_tipo_documento_identidad_instancia,
             cuit=int(str(record.get('CUIT')).strip()) if record.get('CUIT') else 0,
-            condicion_venta=int(record.get('CONDCIONVENTA', 0)) if record.get('CONDCIONVENTA') else 0,
+            condicion_venta=int(record.get('CONVTA', 0)) if record.get('CONVTA') else 0,
             telefono_cliente=record.get('TELEFONO', '').strip() or '',
             fax_cliente=record.get('FAX', '').strip() or '',
             movil_cliente=record.get('MOVIL', '').strip() or '',
@@ -94,7 +112,8 @@ def procesar_registro(record):
             id_actividad=id_actividad_instancia,
             id_sucursal=id_sucursal_instancia,
             id_percepcion_ib=id_percepcion_ib_instancia,
-            sub_cuenta=str(record.get('SUBCUENTA', '')).strip() if record.get('SUBCUENTA') else '',
+            vip=record.get('VIP', False) or False,
+            sub_cuenta=int(record.get('SUBCUENTA')) if record.get('SUBCUENTA') else None,
             black_list=False,
         )
     except Exception as e:

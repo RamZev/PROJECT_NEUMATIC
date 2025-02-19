@@ -40,7 +40,7 @@ def cargar_datos_detalle_factura():
     print(f"Total de registros a procesar: {total_registros}")
 
     # Código inicial para filtrar
-    codigo_inicio = 1498294
+    codigo_inicio = 1
 
     # Filtrar y ordenar los registros
     table = sorted(

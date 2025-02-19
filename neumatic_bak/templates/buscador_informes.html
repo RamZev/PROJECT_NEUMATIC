@@ -1,0 +1,69 @@
+<form method="get" action="{% url list_view_name %}">
+    <div class="row mb-2">
+        <!-- Tipo de Salida -->
+        <div class="col-md-4">
+            <label>Tipo de Salida:</label>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="tipo_salida" id="tabla" value="tabla">
+                <label class="form-check-label" for="tabla">Vista Preliminar en Tabla</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="tipo_salida" id="pdf_preliminar" value="pdf_preliminar">
+                <label class="form-check-label" for="pdf_preliminar">Vista Preliminar en PDF</label>
+            </div>
+            
+            <!-- Envío por Email y WhatsApp como checklist -->
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="tipo_salida" id="email_envio" value="email">
+                <label class="form-check-label" for="email_envio">Envío por eMail</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="tipo_salida" id="whatsapp_envio" value="whatsapp">
+                <label class="form-check-label" for="whatsapp_envio">Envío por WhatsApp</label>
+            </div>
+        </div>
+
+        <!-- Formato de Envío -->
+        <div class="col-md-4">
+            <label>Formato de Envío:</label>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="formato_envio" id="formato_pdf" value="PDF">
+                <label class="form-check-label" for="formato_pdf">PDF</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="formato_envio" id="formato_csv" value="CSV">
+                <label class="form-check-label" for="formato_csv">CSV</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="formato_envio" id="formato_word" value="Word">
+                <label class="form-check-label" for="formato_word">Word</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="formato_envio" id="formato_excel" value="Excel">
+                <label class="form-check-label" for="formato_excel">Excel</label>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="form-control form-control-sm">
+                <label for="email">eMAIL</label>
+                <input type="email" class="form-control" id="email" name="email" placeholder="email@example.com">
+
+                <label for="celular">Celular</label>
+                <input type="tel" class="form-control" id="celular" name="celular" placeholder="Número de celular">
+            </div>
+        </div>
+    </div>
+
+    <div class="input-group flex-nowrap">
+        <span class="input-group-text">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                class="bi bi-search" viewbox="0 0 16 16">
+                <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" />
+            </svg>
+        </span>
+
+        <input type="text" class="form-control" name="busqueda" value="{{ request.GET.busqueda }}" placeholder="Buscar">
+        <button type="submit" class="btn btn-outline-primary">Buscar</button>
+    </div>
+</form>

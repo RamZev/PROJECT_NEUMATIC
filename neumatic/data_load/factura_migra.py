@@ -35,20 +35,21 @@ def cargar_datos_factura():
 	dbf_path = os.path.join(BASE_DIR, 'data_load', 'datavfox', 'facturas.DBF')
 
 	# Abrir la tabla de Visual FoxPro usando dbfread
-	table = DBF(dbf_path, encoding='latin-1')
-
-	total_registros = len(table)
-	print(f"Total de registros a procesar: {total_registros}")
+	# table = DBF(dbf_path, encoding='latin-1')
+	table = sorted(DBF(dbf_path, encoding='latin-1'), key=lambda x: x['ID'])
+	
 	
 	
 	# codigo_inicio = 1498293
 	# codigo_inicio = 1550327
-	codigo_inicio = 1551104
+	codigo_inicio = 1
 	
 	# Filtrar los registros a partir del código inicial
 	table = [record for record in table if int(record['ID']) >= codigo_inicio]
+	total_registros = len(table)
+	print(f"Total de registros a procesar: {total_registros}")
 
-	print("Inicio del ciclo for")
+	print("Inicio del ciclo for****")
 	
 	for idx, record in enumerate(table):
 		# Extraer y procesar los datos según las reglas
@@ -109,9 +110,9 @@ def cargar_datos_factura():
 			gravado=float(record.get('GRAVADO') or 0),
 			exento=float(record.get('EXENTO') or 0),
 			iva=float(record.get('IVA') or 0),
-			percep_ib=float(record.get('PERCEP_IB', 0)),
+			percep_ib = float(record.get('PERCEPIB', 0)) if record.get('PERCEPIB') is not None else 0,
 			total=float(record.get('TOTAL', 0)),
-			entrega=float(record.get('ENTREGA', 0)),
+			entrega = float(record.get('ENTREGA', 0)) if record.get('ENTREGA') is not None else 0,
 			estado=record.get('ESTADO', '').strip(),
 			marca=record.get('MARCA', '').strip(),
 			fecha_pago=record.get('FECHA_PAGO', None),  # Se usa el nombre correcto del campo
@@ -120,7 +121,7 @@ def cargar_datos_factura():
 			cae=record.get('CAE', 0),
 			cae_vto=record.get('CAE_VTO', None),  # Se usa el nombre correcto del campo
 			observa_comprobante=record.get('OBSERVACIONES', '').strip(),
-			stock_clie=bool(record.get('STOCK_CLIE', False)),  # Se usa el nombre correcto del campo
+			stock_clie=bool(record.get('STOCKCLIE', False)),  # Se usa el nombre correcto del campo
 			id_deposito=id_deposito_instancia,
 			promo=bool(record.get('PROMO', False))
 		)

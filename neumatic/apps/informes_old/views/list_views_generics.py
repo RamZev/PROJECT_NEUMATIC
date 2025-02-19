@@ -1,0 +1,106 @@
+# neumatic\apps\informes\views\list_views_generics.py
+from typing import Any
+from django.views.generic import ListView
+from django.db.models import Q
+
+#-- Recursos necesarios para proteger las rutas.
+from django.utils.decorators import method_decorator
+from django.contrib.auth.decorators import login_required
+
+#-- Recursos necesarios para los permisos de usuarios sobre modelos.
+# from django.contrib.auth.mixins import PermissionRequiredMixin
+# from django.contrib import messages
+# from django.shortcuts import redirect, render
+
+from django.utils import timezone
+
+
+# -- Vistas Genéricas Basada en Clases -----------------------------------------------
+@method_decorator(login_required, name='dispatch')
+class InformeListView(ListView):
+	cadena_filtro = ""
+	paginate_by = 8
+	
+	search_fields = []
+	ordering = []
+	
+	report_title = ""
+	table_headers = {}
+	table_data = []
+	pagination_options = [8, 20, 30, 40, 50]
+	
+	# context_object_name = 'objetos'  # Cambia object_list por objetos
+	
+	def get_queryset(self):
+		#-- Acá ya determina el Modelo con el que se trabaja.
+		#-- Obtiene todos los registros sin filtro.
+		#-- Con lo cual no es necesario un filter.all().
+		#-- luego cambiar a que por defecto no haya registros.
+		queryset = super().get_queryset()
+		
+		#-- Obtener el valor de paginate_by de la URL, si está presente.
+		paginate_by_param = self.request.GET.get('paginate_by')
+		if paginate_by_param is not None:
+			try:
+				#-- Intentar convertir a entero, usar valor predeterminado si falla.
+				paginate_by_value = int(paginate_by_param)
+				self.paginate_by = paginate_by_value
+			except ValueError:
+				pass
+		
+		# #-- Obtener la cadena de filtro (Propuesto y recomendado por ChatGPT).
+		# query = self.request.GET.get('busqueda', None)
+		# 
+		# if query:
+		# 	#-- Generar filtros dinámicamente.
+		# 	search_conditions = Q()
+		# 	for field in self.search_fields:
+		# 		search_conditions |= Q(**{f"{field}__icontains": query})
+		# 	
+		# 	queryset = queryset.filter(search_conditions)
+		
+		return queryset.order_by(*self.ordering)
+		
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
+		# context["busqueda"] = self.request.GET.get('busqueda', '')
+		
+		#-- Agregar valores de paginación y valor seleccionado.
+		context['pagination_options'] = self.pagination_options
+		context['selected_pagination'] = int(self.paginate_by)
+		
+		#-- Agregar los filtros actuales al contexto.
+		#-- Con esto se garantiza que la paginación funcione bien con
+		#-- los datos filtrados.
+		query_params = self.request.GET.copy()
+		if 'page' in query_params:
+			#-- Remover el parámetro de paginación actual.
+			query_params.pop('page')
+		
+		context['query_params'] = query_params.urlencode()
+		
+		#-- Para pasar la fecha a la lista del maestro.
+		context['fecha'] = timezone.now()
+		
+		return context
+	
+	def get(self, request, *args, **kwargs):
+		#-- Obtener el valor de paginate_by de la URL, si está presente.
+		paginate_by_param = self.request.GET.get('paginate_by')
+		if paginate_by_param is not None:
+			try:
+				#-- Intentar convertir a entero, usar valor predeterminado si falla.
+				paginate_by_value = int(paginate_by_param)
+				self.paginate_by = paginate_by_value
+			except ValueError:
+				pass
+		
+		#-- Mantener el valor de paginate_by en el formulario de paginación.
+		self.request.GET = self.request.GET.copy()
+		self.request.GET['paginate_by'] = str(self.paginate_by)
+		
+		return super().get(request, *args, **kwargs)
+	
+	def get_paginate_by(self, queryset):
+		#-- Utilizar el valor actualizado de paginate_by.
+		return self.paginate_by

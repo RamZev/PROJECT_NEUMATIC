@@ -10,6 +10,8 @@ from ..models.factura_models import Factura
 from ..forms.factura_forms import FacturaForm, DetalleFacturaFormSet
 from ...maestros.models.base_models import TipoDocumentoIdentidad
 
+from entorno.constantes_base import TIPO_VENTA
+
 modelo = Factura
 
 #-- Usar esta forma cuando el modelo esté compuesto de una sola palabra: Ej. Color.
@@ -95,6 +97,11 @@ class FacturaCreateView(MaestroDetalleCreateView):
 	def get_context_data(self, **kwargs):
 		data = super().get_context_data(**kwargs)
   
+		# Agregar cambia_precio_descripcion al contexto
+		usuario = self.request.user
+		data['cambia_precio_descripcion'] = usuario.cambia_precio_descripcion
+		data['tipo_venta'] = TIPO_VENTA
+  
 		#data['tipos_documento'] = TipoDocumentoIdentidad.objects.filter(estatus_tipo_documento=True)
   
 		if self.request.POST:
@@ -133,6 +140,7 @@ class FacturaCreateView(MaestroDetalleCreateView):
 		# Establecer valores iniciales basados en el usuario
 		initial['id_sucursal'] = usuario.id_sucursal
 		initial['id_punto_venta'] = usuario.id_punto_venta
+		initial['cambia_precio_descripcion'] = usuario.cambia_precio_descripcion
 		#initial['jerarquia'] = usuario.jerarquia
 
 		return initial
@@ -159,7 +167,9 @@ class FacturaUpdateView(MaestroDetalleUpdateView):
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
   
-		# context['tipos_documento'] = TipoDocumentoIdentidad.objects.filter(estatus_tipo_documento=True)
+		# Agregar cambia_precio_descripcion al contexto
+		usuario = self.request.user
+		context['cambia_precio_descripcion'] = usuario.cambia_precio_descripcion
 
 		if self.request.POST:
 			context['formset'] = DetalleFacturaFormSet(self.request.POST, instance=self.object)

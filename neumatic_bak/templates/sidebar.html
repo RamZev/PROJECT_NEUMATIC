@@ -1,0 +1,203 @@
+<div id="layoutSidenav_nav">
+	<nav class="sb-sidenav accordion sb-sidenav-blue" id="sidenavAccordion">
+		<div class="sb-sidenav-menu">
+			<div class="nav">
+				<div class="sb-sidenav-menu-heading">Core</div>
+				
+				<a class="nav-link" href="{% url 'home' %}">
+					<div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+					Panel
+				</a>
+				
+				<div class="sb-sidenav-menu-heading">Ventas</div>
+				
+				<!-- Archivos Start -->
+				<a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseFiles" aria-expanded="false" aria-controls="collapseFiles">
+					<div class="sb-nav-link-icon"><i class="fas fa-book-open"></i></div>
+					Archivos
+					<div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+				</a>
+				
+				<div class="collapse" id="collapseFiles" aria-labelledby="headingTwo" data-bs-parent="#sidenavAccordion">
+					<nav class="sb-sidenav-menu-nested nav accordion" id="sidenavAccordionPages">
+						
+						<a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#pagesCollapseCatalogos" aria-expanded="false" aria-controls="pagesCollapseCatalogos">
+							Catálogos
+							<div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+						</a>
+						<div class="collapse" id="pagesCollapseCatalogos" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordionPages">
+							<nav class="sb-sidenav-menu-nested nav">
+								<a class="nav-link" href="{% url 'cliente_list' %}">Clientes</a>
+								<a class="nav-link" href="{% url 'proveedor_list' %}">Proveedores</a>
+								<a class="nav-link" href="{% url 'producto_list' %}">Productos</a>
+								<a class="nav-link" href="{% url 'vendedor_list' %}">Vendedores</a>
+								<a class="nav-link" href="{% url 'empresa_list' %}">Empresa</a>
+								<a class="nav-link" href="{% url 'sucursal_list' %}">Sucursales</a>
+								<!-- <a class="nav-link" href="{% url 'parametro_list' %}">Parámetros</a> -->
+								<a class="nav-link" href="{% url 'numero_list' %}">Números</a>
+							</nav>
+						</div>
+						
+						<a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#pagesCollapseTablas" aria-expanded="false" aria-controls="pagesCollapseTablas">
+							Tablas
+							<div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+						</a>
+						<div class="collapse" id="pagesCollapseTablas" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordionPages">
+							<nav class="sb-sidenav-menu-nested nav">
+								<a class="nav-link" href="{% url 'actividad_list' %}">Actividad</a>
+								<a class="nav-link" href="{% url 'producto_deposito_list' %}">Prod. Depósito</a>
+								<a class="nav-link" href="{% url 'producto_familia_list' %}">Prod. Familia</a>
+								<a class="nav-link" href="{% url 'producto_marca_list' %}">Prod. Marca</a>
+								<a class="nav-link" href="{% url 'producto_modelo_list' %}">Prod. Modelo</a>
+								<a class="nav-link" href="{% url 'producto_cai_list' %}">Prod. CAI</a>
+								<a class="nav-link" href="{% url 'producto_estado_list' %}">Prod. Estado</a>
+								<a class="nav-link" href="{% url 'comprobante_venta_list' %}">Comp. Venta</a>
+								<a class="nav-link" href="{% url 'comprobante_compra_list' %}">Comp. Compra</a>
+								<a class="nav-link" href="{% url 'moneda_list' %}">Moneda</a>
+								<a class="nav-link" href="{% url 'provincia_list' %}">Provincia</a>
+								<a class="nav-link" href="{% url 'localidad_list' %}">Localidad</a>
+								<a class="nav-link" href="{% url 'tipo_documento_identidad_list' %}">Tipo Documento</a>
+								<a class="nav-link" href="{% url 'tipo_iva_list' %}">Tipo IVA</a>
+								<a class="nav-link" href="{% url 'alicuota_iva_list' %}">Alícuotas IVA</a>
+								<a class="nav-link" href="{% url 'tipo_percepcion_ib_list' %}">Tipo Percepción</a>
+								<a class="nav-link" href="{% url 'tipo_retencion_ib_list' %}">Tipo Retención</a>
+								<a class="nav-link" href="{% url 'operario_list' %}">Operario</a>
+								<a class="nav-link" href="{% url 'medio_pago_list' %}">Medio de Pago</a>
+								<a class="nav-link" href="{% url 'punto_venta_list' %}">Puntos de Venta</a>
+							</nav>
+						</div>
+					</nav>
+				</div>
+				<!-- Archivos End -->
+				
+				<!-- Procesos Start -->
+				<a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseProcesses" aria-expanded="false" aria-controls="collapseProcesses">
+					<div class="sb-nav-link-icon"><i class="fas fa-book-open"></i></div>
+					Procesos
+					<div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+				</a>
+				
+				<div class="collapse" id="collapseProcesses" aria-labelledby="headingTwo" data-bs-parent="#sidenavAccordion">
+					<nav class="sb-sidenav-menu-nested nav accordion" id="sidenavAccordionPages">
+						
+						<a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#pagesCollapseVentas" aria-expanded="false" aria-controls="pagesCollapseVentas">
+							Ventas
+							<div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+						</a>
+						<div class="collapse" id="pagesCollapseVentas" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordionPages">
+							<nav class="sb-sidenav-menu-nested nav">
+								<a class="nav-link" href="{% url 'factura_list' %}">Doc. Venta</a>
+								<a class="nav-link" href="#">Anular DV</a>
+							</nav>
+						</div>
+						
+						<a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#pagesCollapseCompras" aria-expanded="false" aria-controls="pagesCollapseCompras">
+							Compras
+							<div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+						</a>
+						<div class="collapse" id="pagesCollapseCompras" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordionPages">
+							<nav class="sb-sidenav-menu-nested nav">
+								<a class="nav-link" href="#">Doc. Compra</a>
+								<a class="nav-link" href="#">Anular DC</a>
+							</nav>
+						</div>
+					
+					</nav>
+				</div>
+				<!-- Procesos End -->
+				
+				<!-- Informes Start -->
+				<a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseReports" aria-expanded="false" aria-controls="collapseReports">
+					<div class="sb-nav-link-icon"><i class="fas fa-book-open"></i></div>
+					Informes
+					<div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+				</a>
+				
+				<div class="collapse" id="collapseReports" aria-labelledby="headingReports" data-bs-parent="#sidenavAccordion">
+					<nav class="sb-sidenav-menu-nested nav accordion" id="sidenavAccordionReports">
+						
+						<a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#reportsCollapseCatalogos" aria-expanded="false" aria-controls="reportsCollapseCatalogos">
+							Catálogos
+							<div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+						</a>
+						<div class="collapse" id="reportsCollapseCatalogos" aria-labelledby="headingReportsCatalogos" data-bs-parent="#sidenavAccordionReports">
+							<nav class="sb-sidenav-menu-nested nav">
+								<a class="nav-link" href="{% url 'cliente_informe_list' %}">Clientes</a>
+								<a class="nav-link" href="{% url 'proveedor_informe_list' %}">Proveedores</a>
+								<a class="nav-link" href="#">Productos</a>
+								<a class="nav-link" href="{% url 'vendedor_informe_list' %}">Vendedores</a>
+								<a class="nav-link" href="#">Empresa</a>
+								<a class="nav-link" href="#">Sucursales</a>
+								<a class="nav-link" href="#">Parámetros</a>
+								<a class="nav-link" href="#">Números</a>
+							</nav>
+						</div>
+						
+						<a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#reportsCollapseTablas" aria-expanded="false" aria-controls="reportsCollapseTablas">
+							Tablas
+							<div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+						</a>
+						<div class="collapse" id="reportsCollapseTablas" aria-labelledby="headingReportsTablas" data-bs-parent="#sidenavAccordionReports">
+							<nav class="sb-sidenav-menu-nested nav">
+								<a class="nav-link" href="{% url 'actividad_informe_list' %}">Actividad</a>
+								<a class="nav-link" href="{% url 'productodeposito_informe_list' %}">Prod. Depósito</a>
+								<a class="nav-link" href="{% url 'productofamilia_informe_list' %}">Prod. Familia</a>
+								<a class="nav-link" href="{% url 'productomarca_informe_list' %}">Prod. Marca</a>
+								<a class="nav-link" href="{% url 'productomodelo_informe_list' %}">Prod. Modelo</a>
+								<a class="nav-link" href="{% url 'productocai_informe_list' %}">Prod. CAI</a>
+								<a class="nav-link" href="{% url 'productoestado_informe_list' %}">Prod. Estado</a>
+								<a class="nav-link" href="{% url 'comprobanteventa_informe_list' %}">Comp. Venta</a>
+								<a class="nav-link" href="{% url 'comprobantecompra_informe_list' %}">Comp. Compra</a>
+								<a class="nav-link" href="{% url 'moneda_informe_list' %}">Moneda</a>
+								<a class="nav-link" href="{% url 'provincia_informe_list' %}">Provincia</a>
+								<a class="nav-link" href="{% url 'localidad_informe_list' %}">Localidad</a>
+								<a class="nav-link" href="{% url 'tipodocumentoidentidad_informe_list' %}">Tipo Documento</a>
+								<a class="nav-link" href="{% url 'tipoiva_informe_list' %}">Tipo Iva</a>
+								<a class="nav-link" href="{% url 'alicuotaiva_informe_list' %}">Alícuotas Iva</a>
+								<a class="nav-link" href="{% url 'tipopercepcionib_informe_list' %}">Tipo Percepción</a>
+								<a class="nav-link" href="{% url 'tiporetencionib_informe_list' %}">Tipo Retención</a>
+								<a class="nav-link" href="{% url 'operario_informe_list' %}">Operario</a>
+								<a class="nav-link" href="{% url 'mediopago_informe_list' %}">Medio de Pago</a>
+								<a class="nav-link" href="{% url 'puntoventa_informe_list' %}">Puntos de Venta</a>
+							</nav>
+						</div>
+						
+						<a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#reportsCollapseProcesos" aria-expanded="false" aria-controls="reportsCollapseProcesos">
+							Procesos
+							<div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+						</a>
+						<div class="collapse" id="reportsCollapseProcesos" aria-labelledby="headingReportsTablas" data-bs-parent="#sidenavAccordionReports">
+							<nav class="sb-sidenav-menu-nested nav">
+								<a class="nav-link" href="{% url 'vlsaldosclientes_informe_list' %}">Saldos de Clientes</a>
+								<a class="nav-link" href="{% url 'vlsaldosclientes_informe_list_prop' %}">Saldos de Clientes Prop.</a>
+								<a class="nav-link" href="{% url 'vlresumenctacte_informe_list' %}">Resumen de Cuenta Corriente</a>
+								<a class="nav-link" href="{% url 'vlmercaderiaporcliente_informe_list' %}">Mercadería por Cliente</a>
+								<a class="nav-link" href="{% url 'vlremitosclientes_informe_list' %}">Remitos por Cliente</a>
+								<a class="nav-link" href="{% url 'vltotalremitosclientes_informe_list' %}">Totales de Remitos por Cliente</a>
+								<a class="nav-link" href="{% url 'vlventacomprolocalidad_informe_list' %}">Comprobantes de Ventas por Localidad</a>
+								<a class="nav-link" href="{% url 'vlventamostrador_informe_list' %}">Ventas por Mostrador</a>
+								<a class="nav-link" href="{% url 'vlventacompro_informe_list' %}">Total de Ventas por Comprobantes</a>
+							</nav>
+						</div>
+						
+					</nav>
+				</div>
+				<!-- Informes End -->
+				
+				<!-- Opciones de Estadísticas Start -->
+				<div class="sb-sidenav-menu-heading">Estadísticas</div>
+				
+				<a class="nav-link" href="#">
+					<div class="sb-nav-link-icon"><i class="fas fa-chart-area"></i></div>
+					Gráficos
+				</a>
+				
+				<a class="nav-link" href="#">
+					<div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
+					Reportes
+				</a>
+				<!-- Opciones de Estadísticas End -->
+			</div>
+		</div>
+	</nav>
+</div>

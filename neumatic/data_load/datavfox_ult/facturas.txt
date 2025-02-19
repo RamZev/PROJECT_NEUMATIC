@@ -1,0 +1,37 @@
+Field     Name        Type        Width  Dec
+1         ID          Numeric     7      
+2         SUCURSAL    Numeric     2      
+3         COMPRO      Character   2      
+4         LETRA       Character   1      
+5         NUMERO      Numeric     12     
+6         REMITO      Character   15     
+7         FECHA       Date        8      
+8         CLIENTE     Numeric     6      
+9         CONDICION   Numeric     1      
+10        GRAVADO     Numeric     14     2
+11        EXENTO      Numeric     14     2
+12        IVA         Numeric     14     2
+13        ACRECE      Numeric     14     2
+14        IMPINT      Numeric     14     2
+15        TOTAL       Numeric     14     2
+16        ENTREGA     Numeric     14     2
+17        ESTADO      Character   1      
+18        CODIMP      Numeric     2      
+19        MARCA       Character   1      
+20        OPERADOR    Character   2      
+21        COMISION    Character   1      
+22        CODCOMIS    Numeric     2      
+23        FECHAPAGO   Date        8      
+24        NOMBRE      Character   30     
+25        SITIVA      Character   3      
+26        CUIT        Numeric     11     
+27        NOESTADIST  Logical     1      
+28        USUARIO     Character   15     
+29        SUCIMP      Numeric     2      
+30        PERCEPIB    Numeric     14     2
+31        CAE         Numeric     14     
+32        CAEVTO      Date        8      
+33        OBSERVA     Character   50     
+34        STOCKCLIE   Logical     1      
+35        DEPOSITO    Numeric     2      
+36        PROMO       Logical     1      

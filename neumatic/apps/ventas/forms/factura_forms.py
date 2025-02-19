@@ -33,6 +33,16 @@ class FacturaForm(forms.ModelForm):
         widget=forms.TextInput(attrs={**formclasstext, 'readonly': 'readonly'})
     )
     
+    tipo_venta = forms.CharField(
+        required=False,
+        widget=forms.TextInput(attrs={**formclasstext, 'readonly': 'readonly'})
+    )
+    
+    discrimina_iva = forms.BooleanField(
+        required=False,
+        widget=forms.CheckboxInput(attrs={'class': 'form-check-input', 'disabled': 'disabled'})
+    )
+    
     class Meta:
         model = Factura
         
@@ -67,6 +77,7 @@ class FacturaForm(forms.ModelForm):
             "domicilio_factura": forms.TextInput(attrs={**formclasstext, 'readonly': 'readonly'}),
             "movil_factura": forms.TextInput(attrs={**formclasstext}),
             "email_factura": forms.TextInput(attrs={**formclasstext}),
+            "stock_clie": forms.CheckboxInput(attrs={**formclasscheck}),
         }
 
     def __init__(self, *args, **kwargs):
@@ -78,6 +89,7 @@ class FacturaForm(forms.ModelForm):
         if usuario:
             self.fields['nombre_sucursal'].initial = usuario.id_sucursal
             self.fields['punto_venta'].initial = usuario.id_punto_venta
+            
             
         # Filtrar id_deposito según la sucursal del usuario
         if usuario and usuario.id_sucursal:

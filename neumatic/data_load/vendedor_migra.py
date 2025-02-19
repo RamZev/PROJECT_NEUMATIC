@@ -93,7 +93,7 @@ for idx, record in enumerate(table):
             vence_remito=int(record.get('DIASRTOS', 0)),
             id_sucursal=id_sucursal_instancia,
             tipo_venta=record.get('TIPO', '').strip(),
-            col_descuento=float(record.get('DESCUENTO') or 0),
+            col_descuento=float(record.get('DESCOL') or 0),
             email_venta=bool(record.get('EMAILFAC', False)),
             info_saldo=bool(record.get('EMAILSDO', False)),
             info_estadistica=bool(record.get('EMAILEST', False)),

@@ -4,8 +4,10 @@ from .views.factura_views import (FacturaListView, FacturaCreateView,
                                   FacturaUpdateView, FacturaDeleteView)
 
 from .views.consultas_factura_views import (buscar_agenda, 
-                                            buscar_producto, 
-                                            validar_documento)
+                                            buscar_producto,
+                                            buscar_cliente,
+                                            validar_documento,
+                                            detalle_producto)
 
 from .views.crear_agenda import crear_agenda
 
@@ -25,7 +27,9 @@ urlpatterns = [
    path('buscar/producto/', buscar_producto, name='buscar_producto'),
    path('validar/documento/', validar_documento, name='validar_documento'),
    path('buscar/agenda/', buscar_agenda, name='buscar_agenda'),
+   path('buscar/cliente/', buscar_cliente, name='buscar_agenda'),
    
    path('crear/agenda/', crear_agenda, name='crear_agenda'),
+   path('detalle_producto/<int:id_producto>/', detalle_producto, name='detalle_producto'),
 
 ]
