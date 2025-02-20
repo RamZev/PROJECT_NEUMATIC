@@ -129,12 +129,12 @@ class VLSaldosClientesInformeView_prop(InformeFormView):
 		
 		dominio = f"http://{self.request.get_host()}"
 		
-		#-- Calcular el saldo total.
-		saldo_total = 0
-		
 		#-- Convertir cada objeto del queryset a un diccionario.
 		# objetos_serializables = [model_to_dict(item) for item in queryset]
 		objetos_serializables = [raw_to_dict(item) for item in queryset]
+		
+		#-- Calcular el saldo total.
+		saldo_total = sum(item.get('saldo', 0) for item in objetos_serializables)
 		
 		#-- Se retorna un contexto que será consumido tanto para la vista en pantalla como para la generación del PDF.
 		return {
@@ -147,7 +147,6 @@ class VLSaldosClientesInformeView_prop(InformeFormView):
 			'css_url': f"{dominio}{static('css/reportes.css')}",
 			'css_url_new': f"{dominio}{static('css/reportes_new.css')}",
 			'header_bottom_left': "",
-			'header_bottom_right': "header_bottom_right",
 		}
 	
 	def get_context_data(self, **kwargs):
