@@ -3,12 +3,23 @@
 from django.urls import reverse_lazy
 from django.shortcuts import render
 from django.http import HttpResponse
-from decimal import Decimal
-from datetime import date, datetime
+# from decimal import Decimal
+# from datetime import date, datetime
+from datetime import datetime
 from django.template.loader import render_to_string
 from weasyprint import HTML
 from django.templatetags.static import static
-from django.forms.models import model_to_dict
+# from django.forms.models import model_to_dict
+
+#-- Recursos necesarios para generar el pdf.
+from io import BytesIO
+from reportlab.lib.pagesizes import A4  # o letter, según requieras
+from reportlab.lib.units import inch
+from reportlab.lib import colors
+from reportlab.platypus import BaseDocTemplate, Frame, PageTemplate, Paragraph, Spacer, Table, TableStyle
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.pdfgen import canvas
+from reportlab.lib.enums import TA_LEFT, TA_RIGHT
 
 from .report_views_generics import *
 from apps.informes.models import VLSaldosClientes
@@ -134,6 +145,9 @@ class VLSaldosClientesInformeView_prop(InformeFormView):
 			'titulo': ConfigViews.report_title,
 			'logo_url': f"{dominio}{static('img/logo_01.png')}",
 			'css_url': f"{dominio}{static('css/reportes.css')}",
+			'css_url_new': f"{dominio}{static('css/reportes_new.css')}",
+			'header_bottom_left': "",
+			'header_bottom_right': "header_bottom_right",
 		}
 	
 	def get_context_data(self, **kwargs):
@@ -163,7 +177,33 @@ def vlsaldosclientes_vista_pantalla_prop(request):
 	return render(request, ConfigViews.reporte_pantalla, contexto_reporte)
 	# return render(request, "informes/reportes/mercaderiaporcliente_list.html", contexto_reporte)
 
+#-- Vista para generar el PDF con WeasyPrint. -----------------------------------
+# def vlsaldosclientes_vista_pdf_prop(request):
+# 	#-- Obtener el token de la querystring.
+# 	token = request.GET.get("token")
+# 	
+# 	if not token:
+# 		return HttpResponse("Token no proporcionado", status=400)
+# 	
+# 	#-- Obtener el contexto(datos) previamente guardados en la sesión.
+# 	# contexto_reporte = deserializar_datos(request.session.pop(token, None))
+# 	contexto_reporte = deserializar_datos(request.session.get(token, None))
+# 	
+# 	if not contexto_reporte:
+# 		return HttpResponse("Contexto no encontrado o expirado", status=400)
+# 	
+# 	#-- Preparar la respuesta HTTP.
+# 	# html_string = render_to_string("informes/reportes/mercaderiaporcliente_pdf.html", contexto_reporte, request=request)
+# 	html_string = render_to_string(ConfigViews.reporte_pdf, contexto_reporte, request=request)
+# 	pdf_file = HTML(string=html_string, base_url=request.build_absolute_uri()).write_pdf()
+# 
+# 	response = HttpResponse(pdf_file, content_type="application/pdf")
+# 	response["Content-Disposition"] = f'inline; filename="informe_{ConfigViews.model_string}.pdf"'
+# 	
+# 	return response
+#--------------------------------------------------------------------------------
 
+#-- Vista para generar el PDF con ReportLab. ------------------------------------
 def vlsaldosclientes_vista_pdf_prop(request):
 	#-- Obtener el token de la querystring.
 	token = request.GET.get("token")
@@ -178,35 +218,232 @@ def vlsaldosclientes_vista_pdf_prop(request):
 	if not contexto_reporte:
 		return HttpResponse("Contexto no encontrado o expirado", status=400)
 	
+	#-- Generar el PDF usando ReportLab
+	pdf_file = generar_pdf_saldos_clientes(contexto_reporte, request)
+	
 	#-- Preparar la respuesta HTTP.
-	# html_string = render_to_string("informes/reportes/mercaderiaporcliente_pdf.html", contexto_reporte, request=request)
-	html_string = render_to_string(ConfigViews.reporte_pdf, contexto_reporte, request=request)
-	pdf_file = HTML(string=html_string, base_url=request.build_absolute_uri()).write_pdf()
-
 	response = HttpResponse(pdf_file, content_type="application/pdf")
 	response["Content-Disposition"] = f'inline; filename="informe_{ConfigViews.model_string}.pdf"'
 	
 	return response
 
 
-
-# def model_to_full_dict(instance):
-# 	"""
-# 	Convierte una instancia de un modelo de Django en un diccionario,
-# 	incluyendo todos los campos, incluso aquellos no editables.
-# 	"""
-# 	data = {}
-# 	for field in instance._meta.get_fields():
-# 		# Excluir campos ManyToMany si es necesario
-# 		if isinstance(field, ManyToManyField):
-# 			continue
-# 		# Obtener el valor del campo
-# 		value = getattr(instance, field.name)
-# 		data[field.name] = value
-# 	return data
-
 def raw_to_dict(instance):
 	"""Convierte una instancia de una consulta raw a un diccionario, eliminando claves internas."""
 	data = instance.__dict__.copy()
 	data.pop('_state', None)
 	return data
+
+
+#-- Para generar el PDF. ----------------------------------------------------------------------------------
+# Canvas personalizado para numerar páginas "Página xxx / yyy"
+class NumberedCanvas(canvas.Canvas):
+	def __init__(self, *args, **kwargs):
+		super(NumberedCanvas, self).__init__(*args, **kwargs)
+		self._saved_page_states = []
+	def showPage(self):
+		self._saved_page_states.append(dict(self.__dict__))
+		self._startPage()
+	def save(self):
+		num_pages = len(self._saved_page_states)
+		for state in self._saved_page_states:
+			self.__dict__.update(state)
+			self.draw_page_number(num_pages)
+			super(NumberedCanvas, self).showPage()
+		super(NumberedCanvas, self).save()
+	def draw_page_number(self, page_count):
+		page_text = "Página %d / %d" % (self._pageNumber, page_count)
+		self.setFont("Helvetica", 9)
+		self.drawCentredString(self._pagesize[0]/2.0, 15, page_text)
+
+# Función para dibujar header y footer en cada página
+def header_footer(canvas_obj, doc):
+	canvas_obj.saveState()
+	width, height = doc.pagesize
+	# styles = getSampleStyleSheet()
+	
+	# --- Header ---
+	header_top_height = 50
+	# Sección superior izquierda: logotipo
+	logo_path = doc.contexto_reporte.get("logo_url", "")  # Asumiendo que el contexto está en doc.contexto_reporte
+	logo_area_width = (width - doc.leftMargin - doc.rightMargin) * 0.25
+	logo_height = 30
+	logo_x = doc.leftMargin - 30
+	logo_y = height - header_top_height + (header_top_height - logo_height) / 2
+	try:
+		canvas_obj.drawImage(logo_path, logo_x, logo_y, width=logo_area_width,
+							height=logo_height, preserveAspectRatio=True, mask='auto')
+	except Exception:
+		canvas_obj.setFont("Helvetica", 10)
+		canvas_obj.drawString(logo_x, logo_y, "[Logo]")
+	
+	# Sección superior derecha: título
+	titulo = doc.contexto_reporte.get("titulo", "Reporte")
+	font_name = "Helvetica-BoldOblique"
+	font_size = 12
+	available_width = width - doc.leftMargin - doc.rightMargin
+	text_width = canvas_obj.stringWidth(titulo, font_name, font_size)
+	
+	# Reducir el tamaño de fuente si el texto excede el ancho disponible (hasta un tamaño mínimo, por ejemplo, 6)
+	while text_width > available_width and font_size > 6:
+		font_size -= 0.5
+		text_width = canvas_obj.stringWidth(titulo, font_name, font_size)
+	
+	canvas_obj.setFont(font_name, font_size)
+	canvas_obj.drawRightString(width - doc.rightMargin, (height - header_top_height/2)-10, titulo)
+
+	# Mientras el texto exceda el ancho disponible, reducimos el tamaño de fuente
+	while text_width > available_width and font_size > 6:
+		font_size -= 0.5
+		text_width = canvas_obj.stringWidth(titulo, font_name, font_size)
+
+	canvas_obj.setFont(font_name, font_size)
+	canvas_obj.drawRightString(width - doc.rightMargin, (height - header_top_height/2)-10, titulo)	
+	
+	# --- Header-bottom ---
+	#-- Línea inferior de header-top (inicio de header-bottom).
+	line_y_start = height - header_top_height  
+	canvas_obj.setLineWidth(1)
+	canvas_obj.setStrokeColor(colors.black)
+	canvas_obj.line(doc.leftMargin, line_y_start, width - doc.rightMargin, line_y_start)	
+	# ----------------------------------------------------------------------------------
+	header_bottom_text_left = doc.contexto_reporte.get("header_bottom_left", "")
+	
+	# Contenido derecho: se construye a partir del diccionario 'parametros'
+	parametros = doc.contexto_reporte.get("parametros", {})
+	lines = []
+	for key, value in parametros.items():
+		lines.append(f"<b>{key}:</b> {value}")
+	header_bottom_text_right = "<br/>".join(lines)
+	
+	# Definir estilos para cada sección
+	p_style_left = ParagraphStyle('headerBottomLeft', fontSize=9, leading=12, alignment=TA_LEFT)
+	p_style_right = ParagraphStyle('headerBottomRight', fontSize=9, leading=12, alignment=TA_RIGHT)
+	
+	p_left = Paragraph(header_bottom_text_left, p_style_left)
+	p_right = Paragraph(header_bottom_text_right, p_style_right)
+	
+	available_width = (width - doc.leftMargin - doc.rightMargin) / 2.0
+	# Llamar wrap() para cada Paragraph
+	left_w, left_h = p_left.wrap(available_width, 100)
+	right_w, right_h = p_right.wrap(available_width, 100)
+	header_bottom_height = max(left_h, right_h)
+	header_bottom_y = height - header_top_height - header_bottom_height
+	
+	p_left.drawOn(canvas_obj, doc.leftMargin, header_bottom_y)
+	p_right.drawOn(canvas_obj, doc.leftMargin + available_width, header_bottom_y)
+	
+	#-- Dibujar línea horizontal al final del header-bottom.
+	line_y_end = header_bottom_y
+	canvas_obj.line(doc.leftMargin, line_y_end, width - doc.rightMargin, line_y_end)	
+	# ----------------------------------------------------------------------------------
+	
+	# --- Footer ---
+	footer_y = 15
+	
+	# Dibujar línea decorativa justo encima del footer:
+	line_y = footer_y + 12  # 12 puntos por encima del footer
+	canvas_obj.setLineWidth(1)
+	canvas_obj.setStrokeColor(colors.black)
+	canvas_obj.line(doc.leftMargin, line_y, width - doc.rightMargin, line_y)
+
+	canvas_obj.setFont("Helvetica-Oblique", 9)
+	canvas_obj.drawString(doc.leftMargin, footer_y, "M.A.A.Soft")
+	now_str = datetime.now().strftime("%d/%m/%Y %H:%M")
+	canvas_obj.setFont("Helvetica", 9)
+	canvas_obj.drawRightString(width - doc.rightMargin, footer_y, now_str)
+	
+	canvas_obj.restoreState()
+
+def generar_pdf_saldos_clientes(contexto_reporte, request):
+	"""
+	Recibe el contexto del reporte y retorna un PDF generado con ReportLab.
+	"""
+	buffer = BytesIO()
+	
+	# Configuración del documento: tamaño, márgenes (ajusta según necesites)
+	doc = BaseDocTemplate(
+		buffer,
+		pagesize=A4,
+		leftMargin=10,
+		rightMargin=10,
+		topMargin=0,    # Deja espacio para header (120)
+		bottomMargin=40
+	)
+	
+	# Define el Frame para el cuerpo (ajusta la altura restando espacio para header/footer)
+	frame = Frame(
+		doc.leftMargin,
+		doc.bottomMargin,
+		doc.width,
+		doc.height - 80,  # Ajusta según lo usado en header y footer
+		id="body"
+	)
+	
+	# PageTemplate con función header_footer
+	template = PageTemplate(id="reportTemplate", frames=[frame], onPage=header_footer)
+	doc.addPageTemplates([template])
+	
+	story = []
+	styles = getSampleStyleSheet()
+	
+	# Construir datos de la tabla:
+	header_data = [
+		"Cliente", "Nombre", "Domicilio", "C.P.", "Localidad",
+		"Teléfono", "Saldo", "1er. Comp. Pend.", "Último Pago", "Sub Cuenta"
+	]
+	table_data = [header_data]
+	for obj in contexto_reporte.get("objetos", []):
+		primer_fact = obj.get("primer_fact_impaga")
+		if primer_fact:
+			if isinstance(primer_fact, str):
+				primer_fact = datetime.strptime(primer_fact, "%Y-%m-%d").strftime("%d/%m/%Y")
+			else:
+				primer_fact = primer_fact.strftime("%d/%m/%Y")
+		else:
+			primer_fact = ""
+		ultimo_pago = obj.get("ultimo_pago")
+		if ultimo_pago:
+			if isinstance(ultimo_pago, str):
+				try:
+					ultimo_pago = datetime.strptime(ultimo_pago, "%Y-%m-%d").strftime("%d/%m/%Y")
+				except Exception:
+					ultimo_pago = ultimo_pago
+			else:
+				ultimo_pago = ultimo_pago.strftime("%d/%m/%Y")
+		else:
+			ultimo_pago = ""
+		row = [
+			obj.get("id_cliente_id", ""),
+			Paragraph(obj.get("nombre_cliente", ""), styles["BodyText"]),
+			Paragraph(obj.get("domicilio_cliente", ""), styles["BodyText"]),
+			obj.get("codigo_postal", ""),
+			Paragraph(obj.get("nombre_localidad", ""), styles["BodyText"]),
+			obj.get("telefono_cliente", ""),
+			"{:,.2f}".format(float(obj.get("saldo", 0))),
+			primer_fact,
+			ultimo_pago,
+			obj.get("sub_cuenta", "")
+		]
+		table_data.append(row)
+	
+	# Crear la tabla y aplicar estilos
+	table = Table(table_data, repeatRows=1)
+	table_style = TableStyle([
+		('BACKGROUND', (0,0), (-1,0), colors.gray),
+		('TEXTCOLOR', (0,0), (-1,0), colors.whitesmoke),
+		('ALIGN', (0,0), (-1,-1), 'CENTER'),
+		('FONTNAME', (0,0), (-1,0), 'Helvetica-Bold'),
+		('FONTSIZE', (0,0), (-1,0), 10),
+		('BOTTOMPADDING', (0,0), (-1,0), 8),
+		('GRID', (0,0), (-1,-1), 0.5, colors.black),
+	])
+	table.setStyle(table_style)
+	
+	story.append(table)
+	
+	doc.contexto_reporte = contexto_reporte
+	doc.build(story, canvasmaker=NumberedCanvas)
+	pdf = buffer.getvalue()
+	buffer.close()
+	return pdf

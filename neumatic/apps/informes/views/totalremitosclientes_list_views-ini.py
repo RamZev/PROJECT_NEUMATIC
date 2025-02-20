@@ -117,7 +117,7 @@ class VLTotalRemitosClientesInformeListView(InformeListView):
 		# queryset = super().get_queryset()
 		
 		#-- Inicializa el queryset con un queryset vacío por defecto.
-		queryset = VLTotalRemitosClientes.objects.none()		
+		queryset = VLTotalRemitosClientes.objects.none()
 		
 		# form = self.form_class(self.request.GET)
 		

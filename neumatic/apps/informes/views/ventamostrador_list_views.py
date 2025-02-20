@@ -155,6 +155,7 @@ class VLVentaMostradorInformeView(InformeFormView):
 			'titulo': ConfigViews.report_title,
 			'logo_url': f"{dominio}{static('img/logo_01.png')}",
 			'css_url': f"{dominio}{static('css/reportes.css')}",
+			'css_url_new': f"{dominio}{static('css/reportes_new.css')}",
 		}
 	
 	def get_context_data(self, **kwargs):

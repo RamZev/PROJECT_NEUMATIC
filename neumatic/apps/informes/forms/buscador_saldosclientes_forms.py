@@ -38,3 +38,14 @@ class BuscadorSaldosClientesForm(InformesGenericForm):
 			fecha_actual = date.today()
 			self.fields["fecha_hasta"].initial = fecha_actual
 			self.fields["fecha_hasta"].widget.attrs["value"] = fecha_actual
+
+	# def clean(self):
+	# 	cleaned_data = super().clean()
+	# 	
+	# 	fecha_hasta = cleaned_data.get("fecha_hasta")
+	# 	
+	# 	if not fecha_hasta:
+	# 		self.add_error('fecha_hasta', "Debe indicar una fecha válida.")
+	# 
+	# 	return cleaned_data
+	# 

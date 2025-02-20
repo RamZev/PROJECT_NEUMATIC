@@ -115,6 +115,7 @@ class VLSaldosClientesInformeListView(InformeListView):
 	
 	def get_queryset(self):
 		# queryset = super().get_queryset()
+		queryset = VLSaldosClientes.objects.none()
 		form = self.form_class(self.request.GET)
 		
 		if form.is_valid():
