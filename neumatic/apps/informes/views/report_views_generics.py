@@ -78,6 +78,12 @@ class InformeFormView(FormView):
 			url = reverse(self.config.url_pantalla) + f"?token={token}"
 		elif tipo_salida == "pdf_preliminar":
 			url = reverse(self.config.url_pdf) + f"?token={token}"
+		
+		elif tipo_salida == "excel_preliminar":
+			url = reverse(self.config.url_excel) + f"?token={token}"
+		elif tipo_salida == "csv_preliminar":
+			url = reverse(self.config.url_csv) + f"?token={token}"		
+		
 		else:
 			url = reverse(self.config.url_pantalla) + f"?token={token}"
 		

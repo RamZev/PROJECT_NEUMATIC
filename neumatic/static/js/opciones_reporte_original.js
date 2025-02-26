@@ -55,7 +55,7 @@ const selectAllFormats = () => {
 	const formatCheckboxes = document.querySelectorAll('[name="formato_envio"]');
 	
 	// Variable especifica para marcar por defecto el formato PDF
-	const pdfCheckbox = document.querySelector('[name="formato_envio"][value="PDF"]');
+	const pdfCheckbox = document.querySelector('[name="formato_envio"][value="pdf"]');
 	const emailField = document.getElementById("email");
 	const celularField = document.getElementById("celular");
 	const selectedOption = document.querySelector('input[name="tipo_salida"]:checked').value;
@@ -63,8 +63,7 @@ const selectAllFormats = () => {
 	formatCheckboxes.forEach((checkbox) => {
 		
 		// Deshabilitar o habilitar los checkboxes según la selección
-		// checkbox.disabled = selectedOption === "tabla" || selectedOption === "pdf_preliminar";
-		checkbox.disabled = selectedOption === "pantalla" || selectedOption === "pdf_preliminar";
+		checkbox.disabled = selectedOption === "tabla" || selectedOption === "pdf_preliminar";
 		if (checkbox.disabled) {
 			checkbox.checked = false; // Desmarcar si están deshabilitados
 			emailField.value = "";
@@ -105,10 +104,9 @@ document.querySelectorAll('input[name="tipo_salida"]').forEach((radio) => {
 });
 
 // cargar la página
-// const vistaTabla = document.querySelector('input[name="tipo_salida"][value="tabla"]');
-const vistaPantalla = document.querySelector('input[name="tipo_salida"][value="pantalla"]');
-if (vistaPantalla) {
-	vistaPantalla.checked = true; // Seleccionar Vista Preliminar en Tabla por defecto
+const vistaTabla = document.querySelector('input[name="tipo_salida"][value="tabla"]');
+if (vistaTabla) {
+	vistaTabla.checked = true; // Seleccionar Vista Preliminar en Tabla por defecto
 }
 initializeDefaults();
 

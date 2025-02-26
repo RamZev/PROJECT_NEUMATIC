@@ -1,4 +1,4 @@
-# neumatic\apps\usuarios\templates\usuarios
+# neumatic\apps\maestros\templatetags\custom_tags.py
 from django import template
 from decimal import Decimal
 import locale

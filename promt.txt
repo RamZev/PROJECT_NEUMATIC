@@ -115,3 +115,32 @@ RF R 0042-00003037	12/07/2024	Cta. Cte.	9		AdmiraPlus Cargo Logistics, SAC			 0,
 
 
 
+
+
+====================================================
+
+
+
+Columna 1			Columna 2			Columna 3
+--------------------------------------------------
+					xcz xzczxcxc zx
+					dfsd sdfsd fdsf 
+Fila 1				sdfsdfd				Dato 3
+Fila 2				sdfsdfd sdfsd		Dato 3
+					gfg hghg hhh ghh
+					dfd df ffddffdd
+Fila 3				fddf dfdf			Dato3
+
+
+
+
+Columna 1			Columna 2			Columna 3
+--------------------------------------------------
+Fila 1				xcz xzczxcxc zx		Dato 3
+					dfsd sdfsd fdsf 
+					sdfsdfd				
+Fila 2				sdfsdfd sdfsd		Dato 3
+Fila 3				gfg hghg hhh ghh	Dato3
+					dfd df ffddffdd
+					fddf dfdf			
+

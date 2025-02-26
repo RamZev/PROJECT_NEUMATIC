@@ -1,4 +1,4 @@
-<!-- neumatic\apps\informes\templates\informes\maestro_informe_list_prop.html -->
+<!-- neumatic\apps\informes\templates\informes\maestro_informe.html -->
 
 {% extends 'base.html' %}
 {% load static %}
@@ -14,8 +14,6 @@
 		background-color: rgb(0, 204, 255);
 	}
 {% endblock style %}
-
-{% debug %}
 
 <!-- Block Header -->
 {% block header %}
@@ -52,7 +50,6 @@
 							
 							<div class="card-body">
 								
-								{% comment %} <form method="GET" action="{% url 'vlventacompro_informe_list_prop' %}" id="formulario" novalidate> {% endcomment %}
 								<form method="GET" id="formulario" novalidate>
 									
 									<!-- Opciones de salida (opciones_reporte)-->

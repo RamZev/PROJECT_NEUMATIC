@@ -31,7 +31,7 @@ from .views.puntoventa_list_views import *
 #-- Otras rutas.
 from apps.maestros.views.consulta_views_maestros import filtrar_localidad
 from apps.informes.views.saldosclientes_list_views import *
-from apps.informes.views.saldosclientes_list_views_prop import *
+from apps.informes.views.saldosclientes_list_views import *
 from apps.informes.views.resumenctacte_list_views import *
 from apps.informes.views.mercaderiaporcliente_list_views import *
 from apps.informes.views.remitosclientes_list_views import *
@@ -254,21 +254,24 @@ urlpatterns = [
 	
 	#-- Informes-Procesos. --------------------------------------------------------
 	
-	#-- VL Saldos Clientes.
-	path('vlsaldosclientes_informe/', VLSaldosClientesInformeListView.as_view(),
-		 name='vlsaldosclientes_informe_list'),
-	path('vlsaldosclientes_generado/', VLSaldosClientesInformesView.as_view(),
-		 name='vlsaldosclientes_informe_generado'),
-	path('vlsaldosclientes_vista_pdf/', VLSaldosClientesInformePDFView.as_view(),
-		 name='vlsaldosclientes_informe_pdf'),
+	# #-- VL Saldos Clientes.
+	# path('vlsaldosclientes_informe/', VLSaldosClientesInformeListView.as_view(),
+	# 	 name='vlsaldosclientes_informe_list'),
+	# path('vlsaldosclientes_generado/', VLSaldosClientesInformesView.as_view(),
+	# 	 name='vlsaldosclientes_informe_generado'),
+	# path('vlsaldosclientes_vista_pdf/', VLSaldosClientesInformePDFView.as_view(),
+	# 	 name='vlsaldosclientes_informe_pdf'),
 	
 	#-- Propuesta.
-	path('vlsaldosclientes_informe_prop/', VLSaldosClientesInformeView_prop.as_view(), 
-		 name='vlsaldosclientes_informe_list_prop'),
-	path('vlsaldosclientes/vista-preliminar-prop/', vlsaldosclientes_vista_pantalla_prop, 
-		 name="vlsaldosclientes_vista_pantalla_prop"),
-	path("vlsaldosclientes/vista-pdf-prop/", vlsaldosclientes_vista_pdf_prop, 
-		 name="vlsaldosclientes_vista_pdf_prop"),	
+	path('vlsaldosclientes_informe/', VLSaldosClientesInformeView.as_view(), 
+		 name='vlsaldosclientes_informe_list'),
+	path('vlsaldosclientes/vista-preliminar/', vlsaldosclientes_vista_pantalla, 
+		 name="vlsaldosclientes_vista_pantalla"),
+	path("vlsaldosclientes/vista-pdf/", vlsaldosclientes_vista_pdf, 
+		 name="vlsaldosclientes_vista_pdf"),
+	
+	path("vlsaldosclientes/vista-excel/", vlsaldosclientes_vista_excel, 
+		 name="vlsaldosclientes_vista_excel"),
 	
 	#------------------------------------------------------------------------------
 	#-- VL Resumen Cuenta Corriente.
