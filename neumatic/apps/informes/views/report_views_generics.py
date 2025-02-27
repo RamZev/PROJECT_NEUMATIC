@@ -6,6 +6,8 @@ from django.http import HttpResponseRedirect, JsonResponse
 from django.urls import reverse
 from django.template.loader import render_to_string
 
+from django.core.cache import cache
+
 #-- Recursos necesarios para proteger las rutas.
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
@@ -36,7 +38,7 @@ class InformeFormView(FormView):
 				#-- Obtiene el contexto del reporte; por defecto, puede ser simplemente el queryset.
 				contexto_reporte = self.obtener_contexto_reporte(queryset, form.cleaned_data)
 				#-- Procesa la salida.
-				return self.procesar_reporte(contexto_reporte, tipo_salida)
+				return self.procesar_reporte(contexto_reporte, tipo_salida, form.cleaned_data)
 			else:
 				return self.form_invalid(form)
 		
@@ -60,7 +62,7 @@ class InformeFormView(FormView):
 		else:
 			return super().render_to_response(context)
 	
-	def procesar_reporte(self, contexto_reporte, tipo_salida):
+	def procesar_reporte(self, contexto_reporte, tipo_salida, cleaned_data):
 		"""
 		Una vez validado el formulario, genera un token, guarda el contexto en la sesión y
 		devuelve un JSON con la URL de salida (para pantalla o PDF).
@@ -73,6 +75,15 @@ class InformeFormView(FormView):
 		
 		token = f"reporte_{uuid.uuid4()}"  #-- Agregar prefijo para fácil identificación.
 		self.request.session[token] = serializar_datos(contexto_reporte)
+		
+		
+		#----------------------------------------
+		# Guarda en la cache el diccionario con los datos necesarios.
+		# Por ejemplo, puedes guardar el cleaned_data y el contexto sin necesidad de convertirlos a JSON.
+		# cache.set(token, {"cleaned_data": cleaned_data, "contexto_reporte": contexto_reporte}, timeout=600)  # timeout en segundos
+		cache.set(token, {"cleaned_data": cleaned_data}, timeout=600)  # timeout en segundos
+		#----------------------------------------
+		
 		
 		if tipo_salida == "pantalla":
 			url = reverse(self.config.url_pantalla) + f"?token={token}"

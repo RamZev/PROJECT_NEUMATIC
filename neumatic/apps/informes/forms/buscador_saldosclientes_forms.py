@@ -1,4 +1,4 @@
-# neumatic\apps\informes\forms\buscador_actividad_forms.py
+# neumatic\apps\informes\forms\buscador_saldosclientes_forms.py
 from django import forms
 from datetime import date
 

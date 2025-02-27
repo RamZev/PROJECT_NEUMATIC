@@ -1,16 +1,9 @@
 # # neumatic\apps\informes\views\ventacomprolocalidad_list_views.py
 
-# from django.urls import reverse_lazy, reverse
-# from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
 from django.shortcuts import render
 
 from django.http import HttpResponse
-# from django.views import View
-# from zipfile import ZipFile
-# from io import BytesIO
-# from django.core.mail import EmailMessage
-# from datetime import date
 from decimal import Decimal
 from datetime import datetime
 from django.template.loader import render_to_string
@@ -22,6 +15,7 @@ from .report_views_generics import *
 from apps.informes.models import VLVentaComproLocalidad
 from ..forms.buscador_ventacomprolocalidad_forms import BuscadorVentaComproLocalidadForm
 from utils.utils import deserializar_datos
+from utils.helpers.export_helpers import ExportHelper
 
 
 class ConfigViews:
@@ -65,11 +59,31 @@ class ConfigViews:
 	#-- URL de la vista que genera el .pdf.
 	url_pdf = f"{model_string}_vista_pdf"
 	
+	#-- URL de la vista que genera el Excel.
+	url_excel = f"{model_string}_vista_excel"
+	
+	#-- URL de la vista que genera el CSV.
+	url_csv = f"{model_string}_vista_csv"
+	
 	#-- Plantilla Vista Preliminar Pantalla.
 	reporte_pantalla = f"informes/reportes/{model_string}_list.html"
 	
 	#-- Plantilla Vista Preliminar PDF.
 	reporte_pdf = f"informes/reportes/{model_string}_pdf.html"
+	
+	#-- Establecer las columnas del reporte y sus anchos(en punto).
+	header_data = {
+		"fecha_comprobante": (40, "Fecha"),
+		"comprobante": (40, "Comprobante"),
+		"id_cliente_id": (40, "Cliente"),
+		"nombre_cliente": (180, "Nombre"),
+		"cuit": (40, "CUIT"),
+		"gravado": (40, "Gravado"),
+		"exento": (40, "Exento"),
+		"iva": (40, "IVA"),
+		"percep_ib": (40, "Percep. IB"),
+		"total": (40, "Total Op."),
+	}
 
 
 class VLVentaComproLocalidadInformeView(InformeFormView):
@@ -193,5 +207,69 @@ def vlventacomprolocalidad_vista_pdf(request):
 
 	response = HttpResponse(pdf_file, content_type="application/pdf")
 	response["Content-Disposition"] = f'inline; filename="informe_{ConfigViews.model_string}.pdf"'
+	
+	return response
+
+def vlventacomprolocalidad_vista_excel(request):
+	token = request.GET.get("token")
+	if not token:
+		return HttpResponse("Token no proporcionado", status=400)
+	
+	# ---------------------------------------------
+	data = cache.get(token)
+	if not data or "cleaned_data" not in data:
+		return HttpResponse("Datos no encontrados o expirados", status=400)
+	
+	cleaned_data = data["cleaned_data"]
+	# ---------------------------------------------
+	
+	#-- Instanciar la vista y obtener el queryset.
+	view_instance = VLVentaComproLocalidadInformeView()
+	view_instance.request = request
+	queryset = view_instance.obtener_queryset(cleaned_data)
+	
+	helper = ExportHelper(
+		queryset=queryset,
+		table_headers=ConfigViews.header_data,
+		report_title=ConfigViews.report_title
+	)
+	excel_data = helper.export_to_excel()
+	
+	response = HttpResponse(
+		excel_data,
+		content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+	)
+	# Inline permite visualizarlo en el navegador si el navegador lo soporta.
+	response["Content-Disposition"] = f'inline; filename="informe_{ConfigViews.model_string}.xlsx"'
+	return response
+
+
+def vlventacomprolocalidad_vista_csv(request):
+	token = request.GET.get("token")
+	if not token:
+		return HttpResponse("Token no proporcionado", status=400)
+	
+	#-- Recuperar los parámetros de filtrado desde la cache.
+	data = cache.get(token)
+	if not data or "cleaned_data" not in data:
+		return HttpResponse("Datos no encontrados o expirados", status=400)
+	
+	cleaned_data = data["cleaned_data"]
+	
+	#-- Instanciar la vista para reejecutar la consulta y obtener el queryset.
+	view_instance = VLVentaComproLocalidadInformeView()
+	view_instance.request = request
+	queryset = view_instance.obtener_queryset(cleaned_data)
+	
+	#-- Usar el helper para exportar a CSV.
+	helper = ExportHelper(
+		queryset=queryset,
+		table_headers=ConfigViews.header_data,
+		report_title=ConfigViews.report_title
+	)
+	csv_data = helper.export_to_csv()
+	
+	response = HttpResponse(csv_data, content_type="text/csv; charset=utf-8")
+	response["Content-Disposition"] = f'inline; filename="informe_{ConfigViews.model_string}.csv"'
 	
 	return response

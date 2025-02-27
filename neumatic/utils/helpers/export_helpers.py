@@ -32,26 +32,83 @@ class ExportHelper:
 		fields = list(self.table_headers.keys())
 		return headers, fields
 	
-	def _resolve_field(self, obj, field_name):
-		"""Resuelve el valor de un campo, incluso si es un campo anidado."""
-		
+	# def _resolve_field(self, obj, field_name):
+	# 	"""Resuelve el valor de un campo, incluso si es un campo anidado."""
+	# 	
+	# 	try:
+	# 		fields = field_name.split('.')  #-- Separar los niveles de anidación.
+	# 		value = obj
+	# 		
+	# 		for field in fields:
+	# 			value = getattr(value, field, None)  #-- Obtener el siguiente nivel.
+	# 			
+	# 			if isinstance(value, bool) and "estatus" in field:
+	# 				value = "Activo" if value else "Inactivo"
+	# 			elif isinstance(value, bool):
+	# 				value = "Sí" if value else "No"
+	# 			elif isinstance(value, (float, Decimal)):
+	# 				value = formato_es_ar(value)  # Aplica el formato de número				
+	# 				
+	# 		return self._safe_str(value)  #-- Convertir el valor a una cadena segura.
+	# 	except AttributeError:
+	# 		return ""  #-- Si no se puede resolver el campo, devolver una cadena vacía.
+	def _resolve_field(self, obj, field_name, frmto=None):
+		"""
+		Resuelve el valor de un campo (incluso anidado).
+		Si frmto es 'pdf', se formatea el valor (por ejemplo, números se convierten a cadena formateada);
+		en caso contrario, se devuelve el valor en su tipo original (para Excel/CSV) para que los datos numéricos
+		sean numéricos (enteros y Decimal con 2 decimales).
+		"""
 		try:
-			fields = field_name.split('.')  #-- Separar los niveles de anidación.
+			# Recorrer los niveles anidados para obtener el valor
+			fields = field_name.split('.')
 			value = obj
-			
-			for field in fields:
-				value = getattr(value, field, None)  #-- Obtener el siguiente nivel.
-				
-				if isinstance(value, bool) and "estatus" in field:
-					value = "Activo" if value else "Inactivo"
-				elif isinstance(value, bool):
-					value = "Sí" if value else "No"
-				elif isinstance(value, (float, Decimal)):
-					value = formato_es_ar(value)  # Aplica el formato de número				
+			for f in fields:
+				# Si el atributo existe, se obtiene
+				if hasattr(value, f):
+					value = getattr(value, f)
+				# Sino, se intenta obtener del diccionario interno (__dict__)
+				elif isinstance(value, dict) and f in value:
+					value = value[f]
+				else:
+					value = None
+					break
 					
-			return self._safe_str(value)  #-- Convertir el valor a una cadena segura.
-		except AttributeError:
-			return ""  #-- Si no se puede resolver el campo, devolver una cadena vacía.
+			if value is None:
+				return ""
+			
+			# Si es booleano
+			if isinstance(value, bool):
+				if frmto == 'pdf':
+					# Para PDF, se formatea según si el campo contiene "estatus"
+					if "estatus" in fields[-1]:
+						return "Activo" if value else "Inactivo"
+					else:
+						return "Sí" if value else "No"
+				else:
+					return value
+			
+			# Si es numérico
+			if isinstance(value, (float, Decimal)):
+				if frmto == 'pdf':
+					# Para PDF, formatea el número a cadena
+					return self._safe_str(formato_es_ar(value))
+				else:
+					# Para Excel/CSV, devuelve el número:
+					# - Si es float, redondea a 2 decimales.
+					# - Si es Decimal, lo cuantiza a 2 decimales.
+					if isinstance(value, float):
+						return round(value, 2)
+					else:
+						return value.quantize(Decimal('0.01'))
+			
+			# Otros tipos
+			if frmto == 'pdf':
+				return self._safe_str(value)
+			else:
+				return value
+		except Exception as e:
+			return ""
 	
 	def _calculate_totals(self, fields):
 		"""Calcula los totales para las columnas especificadas en total_columns y genera la fila de totales."""
@@ -99,7 +156,7 @@ class ExportHelper:
 		
 		#-- Agregar los datos desde el queryset.
 		for obj in self.queryset:
-			table_data.append([self._resolve_field(obj, field) for field in fields])
+			table_data.append([self._resolve_field(obj, field, frmto='pdf') for field in fields])
 		
 		#-- Calcular y agregar la fila de totales.
 		if self.total_columns:

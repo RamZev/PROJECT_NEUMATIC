@@ -4,8 +4,7 @@ from django.urls import reverse_lazy
 from django.shortcuts import render
 from django.http import HttpResponse
 # from decimal import Decimal
-# from datetime import date, datetime
-from datetime import datetime
+from datetime import date, datetime
 from django.template.loader import render_to_string
 from weasyprint import HTML
 from django.templatetags.static import static
@@ -27,7 +26,6 @@ from ..forms.buscador_saldosclientes_forms import BuscadorSaldosClientesForm
 from utils.utils import deserializar_datos
 from apps.maestros.templatetags.custom_tags import formato_es_ar
 from utils.helpers.export_helpers import ExportHelper
-
 
 
 class ConfigViews:
@@ -82,6 +80,20 @@ class ConfigViews:
 	
 	#-- Plantilla Vista Preliminar PDF.
 	reporte_pdf = f"informes/reportes/{model_string}_pdf.html"
+	
+	#-- Establecer las columnas del reporte y sus anchos(en punto).
+	header_data = {
+		"id_cliente_id": (40, "Cliente"),
+		"nombre_cliente": (180, "Nombre"),
+		"domicilio_cliente": (180, "Domicilio"),
+		"codigo_postal": (30, "C.P."),
+		"nombre_localidad": (100, "Localidad"),
+		"telefono_cliente": (60, "Teléfono"),
+		"saldo": (60, "Saldo"),
+		"primer_fact_impaga": (50, "1er. Comp. Pend."),
+		"ultimo_pago": (50, "Último Pago"),
+		"sub_cuenta": (50, "Sub Cuenta")
+	}
 
 
 class VLSaldosClientesInformeView(InformeFormView):
@@ -408,10 +420,10 @@ def generar_pdf_saldos_clientes(contexto_reporte, request):
 	)
 	
 	#-- Construir datos de la tabla:
-	header_data = [
-		"Cliente", "Nombre", "Domicilio", "C.P.", "Localidad",
-		"Teléfono", "Saldo", "1er. Comp. Pend.", "Último Pago", "Sub Cuenta"
-	]
+	
+	#-- Obtener los títulos de las columnas (headers).
+	header_data = [value[1] for value in ConfigViews.header_data.values()]
+	
 	table_data = [header_data]
 	for obj in contexto_reporte.get("objetos", []):
 		primer_fact = obj.get("primer_fact_impaga")
@@ -458,18 +470,10 @@ def generar_pdf_saldos_clientes(contexto_reporte, request):
 	table_data.append(total_row)	
 	
 	#-- Crear la tabla y aplicar estilos.
-	ancho_cols = [
-		40,  # Cliente
-		180, # Nombre
-		180, # Domicilio
-		30,  # C.P.
-		100, # Localidad
-		60,  # Telefono
-		60,  # Saldo
-		50,  # !er. Comp. Pend.
-		50,  # Ultimo pago
-		50   # Sub Cuenta
-	]
+	
+	#-- Extrae los anchos de las columnas de la estructura ConfigViews.header_data.
+	ancho_cols = [value[0] for value in ConfigViews.header_data.values()]
+	
 	table = Table(table_data, colWidths=ancho_cols, repeatRows=1)
 	table_style = TableStyle([
 		('BACKGROUND', (0,0), (-1,0), colors.gray), # Color de fondo primera fila, Encabezados.
@@ -508,48 +512,28 @@ def generar_pdf_saldos_clientes(contexto_reporte, request):
 
 
 def vlsaldosclientes_vista_excel(request):
-	# token = request.GET.get("token")
-	# if not token:
-	# 	return HttpResponse("Token no proporcionado", status=400)
-	# 
-	# contexto_reporte = deserializar_datos(request.session.get(token, None))
-	# if not contexto_reporte:
-	# 	return HttpResponse("Contexto no encontrado o expirado", status=400)
+	token = request.GET.get("token")
+	if not token:
+		return HttpResponse("Token no proporcionado", status=400)
 	
+	# ---------------------------------------------
+	data = cache.get(token)
+	if not data or "cleaned_data" not in data:
+		return HttpResponse("Datos no encontrados o expirados", status=400)
 	
-	# Primero, se valida el formulario para obtener los datos filtrados
-	form = BuscadorSaldosClientesForm(data=request.GET)
-	if not form.is_valid():
-		return HttpResponse("Error en los parámetros", status=400)
-	cleaned_data = form.cleaned_data
+	cleaned_data = data["cleaned_data"]
+	# ---------------------------------------------
 	
-	print(f"{cleaned_data = }")
-	
-	# Instanciar la vista y obtener el queryset
-	view_instance = VLSaldosClientesInformeView()  # O VLSaldosClientesInformeView_prop según convenga
-	view_instance.request = request  # Asignar la request a la instancia
+	#-- Instanciar la vista y obtener el queryset.
+	view_instance = VLSaldosClientesInformeView()
+	view_instance.request = request
 	queryset = view_instance.obtener_queryset(cleaned_data)
 	
-	print(list(queryset))
-	
-	# Asumiendo que ya tienes implementado export_to_excel en tu ExportHelper:
-	
-	header_data = {
-		"id_cliente_id": (40, "Cliente"),
-		"nombre_cliente": (180, "Nombre"),
-		"domicilio_cliente": (180, "Domicilio"),
-		"codigo_postal": (30, "C.P."),
-		"nombre_localidad": (100, "Localidad"),
-		"telefono_cliente": (60, "Teléfono"),
-		"saldo": (60, "Saldo"),
-		"primer_fact_impaga": (50, "1er. Comp. Pend."),
-		"ultimo_pago": (50, "Último Pago"),
-		"sub_cuenta": (50, "Sub Cuenta")
-	}
-	
-	helper = ExportHelper(queryset=queryset,
-						table_headers=header_data ,  # Los encabezados que corresponden
-						report_title=ConfigViews.report_title)
+	helper = ExportHelper(
+		queryset=queryset,
+		table_headers=ConfigViews.header_data,
+		report_title=ConfigViews.report_title
+	)
 	excel_data = helper.export_to_excel()
 	
 	response = HttpResponse(
@@ -557,5 +541,39 @@ def vlsaldosclientes_vista_excel(request):
 		content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 	)
 	# Inline permite visualizarlo en el navegador si el navegador lo soporta.
-	response["Content-Disposition"] = 'inline; filename="informe.xlsx"'
+	# response["Content-Disposition"] = 'inline; filename="informe.xlsx"'
+	response["Content-Disposition"] = f'inline; filename="informe_{ConfigViews.model_string}.xlsx"'
+	
+	return response
+
+
+def vlsaldosclientes_vista_csv(request):
+	token = request.GET.get("token")
+	if not token:
+		return HttpResponse("Token no proporcionado", status=400)
+	
+	#-- Recuperar los parámetros de filtrado desde la cache.
+	data = cache.get(token)
+	if not data or "cleaned_data" not in data:
+		return HttpResponse("Datos no encontrados o expirados", status=400)
+	
+	cleaned_data = data["cleaned_data"]
+	
+	#-- Instanciar la vista para reejecutar la consulta y obtener el queryset.
+	view_instance = VLSaldosClientesInformeView()
+	view_instance.request = request
+	queryset = view_instance.obtener_queryset(cleaned_data)
+	
+	#-- Usar el helper para exportar a CSV.
+	helper = ExportHelper(
+		queryset=queryset,
+		table_headers=ConfigViews.header_data,
+		report_title=ConfigViews.report_title
+	)
+	csv_data = helper.export_to_csv()
+	
+	response = HttpResponse(csv_data, content_type="text/csv; charset=utf-8")
+	# response["Content-Disposition"] = 'inline; filename="informe.csv"'
+	response["Content-Disposition"] = f'inline; filename="informe_{ConfigViews.model_string}.csv"'
+	
 	return response
