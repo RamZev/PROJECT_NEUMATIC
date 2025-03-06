@@ -576,6 +576,7 @@ class VLVentaCompro(models.Model):
 	numero_comprobante = models.IntegerField()
 	comprobante = models.CharField(max_length=17)
 	fecha_comprobante = models.DateField()
+	dias_vencimiento = models.IntegerField()
 	condicion = models.CharField(max_length=9)
 	id_cliente_id = models.IntegerField()
 	nombre_cliente = models.CharField(max_length=50)
@@ -593,3 +594,127 @@ class VLVentaCompro(models.Model):
 		verbose_name = ('Ventas por Comprobantes')
 		verbose_name_plural = ('Ventas por Comprobantes')
 		ordering = ['comprobante']
+
+
+#-----------------------------------------------------------------------------
+# Comprobantes Vencidos
+#-----------------------------------------------------------------------------
+class ComprobantesVencidosManager(models.Manager):
+	
+	def obtener_compro_vencidos(self, dias, id_vendedor=None, id_sucursal=None):
+		""" Se determina los Comprobantes vencidos según parámetro indicado por vendedor o todos los vendedores,
+		una sucursal o todas. """
+		
+		#-- Se crea la consulta parametrizada.
+		query = """
+			SELECT * 
+				FROM VLComprobantesVencidos 
+				WHERE dias_vencidos > %s
+			"""
+		
+		#-- Se añade los parámetros.
+		params = [dias]
+		
+		#-- Condición adicional para el vendedor si está definido.
+		if id_vendedor:
+			query += " AND id_vendedor_id = %s"
+			params.append(id_vendedor)
+		
+		#-- Agrega filtros opcionales.
+		if id_sucursal:
+			query += " AND id_sucursal_id = %s"
+			params.append(id_sucursal)
+		
+		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
+		return self.raw(query, params)
+
+
+class VLComprobantesVencidos(models.Model):
+	id_factura = models.IntegerField(primary_key=True)
+	fecha_comprobante = models.DateField()
+	dias_vencidos = models.IntegerField()
+	codigo_comprobante_venta = models.CharField(max_length=3)
+	letra_comprobante = models.CharField(max_length=1)
+	numero_comprobante = models.IntegerField()
+	comprobante = models.CharField(max_length=17)
+	id_cliente_id = models.IntegerField()
+	nombre_cliente = models.CharField(max_length=50)
+	total = models.DecimalField(max_digits=14, decimal_places=2)
+	entrega = models.DecimalField(max_digits=14, decimal_places=2)
+	saldo = models.DecimalField(max_digits=14, decimal_places=2)
+	id_sucursal_id = models.IntegerField()
+	id_vendedor_id = models.IntegerField()
+	
+	objects = ComprobantesVencidosManager()
+	
+	class Meta:
+		managed = False
+		db_table = 'VLComprobantesVencidos'
+		verbose_name = ('Comprobantes Vencidos')
+		verbose_name_plural = ('Comprobantes Vencidos')
+		ordering = ['fecha_comprobante']
+
+
+#-----------------------------------------------------------------------------
+# Remitos Pendientes
+#-----------------------------------------------------------------------------
+class RemitosPendientesManager(models.Manager):
+	
+	def obtener_remitos_pendientes(self, filtrar_por, id_vendedor=None, id_cli_desde=0, id_cli_hasta=0, id_sucursal=None):
+		""" Se determina los Comprobantes vencidos según parámetro indicado por vendedor o todos los vendedores,
+		una sucursal o todas. """
+		
+		#-- Se crea la consulta parametrizada.
+		query = "SELECT * FROM VLRemitosPendientes "
+		
+		match filtrar_por:
+			case "vendedor":
+				query += "WHERE id_vendedor_id = %s"
+				params = [id_vendedor]
+				
+			case "clientes":
+				query += "WHERE id_cliente_id BETWEEN %s AND %s"
+				params = [id_cli_desde, id_cli_hasta]
+				
+			case "sucursal_fac":
+				query += "WHERE id_sucursal_fac = %s"
+				params = [id_sucursal]
+				
+			case "sucursal_cli":
+				query += "WHERE id_sucursal_cli = %s"
+				params = [id_sucursal]
+		
+		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
+		return self.raw(query, params)
+
+
+class VLRemitosPendientes(models.Model):
+	id_factura = models.IntegerField(primary_key=True)
+	id_cliente_id = models.IntegerField()
+	nombre_cliente = models.CharField(max_length=50)
+	nombre_comprobante_venta = models.CharField(max_length=50)
+	fecha_comprobante = models.DateField()
+	letra_comprobante = models.CharField(max_length=1)
+	numero_comprobante = models.IntegerField()
+	comprobante = models.CharField(max_length=17)
+	id_producto_id = models.IntegerField()
+	nombre_producto = models.CharField(max_length=50)
+	medida = models.CharField(max_length=15)
+	cantidad = models.DecimalField(max_digits=7, decimal_places=2)
+	precio = models.DecimalField(max_digits=12, decimal_places=2)
+	descuento = models.DecimalField(max_digits=6, decimal_places=2)
+	total = models.DecimalField(max_digits=14, decimal_places=2)
+	id_vendedor_id = models.IntegerField()
+	id_sucursal_fac = models.IntegerField()
+	id_sucursal_cli = models.IntegerField()
+	
+	
+	objects = RemitosPendientesManager()
+	
+	class Meta:
+		managed = False
+		db_table = 'VLRemitosPendientes'
+		verbose_name = ('Remitos Pendientes')
+		verbose_name_plural = ('Remitos Pendientes')
+		ordering = ['nombre_cliente', 'fecha_comprobante', 'numero_comprobante']
+

@@ -722,3 +722,16 @@ Pero en esta parte del código que me sugieres:
 
 Se está preguntando por un dato en específico (fecha_hasta), se podría generalizar esa funcionalidad para que determine el tipo de dato sin importar el nombre de este? es decir, ,para que pueda servir si paso algún otro u otros campos de tipo fecha.
 
+=================================================================
+
+
+Ok, ahora voy a necesitar de tu gran ayuda para lo siguiente.
+
+Ya tienes el formulario BuscadorRemitosPendientesForm donde capturo las opciones para filtrar la consulta, pero necesito hacer unas validaciones.
+
+El usuario autenticado, entre sus atributos, tiene un id_vendedor, si ese usuario es además un vendedor, tendrá un id_vendedor asociado. Por lo tanto, necesito lo siguiente:
+
+Primero, si el usuario autenticado es también vendedor (tiene un id_vendedor asociado) solo podrá filtrar los registros por su id_vendedor, es decir, tendrá todas las opciones de filtro del formulario deshabilitadas y el combo vendedor del formulario debe mostrar el nombre del vendedor asociado al id_vendedor.
+
+Segundo, si el usuario autenticado no es vendedor (no cuenta con un id_vendedor asociado) este tendrá habilitadas todas las opciones de filtro del formulario para hacer consultas sin restricciones.
+

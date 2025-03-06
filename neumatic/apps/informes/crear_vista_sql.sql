@@ -221,3 +221,60 @@ CREATE VIEW "VLVentaCompro" AS SELECT
 		JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
 		JOIN cliente c ON f.id_cliente_id = c.id_cliente
 	ORDER BY nombre_comprobante_venta, letra_comprobante, numero_comprobante;
+
+-- ---------------------------------------------------------------------------
+-- Comprobantes Vencidos.
+-- Modelo: VLComprobantesVencidos
+-- ---------------------------------------------------------------------------
+DROP VIEW IF EXISTS "main"."VLComprobantesVencidos";
+CREATE VIEW "VLComprobantesVencidos" AS SELECT 
+		f.id_factura,
+		f.fecha_comprobante,
+		CAST(JULIANDAY(DATE('now')) - JULIANDAY(f.fecha_comprobante) AS INTEGER) AS dias_vencidos,
+		f.compro AS codigo_comprobante_venta,
+		f.letra_comprobante,
+		f.numero_comprobante,
+		(f.compro || ' ' || f.letra_comprobante || ' ' || SUBSTR(printf('%012d', f.numero_comprobante), 1, 4) || '-' || SUBSTR(printf('%012d', f.numero_comprobante), 5)) AS comprobante,
+		f.id_cliente_id,
+		c.nombre_cliente,
+		CAST(f.total AS NUMERIC)* 1.0 AS total,
+		CAST(f.entrega AS NUMERIC)* 1.0 AS entrega,
+		ROUND(CAST(f.total - f.entrega AS NUMERIC), 2) * 1.0 AS saldo,
+		f.id_vendedor_id,
+		f.id_sucursal_id
+	FROM factura f
+	JOIN cliente c ON f.id_cliente_id = c.id_cliente
+	WHERE f.estado = ""
+	ORDER by f.fecha_comprobante;
+
+-- ---------------------------------------------------------------------------
+-- Remitos Pendientes.
+-- Modelo: VLRemitosPendientes
+-- ---------------------------------------------------------------------------
+DROP VIEW IF EXISTS "main"."VLRemitosPendientes";
+CREATE VIEW "VLRemitosPendientes" AS SELECT 
+		f.id_factura,
+		f.id_cliente_id,
+		c.nombre_cliente,
+		cv.nombre_comprobante_venta,
+		f.fecha_comprobante,
+		f.letra_comprobante,
+		f.numero_comprobante,
+		(f.letra_comprobante || ' ' || SUBSTR(printf('%012d', f.numero_comprobante), 1, 4) || '-' || SUBSTR(printf('%012d', f.numero_comprobante), 5)) AS comprobante,
+		df.id_producto_id,
+		p.nombre_producto,
+		p.medida,
+		df.cantidad,
+		df.precio,
+		df.descuento,
+		df.total*cv.mult_stock*-1 AS total,
+		f.id_vendedor_id,
+		f.id_sucursal_id AS id_sucursal_fac,
+		c.id_sucursal_id AS id_sucursal_cli
+	FROM detalle_factura df
+		INNER JOIN factura f ON df.id_factura_id = f.id_factura
+		INNER JOIN producto p ON df.id_producto_id = p.id_producto
+		INNER JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
+		INNER JOIN cliente c ON f.id_cliente_id = c.id_cliente
+	WHERE cv.mult_venta = 0 AND f.estado = ""
+	ORDER BY c.nombre_cliente, f.fecha_comprobante, f.numero_comprobante

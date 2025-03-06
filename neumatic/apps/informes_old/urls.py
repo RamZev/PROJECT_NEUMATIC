@@ -30,10 +30,10 @@ from .views.puntoventa_list_views import *
 
 #-- Otras rutas.
 from apps.maestros.views.consulta_views_maestros import filtrar_localidad
-from apps.informes.views.saldosclientes_list_views import *
-from apps.informes.views.resumenctacte_list_views import *
-from apps.informes.views.mercaderiaporcliente_list_views import *
-from apps.informes.views.remitosclientes_list_views import *
+from apps.informes.views.vlsaldosclientes_list_views import *
+from apps.informes.views.vlresumenctacte_list_views import *
+from apps.informes.views.vlmercaderiaporcliente_list_views import *
+from apps.informes.views.vlremitosclientes_list_views import *
 from apps.informes.views.totalremitosclientes_list_views import *
 from apps.informes.views.ventacomprolocalidad_list_views import *
 from apps.informes.views.ventamostrador_list_views import *

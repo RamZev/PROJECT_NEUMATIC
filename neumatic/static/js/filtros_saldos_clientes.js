@@ -4,7 +4,7 @@
 const clienteVendedorCombo = document.getElementById("id_cliente_vendedor");
 const vendedorCombo = document.getElementById("id_vendedor");
 
-const estadoComboVendedor = () => {
+const cambiarEstado = () => {
 	if (clienteVendedorCombo.value === "clientes"){
 		vendedorCombo.disabled = true;
 		vendedorCombo.value = "";
@@ -13,7 +13,7 @@ const estadoComboVendedor = () => {
 	}
 };
 
-estadoComboVendedor();
+cambiarEstado();
 
-clienteVendedorCombo.addEventListener("change", estadoComboVendedor);
+clienteVendedorCombo.addEventListener("change", cambiarEstado);
 // ---------------------------------------------------------------------------

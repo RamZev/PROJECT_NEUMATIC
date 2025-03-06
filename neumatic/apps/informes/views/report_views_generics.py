@@ -33,12 +33,21 @@ class InformeFormView(FormView):
 		if request.GET and any(value for key, value in request.GET.items() if value):
 			if form.is_valid():
 				tipo_salida = request.GET.get("tipo_salida")
+				
+				#-- Transformar el cleaned_data si hay objetos para poder serializarlo.
+				cleaned_data_mod = self.transformar_cleaned_data(form.cleaned_data.copy())
+				
 				#-- Se ejecuta la consulta a la Base de Datos.
-				queryset = self.obtener_queryset(form.cleaned_data)
+				# queryset = self.obtener_queryset(form.cleaned_data)
+				queryset = self.obtener_queryset(cleaned_data_mod)
+				
 				#-- Obtiene el contexto del reporte; por defecto, puede ser simplemente el queryset.
-				contexto_reporte = self.obtener_contexto_reporte(queryset, form.cleaned_data)
+				# contexto_reporte = self.obtener_contexto_reporte(queryset, form.cleaned_data)
+				contexto_reporte = self.obtener_contexto_reporte(queryset, cleaned_data_mod)
+				
 				#-- Procesa la salida.
-				return self.procesar_reporte(contexto_reporte, tipo_salida, form.cleaned_data)
+				# return self.procesar_reporte(contexto_reporte, tipo_salida, form.cleaned_data)
+				return self.procesar_reporte(contexto_reporte, tipo_salida, cleaned_data_mod)
 			else:
 				return self.form_invalid(form)
 		
@@ -50,7 +59,9 @@ class InformeFormView(FormView):
 		#-- Sólo asignar data si la querystring contiene datos.
 		if len(self.request.GET) > 0:
 			kwargs['data'] = self.request.GET
-		return kwargs	
+		#-- Pasar como parámetro el usuario autenticado.
+		kwargs['user'] = self.request.user
+		return kwargs
 	
 	def form_invalid(self, form):
 		context = self.get_context_data(form=form)
@@ -61,6 +72,14 @@ class InformeFormView(FormView):
 			return JsonResponse({"success": False, "html": html})
 		else:
 			return super().render_to_response(context)
+	
+	def transformar_cleaned_data(self, cleaned_data):
+		"""
+		Por defecto, retorna el diccionario sin cambios.
+		Las vistas hijas pueden sobreescribir este método para transformar
+		los objetos no serializables (por ejemplo, convertir instancias de Sucursal, Vendedor, etc. a su id).
+		"""
+		return cleaned_data	
 	
 	def procesar_reporte(self, contexto_reporte, tipo_salida, cleaned_data):
 		"""
@@ -76,11 +95,14 @@ class InformeFormView(FormView):
 		token = f"reporte_{uuid.uuid4()}"  #-- Agregar prefijo para fácil identificación.
 		self.request.session[token] = serializar_datos(contexto_reporte)
 		
+		# #-- Transformar el cleaned_data si hay objetos para poder serializarlo.
+		# cleaned_data_mod = self.transformar_cleaned_data(cleaned_data.copy())
 		
 		#----------------------------------------
 		# Guarda en la cache el diccionario con los datos necesarios.
 		# Por ejemplo, puedes guardar el cleaned_data y el contexto sin necesidad de convertirlos a JSON.
 		# cache.set(token, {"cleaned_data": cleaned_data, "contexto_reporte": contexto_reporte}, timeout=600)  # timeout en segundos
+		# cache.set(token, {"cleaned_data": cleaned_data}, timeout=600)  # timeout en segundos
 		cache.set(token, {"cleaned_data": cleaned_data}, timeout=600)  # timeout en segundos
 		#----------------------------------------
 		

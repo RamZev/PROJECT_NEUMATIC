@@ -1,33 +1,33 @@
-# # neumatic\apps\informes\views\totalremitosclientes_list_views.py
+# neumatic\apps\informes\views\vlremitospendientes_list_views.py
 
 from django.urls import reverse_lazy
 from django.shortcuts import render
+
 from django.http import HttpResponse
-from decimal import Decimal
 from datetime import datetime
 from django.template.loader import render_to_string
 from weasyprint import HTML
 from django.templatetags.static import static
 # from django.forms.models import model_to_dict
+from decimal import Decimal
 
 from .report_views_generics import *
-from apps.informes.models import VLRemitosClientes
-from apps.maestros.models.cliente_models import Cliente
-from ..forms.buscador_remitosclientes_forms import BuscadorRemitosClientesForm
-from utils.utils import deserializar_datos
+from apps.informes.models import VLRemitosPendientes
+from ..forms.buscador_vlremitospendientes_forms import BuscadorRemitosPendientesForm
+from utils.utils import deserializar_datos, serializar_queryset
 from utils.helpers.export_helpers import ExportHelper
 
 
 class ConfigViews:
 	
 	#-- Título del reporte.
-	report_title = "Remitos por Cliente"
+	report_title = "Remitos Pendientes"
 	
 	#-- Modelo.
-	model = VLRemitosClientes
+	model = VLRemitosPendientes
 	
 	#-- Formulario asociado al modelo.
-	form_class = BuscadorRemitosClientesForm
+	form_class = BuscadorRemitosPendientesForm
 	
 	#-- Aplicación asociada al modelo.
 	app_label = "informes"
@@ -48,7 +48,7 @@ class ConfigViews:
 	success_url = reverse_lazy(list_view_name)
 	
 	#-- Archivo JavaScript específico.
-	js_file = None
+	js_file = "js/filtros_remitos_pendientes.js"
 	
 	# #-- URL de la vista que genera el .zip con los informes.
 	# url_zip = f"{model_string}_informe_generado"
@@ -73,8 +73,10 @@ class ConfigViews:
 	
 	#-- Establecer las columnas del reporte y sus anchos(en punto).
 	header_data = {
+		"id_cliente_id": (40, "Cliente"),
+		"nombre_cliente": (40, "Nombre"),
 		"fecha_comprobante": (40, "Fecha"),
-		"numero": (40, "Número"),
+		"comprobante": (40, "Comprobante"),
 		"nombre_producto": (40, "Descripción"),
 		"medida": (180, "Medida"),
 		"cantidad": (40, "Cantidad"),
@@ -83,7 +85,7 @@ class ConfigViews:
 	}
 
 
-class VLRemitosClientesInformeView(InformeFormView):
+class VLRemitosPendientesInformeView(InformeFormView):
 	config = ConfigViews  #-- Ahora la configuración estará disponible en self.config.
 	form_class = ConfigViews.form_class
 	template_name = ConfigViews.template_list
@@ -92,23 +94,34 @@ class VLRemitosClientesInformeView(InformeFormView):
 	extra_context = {
 		"master_title": f'Informes - {ConfigViews.model._meta.verbose_name_plural}',
 		"home_view_name": ConfigViews.home_view_name,
-		# "list_view_name": ConfigViews.list_view_name,
-		# "table_headers": DataViewList.table_headers,
-		# "table_data": DataViewList.table_data,
 		"buscador_template": f"{ConfigViews.app_label}/buscador_{ConfigViews.model_string}.html",
 		"js_file": ConfigViews.js_file,
 		"url_pantalla": ConfigViews.url_pantalla,
 		"url_pdf": ConfigViews.url_pdf,
 	}
 	
+	def transformar_cleaned_data(self, cleaned_data):
+		#-- Convertir a id si existen.
+		if cleaned_data.get("vendedor"):
+			ven = cleaned_data["vendedor"]
+			cleaned_data["vendedor"] = ven.id_vendedor
+			cleaned_data["nombre_vendedor"] = ven.nombre_vendedor
+		
+		if cleaned_data.get("sucursal"):
+			suc = cleaned_data["sucursal"]
+			cleaned_data["sucursal"] = suc.id_sucursal
+			cleaned_data["nombre_sucursal"] = suc.nombre_sucursal
+		
+		return cleaned_data
+	
 	def obtener_queryset(self, cleaned_data):
-		id_cliente = cleaned_data.get('id_cliente', None)
-		fecha_desde = cleaned_data.get('fecha_desde')
-		fecha_hasta = cleaned_data.get('fecha_hasta')
+		filtrar_por = cleaned_data.get("filtrar_por")
+		id_vendedor = cleaned_data.get("vendedor")
+		id_sucursal = cleaned_data.get("sucursal")
+		id_cli_desde = cleaned_data.get("id_cli_desde")
+		id_cli_hasta = cleaned_data.get("id_cli_hasta")
 		
-		queryset = VLRemitosClientes.objects.obtener_remitos_por_cliente(id_cliente, fecha_desde, fecha_hasta)
-		
-		return queryset
+		return VLRemitosPendientes.objects.obtener_remitos_pendientes(filtrar_por, id_vendedor, id_cli_desde, id_cli_hasta, id_sucursal)
 	
 	def obtener_contexto_reporte(self, queryset, cleaned_data):
 		"""
@@ -117,58 +130,98 @@ class VLRemitosClientesInformeView(InformeFormView):
 		"""
 		
 		#-- Parámetros del listado.
-		id_cliente = cleaned_data.get('id_cliente', None)
-		fecha_desde = cleaned_data.get('fecha_desde')
-		fecha_hasta = cleaned_data.get('fecha_hasta')
+		filtrar_por = cleaned_data.get("filtrar_por", "")
+		
+		param = {}
+		match filtrar_por:
+			case "vendedor":
+				param["Vendedor"] = cleaned_data.get("nombre_vendedor", "")
+			case "clientes":
+				# param["Cliente desde"] = str(id_cli_desde)
+				param["Cliente desde"] = str(cleaned_data.get("id_cli_desde", ""))
+				# param["Cliente hasta"] = str(id_cli_hasta)
+				param["Cliente hasta"] = str(cleaned_data.get("id_cli_hasta", ""))
+			case "sucursal_fac":
+				param["Sucursal (fac)"] = cleaned_data.get("nombre_sucursal", "")
+			case "sucursal_cli":
+				param["Sucursal (cli)"] = cleaned_data.get("nombre_sucursal", "")
 		
 		fecha_hora_reporte = datetime.now().strftime("%d/%m/%Y %H:%M:%S")		
 		
 		dominio = f"http://{self.request.get_host()}"
 		
-		param = {
-			"Desde": fecha_desde.strftime("%d/%m/%Y"),
-			"Hasta": fecha_hasta.strftime("%d/%m/%Y"),
-		}
-		
-		#-- Obtener los datos el cliente.
-		cliente_data = {}
-		cliente = Cliente.objects.get(pk=id_cliente)
-		cliente_data = {
-			"id_cliente": cliente.id_cliente,
-			"nombre_cliente": cliente.nombre_cliente,
-		}
 		
 		# **************************************************
-		#-- Agrupar los objetos por el número de comprobante.
-		grouped_data = {}
+		# Estructura para agrupar datos por cliente
+		datos_por_cliente = {}
 		total_general = Decimal(0)
-		
+
 		for obj in queryset:
-			comprobante_num = obj.numero_comprobante  # Campo que agrupa los datos.
-			if comprobante_num not in grouped_data:
-				grouped_data[comprobante_num] = {
-					'productos': [],
-					'subtotal': Decimal(0),
+			# Identificar al cliente
+			cliente_id = obj.id_cliente_id
+			nombre_cliente = obj.nombre_cliente.strip()  # Limpieza en caso de espacios extras
+
+			# Si el cliente aún no está en el diccionario, se inicializa
+			if cliente_id not in datos_por_cliente:
+				datos_por_cliente[cliente_id] = {
+					# "cliente": f"[{cliente_id}] {nombre_cliente}",
+					"id_cliente": cliente_id,
+					"cliente": nombre_cliente,
+					"comprobantes": {},
+					"total_cliente": Decimal(0),
 				}
-			#-- Añadir el producto al grupo.
-			grouped_data[comprobante_num]['productos'].append(obj)
-			#-- Calcular el subtotal por comprobante.
-			grouped_data[comprobante_num]['subtotal'] += obj.total
-			#-- Acumular el total general.
+			
+			# Agrupar por comprobante dentro del cliente
+			num_comprobante = obj.numero_comprobante
+			if num_comprobante not in datos_por_cliente[cliente_id]["comprobantes"]:
+				datos_por_cliente[cliente_id]["comprobantes"][num_comprobante] = {
+					"fecha": obj.fecha_comprobante.strftime("%d/%m/%Y"),
+					"fecha_order": obj.fecha_comprobante,  # Para ordenar por fecha
+					"numero_comprobante": num_comprobante,   # Para ordenar por número
+					"comprobante": obj.comprobante,
+					"productos": [],
+					"total_comprobante": Decimal(0),
+				}
+			
+			#-- Crear el diccionario con los datos requeridos para el reporte.
+			producto_data = {
+				"fecha": obj.fecha_comprobante.strftime("%d/%m/%Y"),
+				"comprobante": obj.comprobante,
+				"descripcion": obj.nombre_producto,
+				"medida": obj.medida,
+				"cantidad": obj.cantidad,
+				"precio": obj.precio,
+				"total": obj.total,
+			}
+			
+			#-- Agregar el producto a la lista del comprobante y acumular totales.
+			datos_por_cliente[cliente_id]["comprobantes"][num_comprobante]["productos"].append(producto_data)
+			datos_por_cliente[cliente_id]["comprobantes"][num_comprobante]["total_comprobante"] += obj.total
+			datos_por_cliente[cliente_id]["total_cliente"] += obj.total
 			total_general += obj.total
 		
-		#-- Convertir los datos agrupados a un formato serializable:
-		# Se recorre cada grupo y se convierte cada producto a diccionario usando raw_to_dict.
-		for comprobante, data in grouped_data.items():
-			data['productos'] = [raw_to_dict(producto) for producto in data['productos']]
-			data['subtotal'] = float(data['subtotal'])
-		
+		#-- Convertir la estructura de diccionarios a listas ordenadas para iterar en el template.
+		datos = []
+		for cliente_info in datos_por_cliente.values():
+			#-- Convertir comprobantes (diccionario) a lista y ordenarlos por (fecha, número de comprobante).
+			comprobantes_list = list(cliente_info["comprobantes"].values())
+			comprobantes_list.sort(key=lambda x: (x["fecha_order"], x["numero_comprobante"]))
+			cliente_info["comprobantes"] = comprobantes_list
+			
+			#-- Convertir los totales a float para facilitar el formateo en el template.
+			cliente_info["total_cliente"] = float(cliente_info["total_cliente"])
+			for comp in cliente_info["comprobantes"]:
+				comp["total_comprobante"] = float(comp["total_comprobante"])
+			datos.append(cliente_info)
+
+		#-- Ordenar la lista de datos por el nombre del cliente.
+		datos.sort(key=lambda x: x["cliente"])
 		# **************************************************
+		
 		#-- Se retorna un contexto que será consumido tanto para la vista en pantalla como para la generación del PDF.
 		return {
-			"objetos": grouped_data,
-			"total_general": total_general,
-			'cliente': cliente_data,
+			"objetos": datos,
+			"total_general": float(total_general),
 			"parametros": param,
 			'fecha_hora_reporte': fecha_hora_reporte,
 			'titulo': ConfigViews.report_title,
@@ -186,8 +239,16 @@ class VLRemitosClientesInformeView(InformeFormView):
 			context["data_has_errors"] = True
 		return context
 
+def raw_to_dict(instance):
+	"""Convierte una instancia de una consulta raw a un diccionario, eliminando claves internas."""
+	data = instance.__dict__.copy()
+	data.pop('_state', None)
+	return data
 
-def vlremitosclientes_vista_pantalla(request):
+
+
+
+def vlremitospendientes_vista_pantalla(request):
 	#-- Obtener el token de la querystring.
 	token = request.GET.get("token")
 	
@@ -203,10 +264,10 @@ def vlremitosclientes_vista_pantalla(request):
 	
 	#-- Generar el listado a pantalla.
 	return render(request, ConfigViews.reporte_pantalla, contexto_reporte)
-	# return render(request, "informes/reportes/remitosclientes_list.html", contexto_reporte)
+	# return render(request, "informes/reportes/ventacompro_list.html", contexto_reporte)
 
 
-def vlremitosclientes_vista_pdf(request):
+def vlremitospendientes_vista_pdf(request):
 	#-- Obtener el token de la querystring.
 	token = request.GET.get("token")
 	
@@ -221,7 +282,7 @@ def vlremitosclientes_vista_pdf(request):
 		return HttpResponse("Contexto no encontrado o expirado", status=400)
 	
 	#-- Preparar la respuesta HTTP.
-	# html_string = render_to_string("informes/reportes/remitosclientes_pdf.html", contexto_reporte, request=request)
+	# html_string = render_to_string("informes/reportes/ventacompro_pdf.html", contexto_reporte, request=request)
 	html_string = render_to_string(ConfigViews.reporte_pdf, contexto_reporte, request=request)
 	pdf_file = HTML(string=html_string, base_url=request.build_absolute_uri()).write_pdf()
 
@@ -231,13 +292,7 @@ def vlremitosclientes_vista_pdf(request):
 	return response
 
 
-def raw_to_dict(instance):
-	"""Convierte una instancia de una consulta raw a un diccionario, eliminando claves internas."""
-	data = instance.__dict__.copy()
-	data.pop('_state', None)
-	return data
-
-def vlremitosclientes_vista_excel(request):
+def vlremitospendientes_vista_excel(request):
 	token = request.GET.get("token")
 	if not token:
 		return HttpResponse("Token no proporcionado", status=400)
@@ -251,7 +306,7 @@ def vlremitosclientes_vista_excel(request):
 	# ---------------------------------------------
 	
 	#-- Instanciar la vista y obtener el queryset.
-	view_instance = VLRemitosClientesInformeView()
+	view_instance = VLRemitosPendientesInformeView()
 	view_instance.request = request
 	queryset = view_instance.obtener_queryset(cleaned_data)
 	
@@ -271,7 +326,7 @@ def vlremitosclientes_vista_excel(request):
 	return response
 
 
-def vlremitosclientes_vista_csv(request):
+def vlremitospendientes_vista_csv(request):
 	token = request.GET.get("token")
 	if not token:
 		return HttpResponse("Token no proporcionado", status=400)
@@ -284,7 +339,7 @@ def vlremitosclientes_vista_csv(request):
 	cleaned_data = data["cleaned_data"]
 	
 	#-- Instanciar la vista para reejecutar la consulta y obtener el queryset.
-	view_instance = VLRemitosClientesInformeView()
+	view_instance = VLRemitosPendientesInformeView()
 	view_instance.request = request
 	queryset = view_instance.obtener_queryset(cleaned_data)
 	

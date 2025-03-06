@@ -28,18 +28,24 @@ from .views.operario_list_views import *
 from .views.mediopago_list_views import *
 from .views.puntoventa_list_views import *
 
+#-- Procesos.
+#- Lote 1:
+from apps.informes.views.vlsaldosclientes_list_views import *
+from apps.informes.views.vlsaldosclientes_list_views import *
+from apps.informes.views.vlresumenctacte_list_views import *
+from apps.informes.views.vlmercaderiaporcliente_list_views import *
+from apps.informes.views.vlremitosclientes_list_views import *
+from apps.informes.views.vltotalremitosclientes_list_views import *
+from apps.informes.views.vlventacomprolocalidad_list_views import *
+from apps.informes.views.vlventamostrador_list_views import *
+from apps.informes.views.vlventacompro_list_views import *
+
+#- Lote 2:
+from apps.informes.views.vlcomprobantesvencidos_list_views import *
+from apps.informes.views.vlremitospendientes_list_views import *
+
 #-- Otras rutas.
 from apps.maestros.views.consulta_views_maestros import filtrar_localidad
-from apps.informes.views.saldosclientes_list_views import *
-from apps.informes.views.saldosclientes_list_views import *
-from apps.informes.views.resumenctacte_list_views import *
-from apps.informes.views.mercaderiaporcliente_list_views import *
-from apps.informes.views.remitosclientes_list_views import *
-from apps.informes.views.totalremitosclientes_list_views import *
-from apps.informes.views.ventacomprolocalidad_list_views import *
-from apps.informes.views.ventamostrador_list_views import *
-from apps.informes.views.ventacompro_list_views import *
-
 from apps.informes.views.consultas_informes_views import *
 
 urlpatterns = [
@@ -326,6 +332,32 @@ urlpatterns = [
 		 name="vlventacompro_vista_excel"),
 	path("vlventacompro/vista-csv/", vlventacompro_vista_csv, 
 		 name="vlventacompro_vista_csv"),
+	
+	#-- VL Comprobantes Vencidos.
+	path('vlcomprobantesvencidos_informe/', VLComprobantesVencidosInformeView.as_view(), 
+		 name='vlcomprobantesvencidos_informe_list'),
+	path('vlcomprobantesvencidos/vista-preliminar/', vlcomprobantesvencidos_vista_pantalla, 
+		 name="vlcomprobantesvencidos_vista_pantalla"),
+	path("vlcomprobantesvencidos/vista-pdf/", vlcomprobantesvencidos_vista_pdf, 
+		 name="vlcomprobantesvencidos_vista_pdf"),
+	path("vlcomprobantesvencidos/vista-excel/", vlcomprobantesvencidos_vista_excel, 
+		 name="vlcomprobantesvencidos_vista_excel"),
+	path("vlcomprobantesvencidos/vista-csv/", vlcomprobantesvencidos_vista_csv, 
+		 name="vlcomprobantesvencidos_vista_csv"),
+	
+	#-- VL Remitos Pendientes.
+	path('vlremitospendientes_informe/', VLRemitosPendientesInformeView.as_view(), 
+		 name='vlremitospendientes_informe_list'),
+	path('vlremitospendientes/vista-preliminar/', vlremitospendientes_vista_pantalla, 
+		 name="vlremitospendientes_vista_pantalla"),
+	path("vlremitospendientes/vista-pdf/", vlremitospendientes_vista_pdf, 
+		 name="vlremitospendientes_vista_pdf"),
+	path("vlremitospendientes/vista-excel/", vlremitospendientes_vista_excel, 
+		 name="vlremitospendientes_vista_excel"),
+	path("vlremitospendientes/vista-csv/", vlremitospendientes_vista_csv, 
+		 name="vlremitospendientes_vista_csv"),
+	
+	
 	
 	
 	#-- Otras rutas.

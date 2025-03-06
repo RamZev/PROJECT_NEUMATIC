@@ -2,6 +2,7 @@
 import re
 from datetime import date, datetime
 from decimal import Decimal
+from django.forms.models import model_to_dict
 
 
 def es_numero_valido(valor):
@@ -21,6 +22,7 @@ def serializar_datos(datos):
 		return {k: serializar_datos(v) for k, v in datos.items()}  # Recursivo para dicts
 	return datos  # Si no es un tipo especial, devolver el valor tal cual
 
+
 def deserializar_datos(datos):
 	"""Restaura los datos serializados desde la sesión a sus tipos originales."""
 	if isinstance(datos, str):
@@ -38,3 +40,7 @@ def deserializar_datos(datos):
 	elif isinstance(datos, dict):
 		return {k: deserializar_datos(v) for k, v in datos.items()}
 	return datos
+
+
+def serializar_queryset(queryset):
+	return [model_to_dict(obj) for obj in queryset]

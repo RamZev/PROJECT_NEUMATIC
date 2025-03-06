@@ -1,33 +1,32 @@
-# # neumatic\apps\informes\views\ventacomprolocalidad_list_views.py
+# neumatic\apps\informes\views\vlcomprobantesvencidos_list_views.py
 
 from django.urls import reverse_lazy
 from django.shortcuts import render
 
 from django.http import HttpResponse
-from decimal import Decimal
 from datetime import datetime
 from django.template.loader import render_to_string
 from weasyprint import HTML
 from django.templatetags.static import static
-from django.forms.models import model_to_dict
+# from django.forms.models import model_to_dict
 
 from .report_views_generics import *
-from apps.informes.models import VLVentaComproLocalidad
-from ..forms.buscador_ventacomprolocalidad_forms import BuscadorVentaComproLocalidadForm
-from utils.utils import deserializar_datos
+from apps.informes.models import VLComprobantesVencidos
+from ..forms.buscador_vlcomprobantesvencidos_forms import BuscadorComprobantesVencidosForm
+from utils.utils import deserializar_datos, serializar_queryset
 from utils.helpers.export_helpers import ExportHelper
 
 
 class ConfigViews:
 	
 	#-- Título del reporte.
-	report_title = "Ventas por Localidad"
+	report_title = "Comprobantes Vencidos"
 	
 	#-- Modelo.
-	model = VLVentaComproLocalidad
+	model = VLComprobantesVencidos
 	
 	#-- Formulario asociado al modelo.
-	form_class = BuscadorVentaComproLocalidadForm
+	form_class = BuscadorComprobantesVencidosForm
 	
 	#-- Aplicación asociada al modelo.
 	app_label = "informes"
@@ -74,19 +73,17 @@ class ConfigViews:
 	#-- Establecer las columnas del reporte y sus anchos(en punto).
 	header_data = {
 		"fecha_comprobante": (40, "Fecha"),
-		"comprobante": (40, "Comprobante"),
+		"dias_vencidos": (40, "Días"),
+		"comprobante": (40, "Número"),
 		"id_cliente_id": (40, "Cliente"),
 		"nombre_cliente": (180, "Nombre"),
-		"cuit": (40, "CUIT"),
-		"gravado": (40, "Gravado"),
-		"exento": (40, "Exento"),
-		"iva": (40, "IVA"),
-		"percep_ib": (40, "Percep. IB"),
-		"total": (40, "Total Op."),
+		"total": (40, "Total Comprobante"),
+		"entrega": (40, "Entrega a Cta."),
+		"saldo": (40, "Saldo Pendiente"),
 	}
 
 
-class VLVentaComproLocalidadInformeView(InformeFormView):
+class VLComprobantesVencidosInformeView(InformeFormView):
 	config = ConfigViews  #-- Ahora la configuración estará disponible en self.config.
 	form_class = ConfigViews.form_class
 	template_name = ConfigViews.template_list
@@ -95,25 +92,34 @@ class VLVentaComproLocalidadInformeView(InformeFormView):
 	extra_context = {
 		"master_title": f'Informes - {ConfigViews.model._meta.verbose_name_plural}',
 		"home_view_name": ConfigViews.home_view_name,
-		# "list_view_name": ConfigViews.list_view_name,
-		# "table_headers": DataViewList.table_headers,
-		# "table_data": DataViewList.table_data,
-		# "buscador_template": f"{ConfigViews.app_label}/buscador_{ConfigViews.model_string}.html",
 		"buscador_template": f"{ConfigViews.app_label}/buscador_{ConfigViews.model_string}.html",
 		"js_file": ConfigViews.js_file,
 		"url_pantalla": ConfigViews.url_pantalla,
 		"url_pdf": ConfigViews.url_pdf,
 	}
 	
+	def transformar_cleaned_data(self, cleaned_data):
+		#-- Convertir a id si existen.
+		if cleaned_data.get("vendedor"):
+			ven = cleaned_data["vendedor"]
+			# cleaned_data["vendedor"] = cleaned_data["vendedor"].id_vendedor
+			cleaned_data["vendedor"] = ven.id_vendedor
+			cleaned_data["nombre_vendedor"] = ven.nombre_vendedor
+		
+		if cleaned_data.get("sucursal"):
+			suc = cleaned_data["sucursal"]
+			# cleaned_data["sucursal"] = cleaned_data["sucursal"].id_sucursal
+			cleaned_data["sucursal"] = suc.id_sucursal
+			cleaned_data["nombre_sucursal"] = suc.nombre_sucursal
+		
+		return cleaned_data
+	
 	def obtener_queryset(self, cleaned_data):
-		sucursal = cleaned_data.get('sucursal', None)
-		fecha_desde = cleaned_data.get('fecha_desde')
-		fecha_hasta = cleaned_data.get('fecha_hasta')
-		codigo_postal = cleaned_data.get('codigo_postal', None)
+		dias = cleaned_data.get("dias")
+		id_vendedor = cleaned_data.get("vendedor")
+		id_sucursal = cleaned_data.get("sucursal")
 		
-		queryset = VLVentaComproLocalidad.objects.obtener_venta_compro_localidad(fecha_desde, fecha_hasta, sucursal, codigo_postal)
-		
-		return queryset
+		return VLComprobantesVencidos.objects.obtener_compro_vencidos(dias, id_vendedor, id_sucursal)
 	
 	def obtener_contexto_reporte(self, queryset, cleaned_data):
 		"""
@@ -122,33 +128,28 @@ class VLVentaComproLocalidadInformeView(InformeFormView):
 		"""
 		
 		#-- Parámetros del listado.
-		sucursal = cleaned_data.get('sucursal', None)
-		fecha_desde = cleaned_data.get('fecha_desde')
-		fecha_hasta = cleaned_data.get('fecha_hasta')
-		codigo_postal = cleaned_data.get('codigo_postal', None)
+		dias = cleaned_data.get("dias")
+		vendedor = cleaned_data.get("vendedor")
+		sucursal = cleaned_data.get("sucursal")
+		
+		param = {
+			# "Vendedor": vendedor if vendedor else "Todos",
+			# "Sucursal": sucursal if sucursal else "Todas",
+			"Vendedor": cleaned_data.get("nombre_vendedor") if vendedor else "Todos",
+			"Sucursal": cleaned_data.get("nombre_sucursal") if sucursal else "Todas",
+			"Antigüedad": dias,
+		}
 		
 		fecha_hora_reporte = datetime.now().strftime("%d/%m/%Y %H:%M:%S")		
 		
 		dominio = f"http://{self.request.get_host()}"
 		
-		param = {
-			"Desde": fecha_desde.strftime("%d/%m/%Y"),
-			"Hasta": fecha_hasta.strftime("%d/%m/%Y"),
-		}
-		
-		param.update({"C.P.": codigo_postal if codigo_postal else "Todos"})
-		param.update({"Sucursal": sucursal.nombre_sucursal if sucursal else "Todas"})
-		
-		#-- Calcular el total general.
-		total_general = sum(item.total for item in queryset if hasattr(item, "total"))
-		
 		#-- Convertir cada objeto del queryset a un diccionario.
-		objetos_serializables = [model_to_dict(item) for item in queryset]		
+		objetos_serializables = serializar_queryset(queryset)
 		
 		#-- Se retorna un contexto que será consumido tanto para la vista en pantalla como para la generación del PDF.
 		return {
 			"objetos": objetos_serializables,
-			"total_general": total_general,
 			"parametros": param,
 			'fecha_hora_reporte': fecha_hora_reporte,
 			'titulo': ConfigViews.report_title,
@@ -167,7 +168,7 @@ class VLVentaComproLocalidadInformeView(InformeFormView):
 		return context
 
 
-def vlventacomprolocalidad_vista_pantalla(request):
+def vlcomprobantesvencidos_vista_pantalla(request):
 	#-- Obtener el token de la querystring.
 	token = request.GET.get("token")
 	
@@ -183,10 +184,10 @@ def vlventacomprolocalidad_vista_pantalla(request):
 	
 	#-- Generar el listado a pantalla.
 	return render(request, ConfigViews.reporte_pantalla, contexto_reporte)
-	# return render(request, "informes/reportes/ventacomprolocalidad_list.html", contexto_reporte)
+	# return render(request, "informes/reportes/ventacompro_list.html", contexto_reporte)
 
 
-def vlventacomprolocalidad_vista_pdf(request):
+def vlcomprobantesvencidos_vista_pdf(request):
 	#-- Obtener el token de la querystring.
 	token = request.GET.get("token")
 	
@@ -201,7 +202,7 @@ def vlventacomprolocalidad_vista_pdf(request):
 		return HttpResponse("Contexto no encontrado o expirado", status=400)
 	
 	#-- Preparar la respuesta HTTP.
-	# html_string = render_to_string("informes/reportes/ventacomprolocalidad_pdf.html", contexto_reporte, request=request)
+	# html_string = render_to_string("informes/reportes/ventacompro_pdf.html", contexto_reporte, request=request)
 	html_string = render_to_string(ConfigViews.reporte_pdf, contexto_reporte, request=request)
 	pdf_file = HTML(string=html_string, base_url=request.build_absolute_uri()).write_pdf()
 
@@ -210,7 +211,8 @@ def vlventacomprolocalidad_vista_pdf(request):
 	
 	return response
 
-def vlventacomprolocalidad_vista_excel(request):
+
+def vlcomprobantesvencidos_vista_excel(request):
 	token = request.GET.get("token")
 	if not token:
 		return HttpResponse("Token no proporcionado", status=400)
@@ -224,7 +226,7 @@ def vlventacomprolocalidad_vista_excel(request):
 	# ---------------------------------------------
 	
 	#-- Instanciar la vista y obtener el queryset.
-	view_instance = VLVentaComproLocalidadInformeView()
+	view_instance = VLComprobantesVencidosInformeView()
 	view_instance.request = request
 	queryset = view_instance.obtener_queryset(cleaned_data)
 	
@@ -244,7 +246,7 @@ def vlventacomprolocalidad_vista_excel(request):
 	return response
 
 
-def vlventacomprolocalidad_vista_csv(request):
+def vlcomprobantesvencidos_vista_csv(request):
 	token = request.GET.get("token")
 	if not token:
 		return HttpResponse("Token no proporcionado", status=400)
@@ -257,7 +259,7 @@ def vlventacomprolocalidad_vista_csv(request):
 	cleaned_data = data["cleaned_data"]
 	
 	#-- Instanciar la vista para reejecutar la consulta y obtener el queryset.
-	view_instance = VLVentaComproLocalidadInformeView()
+	view_instance = VLComprobantesVencidosInformeView()
 	view_instance.request = request
 	queryset = view_instance.obtener_queryset(cleaned_data)
 	
