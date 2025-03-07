@@ -43,6 +43,7 @@ from apps.informes.views.vlventacompro_list_views import *
 #- Lote 2:
 from apps.informes.views.vlcomprobantesvencidos_list_views import *
 from apps.informes.views.vlremitospendientes_list_views import *
+from apps.informes.views.vlremitosvendedor_list_views import *
 
 #-- Otras rutas.
 from apps.maestros.views.consulta_views_maestros import filtrar_localidad
@@ -356,6 +357,18 @@ urlpatterns = [
 		 name="vlremitospendientes_vista_excel"),
 	path("vlremitospendientes/vista-csv/", vlremitospendientes_vista_csv, 
 		 name="vlremitospendientes_vista_csv"),
+	
+	#-- VL Remitos por Vendedor.
+	path('vlremitosvendedor_informe/', VLRemitosVendedorInformeView.as_view(), 
+		 name='vlremitosvendedor_informe_list'),
+	path('vlremitosvendedor/vista-preliminar/', vlremitosvendedor_vista_pantalla, 
+		 name="vlremitosvendedor_vista_pantalla"),
+	path("vlremitosvendedor/vista-pdf/", vlremitosvendedor_vista_pdf, 
+		 name="vlremitosvendedor_vista_pdf"),
+	path("vlremitosvendedor/vista-excel/", vlremitosvendedor_vista_excel, 
+		 name="vlremitosvendedor_vista_excel"),
+	path("vlremitosvendedor/vista-csv/", vlremitosvendedor_vista_csv, 
+		 name="vlremitosvendedor_vista_csv"),
 	
 	
 	

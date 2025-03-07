@@ -1,7 +1,7 @@
 from django.db import models
 
 #-----------------------------------------------------------------------------
-# Saldos Clientes
+# Saldos Clientes.
 #-----------------------------------------------------------------------------
 class SaldosClientesManager(models.Manager):
 
@@ -72,7 +72,7 @@ class VLSaldosClientes(models.Model):
 
 
 #-----------------------------------------------------------------------------
-# Resumen Cuenta Corriente
+# Resumen Cuenta Corriente.
 #-----------------------------------------------------------------------------
 class ResumenCtaCteManager(models.Manager):
 
@@ -234,7 +234,7 @@ class VLResumenCtaCte(models.Model):
 
 
 #-----------------------------------------------------------------------------
-# Mercadería por Cliente
+# Mercadería por Cliente.
 #-----------------------------------------------------------------------------
 class MercaderiaPorClienteManager(models.Manager):
 
@@ -282,7 +282,7 @@ class VLMercaderiaPorCliente(models.Model):
 
 
 #-----------------------------------------------------------------------------
-# Remitos por Clientes
+# Remitos por Clientes.
 #-----------------------------------------------------------------------------
 class RemitosClientesManager(models.Manager):
 
@@ -333,7 +333,7 @@ class VLRemitosClientes(models.Model):
 
 
 #-----------------------------------------------------------------------------
-# Total Remitos por Clientes
+# Total Remitos por Clientes.
 #-----------------------------------------------------------------------------
 class TotalRemitosClientesManager(models.Manager):
 
@@ -409,7 +409,7 @@ class VLTotalRemitosClientes(models.Model):
 
 
 #-----------------------------------------------------------------------------
-# Ventas por Localidad
+# Ventas por Localidad.
 #-----------------------------------------------------------------------------
 class VentaComproLocalidadManager(models.Manager):
 
@@ -468,7 +468,7 @@ class VLVentaComproLocalidad(models.Model):
 
 
 #-----------------------------------------------------------------------------
-# Ventas por Mostrador
+# Ventas por Mostrador.
 #-----------------------------------------------------------------------------
 class VentaMostradorManager(models.Manager):
 
@@ -541,7 +541,7 @@ class VLVentaMostrador(models.Model):
 
 
 #-----------------------------------------------------------------------------
-# Ventas por Comprobantes
+# Ventas por Comprobantes.
 #-----------------------------------------------------------------------------
 class VentaComproManager(models.Manager):
 
@@ -597,7 +597,7 @@ class VLVentaCompro(models.Model):
 
 
 #-----------------------------------------------------------------------------
-# Comprobantes Vencidos
+# Comprobantes Vencidos.
 #-----------------------------------------------------------------------------
 class ComprobantesVencidosManager(models.Manager):
 	
@@ -656,13 +656,13 @@ class VLComprobantesVencidos(models.Model):
 
 
 #-----------------------------------------------------------------------------
-# Remitos Pendientes
+# Remitos Pendientes.
 #-----------------------------------------------------------------------------
 class RemitosPendientesManager(models.Manager):
 	
 	def obtener_remitos_pendientes(self, filtrar_por, id_vendedor=None, id_cli_desde=0, id_cli_hasta=0, id_sucursal=None):
-		""" Se determina los Comprobantes vencidos según parámetro indicado por vendedor o todos los vendedores,
-		una sucursal o todas. """
+		""" Permite obtener los Remitos Pendientes por procesar según parámetros indicados: por Vendedor, rango de Ids de Cliente, 
+		Sucursal de Facturación o Sucursal del Cliente. """
 		
 		#-- Se crea la consulta parametrizada.
 		query = "SELECT * FROM VLRemitosPendientes "
@@ -716,5 +716,110 @@ class VLRemitosPendientes(models.Model):
 		db_table = 'VLRemitosPendientes'
 		verbose_name = ('Remitos Pendientes')
 		verbose_name_plural = ('Remitos Pendientes')
+		ordering = ['nombre_cliente', 'fecha_comprobante', 'numero_comprobante']
+
+
+#-----------------------------------------------------------------------------
+# Remitos por Vendedor.
+#-----------------------------------------------------------------------------
+class RemitosVendedorManager(models.Manager):
+	
+	def obtener_remitos_vendedor(self, id_vendedor, fecha_desde, fecha_hasta):
+		""" Permite obtener los Remitos de un Vendedor específico en un período de tiempo. """
+		
+		#-- Se crea la consulta parametrizada.
+		query = """
+			SELECT * 
+				FROM VLRemitosVendedor 
+				WHERE id_vendedor_id = %s AND 
+					fecha_comprobante BETWEEN %s AND %s"""
+		
+		#-- Se añade los parámetros.
+		params = [id_vendedor, fecha_desde, fecha_hasta]
+		
+		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
+		return self.raw(query, params)
+
+
+class VLRemitosVendedor(models.Model):
+	id_factura = models.IntegerField(primary_key=True)
+	id_cliente_id = models.IntegerField()
+	nombre_cliente = models.CharField(max_length=50)
+	nombre_comprobante_venta = models.CharField(max_length=50)
+	fecha_comprobante = models.DateField()
+	letra_comprobante = models.CharField(max_length=1)
+	numero_comprobante = models.IntegerField()
+	comprobante = models.CharField(max_length=17)
+	id_producto_id = models.IntegerField()
+	nombre_producto = models.CharField(max_length=50)
+	medida = models.CharField(max_length=15)
+	cantidad = models.DecimalField(max_digits=7, decimal_places=2)
+	precio = models.DecimalField(max_digits=12, decimal_places=2)
+	descuento = models.DecimalField(max_digits=6, decimal_places=2)
+	total = models.DecimalField(max_digits=14, decimal_places=2)
+	id_vendedor_id = models.IntegerField()
+	
+	objects = RemitosVendedorManager()
+	
+	class Meta:
+		managed = False
+		db_table = 'VLRemitosVendedor'
+		verbose_name = ('Remitos Vendedor')
+		verbose_name_plural = ('Remitos Vendedor')
+		ordering = ['nombre_cliente', 'fecha_comprobante', 'numero_comprobante']
+
+#-----------------------------------------------------------------------------
+# Libro I.V.A. Ventas.
+#-----------------------------------------------------------------------------
+class IVAVentasFULLManager(models.Manager):
+	
+	def obtener_remitos_vendedor(self, id_sucursal, mes, anno):
+		""" Permite obtener los Comprobantes Fiscales por todas las Sucursales o una en específico de un mes y año determinado. """
+		
+		#-- Se crea la consulta parametrizada.
+		query = "SELECT * FROM VLIVAVentasFULL WHERE "
+		
+		params = []
+		
+		if id_sucursal:
+			query += "id_sucursal_id = %s AND "
+			params.append(id_sucursal)
+		
+		
+		query += "STRFTIME('%Y', fecha_comprobante) = %s AND STRFTIME('%m', fecha_comprobante) = %s"
+		
+		params.append(mes, anno)
+		
+		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
+		return self.raw(query, params)
+
+
+class VLIVAVentasFULL(models.Model):
+	id_factura = models.IntegerField(primary_key=True)
+	id_cliente_id = models.IntegerField()
+	nombre_cliente = models.CharField(max_length=50)
+	codigo_iva = models.CharField(max_length=4)
+	cuit = models.IntegerField()
+	nombre_comprobante_venta = models.CharField(max_length=50)
+	codigo_comprobante_venta = models.CharField(max_length=3)
+	fecha_comprobante = models.DateField()
+	letra_comprobante = models.CharField(max_length=1)
+	numero_comprobante = models.IntegerField()
+	comprobante = models.CharField(max_length=17)
+	gravado = models.DecimalField(max_digits=14, decimal_places=2)
+	exento = models.DecimalField(max_digits=14, decimal_places=2)
+	iva = models.DecimalField(max_digits=14, decimal_places=2)
+	percep_ib = models.DecimalField(max_digits=14, decimal_places=2)
+	total = models.DecimalField(max_digits=14, decimal_places=2)
+	
+	id_sucursal_id = models.IntegerField()
+	
+	objects = RemitosVendedorManager()
+	
+	class Meta:
+		managed = False
+		db_table = 'VLRemitosVendedor'
+		verbose_name = ('Remitos Vendedor')
+		verbose_name_plural = ('Remitos Vendedor')
 		ordering = ['nombre_cliente', 'fecha_comprobante', 'numero_comprobante']
 

@@ -278,3 +278,62 @@ CREATE VIEW "VLRemitosPendientes" AS SELECT
 		INNER JOIN cliente c ON f.id_cliente_id = c.id_cliente
 	WHERE cv.mult_venta = 0 AND f.estado = ""
 	ORDER BY c.nombre_cliente, f.fecha_comprobante, f.numero_comprobante
+
+-- ---------------------------------------------------------------------------
+-- Remitos Vendedor.
+-- Modelo: VLRemitosVendedor
+-- ---------------------------------------------------------------------------
+DROP VIEW IF EXISTS "main"."VLRemitosVendedor";
+CREATE VIEW "VLRemitosVendedor" AS SELECT 
+		f.id_factura,
+		f.id_cliente_id,
+		c.nombre_cliente,
+		cv.nombre_comprobante_venta,
+		f.fecha_comprobante,
+		f.letra_comprobante,
+		f.numero_comprobante,
+		(f.letra_comprobante || ' ' || SUBSTR(printf('%012d', f.numero_comprobante), 1, 4) || '-' || SUBSTR(printf('%012d', f.numero_comprobante), 5)) AS comprobante,
+		df.id_producto_id,
+		p.nombre_producto,
+		p.medida,
+		df.cantidad,
+		df.precio,
+		df.descuento,
+		df.total*cv.mult_stock*-1 AS total,
+		f.id_vendedor_id
+	FROM detalle_factura df
+		INNER JOIN factura f ON df.id_factura_id = f.id_factura
+		INNER JOIN producto p ON df.id_producto_id = p.id_producto
+		INNER JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
+		INNER JOIN cliente c ON f.id_cliente_id = c.id_cliente
+	WHERE cv.mult_venta = 0
+	ORDER BY c.nombre_cliente, f.fecha_comprobante, f.numero_comprobante
+
+-- ---------------------------------------------------------------------------
+-- Libro I.V.A. Ventas.
+-- Modelo: VLIVAVentasFULL
+-- ---------------------------------------------------------------------------
+DROP VIEW IF EXISTS "main"."VLIVAVentasFULL";
+CREATE VIEW "VLIVAVentasFULL" AS SELECT 
+		cv.nombre_comprobante_venta,
+		cv.codigo_comprobante_venta,
+		f.letra_comprobante,
+		f.numero_comprobante,
+		(f.compro || ' ' || f.letra_comprobante || ' ' || SUBSTR(printf('%012d', f.numero_comprobante), 1, 4) || '-' || SUBSTR(printf('%012d', f.numero_comprobante), 5)) AS comprobante,
+		f.fecha_comprobante,
+		c.nombre_cliente,
+		c.cuit,
+		ti.nombre_iva,
+		ROUND(f.gravado*cv.mult_venta, 2) * 1.0 AS gravado,
+		ROUND(f.exento*cv.mult_venta, 2) * 1.0 AS exento,
+		ROUND(f.iva*cv.mult_venta, 2) * 1.0 AS iva,
+		ROUND(f.percep_ib*cv.mult_venta, 2) * 1.0 AS percep_ib,
+		ROUND(f.total*cv.mult_venta, 2) * 1.0 AS total,
+		f.id_sucursal_id
+	FROM factura f
+		INNER JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
+		INNER JOIN cliente c ON f.id_cliente_id = c.id_cliente
+		INNER JOIN tipo_iva ti ON c.id_tipo_iva_id = ti.id_tipo_iva
+	WHERE cv.libro_iva
+	ORDER by f.fecha_comprobante, f.numero_comprobante
+
