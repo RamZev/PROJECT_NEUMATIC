@@ -179,6 +179,17 @@
 								<a class="nav-link" href="{% url 'vlcomprobantesvencidos_informe_list' %}">Comprobantes Vencidos</a>
 								<a class="nav-link" href="{% url 'vlremitospendientes_informe_list' %}">Remitos Pendientes</a>
 								<a class="nav-link" href="{% url 'vlremitosvendedor_informe_list' %}">Remitos por Vendedor</a>
+								<a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseIvaVentas" aria-expanded="false" aria-controls="collapseIvaVentas">
+									Libro I.V.A. Ventas
+									<div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+								</a>
+								<div class="collapse" id="collapseIvaVentas" data-bs-parent="#reportsCollapseTablas">
+									<nav class="sb-sidenav-menu-nested nav">
+										 <a class="nav-link" href="{% url 'vlivaventasfull_informe_list' %}">Detalle</a>
+										 <a class="nav-link" href="{% url 'vlivaventasprovincias_informe_list' %}">Totales por Provincia</a>
+										 <a class="nav-link" href="{% url 'vlivaventassitrib_informe_list' %}">Totales para SITRIB</a>
+									</nav>
+								</div>
 							</nav>
 						</div>
 						

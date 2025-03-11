@@ -1,0 +1,49 @@
+<!-- neumatic\apps\informes\templates\informes\buscador_vlivaventasfull.html -->
+ 
+<div class="row">
+	
+	<div class="col-md-3">
+		{{ form.sucursal.label }}
+		{{ form.sucursal }}
+	</div>
+	
+	<div class="col-md-2">
+		{{ form.mes.label }}
+		{{ form.mes }}
+	</div>
+	
+	<div class="col-md-2">
+		{{ form.anno.label }}
+		{{ form.anno }}
+	</div>
+	
+	<div class="col-md-2">
+		{{ form.folio.label }}
+		{{ form.folio }}
+	</div>
+</div>
+
+
+{% comment %} 
+<div class="row">
+	
+	<div class="col-md-12">
+		{{ form.totales_provincias }}
+		<label for="{{ form.totales_provincias.id_for_label }}">
+			{{ form.totales_provincias.label }}
+		</label>
+	</div>
+	
+</div>
+
+<div class="row">
+	
+	<div class="col-md-12">
+		{{ form.totales_sitrib }}
+		<label for="{{ form.totales_sitrib.id_for_label }}">
+			{{ form.totales_sitrib.label }}
+		</label>
+	</div>
+	
+</div>
+{% endcomment %}

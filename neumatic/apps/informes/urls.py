@@ -44,6 +44,9 @@ from apps.informes.views.vlventacompro_list_views import *
 from apps.informes.views.vlcomprobantesvencidos_list_views import *
 from apps.informes.views.vlremitospendientes_list_views import *
 from apps.informes.views.vlremitosvendedor_list_views import *
+from apps.informes.views.vlivaventasfull_list_views import *
+from apps.informes.views.vlivaventasprovincias_list_views import *
+from apps.informes.views.vlivaventassitrib_list_views import *
 
 #-- Otras rutas.
 from apps.maestros.views.consulta_views_maestros import filtrar_localidad
@@ -369,6 +372,42 @@ urlpatterns = [
 		 name="vlremitosvendedor_vista_excel"),
 	path("vlremitosvendedor/vista-csv/", vlremitosvendedor_vista_csv, 
 		 name="vlremitosvendedor_vista_csv"),
+	
+	#-- VL IVA Ventas FULL.
+	path('vlivaventasfull_informe/', VLIVAVentasFULLInformeView.as_view(), 
+		 name='vlivaventasfull_informe_list'),
+	path('vlivaventasfull/vista-preliminar/', vlivaventasfull_vista_pantalla, 
+		 name="vlivaventasfull_vista_pantalla"),
+	path("vlivaventasfull/vista-pdf/", vlivaventasfull_vista_pdf, 
+		 name="vlivaventasfull_vista_pdf"),
+	path("vlivaventasfull/vista-excel/", vlivaventasfull_vista_excel, 
+		 name="vlivaventasfull_vista_excel"),
+	path("vlivaventasfull/vista-csv/", vlivaventasfull_vista_csv, 
+		 name="vlivaventasfull_vista_csv"),
+	
+	#-- VL IVA Ventas - Totales por Provincias.
+	path('vlivaventasprovincias_informe/', VLIVAVentasProvinciasInformeView.as_view(), 
+		 name='vlivaventasprovincias_informe_list'),
+	path('vlivaventasprovincias/vista-preliminar/', vlivaventasprovincias_vista_pantalla, 
+		 name="vlivaventasprovincias_vista_pantalla"),
+	path("vlivaventasprovincias/vista-pdf/", vlivaventasprovincias_vista_pdf, 
+		 name="vlivaventasprovincias_vista_pdf"),
+	path("vlivaventasprovincias/vista-excel/", vlivaventasprovincias_vista_excel, 
+		 name="vlivaventasprovincias_vista_excel"),
+	path("vlivaventasprovincias/vista-csv/", vlivaventasprovincias_vista_csv, 
+		 name="vlivaventasprovincias_vista_csv"),
+	
+	#-- VL IVA Ventas - Totales para SITRIB.
+	path('vlivaventassitrib_informe/', VLIVAVentasSitribInformeView.as_view(), 
+		 name='vlivaventassitrib_informe_list'),
+	path('vlivaventassitrib/vista-preliminar/', vlivaventassitrib_vista_pantalla, 
+		 name="vlivaventassitrib_vista_pantalla"),
+	path("vlivaventassitrib/vista-pdf/", vlivaventassitrib_vista_pdf, 
+		 name="vlivaventassitrib_vista_pdf"),
+	path("vlivaventassitrib/vista-excel/", vlivaventassitrib_vista_excel, 
+		 name="vlivaventassitrib_vista_excel"),
+	path("vlivaventassitrib/vista-csv/", vlivaventassitrib_vista_csv, 
+		 name="vlivaventassitrib_vista_csv"),
 	
 	
 	

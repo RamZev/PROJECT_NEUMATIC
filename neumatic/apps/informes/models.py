@@ -769,34 +769,35 @@ class VLRemitosVendedor(models.Model):
 		ordering = ['nombre_cliente', 'fecha_comprobante', 'numero_comprobante']
 
 #-----------------------------------------------------------------------------
-# Libro I.V.A. Ventas.
+# Libro I.V.A. Ventas - Detalle.
 #-----------------------------------------------------------------------------
 class IVAVentasFULLManager(models.Manager):
 	
-	def obtener_remitos_vendedor(self, id_sucursal, mes, anno):
+	def obtener_datos(self, id_sucursal, anno, mes):
 		""" Permite obtener los Comprobantes Fiscales por todas las Sucursales o una en específico de un mes y año determinado. """
 		
-		#-- Se crea la consulta parametrizada.
-		query = "SELECT * FROM VLIVAVentasFULL WHERE "
+		#-- Base de la consulta SQL.
+		query = """
+			SELECT * FROM VLIVAVentasFULL
+			WHERE 
+				STRFTIME('%%Y', fecha_comprobante) = %s
+				AND STRFTIME('%%m', fecha_comprobante) = %s
+		"""
 		
-		params = []
+		#-- Lista de parámetros.
+		params = [str(anno), str(mes)]
 		
-		if id_sucursal:
-			query += "id_sucursal_id = %s AND "
+		#-- Agregar la condición solo si id_sucursal no es None.
+		if id_sucursal is not None:
+			query += " AND id_sucursal_id = %s"
 			params.append(id_sucursal)
 		
-		
-		query += "STRFTIME('%Y', fecha_comprobante) = %s AND STRFTIME('%m', fecha_comprobante) = %s"
-		
-		params.append(mes, anno)
-		
-		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
+		#-- Ejecutar la consulta y devolver los resultados.
 		return self.raw(query, params)
-
 
 class VLIVAVentasFULL(models.Model):
 	id_factura = models.IntegerField(primary_key=True)
-	id_cliente_id = models.IntegerField()
+	# id_cliente_id = models.IntegerField()
 	nombre_cliente = models.CharField(max_length=50)
 	codigo_iva = models.CharField(max_length=4)
 	cuit = models.IntegerField()
@@ -811,15 +812,128 @@ class VLIVAVentasFULL(models.Model):
 	iva = models.DecimalField(max_digits=14, decimal_places=2)
 	percep_ib = models.DecimalField(max_digits=14, decimal_places=2)
 	total = models.DecimalField(max_digits=14, decimal_places=2)
-	
 	id_sucursal_id = models.IntegerField()
 	
-	objects = RemitosVendedorManager()
+	objects = IVAVentasFULLManager()
 	
 	class Meta:
 		managed = False
-		db_table = 'VLRemitosVendedor'
-		verbose_name = ('Remitos Vendedor')
-		verbose_name_plural = ('Remitos Vendedor')
-		ordering = ['nombre_cliente', 'fecha_comprobante', 'numero_comprobante']
+		db_table = 'VLIVAVentasFULL'
+		verbose_name = ('Libro de I.V.A. Ventas - Detalle')
+		verbose_name_plural = ('Libro de I.V.A. Ventas - Detalle')
+		ordering = ['fecha_comprobante', 'numero_comprobante']
+
+#-----------------------------------------------------------------------------
+# Libro I.V.A. Ventas - Totales por Provincias.
+#-----------------------------------------------------------------------------
+class VLIVAVentasProvinciasManager(models.Manager):
+	
+	def obtener_datos(self, id_sucursal, anno, mes):
+		
+		#-- Base de la consulta SQL.
+		query = """
+			SELECT 
+					id_factura, 
+					nombre_provincia,
+					ROUND(SUM(gravado), 2) AS gravado,
+					ROUND(SUM(exento), 2) AS exento,
+					ROUND(SUM(iva), 2) AS iva,
+					ROUND(SUM(percep_ib), 2) AS percep_ib,
+					ROUND(SUM(total), 2) AS total
+				FROM VLIVAVentasProvincias
+				WHERE STRFTIME('%%Y', fecha_comprobante) = %s AND
+					  STRFTIME('%%m', fecha_comprobante) = %s
+		"""
+		
+		#-- Lista de parámetros.
+		params = [str(anno), str(mes)]
+		
+		#-- Agregar condiciones de filtro.
+		if id_sucursal is not None:
+			query += " AND id_sucursal_id = %s"
+			params.append(id_sucursal)
+		
+		query += " GROUP BY nombre_provincia"
+		
+		#-- Ejecutar la consulta y devolver los resultados.
+		return self.raw(query, params)
+
+class VLIVAVentasProvincias(models.Model):
+	id_factura = models.IntegerField(primary_key=True)
+	id_provincia = models.IntegerField()
+	nombre_provincia = models.CharField(max_length=30)
+	fecha_comprobante = models.DateField()
+	gravado = models.DecimalField(max_digits=14, decimal_places=2)
+	exento = models.DecimalField(max_digits=14, decimal_places=2)
+	iva = models.DecimalField(max_digits=14, decimal_places=2)
+	percep_ib = models.DecimalField(max_digits=14, decimal_places=2)
+	total = models.DecimalField(max_digits=14, decimal_places=2)
+	id_sucursal_id = models.IntegerField()
+	
+	objects = VLIVAVentasProvinciasManager()
+	
+	class Meta:
+		managed = False
+		db_table = 'VLIVAVentasProvincias'
+		verbose_name = ('Libro de I.V.A. Ventas - Totales por Provincias')
+		verbose_name_plural = ('Libro de I.V.A. Ventas - Totales por Provincias')
+		ordering = ['nombre_provincia']
+
+
+#-----------------------------------------------------------------------------
+# Libro I.V.A. Ventas - Totales para SITRIB.
+#-----------------------------------------------------------------------------
+class VLIVAVentasSitribManager(models.Manager):
+	
+	def obtener_datos(self, id_sucursal, anno, mes):
+		
+		#-- Base de la consulta SQL.
+		query = """
+			SELECT 
+					id_factura,
+					codigo_iva,
+					nombre_iva,
+					ROUND(SUM(gravado), 2) AS gravado, 
+					ROUND(SUM(exento), 2) AS exento, 
+					ROUND(SUM(iva), 2) AS iva, 
+					ROUND(SUM(percep_ib), 2) AS percep_ib, 
+					ROUND(SUM(total), 2) AS total
+				FROM VLIVAVentasSitrib
+				WHERE STRFTIME('%%Y', fecha_comprobante) = %s AND
+					  STRFTIME('%%m', fecha_comprobante) = %s
+		"""
+		
+		#-- Lista de parámetros.
+		params = [str(anno), str(mes)]
+		
+		#-- Agregar condiciones de filtro.
+		if id_sucursal is not None:
+			query += " AND id_sucursal_id = %s"
+			params.append(id_sucursal)
+		
+		query += " GROUP BY codigo_iva"
+		
+		#-- Ejecutar la consulta y devolver los resultados.
+		return self.raw(query, params)
+
+class VLIVAVentasSitrib(models.Model):
+	id_factura = models.IntegerField(primary_key=True)
+	fecha_comprobante = models.DateField()
+	codigo_iva = models.CharField(max_length=4)
+	nombre_iva = models.CharField(max_length=25)
+	gravado = models.DecimalField(max_digits=14, decimal_places=2)
+	exento = models.DecimalField(max_digits=14, decimal_places=2)
+	iva = models.DecimalField(max_digits=14, decimal_places=2)
+	percep_ib = models.DecimalField(max_digits=14, decimal_places=2)
+	total = models.DecimalField(max_digits=14, decimal_places=2)
+	id_sucursal_id = models.IntegerField()
+	
+	objects = VLIVAVentasSitribManager()
+	
+	class Meta:
+		managed = False
+		db_table = 'VLIVAVentasSitrib'
+		verbose_name = ('Libro de I.V.A. Ventas - Totales para SITRIB')
+		verbose_name_plural = ('Libro de I.V.A. Ventas - Totales para SITRIB')
+		ordering = ['codigo_iva']
 

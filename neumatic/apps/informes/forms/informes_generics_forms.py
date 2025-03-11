@@ -5,6 +5,7 @@ from django import forms
 class InformesGenericForm(forms.Form):
 	
 	def __init__(self, *args, **kwargs):
+		user = kwargs.pop('user', None)
 		super().__init__(*args, **kwargs)
 	
 	def add_error_classes(self):

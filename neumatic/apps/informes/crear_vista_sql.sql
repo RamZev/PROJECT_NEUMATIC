@@ -277,7 +277,7 @@ CREATE VIEW "VLRemitosPendientes" AS SELECT
 		INNER JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
 		INNER JOIN cliente c ON f.id_cliente_id = c.id_cliente
 	WHERE cv.mult_venta = 0 AND f.estado = ""
-	ORDER BY c.nombre_cliente, f.fecha_comprobante, f.numero_comprobante
+	ORDER BY c.nombre_cliente, f.fecha_comprobante, f.numero_comprobante;
 
 -- ---------------------------------------------------------------------------
 -- Remitos Vendedor.
@@ -307,14 +307,15 @@ CREATE VIEW "VLRemitosVendedor" AS SELECT
 		INNER JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
 		INNER JOIN cliente c ON f.id_cliente_id = c.id_cliente
 	WHERE cv.mult_venta = 0
-	ORDER BY c.nombre_cliente, f.fecha_comprobante, f.numero_comprobante
+	ORDER BY c.nombre_cliente, f.fecha_comprobante, f.numero_comprobante;
 
 -- ---------------------------------------------------------------------------
--- Libro I.V.A. Ventas.
+-- Libro I.V.A. Ventas - Detalle.
 -- Modelo: VLIVAVentasFULL
 -- ---------------------------------------------------------------------------
 DROP VIEW IF EXISTS "main"."VLIVAVentasFULL";
 CREATE VIEW "VLIVAVentasFULL" AS SELECT 
+		f.id_factura,
 		cv.nombre_comprobante_venta,
 		cv.codigo_comprobante_venta,
 		f.letra_comprobante,
@@ -323,7 +324,7 @@ CREATE VIEW "VLIVAVentasFULL" AS SELECT
 		f.fecha_comprobante,
 		c.nombre_cliente,
 		c.cuit,
-		ti.nombre_iva,
+		ti.codigo_iva,
 		ROUND(f.gravado*cv.mult_venta, 2) * 1.0 AS gravado,
 		ROUND(f.exento*cv.mult_venta, 2) * 1.0 AS exento,
 		ROUND(f.iva*cv.mult_venta, 2) * 1.0 AS iva,
@@ -335,5 +336,54 @@ CREATE VIEW "VLIVAVentasFULL" AS SELECT
 		INNER JOIN cliente c ON f.id_cliente_id = c.id_cliente
 		INNER JOIN tipo_iva ti ON c.id_tipo_iva_id = ti.id_tipo_iva
 	WHERE cv.libro_iva
-	ORDER by f.fecha_comprobante, f.numero_comprobante
+	ORDER by f.fecha_comprobante, f.numero_comprobante;
 
+
+-- ---------------------------------------------------------------------------
+-- Libro I.V.A. Ventas - Totales por Provincias.
+-- Modelo: VLIVAVentasProvincias
+-- ---------------------------------------------------------------------------
+DROP VIEW IF EXISTS "main"."VLIVAVentasProvincias";
+CREATE VIEW "VLIVAVentasProvincias" AS SELECT 
+		p.id_provincia,
+		p.nombre_provincia,
+		f.fecha_comprobante,
+		ROUND(f.gravado*cv.mult_venta * 1.0, 2) AS gravado,
+		ROUND(f.exento*cv.mult_venta * 1.0, 2)  AS exento,
+		ROUND(f.iva*cv.mult_venta * 1.0, 2)  AS iva,
+		ROUND(f.percep_ib*cv.mult_venta * 1.0, 2)  AS percep_ib,
+		ROUND(f.total*cv.mult_venta * 1.0, 2)  AS total,
+		f.id_sucursal_id AS id_sucursal_id
+	FROM factura f
+		INNER JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
+		INNER JOIN cliente c ON f.id_cliente_id = c.id_cliente
+		INNER JOIN localidad l ON c.id_localidad_id = l.id_localidad
+		INNER JOIN provincia p ON l.id_provincia_id = p.id_provincia
+	WHERE cv.libro_iva
+	ORDER by p.nombre_provincia;
+
+
+-- ---------------------------------------------------------------------------
+-- Libro I.V.A. Ventas - Totales para SITRIB.
+-- Modelo: VLIVAVentasProvincias
+-- ---------------------------------------------------------------------------
+DROP VIEW IF EXISTS "main"."VLIVAVentasSitrib";
+CREATE VIEW "VLIVAVentasSitrib" AS SELECT 
+		f.id_factura,
+		f.fecha_comprobante,
+		ti.codigo_iva,
+		ti.nombre_iva,
+		ROUND(f.gravado*cv.mult_venta * 1.0, 2) AS gravado, 
+		ROUND(f.exento*cv.mult_venta * 1.0, 2) AS exento, 
+		ROUND(f.iva*cv.mult_venta * 1.0, 2) AS iva, 
+		ROUND(f.percep_ib*cv.mult_venta * 1.0, 2) AS percep_ib, 
+		ROUND(f.total*cv.mult_venta * 1.0, 2) AS total,
+		f.id_sucursal_id
+	FROM factura f
+		INNER JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
+		INNER JOIN cliente c ON f.id_cliente_id = c.id_cliente
+		INNER JOIN tipo_iva ti ON c.id_tipo_iva_id = ti.id_tipo_iva
+		INNER JOIN localidad l ON c.id_localidad_id = l.id_localidad
+		INNER JOIN provincia p ON l.id_provincia_id = p.id_provincia
+	WHERE cv.libro_iva
+	ORDER by ti.codigo_iva;
