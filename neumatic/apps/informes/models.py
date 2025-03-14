@@ -937,3 +937,139 @@ class VLIVAVentasSitrib(models.Model):
 		verbose_name_plural = ('Libro de I.V.A. Ventas - Totales para SITRIB')
 		ordering = ['codigo_iva']
 
+
+#-----------------------------------------------------------------------------
+# Percepción IB por Vendedores - Totales.
+#-----------------------------------------------------------------------------
+class VLPercepIBVendedorTotalesManager(models.Manager):
+	
+	def obtener_datos(self, fecha_desde, fecha_hasta):
+		
+		#-- Base de la consulta SQL.
+		query = """
+			SELECT 
+					id_factura,
+					id_vendedor_id,
+					nombre_vendedor,
+					ROUND(SUM(neto), 2) AS neto, 
+					ROUND(SUM(percep_ib), 2) AS percep_ib
+				FROM VLPercepIBVendedorTotales
+				WHERE fecha_comprobante BETWEEN %s AND %s
+				GROUP BY id_vendedor_id
+				ORDER by nombre_vendedor
+		"""
+		
+		#-- Lista de parámetros.
+		params = [fecha_desde, fecha_hasta]
+		
+		#-- Ejecutar la consulta y devolver los resultados.
+		return self.raw(query, params)
+
+class VLPercepIBVendedorTotales(models.Model):
+	id_factura = models.IntegerField(primary_key=True)
+	fecha_comprobante = models.DateField()
+	id_vendedor_id = models.IntegerField()
+	nombre_vendedor = models.CharField(max_length=30)
+	neto = models.DecimalField(max_digits=14, decimal_places=2)
+	percep_ib = models.DecimalField(max_digits=14, decimal_places=2)
+	
+	objects = VLPercepIBVendedorTotalesManager()
+	
+	class Meta:
+		managed = False
+		db_table = 'VLPercepIBVendedorTotales'
+		verbose_name = ('Percepciones por Vendedor - Totales')
+		verbose_name_plural = ('Percepciones por Vendedor - Totales')
+		ordering = ['id_vendedor_id']
+
+
+#-----------------------------------------------------------------------------
+# Percepción IB por Vendedores - Detallado.
+#-----------------------------------------------------------------------------
+class VLPercepIBVendedorDetalladoManager(models.Manager):
+	
+	def obtener_datos(self, fecha_desde, fecha_hasta):
+		
+		#-- Base de la consulta SQL.
+		query = """
+			SELECT * FROM VLPercepIBVendedorDetallado
+				WHERE fecha_comprobante BETWEEN %s AND %s
+		"""
+		
+		#-- Lista de parámetros.
+		params = [fecha_desde, fecha_hasta]
+		
+		#-- Ejecutar la consulta y devolver los resultados.
+		return self.raw(query, params)
+
+class VLPercepIBVendedorDetallado(models.Model):
+	id_factura = models.IntegerField(primary_key=True)
+	id_vendedor_id = models.IntegerField()
+	nombre_vendedor = models.CharField(max_length=30)
+	compro = models.CharField(max_length=3)	
+	letra_comprobante = models.CharField(max_length=1)
+	numero_comprobante = models.IntegerField()
+	fecha_comprobante = models.DateField()
+	comprobante = models.CharField(max_length=17)
+	id_cliente_id = models.IntegerField()
+	nombre_cliente = models.CharField(max_length=50)
+	cuit = models.IntegerField()
+	neto = models.DecimalField(max_digits=14, decimal_places=2)
+	percep_ib = models.DecimalField(max_digits=14, decimal_places=2)
+	
+	objects = VLPercepIBVendedorDetalladoManager()
+	
+	class Meta:
+		managed = False
+		db_table = 'VLPercepIBVendedorDetallado'
+		verbose_name = ('Percepciones por Vendedor - Detallado')
+		verbose_name_plural = ('Percepciones por Vendedor - Detallado')
+		ordering = ['nombre_vendedor']
+
+
+#-----------------------------------------------------------------------------
+# Percepción IB por Sub Cuentas - Totales.
+#-----------------------------------------------------------------------------
+class VLPercepIBSubcuentaTotalesManager(models.Manager):
+	
+	def obtener_datos(self, fecha_desde, fecha_hasta):
+		
+		#-- Base de la consulta SQL.
+		query = """
+			SELECT 
+					id_factura,
+					sub_cuenta,
+					nombre_cliente_padre,
+					ROUND(SUM(neto), 2) AS neto, 
+					ROUND(SUM(percep_ib), 2) AS percep_ib
+				FROM VLPercepIBSubcuentaTotales
+				WHERE fecha_comprobante BETWEEN %s AND %s
+				GROUP BY sub_cuenta
+				ORDER by sub_cuenta
+		"""
+		
+		#-- Lista de parámetros.
+		params = [fecha_desde, fecha_hasta]
+		
+		#-- Ejecutar la consulta y devolver los resultados.
+		return self.raw(query, params)
+
+class VLPercepIBSubcuentaTotales(models.Model):
+	id_factura = models.IntegerField(primary_key=True)
+	fecha_comprobante = models.DateField()
+	sub_cuenta = models.IntegerField()
+	nombre_cliente_padre = models.CharField(max_length=50)
+	id_cliente_id = models.IntegerField()
+	nombre_cliente = models.CharField(max_length=50)
+	neto = models.DecimalField(max_digits=14, decimal_places=2)
+	percep_ib = models.DecimalField(max_digits=14, decimal_places=2)
+	
+	objects = VLPercepIBSubcuentaTotalesManager()
+	
+	class Meta:
+		managed = False
+		db_table = 'VLPercepIBSubcuentaTotales'
+		verbose_name = ('Percepciones por Sub Cuentas - Totales')
+		verbose_name_plural = ('Percepciones por Sub Cuentas - Totales')
+		ordering = ['sub_cuenta']
+

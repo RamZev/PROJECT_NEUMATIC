@@ -3,27 +3,28 @@
 --  Modelo: VLSaldosClientes
 -- ---------------------------------------------------------------------------
 DROP VIEW IF EXISTS "main"."VLSaldosClientes";
-CREATE VIEW "VLSaldosClientes" AS SELECT 
-	f.id_cliente_id, 
-	f.fecha_comprobante, 
-	f.fecha_pago, 
-	c.nombre_cliente, 
-	c.domicilio_cliente, 
-	l.nombre_localidad,
-	c.codigo_postal, 
-	c.telefono_cliente, 
-	c.sub_cuenta, 
-	c.id_vendedor_id, 
-	f.total, 
-	f.entrega, 
-	f.condicion_comprobante
-FROM factura f 
-	JOIN cliente c ON f.id_cliente_id = c.id_cliente 
-	JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta 
-	JOIN localidad l ON c.id_localidad_id = l.id_localidad
-WHERE 
-	f.condicion_comprobante = 2 AND 
-	cv.mult_saldo <> 0;
+CREATE VIEW "VLSaldosClientes" AS 
+	SELECT 
+		f.id_cliente_id, 
+		f.fecha_comprobante, 
+		f.fecha_pago, 
+		c.nombre_cliente, 
+		c.domicilio_cliente, 
+		l.nombre_localidad,
+		c.codigo_postal, 
+		c.telefono_cliente, 
+		c.sub_cuenta, 
+		c.id_vendedor_id, 
+		f.total, 
+		f.entrega, 
+		f.condicion_comprobante
+	FROM factura f 
+		JOIN cliente c ON f.id_cliente_id = c.id_cliente 
+		JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta 
+		JOIN localidad l ON c.id_localidad_id = l.id_localidad
+	WHERE 
+		f.condicion_comprobante = 2 AND 
+		cv.mult_saldo <> 0;
 
 -- ---------------------------------------------------------------------------
 -- Resumen Cuenta Corriente.
@@ -31,35 +32,36 @@ WHERE
 -- ---------------------------------------------------------------------------
 DROP VIEW IF EXISTS "main"."VLResumenCtaCte";
 CREATE VIEW "VLResumenCtaCte" AS 
-SELECT 
-    f.id_cliente_id, 
-    c.nombre_cliente AS razon_social, 
-    cv.nombre_comprobante_venta, 
-    f.letra_comprobante, 
-    f.numero_comprobante, 
-    (f.letra_comprobante || ' ' || SUBSTR(printf('%012d', f.numero_comprobante), 1, 4) || '-' || SUBSTR(printf('%012d', f.numero_comprobante), 5)) AS numero, 
-    f.fecha_comprobante, 
-	f.remito,
-    f.condicion_comprobante, 
-    CASE 
-        WHEN f.condicion_comprobante = 1 THEN 'Contado'
-        WHEN f.condicion_comprobante = 2 THEN 'Cta. Cte.'
-        ELSE 'Desconocido'
-    END AS condicion,
-    f.total * cv.mult_saldo AS total, 
-    f.entrega * cv.mult_saldo AS entrega, 
-    0 AS intereses
-FROM factura f 
-JOIN cliente c ON f.id_cliente_id = c.id_cliente
-JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
-WHERE cv.mult_saldo <> 0;
+	SELECT 
+		f.id_cliente_id, 
+		c.nombre_cliente AS razon_social, 
+		cv.nombre_comprobante_venta, 
+		f.letra_comprobante, 
+		f.numero_comprobante, 
+		(f.letra_comprobante || ' ' || SUBSTR(printf('%012d', f.numero_comprobante), 1, 4) || '-' || SUBSTR(printf('%012d', f.numero_comprobante), 5)) AS numero, 
+		f.fecha_comprobante, 
+		f.remito,
+		f.condicion_comprobante, 
+		CASE 
+			WHEN f.condicion_comprobante = 1 THEN 'Contado'
+			WHEN f.condicion_comprobante = 2 THEN 'Cta. Cte.'
+			ELSE 'Desconocido'
+		END AS condicion,
+		f.total * cv.mult_saldo AS total, 
+		f.entrega * cv.mult_saldo AS entrega, 
+		0 AS intereses
+	FROM factura f 
+		JOIN cliente c ON f.id_cliente_id = c.id_cliente
+		JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
+	WHERE cv.mult_saldo <> 0;
 
 -- ---------------------------------------------------------------------------
 -- Mercadería por Cliente.
 -- Modelo: VLMercaderiaPorCliente
 -- ---------------------------------------------------------------------------
 DROP VIEW IF EXISTS "main"."VLMercaderiaPorCliente";
-CREATE VIEW "VLMercaderiaPorCliente" AS SELECT 
+CREATE VIEW "VLMercaderiaPorCliente" AS 
+	SELECT 
 	   f.id_cliente_id, 
 	   cv.nombre_comprobante_venta, 
 	   f.letra_comprobante, 
@@ -113,7 +115,8 @@ CREATE VIEW "VLRemitosClientes" AS
 -- Modelo: VLTotalRemitosClientes
 -- ---------------------------------------------------------------------------
 DROP VIEW IF EXISTS "main"."VLTotalRemitosClientes";
-CREATE VIEW "VLTotalRemitosClientes" AS SELECT 
+CREATE VIEW "VLTotalRemitosClientes" AS 
+	SELECT 
 		f.id_cliente_id, 
 		f.fecha_comprobante, 
 		c.nombre_cliente, 
@@ -135,7 +138,8 @@ CREATE VIEW "VLTotalRemitosClientes" AS SELECT
 -- Modelo: VLVentaComproLocalidad
 -- ---------------------------------------------------------------------------
 DROP VIEW IF EXISTS "main"."VLVentaComproLocalidad";
-CREATE VIEW "VLVentaComproLocalidad" AS SELECT 
+CREATE VIEW "VLVentaComproLocalidad" AS 
+	SELECT 
 		f.id_cliente_id,
 		f.id_sucursal_id,
 		f.fecha_comprobante,
@@ -165,7 +169,8 @@ CREATE VIEW "VLVentaComproLocalidad" AS SELECT
 -- Modelo: VLVentaMostrador
 -- ---------------------------------------------------------------------------
 DROP VIEW IF EXISTS "main"."VLVentaMostrador";
-CREATE VIEW "VLVentaMostrador" AS SELECT 
+CREATE VIEW "VLVentaMostrador" AS 
+	SELECT 
 		df.id_detalle_factura,
 		cv.nombre_comprobante_venta,
 		cv.codigo_comprobante_venta,
@@ -198,7 +203,8 @@ CREATE VIEW "VLVentaMostrador" AS SELECT
 -- Modelo: VLVentaCompro
 -- ---------------------------------------------------------------------------
 DROP VIEW IF EXISTS "main"."VLVentaCompro";
-CREATE VIEW "VLVentaCompro" AS SELECT 
+CREATE VIEW "VLVentaCompro" AS 
+	SELECT 
 		f.id_factura,
 		cv.nombre_comprobante_venta,
 		f.letra_comprobante,
@@ -227,7 +233,8 @@ CREATE VIEW "VLVentaCompro" AS SELECT
 -- Modelo: VLComprobantesVencidos
 -- ---------------------------------------------------------------------------
 DROP VIEW IF EXISTS "main"."VLComprobantesVencidos";
-CREATE VIEW "VLComprobantesVencidos" AS SELECT 
+CREATE VIEW "VLComprobantesVencidos" AS 
+	SELECT 
 		f.id_factura,
 		f.fecha_comprobante,
 		CAST(JULIANDAY(DATE('now')) - JULIANDAY(f.fecha_comprobante) AS INTEGER) AS dias_vencidos,
@@ -243,7 +250,7 @@ CREATE VIEW "VLComprobantesVencidos" AS SELECT
 		f.id_vendedor_id,
 		f.id_sucursal_id
 	FROM factura f
-	JOIN cliente c ON f.id_cliente_id = c.id_cliente
+		JOIN cliente c ON f.id_cliente_id = c.id_cliente
 	WHERE f.estado = ""
 	ORDER by f.fecha_comprobante;
 
@@ -252,7 +259,8 @@ CREATE VIEW "VLComprobantesVencidos" AS SELECT
 -- Modelo: VLRemitosPendientes
 -- ---------------------------------------------------------------------------
 DROP VIEW IF EXISTS "main"."VLRemitosPendientes";
-CREATE VIEW "VLRemitosPendientes" AS SELECT 
+CREATE VIEW "VLRemitosPendientes" AS 
+	SELECT 
 		f.id_factura,
 		f.id_cliente_id,
 		c.nombre_cliente,
@@ -284,7 +292,8 @@ CREATE VIEW "VLRemitosPendientes" AS SELECT
 -- Modelo: VLRemitosVendedor
 -- ---------------------------------------------------------------------------
 DROP VIEW IF EXISTS "main"."VLRemitosVendedor";
-CREATE VIEW "VLRemitosVendedor" AS SELECT 
+CREATE VIEW "VLRemitosVendedor" AS 
+	SELECT 
 		f.id_factura,
 		f.id_cliente_id,
 		c.nombre_cliente,
@@ -314,7 +323,8 @@ CREATE VIEW "VLRemitosVendedor" AS SELECT
 -- Modelo: VLIVAVentasFULL
 -- ---------------------------------------------------------------------------
 DROP VIEW IF EXISTS "main"."VLIVAVentasFULL";
-CREATE VIEW "VLIVAVentasFULL" AS SELECT 
+CREATE VIEW "VLIVAVentasFULL" AS 
+	SELECT 
 		f.id_factura,
 		cv.nombre_comprobante_venta,
 		cv.codigo_comprobante_venta,
@@ -344,7 +354,8 @@ CREATE VIEW "VLIVAVentasFULL" AS SELECT
 -- Modelo: VLIVAVentasProvincias
 -- ---------------------------------------------------------------------------
 DROP VIEW IF EXISTS "main"."VLIVAVentasProvincias";
-CREATE VIEW "VLIVAVentasProvincias" AS SELECT 
+CREATE VIEW "VLIVAVentasProvincias" AS 
+	SELECT 
 		p.id_provincia,
 		p.nombre_provincia,
 		f.fecha_comprobante,
@@ -368,7 +379,8 @@ CREATE VIEW "VLIVAVentasProvincias" AS SELECT
 -- Modelo: VLIVAVentasProvincias
 -- ---------------------------------------------------------------------------
 DROP VIEW IF EXISTS "main"."VLIVAVentasSitrib";
-CREATE VIEW "VLIVAVentasSitrib" AS SELECT 
+CREATE VIEW "VLIVAVentasSitrib" AS 
+	SELECT 
 		f.id_factura,
 		f.fecha_comprobante,
 		ti.codigo_iva,
@@ -387,3 +399,78 @@ CREATE VIEW "VLIVAVentasSitrib" AS SELECT
 		INNER JOIN provincia p ON l.id_provincia_id = p.id_provincia
 	WHERE cv.libro_iva
 	ORDER by ti.codigo_iva;
+
+
+-- ---------------------------------------------------------------------------
+-- Percepciones por Vendedor - Totales.
+-- Modelo: VLPercepIBVendedorTotales
+-- ---------------------------------------------------------------------------
+DROP VIEW IF EXISTS "main"."VLPercepIBVendedorTotales";
+CREATE VIEW "VLPercepIBVendedorTotales" AS 
+	SELECT 
+		f.id_factura,
+		c.id_vendedor_id,
+		v.nombre_vendedor,
+		f.fecha_comprobante,
+		ROUND(f.gravado*cv.mult_venta * 1.0, 2) AS neto,
+		ROUND(f.percep_ib*cv.mult_venta * 1.0, 2) AS percep_ib
+	FROM factura f
+		INNER JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
+		INNER JOIN cliente c ON f.id_cliente_id = c.id_cliente 
+		INNER JOIN vendedor v ON c.id_vendedor_id = v.id_vendedor
+	WHERE f.percep_ib<>0 AND cv.mult_venta<>0
+	ORDER BY c.id_vendedor_id
+
+
+-- ---------------------------------------------------------------------------
+-- Percepciones por Vendedor - Detallado.
+-- Modelo: VLPercepIBVendedorDetallado
+-- ---------------------------------------------------------------------------
+DROP VIEW IF EXISTS "main"."VLPercepIBVendedorDetallado";
+CREATE VIEW VLPercepIBVendedorDetallado AS
+	SELECT 
+		f.id_factura,
+		c.id_vendedor_id,
+		v.nombre_vendedor,
+		cv.nombre_comprobante_venta,
+		f.letra_comprobante,
+		f.numero_comprobante,
+		f.fecha_comprobante,
+		(f.compro || ' ' || f.letra_comprobante || ' ' || SUBSTR(printf('%012d', f.numero_comprobante), 1, 4) || '-' || SUBSTR(printf('%012d', f.numero_comprobante), 5) || "  " || f.fecha_comprobante) AS comprobante,
+		f.id_cliente_id,
+		c.nombre_cliente,
+		c.cuit,
+		f.gravado*cv.mult_venta AS neto,
+		f.percep_ib*cv.mult_venta AS percep_ib,
+		f.no_estadist
+	FROM factura f
+		INNER JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
+		INNER JOIN cliente c ON f.id_cliente_id = c.id_cliente 
+		INNER JOIN vendedor v ON c.id_vendedor_id = v.id_vendedor
+	WHERE f.percep_ib<>0 AND cv.mult_venta<>0
+	ORDER BY v.nombre_vendedor, f.fecha_comprobante, f.numero_comprobante
+
+
+-- ---------------------------------------------------------------------------
+-- Percepciones por Sub Cuenta - Totales.
+-- Modelo: VLPercepIBSubcuentaTotales
+-- ---------------------------------------------------------------------------
+DROP VIEW IF EXISTS "main"."VLPercepIBSubcuentaTotales";
+CREATE VIEW "VLPercepIBSubcuentaTotales" AS 
+	SELECT 
+		f.id_factura,
+		f.fecha_comprobante,
+		c.sub_cuenta,
+		p.nombre_cliente AS nombre_cliente_padre,
+		f.id_cliente_id,
+		c.nombre_cliente,
+		ROUND(f.gravado * cv.mult_venta * 1.0, 2) AS neto,
+		ROUND(f.percep_ib * cv.mult_venta * 1.0, 2) AS percep_ib
+	FROM factura f
+		INNER JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
+		INNER JOIN cliente c ON f.id_cliente_id = c.id_cliente 
+		LEFT JOIN cliente p ON c.sub_cuenta = p.id_cliente 
+	WHERE f.percep_ib <> 0 AND cv.mult_venta <> 0 
+	ORDER BY c.sub_cuenta
+
+

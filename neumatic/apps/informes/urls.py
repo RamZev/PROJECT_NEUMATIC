@@ -47,6 +47,9 @@ from apps.informes.views.vlremitosvendedor_list_views import *
 from apps.informes.views.vlivaventasfull_list_views import *
 from apps.informes.views.vlivaventasprovincias_list_views import *
 from apps.informes.views.vlivaventassitrib_list_views import *
+from apps.informes.views.vlpercepibvendedortotales_list_views import *
+from apps.informes.views.vlpercepibvendedordetallado_list_views import *
+from apps.informes.views.vlpercepibsubcuentatotales_list_views import *
 
 #-- Otras rutas.
 from apps.maestros.views.consulta_views_maestros import filtrar_localidad
@@ -408,6 +411,42 @@ urlpatterns = [
 		 name="vlivaventassitrib_vista_excel"),
 	path("vlivaventassitrib/vista-csv/", vlivaventassitrib_vista_csv, 
 		 name="vlivaventassitrib_vista_csv"),
+	
+	#-- VL Percep IB Vendedor - Totales.
+	path('vlpercepibvendedortotales_informe/', VLPercepIBVendedorTotalesInformeView.as_view(), 
+		 name='vlpercepibvendedortotales_informe_list'),
+	path('vlpercepibvendedortotales/vista-preliminar/', vlpercepibvendedortotales_vista_pantalla, 
+		 name="vlpercepibvendedortotales_vista_pantalla"),
+	path("vlpercepibvendedortotales/vista-pdf/", vlpercepibvendedortotales_vista_pdf, 
+		 name="vlpercepibvendedortotales_vista_pdf"),
+	path("vlpercepibvendedortotales/vista-excel/", vlpercepibvendedortotales_vista_excel, 
+		 name="vlpercepibvendedortotales_vista_excel"),
+	path("vlpercepibvendedortotales/vista-csv/", vlpercepibvendedortotales_vista_csv, 
+		 name="vlpercepibvendedortotales_vista_csv"),
+	
+	#-- VL Percep IB Vendedor - Detallado.
+	path('vlpercepibvendedordetallado_informe/', VLPercepIBVendedorDetalladoInformeView.as_view(), 
+		 name='vlpercepibvendedordetallado_informe_list'),
+	path('vlpercepibvendedordetallado/vista-preliminar/', vlpercepibvendedordetallado_vista_pantalla, 
+		 name="vlpercepibvendedordetallado_vista_pantalla"),
+	path("vlpercepibvendedordetallado/vista-pdf/", vlpercepibvendedordetallado_vista_pdf, 
+		 name="vlpercepibvendedordetallado_vista_pdf"),
+	path("vlpercepibvendedordetallado/vista-excel/", vlpercepibvendedordetallado_vista_excel, 
+		 name="vlpercepibvendedordetallado_vista_excel"),
+	path("vlpercepibvendedordetallado/vista-csv/", vlpercepibvendedordetallado_vista_csv, 
+		 name="vlpercepibvendedordetallado_vista_csv"),
+	
+	#-- VL Percep IB Subcuenta - Totales.
+	path('vlpercepibsubcuentatotales_informe/', VLPercepIBSubcuentaTotalesInformeView.as_view(), 
+		 name='vlpercepibsubcuentatotales_informe_list'),
+	path('vlpercepibsubcuentatotales/vista-preliminar/', vlpercepibsubcuentatotales_vista_pantalla, 
+		 name="vlpercepibsubcuentatotales_vista_pantalla"),
+	path("vlpercepibsubcuentatotales/vista-pdf/", vlpercepibsubcuentatotales_vista_pdf, 
+		 name="vlpercepibsubcuentatotales_vista_pdf"),
+	path("vlpercepibsubcuentatotales/vista-excel/", vlpercepibsubcuentatotales_vista_excel, 
+		 name="vlpercepibsubcuentatotales_vista_excel"),
+	path("vlpercepibsubcuentatotales/vista-csv/", vlpercepibsubcuentatotales_vista_csv, 
+		 name="vlpercepibsubcuentatotales_vista_csv"),
 	
 	
 	

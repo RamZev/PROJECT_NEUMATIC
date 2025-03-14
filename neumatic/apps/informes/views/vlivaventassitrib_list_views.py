@@ -13,7 +13,7 @@ from decimal import Decimal
 
 from .report_views_generics import *
 from apps.informes.models import VLIVAVentasSitrib
-from ..forms.buscador_vlivaventastotales_forms import BuscadorVLIVAVentasTotalesForm
+from ..forms.buscador_vlivaventassitrib_forms import BuscadorVLIVAVentasSitribForm
 from utils.utils import deserializar_datos, serializar_queryset
 from utils.helpers.export_helpers import ExportHelper
 
@@ -27,7 +27,7 @@ class ConfigViews:
 	model = VLIVAVentasSitrib
 	
 	#-- Formulario asociado al modelo.
-	form_class = BuscadorVLIVAVentasTotalesForm
+	form_class = BuscadorVLIVAVentasSitribForm
 	
 	#-- Aplicación asociada al modelo.
 	app_label = "informes"

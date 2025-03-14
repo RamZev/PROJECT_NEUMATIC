@@ -1,0 +1,74 @@
+<!-- neumatic\apps\informes\templates\informes\reportes\vlpercepibvendedordetallado_list.html -->
+
+{% extends 'informes/reportes/base_reportes_new.html' %}
+{% load static %}
+{% load custom_tags %}
+
+<!-- Blque Header -------------------------------------------------------------------------- -->
+ 
+<!-- Contenido Inferior Izquierdo -->
+{% block header_bottom_left %}
+	{% comment %}
+	<p>{{ datos_empresa.empresa }}</p>
+	<p>{{ datos_empresa.domicilio }}</p>
+	<p>C.P.: {{ datos_empresa.cp }} {{ datos_empresa.localidad }} - {{ datos_empresa.provincia }}</p>
+	<p>{{ datos_empresa.sit_iva }} C.U.I.T.:{{ datos_empresa.cuit }}</p>
+	{% endcomment %}
+{% endblock %}
+
+<!-- Contenido Inferior Derecho -->
+{% block header_bottom_right %}
+	{% for param, valor in parametros.items %}
+		<p class="compact-line-spacing"><strong>{{ param }}:</strong> {{ valor }}</p>
+	{% endfor %}
+{% endblock %}
+
+<!-- Bloque Content ------------------------------------------------------------------------ -->
+
+{% block content %}
+	<table>
+		
+		<thead>
+			<tr>
+				<th>Comprobante</th>
+				<th>Código</th>
+				<th>Cliente</th>
+				<th>C.U.I.T.</th>
+				<th class="numeric">Neto</th>
+				<th class="numeric">Percep IB</th>
+			</tr>
+		</thead>
+		
+		<tbody>
+			
+			{% for id_vendedor, data in objetos.items %}
+				<!-- Fila con los datos del Vendedor -->
+				<tr>
+					<td style="padding-top: 5px;">
+						<strong>Vendedor: </strong> 
+						<strong>[{{ id_vendedor }}]</strong> 
+						<strong>{{ data.vendedor }}</strong> 
+					</td>
+				</tr>
+				
+				<!-- Filas con el detalle del comprobante -->
+				{% for comp in data.comprobantes %}
+					<tr>
+						<td>{{ comp.comprobante }}</td>
+						<td>{{ comp.id_cliente_id }}</td>
+						<td>{{ comp.nombre_cliente }}</td>
+						<td>{{ comp.cuit }}</td>
+						<td class="numeric">{{ comp.neto|formato_es_ar }}</td>
+						<td class="numeric">{{ comp.percep_ib|formato_es_ar }}</td>
+					</tr>
+				{% endfor %}
+				<tr>
+					{% comment %} <td colspan="4" style="text-align: right;"><strong>Total Comprobante:</strong></td> {% endcomment %}
+					<td class="numeric" colspan="5"><strong>{{ data.total_neto|formato_es_ar }}</strong></td>
+					<td class="numeric"><strong>{{ data.total_percep|formato_es_ar }}</strong></td>
+				</tr>
+			{% endfor %}
+			
+		</tbody>
+	</table>
+{% endblock content %}

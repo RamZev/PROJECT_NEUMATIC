@@ -1,4 +1,4 @@
-# neumatic\apps\informes\views\vlivaventasprovincias_list_views.py
+# neumatic\apps\informes\views\vlpercepibsubcuentatotales_list_views.py
 
 from django.urls import reverse_lazy
 from django.shortcuts import render
@@ -8,12 +8,11 @@ from datetime import datetime
 from django.template.loader import render_to_string
 from weasyprint import HTML
 from django.templatetags.static import static
-# from django.forms.models import model_to_dict
 from decimal import Decimal
 
 from .report_views_generics import *
-from apps.informes.models import VLIVAVentasProvincias
-from ..forms.buscador_vlivaventasprovincias_forms import BuscadorVLIVAVentasProvinciasForm
+from apps.informes.models import VLPercepIBSubcuentaTotales
+from ..forms.buscador_vlpercepibsubcuentatotales_forms import BuscadorPercepIBSubcuentaTotalesForm
 from utils.utils import deserializar_datos, serializar_queryset
 from utils.helpers.export_helpers import ExportHelper
 
@@ -21,13 +20,13 @@ from utils.helpers.export_helpers import ExportHelper
 class ConfigViews:
 	
 	#-- Título del reporte.
-	report_title = "Total de Ventas por Provincias"
+	report_title = "Percepciones por Sub-Cuentas - Totales"
 	
 	#-- Modelo.
-	model = VLIVAVentasProvincias
+	model = VLPercepIBSubcuentaTotales
 	
 	#-- Formulario asociado al modelo.
-	form_class = BuscadorVLIVAVentasProvinciasForm
+	form_class = BuscadorPercepIBSubcuentaTotalesForm
 	
 	#-- Aplicación asociada al modelo.
 	app_label = "informes"
@@ -73,16 +72,14 @@ class ConfigViews:
 	
 	#-- Establecer las columnas del reporte y sus anchos(en punto).
 	header_data = {
-		"nombre_provincia": (40, "Provincia"),
-		"gravado": (180, "Gravado"),
-		"exento": (40, "Exento"),
-		"iva": (40, "I.V.A."),
-		"percep_ib": (40, "Percep. IB"),
-		"total": (40, "Total"),
+		"sub_cuenta": (40, "Código"),
+		"nombre_cliente_padre": (40, "Sub-Cuenta"),
+		"neto": (180, "Neto"),
+		"percep_ib": (40, "Percepción"),
 	}
 
 
-class VLIVAVentasProvinciasInformeView(InformeFormView):
+class VLPercepIBSubcuentaTotalesInformeView(InformeFormView):
 	config = ConfigViews  #-- Ahora la configuración estará disponible en self.config.
 	form_class = ConfigViews.form_class
 	template_name = ConfigViews.template_list
@@ -97,21 +94,16 @@ class VLIVAVentasProvinciasInformeView(InformeFormView):
 		"url_pdf": ConfigViews.url_pdf,
 	}
 	
-	def transformar_cleaned_data(self, cleaned_data):
-		#-- Convertir a id si existen.
-		if cleaned_data.get("sucursal"):
-			suc = cleaned_data["sucursal"]
-			cleaned_data["sucursal"] = suc.id_sucursal
-			cleaned_data["nombre_sucursal"] = suc.nombre_sucursal
-		
-		return cleaned_data
+	# def transformar_cleaned_data(self, cleaned_data):
+	# 	#-- Convertir a id si existen.
+	# 	
+	# 	return cleaned_data
 	
 	def obtener_queryset(self, cleaned_data):
-		id_sucursal = cleaned_data.get("sucursal")
-		anno = cleaned_data.get("anno")
-		mes = cleaned_data.get("mes")
+		fecha_desde = cleaned_data.get('fecha_desde')
+		fecha_hasta = cleaned_data.get('fecha_hasta')
 		
-		return VLIVAVentasProvincias.objects.obtener_datos(id_sucursal, anno, mes)
+		return VLPercepIBSubcuentaTotales.objects.obtener_datos(fecha_desde, fecha_hasta)
 	
 	def obtener_contexto_reporte(self, queryset, cleaned_data):
 		"""
@@ -120,38 +112,12 @@ class VLIVAVentasProvinciasInformeView(InformeFormView):
 		"""
 		
 		#-- Parámetros del listado.
-		id_sucursal = cleaned_data.get("sucursal")
-		anno = cleaned_data.get("anno")
-		mes = cleaned_data.get("mes")
+		fecha_desde = cleaned_data.get('fecha_desde')
+		fecha_hasta = cleaned_data.get('fecha_hasta')
 		
-		meses = {
-			"01": "Enero",
-			"02": "Febrero",
-			"03": "Marzo",
-			"04": "Abril",
-			"05": "Mayo",
-			"06": "Junio",
-			"07": "Julio",
-			"08": "Agosto",
-			"09": "Septiembre",
-			"10": "Octubre",
-			"11": "Noviembre",
-			"12": "Diciembre",
-		}
 		param = {
-			"Sucursal": cleaned_data.get("nombre_sucursal") if id_sucursal else "Todas",
-			"Mes": meses[mes],
-			"Año": anno,
-		}
-		
-		datos_empresa = {
-			"cuit": "30692402363",
-			"empresa": "DEBONA MARCELO FABIAN Y DEBONA VICTOR HUGO S.H.",
-			"domicilio": "INDEPENDENCIA 2994",
-			"cp": "S3040",
-			"provincia": "SANTA FE",
-			"localidad": "SAN JUSTO",
-			"sit_iva": "RESP. INSCRIPTOS"
+			"Desde": fecha_desde.strftime("%d/%m/%Y"),
+			"Hasta": fecha_hasta.strftime("%d/%m/%Y"),
 		}
 		
 		fecha_hora_reporte = datetime.now().strftime("%d/%m/%Y %H:%M:%S")		
@@ -160,20 +126,6 @@ class VLIVAVentasProvinciasInformeView(InformeFormView):
 		
 		
 		# **************************************************
-		#-- Inicializar los totales como Decimals.
-		total_gravado = Decimal(0)
-		total_exento = Decimal(0)
-		total_iva = Decimal(0)
-		total_percep_ib = Decimal(0)
-		total_total = Decimal(0)
-		
-		#-- Iterar sobre cada objeto en el queryset y acumular los totales.
-		for obj in queryset:
-			total_gravado   += obj.gravado
-			total_exento    += obj.exento
-			total_iva       += obj.iva
-			total_percep_ib += obj.percep_ib
-			total_total     += obj.total
 		# **************************************************
 		
 		#-- Serializar el queryset.
@@ -182,13 +134,7 @@ class VLIVAVentasProvinciasInformeView(InformeFormView):
 		#-- Se retorna un contexto que será consumido tanto para la vista en pantalla como para la generación del PDF.
 		return {
 			"objetos": queryset_serializado,
-			"total_gravado": total_gravado,
-			"total_exento": total_exento,
-			"total_iva": total_iva,
-			"total_percep_ib": total_percep_ib,
-			"total_total": total_total,
 			"parametros": param,
-			"datos_empresa": datos_empresa,
 			'fecha_hora_reporte': fecha_hora_reporte,
 			'titulo': ConfigViews.report_title,
 			'logo_url': f"{dominio}{static('img/logo_01.png')}",
@@ -212,7 +158,7 @@ def raw_to_dict(instance):
 	return data
 
 
-def vlivaventasprovincias_vista_pantalla(request):
+def vlpercepibsubcuentatotales_vista_pantalla(request):
 	#-- Obtener el token de la querystring.
 	token = request.GET.get("token")
 	
@@ -231,7 +177,7 @@ def vlivaventasprovincias_vista_pantalla(request):
 	# return render(request, "informes/reportes/ventacompro_list.html", contexto_reporte)
 
 
-def vlivaventasprovincias_vista_pdf(request):
+def vlpercepibsubcuentatotales_vista_pdf(request):
 	#-- Obtener el token de la querystring.
 	token = request.GET.get("token")
 	
@@ -256,7 +202,7 @@ def vlivaventasprovincias_vista_pdf(request):
 	return response
 
 
-def vlivaventasprovincias_vista_excel(request):
+def vlpercepibsubcuentatotales_vista_excel(request):
 	token = request.GET.get("token")
 	if not token:
 		return HttpResponse("Token no proporcionado", status=400)
@@ -270,7 +216,7 @@ def vlivaventasprovincias_vista_excel(request):
 	# ---------------------------------------------
 	
 	#-- Instanciar la vista y obtener el queryset.
-	view_instance = VLIVAVentasProvinciasInformeView()
+	view_instance = VLPercepIBSubcuentaTotalesInformeView()
 	view_instance.request = request
 	queryset = view_instance.obtener_queryset(cleaned_data)
 	
@@ -290,7 +236,7 @@ def vlivaventasprovincias_vista_excel(request):
 	return response
 
 
-def vlivaventasprovincias_vista_csv(request):
+def vlpercepibsubcuentatotales_vista_csv(request):
 	token = request.GET.get("token")
 	if not token:
 		return HttpResponse("Token no proporcionado", status=400)
@@ -303,7 +249,7 @@ def vlivaventasprovincias_vista_csv(request):
 	cleaned_data = data["cleaned_data"]
 	
 	#-- Instanciar la vista para reejecutar la consulta y obtener el queryset.
-	view_instance = VLIVAVentasProvinciasInformeView()
+	view_instance = VLPercepIBSubcuentaTotalesInformeView()
 	view_instance.request = request
 	queryset = view_instance.obtener_queryset(cleaned_data)
 	
