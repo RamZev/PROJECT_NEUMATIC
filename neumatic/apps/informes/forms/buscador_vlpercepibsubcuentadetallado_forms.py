@@ -1,13 +1,13 @@
-# neumatic\apps\informes\forms\buscador_actividad_forms.py
+# neumatic\apps\informes\forms\buscador_vlpercepibsubcuentadetallado_forms.py
+
 from django import forms
 from datetime import date
 
 from .informes_generics_forms import InformesGenericForm
-from diseno_base.diseno_bootstrap import formclasstext, formclassdate
-from apps.maestros.models.cliente_models import Cliente
+from diseno_base.diseno_bootstrap import formclassdate
 
 
-class BuscadorRemitosClientesForm(InformesGenericForm):
+class BuscadorPercepIBSubcuentaDetalladoForm(InformesGenericForm):
 	
 	fecha_desde = forms.DateField(
 		required=False, 
@@ -19,28 +19,18 @@ class BuscadorRemitosClientesForm(InformesGenericForm):
 		label="Hasta Fecha",
 		widget=forms.TextInput(attrs={'type':'date', **formclassdate})
 	)
-	id_cliente = forms.IntegerField(
-		label="Cód. Cliente",
-		required=True,
-		widget=forms.NumberInput(attrs={**formclasstext})
-	)
-	nombre_cliente = forms.CharField(
-		label="Cliente",
-		required=False,
-		widget=forms.TextInput(attrs={**formclasstext, 'readonly': 'readonly'})
-	)
 	
 	def __init__(self, *args, **kwargs):
 		"""
 		Inicializa el formulario con valores predeterminados:
-		- `fecha_desde` se establece en el 1 de enero del año actual.
+		- `fecha_desde` se establece en el 1 del mes y año actual.
 		- `fecha_hasta` se establece en la fecha actual.
 		"""
 		
 		super().__init__(*args, **kwargs)
 		
 		if "fecha_desde" not in self.initial:
-			fecha_inicial = date(date.today().year, 1, 1)
+			fecha_inicial = date(date.today().year, date.today().month, 1)
 			self.fields["fecha_desde"].initial = fecha_inicial
 			self.fields["fecha_desde"].widget.attrs["value"] = fecha_inicial
 		if "fecha_hasta" not in self.initial:
@@ -51,13 +41,8 @@ class BuscadorRemitosClientesForm(InformesGenericForm):
 	def clean(self):
 		cleaned_data = super().clean()
 		
-		id_cliente = cleaned_data.get("id_cliente")
 		fecha_desde = cleaned_data.get("fecha_desde")
 		fecha_hasta = cleaned_data.get("fecha_hasta")
-		
-		#-- Validar que se haya indicado un cliente solo si hay datos enviados.
-		if not id_cliente:
-			self.add_error("id_cliente", "Debe indicar un Código de Cliente.")
 		
 		#-- Validar rango de fechas.
 		if fecha_desde and fecha_hasta and fecha_desde > fecha_hasta:

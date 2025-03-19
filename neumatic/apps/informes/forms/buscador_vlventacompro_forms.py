@@ -1,13 +1,14 @@
-# neumatic\apps\informes\forms\buscador_actividad_forms.py
+# neumatic\apps\informes\forms\buscador_vlventacompro_forms.py
+
 from django import forms
 from datetime import date
 
 from .informes_generics_forms import InformesGenericForm
-from diseno_base.diseno_bootstrap import formclassselect, formclassdate, formclasstext
+from diseno_base.diseno_bootstrap import formclassselect, formclassdate, formclasscheck
 from apps.maestros.models.sucursal_models import Sucursal
 
 
-class BuscadorVentaComproLocalidadForm(InformesGenericForm):
+class BuscadorVentaComproForm(InformesGenericForm):
 	
 	sucursal = forms.ModelChoiceField(
 		queryset=Sucursal.objects.filter(estatus_sucursal=True), 
@@ -25,12 +26,12 @@ class BuscadorVentaComproLocalidadForm(InformesGenericForm):
 		label="Hasta Fecha",
 		widget=forms.TextInput(attrs={'type':'date', **formclassdate})
 	)
-	codigo_postal = forms.CharField(
-		max_length=5,
-		required=False, 
-		label="Código Postal", 
-		widget=forms.TextInput(attrs={**formclasstext})
+	solo_totales_comprobante = forms.BooleanField(
+		label="Solo Totales por Comprobante",
+		required=False,
+		widget=forms.CheckboxInput(attrs={**formclasscheck})
 	)
+	
 	
 	def __init__(self, *args, **kwargs):
 		"""
@@ -53,13 +54,8 @@ class BuscadorVentaComproLocalidadForm(InformesGenericForm):
 	def clean(self):
 		cleaned_data = super().clean()
 		
-		# cliente = cleaned_data.get("cliente")
 		fecha_desde = cleaned_data.get("fecha_desde")
 		fecha_hasta = cleaned_data.get("fecha_hasta")
-		
-		# #-- Validar que se haya indicado un cliente solo si hay datos enviados.
-		# if not cliente:
-		# 	self.add_error("cliente", "Debe indicar un cliente.")
 		
 		#-- Validar rango de fechas.
 		if fecha_desde and fecha_hasta and fecha_desde > fecha_hasta:

@@ -38,7 +38,6 @@ class BuscadorVLIVAVentasFULLForm(InformesGenericForm):
 		widget=forms.Select(attrs={**formclassselect})
 	)
 	anno = forms.IntegerField(
-		# min_value=2000,
 		required=True, 
 		label="Año", 
 		widget=forms.NumberInput(attrs={**formclasstext})

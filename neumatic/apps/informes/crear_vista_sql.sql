@@ -474,3 +474,30 @@ CREATE VIEW "VLPercepIBSubcuentaTotales" AS
 	ORDER BY c.sub_cuenta
 
 
+-- ---------------------------------------------------------------------------
+-- Percepciones por Sub Cuenta - Detallado.
+-- Modelo: VLPercepIBSubcuentaDetallado
+-- ---------------------------------------------------------------------------
+DROP VIEW IF EXISTS "main"."VLPercepIBSubcuentaDetallado";
+CREATE VIEW "VLPercepIBSubcuentaDetallado" AS SELECT 
+		f.id_factura,
+		c.sub_cuenta,
+		p.nombre_cliente AS nombre_cliente_padre,
+		f.compro,
+		f.letra_comprobante,
+		f.numero_comprobante,
+		f.fecha_comprobante,
+		(f.compro || ' ' || f.letra_comprobante || ' ' || SUBSTR(printf('%012d', f.numero_comprobante), 1, 4) || '-' || SUBSTR(printf('%012d', f.numero_comprobante), 5) || "  " || f.fecha_comprobante) AS comprobante,
+		f.id_cliente_id,
+		c.nombre_cliente,
+		c.cuit,
+		f.gravado*cv.mult_venta AS neto,
+		f.percep_ib*cv.mult_venta AS percep_ib,
+		f.no_estadist
+	FROM factura f
+		INNER JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
+		INNER JOIN cliente c ON f.id_cliente_id = c.id_cliente
+		LEFT JOIN cliente p ON c.sub_cuenta = p.id_cliente
+	WHERE f.percep_ib<>0 AND cv.mult_venta<>0
+	GROUP BY c.sub_cuenta, f.numero_comprobante
+	ORDER BY c.sub_cuenta, f.fecha_comprobante, f.numero_comprobante

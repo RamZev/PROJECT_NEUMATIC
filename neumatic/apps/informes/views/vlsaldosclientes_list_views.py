@@ -22,7 +22,7 @@ from reportlab.lib.enums import TA_LEFT, TA_RIGHT
 
 from .report_views_generics import *
 from apps.informes.models import VLSaldosClientes
-from ..forms.buscador_saldosclientes_forms import BuscadorSaldosClientesForm
+from ..forms.buscador_vlsaldosclientes_forms import BuscadorSaldosClientesForm
 from utils.utils import deserializar_datos
 from apps.maestros.templatetags.custom_tags import formato_es_ar
 from utils.helpers.export_helpers import ExportHelper

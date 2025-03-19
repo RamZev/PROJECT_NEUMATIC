@@ -76,7 +76,7 @@ class BuscadorRemitosPendientesForm(InformesGenericForm):
 		
 		filtrar_por = cleaned_data.get("filtrar_por")
 		vendedor = cleaned_data.get("vendedor", None)
-		Sucursal = cleaned_data.get("sucursal", None)
+		sucursal = cleaned_data.get("sucursal", None)
 		id_cli_desde = cleaned_data.get("id_cli_desde") or 0
 		id_cli_hasta = cleaned_data.get("id_cli_hasta") or 0
 		
@@ -90,7 +90,7 @@ class BuscadorRemitosPendientesForm(InformesGenericForm):
 			elif id_cli_desde > id_cli_hasta:
 				self.add_error("id_cli_hasta", "El Id Hasta no debe ser manor al Id Desde.")
 			
-		elif (filtrar_por == "sucursal_fac" or filtrar_por == "sucursal_cli") and not Sucursal:
+		elif (filtrar_por == "sucursal_fac" or filtrar_por == "sucursal_cli") and not sucursal:
 			self.add_error("sucursal", "Debe seleccionar una Sucursal.")
 		
 		return cleaned_data

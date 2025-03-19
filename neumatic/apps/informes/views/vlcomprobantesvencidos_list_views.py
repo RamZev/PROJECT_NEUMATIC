@@ -98,28 +98,12 @@ class VLComprobantesVencidosInformeView(InformeFormView):
 		"url_pdf": ConfigViews.url_pdf,
 	}
 	
-	def transformar_cleaned_data(self, cleaned_data):
-		#-- Convertir a id si existen.
-		if cleaned_data.get("vendedor"):
-			ven = cleaned_data["vendedor"]
-			# cleaned_data["vendedor"] = cleaned_data["vendedor"].id_vendedor
-			cleaned_data["vendedor"] = ven.id_vendedor
-			cleaned_data["nombre_vendedor"] = ven.nombre_vendedor
-		
-		if cleaned_data.get("sucursal"):
-			suc = cleaned_data["sucursal"]
-			# cleaned_data["sucursal"] = cleaned_data["sucursal"].id_sucursal
-			cleaned_data["sucursal"] = suc.id_sucursal
-			cleaned_data["nombre_sucursal"] = suc.nombre_sucursal
-		
-		return cleaned_data
-	
 	def obtener_queryset(self, cleaned_data):
-		dias = cleaned_data.get("dias")
-		id_vendedor = cleaned_data.get("vendedor")
-		id_sucursal = cleaned_data.get("sucursal")
+		dias = cleaned_data.get("dias") or 0
+		vendedor = cleaned_data.get("vendedor", None)
+		sucursal = cleaned_data.get('sucursal', None)
 		
-		return VLComprobantesVencidos.objects.obtener_compro_vencidos(dias, id_vendedor, id_sucursal)
+		return VLComprobantesVencidos.objects.obtener_compro_vencidos(dias, vendedor.id_vendedor, sucursal.id_sucursal)
 	
 	def obtener_contexto_reporte(self, queryset, cleaned_data):
 		"""
@@ -128,16 +112,14 @@ class VLComprobantesVencidosInformeView(InformeFormView):
 		"""
 		
 		#-- Parámetros del listado.
-		dias = cleaned_data.get("dias")
-		vendedor = cleaned_data.get("vendedor")
-		sucursal = cleaned_data.get("sucursal")
+		dias = cleaned_data.get("dias") or 0
+		vendedor = cleaned_data.get("vendedor", None)
+		sucursal = cleaned_data.get('sucursal', None)
 		
 		param = {
-			# "Vendedor": vendedor if vendedor else "Todos",
-			# "Sucursal": sucursal if sucursal else "Todas",
-			"Vendedor": cleaned_data.get("nombre_vendedor") if vendedor else "Todos",
-			"Sucursal": cleaned_data.get("nombre_sucursal") if sucursal else "Todas",
-			"Antigüedad": dias,
+			"Vendedor": vendedor.nombre_vendedor if vendedor else "Todos",
+			"Sucursal": sucursal.nombre_sucursal if sucursal else "Todas",
+			"Antigüedad mayor a (días)": dias,
 		}
 		
 		fecha_hora_reporte = datetime.now().strftime("%d/%m/%Y %H:%M:%S")		

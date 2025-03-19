@@ -92,8 +92,7 @@ class ResumenCtaCteManager(models.Manager):
 						ORDER BY fecha_comprobante, numero_comprobante
 					) AS row_num
 				FROM VLResumenCtaCte
-				WHERE id_cliente_id = %s
-				AND total <> entrega
+				WHERE id_cliente_id = %s AND total <> entrega
 			)
 			SELECT 
 				r.id_cliente_id, 
@@ -130,8 +129,7 @@ class ResumenCtaCteManager(models.Manager):
 				) AS saldo_acumulado,
 				r.intereses
 			FROM VLResumenCtaCte r
-			WHERE r.id_cliente_id = %s 
-			AND r.total <> r.entrega
+			WHERE r.id_cliente_id = %s AND r.total <> r.entrega
 			ORDER BY r.fecha_comprobante, r.numero_comprobante;
 			"""
 		
@@ -219,7 +217,6 @@ class VLResumenCtaCte(models.Model):
 	condicion_comprobante = models.IntegerField()
 	total = models.DecimalField(max_digits=14, decimal_places=2)
 	entrega = models.DecimalField(max_digits=14, decimal_places=2)
-	# saldo = models.DecimalField(max_digits=14, decimal_places=2)
 	saldo_acumulado = models.DecimalField(max_digits=14, decimal_places=2)
 	intereses = models.DecimalField(max_digits=14, decimal_places=2)
 	
@@ -292,11 +289,11 @@ class RemitosClientesManager(models.Manager):
 		#-- Se crea la consulta parametrizada.
 		query = """
 			SELECT * 
-				FROM VLRemitosClientes v 
+				FROM VLRemitosClientes
 				WHERE 
-					v.id_cliente_id = %s AND 
-					v.codigo_comprobante_venta BETWEEN %s AND %s AND
-					v.fecha_comprobante BETWEEN %s AND %s;
+					id_cliente_id = %s AND 
+					codigo_comprobante_venta BETWEEN %s AND %s AND
+					fecha_comprobante BETWEEN %s AND %s;
 		"""
 		
 		#-- Se añade los parámetros.
@@ -764,8 +761,8 @@ class VLRemitosVendedor(models.Model):
 	class Meta:
 		managed = False
 		db_table = 'VLRemitosVendedor'
-		verbose_name = ('Remitos Vendedor')
-		verbose_name_plural = ('Remitos Vendedor')
+		verbose_name = ('Remitos por Vendedor')
+		verbose_name_plural = ('Remitos por Vendedor')
 		ordering = ['nombre_cliente', 'fecha_comprobante', 'numero_comprobante']
 
 #-----------------------------------------------------------------------------
@@ -1010,7 +1007,7 @@ class VLPercepIBVendedorDetallado(models.Model):
 	letra_comprobante = models.CharField(max_length=1)
 	numero_comprobante = models.IntegerField()
 	fecha_comprobante = models.DateField()
-	comprobante = models.CharField(max_length=17)
+	comprobante = models.CharField(max_length=30)
 	id_cliente_id = models.IntegerField()
 	nombre_cliente = models.CharField(max_length=50)
 	cuit = models.IntegerField()
@@ -1072,4 +1069,49 @@ class VLPercepIBSubcuentaTotales(models.Model):
 		verbose_name = ('Percepciones por Sub Cuentas - Totales')
 		verbose_name_plural = ('Percepciones por Sub Cuentas - Totales')
 		ordering = ['sub_cuenta']
+
+
+#-----------------------------------------------------------------------------
+# Percepción IB por Sub Cuentas - Detallado.
+#-----------------------------------------------------------------------------
+class VLPercepIBSubcuentaDetalladoManager(models.Manager):
+	
+	def obtener_datos(self, fecha_desde, fecha_hasta):
+		
+		#-- Base de la consulta SQL.
+		query = """
+			SELECT * FROM VLPercepIBSubcuentaDetallado
+				WHERE fecha_comprobante BETWEEN %s AND %s
+		"""
+		
+		#-- Lista de parámetros.
+		params = [fecha_desde, fecha_hasta]
+		
+		#-- Ejecutar la consulta y devolver los resultados.
+		return self.raw(query, params)
+
+class VLPercepIBSubcuentaDetallado(models.Model):
+	id_factura = models.IntegerField(primary_key=True)
+	sub_cuenta = models.IntegerField()
+	nombre_cliente_padre = models.CharField(max_length=50)
+	compro = models.CharField(max_length=3)	
+	letra_comprobante = models.CharField(max_length=1)
+	numero_comprobante = models.IntegerField()
+	fecha_comprobante = models.DateField()
+	comprobante = models.CharField(max_length=30)
+	id_cliente_id = models.IntegerField()
+	nombre_cliente = models.CharField(max_length=50)
+	cuit = models.IntegerField()
+	neto = models.DecimalField(max_digits=14, decimal_places=2)
+	percep_ib = models.DecimalField(max_digits=14, decimal_places=2)
+	
+	objects = VLPercepIBSubcuentaDetalladoManager()
+	
+	class Meta:
+		managed = False
+		db_table = 'VLPercepIBSubcuentaDetallado'
+		verbose_name = ('Percepciones por Sub Cuentas - Detallado')
+		verbose_name_plural = ('Percepciones por Sub Cuentas - Detallado')
+		ordering = ['sub_cuenta']
+
 

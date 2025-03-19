@@ -39,7 +39,7 @@ class BuscadorComprobantesVencidosForm(InformesGenericForm):
 	def clean(self):
 		cleaned_data = super().clean()
 		
-		dias = cleaned_data.get("dias")
+		dias = cleaned_data.get("dias") or 0
 		
 		if dias < 0:
 			self.add_error('dias', "No puede indicar un número negativo.")

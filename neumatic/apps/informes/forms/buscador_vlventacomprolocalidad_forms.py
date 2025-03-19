@@ -1,13 +1,14 @@
-# neumatic\apps\informes\forms\buscador_ventacompro_forms.py
+# neumatic\apps\informes\forms\buscador_vlventacomprolocalidad_forms.py
+
 from django import forms
 from datetime import date
 
 from .informes_generics_forms import InformesGenericForm
-from diseno_base.diseno_bootstrap import formclassselect, formclassdate, formclasscheck
+from diseno_base.diseno_bootstrap import formclassselect, formclassdate, formclasstext
 from apps.maestros.models.sucursal_models import Sucursal
 
 
-class BuscadorVentaComproForm(InformesGenericForm):
+class BuscadorVentaComproLocalidadForm(InformesGenericForm):
 	
 	sucursal = forms.ModelChoiceField(
 		queryset=Sucursal.objects.filter(estatus_sucursal=True), 
@@ -25,12 +26,12 @@ class BuscadorVentaComproForm(InformesGenericForm):
 		label="Hasta Fecha",
 		widget=forms.TextInput(attrs={'type':'date', **formclassdate})
 	)
-	solo_totales_comprobante = forms.BooleanField(
-		label="Solo Totales por Comprobante",
-		required=False,
-		widget=forms.CheckboxInput(attrs={**formclasscheck})
+	codigo_postal = forms.CharField(
+		max_length=5,
+		required=False, 
+		label="Código Postal", 
+		widget=forms.TextInput(attrs={**formclasstext})
 	)
-	
 	
 	def __init__(self, *args, **kwargs):
 		"""
@@ -53,6 +54,7 @@ class BuscadorVentaComproForm(InformesGenericForm):
 	def clean(self):
 		cleaned_data = super().clean()
 		
+		# cliente = cleaned_data.get("cliente")
 		fecha_desde = cleaned_data.get("fecha_desde")
 		fecha_hasta = cleaned_data.get("fecha_hasta")
 		

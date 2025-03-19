@@ -100,26 +100,15 @@ class VLRemitosPendientesInformeView(InformeFormView):
 		"url_pdf": ConfigViews.url_pdf,
 	}
 	
-	def transformar_cleaned_data(self, cleaned_data):
-		#-- Convertir a id si existen.
-		if cleaned_data.get("vendedor"):
-			ven = cleaned_data["vendedor"]
-			cleaned_data["vendedor"] = ven.id_vendedor
-			cleaned_data["nombre_vendedor"] = ven.nombre_vendedor
-		
-		if cleaned_data.get("sucursal"):
-			suc = cleaned_data["sucursal"]
-			cleaned_data["sucursal"] = suc.id_sucursal
-			cleaned_data["nombre_sucursal"] = suc.nombre_sucursal
-		
-		return cleaned_data
-	
 	def obtener_queryset(self, cleaned_data):
 		filtrar_por = cleaned_data.get("filtrar_por")
-		id_vendedor = cleaned_data.get("vendedor")
-		id_sucursal = cleaned_data.get("sucursal")
+		vendedor = cleaned_data.get("vendedor", None)
+		sucursal = cleaned_data.get("sucursal", None)
 		id_cli_desde = cleaned_data.get("id_cli_desde")
 		id_cli_hasta = cleaned_data.get("id_cli_hasta")
+		
+		id_vendedor = vendedor.id_vendedor if vendedor else None
+		id_sucursal = sucursal.id_sucursal if sucursal else None
 		
 		return VLRemitosPendientes.objects.obtener_remitos_pendientes(filtrar_por, id_vendedor, id_cli_desde, id_cli_hasta, id_sucursal)
 	
@@ -135,16 +124,16 @@ class VLRemitosPendientesInformeView(InformeFormView):
 		param = {}
 		match filtrar_por:
 			case "vendedor":
-				param["Vendedor"] = cleaned_data.get("nombre_vendedor", "")
+				param["Vendedor"] = cleaned_data.get("vendedor").nombre_vendedor
 			case "clientes":
-				# param["Cliente desde"] = str(id_cli_desde)
 				param["Cliente desde"] = str(cleaned_data.get("id_cli_desde", ""))
-				# param["Cliente hasta"] = str(id_cli_hasta)
 				param["Cliente hasta"] = str(cleaned_data.get("id_cli_hasta", ""))
 			case "sucursal_fac":
-				param["Sucursal (fac)"] = cleaned_data.get("nombre_sucursal", "")
+				# param["Sucursal (fac)"] = cleaned_data.get("nombre_sucursal", "")
+				param["Sucursal (fac)"] = cleaned_data.get("sucursal").nombre_sucursal
 			case "sucursal_cli":
-				param["Sucursal (cli)"] = cleaned_data.get("nombre_sucursal", "")
+				# param["Sucursal (cli)"] = cleaned_data.get("nombre_sucursal", "")
+				param["Sucursal (cli)"] = cleaned_data.get("sucursal").nombre_sucursal
 		
 		fecha_hora_reporte = datetime.now().strftime("%d/%m/%Y %H:%M:%S")		
 		

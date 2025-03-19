@@ -13,7 +13,7 @@ from django.forms.models import model_to_dict
 from .report_views_generics import *
 from apps.informes.models import VLMercaderiaPorCliente
 from apps.maestros.models.cliente_models import Cliente
-from ..forms.buscador_mercaderiaporcliente_forms import BuscadorMercaderiaPorClienteForm
+from ..forms.buscador_vlmercaderiaporcliente_forms import BuscadorMercaderiaPorClienteForm
 from utils.utils import deserializar_datos
 from utils.helpers.export_helpers import ExportHelper
 

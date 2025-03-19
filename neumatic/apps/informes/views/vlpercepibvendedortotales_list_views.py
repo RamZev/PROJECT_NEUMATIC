@@ -94,11 +94,6 @@ class VLPercepIBVendedorTotalesInformeView(InformeFormView):
 		"url_pdf": ConfigViews.url_pdf,
 	}
 	
-	# def transformar_cleaned_data(self, cleaned_data):
-	# 	#-- Convertir a id si existen.
-	# 	
-	# 	return cleaned_data
-	
 	def obtener_queryset(self, cleaned_data):
 		fecha_desde = cleaned_data.get('fecha_desde')
 		fecha_hasta = cleaned_data.get('fecha_hasta')

@@ -50,6 +50,7 @@ from apps.informes.views.vlivaventassitrib_list_views import *
 from apps.informes.views.vlpercepibvendedortotales_list_views import *
 from apps.informes.views.vlpercepibvendedordetallado_list_views import *
 from apps.informes.views.vlpercepibsubcuentatotales_list_views import *
+from apps.informes.views.vlpercepibsubcuentadetallado_list_views import *
 
 #-- Otras rutas.
 from apps.maestros.views.consulta_views_maestros import filtrar_localidad
@@ -447,6 +448,18 @@ urlpatterns = [
 		 name="vlpercepibsubcuentatotales_vista_excel"),
 	path("vlpercepibsubcuentatotales/vista-csv/", vlpercepibsubcuentatotales_vista_csv, 
 		 name="vlpercepibsubcuentatotales_vista_csv"),
+	
+	#-- VL Percep IB Subcuenta - Detallado.
+	path('vlpercepibsubcuentadetallado_informe/', VLPercepIBSubcuentaDetalladoInformeView.as_view(), 
+		 name='vlpercepibsubcuentadetallado_informe_list'),
+	path('vlpercepibsubcuentadetallado/vista-preliminar/', vlpercepibsubcuentadetallado_vista_pantalla, 
+		 name="vlpercepibsubcuentadetallado_vista_pantalla"),
+	path("vlpercepibsubcuentadetallado/vista-pdf/", vlpercepibsubcuentadetallado_vista_pdf, 
+		 name="vlpercepibsubcuentadetallado_vista_pdf"),
+	path("vlpercepibsubcuentadetallado/vista-excel/", vlpercepibsubcuentadetallado_vista_excel, 
+		 name="vlpercepibsubcuentadetallado_vista_excel"),
+	path("vlpercepibsubcuentadetallado/vista-csv/", vlpercepibsubcuentadetallado_vista_csv, 
+		 name="vlpercepibsubcuentadetallado_vista_csv"),
 	
 	
 	

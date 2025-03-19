@@ -97,19 +97,12 @@ class VLIVAVentasProvinciasInformeView(InformeFormView):
 		"url_pdf": ConfigViews.url_pdf,
 	}
 	
-	def transformar_cleaned_data(self, cleaned_data):
-		#-- Convertir a id si existen.
-		if cleaned_data.get("sucursal"):
-			suc = cleaned_data["sucursal"]
-			cleaned_data["sucursal"] = suc.id_sucursal
-			cleaned_data["nombre_sucursal"] = suc.nombre_sucursal
-		
-		return cleaned_data
-	
 	def obtener_queryset(self, cleaned_data):
-		id_sucursal = cleaned_data.get("sucursal")
+		sucursal = cleaned_data.get("sucursal")
 		anno = cleaned_data.get("anno")
 		mes = cleaned_data.get("mes")
+		
+		id_sucursal = sucursal.id_sucursal if sucursal else None
 		
 		return VLIVAVentasProvincias.objects.obtener_datos(id_sucursal, anno, mes)
 	
@@ -120,8 +113,9 @@ class VLIVAVentasProvinciasInformeView(InformeFormView):
 		"""
 		
 		#-- Parámetros del listado.
-		id_sucursal = cleaned_data.get("sucursal")
-		anno = cleaned_data.get("anno")
+		# id_sucursal = cleaned_data.get("sucursal")
+		sucursal = cleaned_data.get("sucursal")
+		anno = cleaned_data.get("anno") or 0
 		mes = cleaned_data.get("mes")
 		
 		meses = {
@@ -139,7 +133,7 @@ class VLIVAVentasProvinciasInformeView(InformeFormView):
 			"12": "Diciembre",
 		}
 		param = {
-			"Sucursal": cleaned_data.get("nombre_sucursal") if id_sucursal else "Todas",
+			"Sucursal": sucursal.nombre_sucursal if sucursal else "Todas",
 			"Mes": meses[mes],
 			"Año": anno,
 		}

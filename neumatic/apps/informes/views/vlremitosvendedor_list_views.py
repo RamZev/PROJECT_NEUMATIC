@@ -100,21 +100,12 @@ class VLRemitosVendedorInformeView(InformeFormView):
 		"url_pdf": ConfigViews.url_pdf,
 	}
 	
-	def transformar_cleaned_data(self, cleaned_data):
-		#-- Convertir a id si existen.
-		if cleaned_data.get("vendedor"):
-			ven = cleaned_data["vendedor"]
-			cleaned_data["vendedor"] = ven.id_vendedor
-			cleaned_data["nombre_vendedor"] = ven.nombre_vendedor
-		
-		return cleaned_data
-	
 	def obtener_queryset(self, cleaned_data):
-		id_vendedor = cleaned_data.get("vendedor")
+		vendedor = cleaned_data.get("vendedor", None)
 		fecha_desde = cleaned_data.get("fecha_desde")
 		fecha_hasta = cleaned_data.get("fecha_hasta")
 		
-		return VLRemitosVendedor.objects.obtener_remitos_vendedor(id_vendedor, fecha_desde, fecha_hasta)
+		return VLRemitosVendedor.objects.obtener_remitos_vendedor(vendedor.id_vendedor, fecha_desde, fecha_hasta)
 	
 	def obtener_contexto_reporte(self, queryset, cleaned_data):
 		"""
@@ -123,12 +114,12 @@ class VLRemitosVendedorInformeView(InformeFormView):
 		"""
 		
 		#-- Parámetros del listado.
-		vendedor = cleaned_data.get("nombre_vendedor", "")
+		vendedor = cleaned_data.get("vendedor")
 		fecha_desde = cleaned_data.get('fecha_desde')
 		fecha_hasta = cleaned_data.get('fecha_hasta')
 		
 		param = {
-			"Vendedor": vendedor,
+			"Vendedor": vendedor.nombre_vendedor,
 			"Desde": fecha_desde.strftime("%d/%m/%Y"),
 			"Hasta": fecha_hasta.strftime("%d/%m/%Y"),
 		}

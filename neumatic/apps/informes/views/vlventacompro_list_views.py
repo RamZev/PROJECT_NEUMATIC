@@ -1,4 +1,4 @@
-# neumatic\apps\informes\views\ventacompro_list_views.py
+# neumatic\apps\informes\views\vlventacompro_list_views.py
 
 from django.urls import reverse_lazy
 from django.shortcuts import render
@@ -13,7 +13,7 @@ from collections import defaultdict
 
 from .report_views_generics import *
 from apps.informes.models import VLVentaCompro
-from ..forms.buscador_ventacompro_forms import BuscadorVentaComproForm
+from ..forms.buscador_vlventacompro_forms import BuscadorVentaComproForm
 from utils.utils import deserializar_datos
 from utils.helpers.export_helpers import ExportHelper
 
@@ -118,10 +118,10 @@ class VLVentaComproInformeView(InformeFormView):
 		fecha_desde = cleaned_data.get("fecha_desde")
 		fecha_hasta = cleaned_data.get("fecha_hasta")
 		solo_totales_comprobante = cleaned_data.get("solo_totales_comprobante", False)
-		sucursal = cleaned_data.get("sucursal").nombre_sucursal if cleaned_data.get("sucursal") else "Todas"
+		sucursal = cleaned_data.get('sucursal', None)
 		
 		param = {
-			"Sucursal": sucursal,
+			"Sucursal": sucursal.nombre_sucursal if sucursal else "Todas",
 			"Desde": fecha_desde.strftime("%d/%m/%Y"),
 			"Hasta": fecha_hasta.strftime("%d/%m/%Y"),
 		}

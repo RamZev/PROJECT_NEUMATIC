@@ -14,7 +14,7 @@ class InformesGenericForm(forms.Form):
 			widget = field.widget
 			if field_name in self.errors:
 				existing_classes = widget.attrs.get('class', '')
-				widget.attrs['class'] = f"{existing_classes} border-danger is-invalid".strip()		
+				widget.attrs['class'] = f"{existing_classes} border-danger is-invalid".strip()
 		
 		# #-- Agregar clases CSS a los campos con errores.
 		# for field in self.fields:

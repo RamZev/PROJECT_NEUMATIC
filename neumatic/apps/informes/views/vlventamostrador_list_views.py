@@ -1,4 +1,4 @@
-# neumatic\apps\informes\views\ventacompro_list_views.py
+# neumatic\apps\informes\views\vlventamostrador_list_views.py
 
 from django.urls import reverse_lazy
 from django.shortcuts import render
@@ -13,7 +13,7 @@ from django.forms.models import model_to_dict
 
 from .report_views_generics import *
 from apps.informes.models import VLVentaMostrador
-from ..forms.buscador_ventamostrador_forms import BuscadorVentaMostradorForm
+from ..forms.buscador_vlventamostrador_forms import BuscadorVentaMostradorForm
 from utils.utils import deserializar_datos
 from utils.helpers.export_helpers import ExportHelper
 
@@ -95,10 +95,6 @@ class VLVentaMostradorInformeView(InformeFormView):
 	extra_context = {
 		"master_title": f'Informes - {ConfigViews.model._meta.verbose_name_plural}',
 		"home_view_name": ConfigViews.home_view_name,
-		# "list_view_name": ConfigViews.list_view_name,
-		# "table_headers": DataViewList.table_headers,
-		# "table_data": DataViewList.table_data,
-		# "buscador_template": f"{ConfigViews.app_label}/buscador_{ConfigViews.model_string}.html",
 		"buscador_template": f"{ConfigViews.app_label}/buscador_{ConfigViews.model_string}.html",
 		"js_file": ConfigViews.js_file,
 		"url_pantalla": ConfigViews.url_pantalla,

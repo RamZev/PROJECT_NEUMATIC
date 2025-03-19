@@ -1,36 +1,14 @@
-# neumatic\apps\informes\forms\buscador_actividad_forms.py
+# neumatic\apps\informes\forms\buscador_vlmercaderiaporcliente_forms.py
+
 from django import forms
 from datetime import date
 
 from .informes_generics_forms import InformesGenericForm
-from diseno_base.diseno_bootstrap import formclassselect, formclassdate, formclasscheck
-from apps.maestros.models.sucursal_models import Sucursal
+from diseno_base.diseno_bootstrap import formclasstext, formclassdate
 
 
-class BuscadorVentaMostradorForm(InformesGenericForm):
+class BuscadorMercaderiaPorClienteForm(InformesGenericForm):
 	
-	TIPO_VENTA = [
-		('T', 'Todas'),
-		('M', 'Mostrador'),
-		('R', 'Reventa'),
-	]
-	TIPO_CLIENTE = [
-		('T', 'Todos'),
-		('M', 'Minoristas'),
-		('R', 'Revendedores'),
-	]
-	TIPO_PRODUCTO = [
-		('T', 'Todos'),
-		('P', 'Producto'),
-		('S', 'Servicio'),
-	]
-	
-	sucursal = forms.ModelChoiceField(
-		queryset=Sucursal.objects.filter(estatus_sucursal=True), 
-		required=False,
-		label="Sucursal",
-		widget=forms.Select(attrs={**formclassselect})
-	)
 	fecha_desde = forms.DateField(
 		required=False, 
 		label="Desde Fecha",
@@ -41,30 +19,16 @@ class BuscadorVentaMostradorForm(InformesGenericForm):
 		label="Hasta Fecha",
 		widget=forms.TextInput(attrs={'type':'date', **formclassdate})
 	)
-	tipo_venta = forms.ChoiceField(
-		choices=TIPO_VENTA, 
-		label="Tipo de Venta", 
-		required=False,
-		widget=forms.Select(attrs={**formclassselect})
+	id_cliente = forms.IntegerField(
+		label="Cód. Cliente",
+		required=True,
+		widget=forms.NumberInput(attrs={**formclasstext})
 	)
-	tipo_cliente = forms.ChoiceField(
-		choices=TIPO_CLIENTE, 
-		label="Tipo de Cliente", 
+	nombre_cliente = forms.CharField(
+		label="Cliente",
 		required=False,
-		widget=forms.Select(attrs={**formclassselect})
+		widget=forms.TextInput(attrs={**formclasstext, 'readonly': 'readonly'})
 	)
-	tipo_producto = forms.ChoiceField(
-		choices=TIPO_PRODUCTO, 
-		label="Tipo de Producto", 
-		required=False,
-		widget=forms.Select(attrs={**formclassselect})
-	)
-	datos_cliente = forms.BooleanField(
-		label="Imprimir datos del cliente para el Call Center",
-		required=False,
-		widget=forms.CheckboxInput(attrs={**formclasscheck})
-	)
-	
 	
 	def __init__(self, *args, **kwargs):
 		"""
@@ -87,8 +51,13 @@ class BuscadorVentaMostradorForm(InformesGenericForm):
 	def clean(self):
 		cleaned_data = super().clean()
 		
+		id_cliente = cleaned_data.get("id_cliente")
 		fecha_desde = cleaned_data.get("fecha_desde")
 		fecha_hasta = cleaned_data.get("fecha_hasta")
+		
+		#-- Validar que se haya indicado un cliente solo si hay datos enviados.
+		if not id_cliente:
+			self.add_error("id_cliente", "Debe indicar un Código de Cliente.")
 		
 		#-- Validar rango de fechas.
 		if fecha_desde and fecha_hasta and fecha_desde > fecha_hasta:

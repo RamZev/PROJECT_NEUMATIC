@@ -1,4 +1,4 @@
-# # neumatic\apps\informes\views\totalremitosclientes_list_views.py
+# neumatic\apps\informes\views\vlremitosclientes_list_views.py
 
 from django.urls import reverse_lazy
 from django.shortcuts import render
@@ -8,12 +8,11 @@ from datetime import datetime
 from django.template.loader import render_to_string
 from weasyprint import HTML
 from django.templatetags.static import static
-# from django.forms.models import model_to_dict
 
 from .report_views_generics import *
 from apps.informes.models import VLRemitosClientes
 from apps.maestros.models.cliente_models import Cliente
-from ..forms.buscador_remitosclientes_forms import BuscadorRemitosClientesForm
+from ..forms.buscador_vlremitosclientes_forms import BuscadorRemitosClientesForm
 from utils.utils import deserializar_datos
 from utils.helpers.export_helpers import ExportHelper
 
