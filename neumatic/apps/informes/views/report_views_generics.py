@@ -109,6 +109,8 @@ class InformeFormView(FormView):
 			return JsonResponse({"success": True, "url": url})
 		else:
 			return HttpResponseRedirect(url)
+		
+		# return HttpResponseRedirect(url)
 	
 	def obtener_queryset(self, cleaned_data):
 		"""

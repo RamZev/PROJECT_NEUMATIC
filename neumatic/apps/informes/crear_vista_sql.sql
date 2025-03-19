@@ -17,7 +17,8 @@ CREATE VIEW "VLSaldosClientes" AS
 		c.id_vendedor_id, 
 		f.total, 
 		f.entrega, 
-		f.condicion_comprobante
+		f.condicion_comprobante,
+		cv.mult_saldo
 	FROM factura f 
 		JOIN cliente c ON f.id_cliente_id = c.id_cliente 
 		JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta 
