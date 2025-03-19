@@ -148,6 +148,7 @@ def validar_documento(request):
 # Búsqueda en Agenda para la ventana Modal de Factura
 def buscar_agenda(request):
     busqueda_general = request.GET.get('busqueda_general', '')
+    print("Entro a buscar el Cliente")
 
     try:
         id_cliente = int(busqueda_general)

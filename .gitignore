@@ -10,3 +10,4 @@ datavfox/
 venv/
 migrations/
 staticfiles/
+neumatic_bak/

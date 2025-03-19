@@ -14,7 +14,7 @@ from decimal import Decimal
 from .report_views_generics import *
 from apps.informes.models import VLRemitosVendedor
 from ..forms.buscador_vlremitosvendedor_forms import BuscadorRemitosVendedorForm
-from utils.utils import deserializar_datos, serializar_queryset
+from utils.utils import deserializar_datos
 from utils.helpers.export_helpers import ExportHelper
 
 
@@ -109,8 +109,8 @@ class VLRemitosVendedorInformeView(InformeFormView):
 	
 	def obtener_contexto_reporte(self, queryset, cleaned_data):
 		"""
-		Aquí se estructura el contexto para el reporte, agrupando los comprobantes,
-		calculando subtotales y totales generales, tal como se requiere para el listado.
+		Aquí se estructura el contexto para el reporte, agrupando, calculando subtotales y totales generales, etc,
+		tal como se requiere para el listado.
 		"""
 		
 		#-- Parámetros del listado.
@@ -130,31 +130,30 @@ class VLRemitosVendedorInformeView(InformeFormView):
 		
 		
 		# **************************************************
-		# Estructura para agrupar datos por cliente
+		#-- Estructura para agrupar datos por cliente.
 		datos_por_cliente = {}
 		total_general = Decimal(0)
 		
 		for obj in queryset:
-			# Identificar al cliente
+			#-- Identificar al cliente.
 			cliente_id = obj.id_cliente_id
-			nombre_cliente = obj.nombre_cliente.strip()  # Limpieza en caso de espacios extras
+			nombre_cliente = obj.nombre_cliente.strip()  #-- Limpieza en caso de espacios extras.
 			
-			# Si el cliente aún no está en el diccionario, se inicializa
+			#-- Si el cliente aún no está en el diccionario, se inicializa.
 			if cliente_id not in datos_por_cliente:
 				datos_por_cliente[cliente_id] = {
-					# "cliente": f"[{cliente_id}] {nombre_cliente}",
 					"id_cliente": cliente_id,
 					"cliente": nombre_cliente,
 					"comprobantes": {},
 					"total_cliente": Decimal(0),
 				}
 			
-			# Agrupar por comprobante dentro del cliente
+			#-- Agrupar por comprobante dentro del cliente.
 			num_comprobante = obj.numero_comprobante
 			if num_comprobante not in datos_por_cliente[cliente_id]["comprobantes"]:
 				datos_por_cliente[cliente_id]["comprobantes"][num_comprobante] = {
 					"fecha": obj.fecha_comprobante.strftime("%d/%m/%Y"),
-					"fecha_order": obj.fecha_comprobante,  # Para ordenar por fecha
+					"fecha_order": obj.fecha_comprobante,    # Para ordenar por fecha
 					"numero_comprobante": num_comprobante,   # Para ordenar por número
 					"comprobante": obj.comprobante,
 					"productos": [],
@@ -186,12 +185,13 @@ class VLRemitosVendedorInformeView(InformeFormView):
 			comprobantes_list.sort(key=lambda x: (x["fecha_order"], x["numero_comprobante"]))
 			cliente_info["comprobantes"] = comprobantes_list
 			
-			#-- Convertir los totales a float para facilitar el formateo en el template.
-			cliente_info["total_cliente"] = float(cliente_info["total_cliente"])
-			for comp in cliente_info["comprobantes"]:
-				comp["total_comprobante"] = float(comp["total_comprobante"])
+			# #-- Convertir los totales a float para facilitar el formateo en el template.
+			# cliente_info["total_cliente"] = float(cliente_info["total_cliente"])
+			# for comp in cliente_info["comprobantes"]:
+			# 	comp["total_comprobante"] = float(comp["total_comprobante"])
+			
 			datos.append(cliente_info)
-
+		
 		#-- Ordenar la lista de datos por el nombre del cliente.
 		datos.sort(key=lambda x: x["cliente"])
 		# **************************************************
@@ -232,7 +232,6 @@ def vlremitosvendedor_vista_pantalla(request):
 		return HttpResponse("Token no proporcionado", status=400)
 	
 	#-- Obtener el contexto(datos) previamente guardados en la sesión.
-	# contexto_reporte = request.session.pop(token, None)
 	contexto_reporte = deserializar_datos(request.session.pop(token, None))
 	
 	if not contexto_reporte:
@@ -240,10 +239,10 @@ def vlremitosvendedor_vista_pantalla(request):
 	
 	#-- Generar el listado a pantalla.
 	return render(request, ConfigViews.reporte_pantalla, contexto_reporte)
-	# return render(request, "informes/reportes/ventacompro_list.html", contexto_reporte)
 
 
 def vlremitosvendedor_vista_pdf(request):
+	return HttpResponse("Reporte en PDF aún no implementado.", status=400)
 	#-- Obtener el token de la querystring.
 	token = request.GET.get("token")
 	
@@ -258,7 +257,6 @@ def vlremitosvendedor_vista_pdf(request):
 		return HttpResponse("Contexto no encontrado o expirado", status=400)
 	
 	#-- Preparar la respuesta HTTP.
-	# html_string = render_to_string("informes/reportes/ventacompro_pdf.html", contexto_reporte, request=request)
 	html_string = render_to_string(ConfigViews.reporte_pdf, contexto_reporte, request=request)
 	pdf_file = HTML(string=html_string, base_url=request.build_absolute_uri()).write_pdf()
 	
@@ -297,7 +295,7 @@ def vlremitosvendedor_vista_excel(request):
 		excel_data,
 		content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 	)
-	# Inline permite visualizarlo en el navegador si el navegador lo soporta.
+	#-- Inline permite visualizarlo en el navegador si el navegador lo soporta.
 	response["Content-Disposition"] = f'inline; filename="informe_{ConfigViews.model_string}.xlsx"'
 	return response
 

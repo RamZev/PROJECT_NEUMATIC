@@ -419,7 +419,7 @@ CREATE VIEW "VLPercepIBVendedorTotales" AS
 		INNER JOIN cliente c ON f.id_cliente_id = c.id_cliente 
 		INNER JOIN vendedor v ON c.id_vendedor_id = v.id_vendedor
 	WHERE f.percep_ib<>0 AND cv.mult_venta<>0
-	ORDER BY c.id_vendedor_id
+	ORDER BY c.id_vendedor_id;
 
 
 -- ---------------------------------------------------------------------------
@@ -448,7 +448,7 @@ CREATE VIEW VLPercepIBVendedorDetallado AS
 		INNER JOIN cliente c ON f.id_cliente_id = c.id_cliente 
 		INNER JOIN vendedor v ON c.id_vendedor_id = v.id_vendedor
 	WHERE f.percep_ib<>0 AND cv.mult_venta<>0
-	ORDER BY v.nombre_vendedor, f.fecha_comprobante, f.numero_comprobante
+	ORDER BY v.nombre_vendedor, f.fecha_comprobante, f.numero_comprobante;
 
 
 -- ---------------------------------------------------------------------------
@@ -471,7 +471,7 @@ CREATE VIEW "VLPercepIBSubcuentaTotales" AS
 		INNER JOIN cliente c ON f.id_cliente_id = c.id_cliente 
 		LEFT JOIN cliente p ON c.sub_cuenta = p.id_cliente 
 	WHERE f.percep_ib <> 0 AND cv.mult_venta <> 0 
-	ORDER BY c.sub_cuenta
+	ORDER BY c.sub_cuenta;
 
 
 -- ---------------------------------------------------------------------------
@@ -500,4 +500,5 @@ CREATE VIEW "VLPercepIBSubcuentaDetallado" AS SELECT
 		LEFT JOIN cliente p ON c.sub_cuenta = p.id_cliente
 	WHERE f.percep_ib<>0 AND cv.mult_venta<>0
 	GROUP BY c.sub_cuenta, f.numero_comprobante
-	ORDER BY c.sub_cuenta, f.fecha_comprobante, f.numero_comprobante
+	ORDER BY c.sub_cuenta, f.fecha_comprobante, f.numero_comprobante;
+

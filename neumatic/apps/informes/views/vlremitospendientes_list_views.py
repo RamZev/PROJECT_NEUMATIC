@@ -14,7 +14,7 @@ from decimal import Decimal
 from .report_views_generics import *
 from apps.informes.models import VLRemitosPendientes
 from ..forms.buscador_vlremitospendientes_forms import BuscadorRemitosPendientesForm
-from utils.utils import deserializar_datos, serializar_queryset
+from utils.utils import deserializar_datos
 from utils.helpers.export_helpers import ExportHelper
 
 
@@ -129,10 +129,8 @@ class VLRemitosPendientesInformeView(InformeFormView):
 				param["Cliente desde"] = str(cleaned_data.get("id_cli_desde", ""))
 				param["Cliente hasta"] = str(cleaned_data.get("id_cli_hasta", ""))
 			case "sucursal_fac":
-				# param["Sucursal (fac)"] = cleaned_data.get("nombre_sucursal", "")
 				param["Sucursal (fac)"] = cleaned_data.get("sucursal").nombre_sucursal
 			case "sucursal_cli":
-				# param["Sucursal (cli)"] = cleaned_data.get("nombre_sucursal", "")
 				param["Sucursal (cli)"] = cleaned_data.get("sucursal").nombre_sucursal
 		
 		fecha_hora_reporte = datetime.now().strftime("%d/%m/%Y %H:%M:%S")		
@@ -165,7 +163,7 @@ class VLRemitosPendientesInformeView(InformeFormView):
 			if num_comprobante not in datos_por_cliente[cliente_id]["comprobantes"]:
 				datos_por_cliente[cliente_id]["comprobantes"][num_comprobante] = {
 					"fecha": obj.fecha_comprobante.strftime("%d/%m/%Y"),
-					"fecha_order": obj.fecha_comprobante,  # Para ordenar por fecha
+					"fecha_order": obj.fecha_comprobante,    # Para ordenar por fecha
 					"numero_comprobante": num_comprobante,   # Para ordenar por número
 					"comprobante": obj.comprobante,
 					"productos": [],
@@ -235,8 +233,6 @@ def raw_to_dict(instance):
 	return data
 
 
-
-
 def vlremitospendientes_vista_pantalla(request):
 	#-- Obtener el token de la querystring.
 	token = request.GET.get("token")
@@ -253,10 +249,10 @@ def vlremitospendientes_vista_pantalla(request):
 	
 	#-- Generar el listado a pantalla.
 	return render(request, ConfigViews.reporte_pantalla, contexto_reporte)
-	# return render(request, "informes/reportes/ventacompro_list.html", contexto_reporte)
 
 
 def vlremitospendientes_vista_pdf(request):
+	return HttpResponse("Reporte en PDF aún no implementado.", status=400)
 	#-- Obtener el token de la querystring.
 	token = request.GET.get("token")
 	
@@ -271,7 +267,6 @@ def vlremitospendientes_vista_pdf(request):
 		return HttpResponse("Contexto no encontrado o expirado", status=400)
 	
 	#-- Preparar la respuesta HTTP.
-	# html_string = render_to_string("informes/reportes/ventacompro_pdf.html", contexto_reporte, request=request)
 	html_string = render_to_string(ConfigViews.reporte_pdf, contexto_reporte, request=request)
 	pdf_file = HTML(string=html_string, base_url=request.build_absolute_uri()).write_pdf()
 
@@ -310,7 +305,7 @@ def vlremitospendientes_vista_excel(request):
 		excel_data,
 		content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 	)
-	# Inline permite visualizarlo en el navegador si el navegador lo soporta.
+	#-- Inline permite visualizarlo en el navegador si el navegador lo soporta.
 	response["Content-Disposition"] = f'inline; filename="informe_{ConfigViews.model_string}.xlsx"'
 	return response
 

@@ -50,6 +50,7 @@ class FacturaForm(forms.ModelForm):
         
         widgets = {
             "id_factura": forms.HiddenInput(),
+            "estatus_comprobante": forms.Select(attrs={**formclassselect}),
             
             # "id_sucursal": forms.Select(attrs={**formclassselect}),
             # "id_punto_venta": forms.Select(attrs={**formclassselect}),
@@ -105,6 +106,15 @@ class FacturaForm(forms.ModelForm):
 
        
 class DetalleFacturaForm(forms.ModelForm):
+    medida = forms.CharField(
+        label="Medida", 
+        required=False, 
+        widget=forms.TextInput(attrs={
+            'readonly': 'readonly',
+            'class': 'form-control form-control-sm border border-primary',
+            'style': 'font-size: 0.8rem; padding: 0.25rem; margin-left: 0px; margin-right: 0px;'
+            })
+    )
     
     class Meta:
         model = DetalleFactura
@@ -121,28 +131,70 @@ class DetalleFacturaForm(forms.ModelForm):
                 'style': 'font-size: 0.8rem; padding: 0.25rem; margin-left: 0px; margin-right: 0px;'
                 }),
             
+            'producto_venta': forms.TextInput(attrs={
+                'readonly': 'readonly',
+                'class': 'form-control form-control-sm border border-primary',
+                'style': 'font-size: 0.8rem; padding: 0.25rem; margin-left: 0px; margin-right: 0px;'
+                }),
+            
             'cantidad': forms.NumberInput(attrs={
+                'readonly': 'readonly',
+                'class': 'form-control form-control-sm border border-primary', 
+                'step': '1',
+                'style': 'font-size: 0.8rem; padding: 0.25rem; margin-left: 0px; margin-right: 0px;'
+                }),
+            'reventa': forms.TextInput(attrs={
+                'readonly': 'readonly',
+                'class': 'form-control form-control-sm border border-primary',
+                'style': 'font-size: 0.8rem; padding: 0.25rem; margin-left: 0px; margin-right: 0px;'
+                }),
+            'precio_lista': forms.HiddenInput(),
+            'precio': forms.NumberInput(attrs={
+                'readonly': 'readonly',
                 'class': 'form-control form-control-sm border border-primary', 
                 'step': '0.1',
                 'style': 'font-size: 0.8rem; padding: 0.25rem; margin-left: 0px; margin-right: 0px;'
                 }),
-            'precio': forms.NumberInput(attrs={
-                'class': 'form-control form-control-sm border border-primary', 
-                'step': '0.001',
-                'style': 'font-size: 0.8rem; padding: 0.25rem; margin-left: 0px; margin-right: 0px;'
-                }),
             'descuento': forms.NumberInput(attrs={
+                'readonly': 'readonly',
                 'class': 'form-control form-control-sm border border-primary', 'step': '0.1',
                 'style': 'font-size: 0.8rem; padding: 0.25rem; margin-left: 0px; margin-right: 0px;'
                 }),
             'iva': forms.NumberInput(attrs={
+                'readonly': 'readonly',
                 'class': 'form-control form-control-sm border border-primary', 'step': '0.1',
                 'style': 'font-size: 0.8rem; padding: 0.25rem; margin-left: 0px; margin-right: 0px;'
                 }),
             'total': forms.NumberInput(attrs={
+                'readonly': 'readonly',
                 'class': 'form-control form-control-sm border border-primary', 'step': '0.1',
                 'style': 'font-size: 0.8rem; padding: 0.25rem; margin-left: 0px; margin-right: 0px;'}),
         }
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.instance and self.instance.id_producto:
+            self.fields['medida'].initial = self.instance.id_producto.medida
+    
+
+class SerialFacturaForm(forms.ModelForm):
+    
+    class Meta:
+        model = SerialFactura
+        fields = ['id_serial_factura', 'id_factura', 'producto_serial']
+        widgets = {
+            'id_serial_factura': forms.HiddenInput(),
+            'id_factura': forms.HiddenInput(),
+            'producto_serial': forms.TextInput(attrs={'class': 'form-control form-control-sm border border-secondary'}),
+        }
+
+
+# Se crea una instancia donde vincula  Factura (Padre) DetalleFactura (hijo)
+# Donde el set de formularios esta vinculado a DetalleFacturaForm
+# DetalleFactura y form=DetalleFacturaForm deben estar vinculados
 DetalleFacturaFormSet = inlineformset_factory(Factura, DetalleFactura, form=DetalleFacturaForm, extra=0)
-formset = DetalleFacturaFormSet(queryset=DetalleFactura.objects.none())
+formset_detalle = DetalleFacturaFormSet(queryset=DetalleFactura.objects.none())
+
+SerialFacturaFormSet = inlineformset_factory(Factura, SerialFactura, form=SerialFacturaForm, extra=0)
+formset_serial = SerialFacturaFormSet(queryset=SerialFactura.objects.none())
+

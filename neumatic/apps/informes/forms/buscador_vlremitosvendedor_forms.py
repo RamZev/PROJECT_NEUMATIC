@@ -12,7 +12,7 @@ class BuscadorRemitosVendedorForm(InformesGenericForm):
 	
 	vendedor = forms.ModelChoiceField(
 		queryset=Vendedor.objects.filter(estatus_vendedor=True),
-		required=True,
+		required=False,
 		initial=0,
 		label="Vendedor",
 		widget=forms.Select(attrs={**formclassselect})
@@ -65,5 +65,5 @@ class BuscadorRemitosVendedorForm(InformesGenericForm):
 		
 		if not vendedor:
 			self.add_error("vendedor", "Debe seleccionar un Vendedor.")
-
+		
 		return cleaned_data

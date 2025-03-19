@@ -75,7 +75,7 @@ class InformeFormView(FormView):
 	def procesar_reporte(self, contexto_reporte, tipo_salida, cleaned_data):
 		"""
 		Una vez validado el formulario, genera un token, guarda el contexto en la sesión y
-		devuelve un JSON con la URL de salida (para pantalla o PDF).
+		devuelve un JSON con la URL de salida (para pantalla, PDF, etc).
 		"""
 		
 		#-- Limpiar posibles reportes previos en la sesión.

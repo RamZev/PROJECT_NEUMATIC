@@ -166,10 +166,10 @@ def vlcomprobantesvencidos_vista_pantalla(request):
 	
 	#-- Generar el listado a pantalla.
 	return render(request, ConfigViews.reporte_pantalla, contexto_reporte)
-	# return render(request, "informes/reportes/ventacompro_list.html", contexto_reporte)
 
 
 def vlcomprobantesvencidos_vista_pdf(request):
+	return HttpResponse("Reporte en PDF aún no implementado.", status=400)
 	#-- Obtener el token de la querystring.
 	token = request.GET.get("token")
 	
@@ -223,7 +223,7 @@ def vlcomprobantesvencidos_vista_excel(request):
 		excel_data,
 		content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 	)
-	# Inline permite visualizarlo en el navegador si el navegador lo soporta.
+	#-- Inline permite visualizarlo en el navegador si el navegador lo soporta.
 	response["Content-Disposition"] = f'inline; filename="informe_{ConfigViews.model_string}.xlsx"'
 	return response
 

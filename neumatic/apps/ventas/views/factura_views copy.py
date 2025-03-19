@@ -113,10 +113,22 @@ class FacturaCreateView(MaestroDetalleCreateView):
 			print("NO Entro self.request.POST")
 			data['formset_detalle'] = DetalleFacturaFormSet(instance=self.object)
    
-		data['is_edit'] = False  # Indicar que es una creación
-   
 		return data
 
+	# def form_valid(self, form):
+	# 	context = self.get_context_data()
+	# 	formset_detalle = context['formset_detalle']
+
+	# 	if formset_detalle.is_valid():
+	# 		with transaction.atomic():
+	# 			self.object = form.save()
+	# 			formset_detalle.instance = self.object
+	# 			formset_detalle.save()
+
+	# 		return redirect(self.get_success_url())
+	# 	else:
+	# 		print("Error: El formario no pasó la validación")
+	# 		return self.form_invalid(form)
  
 	def form_valid(self, form):
 		context = self.get_context_data()
@@ -199,19 +211,38 @@ class FacturaUpdateView(MaestroDetalleUpdateView):
 	permission_required = f"{app_label}.change_{model.__name__.lower()}"
 
 	def get_context_data(self, **kwargs):
-		data = super().get_context_data(**kwargs)
+		context = super().get_context_data(**kwargs)
+  
+		# Agregar cambia_precio_descripcion al contexto
 		usuario = self.request.user
-		data['cambia_precio_descripcion'] = usuario.cambia_precio_descripcion
-		data['tipo_venta'] = TIPO_VENTA
-		# data['tipo_doc_ident'] = TipoDocumentoIdentidad.objects.filter(estatus_tipo_documento=True)
-		
+		context['cambia_precio_descripcion'] = usuario.cambia_precio_descripcion
+
 		if self.request.POST:
-			data['formset_detalle'] = DetalleFacturaFormSet(self.request.POST, instance=self.object)
+			context['formset'] = DetalleFacturaFormSet(self.request.POST, instance=self.object)
 		else:
-			data['formset_detalle'] = DetalleFacturaFormSet(instance=self.object)
-		
-		data['is_edit'] = True  # Indicar que es una edición
-		return data
+			formset = DetalleFacturaFormSet(instance=self.object)
+   
+			context['formset'] = formset
+   
+		# Añadir tipo_doc_ident al contexto
+		context['tipo_doc_ident'] = TipoDocumentoIdentidad.objects.filter(estatus_tipo_documento=True)
+			
+		return context
+
+	# def form_valid(self, form):
+	# 	context = self.get_context_data()
+	# 	formset = context['formset']
+
+	# 	if formset.is_valid():
+	# 		with transaction.atomic():
+	# 			self.object = form.save()
+	# 			formset.instance = self.object
+	# 			# print(formset.cleaned_data)  # Verifica los datos limpiados
+	# 			formset.save()
+			
+	# 		return redirect(self.get_success_url())
+	# 	else:
+	# 		return self.form_invalid(form)
  
 	def form_valid(self, form):
 		context = self.get_context_data()
@@ -220,39 +251,33 @@ class FacturaUpdateView(MaestroDetalleUpdateView):
 		if formset_detalle.is_valid():
 			try:
 				with transaction.atomic():
+					# Guardar el encabezado de la factura
 					self.object = form.save()
+
+					# Asociar el detalle a la factura recién creada
 					formset_detalle.instance = self.object
+
+					# Guardar el detalle de la factura
 					formset_detalle.save()
-				
-				messages.success(self.request, "La factura se ha actualizado correctamente.")
+
+				# Mostrar mensaje de éxito
+				messages.success(self.request, "La factura se ha guardado correctamente.")
+
+				# Redirigir a la lista de facturas después de guardar
 				return super().form_valid(form)
+
 			except Exception as e:
-				messages.error(self.request, f"Error al actualizar la factura: {str(e)}")
+				# Manejar cualquier error durante el guardado
+				messages.error(self.request, f"Error al guardar la factura: {str(e)}")
 				return self.form_invalid(form)
 		else:
+			# Si el formset no es válido, mostrar errores
 			messages.error(self.request, "Error en el detalle de la factura. Revise los datos.")
 			return self.form_invalid(form)
 
-	def form_invalid(self, form):
-		print("Entro a form_invalid")
-		print("Errores del formulario principal:", form.errors)
-		
-		context = self.get_context_data()
-		formset_detalle = context['formset_detalle']
-		
-		if formset_detalle:
-			print("Errores del formset:", formset_detalle.errors)
-
-		return super().form_invalid(form)
 
 	def get_success_url(self):
 		return self.success_url
-
-	def get_form_kwargs(self):
-		kwargs = super().get_form_kwargs()
-		kwargs['usuario'] = self.request.user  # Pasar el usuario autenticado
-
-		return kwargs
 
 
 # @method_decorator(login_required, name='dispatch')

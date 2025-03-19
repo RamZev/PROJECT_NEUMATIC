@@ -99,16 +99,6 @@
                                     <div class="col-md-6">
                                         <div class="row my-1">
                                             <div class="col-md-3">
-                                                <label for="{{ form.estatus_comprobante.id_for_label }}">Estatus</label>
-                                            </div>
-
-                                            <div class="col-md-5">
-                                                {{ form.estatus_comprobante }}
-                                            </div>
-                                        </div>
-
-                                        <div class="row my-1">
-                                            <div class="col-md-3">
                                                 <label for="{{ form.id_sucursal.id_for_label }}">Sucursal</label>
                                             </div>
                                             
@@ -343,7 +333,7 @@
                                 <!-- Botones a la izquierda -->
                                 <div>
                                     <button class="btn btn-outline-success btn-sm">
-                                        {% if is_edit %}Actualizar{% else %}Guardar{% endif %}
+                                        Guardar
                                         <i class="bi bi-floppy"></i>
                                     </button>
                                     
@@ -378,7 +368,7 @@
                                     
                                     
                                     <div class="row tbl-fixed my-2 mx-1" id="formset-container">
-                                        {{ formset_detalle.management_form }}
+                                        {{ formset.management_form }}
                                         
                                         <table class="detalle-form table table-striped table-hover table-responsive" style="width: 100%;">
                                             <thead class="table-primary small-font">
@@ -395,31 +385,25 @@
                                             </thead>
                                             <tbody>
                                                 {# Inicialmente no hay filas en el formulario #}
-                                                {% for form in formset_detalle %}
+                                                {% for form in formset %}
                                                     <tr data-form-index="{{ forloop.counter0 }}">
                                                         <td>
                                                             {% if form.instance.pk %}
                                                                 {{ form.id_detalle_factura }}
                                                                 {{ form.id_factura }}
-                                                                {{ form.id_producto }}     
+                                                                {% comment %} {{ form.id_producto }}     {% endcomment %}
                                                             {% endif %}
                                                             
-                                                            {{ form.medida }}
+                                                            {{ form.codigo_producto }}
                                                         </td>
-                                                        
-                                                        <td>{{ form.producto_venta }}</td>
+                                                        <td>{{ form.nombre_producto }}</td>
+                                                        <td>{{ form.unidad_producto }}</td>
                                                         <td>{{ form.cantidad }}</td>
-                                                        <td>{{ form.reventa }}</td>
-                                                        <td>{{ form.precio }}</td>
+                                                        <td>{{ form.precio_unitario }}</td>
+                                                        <td>{{ form.subtotal_detalle }}</td>
                                                         <td>{{ form.descuento }}</td>
-                                                        <td>{{ form.total }}</td>
-
-                                                        <td>
-                                                            <button type="button" class="btn btn-danger btn-sm btn-delete" 
-                                                                data-form-index="{{ forloop.counter0 }}" data-toggle="tooltip" title="Eliminar">
-                                                                <i class="bi bi-trash"></i>
-                                                            </button>
-                                                        </td>
+                                                        <td>{{ form.monto_igv }}</td>
+                                                        <td>{{ form.total_detalle }}</td>
                                                     </tr>
                                                 {% endfor %}
 
@@ -644,7 +628,6 @@
     {% comment %} SCRIPTS JS Start {% endcomment %}
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            //alert("carga inicial de la página 1!");
             /*
             const formsetContainer = document.getElementById('formset-container');
 
@@ -712,18 +695,15 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             ////////////*
+            // Función para actualizar el total general
             const formsetContainer = document.getElementById('formset-container');
 
             function actualizarTotalFactura() {
+                // alert("Entro a la función Total Factura")
                 let totalFactura = 0;
-
-                // Recorre cada fila dentro de la tabla del detalle
                 formsetContainer.querySelectorAll('.detalle-form tbody tr').forEach(row => {
-                    const totalField = row.querySelector('input[name^="detallefactura_set"][name$="-total"]');
-
-                    if (totalField && totalField.value) {  
-                        totalFactura += parseFloat(totalField.value) || 0;
-                    }
+                    const total = parseFloat(row.querySelector('[name*="-total"]').value) || 0;
+                    totalFactura += total;
                 });
     
                 // Actualizar el campo total general
@@ -757,11 +737,6 @@
                     actualizarTotalFactura(); // Recalcula el total general
                 }
             });
-
-            // ✅ Si hay filas en la tabla, recalcular el total al cargar la página
-            if (formsetContainer.querySelectorAll('.detalle-form tbody tr').length > 0) {
-                actualizarTotalFactura();
-            }
             ////////////*
             
             const buscarProductoForm = document.getElementById('detalleForm');
@@ -781,17 +756,15 @@
                 if (event.target.matches('.seleccionar-producto')) {
                     const isChecked = event.target.checked;
                     const row = event.target.closest('tr');
-                    const idProducto = event.target.getAttribute('data-id'); // Capturar ID del producto
-                    //const medidaProducto = row.querySelector('td:nth-child(2)').textContent.trim();
-                    //const nombreProducto = row.querySelector('td:nth-child(4)').textContent.trim();
-                    const medidaProducto = event.target.getAttribute("data-medida"); // Obtener la medida del producto
-                    const nombreProducto = event.target.getAttribute("data-nombre"); // Obtener el nombre de
+                    const idProducto = event.target.dataset.idProducto; // Capturar ID del producto
+                    const medidaProducto = row.querySelector('td:nth-child(2)').textContent.trim();
+                    const nombreProducto = row.querySelector('td:nth-child(4)').textContent.trim();
                     //const precioProducto = parseFloat(row.querySelector('td:nth-child(5)').textContent.trim());
                     const precioProducto = parseFloat(event.target.getAttribute("data-precio"));
                     const descuentoVendedor = parseFloat(event.target.getAttribute("data-descuento-vendedor"));
 
                     const producto = {
-                        id: idProducto,
+                        idProducto,
                         medida: medidaProducto,
                         nombre: nombreProducto,
                         precio: precioProducto,
@@ -837,27 +810,21 @@
 
                     // Obtener el valor por defecto del campo tipo_venta
                     const valorPorDefecto = document.getElementById('id_tipo_venta') ? document.getElementById('id_tipo_venta').value : "M";
-                    
-                    ////****
-                    //alert("Aquí es");
-                    //alert(producto.id);                    
+
                     const newFormHTML = `
                     <tr data-form-index="${currentIndex}" class="small-font">
 
-                        <!-- Inputs ocultos para manejar relaciones -->
+                    <tr data-form-index="${currentIndex}" class="small-font">
                         <input type="hidden" name="detallefactura_set-${currentIndex}-id_detalle_factura" 
                             id="id_detallefactura_set-${currentIndex}-id_detalle_factura">
                         <input type="hidden" name="detallefactura_set-${currentIndex}-id_factura" 
                             id="id_detallefactura_set-${currentIndex}-id_factura">
                         <input type="hidden" name="detallefactura_set-${currentIndex}-id_producto" 
                             id="id_detallefactura_set-${currentIndex}-id_producto" value="${producto.id}">
-                        <input type="hidden" name="detallefactura_set-${currentIndex}-precio_lista" 
-                            id="id_detallefactura_set-${currentIndex}-precio_lista" value="${producto.precio}">
 
                         <td>${producto.medida}</td> <!-- Mostrar medida -->
-
                         <td>
-                            <input type="text" name="detallefactura_set-${currentIndex}-producto_venta" 
+                            <input type="text" name="detallefactura_set-${currentIndex}-nombre" 
                                 class="${formControlClass}" value="${producto.nombre}" ${nombreInputAttributes}>
                         </td>
                         <td>
@@ -878,21 +845,19 @@
                         </td>
                         <td>
                             <input type="number" name="detallefactura_set-${currentIndex}-descuento" 
-                                class="${formControlClass} text-end" value="0" step="0.1" min="0">
+                                class="${formControlClass} text-end" value="0" step="0.1"
+                                min="0" step="0.1">
                         </td>
                         <td>
                             <input type="number" name="detallefactura_set-${currentIndex}-total" 
                                 class="${formControlClass} text-end" value="${precioConDescuento}" readonly>
                         </td>
                         <td>
-                            <button type="button" class="btn btn-danger btn-sm btn-delete" data-form-index="${currentIndex}" 
-                                data-toggle="tooltip" title="Eliminar">
-                                <i class="bi bi-trash"></i>
-                            </button>
+                            <button type="button" class="btn btn-danger btn-sm btn-delete" data-form-index="${currentIndex}" data-toggle="tooltip" title="Eliminar"><i class="bi bi-trash"></i></button>
                         </td>
                     </tr>
                     `;
-                    ////****
+
 
                     // Agregar la nueva fila al cuerpo de la tabla
                     formsetContainer.querySelector('.detalle-form tbody').insertAdjacentHTML('beforeend', newFormHTML);
@@ -1030,12 +995,13 @@
                 .then(response => response.json())
                 .then(data => {
                     tablaResultados.innerHTML = ''; // Limpiar tabla de resultados
+                    
 
-                    const formateadorPrecio = new Intl.NumberFormat('es-ES', {
-                        style: 'decimal',
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                    });
+                const formateadorPrecio = new Intl.NumberFormat('es-ES', {
+                    style: 'decimal',
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                });
                     
                     data.forEach(producto => {
                         const precioNumerico = parseFloat(producto.precio); // Asegura que sea número
@@ -1066,11 +1032,9 @@
                                 </td>
 
                                 <td>
-                                    <input type="checkbox" class="seleccionar-producto"
-                                            data-id="${producto.id}" 
+                                    <input type="checkbox" class="seleccionar-producto" 
                                             data-codigo="${producto.codigo}" 
-                                            data-medida="${producto.medida}"
-                                            data-nombre="${producto.nombre}"
+                                            data-nombre="${producto.nombre}" 
                                             data-precio="${precioNumerico}"
                                             data-id-marca="${producto.id_marca}" 
                                             data-id-familia="${producto.id_familia}"

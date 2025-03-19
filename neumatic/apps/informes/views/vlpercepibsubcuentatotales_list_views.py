@@ -146,11 +146,11 @@ class VLPercepIBSubcuentaTotalesInformeView(InformeFormView):
 			context["data_has_errors"] = True
 		return context
 
-def raw_to_dict(instance):
-	"""Convierte una instancia de una consulta raw a un diccionario, eliminando claves internas."""
-	data = instance.__dict__.copy()
-	data.pop('_state', None)
-	return data
+# def raw_to_dict(instance):
+# 	"""Convierte una instancia de una consulta raw a un diccionario, eliminando claves internas."""
+# 	data = instance.__dict__.copy()
+# 	data.pop('_state', None)
+# 	return data
 
 
 def vlpercepibsubcuentatotales_vista_pantalla(request):
@@ -169,10 +169,10 @@ def vlpercepibsubcuentatotales_vista_pantalla(request):
 	
 	#-- Generar el listado a pantalla.
 	return render(request, ConfigViews.reporte_pantalla, contexto_reporte)
-	# return render(request, "informes/reportes/ventacompro_list.html", contexto_reporte)
 
 
 def vlpercepibsubcuentatotales_vista_pdf(request):
+	return HttpResponse("Reporte en PDF aún no implementado.", status=400)
 	#-- Obtener el token de la querystring.
 	token = request.GET.get("token")
 	
@@ -187,7 +187,6 @@ def vlpercepibsubcuentatotales_vista_pdf(request):
 		return HttpResponse("Contexto no encontrado o expirado", status=400)
 	
 	#-- Preparar la respuesta HTTP.
-	# html_string = render_to_string("informes/reportes/ventacompro_pdf.html", contexto_reporte, request=request)
 	html_string = render_to_string(ConfigViews.reporte_pdf, contexto_reporte, request=request)
 	pdf_file = HTML(string=html_string, base_url=request.build_absolute_uri()).write_pdf()
 	
@@ -226,7 +225,7 @@ def vlpercepibsubcuentatotales_vista_excel(request):
 		excel_data,
 		content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 	)
-	# Inline permite visualizarlo en el navegador si el navegador lo soporta.
+	#-- Inline permite visualizarlo en el navegador si el navegador lo soporta.
 	response["Content-Disposition"] = f'inline; filename="informe_{ConfigViews.model_string}.xlsx"'
 	return response
 

@@ -586,7 +586,7 @@ class PuntoVenta(ModeloBaseGenerico):
 	id_sucursal = models.ForeignKey('Sucursal', on_delete=models.PROTECT,
                                  verbose_name="Sucursal",
                                  null=True, blank=True)
-	punto_venta = models.CharField("Punto de Venta", max_length=5, unique=True)
+	punto_venta = models.CharField("Punto de Venta", max_length=5)
 	descripcion_punto_venta = models.CharField("Descripción Pto. Venta",
                                             max_length=50, 
                                             null=True, blank=True)

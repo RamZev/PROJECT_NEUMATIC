@@ -13,7 +13,7 @@ from decimal import Decimal
 from .report_views_generics import *
 from apps.informes.models import VLPercepIBSubcuentaDetallado
 from ..forms.buscador_vlpercepibsubcuentadetallado_forms import BuscadorPercepIBSubcuentaDetalladoForm
-from utils.utils import deserializar_datos, serializar_queryset
+from utils.utils import deserializar_datos
 from utils.helpers.export_helpers import ExportHelper
 
 
@@ -153,9 +153,6 @@ class VLPercepIBSubcuentaDetalladoInformeView(InformeFormView):
 		
 		# **************************************************
 		
-		#-- Serializar el queryset.
-		# queryset_serializado = serializar_queryset(queryset)
-		
 		#-- Se retorna un contexto que será consumido tanto para la vista en pantalla como para la generación del PDF.
 		return {
 			"objetos": grouped_data,
@@ -199,10 +196,10 @@ def vlpercepibsubcuentadetallado_vista_pantalla(request):
 	
 	#-- Generar el listado a pantalla.
 	return render(request, ConfigViews.reporte_pantalla, contexto_reporte)
-	# return render(request, "informes/reportes/ventacompro_list.html", contexto_reporte)
 
 
 def vlpercepibsubcuentadetallado_vista_pdf(request):
+	return HttpResponse("Reporte en PDF aún no implementado.", status=400)
 	#-- Obtener el token de la querystring.
 	token = request.GET.get("token")
 	
@@ -217,7 +214,6 @@ def vlpercepibsubcuentadetallado_vista_pdf(request):
 		return HttpResponse("Contexto no encontrado o expirado", status=400)
 	
 	#-- Preparar la respuesta HTTP.
-	# html_string = render_to_string("informes/reportes/ventacompro_pdf.html", contexto_reporte, request=request)
 	html_string = render_to_string(ConfigViews.reporte_pdf, contexto_reporte, request=request)
 	pdf_file = HTML(string=html_string, base_url=request.build_absolute_uri()).write_pdf()
 	
@@ -256,7 +252,7 @@ def vlpercepibsubcuentadetallado_vista_excel(request):
 		excel_data,
 		content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 	)
-	# Inline permite visualizarlo en el navegador si el navegador lo soporta.
+	#-- Inline permite visualizarlo en el navegador si el navegador lo soporta.
 	response["Content-Disposition"] = f'inline; filename="informe_{ConfigViews.model_string}.xlsx"'
 	return response
 

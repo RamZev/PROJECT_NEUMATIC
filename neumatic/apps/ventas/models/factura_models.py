@@ -450,3 +450,32 @@ class DetalleFactura(ModeloBaseGenerico):
 		verbose_name = ('Detalle Factura')
 		verbose_name_plural = ('Detalles Factura')
 		# ordering = ['id_detalle_factura']
+
+
+class SerialFactura(ModeloBaseGenerico):
+	id_serial_factura = models.AutoField(
+		primary_key=True
+	)
+	id_factura = models.ForeignKey(
+		Factura,
+		on_delete=models.CASCADE,
+		verbose_name="Factura",
+		null=True,
+		blank=True
+	)
+	producto_serial = models.CharField(
+     	"Serial producto", 
+      	max_length=50,
+		null=True,
+		blank=True
+    )
+
+	
+	def __str__(self):
+		return self.producto_serial
+	
+	
+	class Meta:
+		db_table = "serial_factura"
+		verbose_name = ('Detalle Serial')
+		verbose_name_plural = ('Detalles Serial')
