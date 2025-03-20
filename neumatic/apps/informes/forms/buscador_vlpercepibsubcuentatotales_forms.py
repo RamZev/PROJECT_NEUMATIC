@@ -44,7 +44,13 @@ class BuscadorPercepIBSubcuentaTotalesForm(InformesGenericForm):
 		fecha_desde = cleaned_data.get("fecha_desde")
 		fecha_hasta = cleaned_data.get("fecha_hasta")
 		
-		#-- Validar rango de fechas.
+		#-- Validar fechas.
+		if not fecha_desde:
+			self.add_error("fecha_desde", "Debe indicar una fecha válida.")
+		
+		if not fecha_hasta:
+			self.add_error("fecha_hasta", "Debe indicar una fecha válida.")
+		
 		if fecha_desde and fecha_hasta and fecha_desde > fecha_hasta:
 			self.add_error("fecha_hasta", "La fecha hasta no puede ser anterior a la fecha desde.")
 		

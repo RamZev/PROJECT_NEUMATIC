@@ -11,12 +11,12 @@ from apps.maestros.models.cliente_models import Cliente
 class BuscadorRemitosClientesForm(InformesGenericForm):
 	
 	fecha_desde = forms.DateField(
-		required=True, 
+		required=False, 
 		label="Desde Fecha",
 		widget=forms.TextInput(attrs={'type':'date', **formclassdate})
 	)
 	fecha_hasta = forms.DateField(
-		required=True, 
+		required=False, 
 		label="Hasta Fecha",
 		widget=forms.TextInput(attrs={'type':'date', **formclassdate})
 	)
@@ -60,7 +60,13 @@ class BuscadorRemitosClientesForm(InformesGenericForm):
 		if not id_cliente:
 			self.add_error("id_cliente", "Debe indicar un Código de Cliente.")
 		
-		#-- Validar rango de fechas.
+		#-- Validar fechas.
+		if not fecha_desde:
+			self.add_error("fecha_desde", "Debe indicar una fecha válida.")
+		
+		if not fecha_hasta:
+			self.add_error("fecha_hasta", "Debe indicar una fecha válida.")
+		
 		if fecha_desde and fecha_hasta and fecha_desde > fecha_hasta:
 			self.add_error("fecha_hasta", "La fecha hasta no puede ser anterior a la fecha desde.")
 		
