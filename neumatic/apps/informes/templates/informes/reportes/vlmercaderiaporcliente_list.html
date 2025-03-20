@@ -9,7 +9,7 @@
 <!-- Contenido Inferior Izquierdo -->
 {% block header_bottom_left %}
 	<p><strong>Cliente:</strong></p>
-	<p><strong>[{{ cliente.id_cliente }}] {{ cliente.nombre_cliente }}</p>
+	<p><strong>[{{ cliente.id_cliente }}] {{ cliente.nombre_cliente }}</strong></p>
 {% endblock %}
 
 <!-- Contenido Inferior Derecho -->
@@ -39,7 +39,7 @@
 			
 			{% for comprobante_num, productos in objetos.items %}
 				<!-- Fila con los datos del comprobante -->
-				<tr class="comprobante-row">
+				<tr>
 					<td colspan="8" style="padding-top: 5px;">
 						<strong>{{ productos.0.nombre_comprobante_venta }}</strong> 
 						<strong>{{ productos.0.numero }}</strong> 
@@ -48,7 +48,7 @@
 				</tr>
 				<!-- Filas con el detalle del comprobante -->
 				{% for producto in productos %}
-					<tr class="compact-line-spacing">
+					<tr>
 						<td>{{ producto.nombre_producto_marca }}</td>
 						<td>{{ producto.medida }}</td>
 						<td>{{ producto.id_producto_id }}</td>

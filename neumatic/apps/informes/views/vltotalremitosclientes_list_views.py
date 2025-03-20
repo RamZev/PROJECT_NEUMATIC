@@ -104,10 +104,9 @@ class VLTotalRemitosClientesInformeView(InformeFormView):
 		fecha_desde = cleaned_data.get('fecha_desde')
 		fecha_hasta = cleaned_data.get('fecha_hasta')
 		
-		if id_cliente:
-			queryset = VLTotalRemitosClientes.objects.obtener_total_remitos_cliente(id_cliente, fecha_desde, fecha_hasta)
-		else:
-			queryset = VLTotalRemitosClientes.objects.obtener_total_remitos_cliente(None, fecha_desde, fecha_hasta)
+		print(f"{id_cliente = }")
+		
+		queryset = VLTotalRemitosClientes.objects.obtener_total_remitos_cliente(id_cliente, fecha_desde, fecha_hasta)
 		
 		return queryset
 	

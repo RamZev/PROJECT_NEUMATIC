@@ -91,9 +91,6 @@ class VLRemitosClientesInformeView(InformeFormView):
 	extra_context = {
 		"master_title": f'Informes - {ConfigViews.model._meta.verbose_name_plural}',
 		"home_view_name": ConfigViews.home_view_name,
-		# "list_view_name": ConfigViews.list_view_name,
-		# "table_headers": DataViewList.table_headers,
-		# "table_data": DataViewList.table_data,
 		"buscador_template": f"{ConfigViews.app_label}/buscador_{ConfigViews.model_string}.html",
 		"js_file": ConfigViews.js_file,
 		"url_pantalla": ConfigViews.url_pantalla,
