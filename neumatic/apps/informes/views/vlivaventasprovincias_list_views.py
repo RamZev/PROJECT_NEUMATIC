@@ -112,7 +112,6 @@ class VLIVAVentasProvinciasInformeView(InformeFormView):
 		"""
 		
 		#-- Parámetros del listado.
-		# id_sucursal = cleaned_data.get("sucursal")
 		sucursal = cleaned_data.get("sucursal")
 		anno = cleaned_data.get("anno") or 0
 		mes = cleaned_data.get("mes")
