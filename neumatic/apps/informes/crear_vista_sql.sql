@@ -17,7 +17,8 @@ CREATE VIEW "VLSaldosClientes" AS
 		c.id_vendedor_id, 
 		f.total, 
 		f.entrega, 
-		f.condicion_comprobante
+		f.condicion_comprobante,
+		cv.mult_saldo
 	FROM factura f 
 		JOIN cliente c ON f.id_cliente_id = c.id_cliente 
 		JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta 
@@ -356,6 +357,7 @@ CREATE VIEW "VLIVAVentasFULL" AS
 DROP VIEW IF EXISTS "main"."VLIVAVentasProvincias";
 CREATE VIEW "VLIVAVentasProvincias" AS 
 	SELECT 
+		f.id_factura,
 		p.id_provincia,
 		p.nombre_provincia,
 		f.fecha_comprobante,
@@ -436,7 +438,7 @@ CREATE VIEW VLPercepIBVendedorDetallado AS
 		f.letra_comprobante,
 		f.numero_comprobante,
 		f.fecha_comprobante,
-		(f.compro || ' ' || f.letra_comprobante || ' ' || SUBSTR(printf('%012d', f.numero_comprobante), 1, 4) || '-' || SUBSTR(printf('%012d', f.numero_comprobante), 5) || "  " || f.fecha_comprobante) AS comprobante,
+		(f.compro || '  ' || f.letra_comprobante || '  ' || SUBSTR(printf('%012d', f.numero_comprobante), 1, 4) || '-' || SUBSTR(printf('%012d', f.numero_comprobante), 5) || "   " || substr(f.fecha_comprobante, 9, 2) || '/' || substr(f.fecha_comprobante, 6, 2) || '/' || substr(f.fecha_comprobante, 1, 4)) AS comprobante,
 		f.id_cliente_id,
 		c.nombre_cliente,
 		c.cuit,
@@ -479,7 +481,8 @@ CREATE VIEW "VLPercepIBSubcuentaTotales" AS
 -- Modelo: VLPercepIBSubcuentaDetallado
 -- ---------------------------------------------------------------------------
 DROP VIEW IF EXISTS "main"."VLPercepIBSubcuentaDetallado";
-CREATE VIEW "VLPercepIBSubcuentaDetallado" AS SELECT 
+CREATE VIEW "VLPercepIBSubcuentaDetallado" AS 
+	SELECT 
 		f.id_factura,
 		c.sub_cuenta,
 		p.nombre_cliente AS nombre_cliente_padre,
@@ -487,7 +490,7 @@ CREATE VIEW "VLPercepIBSubcuentaDetallado" AS SELECT
 		f.letra_comprobante,
 		f.numero_comprobante,
 		f.fecha_comprobante,
-		(f.compro || ' ' || f.letra_comprobante || ' ' || SUBSTR(printf('%012d', f.numero_comprobante), 1, 4) || '-' || SUBSTR(printf('%012d', f.numero_comprobante), 5) || "  " || f.fecha_comprobante) AS comprobante,
+		(f.compro || '  ' || f.letra_comprobante || '  ' || SUBSTR(printf('%012d', f.numero_comprobante), 1, 4) || '-' || SUBSTR(printf('%012d', f.numero_comprobante), 5) || "   " || substr(f.fecha_comprobante, 9, 2) || '/' || substr(f.fecha_comprobante, 6, 2) || '/' || substr(f.fecha_comprobante, 1, 4)) AS comprobante,
 		f.id_cliente_id,
 		c.nombre_cliente,
 		c.cuit,
@@ -501,4 +504,3 @@ CREATE VIEW "VLPercepIBSubcuentaDetallado" AS SELECT
 	WHERE f.percep_ib<>0 AND cv.mult_venta<>0
 	GROUP BY c.sub_cuenta, f.numero_comprobante
 	ORDER BY c.sub_cuenta, f.fecha_comprobante, f.numero_comprobante;
-

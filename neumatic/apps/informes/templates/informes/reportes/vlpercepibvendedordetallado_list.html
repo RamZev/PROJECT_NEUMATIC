@@ -54,7 +54,7 @@
 				<!-- Filas con el detalle del comprobante -->
 				{% for comp in data.comprobantes %}
 					<tr>
-						<td>{{ comp.comprobante }}</td>
+						<td style="white-space: pre">{{ comp.comprobante }}</td>
 						<td>{{ comp.id_cliente_id }}</td>
 						<td>{{ comp.nombre_cliente }}</td>
 						<td>{{ comp.cuit }}</td>

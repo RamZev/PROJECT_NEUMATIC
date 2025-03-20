@@ -7,7 +7,7 @@ class SaldosClientesManager(models.Manager):
 
 	def obtener_saldos_clientes(self, fecha_hasta, id_vendedor=None):
 		
-		#-- Se crea la consulta parametrizada.
+		#-- Se crea la consulta.
 		query = """
 		SELECT 
 			id_cliente_id, 
@@ -25,15 +25,15 @@ class SaldosClientesManager(models.Manager):
 			fecha_comprobante <= %s
 		"""
 		
-		#-- Se añade el parámetro fecha.
+		#-- Se añaden parámetros.
 		params = [fecha_hasta]
 		
-		#-- Condición adicional para el vendedor si está definido.
+		#-- Filtros adicionales.
 		if id_vendedor:
 			query += " AND id_vendedor_id = %s"
 			params.append(id_vendedor)
 		
-		#-- Se agrega la clausula GROUP BY y ORDER BY.
+		#-- Se completa la consulta.
 		query += """
 		GROUP BY 
 			id_cliente_id, nombre_cliente, domicilio_cliente, nombre_localidad, 
@@ -79,7 +79,7 @@ class ResumenCtaCteManager(models.Manager):
 	def obtener_fact_pendientes(self, id_cliente):
 		""" Se determina los comprobantes pendientes de un cliente determinado. """
 		
-		#-- Se crea la consulta parametrizada.
+		#-- Se crea la consulta.
 		query = """
 			WITH acumulado AS (
 				SELECT 
@@ -133,7 +133,7 @@ class ResumenCtaCteManager(models.Manager):
 			ORDER BY r.fecha_comprobante, r.numero_comprobante;
 			"""
 		
-		#-- Se añade el parámetro.
+		#-- Se añaden parámetros.
 		params = [id_cliente, id_cliente]
 		
 		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
@@ -142,7 +142,7 @@ class ResumenCtaCteManager(models.Manager):
 	def obtener_resumen_cta_cte(self, id_cliente, fecha_desde, fecha_hasta, condicion_venta1, condicion_venta2):
 		""" Determina el Resumen de Cuenta Corriente de un cliente y período determinados. """
 		
-		#-- Se crea la consulta parametrizada.
+		#-- Se crea la consulta.
 		query = """
 			SELECT 
 				r.id_cliente_id, 
@@ -172,12 +172,12 @@ class ResumenCtaCteManager(models.Manager):
 				r.intereses
 			FROM VLResumenCtaCte r
 			WHERE r.id_cliente_id = %s 
-			AND r.fecha_comprobante BETWEEN %s AND %s 
-			AND r.condicion_comprobante BETWEEN %s AND %s
+				AND r.fecha_comprobante BETWEEN %s AND %s 
+				AND r.condicion_comprobante BETWEEN %s AND %s
 			ORDER BY r.fecha_comprobante, r.numero_comprobante;
 		"""
 		
-		#-- Se añade los parámetros.
+		#-- Se añaden parámetros.
 		params = [id_cliente, fecha_desde, fecha_hasta, condicion_venta1, condicion_venta2]
 		
 		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
@@ -186,19 +186,15 @@ class ResumenCtaCteManager(models.Manager):
 	def obtener_saldo_anterior(self, id_cliente, fecha_desde):
 		""" Método que calcula y devuelve el saldo anterior a la fecha desde de un cliente dado. """
 		
-		#-- Se crea la consulta parametrizada.
-		# query = """
-		# 	SELECT v.id_cliente_id, COALESCE(SUM(v.total * 1.0), 0.0) AS saldo_anterior 
-		# 		FROM VLResumenCtaCte v 
-		# 		WHERE v.id_cliente_id = %s AND v.fecha_comprobante < %s;
-		# """
 		query = """
-			SELECT v.id_cliente_id, COALESCE(ROUND(SUM(v.total * 1.0), 2), 0.00) AS saldo_anterior 
+			SELECT 
+				v.id_cliente_id, 
+				COALESCE(ROUND(SUM(v.total * 1.0), 2), 0.00) AS saldo_anterior 
 			FROM VLResumenCtaCte v 
 			WHERE v.id_cliente_id = %s AND v.fecha_comprobante < %s;
 		"""
 		
-		#-- Se añade los parámetros.
+		#-- Se añaden parámetros.
 		params = [id_cliente, fecha_desde]
 		
 		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
@@ -238,14 +234,14 @@ class MercaderiaPorClienteManager(models.Manager):
 	def obtener_mercaderia_por_cliente(self, id_cliente, fecha_desde, fecha_hasta):
 		""" Se determina los comprobantes pendientes de un cliente determinado. """
 		
-		#-- Se crea la consulta parametrizada.
+		#-- Se crea la consulta.
 		query = """
 			SELECT * 
-				FROM VLMercaderiaPorCliente v 
-				WHERE v.id_cliente_id = %s AND v.fecha_comprobante BETWEEN %s AND %s;
+			FROM VLMercaderiaPorCliente v 
+			WHERE v.id_cliente_id = %s AND v.fecha_comprobante BETWEEN %s AND %s;
 		"""
 		
-		#-- Se añade los parámetros.
+		#-- Se añaden parámetros.
 		params = [id_cliente, fecha_desde, fecha_hasta]
 		
 		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
@@ -289,14 +285,13 @@ class RemitosClientesManager(models.Manager):
 		#-- Se crea la consulta parametrizada.
 		query = """
 			SELECT * 
-				FROM VLRemitosClientes
-				WHERE 
-					id_cliente_id = %s AND 
-					codigo_comprobante_venta BETWEEN %s AND %s AND
-					fecha_comprobante BETWEEN %s AND %s;
+			FROM VLRemitosClientes
+			WHERE id_cliente_id = %s AND 
+				codigo_comprobante_venta BETWEEN %s AND %s AND
+				fecha_comprobante BETWEEN %s AND %s;
 		"""
 		
-		#-- Se añade los parámetros.
+		#-- Se añaden parámetros.
 		params = [id_cliente, "RD", "RT", fecha_desde, fecha_hasta]
 		
 		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
@@ -338,48 +333,31 @@ class TotalRemitosClientesManager(models.Manager):
 		""" Se determina los Totales de Remitos por clientes. """
 		
 		#-- Se crea la consulta parametrizada.
-		if id_cliente:
-			query = """
-				SELECT 
-						id_cliente_id, 
-						fecha_comprobante, 
-						nombre_cliente, 
-						domicilio_cliente, 
-						codigo_postal, 
-						nombre_iva, 
-						cuit, 
-						telefono_cliente, 
-						SUM(total) AS total
-					FROM VLTotalRemitosClientes 
-					WHERE 
-						id_cliente_id = %s AND 
-						fecha_comprobante BETWEEN %s AND %s
-					GROUP BY
-						id_cliente_id;
-			"""
-			#-- Se añade los parámetros.
-			params = [id_cliente, fecha_desde, fecha_hasta]
-		else:
-			query = """
-				SELECT 
-						id_cliente_id, 
-						fecha_comprobante, 
-						nombre_cliente, 
-						domicilio_cliente, 
-						codigo_postal, 
-						nombre_iva, 
-						cuit, 
-						telefono_cliente, 
-						SUM(total) AS total
-					FROM VLTotalRemitosClientes 
-					WHERE 
-						fecha_comprobante BETWEEN %s AND %s
-					GROUP BY
-						id_cliente_id;
-			"""
-			#-- Se añade los parámetros.
-			params = [fecha_desde, fecha_hasta]
+		query = """
+			SELECT 
+				id_cliente_id, 
+				fecha_comprobante, 
+				nombre_cliente, 
+				domicilio_cliente, 
+				codigo_postal, 
+				nombre_iva, 
+				cuit, 
+				telefono_cliente, 
+				SUM(total) AS total
+			FROM VLTotalRemitosClientes 
+			WHERE fecha_comprobante BETWEEN %s AND %s
+		"""
+		#-- Se añaden parámetros.
+		params = [fecha_desde, fecha_hasta]
 		
+		#-- Filtros adicionales.
+		if id_cliente:
+			query += " AND id_cliente_id = %s "
+			params.append(id_cliente)
+		
+		#-- Completar la consulta.
+		query += "GROUP BY id_cliente_id;"
+	
 		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
 		return self.raw(query, params)
 
@@ -416,14 +394,17 @@ class VentaComproLocalidadManager(models.Manager):
 		filtra por sucursal y código postal, aplicando todo el filtrado directamente en SQL.
 		"""
 		
+		#-- Se crea la consulta parametrizada.
 		query = """
 			SELECT *
 			FROM VLVentaComproLocalidad 
 			WHERE fecha_comprobante BETWEEN %s AND %s
 		"""
 		
+		#-- Se añaden parámetros.
 		params = [fecha_desde, fecha_hasta]
 		
+		#-- Filtros adicionales.
 		if sucursal:
 			query += " AND id_sucursal_id = %s"
 			params.append(sucursal.id_sucursal)
@@ -432,6 +413,7 @@ class VentaComproLocalidadManager(models.Manager):
 			query += " AND codigo_postal = %s"
 			params.append(codigo_postal)
 		
+		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
 		return self.raw(query, params)
 
 
@@ -472,18 +454,17 @@ class VentaMostradorManager(models.Manager):
 	def obtener_venta_mostrador(self, fecha_desde, fecha_hasta, sucursal=None, tipo_venta=None, tipo_cliente=None, tipo_producto=None):
 		""" Se determina las Ventas por Mostrador por un rango de fechas, aplicando filtros. """
 		
-		#-- Se crea la consulta parametrizada.
+		#-- Se crea la consulta.
 		query = """
 			SELECT *
-				FROM VLVentaMostrador 
-				WHERE 
-					fecha_comprobante BETWEEN %s AND %s
+			FROM VLVentaMostrador 
+			WHERE fecha_comprobante BETWEEN %s AND %s
 		"""
 		
-		#-- Se añade los parámetros.
+		#-- Se añaden parámetros.
 		params = [fecha_desde, fecha_hasta]
 		
-		#-- Agrega filtros opcionales.
+		#-- Filtros adicionales.
 		if sucursal:
 			query += " AND id_sucursal_id = %s"
 			params.append(sucursal.id_sucursal)
@@ -548,15 +529,14 @@ class VentaComproManager(models.Manager):
 		#-- Se crea la consulta parametrizada.
 		query = """
 			SELECT *
-				FROM VLVentaCompro 
-				WHERE 
-					fecha_comprobante BETWEEN %s AND %s
+			FROM VLVentaCompro 
+			WHERE fecha_comprobante BETWEEN %s AND %s
 		"""
 		
-		#-- Se añade los parámetros.
+		#-- Se añaden parámetros.
 		params = [fecha_desde, fecha_hasta]
 		
-		#-- Agrega filtros opcionales.
+		#-- Filtros adicionales.
 		if sucursal:
 			query += " AND id_sucursal_id = %s"
 			params.append(sucursal.id_sucursal)
@@ -602,22 +582,21 @@ class ComprobantesVencidosManager(models.Manager):
 		""" Se determina los Comprobantes vencidos según parámetro indicado por vendedor o todos los vendedores,
 		una sucursal o todas. """
 		
-		#-- Se crea la consulta parametrizada.
+		#-- Se crea la consulta.
 		query = """
 			SELECT * 
-				FROM VLComprobantesVencidos 
-				WHERE dias_vencidos > %s
-			"""
+			FROM VLComprobantesVencidos 
+			WHERE dias_vencidos > %s
+		"""
 		
-		#-- Se añade los parámetros.
+		#-- Se añaden parámetros.
 		params = [dias]
 		
-		#-- Condición adicional para el vendedor si está definido.
+		#-- Filtros adicionales.
 		if id_vendedor:
 			query += " AND id_vendedor_id = %s"
 			params.append(id_vendedor)
 		
-		#-- Agrega filtros opcionales.
 		if id_sucursal:
 			query += " AND id_sucursal_id = %s"
 			params.append(id_sucursal)
@@ -661,9 +640,10 @@ class RemitosPendientesManager(models.Manager):
 		""" Permite obtener los Remitos Pendientes por procesar según parámetros indicados: por Vendedor, rango de Ids de Cliente, 
 		Sucursal de Facturación o Sucursal del Cliente. """
 		
-		#-- Se crea la consulta parametrizada.
+		#-- Se crea la consulta.
 		query = "SELECT * FROM VLRemitosPendientes "
 		
+		#-- Filtros adicionales.
 		match filtrar_por:
 			case "vendedor":
 				query += "WHERE id_vendedor_id = %s"
@@ -724,14 +704,14 @@ class RemitosVendedorManager(models.Manager):
 	def obtener_remitos_vendedor(self, id_vendedor, fecha_desde, fecha_hasta):
 		""" Permite obtener los Remitos de un Vendedor específico en un período de tiempo. """
 		
-		#-- Se crea la consulta parametrizada.
+		#-- Se crea la consulta.
 		query = """
 			SELECT * 
-				FROM VLRemitosVendedor 
-				WHERE id_vendedor_id = %s AND 
-					fecha_comprobante BETWEEN %s AND %s"""
+			FROM VLRemitosVendedor 
+			WHERE id_vendedor_id = %s AND 
+				fecha_comprobante BETWEEN %s AND %s"""
 		
-		#-- Se añade los parámetros.
+		#-- Se añaden parámetros.
 		params = [id_vendedor, fecha_desde, fecha_hasta]
 		
 		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
@@ -773,19 +753,18 @@ class IVAVentasFULLManager(models.Manager):
 	def obtener_datos(self, id_sucursal, anno, mes):
 		""" Permite obtener los Comprobantes Fiscales por todas las Sucursales o una en específico de un mes y año determinado. """
 		
-		#-- Base de la consulta SQL.
+		#-- Se crea la consulta.
 		query = """
 			SELECT * FROM VLIVAVentasFULL
-			WHERE 
-				STRFTIME('%%Y', fecha_comprobante) = %s
-				AND STRFTIME('%%m', fecha_comprobante) = %s
+			WHERE STRFTIME('%%Y', fecha_comprobante) = %s AND
+				  STRFTIME('%%m', fecha_comprobante) = %s
 		"""
 		
-		#-- Lista de parámetros.
+		#-- Se añaden parámetros.
 		params = [str(anno), str(mes)]
 		
-		#-- Agregar la condición solo si id_sucursal no es None.
-		if id_sucursal is not None:
+		#-- Filtros adicionales.
+		if id_sucursal:
 			query += " AND id_sucursal_id = %s"
 			params.append(id_sucursal)
 		
@@ -827,29 +806,30 @@ class VLIVAVentasProvinciasManager(models.Manager):
 	
 	def obtener_datos(self, id_sucursal, anno, mes):
 		
-		#-- Base de la consulta SQL.
+		#-- Se crea la consulta.
 		query = """
 			SELECT 
-					id_factura, 
-					nombre_provincia,
-					ROUND(SUM(gravado), 2) AS gravado,
-					ROUND(SUM(exento), 2) AS exento,
-					ROUND(SUM(iva), 2) AS iva,
-					ROUND(SUM(percep_ib), 2) AS percep_ib,
-					ROUND(SUM(total), 2) AS total
-				FROM VLIVAVentasProvincias
-				WHERE STRFTIME('%%Y', fecha_comprobante) = %s AND
-					  STRFTIME('%%m', fecha_comprobante) = %s
+				id_factura, 
+				nombre_provincia,
+				ROUND(SUM(gravado), 2) AS gravado,
+				ROUND(SUM(exento), 2) AS exento,
+				ROUND(SUM(iva), 2) AS iva,
+				ROUND(SUM(percep_ib), 2) AS percep_ib,
+				ROUND(SUM(total), 2) AS total
+			FROM VLIVAVentasProvincias
+			WHERE STRFTIME('%%Y', fecha_comprobante) = %s AND
+				  STRFTIME('%%m', fecha_comprobante) = %s
 		"""
 		
-		#-- Lista de parámetros.
+		#-- Se añaden parámetros.
 		params = [str(anno), str(mes)]
 		
-		#-- Agregar condiciones de filtro.
-		if id_sucursal is not None:
+		#-- Filtros adicionales.
+		if id_sucursal:
 			query += " AND id_sucursal_id = %s"
 			params.append(id_sucursal)
 		
+		#-- Se completa la consulta.
 		query += " GROUP BY nombre_provincia"
 		
 		#-- Ejecutar la consulta y devolver los resultados.
@@ -884,30 +864,31 @@ class VLIVAVentasSitribManager(models.Manager):
 	
 	def obtener_datos(self, id_sucursal, anno, mes):
 		
-		#-- Base de la consulta SQL.
+		#-- Se crea la consulta.
 		query = """
 			SELECT 
-					id_factura,
-					codigo_iva,
-					nombre_iva,
-					ROUND(SUM(gravado), 2) AS gravado, 
-					ROUND(SUM(exento), 2) AS exento, 
-					ROUND(SUM(iva), 2) AS iva, 
-					ROUND(SUM(percep_ib), 2) AS percep_ib, 
-					ROUND(SUM(total), 2) AS total
-				FROM VLIVAVentasSitrib
-				WHERE STRFTIME('%%Y', fecha_comprobante) = %s AND
-					  STRFTIME('%%m', fecha_comprobante) = %s
+				id_factura,
+				codigo_iva,
+				nombre_iva,
+				ROUND(SUM(gravado), 2) AS gravado, 
+				ROUND(SUM(exento), 2) AS exento, 
+				ROUND(SUM(iva), 2) AS iva, 
+				ROUND(SUM(percep_ib), 2) AS percep_ib, 
+				ROUND(SUM(total), 2) AS total
+			FROM VLIVAVentasSitrib
+			WHERE STRFTIME('%%Y', fecha_comprobante) = %s AND
+				  STRFTIME('%%m', fecha_comprobante) = %s
 		"""
 		
-		#-- Lista de parámetros.
+		#-- Se añaden parámetros.
 		params = [str(anno), str(mes)]
 		
-		#-- Agregar condiciones de filtro.
-		if id_sucursal is not None:
+		#-- Filtros adicionales.
+		if id_sucursal:
 			query += " AND id_sucursal_id = %s"
 			params.append(id_sucursal)
 		
+		#-- Se completa la consulta.
 		query += " GROUP BY codigo_iva"
 		
 		#-- Ejecutar la consulta y devolver los resultados.
@@ -942,21 +923,21 @@ class VLPercepIBVendedorTotalesManager(models.Manager):
 	
 	def obtener_datos(self, fecha_desde, fecha_hasta):
 		
-		#-- Base de la consulta SQL.
+		#-- Se crea la consulta.
 		query = """
 			SELECT 
-					id_factura,
-					id_vendedor_id,
-					nombre_vendedor,
-					ROUND(SUM(neto), 2) AS neto, 
-					ROUND(SUM(percep_ib), 2) AS percep_ib
-				FROM VLPercepIBVendedorTotales
-				WHERE fecha_comprobante BETWEEN %s AND %s
-				GROUP BY id_vendedor_id
-				ORDER by nombre_vendedor
+				id_factura,
+				id_vendedor_id,
+				nombre_vendedor,
+				ROUND(SUM(neto), 2) AS neto, 
+				ROUND(SUM(percep_ib), 2) AS percep_ib
+			FROM VLPercepIBVendedorTotales
+			WHERE fecha_comprobante BETWEEN %s AND %s
+			GROUP BY id_vendedor_id
+			ORDER by nombre_vendedor
 		"""
 		
-		#-- Lista de parámetros.
+		#-- Se añaden parámetros.
 		params = [fecha_desde, fecha_hasta]
 		
 		#-- Ejecutar la consulta y devolver los resultados.
@@ -987,10 +968,11 @@ class VLPercepIBVendedorDetalladoManager(models.Manager):
 	
 	def obtener_datos(self, fecha_desde, fecha_hasta):
 		
-		#-- Base de la consulta SQL.
+		#-- Se crea la consulta.
 		query = """
-			SELECT * FROM VLPercepIBVendedorDetallado
-				WHERE fecha_comprobante BETWEEN %s AND %s
+			SELECT * 
+			FROM VLPercepIBVendedorDetallado
+			WHERE fecha_comprobante BETWEEN %s AND %s
 		"""
 		
 		#-- Lista de parámetros.
@@ -1045,7 +1027,7 @@ class VLPercepIBSubcuentaTotalesManager(models.Manager):
 				ORDER by sub_cuenta
 		"""
 		
-		#-- Lista de parámetros.
+		#-- Se añaden parámetros.
 		params = [fecha_desde, fecha_hasta]
 		
 		#-- Ejecutar la consulta y devolver los resultados.
@@ -1078,13 +1060,14 @@ class VLPercepIBSubcuentaDetalladoManager(models.Manager):
 	
 	def obtener_datos(self, fecha_desde, fecha_hasta):
 		
-		#-- Base de la consulta SQL.
+		#-- Se crea la consulta.
 		query = """
-			SELECT * FROM VLPercepIBSubcuentaDetallado
-				WHERE fecha_comprobante BETWEEN %s AND %s
+			SELECT * 
+			FROM VLPercepIBSubcuentaDetallado
+			WHERE fecha_comprobante BETWEEN %s AND %s
 		"""
 		
-		#-- Lista de parámetros.
+		#-- Se añaden parámetros.
 		params = [fecha_desde, fecha_hasta]
 		
 		#-- Ejecutar la consulta y devolver los resultados.

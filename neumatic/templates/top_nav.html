@@ -21,12 +21,13 @@
 	
 	<div class="col-auto align-self-center text-white">
 		{% if user.is_authenticated %}
+			{{ request.session.sucursal }}-{{ request.session.punto_venta }}-
 			{% if request.session.first_name %}
 				{{ request.session.first_name }} {{ request.session.last_name }}
 			{% else %}
 				{{ request.session.username }}
 			{% endif %}
-		{% endif %}  
+		{% endif %}
 	</div>
 		
 	<!-- Navbar-->

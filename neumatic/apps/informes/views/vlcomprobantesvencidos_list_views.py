@@ -103,7 +103,10 @@ class VLComprobantesVencidosInformeView(InformeFormView):
 		vendedor = cleaned_data.get("vendedor", None)
 		sucursal = cleaned_data.get('sucursal', None)
 		
-		return VLComprobantesVencidos.objects.obtener_compro_vencidos(dias, vendedor.id_vendedor, sucursal.id_sucursal)
+		id_vendedor = vendedor.id_vendedor if vendedor else None
+		id_sucursal = sucursal.id_sucursal if sucursal else None
+		
+		return VLComprobantesVencidos.objects.obtener_compro_vencidos(dias, id_vendedor, id_sucursal)
 	
 	def obtener_contexto_reporte(self, queryset, cleaned_data):
 		"""
