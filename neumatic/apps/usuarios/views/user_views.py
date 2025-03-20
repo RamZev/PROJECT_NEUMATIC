@@ -19,7 +19,7 @@ from apps.usuarios.models import User
 
 
 #-- Indicar las aplicaciones del proyecto para poder filtrar los modelos de las mismas.
-project_app_labels = ['usuarios', 'maestros', 'facturacion']
+project_app_labels = ['usuarios', 'maestros', 'ventas']
 
 
 #-- Vista Login. 

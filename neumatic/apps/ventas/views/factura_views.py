@@ -79,7 +79,27 @@ class FacturaListView(MaestroDetalleListView):
 		"table_headers": table_headers,
 		"table_data": table_data,
 	}
+ 
+	def get_queryset(self):
+			# Obtener el queryset base
+			queryset = super().get_queryset()
 
+			# Obtener el usuario actual
+			user = self.request.user
+
+			# Si el usuario no es superusuario, filtrar por sucursal
+			if not user.is_superuser:
+					queryset = queryset.filter(id_sucursal=user.id_sucursal)
+
+			# Aplicar búsqueda y ordenación
+			query = self.request.GET.get('busqueda', None)
+			if query:
+					search_conditions = Q()
+					for field in self.search_fields:
+							search_conditions |= Q(**{f"{field}__icontains": query})
+					queryset = queryset.filter(search_conditions)
+
+			return queryset.order_by(*self.ordering)
 
 # @method_decorator(login_required, name='dispatch')
 class FacturaCreateView(MaestroDetalleCreateView):
@@ -92,7 +112,7 @@ class FacturaCreateView(MaestroDetalleCreateView):
 	# Obtener el nombre de la aplicación a la que pertenece el modelo.
 	app_label = model._meta.app_label
 	# Indicar el permiso eN el formato: <app_name>.<permiso>_<modelo>
-	permission_required = f"{app_label}.change_{model.__name__.lower()}"
+	permission_required = f"{app_label}.add_{model.__name__.lower()}"
  
 	# print("Entro a la vista")
 	
