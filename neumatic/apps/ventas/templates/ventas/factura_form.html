@@ -78,6 +78,9 @@
     {% block principalcomponent %}
     <div id="layoutSidenav_content">
 		<main>
+            <!-- Elemento HTML para almacenar el valor de is_edit -->
+            <div id="modo-edicion" data-is-edit="{{ is_edit|yesno:'true,false' }}"></div>
+
             <div class="container-fluid tbl-container">
                 <!-- Formulario Encabezado Detalle - Inicio -->
                 <form method="post" id="factura-form">
@@ -1674,4 +1677,59 @@
             });
         });
     </script>
+
+    
+    <script>
+        /*
+        document.addEventListener('DOMContentLoaded', function () {
+            // Obtener el elemento HTML que contiene el valor de is_edit
+            const modoEdicion = document.getElementById('modo-edicion');
+
+            // Obtener el valor de data-is-edit y convertirlo a booleano
+            const isEdit = modoEdicion.dataset.isEdit === 'true';
+
+            // Si estamos en modo de edición, deshabilitar los campos y el botón
+            if (isEdit) {
+                const inputs = document.querySelectorAll('#factura-form input, #factura-form button');
+                inputs.forEach(input => {
+                    input.disabled = true;  // Deshabilitar campos y botón
+                    input.classList.add('readonly-select');  // Aplicar estilo visual
+                });
+
+                alert("El formulario está en modo de solo lectura!");
+            } else {
+                alert("El formulario está en modo de Creación!");
+            }
+        });
+        */
+
+        document.addEventListener('DOMContentLoaded', function () {
+            // Obtener el elemento HTML que contiene el valor de is_edit
+            const modoEdicion = document.getElementById('modo-edicion');
+
+            // Obtener el valor de data-is-edit y convertirlo a booleano
+            const isEdit = modoEdicion.dataset.isEdit === 'true';
+
+            // Si estamos en modo de edición, deshabilitar los campos y el botón
+            if (isEdit) {
+                // Deshabilitar solo los campos de entrada y el botón "Agregar Detalle"
+                const inputs = document.querySelectorAll('#factura-form input, #factura-form select, #factura-form textarea');
+                const btnAgregarDetalle = document.getElementById('btnAgregarDetalle');
+
+                inputs.forEach(input => {
+                    input.disabled = true;  // Deshabilitar campos
+                    input.classList.add('readonly-select');  // Aplicar estilo visual
+                });
+
+                if (btnAgregarDetalle) {
+                    btnAgregarDetalle.disabled = true;  // Deshabilitar el botón "Agregar Detalle"
+                }
+
+                alert("El formulario está en modo de solo lectura");
+            } else {
+                alert("El formulario está en modo de creación");
+            }
+        });   
+    </script>
+
 {% endblock script %}
