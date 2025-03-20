@@ -29,7 +29,6 @@ create_view_name = f"{model_string}_create"
 update_view_name = f"{model_string}_update"
 delete_view_name = f"{model_string}_delete"
 
-
 # @method_decorator(login_required, name='dispatch')
 class FacturaListView(MaestroDetalleListView):
 	model = modelo
@@ -104,6 +103,7 @@ class FacturaListView(MaestroDetalleListView):
 # @method_decorator(login_required, name='dispatch')
 class FacturaCreateView(MaestroDetalleCreateView):
 	model = modelo
+	list_view_name = list_view_name
 	form_class = formulario
 	template_name = f"ventas/{template_form}"
 	success_url = reverse_lazy(list_view_name) # Nombre de la url.
@@ -208,6 +208,7 @@ class FacturaCreateView(MaestroDetalleCreateView):
 # @method_decorator(login_required, name='dispatch')
 class FacturaUpdateView(MaestroDetalleUpdateView):
 	model = modelo
+	list_view_name = list_view_name
 	form_class = formulario
 	template_name = f"ventas/{template_form}"
 	success_url = reverse_lazy(list_view_name) # Nombre de la url.
