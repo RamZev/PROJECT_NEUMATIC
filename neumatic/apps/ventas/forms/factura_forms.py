@@ -103,7 +103,14 @@ class FacturaForm(forms.ModelForm):
         # Establecer la fecha actual si no se proporciona un valor inicial
         if not self.initial.get("fecha_comprobante"):
             self.initial["fecha_comprobante"] = date.today().isoformat()
+        
+        # ← Agregar aquí la lógica para modo edición:
+        if self.instance and self.instance.id_cliente and self.instance.id_cliente.id_vendedor:
+            self.fields['vendedor_factura'].initial = self.instance.id_cliente.id_vendedor.nombre_vendedor
 
+        if self.instance and self.instance.id_cliente and self.instance.id_cliente.id_vendedor:
+            self.fields['vendedor_factura'].initial = self.instance.id_cliente.id_vendedor.nombre_vendedor
+            self.fields['tipo_venta'].initial = self.instance.id_cliente.id_vendedor.tipo_venta
        
 class DetalleFacturaForm(forms.ModelForm):
     medida = forms.CharField(

@@ -59,6 +59,7 @@ def buscar_producto(request):
 
     
     # Preparar los datos de respuesta usando lista por comprensión
+    '''
     resultados = [
         {
             'id': producto.id_producto,
@@ -78,6 +79,34 @@ def buscar_producto(request):
         }
         for producto in productos
     ]
+    '''
+    
+    resultados = []
+    for producto in productos:
+        # Descuento vendedor seguro
+        descuento = 0
+        if col_descuento > 0:
+            dv = DescuentoVendedor.objects.filter(
+                id_marca=producto.id_marca, 
+                id_familia=producto.id_familia
+            ).values(f"desc{col_descuento}").first()
+            if dv:
+                descuento = dv.get(f"desc{col_descuento}", 0)
+
+        resultados.append({
+            'id': producto.id_producto,
+            'marca': producto.id_marca.nombre_producto_marca if producto.id_marca else 'Sin marca',
+            'medida': producto.medida,
+            'cai': producto.id_cai.descripcion_cai if producto.id_cai else 'Sin CAI',
+            'nombre': producto.nombre_producto,
+            'precio': producto.precio,
+            'stock': ProductoStock.objects.filter(id_producto=producto).aggregate(total_stock=Sum('stock'))['total_stock'] or 0,
+            'minimo': ProductoMinimo.objects.filter(id_cai=producto.id_cai).aggregate(total_minimo=Sum('minimo'))['total_minimo'] or 0,
+            'id_marca': producto.id_marca_id if producto.id_marca else None,
+            'id_familia': producto.id_familia_id if producto.id_familia else None,
+            'descuento_vendedor': descuento,
+        })
+
 
     # print(resultados)
 

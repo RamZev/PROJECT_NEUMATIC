@@ -260,6 +260,7 @@ class ComprobanteVenta(ModeloBaseGenerico):
 												default=False)
 	codigo_afip_a = models.CharField("Código AFIP A", max_length=3)
 	codigo_afip_b = models.CharField("Código AFIP B", max_length=3)
+	remito = models.BooleanField("Remito", default=False, blank=True, null=True)
 	
 	def __str__(self):
 		return self.nombre_comprobante_venta
