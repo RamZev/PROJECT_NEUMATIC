@@ -41,9 +41,6 @@ class CustomLoginView(GenericLoginView):
 		self.request.session['is_staff'] = user.is_staff
 		self.request.session['sucursal'] = user.id_sucursal.nombre_sucursal
 		self.request.session['punto_venta'] = user.id_punto_venta.punto_venta
-		# self.request.session['pt'] = "999"
-		
-		print(f"{self.request.session['punto_venta'] = }")
 		
 		return response
 	
@@ -82,14 +79,17 @@ class CustomLogoutView(GenericLogoutView):
 	http_method_names = ["get", "post", "options"]  # He tenido que incluir el método GET para que funcione. NO DEBERÍA SER!!!
 	
 	def dispatch(self, request, *args, **kwargs):
-		#-- Limpiar los datos del usuario de la sesión.
-		request.session.pop('username', None)
-		request.session.pop('first_name', None)
-		request.session.pop('last_name', None)
-		request.session.pop('is_superuser', None)
-		request.session.pop('is_staff', None)
-		request.session.pop('sucursal', None)
-		request.session.pop('punto_venta', None)
+		
+		#-- Verificar si la solicitud proviene de una confirmación de logout.
+		if request.method == "POST" and request.POST.get("confirm_logout") == "true":		
+			#-- Limpiar los datos del usuario de la sesión.
+			request.session.pop('username', None)
+			request.session.pop('first_name', None)
+			request.session.pop('last_name', None)
+			request.session.pop('is_superuser', None)
+			request.session.pop('is_staff', None)
+			request.session.pop('sucursal', None)
+			request.session.pop('punto_venta', None)
 		 
 		#-- Llama al método original para cerrar la sesión.
 		return super().dispatch(request, *args, **kwargs)
