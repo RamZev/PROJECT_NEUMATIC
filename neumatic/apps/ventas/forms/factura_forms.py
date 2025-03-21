@@ -2,6 +2,7 @@
 from django import forms
 from django.forms import inlineformset_factory
 from datetime import date
+from django.db.models import Q
 
 from ..models.factura_models import *
 from ...maestros.models.base_models import ComprobanteVenta
@@ -111,6 +112,11 @@ class FacturaForm(forms.ModelForm):
         if self.instance and self.instance.id_cliente and self.instance.id_cliente.id_vendedor:
             self.fields['vendedor_factura'].initial = self.instance.id_cliente.id_vendedor.nombre_vendedor
             self.fields['tipo_venta'].initial = self.instance.id_cliente.id_vendedor.tipo_venta
+        
+        # Filtrar los comprobantes electrónicos y de remito
+        self.fields['id_comprobante_venta'].queryset = ComprobanteVenta.objects.filter(
+            Q(electronica=True) | Q(remito=True)
+        )
        
 class DetalleFacturaForm(forms.ModelForm):
     medida = forms.CharField(
