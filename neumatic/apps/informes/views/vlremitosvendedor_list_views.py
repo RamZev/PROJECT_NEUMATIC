@@ -124,7 +124,7 @@ class VLRemitosVendedorInformeView(InformeFormView):
 			"Hasta": fecha_hasta.strftime("%d/%m/%Y"),
 		}
 		
-		fecha_hora_reporte = datetime.now().strftime("%d/%m/%Y %H:%M:%S")		
+		fecha_hora_reporte = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
 		
 		dominio = f"http://{self.request.get_host()}"
 		
@@ -199,7 +199,7 @@ class VLRemitosVendedorInformeView(InformeFormView):
 		#-- Se retorna un contexto que será consumido tanto para la vista en pantalla como para la generación del PDF.
 		return {
 			"objetos": datos,
-			"total_general": float(total_general),
+			"total_general": total_general,
 			"parametros": param,
 			'fecha_hora_reporte': fecha_hora_reporte,
 			'titulo': ConfigViews.report_title,
@@ -216,12 +216,6 @@ class VLRemitosVendedorInformeView(InformeFormView):
 		if form.errors:
 			context["data_has_errors"] = True
 		return context
-
-def raw_to_dict(instance):
-	"""Convierte una instancia de una consulta raw a un diccionario, eliminando claves internas."""
-	data = instance.__dict__.copy()
-	data.pop('_state', None)
-	return data
 
 
 def vlremitosvendedor_vista_pantalla(request):

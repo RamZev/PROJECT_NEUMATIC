@@ -32,26 +32,6 @@ class ExportHelper:
 		fields = list(self.table_headers.keys())
 		return headers, fields
 	
-	# def _resolve_field(self, obj, field_name):
-	# 	"""Resuelve el valor de un campo, incluso si es un campo anidado."""
-	# 	
-	# 	try:
-	# 		fields = field_name.split('.')  #-- Separar los niveles de anidación.
-	# 		value = obj
-	# 		
-	# 		for field in fields:
-	# 			value = getattr(value, field, None)  #-- Obtener el siguiente nivel.
-	# 			
-	# 			if isinstance(value, bool) and "estatus" in field:
-	# 				value = "Activo" if value else "Inactivo"
-	# 			elif isinstance(value, bool):
-	# 				value = "Sí" if value else "No"
-	# 			elif isinstance(value, (float, Decimal)):
-	# 				value = formato_es_ar(value)  # Aplica el formato de número				
-	# 				
-	# 		return self._safe_str(value)  #-- Convertir el valor a una cadena segura.
-	# 	except AttributeError:
-	# 		return ""  #-- Si no se puede resolver el campo, devolver una cadena vacía.
 	def _resolve_field(self, obj, field_name, frmto=None):
 		"""
 		Resuelve el valor de un campo (incluso anidado).
@@ -60,14 +40,14 @@ class ExportHelper:
 		sean numéricos (enteros y Decimal con 2 decimales).
 		"""
 		try:
-			# Recorrer los niveles anidados para obtener el valor
+			#-- Recorrer los niveles anidados para obtener el valor.
 			fields = field_name.split('.')
 			value = obj
 			for f in fields:
-				# Si el atributo existe, se obtiene
+				#-- Si el atributo existe, se obtiene.
 				if hasattr(value, f):
 					value = getattr(value, f)
-				# Sino, se intenta obtener del diccionario interno (__dict__)
+				#-- Sino, se intenta obtener del diccionario interno (__dict__).
 				elif isinstance(value, dict) and f in value:
 					value = value[f]
 				else:
@@ -77,10 +57,10 @@ class ExportHelper:
 			if value is None:
 				return ""
 			
-			# Si es booleano
+			#-- Si es booleano.
 			if isinstance(value, bool):
 				if frmto == 'pdf':
-					# Para PDF, se formatea según si el campo contiene "estatus"
+					#-- Para PDF, se formatea según si el campo contiene "estatus".
 					if "estatus" in fields[-1]:
 						return "Activo" if value else "Inactivo"
 					else:
@@ -88,21 +68,21 @@ class ExportHelper:
 				else:
 					return value
 			
-			# Si es numérico
+			#-- Si es numérico.
 			if isinstance(value, (float, Decimal)):
 				if frmto == 'pdf':
-					# Para PDF, formatea el número a cadena
+					#-- Para PDF, formatea el número a cadena.
 					return self._safe_str(formato_es_ar(value))
 				else:
-					# Para Excel/CSV, devuelve el número:
-					# - Si es float, redondea a 2 decimales.
-					# - Si es Decimal, lo cuantiza a 2 decimales.
+					#-- Para Excel/CSV, devuelve el número:
+					#-- - Si es float, redondea a 2 decimales.
+					#-- - Si es Decimal, lo cuantiza a 2 decimales.
 					if isinstance(value, float):
 						return round(value, 2)
 					else:
 						return value.quantize(Decimal('0.01'))
 			
-			# Otros tipos
+			#-- Otros tipos.
 			if frmto == 'pdf':
 				return self._safe_str(value)
 			else:
@@ -113,10 +93,10 @@ class ExportHelper:
 	def _calculate_totals(self, fields):
 		"""Calcula los totales para las columnas especificadas en total_columns y genera la fila de totales."""
 		
-		totals = [""] * len(fields)  # Inicializa la fila de totales vacía
+		totals = [""] * len(fields)  #-- Inicializa la fila de totales vacía.
 		
 		for total_text, columns in self.total_columns.items():
-			# Encuentra la primera columna para colocar el texto
+			#-- Encuentra la primera columna para colocar el texto.
 			first_col = None
 			for col in columns:
 				if col in fields:
@@ -131,7 +111,7 @@ class ExportHelper:
 					if first_col is None:  # Coloca el texto solo una vez
 						first_col = col_index
 			
-			# Coloca el texto en la primera columna encontrada
+			#-- Coloca el texto en la primera columna encontrada.
 			if first_col is not None:
 				totals[first_col - 1 if first_col > 0 else 0] = total_text
 		
