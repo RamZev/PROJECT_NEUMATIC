@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
+import locale
 from pathlib import Path
 from dotenv import load_dotenv
 from os import path, getenv
@@ -158,3 +159,9 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 # Modelo Usuario personalizado.
 AUTH_USER_MODEL = 'usuarios.User'
 
+
+#-- Configuración del locale para Argentina/España.
+try:
+    locale.setlocale(locale.LC_ALL, 'es_AR.UTF-8')  # Linux/Mac
+except locale.Error:
+    locale.setlocale(locale.LC_ALL, 'spanish')      # Windows como fallback

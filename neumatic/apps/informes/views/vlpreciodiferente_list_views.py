@@ -1,4 +1,4 @@
-# neumatic\apps\informes\views\vlremitosvendedor_list_views.py
+# neumatic\apps\informes\views\vlpreciodiferente_list_views.py
 
 from django.urls import reverse_lazy
 from django.shortcuts import render
@@ -8,26 +8,24 @@ from datetime import datetime
 from django.template.loader import render_to_string
 from weasyprint import HTML
 from django.templatetags.static import static
-# from django.forms.models import model_to_dict
-from decimal import Decimal
 
 from .report_views_generics import *
-from apps.informes.models import VLRemitosVendedor
-from ..forms.buscador_vlremitosvendedor_forms import BuscadorRemitosVendedorForm
-from utils.utils import deserializar_datos
+from apps.informes.models import VLPrecioDiferente
+from ..forms.buscador_vlpreciodiferente_forms import BuscadorPrecioDiferenteForm
+from utils.utils import deserializar_datos, formato_argentino
 from utils.helpers.export_helpers import ExportHelper
 
 
 class ConfigViews:
 	
 	#-- Título del reporte.
-	report_title = "Remitos por Vendedor"
+	report_title = "Diferencias de Precios en Facturación"
 	
 	#-- Modelo.
-	model = VLRemitosVendedor
+	model = VLPrecioDiferente
 	
 	#-- Formulario asociado al modelo.
-	form_class = BuscadorRemitosVendedorForm
+	form_class = BuscadorPrecioDiferenteForm
 	
 	#-- Aplicación asociada al modelo.
 	app_label = "informes"
@@ -73,19 +71,23 @@ class ConfigViews:
 	
 	#-- Establecer las columnas del reporte y sus anchos(en punto).
 	header_data = {
+		"id_vendedor_id": (40, "Vendedor"),
+		"nombre_vendedor": (40, "Nombre"),
+		"comprobante": (40, "Comprobante"),
+		"fecha_comprobante": (40, "Fecha"),
 		"id_cliente_id": (40, "Cliente"),
 		"nombre_cliente": (40, "Nombre"),
-		"fecha_comprobante": (40, "Fecha"),
-		"comprobante": (40, "Comprobante"),
-		"nombre_producto": (40, "Descripción"),
-		"medida": (180, "Medida"),
+		"id_producto_id": (180, "Código"),
+		"nombre_producto_familia": (40, "Detalle"),
 		"cantidad": (40, "Cantidad"),
-		"precio": (40, "Precio"),
-		"total": (40, "Total"),
+		"precio": (40, "Facturado"),
+		"precio_lista": (40, "Lista"),
+		"diferencia": (40, "Diferencia"),
+		"descuento": (40, "Bonif."),
 	}
 
 
-class VLRemitosVendedorInformeView(InformeFormView):
+class VLPrecioDiferenteInformeView(InformeFormView):
 	config = ConfigViews  #-- Ahora la configuración estará disponible en self.config.
 	form_class = ConfigViews.form_class
 	template_name = ConfigViews.template_list
@@ -101,27 +103,59 @@ class VLRemitosVendedorInformeView(InformeFormView):
 	}
 	
 	def obtener_queryset(self, cleaned_data):
-		vendedor = cleaned_data.get("vendedor", None)
 		fecha_desde = cleaned_data.get("fecha_desde")
 		fecha_hasta = cleaned_data.get("fecha_hasta")
+		id_vendedor_desde = cleaned_data.get("id_vendedor_desde")
+		id_vendedor_hasta = cleaned_data.get("id_vendedor_hasta")
+		comprobantes = cleaned_data.get("comprobantes")
+		dif_mayor = cleaned_data.get("operario") or 0
 		
-		return VLRemitosVendedor.objects.obtener_remitos_vendedor(vendedor.id_vendedor, fecha_desde, fecha_hasta)
+		#-- Convertir a lista explícitamente.
+		codigos_comprobantes = list(comprobantes.values_list('codigo_comprobante_venta', flat=True)) if comprobantes else []
+		
+		return VLPrecioDiferente.objects.obtener_datos(
+			fecha_desde,
+			fecha_hasta,
+			id_vendedor_desde,
+			id_vendedor_hasta,
+			codigos_comprobantes,
+			dif_mayor
+		)
 	
 	def obtener_contexto_reporte(self, queryset, cleaned_data):
 		"""
 		Aquí se estructura el contexto para el reporte, agrupando, calculando subtotales y totales generales, etc,
-		tal como se requiere para el listado.
+		tal como se requiere para el listado. Si APLICA!
 		"""
 		
 		#-- Parámetros del listado.
-		vendedor = cleaned_data.get("vendedor")
-		fecha_desde = cleaned_data.get('fecha_desde')
-		fecha_hasta = cleaned_data.get('fecha_hasta')
+		fecha_desde = cleaned_data.get("fecha_desde")
+		fecha_hasta = cleaned_data.get("fecha_hasta")
+		id_vendedor_desde = cleaned_data.get("id_vendedor_desde")
+		id_vendedor_hasta = cleaned_data.get("id_vendedor_hasta")
+		comprobantes = cleaned_data.get("comprobantes")
+		dif_mayor = cleaned_data.get("dif_mayor") or 0
 		
-		param = {
-			"Vendedor": vendedor.nombre_vendedor,
+		#-- Obtener los códigos de comprobantes.
+		codigos_comprobantes = ", ".join(list(comprobantes.values_list('codigo_comprobante_venta', flat=True)) if comprobantes else [])
+		
+		# param = {
+		# 	"Desde": fecha_desde.strftime("%d/%m/%Y"),
+		# 	"Hasta": fecha_hasta.strftime("%d/%m/%Y"),
+		# 	"Vendedor desde": id_vendedor_desde,
+		# 	"Vendedor hasta": id_vendedor_hasta,
+		# 	"Comprobantes": codigos_comprobantes,
+		# 	"Diferencias Superiores a": formato_argentino(dif_mayor)
+		# }
+		param_left = {
+			"Vendedor desde": id_vendedor_desde,
+			"Vendedor hasta": id_vendedor_hasta,
+			"Comprobantes": codigos_comprobantes,
+		}
+		param_right = {
 			"Desde": fecha_desde.strftime("%d/%m/%Y"),
 			"Hasta": fecha_hasta.strftime("%d/%m/%Y"),
+			"Diferencias Superiores a": formato_argentino(dif_mayor),
 		}
 		
 		fecha_hora_reporte = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
@@ -130,72 +164,49 @@ class VLRemitosVendedorInformeView(InformeFormView):
 		
 		
 		# **************************************************
-		#-- Estructura para agrupar datos por cliente.
-		datos_por_cliente = {}
-		total_general = Decimal(0)
+		#-- Estructura para agrupar datos por Vendedor.
+		datos_por_vendedor = {}
 		
 		for obj in queryset:
-			#-- Identificar al cliente.
-			cliente_id = obj.id_cliente_id
-			nombre_cliente = obj.nombre_cliente.strip()  #-- Limpieza en caso de espacios extras.
+			#-- Identificar al Vendedor.
+			vendedor_id = obj.id_vendedor_id
+			nombre_vendedor = obj.nombre_vendedor.strip()  #-- Limpieza en caso de espacios extras.
 			
-			#-- Si el cliente aún no está en el diccionario, se inicializa.
-			if cliente_id not in datos_por_cliente:
-				datos_por_cliente[cliente_id] = {
-					"id_cliente": cliente_id,
-					"cliente": nombre_cliente,
-					"comprobantes": {},
-					"total_cliente": Decimal(0),
+			#-- Si el Vendedor aún no está en el diccionario, se inicializa.
+			if vendedor_id not in datos_por_vendedor:
+				datos_por_vendedor[vendedor_id] = {
+					"id_vendedor": vendedor_id,
+					"vendedor": nombre_vendedor,
+					"detalle": []
 				}
 			
-			#-- Agrupar por comprobante dentro del cliente.
-			num_comprobante = obj.numero_comprobante
-			if num_comprobante not in datos_por_cliente[cliente_id]["comprobantes"]:
-				datos_por_cliente[cliente_id]["comprobantes"][num_comprobante] = {
-					"fecha": obj.fecha_comprobante.strftime("%d/%m/%Y"),
-					"fecha_order": obj.fecha_comprobante,    # Para ordenar por fecha
-					"numero_comprobante": num_comprobante,   # Para ordenar por número
-					"comprobante": obj.comprobante,
-					"productos": [],
-					"total_comprobante": Decimal(0),
-				}
-			
-			#-- Crear el diccionario con los datos requeridos para el reporte.
-			producto_data = {
-				"fecha": obj.fecha_comprobante.strftime("%d/%m/%Y"),
+			#-- Crear el diccionario con los datos del detalle del Vendedor.
+			detalle_data = {
 				"comprobante": obj.comprobante,
-				"descripcion": obj.nombre_producto,
-				"medida": obj.medida,
+				"fecha": obj.fecha_comprobante.strftime("%d/%m/%Y"),
+				"id_cliente_id": obj.id_cliente_id,
+				"nombre_cliente": obj.nombre_cliente,
+				"id_producto_id": obj.id_producto_id,
+				"nombre_producto": obj.nombre_producto,
 				"cantidad": obj.cantidad,
 				"precio": obj.precio,
-				"total": obj.total,
+				"precio_lista": obj.precio_lista,
+				"diferencia": obj.diferencia,
+				"descuento": obj.descuento,
 			}
 			
-			#-- Agregar el producto a la lista del comprobante y acumular totales.
-			datos_por_cliente[cliente_id]["comprobantes"][num_comprobante]["productos"].append(producto_data)
-			datos_por_cliente[cliente_id]["comprobantes"][num_comprobante]["total_comprobante"] += obj.total
-			datos_por_cliente[cliente_id]["total_cliente"] += obj.total
-			total_general += obj.total
+			#-- Agregar el detalle a la lista de detalles.
+			datos_por_vendedor[vendedor_id]["detalle"].append(detalle_data)
 		
-		#-- Convertir la estructura de diccionarios a listas ordenadas para iterar en el template.
-		datos = []
-		for cliente_info in datos_por_cliente.values():
-			#-- Convertir comprobantes (diccionario) a lista y ordenarlos por (fecha, número de comprobante).
-			comprobantes_list = list(cliente_info["comprobantes"].values())
-			comprobantes_list.sort(key=lambda x: (x["fecha_order"], x["numero_comprobante"]))
-			cliente_info["comprobantes"] = comprobantes_list
-			
-			datos.append(cliente_info)
-		
-		#-- Ordenar la lista de datos por el nombre del cliente.
-		datos.sort(key=lambda x: x["cliente"])
-		# **************************************************
+		#-- Convertir a lista los datos para iterar con más facilidad en la plantilla.
+		datos_por_vendedor = list(datos_por_vendedor.values())
 		
 		#-- Se retorna un contexto que será consumido tanto para la vista en pantalla como para la generación del PDF.
 		return {
-			"objetos": datos,
-			"total_general": total_general,
-			"parametros": param,
+			"objetos": datos_por_vendedor,
+			# "parametros": param,
+			"parametros_i": param_left,
+			"parametros_d": param_right,
 			'fecha_hora_reporte': fecha_hora_reporte,
 			'titulo': ConfigViews.report_title,
 			'logo_url': f"{dominio}{static('img/logo_01.png')}",
@@ -213,7 +224,7 @@ class VLRemitosVendedorInformeView(InformeFormView):
 		return context
 
 
-def vlremitosvendedor_vista_pantalla(request):
+def vlpreciodiferente_vista_pantalla(request):
 	#-- Obtener el token de la querystring.
 	token = request.GET.get("token")
 	
@@ -230,7 +241,7 @@ def vlremitosvendedor_vista_pantalla(request):
 	return render(request, ConfigViews.reporte_pantalla, contexto_reporte)
 
 
-def vlremitosvendedor_vista_pdf(request):
+def vlpreciodiferente_vista_pdf(request):
 	return HttpResponse("Reporte en PDF aún no implementado.", status=400)
 	#-- Obtener el token de la querystring.
 	token = request.GET.get("token")
@@ -255,7 +266,7 @@ def vlremitosvendedor_vista_pdf(request):
 	return response
 
 
-def vlremitosvendedor_vista_excel(request):
+def vlpreciodiferente_vista_excel(request):
 	token = request.GET.get("token")
 	if not token:
 		return HttpResponse("Token no proporcionado", status=400)
@@ -269,7 +280,7 @@ def vlremitosvendedor_vista_excel(request):
 	# ---------------------------------------------
 	
 	#-- Instanciar la vista y obtener el queryset.
-	view_instance = VLRemitosVendedorInformeView()
+	view_instance = VLPrecioDiferenteInformeView()
 	view_instance.request = request
 	queryset = view_instance.obtener_queryset(cleaned_data)
 	
@@ -289,7 +300,7 @@ def vlremitosvendedor_vista_excel(request):
 	return response
 
 
-def vlremitosvendedor_vista_csv(request):
+def vlpreciodiferente_vista_csv(request):
 	token = request.GET.get("token")
 	if not token:
 		return HttpResponse("Token no proporcionado", status=400)
@@ -302,7 +313,7 @@ def vlremitosvendedor_vista_csv(request):
 	cleaned_data = data["cleaned_data"]
 	
 	#-- Instanciar la vista para reejecutar la consulta y obtener el queryset.
-	view_instance = VLRemitosVendedorInformeView()
+	view_instance = VLPrecioDiferenteInformeView()
 	view_instance.request = request
 	queryset = view_instance.obtener_queryset(cleaned_data)
 	

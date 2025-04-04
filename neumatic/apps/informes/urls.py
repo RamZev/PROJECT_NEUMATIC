@@ -52,6 +52,12 @@ from apps.informes.views.vlpercepibvendedordetallado_list_views import *
 from apps.informes.views.vlpercepibsubcuentatotales_list_views import *
 from apps.informes.views.vlpercepibsubcuentadetallado_list_views import *
 
+#- Lote 3:
+from apps.informes.views.vlcomisionoperario_list_views import *
+from apps.informes.views.vlpreciodiferente_list_views import *
+from apps.informes.views.vlventasresumenib_list_views import *
+
+
 #-- Otras rutas.
 from apps.maestros.views.consulta_views_maestros import filtrar_localidad
 from apps.informes.views.consultas_informes_views import *
@@ -460,6 +466,42 @@ urlpatterns = [
 		 name="vlpercepibsubcuentadetallado_vista_excel"),
 	path("vlpercepibsubcuentadetallado/vista-csv/", vlpercepibsubcuentadetallado_vista_csv, 
 		 name="vlpercepibsubcuentadetallado_vista_csv"),
+	
+	#-- VL Comisión Operario.
+	path('vlcomisionoperario_informe/', VLComisionOperarioInformeView.as_view(), 
+		 name='vlcomisionoperario_informe_list'),
+	path('vlcomisionoperario/vista-preliminar/', vlcomisionoperario_vista_pantalla, 
+		 name="vlcomisionoperario_vista_pantalla"),
+	path("vlcomisionoperario/vista-pdf/", vlcomisionoperario_vista_pdf, 
+		 name="vlcomisionoperario_vista_pdf"),
+	path("vlcomisionoperario/vista-excel/", vlcomisionoperario_vista_excel, 
+		 name="vlcomisionoperario_vista_excel"),
+	path("vlcomisionoperario/vista-csv/", vlcomisionoperario_vista_csv, 
+		 name="vlcomisionoperario_vista_csv"),
+	
+	#-- VL Precio Diferente.
+	path('vlpreciodiferente_informe/', VLPrecioDiferenteInformeView.as_view(), 
+		 name='vlpreciodiferente_informe_list'),
+	path('vlpreciodiferente/vista-preliminar/', vlpreciodiferente_vista_pantalla, 
+		 name="vlpreciodiferente_vista_pantalla"),
+	path("vlpreciodiferente/vista-pdf/", vlpreciodiferente_vista_pdf, 
+		 name="vlpreciodiferente_vista_pdf"),
+	path("vlpreciodiferente/vista-excel/", vlpreciodiferente_vista_excel, 
+		 name="vlpreciodiferente_vista_excel"),
+	path("vlpreciodiferente/vista-csv/", vlpreciodiferente_vista_csv, 
+		 name="vlpreciodiferente_vista_csv"),
+	
+	#-- VL Ventas Resumne IB.
+	path('vlventasresumenib_informe/', VLVentasResumenIBInformeView.as_view(), 
+		 name='vlventasresumenib_informe_list'),
+	path('vlventasresumenib/vista-preliminar/', vlventasresumenib_vista_pantalla, 
+		 name="vlventasresumenib_vista_pantalla"),
+	path("vlventasresumenib/vista-pdf/", vlventasresumenib_vista_pdf, 
+		 name="vlventasresumenib_vista_pdf"),
+	path("vlventasresumenib/vista-excel/", vlventasresumenib_vista_excel, 
+		 name="vlventasresumenib_vista_excel"),
+	path("vlventasresumenib/vista-csv/", vlventasresumenib_vista_csv, 
+		 name="vlventasresumenib_vista_csv"),
 	
 	
 	

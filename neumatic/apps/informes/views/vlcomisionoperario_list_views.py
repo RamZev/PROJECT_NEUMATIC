@@ -1,4 +1,4 @@
-# neumatic\apps\informes\views\vlremitosvendedor_list_views.py
+# neumatic\apps\informes\views\vlcomisionoperario_list_views.py
 
 from django.urls import reverse_lazy
 from django.shortcuts import render
@@ -8,12 +8,11 @@ from datetime import datetime
 from django.template.loader import render_to_string
 from weasyprint import HTML
 from django.templatetags.static import static
-# from django.forms.models import model_to_dict
 from decimal import Decimal
 
 from .report_views_generics import *
-from apps.informes.models import VLRemitosVendedor
-from ..forms.buscador_vlremitosvendedor_forms import BuscadorRemitosVendedorForm
+from apps.informes.models import VLComisionOperario
+from ..forms.buscador_vlcomisionoperario_forms import BuscadorComisionOperarioForm
 from utils.utils import deserializar_datos
 from utils.helpers.export_helpers import ExportHelper
 
@@ -21,13 +20,13 @@ from utils.helpers.export_helpers import ExportHelper
 class ConfigViews:
 	
 	#-- Título del reporte.
-	report_title = "Remitos por Vendedor"
+	report_title = "Comisiones a Operarios"
 	
 	#-- Modelo.
-	model = VLRemitosVendedor
+	model = VLComisionOperario
 	
 	#-- Formulario asociado al modelo.
-	form_class = BuscadorRemitosVendedorForm
+	form_class = BuscadorComisionOperarioForm
 	
 	#-- Aplicación asociada al modelo.
 	app_label = "informes"
@@ -73,19 +72,19 @@ class ConfigViews:
 	
 	#-- Establecer las columnas del reporte y sus anchos(en punto).
 	header_data = {
-		"id_cliente_id": (40, "Cliente"),
-		"nombre_cliente": (40, "Nombre"),
-		"fecha_comprobante": (40, "Fecha"),
+		"id_operario_id": (40, "Operario"),
+		"nombre_operario": (40, "Nombre"),
 		"comprobante": (40, "Comprobante"),
-		"nombre_producto": (40, "Descripción"),
-		"medida": (180, "Medida"),
-		"cantidad": (40, "Cantidad"),
-		"precio": (40, "Precio"),
+		"fecha_comprobante": (40, "Fecha"),
+		"id_producto_id": (180, "Código"),
+		"nombre_producto_familia": (40, "Servicio"),
 		"total": (40, "Total"),
+		"comision_operario": (40, "%"),
+		"monto_comision": (40, "Comisión"),
 	}
 
 
-class VLRemitosVendedorInformeView(InformeFormView):
+class VLComisionOperarioInformeView(InformeFormView):
 	config = ConfigViews  #-- Ahora la configuración estará disponible en self.config.
 	form_class = ConfigViews.form_class
 	template_name = ConfigViews.template_list
@@ -101,11 +100,13 @@ class VLRemitosVendedorInformeView(InformeFormView):
 	}
 	
 	def obtener_queryset(self, cleaned_data):
-		vendedor = cleaned_data.get("vendedor", None)
+		operario = cleaned_data.get("operario", None)
 		fecha_desde = cleaned_data.get("fecha_desde")
 		fecha_hasta = cleaned_data.get("fecha_hasta")
 		
-		return VLRemitosVendedor.objects.obtener_remitos_vendedor(vendedor.id_vendedor, fecha_desde, fecha_hasta)
+		id_operario = operario.id_operario if operario else None
+		
+		return VLComisionOperario.objects.obtener_datos(id_operario, fecha_desde, fecha_hasta)
 	
 	def obtener_contexto_reporte(self, queryset, cleaned_data):
 		"""
@@ -114,12 +115,12 @@ class VLRemitosVendedorInformeView(InformeFormView):
 		"""
 		
 		#-- Parámetros del listado.
-		vendedor = cleaned_data.get("vendedor")
+		operario = cleaned_data.get("operario")
 		fecha_desde = cleaned_data.get('fecha_desde')
 		fecha_hasta = cleaned_data.get('fecha_hasta')
 		
 		param = {
-			"Vendedor": vendedor.nombre_vendedor,
+			"Operario": operario.nombre_operario if operario else "Todos",
 			"Desde": fecha_desde.strftime("%d/%m/%Y"),
 			"Hasta": fecha_hasta.strftime("%d/%m/%Y"),
 		}
@@ -130,71 +131,45 @@ class VLRemitosVendedorInformeView(InformeFormView):
 		
 		
 		# **************************************************
-		#-- Estructura para agrupar datos por cliente.
-		datos_por_cliente = {}
-		total_general = Decimal(0)
+		#-- Estructura para agrupar datos por Operario.
+		datos_por_operario = {}
 		
 		for obj in queryset:
-			#-- Identificar al cliente.
-			cliente_id = obj.id_cliente_id
-			nombre_cliente = obj.nombre_cliente.strip()  #-- Limpieza en caso de espacios extras.
+			#-- Identificar al Operario.
+			operario_id = obj.id_operario_id
+			nombre_operario = obj.nombre_operario.strip()  #-- Limpieza en caso de espacios extras.
 			
-			#-- Si el cliente aún no está en el diccionario, se inicializa.
-			if cliente_id not in datos_por_cliente:
-				datos_por_cliente[cliente_id] = {
-					"id_cliente": cliente_id,
-					"cliente": nombre_cliente,
-					"comprobantes": {},
-					"total_cliente": Decimal(0),
+			#-- Si el Operario aún no está en el diccionario, se inicializa.
+			if operario_id not in datos_por_operario:
+				datos_por_operario[operario_id] = {
+					"id_operario": operario_id,
+					"operario": nombre_operario,
+					"detalle": [],
+					"total_operario": Decimal(0),
 				}
 			
-			#-- Agrupar por comprobante dentro del cliente.
-			num_comprobante = obj.numero_comprobante
-			if num_comprobante not in datos_por_cliente[cliente_id]["comprobantes"]:
-				datos_por_cliente[cliente_id]["comprobantes"][num_comprobante] = {
-					"fecha": obj.fecha_comprobante.strftime("%d/%m/%Y"),
-					"fecha_order": obj.fecha_comprobante,    # Para ordenar por fecha
-					"numero_comprobante": num_comprobante,   # Para ordenar por número
-					"comprobante": obj.comprobante,
-					"productos": [],
-					"total_comprobante": Decimal(0),
-				}
-			
-			#-- Crear el diccionario con los datos requeridos para el reporte.
-			producto_data = {
-				"fecha": obj.fecha_comprobante.strftime("%d/%m/%Y"),
+			#-- Crear el diccionario con los datos del detalle del Operario.
+			detalle_data = {
 				"comprobante": obj.comprobante,
-				"descripcion": obj.nombre_producto,
-				"medida": obj.medida,
-				"cantidad": obj.cantidad,
-				"precio": obj.precio,
+				"fecha": obj.fecha_comprobante.strftime("%d/%m/%Y"),
+				"id_producto_id": obj.id_producto_id,
+				"nombre_producto_familia": obj.nombre_producto_familia,
 				"total": obj.total,
+				"comision_operario": obj.comision_operario,
+				"monto_comision": obj.monto_comision,
 			}
 			
-			#-- Agregar el producto a la lista del comprobante y acumular totales.
-			datos_por_cliente[cliente_id]["comprobantes"][num_comprobante]["productos"].append(producto_data)
-			datos_por_cliente[cliente_id]["comprobantes"][num_comprobante]["total_comprobante"] += obj.total
-			datos_por_cliente[cliente_id]["total_cliente"] += obj.total
-			total_general += obj.total
+			#-- Agregar el detalle a la lista de detalles y acumular el total.
+			datos_por_operario[operario_id]["detalle"].append(detalle_data)
+			datos_por_operario[operario_id]["total_operario"] += obj.monto_comision
 		
-		#-- Convertir la estructura de diccionarios a listas ordenadas para iterar en el template.
-		datos = []
-		for cliente_info in datos_por_cliente.values():
-			#-- Convertir comprobantes (diccionario) a lista y ordenarlos por (fecha, número de comprobante).
-			comprobantes_list = list(cliente_info["comprobantes"].values())
-			comprobantes_list.sort(key=lambda x: (x["fecha_order"], x["numero_comprobante"]))
-			cliente_info["comprobantes"] = comprobantes_list
-			
-			datos.append(cliente_info)
-		
-		#-- Ordenar la lista de datos por el nombre del cliente.
-		datos.sort(key=lambda x: x["cliente"])
-		# **************************************************
+		#-- Convertir a lista los datos para iterar con más facilidad en la plantilla.
+		datos_por_operario = list(datos_por_operario.values())
 		
 		#-- Se retorna un contexto que será consumido tanto para la vista en pantalla como para la generación del PDF.
 		return {
-			"objetos": datos,
-			"total_general": total_general,
+			# "objetos": datos,
+			"objetos": datos_por_operario,
 			"parametros": param,
 			'fecha_hora_reporte': fecha_hora_reporte,
 			'titulo': ConfigViews.report_title,
@@ -213,7 +188,7 @@ class VLRemitosVendedorInformeView(InformeFormView):
 		return context
 
 
-def vlremitosvendedor_vista_pantalla(request):
+def vlcomisionoperario_vista_pantalla(request):
 	#-- Obtener el token de la querystring.
 	token = request.GET.get("token")
 	
@@ -230,7 +205,7 @@ def vlremitosvendedor_vista_pantalla(request):
 	return render(request, ConfigViews.reporte_pantalla, contexto_reporte)
 
 
-def vlremitosvendedor_vista_pdf(request):
+def vlcomisionoperario_vista_pdf(request):
 	return HttpResponse("Reporte en PDF aún no implementado.", status=400)
 	#-- Obtener el token de la querystring.
 	token = request.GET.get("token")
@@ -255,7 +230,7 @@ def vlremitosvendedor_vista_pdf(request):
 	return response
 
 
-def vlremitosvendedor_vista_excel(request):
+def vlcomisionoperario_vista_excel(request):
 	token = request.GET.get("token")
 	if not token:
 		return HttpResponse("Token no proporcionado", status=400)
@@ -269,7 +244,7 @@ def vlremitosvendedor_vista_excel(request):
 	# ---------------------------------------------
 	
 	#-- Instanciar la vista y obtener el queryset.
-	view_instance = VLRemitosVendedorInformeView()
+	view_instance = VLComisionOperarioInformeView()
 	view_instance.request = request
 	queryset = view_instance.obtener_queryset(cleaned_data)
 	
@@ -289,7 +264,7 @@ def vlremitosvendedor_vista_excel(request):
 	return response
 
 
-def vlremitosvendedor_vista_csv(request):
+def vlcomisionoperario_vista_csv(request):
 	token = request.GET.get("token")
 	if not token:
 		return HttpResponse("Token no proporcionado", status=400)
@@ -302,7 +277,7 @@ def vlremitosvendedor_vista_csv(request):
 	cleaned_data = data["cleaned_data"]
 	
 	#-- Instanciar la vista para reejecutar la consulta y obtener el queryset.
-	view_instance = VLRemitosVendedorInformeView()
+	view_instance = VLComisionOperarioInformeView()
 	view_instance.request = request
 	queryset = view_instance.obtener_queryset(cleaned_data)
 	

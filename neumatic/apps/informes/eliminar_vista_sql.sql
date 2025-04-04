@@ -16,3 +16,8 @@ DROP VIEW IF EXISTS "main"."VLPercepIBVendedorTotales";
 DROP VIEW IF EXISTS "main"."VLPercepIBVendedorDetallado";
 DROP VIEW IF EXISTS "main"."VLPercepIBSubcuentaTotales";
 DROP VIEW IF EXISTS "main"."VLPercepIBSubcuentaDetallado";
+DROP VIEW IF EXISTS "main"."VLComisionOperario";
+DROP VIEW IF EXISTS "main"."VLPrecioDiferente";
+DROP VIEW IF EXISTS "main"."VLVentasResumenIB";
+
+		

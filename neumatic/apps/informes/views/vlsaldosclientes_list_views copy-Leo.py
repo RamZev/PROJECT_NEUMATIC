@@ -21,7 +21,7 @@ from apps.informes.models import VLSaldosClientes
 from ..forms.buscador_vlsaldosclientes_forms import BuscadorSaldosClientesForm
 from utils.utils import deserializar_datos
 from apps.maestros.templatetags.custom_tags import formato_es_ar
-from utils.helpers.export_helpers import ExportHelper, PDFGenerator
+from utils.helpers.export_helpers import ExportHelper
 
 
 class ConfigViews:
@@ -209,8 +209,7 @@ def vlsaldosclientes_vista_pdf(request):
 		return HttpResponse("Contexto no encontrado o expirado", status=400)
 	
 	#-- Generar el PDF usando ReportLab
-	# pdf_file = generar_pdf_saldos_clientes(contexto_reporte)
-	pdf_file = generar_pdf(contexto_reporte)
+	pdf_file = generar_pdf_saldos_clientes(contexto_reporte)
 	
 	#-- Preparar la respuesta HTTP.
 	response = HttpResponse(pdf_file, content_type="application/pdf")
@@ -221,8 +220,31 @@ def vlsaldosclientes_vista_pdf(request):
 
 
 #-- Para generar el PDF. ----------------------------------------------------------------------------------
+""" #-- Canvas personalizado para numerar páginas "Página xxx / yyy".
+# #-- Este método es ineficiente porque de debe hacer una doble pasada
+# #-- para determinar el total de páginas y enumerarlas.
+#
+# class NumberedCanvas(canvas.Canvas):
+# 	def __init__(self, *args, **kwargs):
+# 		super(NumberedCanvas, self).__init__(*args, **kwargs)
+# 		self._saved_page_states = []
+# 	def showPage(self):
+# 		self._saved_page_states.append(dict(self.__dict__))
+# 		self._startPage()
+# 	def save(self):
+# 		num_pages = len(self._saved_page_states)
+# 		for state in self._saved_page_states:
+# 			self.__dict__.update(state)
+# 			self.draw_page_number(num_pages)
+# 			super(NumberedCanvas, self).showPage()
+# 		super(NumberedCanvas, self).save()
+# 	def draw_page_number(self, page_count):
+# 		page_text = "Página %d / %d" % (self._pageNumber, page_count)
+# 		self.setFont("Helvetica", 9)
+# 		self.drawCentredString(self._pagesize[0]/2.0, 15, page_text)
+"""
+
 #-- Función para dibujar header y footer en cada página.
-''' Funcionalidad anterior
 def header_footer(canvas_obj, doc):
 	canvas_obj.saveState()
 	width, height = doc.pagesize
@@ -460,101 +482,6 @@ def generar_pdf_saldos_clientes(contexto_reporte):
 	buffer.close()
 	
 	return pdf
-'''
-
-class CustomPDFGenerator(PDFGenerator):
-	#-- Método que se puede sobreescribir/extender según requerimientos.
-	def _get_header_bottom_left(self, context):
-		"""Personalización del Header-bottom-left"""
-		
-		# custom_text = context.get("texto_personalizado", "")
-		# 
-		# if custom_text:
-		# 	return f"<b>NOTA:</b> {custom_text}"
-		
-		id_cliente = 10025
-		cliente = "Leoncio R. Barrios H."
-		domicilio = "Jr. San Pedro 1256. Surquillo, Lima."
-		Telefono = "971025647"
-		
-		# return f"Cliente: [{id_cliente}] {cliente} <br/> {domicilio}"
-		# return f"Cliente: [{id_cliente}] {cliente} <br/> {domicilio} <br/> Tel. {Telefono} <br/>"
-		return f"Cliente: [{id_cliente}] {cliente} <br/> {domicilio} <br/> Tel. {Telefono} <br/> Tel. {Telefono} "
-		# return f"Cliente: [{id_cliente}] {cliente} <br/> {domicilio} <br/> Tel. {Telefono} <br/> Tel. {Telefono} <br/> Tel. {Telefono}"
-		
-		# return super()._get_header_bottom_left(context)
-	
-	#-- Método que se puede sobreescribir/extender según requerimientos.
-	# def _get_header_bottom_right(self, context):
-	# 	"""Añadir información adicional específica para este reporte"""
-	# 	base_content = super()._get_header_bottom_right(context)
-	# 	saldo_total = context.get("saldo_total", 0)
-	# 	return f"""
-	# 		{base_content}<br/>
-	# 		<b>Total General:</b> {formato_es_ar(saldo_total)}
-	# 	"""
-	pass
-
-def generar_pdf(contexto_reporte):
-	#-- Crear instancia del generador personalizado.
-	generator = CustomPDFGenerator(contexto_reporte)
-	
-	#-- Construir datos de la tabla:
-	
-	#-- Obtener los títulos de las columnas (headers).
-	header_data = [value[1] for value in ConfigViews.header_data.values()]
-	table_data = [header_data]
-	
-	for obj in contexto_reporte.get("objetos", []):
-		
-		row = [
-			obj.get("id_cliente_id", ""),
-			Paragraph(obj.get("nombre_cliente", ""), generator.styles['CellStyle']),
-			Paragraph(obj.get("domicilio_cliente", ""), generator.styles['CellStyle']),
-			obj.get("codigo_postal", ""),
-			Paragraph(obj.get("nombre_localidad", ""), generator.styles['CellStyle']),
-			obj.get("telefono_cliente", ""),
-			formato_es_ar(obj.get("saldo", 0)),
-			_format_date(obj.get("primer_fact_impaga", "")),
-			_format_date(obj.get("ultimo_pago", "")),
-			obj.get("sub_cuenta", "")
-		]
-		table_data.append(row)
-		
-	#-- Agregar fila de total.
-	saldo_total = contexto_reporte.get("saldo_total", 0)
-	total_row = ["", "", "", "", "", "Total Pendiente:", 
-				formato_es_ar(saldo_total), "", "", ""]
-	table_data.append(total_row)
-	
-	#-- Configuración específica de la tabla de datos:
-	
-	#-- Extrae los anchos de las columnas de la estructura ConfigViews.header_data.
-	col_widths = [value[0] for value in ConfigViews.header_data.values()]
-	
-	#-- Estilos específicos adicionales de la tabla.
-	table_style_config = [
-		('ALIGN', (6,0), (6,-1), 'RIGHT'),
-		('FONTNAME', (0,0), (-1,0), 'Helvetica-Bold'),
-		('LINEABOVE', (0, len(table_data)-1), (-1, len(table_data)-1), 0.5, colors.black),
-		('FONTNAME', (0, len(table_data)-1), (-1, len(table_data)-1), 'Helvetica-Bold')
-	]
-	
-	return generator.generate(table_data, col_widths, table_style_config)		
-
-def _format_date(date_value):
-	"""Helper para formatear fechas"""
-	if not date_value:
-		return ""
-	
-	if isinstance(date_value, str):
-		try:
-			return datetime.strptime(date_value, "%Y-%m-%d").strftime("%d/%m/%Y")
-		except ValueError:
-			return date_value
-	else:
-		return date_value.strftime("%d/%m/%Y")
-
 #-- Para generar el PDF. (Fin) ----------------------------------------------------------------------------
 
 def vlsaldosclientes_vista_excel(request):

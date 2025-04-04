@@ -504,3 +504,96 @@ CREATE VIEW "VLPercepIBSubcuentaDetallado" AS
 	WHERE f.percep_ib<>0 AND cv.mult_venta<>0
 	GROUP BY c.sub_cuenta, f.numero_comprobante
 	ORDER BY c.sub_cuenta, f.fecha_comprobante, f.numero_comprobante;
+
+
+-- ---------------------------------------------------------------------------
+-- Comisiones a Operarios.
+-- Modelo: VLComisionOperario
+-- ---------------------------------------------------------------------------
+DROP VIEW IF EXISTS "main"."VLComisionOperario";
+CREATE VIEW "VLComisionOperario" AS 
+	SELECT 
+		f.id_factura,
+		df.id_operario_id,
+		o.nombre_operario,
+		f.compro,
+		f.letra_comprobante,
+		f.numero_comprobante,
+		(f.compro || '  ' || f.letra_comprobante || '  ' || SUBSTR(printf('%012d', f.numero_comprobante), 1, 4) || '-' || SUBSTR(printf('%012d', f.numero_comprobante), 5)) AS comprobante,
+		f.fecha_comprobante,
+		df.id_producto_id,
+		pf.nombre_producto_familia,
+		p.nombre_producto,
+		(df.total*cv.mult_estadistica) * 1.0 AS total,
+		(pf.comision_operario) * 1.0 AS comision_operario,
+		(((df.total*cv.mult_estadistica) * pf.comision_operario / 100)) * 1.0 AS monto_comision
+	FROM
+		detalle_factura df
+			INNER JOIN factura f ON df.id_factura_id = f.id_factura
+			INNER JOIN operario o ON df.id_operario_id = o.id_operario
+			INNER JOIN producto p ON df.id_producto_id = p.id_producto
+			INNER JOIN producto_familia pf ON p.id_familia_id = pf.id_producto_familia
+			INNER JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
+	WHERE 
+		pf.comision_operario <> 0 AND
+		cv.mult_estadistica <> 0
+	ORDER BY o.nombre_operario, f.fecha_comprobante, f.numero_comprobante;
+
+
+-- ---------------------------------------------------------------------------
+-- Diferencias de Precios en Facturación.
+-- Modelo: VLPrecioDiferente
+-- ---------------------------------------------------------------------------
+DROP VIEW IF EXISTS "main"."VLPrecioDiferente";
+CREATE VIEW "VLPrecioDiferente" AS 
+	SELECT 
+		f.id_factura,
+		f.compro,
+		f.letra_comprobante,
+		f.numero_comprobante,
+		(f.compro || '  ' || f.letra_comprobante || '  ' || SUBSTR(printf('%012d', f.numero_comprobante), 1, 4) || '-' || SUBSTR(printf('%012d', f.numero_comprobante), 5)) AS comprobante,
+		f.fecha_comprobante,
+		f.id_cliente_id,
+		c.nombre_cliente,
+		df.id_producto_id,
+		p.nombre_producto,
+		df.cantidad,
+		df.precio,
+		df.precio_lista,
+		(df.precio - df.precio_lista) * 1.0 AS diferencia,
+		df.descuento,
+		round(p.precio*p.descuento/100,2) AS adicional,
+		c.id_vendedor_id,
+		v.nombre_vendedor
+	FROM detalle_factura df
+		INNER JOIN factura f ON df.id_factura_id = f.id_factura
+		INNER JOIN producto p ON df.id_producto_id = p.id_producto
+		INNER JOIN cliente c ON f.id_cliente_id = c.id_cliente
+		INNER JOIN vendedor v ON c.id_vendedor_id = v.id_vendedor
+	WHERE 
+		f.no_estadist = False AND df.precio <> df.precio_lista
+	ORDER BY
+		v.nombre_vendedor, f.fecha_comprobante, f.numero_comprobante;
+
+
+-- ---------------------------------------------------------------------------
+-- Resumen de Ventas Ing. Brutos Mercadolibre.
+-- Modelo: VLVentasResumenIB
+-- ---------------------------------------------------------------------------
+DROP VIEW IF EXISTS "main"."VLVentasResumenIB";
+CREATE VIEW "VLVentasResumenIB" AS 
+SELECT 
+	f.id_factura,
+	f.fecha_comprobante,
+	f.gravado*cv.mult_venta AS gravado,
+	f.iva*cv.mult_venta AS iva,
+	f.total*cv.mult_venta AS total,
+	c.id_provincia_id,
+	p.nombre_provincia,
+	f.suc_imp
+FROM factura f
+	INNER JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
+	INNER JOIN cliente c ON f.id_cliente_id = c.id_cliente
+	INNER JOIN provincia p ON c.id_provincia_id = p.id_provincia
+WHERE
+	cv.libro_iva = True

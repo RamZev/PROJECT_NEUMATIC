@@ -1,0 +1,74 @@
+DROP VIEW "main"."VLVentasResumenIB";
+CREATE VIEW "VLVentasResumenIB" AS 
+SELECT 
+	f.id_factura,
+	f.fecha_comprobante,
+	f.gravado*cv.mult_venta AS gravado,
+	f.iva*cv.mult_venta AS iva,
+	f.total*cv.mult_venta AS total,
+	c.id_provincia_id,
+	p.nombre_provincia,
+	f.suc_imp
+FROM factura f
+	INNER JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
+	INNER JOIN cliente c ON f.id_cliente_id = c.id_cliente
+	INNER JOIN provincia p ON c.id_provincia_id = p.id_provincia
+WHERE
+	cv.libro_iva = True
+--
+SELECT * FROM VLVentasResumenIB -- 49985
+SELECT * FROM VLVentasResumenIB WHERE STRFTIME('%Y', fecha_comprobante) = '2025' AND STRFTIME('%m', fecha_comprobante) = '01'   -- 4598
+
+===============================================
+-- Consulta Original
+SELECT 
+	factura.id_factura,
+	factura.compro,
+	factura.letra_comprobante,
+	factura.numero_comprobante,
+	factura.fecha_comprobante,
+	factura.id_cliente_id,
+	cliente.nombre_cliente,
+	cliente.id_tipo_iva_id,
+	cliente.cuit,
+	tipo_iva.nombre_iva,
+	factura.gravado*comprobante_venta.mult_venta AS gravado,
+	factura.iva*comprobante_venta.mult_venta AS iva,
+	factura.total*comprobante_venta.mult_venta AS total,
+	localidad.codigo_postal,
+	factura.suc_imp
+FROM factura 
+	INNER JOIN comprobante_venta ON factura.id_comprobante_venta_id = comprobante_venta.id_comprobante_venta
+	INNER JOIN cliente ON factura.id_cliente_id = cliente.id_cliente
+	INNER JOIN tipo_iva ON cliente.id_tipo_iva_id = tipo_iva.id_tipo_iva
+	INNER JOIN localidad ON cliente.id_localidad_id = localidad.id_localidad
+WHERE
+	comprobante_venta.libro_iva = True
+
+-- Consulta propuesta
+SELECT 
+	f.id_factura,
+	--factura.compro,
+	--factura.letra_comprobante,
+	--factura.numero_comprobante,
+	f.fecha_comprobante,
+	--factura.id_cliente_id,
+	--cliente.nombre_cliente,
+	--cliente.id_tipo_iva_id,
+	--cliente.cuit,
+	--tipo_iva.nombre_iva,
+	f.gravado*cv.mult_venta AS gravado,
+	f.iva*cv.mult_venta AS iva,
+	f.total*cv.mult_venta AS total,
+	--localidad.codigo_postal,
+	c.id_provincia_id,
+	f.suc_imp
+FROM factura f
+	INNER JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
+	INNER JOIN cliente c ON f.id_cliente_id = c.id_cliente
+	--INNER JOIN tipo_iva ON cliente.id_tipo_iva_id = tipo_iva.id_tipo_iva
+	--INNER JOIN localidad ON cliente.id_localidad_id = localidad.id_localidad
+WHERE
+	cv.libro_iva = True
+
+=====================================
