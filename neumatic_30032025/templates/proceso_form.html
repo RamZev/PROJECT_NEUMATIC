@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% load static %}
+
+<!-- Block Header  ---------------------------------------------------------->
+{% block header %}
+    {% include 'top_nav.html' %}
+{% endblock header %}
+
+{% comment %} Block Main {% endcomment %}
+{% block main %}
+	{% block sidebar %}
+		{% include 'sidebar.html' %}
+	{% endblock sidebar %}
+	
+	{% block maincomponent %}
+		{% block principalcomponent %}
+		{% endblock principalcomponent %}
+	{% endblock maincomponent %}
+{% endblock main %}
+
+{% block modals %}
+{% endblock modals %}
+
+{% block footer %}
+{% endblock footer %}
+
+{% block script %}
+{% endblock script %}

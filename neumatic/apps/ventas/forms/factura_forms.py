@@ -7,13 +7,16 @@ from django.db.models import Q
 from ..models.factura_models import *
 from ...maestros.models.base_models import ComprobanteVenta
 
-from diseno_base.diseno_bootstrap import (
-	formclasstext, formclassselect, formclassdate, formclasscheck)
+from diseno_base.diseno_bootstrap import (formclasstext, 
+                                          formclassnumb,
+                                          formclassselect, 
+                                          formclassdate, 
+                                          formclasscheck)
 
 
 class FacturaForm(forms.ModelForm):
     buscar_cliente = forms.CharField(required=False, 
-                                     widget=forms.TextInput(attrs={**formclasstext, 'id': 'buscar_cliente'}))
+                                     widget=forms.TextInput(attrs={**formclasstext, 'id': 'buscar_cliente', 'readonly': 'readonly'}))
     
     nombre_sucursal = forms.CharField(
         required=False,
@@ -22,7 +25,7 @@ class FacturaForm(forms.ModelForm):
     punto_venta = forms.CharField(
         required=False,
         widget=forms.TextInput(attrs={**formclasstext, 'readonly': 'readonly'})
-    )
+    )   
     
     vendedor_factura = forms.CharField(
         required=False,
@@ -44,6 +47,11 @@ class FacturaForm(forms.ModelForm):
         widget=forms.CheckboxInput(attrs={'class': 'form-check-input', 'disabled': 'disabled'})
     )
     
+    es_remito = forms.BooleanField(
+        required=False,
+        widget=forms.CheckboxInput(attrs={'class': 'form-check-input', 'disabled': 'disabled'})
+    )
+    
     class Meta:
         model = Factura
         
@@ -61,9 +69,9 @@ class FacturaForm(forms.ModelForm):
             "id_deposito": forms.Select(attrs={**formclassselect}),
             
             "id_comprobante_venta": forms.Select(attrs={**formclassselect}),
-            "compro": forms.TextInput(attrs={**formclasstext}),
-            "letra_comprobante": forms.TextInput(attrs={**formclasstext}),
-            "numero_comprobante": forms.TextInput(attrs={**formclasstext, 'type': 'number', 'step': 'any'}),
+            "compro": forms.TextInput(attrs={**formclasstext, 'readonly': 'readonly'}),
+            "letra_comprobante": forms.TextInput(attrs={**formclasstext, 'readonly': 'readonly'}),
+            "numero_comprobante": forms.TextInput(attrs={**formclasstext, 'readonly': 'readonly', 'type': 'number', 'step': 'any'}),
             "remito": forms.TextInput(attrs={**formclasstext}),
             "fecha_comprobante": forms.TextInput(attrs={**formclassdate, 'type': 'date'}),
                         
@@ -80,6 +88,9 @@ class FacturaForm(forms.ModelForm):
             "movil_factura": forms.TextInput(attrs={**formclasstext}),
             "email_factura": forms.TextInput(attrs={**formclasstext}),
             "stock_clie": forms.CheckboxInput(attrs={**formclasscheck}),
+            
+            "gravado": forms.TextInput(attrs={**formclassnumb, 'readonly': 'readonly'}),
+            "exento": forms.TextInput(attrs={**formclassnumb, 'readonly': 'readonly'}),
         }
 
     def __init__(self, *args, **kwargs):
@@ -119,6 +130,25 @@ class FacturaForm(forms.ModelForm):
         )
        
 class DetalleFacturaForm(forms.ModelForm):
+    gravado = forms.DecimalField(
+        max_digits=12, 
+        decimal_places=2,
+        widget=forms.HiddenInput(),
+    )
+    
+    alic_iva = forms.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+        widget=forms.HiddenInput()
+    )
+    
+    iva = forms.DecimalField(
+        max_digits=12,
+        decimal_places=2,
+        widget=forms.HiddenInput(),
+        initial=0.00  # Opcional: valor inicial
+    )
+    
     medida = forms.CharField(
         label="Medida", 
         required=False, 
@@ -173,11 +203,9 @@ class DetalleFacturaForm(forms.ModelForm):
                 'class': 'form-control form-control-sm border border-primary', 'step': '0.1',
                 'style': 'font-size: 0.8rem; padding: 0.25rem; margin-left: 0px; margin-right: 0px;'
                 }),
-            'iva': forms.NumberInput(attrs={
-                'readonly': 'readonly',
-                'class': 'form-control form-control-sm border border-primary', 'step': '0.1',
-                'style': 'font-size: 0.8rem; padding: 0.25rem; margin-left: 0px; margin-right: 0px;'
-                }),
+            #'gravado': forms.HiddenInput(),
+            #'alic_iva': forms.HiddenInput(),
+            #'iva': forms.HiddenInput(),
             'total': forms.NumberInput(attrs={
                 'readonly': 'readonly',
                 'class': 'form-control form-control-sm border border-primary', 'step': '0.1',

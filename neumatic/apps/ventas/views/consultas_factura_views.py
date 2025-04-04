@@ -1,18 +1,20 @@
-# D:\SIG_PROJECTS\SIGCOERP\apps\facturacion\views\consultas_factura_views.py
+# neumatic\apps\ventas\views\consultas_factura_views.py
 from django.db.models import Sum
 from django.http import JsonResponse
 from django.db.models import Q
 from django.db.models import F
 from django.shortcuts import get_object_or_404
 
-
+from apps.maestros.models.base_models import (ProductoStock, 
+                                              ProductoMinimo,
+                                              AlicuotaIva,
+                                              ComprobanteVenta)
 from apps.maestros.models.producto_models import Producto
 from apps.maestros.models.cliente_models import Cliente
-from apps.maestros.models.base_models import (ProductoStock, 
-                                              ProductoMinimo)
 from apps.maestros.models.vendedor_models import Vendedor
-from apps.maestros.models.producto_models import Producto
 from apps.maestros.models.descuento_vendedor_models import DescuentoVendedor
+from apps.maestros.models.numero_models import Numero
+
 
 import json
 
@@ -24,7 +26,7 @@ def buscar_producto(request):
     filtro_marca = request.GET.get('filtro_marca', 'primeras')  # Valor por defecto
     id_cliente = request.GET.get('id_cliente', None)
     
-    print("id_cliente", id_cliente)
+    
     # Obtener el vendedor asociado al cliente
     vendedor = None
     col_descuento = 0  # Valor por defecto
@@ -59,28 +61,6 @@ def buscar_producto(request):
 
     
     # Preparar los datos de respuesta usando lista por comprensión
-    '''
-    resultados = [
-        {
-            'id': producto.id_producto,
-            'marca': producto.id_marca.nombre_producto_marca if producto.id_marca else 'Sin marca',
-            'medida': producto.medida,
-            'cai': producto.id_cai.descripcion_cai if producto.id_cai else 'Sin CAI',
-            'nombre': producto.nombre_producto,
-            'precio': producto.precio,
-            'stock': ProductoStock.objects.filter(id_producto=producto).aggregate(total_stock=Sum('stock'))['total_stock'] or 0,
-            'minimo': ProductoMinimo.objects.filter(id_cai=producto.id_cai).aggregate(total_minimo=Sum('minimo'))['total_minimo'] or 0,
-            'id_marca': producto.id_marca_id if producto.id_marca else None,
-            'id_familia': producto.id_familia_id if producto.id_familia else None,
-            'descuento_vendedor': (
-                DescuentoVendedor.objects.filter(id_marca=producto.id_marca, id_familia=producto.id_familia)
-                .values(f"desc{col_descuento}").first().get(f"desc{col_descuento}", 0) if col_descuento > 0 else 0
-            )
-        }
-        for producto in productos
-    ]
-    '''
-    
     resultados = []
     for producto in productos:
         # Descuento vendedor seguro
@@ -92,6 +72,11 @@ def buscar_producto(request):
             ).values(f"desc{col_descuento}").first()
             if dv:
                 descuento = dv.get(f"desc{col_descuento}", 0)
+                
+        # Obtener alícuota IVA
+        alicuota_iva = 0
+        if producto.id_alicuota_iva:
+            alicuota_iva = producto.id_alicuota_iva.alicuota_iva
 
         resultados.append({
             'id': producto.id_producto,
@@ -105,11 +90,12 @@ def buscar_producto(request):
             'id_marca': producto.id_marca_id if producto.id_marca else None,
             'id_familia': producto.id_familia_id if producto.id_familia else None,
             'descuento_vendedor': descuento,
+            'id_alicuota_iva': producto.id_alicuota_iva_id if producto.id_alicuota_iva else None,
+            'alicuota_iva': alicuota_iva
+
         })
 
-
-    # print(resultados)
-
+    # print("Productos:", resultados)
     # Devolver los resultados como JSON
     return JsonResponse(resultados, safe=False)
 
@@ -202,7 +188,8 @@ def buscar_agenda(request):
         'id_vendedor',
         'id_vendedor__nombre_vendedor',
         'id_vendedor__tipo_venta',
-        'id_tipo_iva__discrimina_iva',
+        'id_tipo_iva__nombre_iva',
+        'id_tipo_iva__discrimina_iva',        
         'condicion_venta',
         'id_sucursal',
         'vip',
@@ -212,7 +199,7 @@ def buscar_agenda(request):
         'black_list',
         'black_list_motivo',
     )
-    
+
     #print("resultados", resultados)
 
     return JsonResponse(list(resultados), safe=False)
@@ -255,3 +242,51 @@ def buscar_cliente(request):
     # print("response_data", response_data)
 
     return JsonResponse(response_data)
+
+def datos_comprobante(request, pk):
+    try:
+        comprobante = ComprobanteVenta.objects.get(pk=pk)
+        return JsonResponse({
+            'codigo': comprobante.codigo_comprobante_venta,
+            'es_remito': comprobante.remito
+        })
+    except ComprobanteVenta.DoesNotExist:
+        return JsonResponse({'error': 'Comprobante no encontrado'}, status=404)
+    
+
+# Obtener número de comprobante
+def obtener_numero_comprobante(request):
+    # Obtener parámetros de la solicitud
+    id_sucursal = request.GET.get('id_sucursal')
+    id_punto_venta = request.GET.get('id_punto_venta')
+    comprobante = request.GET.get('comprobante')
+    letra = request.GET.get('letra')
+
+    if not all([id_sucursal, id_punto_venta, comprobante, letra]):
+        return JsonResponse({'error': 'Faltan parámetros requeridos'}, status=400)
+
+    try:
+        # Obtener número referencial (último número + 1)
+        ultimo_numero = Numero.objects.filter(
+            id_sucursal=id_sucursal,
+            id_punto_venta=id_punto_venta,
+            comprobante=comprobante,
+            letra=letra
+        ).order_by('-numero').first()
+
+        numero_referencial = (ultimo_numero.numero + 1) if ultimo_numero else 1
+
+        # Obtener número definitivo (podría incluir lógica adicional aquí)
+        numero_definitivo = numero_referencial  # Por defecto son iguales
+
+        return JsonResponse({
+            'numero_referencial': numero_referencial,
+            'numero_definitivo': numero_definitivo,
+            'success': True
+        })
+
+    except Exception as e:
+        return JsonResponse({
+            'error': str(e),
+            'success': False
+        }, status=500)

@@ -7,9 +7,12 @@ from .views.consultas_factura_views import (buscar_agenda,
                                             buscar_producto,
                                             buscar_cliente,
                                             validar_documento,
-                                            detalle_producto)
+                                            detalle_producto,
+                                            datos_comprobante,
+                                            obtener_numero_comprobante)
 
 from .views.crear_agenda import crear_agenda
+from .views.genera_pdf import GeneraPDFView
 
 # from .views.buscar_clientes import buscar_cliente_por_id, buscar_cliente_por_nombre
 
@@ -31,5 +34,7 @@ urlpatterns = [
    
    path('crear/agenda/', crear_agenda, name='crear_agenda'),
    path('detalle_producto/<int:id_producto>/', detalle_producto, name='detalle_producto'),
-
+   path('comprobante/<int:pk>/codigo/', datos_comprobante, name='comprobante_codigo'),
+   path('obtener-numero-comprobante/', obtener_numero_comprobante, name='obtener_numero_comprobante'),
+   path('<str:model_name>/pdf/<int:pk>/', GeneraPDFView.as_view(), name='generic_pdf'),
 ]

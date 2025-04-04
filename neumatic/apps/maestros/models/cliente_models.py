@@ -92,7 +92,7 @@ class Cliente(ModeloBaseGenerico):
 	black_list_usuario = models.CharField("Usuario Black List", 
 										  max_length=20, null=True, blank=True)
 	fecha_baja = models.DateField("Fecha de Baja", null=True, blank=True)
-	
+												
 	def __str__(self):
 		return self.nombre_cliente
 	

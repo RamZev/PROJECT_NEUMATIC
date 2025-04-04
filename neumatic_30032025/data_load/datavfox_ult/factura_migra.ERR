@@ -1,0 +1,60 @@
+id_factura PK (int): ID (int)
+Error in line 1: Unrecognized command verb.
+id_orig (int): ID (int)
+Error in line 2: Syntax error.
+estatus_comprobante (boolean): True
+Error in line 3: Syntax error.
+id_sucursal FK(Sucursal) (int): valor 1
+Error in line 4: Unrecognized command verb.
+id_comprobante_venta FK(ComprobanteVenta) (int): valor 1
+Error in line 5: Unrecognized command verb.
+compro (string): COMPRO (string)
+Error in line 6: Syntax error.
+letra_comprobante (string): LETRA (string)
+Error in line 7: Syntax error.
+numero_comprobante (int): NUMERO (int)
+Error in line 8: Syntax error.
+remito (string): REMITO (string)
+Error in line 9: Syntax error.
+fecha_comprobante (date): FECHA (date)
+Error in line 10: Syntax error.
+id_cliente FK(Cliente) (int): CLIENTE (int)
+Error in line 11: Unrecognized command verb.
+cuit (int): CUIT (int)
+Error in line 12: Syntax error.
+condicion_comprobante (int): CONDICION (int)
+Error in line 13: Syntax error.
+gravado (Decimal): GRAVADO (Decimal)
+Error in line 14: Syntax error.
+exento (Decimal): EXENTO (Decimal)
+Error in line 15: Syntax error.
+iva (Decimal): IVA (Decimal)
+Error in line 16: Syntax error.
+percep_ib (Decimal): PERCEPIB (Decimal)
+Error in line 17: Syntax error.
+total (Decimal): TOTAL (Decimal)
+Error in line 18: Command contains unrecognized phrase/keyword.
+entrega (Decimal): ENTREGA (Decimal)
+Error in line 19: Syntax error.
+estado (string): ESTADO (string)
+Error in line 20: Syntax error.
+marca (string): ESTADO (string)
+Error in line 21: Syntax error.
+fecha_pago (date): FECHAPAGO (date)
+Error in line 22: Syntax error.
+no_estadist (boolean): NOESTADIT (logico)
+Error in line 23: Syntax error.
+suc_imp (int): SUCIMP (int)
+Error in line 24: Syntax error.
+cae (int): CAE (int)
+Error in line 25: Syntax error.
+cae_vto (date): CAEVTO (date)
+Error in line 26: Syntax error.
+observa_comprobante (string): OBSERVA (string)
+Error in line 27: Syntax error.
+stock_clie (boolean): STOCKCLIE (logico)
+Error in line 28: Syntax error.
+id_deposito FK(ProductoDeposito) (int): valor 1
+Error in line 29: Unrecognized command verb.
+promo (boolean): PROMO (logico)
+Error in line 30: Syntax error.

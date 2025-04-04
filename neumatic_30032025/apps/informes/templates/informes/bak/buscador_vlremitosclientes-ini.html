@@ -1,0 +1,61 @@
+<div class="card">
+	<div class="card-body">
+		<form method="GET" novalidate>
+			<!-- Opciones generales de reporte -->
+			{% include 'informes/opciones_reporte.html' %}
+			
+			<div class="row">
+				
+				<div class="col-md-2">
+					{{ form.fecha_desde.label }}
+					{{ form.fecha_desde }}
+				</div>
+				
+				<div class="col-md-2">
+					{{ form.fecha_hasta.label }}
+					{{ form.fecha_hasta }}
+				</div>
+				
+				<div class="col-md-2">
+					{{ form.id_cliente.label }}
+					<div class="d-flex align-items-stretch">
+							{{ form.id_cliente }}
+							<button 
+								type="button" 
+								class="btn btn-outline-primary btn-sm ms-2" 
+								title="Listar" 
+								data-bs-toggle="modal" 
+								data-bs-target="#agendaModal" 
+								style="height: calc(1.5em + 0.5rem + 2px);">
+									<i class="bi bi-card-list"></i>
+							</button>
+					</div>
+				</div>
+				
+				<div class="col-md-4">
+					{{ form.nombre_cliente.label }}
+					{{ form.nombre_cliente }}
+				</div>
+				
+			</div>
+			
+			<!-- Botones de acción -->
+			<div class="row mt-3">
+				<div class="col-md-12">
+					<button type="submit" class="btn btn-primary">Buscar</button>
+					<button type="reset" class="btn btn-secondary">Limpiar Filtros</button>
+				</div>
+			</div>
+			
+			<button 
+					class="btn btn-outline-success me-2 mt-3" 
+					id="generar"
+					data-zip-url="{% url url_zip %}?{{ request.GET.urlencode }}"
+					data-pdf-url="{% url url_pdf %}?{{ request.GET.urlencode }}"
+				>
+				Generar
+			</button>
+		</form>
+
+	</div>
+</div>

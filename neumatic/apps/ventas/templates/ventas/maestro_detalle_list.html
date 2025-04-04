@@ -132,11 +132,23 @@
 													</button>
 													
 													<!-- Botón Ver -->
-													<button type="button" class="btn btn-outline-success btn-sm btn-view boton-oculto"
+													{% comment %} <button type="button" class="btn btn-outline-success btn-sm btn-view boton-oculto"
 															data-bs-toggle="tooltip" data-bs-placement="top" title="Ver Registro"
 															style="font-size: 70%; padding: 0.1rem 0.3rem;">
 														<i class="bi bi-eye"></i>
-													</button>
+													</button> {% endcomment %}
+
+													<!-- Botón Imprimir PDF -->
+													<!-- Botón Imprimir PDF -->
+													<a href="{% url 'generic_pdf' model_name=model_string pk=objeto.pk %}" 
+														target="_blank"
+														class="btn btn-outline-secondary btn-sm btn-print boton-oculto"
+														data-bs-toggle="tooltip" 
+														data-bs-placement="top" 
+														title="Generar PDF"
+														style="font-size: 70%; padding: 0.1rem 0.3rem;">
+															<i class="bi bi-printer"></i>
+													</a>
 												</td>
 											</tr>
 										{% endfor %}
