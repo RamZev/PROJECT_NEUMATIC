@@ -1,4 +1,4 @@
-# neumatic\apps\informes\views\vlremitosvendedor_list_views.py
+# neumatic\apps\informes\views\vlventasresumenib_list_views.py
 
 from django.urls import reverse_lazy
 from django.shortcuts import render
@@ -8,26 +8,25 @@ from datetime import datetime
 from django.template.loader import render_to_string
 from weasyprint import HTML
 from django.templatetags.static import static
-# from django.forms.models import model_to_dict
 from decimal import Decimal
 
 from .report_views_generics import *
-from apps.informes.models import VLRemitosVendedor
-from ..forms.buscador_vlremitosvendedor_forms import BuscadorRemitosVendedorForm
-from utils.utils import deserializar_datos
+from apps.informes.models import VLVentasResumenIB
+from ..forms.buscador_vlventasresumenib_forms import BuscadorVLVentasResumenIBForm
+from utils.utils import deserializar_datos, serializar_queryset, formato_argentino
 from utils.helpers.export_helpers import ExportHelper
 
 
 class ConfigViews:
 	
 	#-- Título del reporte.
-	report_title = "Remitos por Vendedor"
+	report_title = "Resumen de Ventas por Provincias"
 	
 	#-- Modelo.
-	model = VLRemitosVendedor
+	model = VLVentasResumenIB
 	
 	#-- Formulario asociado al modelo.
-	form_class = BuscadorRemitosVendedorForm
+	form_class = BuscadorVLVentasResumenIBForm
 	
 	#-- Aplicación asociada al modelo.
 	app_label = "informes"
@@ -36,7 +35,7 @@ class ConfigViews:
 	model_string = model.__name__.lower()
 	
 	# Vistas del CRUD del modelo
-	list_view_name = f"{model_string}_list"  # <== vlventacompro_list
+	list_view_name = f"{model_string}_list"
 	
 	#-- Plantilla base.
 	template_list = f'{app_label}/maestro_informe.html'
@@ -73,19 +72,17 @@ class ConfigViews:
 	
 	#-- Establecer las columnas del reporte y sus anchos(en punto).
 	header_data = {
-		"id_cliente_id": (40, "Cliente"),
-		"nombre_cliente": (40, "Nombre"),
-		"fecha_comprobante": (40, "Fecha"),
-		"comprobante": (40, "Comprobante"),
-		"nombre_producto": (40, "Descripción"),
-		"medida": (180, "Medida"),
-		"cantidad": (40, "Cantidad"),
-		"precio": (40, "Precio"),
+		"nombre_provincia": (40, "Provincia"),
+		"por_menor": (180, "Por Menor"),
+		"reparacion": (40, "Reparación"),
+		"por_mayor": (180, "Por Mayor"),
+		"total_gravado": (40, "TotalGravado"),
+		"iva": (40, "I.V.A."),
 		"total": (40, "Total"),
 	}
 
 
-class VLRemitosVendedorInformeView(InformeFormView):
+class VLVentasResumenIBInformeView(InformeFormView):
 	config = ConfigViews  #-- Ahora la configuración estará disponible en self.config.
 	form_class = ConfigViews.form_class
 	template_name = ConfigViews.template_list
@@ -101,100 +98,87 @@ class VLRemitosVendedorInformeView(InformeFormView):
 	}
 	
 	def obtener_queryset(self, cleaned_data):
-		vendedor = cleaned_data.get("vendedor", None)
-		fecha_desde = cleaned_data.get("fecha_desde")
-		fecha_hasta = cleaned_data.get("fecha_hasta")
+		sucursal = cleaned_data.get("sucursal")
+		anno = cleaned_data.get("anno")
+		mes = cleaned_data.get("mes")
 		
-		return VLRemitosVendedor.objects.obtener_remitos_vendedor(vendedor.id_vendedor, fecha_desde, fecha_hasta)
+		id_sucursal = sucursal.id_sucursal if sucursal else None
+		
+		return VLVentasResumenIB.objects.obtener_datos(anno, mes, id_sucursal)
 	
 	def obtener_contexto_reporte(self, queryset, cleaned_data):
 		"""
-		Aquí se estructura el contexto para el reporte, agrupando, calculando subtotales y totales generales, etc,
-		tal como se requiere para el listado.
+		Aquí se estructura el contexto para el reporte, agrupando los comprobantes,
+		calculando subtotales y totales generales, tal como se requiere para el listado.
 		"""
 		
 		#-- Parámetros del listado.
-		vendedor = cleaned_data.get("vendedor")
-		fecha_desde = cleaned_data.get('fecha_desde')
-		fecha_hasta = cleaned_data.get('fecha_hasta')
+		sucursal = cleaned_data.get("sucursal")
+		anno = cleaned_data.get("anno")
+		mes = cleaned_data.get("mes")
+		importe_max = cleaned_data.get("importe_max") or 0
+		provincias = cleaned_data.get("provincias")
 		
+		id_sucursal = sucursal.id_sucursal if sucursal else None
+		print(f"{provincias = }")
+		
+		#-- Convertir a lista explícitamente.
+		ids_provincias = list(provincias.values_list('id_provincia', flat=True)) if provincias else []
+		print(f"{ids_provincias = }")
+		
+		meses = {
+			"01": "Enero",
+			"02": "Febrero",
+			"03": "Marzo",
+			"04": "Abril",
+			"05": "Mayo",
+			"06": "Junio",
+			"07": "Julio",
+			"08": "Agosto",
+			"09": "Septiembre",
+			"10": "Octubre",
+			"11": "Noviembre",
+			"12": "Diciembre",
+		}
 		param = {
-			"Vendedor": vendedor.nombre_vendedor,
-			"Desde": fecha_desde.strftime("%d/%m/%Y"),
-			"Hasta": fecha_hasta.strftime("%d/%m/%Y"),
+			"Sucursal": sucursal.nombre_sucursal,
+			"Período": f"{meses[mes]}/{anno}",
+			"Imp. máx. P/menor": formato_argentino(importe_max),
 		}
 		
-		fecha_hora_reporte = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+		fecha_hora_reporte = datetime.now().strftime("%d/%m/%Y %H:%M:%S")		
 		
 		dominio = f"http://{self.request.get_host()}"
 		
-		
+		print(f"{param = }")
 		# **************************************************
-		#-- Estructura para agrupar datos por cliente.
-		datos_por_cliente = {}
-		total_general = Decimal(0)
+		#-- Inicializar los totales como Decimals.
+		total_gravado = Decimal(0)
+		total_exento = Decimal(0)
+		total_iva = Decimal(0)
+		total_percep_ib = Decimal(0)
+		total_total = Decimal(0)
 		
+		#-- Iterar sobre cada objeto en el queryset y acumular los totales.
 		for obj in queryset:
-			#-- Identificar al cliente.
-			cliente_id = obj.id_cliente_id
-			nombre_cliente = obj.nombre_cliente.strip()  #-- Limpieza en caso de espacios extras.
-			
-			#-- Si el cliente aún no está en el diccionario, se inicializa.
-			if cliente_id not in datos_por_cliente:
-				datos_por_cliente[cliente_id] = {
-					"id_cliente": cliente_id,
-					"cliente": nombre_cliente,
-					"comprobantes": {},
-					"total_cliente": Decimal(0),
-				}
-			
-			#-- Agrupar por comprobante dentro del cliente.
-			num_comprobante = obj.numero_comprobante
-			if num_comprobante not in datos_por_cliente[cliente_id]["comprobantes"]:
-				datos_por_cliente[cliente_id]["comprobantes"][num_comprobante] = {
-					"fecha": obj.fecha_comprobante.strftime("%d/%m/%Y"),
-					"fecha_order": obj.fecha_comprobante,    # Para ordenar por fecha
-					"numero_comprobante": num_comprobante,   # Para ordenar por número
-					"comprobante": obj.comprobante,
-					"productos": [],
-					"total_comprobante": Decimal(0),
-				}
-			
-			#-- Crear el diccionario con los datos requeridos para el reporte.
-			producto_data = {
-				"fecha": obj.fecha_comprobante.strftime("%d/%m/%Y"),
-				"comprobante": obj.comprobante,
-				"descripcion": obj.nombre_producto,
-				"medida": obj.medida,
-				"cantidad": obj.cantidad,
-				"precio": obj.precio,
-				"total": obj.total,
-			}
-			
-			#-- Agregar el producto a la lista del comprobante y acumular totales.
-			datos_por_cliente[cliente_id]["comprobantes"][num_comprobante]["productos"].append(producto_data)
-			datos_por_cliente[cliente_id]["comprobantes"][num_comprobante]["total_comprobante"] += obj.total
-			datos_por_cliente[cliente_id]["total_cliente"] += obj.total
-			total_general += obj.total
-		
-		#-- Convertir la estructura de diccionarios a listas ordenadas para iterar en el template.
-		datos = []
-		for cliente_info in datos_por_cliente.values():
-			#-- Convertir comprobantes (diccionario) a lista y ordenarlos por (fecha, número de comprobante).
-			comprobantes_list = list(cliente_info["comprobantes"].values())
-			comprobantes_list.sort(key=lambda x: (x["fecha_order"], x["numero_comprobante"]))
-			cliente_info["comprobantes"] = comprobantes_list
-			
-			datos.append(cliente_info)
-		
-		#-- Ordenar la lista de datos por el nombre del cliente.
-		datos.sort(key=lambda x: x["cliente"])
+			total_gravado   += obj.gravado
+			total_exento    += obj.exento
+			total_iva       += obj.iva
+			total_percep_ib += obj.percep_ib
+			total_total     += obj.total
 		# **************************************************
+		
+		#-- Serializar el queryset.
+		queryset_serializado = serializar_queryset(queryset)
 		
 		#-- Se retorna un contexto que será consumido tanto para la vista en pantalla como para la generación del PDF.
 		return {
-			"objetos": datos,
-			"total_general": total_general,
+			"objetos": queryset_serializado,
+			"total_gravado": total_gravado,
+			"total_exento": total_exento,
+			"total_iva": total_iva,
+			"total_percep_ib": total_percep_ib,
+			"total_total": total_total,
 			"parametros": param,
 			'fecha_hora_reporte': fecha_hora_reporte,
 			'titulo': ConfigViews.report_title,
@@ -213,7 +197,7 @@ class VLRemitosVendedorInformeView(InformeFormView):
 		return context
 
 
-def vlremitosvendedor_vista_pantalla(request):
+def vlventasresumenib_vista_pantalla(request):
 	#-- Obtener el token de la querystring.
 	token = request.GET.get("token")
 	
@@ -221,6 +205,7 @@ def vlremitosvendedor_vista_pantalla(request):
 		return HttpResponse("Token no proporcionado", status=400)
 	
 	#-- Obtener el contexto(datos) previamente guardados en la sesión.
+	# contexto_reporte = request.session.pop(token, None)
 	contexto_reporte = deserializar_datos(request.session.pop(token, None))
 	
 	if not contexto_reporte:
@@ -230,7 +215,7 @@ def vlremitosvendedor_vista_pantalla(request):
 	return render(request, ConfigViews.reporte_pantalla, contexto_reporte)
 
 
-def vlremitosvendedor_vista_pdf(request):
+def vlventasresumenib_vista_pdf(request):
 	return HttpResponse("Reporte en PDF aún no implementado.", status=400)
 	#-- Obtener el token de la querystring.
 	token = request.GET.get("token")
@@ -255,7 +240,7 @@ def vlremitosvendedor_vista_pdf(request):
 	return response
 
 
-def vlremitosvendedor_vista_excel(request):
+def vlventasresumenib_vista_excel(request):
 	token = request.GET.get("token")
 	if not token:
 		return HttpResponse("Token no proporcionado", status=400)
@@ -269,7 +254,7 @@ def vlremitosvendedor_vista_excel(request):
 	# ---------------------------------------------
 	
 	#-- Instanciar la vista y obtener el queryset.
-	view_instance = VLRemitosVendedorInformeView()
+	view_instance = VLVentasResumenIBInformeView()
 	view_instance.request = request
 	queryset = view_instance.obtener_queryset(cleaned_data)
 	
@@ -289,7 +274,7 @@ def vlremitosvendedor_vista_excel(request):
 	return response
 
 
-def vlremitosvendedor_vista_csv(request):
+def vlventasresumenib_vista_csv(request):
 	token = request.GET.get("token")
 	if not token:
 		return HttpResponse("Token no proporcionado", status=400)
@@ -302,7 +287,7 @@ def vlremitosvendedor_vista_csv(request):
 	cleaned_data = data["cleaned_data"]
 	
 	#-- Instanciar la vista para reejecutar la consulta y obtener el queryset.
-	view_instance = VLRemitosVendedorInformeView()
+	view_instance = VLVentasResumenIBInformeView()
 	view_instance.request = request
 	queryset = view_instance.obtener_queryset(cleaned_data)
 	
@@ -318,3 +303,30 @@ def vlremitosvendedor_vista_csv(request):
 	response["Content-Disposition"] = f'inline; filename="informe_{ConfigViews.model_string}.csv"'
 	
 	return response
+
+
+
+# --------------------------------
+
+objetos = []
+lista_provincias = []
+totales = {}
+for obj in objetos:
+	
+	if obj.id_provincia_id in lista_provincias:
+		id_prov = obj.id_provincia_id
+	else:
+		id_prov = 13   # Santan Fe.
+	
+	if id_prov not in totales:
+		totales[id_prov] = {
+			"Provincia": obj.nombre_provincia,
+			"Por Menor": Decimal(0),
+			"Reparación": Decimal(0),
+			"Por Mayor": Decimal(0),
+			"Total Gravado": Decimal(0),
+			"I.V.A.": Decimal(0),
+			"TOTAL": Decimal(0),
+		}
+	
+	totales[id_prov]["Por Mayor"] += obj.gravado

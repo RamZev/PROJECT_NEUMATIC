@@ -224,24 +224,6 @@ if (idClienteInput){
 		}
 	});
 }
-// idClienteInput.addEventListener("change", function() {
-// 	const idCliente = idClienteInput.value.trim();
-	
-// 	if (idCliente) {
-// 		fetch(`/informes/buscar/cliente/id/?id_cliente=${idCliente}`)
-// 			.then(response => response.json())
-// 			.then(data => {
-// 				if (data.error) {
-// 					nombreClienteInput.value = "Cliente no encontrado";
-// 				} else {
-// 					nombreClienteInput.value = data.nombre_cliente;
-// 				}
-// 			})
-// 			.catch(error => console.error("Error al obtener cliente:", error));
-// 	} else {
-// 		nombreClienteInput.value = "";
-// 	}
-// });
 
 // ---------------------------------------------------------------------------
 // Funcionalidad que muestra el Modal para buscar un Cliente por filtrado.

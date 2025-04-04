@@ -751,7 +751,6 @@ class VLRemitosVendedor(models.Model):
 class IVAVentasFULLManager(models.Manager):
 	
 	def obtener_datos(self, id_sucursal, anno, mes):
-		""" Permite obtener los Comprobantes Fiscales por todas las Sucursales o una en específico de un mes y año determinado. """
 		
 		#-- Se crea la consulta.
 		query = """
@@ -1096,5 +1095,158 @@ class VLPercepIBSubcuentaDetallado(models.Model):
 		verbose_name = ('Percepciones por Sub Cuentas - Detallado')
 		verbose_name_plural = ('Percepciones por Sub Cuentas - Detallado')
 		ordering = ['sub_cuenta']
+
+
+#-----------------------------------------------------------------------------
+# Comisiones a Operarios.
+#-----------------------------------------------------------------------------
+class ComisionOperarioManager(models.Manager):
+	
+	def obtener_datos(self, id_operario, fecha_desde, fecha_hasta):
+		
+		#-- Se crea la consulta.
+		query = """
+			SELECT * 
+			FROM VLComisionOperario 
+			WHERE fecha_comprobante BETWEEN %s AND %s"""
+		
+		#-- Se añaden parámetros.
+		params = [fecha_desde, fecha_hasta]
+		
+		#-- Filtros adicionales.
+		if id_operario:
+			query += " AND id_operario_id = %s"
+			params.append(id_operario)
+		
+		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
+		return self.raw(query, params)
+
+
+class VLComisionOperario(models.Model):
+	id_factura = models.IntegerField(primary_key=True)
+	id_operario_id = models.IntegerField()
+	nombre_operario = models.CharField(max_length=50)
+	codigo_comprobante_venta = models.CharField(max_length=3)
+	letra_comprobante = models.CharField(max_length=1)
+	numero_comprobante = models.IntegerField()
+	comprobante = models.CharField(max_length=19)
+	fecha_comprobante = models.DateField()
+	id_producto_id = models.IntegerField()
+	nombre_producto_familia = models.CharField(max_length=50)
+	total = models.DecimalField(max_digits=14, decimal_places=2)
+	comision_operario = models.DecimalField(max_digits=5, decimal_places=2)
+	monto_comision = models.DecimalField(max_digits=14, decimal_places=2)
+	
+	objects = ComisionOperarioManager()
+	
+	class Meta:
+		managed = False
+		db_table = 'VLComisionOperario'
+		verbose_name = ('Comisiones a Operarios')
+		verbose_name_plural = ('Comisiones a Operarios')
+		ordering = ['nombre_operario', 'fecha_comprobante', 'numero_comprobante']
+
+
+#-----------------------------------------------------------------------------
+# Deferencias de Precios en Facturación.
+#-----------------------------------------------------------------------------
+class PrecioDiferenteManager(models.Manager):
+	
+	def obtener_datos(self, fecha_desde, fecha_hasta, id_vendedor_desde, id_vendedor_hasta, comprobantes, dif_mayor=0):
+		
+		#-- Determinar cantidad de marcas de parámetros para los comprobantes.
+		placeholders = ','.join(['%s'] * len(comprobantes))
+		
+		#-- Se crea la consulta.
+		query = """
+			SELECT * 
+			FROM VLPrecioDiferente 
+			WHERE fecha_comprobante BETWEEN %s AND %s 
+				AND id_vendedor_id BETWEEN %s AND %s 
+				AND ABS(precio - precio_lista) > %s
+		"""
+		
+		#-- Se añaden parámetros.
+		params = [fecha_desde, fecha_hasta, id_vendedor_desde, id_vendedor_hasta, dif_mayor]
+		
+		#-- Añadir filtro por comprobantes.
+		query += f" AND compro IN ({placeholders})"
+		params.extend(comprobantes)  # Extender con los elementos de la lista
+		
+		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
+		return self.raw(query, params)
+
+
+class VLPrecioDiferente(models.Model):
+	id_factura = models.IntegerField(primary_key=True)
+	id_vendedor_id = models.IntegerField()
+	nombre_vendedor = models.CharField(max_length=30)
+	codigo_comprobante_venta = models.CharField(max_length=3)
+	letra_comprobante = models.CharField(max_length=1)
+	fecha_comprobante = models.DateField()
+	numero_comprobante = models.IntegerField()
+	comprobante = models.CharField(max_length=19)
+	id_cliente_id = models.IntegerField()
+	nombre_cliente = models.CharField(max_length=50)
+	id_producto_id = models.IntegerField()
+	nombre_producto = models.CharField(max_length=50)
+	cantidad = models.DecimalField(max_digits=7, decimal_places=2)
+	precio = models.DecimalField(max_digits=12, decimal_places=2)
+	precio_lista = models.DecimalField(max_digits=12, decimal_places=2)
+	diferencia = models.DecimalField(max_digits=12, decimal_places=2)
+	descuento = models.DecimalField(max_digits=6, decimal_places=2)
+	adicional = models.DecimalField(max_digits=12, decimal_places=2)
+	
+	objects = PrecioDiferenteManager()
+	
+	class Meta:
+		managed = False
+		db_table = 'VLPrecioDiferente'
+		verbose_name = ('Diferencias de Precios en Facturación')
+		verbose_name_plural = ('Diferencias de Precios en Facturación')
+		ordering = ['nombre_vendedor', 'fecha_comprobante', 'numero_comprobante']
+
+
+#-----------------------------------------------------------------------------
+# Resumen de Ventas Ing. Brutos Mercadolibre.
+#-----------------------------------------------------------------------------
+class VentasResumenIBManager(models.Manager):
+	
+	def obtener_datos(self, anno, mes, id_sucursal=0):
+		
+		#-- Se crea la consulta.
+		query = """
+			SELECT *
+			FROM VLVentasResumenIB
+			WHERE STRFTIME('%%Y', fecha_comprobante) = %s AND
+				  STRFTIME('%%m', fecha_comprobante) = %s AND
+				  suc_imp = %s
+		"""
+		
+		#-- Se añaden parámetros.
+		params = [str(anno), str(mes), id_sucursal]
+		
+		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
+		return self.raw(query, params)
+
+
+class VLVentasResumenIB(models.Model):
+	id_factura = models.IntegerField(primary_key=True)
+	fecha_comprobante = models.DateField()
+	gravado = models.DecimalField(max_digits=14, decimal_places=2)
+	iva = models.DecimalField(max_digits=14, decimal_places=2)
+	total = models.DecimalField(max_digits=14, decimal_places=2)
+	id_provincia_id = models.IntegerField()
+	nombre_provincia = models.CharField(max_length=30)	
+	suc_imp = models.IntegerField()
+	
+	objects = VentasResumenIBManager()
+	
+	class Meta:
+		managed = False
+		db_table = 'VLVentasResumenIB'
+		verbose_name = ('Resumen de Ventas por Provincias')
+		verbose_name_plural = ('Resumen de Ventas por Provincias')
+		ordering = ['fecha_comprobante']
 
 

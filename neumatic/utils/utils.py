@@ -1,5 +1,5 @@
 # neumatic\utils\utils.py
-import re
+import re, locale
 from datetime import date, datetime
 from decimal import Decimal
 from django.forms.models import model_to_dict
@@ -44,3 +44,7 @@ def deserializar_datos(datos):
 
 def serializar_queryset(queryset):
 	return [model_to_dict(obj) for obj in queryset]
+
+
+def formato_argentino(valor):
+    return locale.format_string('%.2f', valor, grouping=True)
