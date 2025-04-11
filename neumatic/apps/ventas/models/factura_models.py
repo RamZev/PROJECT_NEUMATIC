@@ -217,13 +217,15 @@ class Factura(ModeloBaseGenerico):
 	# 	null=True,
 	# 	blank=True		
 	# )
-	# Esta campo no es necesario
-	# comision = models.CharField(
-	# 	verbose_name="Comisión",
-	# 	max_length=1,
-	# 	null=True,
-	# 	blank=True
-	# )
+	
+	#-- Campo usado cuando se generan recibos y si el tipo de producto es para Camión se coloca una "C".
+	#-- utilizado en reporte "Comisión a Vendedores Según Facturación".
+	comision = models.CharField(
+		verbose_name="Comisión",
+		max_length=1,
+		null=True,
+		blank=True
+	)
 	# Esta campo no es necesario
 	# codcomis = models.SmallIntegerField(
 	# 	verbose_name="codcomis",

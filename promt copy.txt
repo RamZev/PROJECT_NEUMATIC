@@ -1,74 +1,210 @@
-DROP VIEW "main"."VLVentasResumenIB";
-CREATE VIEW "VLVentasResumenIB" AS 
+-- Busco la Comision de Cobranza de cada vendedor
 SELECT 
-	f.id_factura,
-	f.fecha_comprobante,
-	f.gravado*cv.mult_venta AS gravado,
-	f.iva*cv.mult_venta AS iva,
-	f.total*cv.mult_venta AS total,
-	c.id_provincia_id,
-	p.nombre_provincia,
-	f.suc_imp
-FROM factura f
-	INNER JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
-	INNER JOIN cliente c ON f.id_cliente_id = c.id_cliente
-	INNER JOIN provincia p ON c.id_provincia_id = p.id_provincia
-WHERE
-	cv.libro_iva = True
---
-SELECT * FROM VLVentasResumenIB -- 49985
-SELECT * FROM VLVentasResumenIB WHERE STRFTIME('%Y', fecha_comprobante) = '2025' AND STRFTIME('%m', fecha_comprobante) = '01'   -- 4598
+	Facturas.compro, 
+	Facturas.letra, 
+	Facturas.numero, 
+	Facturas.fecha, 
+	Facturas.condicion, 
+	Facturas.cliente, 
+	Clientes.nombre AS nomCliente, 
+	Facturas.gravado,;
+	Facturas.total, 
+	Clientes.vendedor, 
+	Vendedor.nombre, 
+	Vendedor.porcentaje AS pjecom,  -- Porc. Auto.
+	Facturas.total*0 AS comision,   -- Monto Comisión calculado.
+	facturas.comision AS comCamion;
+ FROM clientes, vendedor, facturas 
+	INNER JOIN codven ON  Facturas.compro = Codven.compro;
+ WHERE Facturas.cliente = Clientes.codigo;
+	AND (Facturas.compro = "RC" OR Facturas.compro = "RB" OR Facturas.compro = "RE");
+	AND Clientes.vendedor = Vendedor.codigo;
+	AND Facturas.fecha BETWEEN ?dDesde AND ?dHasta ;
+ INTO CURSOR t2 READWRITE 
 
-===============================================
--- Consulta Original
+SELECT t2
+SET RELATION TO VENDEDOR INTO Vendedor
+REPLACE gravado  WITH total/((param.iva/100)+1) ALL 
+REPLACE Comision WITH IIF(comCamion="C",gravado*vendedor.pjeCamion/100, gravado*vendedor.porcentaje/100) ALL 
+SET RELATION TO 
+
+--=============================================================
+
 SELECT 
-	factura.id_factura,
+	detven.compro,
+	detven.letra,
+	detven.numero,
+	facturas.fecha,
+	facturas.cliente,
+	clientes.nombre AS nomCliente,
+	detven.codigo,
+	lista.medida,
+	lista.marca,
+	marcas.nombre AS Marcas,
+	lista.articulo, 
+	articulo.nombre AS Articulos,
+	detven.cantidad,
+	detven.precio,
+	detven.costo,
+	detven.descuento,
+	detven.gravado*codven.mult_com AS gravado,
+	Detven.total*Codven.mult_com AS total,
+	facturas.noestadist,
+	detven.reventa,
+	clientes.vendedor,
+	vendedor.nombre,
+	detven.aliciva*0 AS pjecom,  -- Porcentaje
+	detven.aliciva*0 AS Comision -- Monto
+FROM detven,facturas,lista,clientes,vendedor,codven, marcas, articulo;
+WHERE detven.id=facturas.id AND detven.codigo=lista.codigo AND facturas.cliente=clientes.codigo AND clientes.vendedor=vendedor.codigo AND lista.marca=marcas.codigo AND lista.articulo=articulo.codigo ;
+	AND facturas.compro=codven.compro 
+	AND codven.mult_com#0 AND !facturas.noestadist AND facturas.fecha BETWEEN dDesde AND dHasta ;
+ORDER BY vendedor ;
+INTO CURSOR t1 READWRITE 
+
+SELECT t1
+REPLACE gravado WITH total/((param.iva/100)+1) FOR gravado=0
+SET RELATION TO STR(VENDEDOR,3)+STR(MARCA,3)+STR(ARTICULO,4) INTO VendedorComision 
+REPLACE pjecom WITH VendedorComision.comision ALL 
+REPLACE comision WITH gravado*pjecom/100 ALL 
+-----------------------------------------------
+SELECT t2
+SCAN 
+	SCATTER MEMVAR 
+	INSERT INTO t1 FROM MEMVAR 
+	SELECT t2
+ENDSCAN 
+
+SELECT t1
+INDEX ON vendedor TAG vendedor
+DELETE FOR comision=0
+IF This.rdbVendedor.Value = 2
+	nVendedor=vendedor.codigo
+	DELETE FOR vendedor#nVendedor
+ENDIF 
+
+===============================================================================
+===============================================================================
+===============================================================================
+
+SELECT 
+	detven.compro,
+	detven.letra,
+	detven.numero,
+	facturas.fecha,
+	facturas.cliente,
+	clientes.nombre AS nomCliente,
+	detven.codigo,
+	lista.medida,
+	lista.marca,
+	marcas.nombre AS Marcas,
+	lista.articulo, 
+	articulo.nombre AS Articulos,
+	detven.cantidad,
+	detven.precio,
+	detven.costo,
+	detven.descuento,
+	detven.gravado*codven.mult_com AS gravado,
+	Detven.total*Codven.mult_com AS total,
+	facturas.noestadist,
+	detven.reventa,
+	clientes.vendedor,
+	vendedor.nombre,
+	detven.aliciva*0 AS pjecom,  -- Porc
+	detven.aliciva*0 AS Comision
+FROM detven,facturas,lista,clientes,vendedor,codven, marcas, articulo;
+WHERE detven.id=facturas.id AND detven.codigo=lista.codigo AND facturas.cliente=clientes.codigo AND clientes.vendedor=vendedor.codigo AND lista.marca=marcas.codigo AND lista.articulo=articulo.codigo ;
+	AND facturas.compro=codven.compro 
+	AND codven.mult_com#0 AND !facturas.noestadist AND facturas.fecha BETWEEN dDesde AND dHasta ;
+ORDER BY vendedor ;
+INTO CURSOR t1 READWRITE 
+
+SELECT t1
+REPLACE gravado WITH total/((param.iva/100)+1) FOR gravado=0
+SET RELATION TO STR(VENDEDOR,3)+STR(MARCA,3)+STR(ARTICULO,4) INTO VendedorComision 
+REPLACE pjecom WITH VendedorComision.comision ALL 
+REPLACE comision WITH gravado*pjecom/100 ALL 
+-----------------------------------------------
+SELECT t2
+SCAN 
+	SCATTER MEMVAR 
+	INSERT INTO t1 FROM MEMVAR 
+	SELECT t2
+ENDSCAN 
+
+SELECT t1
+INDEX ON vendedor TAG vendedor
+DELETE FOR comision=0
+IF This.rdbVendedor.Value = 2
+	nVendedor=vendedor.codigo
+	DELETE FOR vendedor#nVendedor
+ENDIF 
+
+===============================================================================
+
+CREATE VIEW VLComisionVendedor AS
+SELECT 
+	factura.compro, 
+	factura.letra_comprobante, 
+	factura.numero_comprobante, 
+	factura.fecha_comprobante,
+	factura.id_cliente_id, 
+	cliente.nombre_cliente,
+	--factura.gravado,
+	round(factura.total/((21.0/100)+1),2) AS gravado,
+	factura.total, 
+	cliente.id_vendedor_id,
+	vendedor.nombre_vendedor,
+	vendedor.pje_auto, 
+	vendedor.pje_camion
+FROM factura 
+	INNER JOIN cliente ON factura.id_cliente_id = cliente.id_cliente
+	INNER JOIN vendedor ON cliente.id_vendedor_id = vendedor.id_vendedor
+WHERE
+	factura.compro = 'RC' OR factura.compro = 'RB' OR factura.compro = 'RE';
+
+-- ---------------------
+
+select * from vendedor where pje_auto <> pje_camion;
+		
+select * from factura where compro = 'RC' or compro =  'RB' or compro =  'RE';
+-- ---------------------
+
+CREATE VIEW VLComisionVendedorDetalle AS
+SELECT 
 	factura.compro,
 	factura.letra_comprobante,
 	factura.numero_comprobante,
 	factura.fecha_comprobante,
-	factura.id_cliente_id,
+	--factura.id_cliente_id,
 	cliente.nombre_cliente,
-	cliente.id_tipo_iva_id,
-	cliente.cuit,
-	tipo_iva.nombre_iva,
-	factura.gravado*comprobante_venta.mult_venta AS gravado,
-	factura.iva*comprobante_venta.mult_venta AS iva,
-	factura.total*comprobante_venta.mult_venta AS total,
-	localidad.codigo_postal,
-	factura.suc_imp
-FROM factura 
+	detalle_factura.reventa,
+	detalle_factura.id_producto_id,
+	producto.medida,
+	--producto.id_marca_id,
+	producto_marca.nombre_producto_marca,
+	--producto.id_familia_id,
+	producto_familia.nombre_producto_familia,
+	--detalle_factura.cantidad,
+	--detalle_factura.precio,
+	--detalle_factura.costo,
+	--detalle_factura.descuento,
+	detalle_factura.gravado*comprobante_venta.mult_comision AS gravado,
+	--detalle_factura.total*comprobante_venta.mult_comision AS total,
+	--factura.no_estadist,
+	detalle_factura.alic_iva*0 AS pje_auto,
+	detalle_factura.alic_iva*0 AS comision,
+	cliente.id_vendedor_id,
+	vendedor.nombre_vendedor
+FROM 
+	detalle_factura 
+	INNER JOIN factura ON detalle_factura.id_factura_id = factura.id_factura
 	INNER JOIN comprobante_venta ON factura.id_comprobante_venta_id = comprobante_venta.id_comprobante_venta
 	INNER JOIN cliente ON factura.id_cliente_id = cliente.id_cliente
-	INNER JOIN tipo_iva ON cliente.id_tipo_iva_id = tipo_iva.id_tipo_iva
-	INNER JOIN localidad ON cliente.id_localidad_id = localidad.id_localidad
-WHERE
-	comprobante_venta.libro_iva = True
-
--- Consulta propuesta
-SELECT 
-	f.id_factura,
-	--factura.compro,
-	--factura.letra_comprobante,
-	--factura.numero_comprobante,
-	f.fecha_comprobante,
-	--factura.id_cliente_id,
-	--cliente.nombre_cliente,
-	--cliente.id_tipo_iva_id,
-	--cliente.cuit,
-	--tipo_iva.nombre_iva,
-	f.gravado*cv.mult_venta AS gravado,
-	f.iva*cv.mult_venta AS iva,
-	f.total*cv.mult_venta AS total,
-	--localidad.codigo_postal,
-	c.id_provincia_id,
-	f.suc_imp
-FROM factura f
-	INNER JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
-	INNER JOIN cliente c ON f.id_cliente_id = c.id_cliente
-	--INNER JOIN tipo_iva ON cliente.id_tipo_iva_id = tipo_iva.id_tipo_iva
-	--INNER JOIN localidad ON cliente.id_localidad_id = localidad.id_localidad
-WHERE
-	cv.libro_iva = True
-
-=====================================
+	INNER JOIN vendedor ON cliente.id_vendedor_id = vendedor.id_vendedor
+	INNER JOIN producto ON detalle_factura.id_producto_id = producto.id_producto
+	INNER JOIN producto_familia ON producto.id_familia_id = producto_familia.id_producto_familia
+	INNER JOIN producto_marca ON producto.id_marca_id = producto_marca.id_producto_marca
+WHERE 
+	comprobante_venta.mult_comision<>0 AND 
+	factura.no_estadist <> True;

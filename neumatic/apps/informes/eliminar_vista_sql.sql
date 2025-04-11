@@ -1,3 +1,4 @@
+DROP VIEW IF EXISTS "main"."A";
 DROP VIEW IF EXISTS "main"."VLSaldosClientes";
 DROP VIEW IF EXISTS "main"."VLResumenCtaCte";
 DROP VIEW IF EXISTS "main"."VLMercaderiaPorCliente";
@@ -19,5 +20,5 @@ DROP VIEW IF EXISTS "main"."VLPercepIBSubcuentaDetallado";
 DROP VIEW IF EXISTS "main"."VLComisionOperario";
 DROP VIEW IF EXISTS "main"."VLPrecioDiferente";
 DROP VIEW IF EXISTS "main"."VLVentasResumenIB";
-
-		
+DROP VIEW IF EXISTS "main"."VLComisionVendedor";
+DROP VIEW IF EXISTS "main"."VLComisionVendedorDetalle";

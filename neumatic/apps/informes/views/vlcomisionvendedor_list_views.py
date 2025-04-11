@@ -1,19 +1,18 @@
-# neumatic\apps\informes\views\vlventamostrador_list_views.py
+# neumatic\apps\informes\views\vlcomisionvendedor_list_views.py
 
 from django.urls import reverse_lazy
 from django.shortcuts import render
 
 from django.http import HttpResponse
-from decimal import Decimal
 from datetime import datetime
 from django.template.loader import render_to_string
 from weasyprint import HTML
 from django.templatetags.static import static
-from django.forms.models import model_to_dict
+from decimal import Decimal
 
 from .report_views_generics import *
-from apps.informes.models import VLVentaMostrador
-from ..forms.buscador_vlventamostrador_forms import BuscadorVentaMostradorForm
+from apps.informes.models import VLComisionVendedor
+from ..forms.buscador_vlcomisionvendedor_forms import BuscadorComisionVendedorForm
 from utils.utils import deserializar_datos
 from utils.helpers.export_helpers import ExportHelper
 
@@ -21,13 +20,13 @@ from utils.helpers.export_helpers import ExportHelper
 class ConfigViews:
 	
 	#-- Título del reporte.
-	report_title = "Ventas por Mostrador"
+	report_title = "Comisión Según Facturación"
 	
 	#-- Modelo.
-	model = VLVentaMostrador
+	model = VLComisionVendedor
 	
 	#-- Formulario asociado al modelo.
-	form_class = BuscadorVentaMostradorForm
+	form_class = BuscadorComisionVendedorForm
 	
 	#-- Aplicación asociada al modelo.
 	app_label = "informes"
@@ -73,20 +72,23 @@ class ConfigViews:
 	
 	#-- Establecer las columnas del reporte y sus anchos(en punto).
 	header_data = {
-		"fecha_comprobante": (40, "Fecha"),
+		"id_vendedor_id": (40, "Vendedor"),
+		"nombre_vendedor": (40, "Nombre"),
 		"comprobante": (40, "Comprobante"),
-		"id_cliente_id": (40, "Cliente"),
-		"nombre_cliente": (180, "Nombre"),
-		"reventa": (40, "Rvta."),
-		"tipo_producto": (40, "T/P"),
+		"fecha_comprobante": (40, "Fecha"),
+		"nombre_cliente": (40, "Nombre"),
+		"reventa": (40, "Reventa"),
 		"id_producto_id": (40, "Código"),
-		"cantidad": (40, "Cantidad"),
-		"precio": (40, "Precio"),
-		"total": (40, "Total"),
+		"medida": (40, "Producto"),
+		"nombre_producto_marca": (180, "Marca"),
+		"cantidadnombre_producto_familia": (40, "Artículo"),
+		"gravado": (40, "Gravado"),
+		"pje_comision": (40, "%"),
+		"comision": (40, "Comisión"),
 	}
 
 
-class VLVentaMostradorInformeView(InformeFormView):
+class VLComisionVendedorInformeView(InformeFormView):
 	config = ConfigViews  #-- Ahora la configuración estará disponible en self.config.
 	form_class = ConfigViews.form_class
 	template_name = ConfigViews.template_list
@@ -102,77 +104,84 @@ class VLVentaMostradorInformeView(InformeFormView):
 	}
 	
 	def obtener_queryset(self, cleaned_data):
-		sucursal = cleaned_data.get('sucursal', None)
-		fecha_desde = cleaned_data.get('fecha_desde')
-		fecha_hasta = cleaned_data.get('fecha_hasta')
-		tipo_venta = cleaned_data.get('tipo_venta', None)
-		tipo_cliente = cleaned_data.get('tipo_cliente', None)
-		tipo_producto = cleaned_data.get('tipo_producto', None)
-		datos_cliente = cleaned_data.get('datos_cliente', None)
+		vendedor = cleaned_data.get("vendedor", None)
+		fecha_desde = cleaned_data.get("fecha_desde")
+		fecha_hasta = cleaned_data.get("fecha_hasta")
 		
-		return VLVentaMostrador.objects.obtener_venta_mostrador(
-			fecha_desde, 
-			fecha_hasta, 
-			sucursal=sucursal, 
-			tipo_venta=tipo_venta, 
-			tipo_cliente=tipo_cliente, 
-			tipo_producto=tipo_producto
-		)
+		id_vendedor = vendedor.id_vendedor if vendedor else None
+		
+		return VLComisionVendedor.objects.obtener_datos(id_vendedor, fecha_desde, fecha_hasta)
 	
 	def obtener_contexto_reporte(self, queryset, cleaned_data):
 		"""
-		Aquí se estructura el contexto para el reporte, agrupando los comprobantes,
-		calculando subtotales y totales generales, tal como se requiere para el listado.
+		Aquí se estructura el contexto para el reporte, agrupando, calculando subtotales y totales generales, etc,
+		tal como se requiere para el listado.
 		"""
 		
-		sucursal = cleaned_data.get('sucursal', None)
+		#-- Parámetros del listado.
+		vendedor = cleaned_data.get("vendedor")
 		fecha_desde = cleaned_data.get('fecha_desde')
 		fecha_hasta = cleaned_data.get('fecha_hasta')
-		tipo_venta = cleaned_data.get('tipo_venta', None)
-		tipo_cliente = cleaned_data.get('tipo_cliente', None)
-		tipo_producto = cleaned_data.get('tipo_producto', None)
-		datos_cliente = cleaned_data.get('datos_cliente', None)
 		
-		tipo_venta_dict = {"T": "Todas", "M": "Mostrador", "R": "Reventa"}
-		tipo_cliente_dict = {"T": "Todos", "M": "Minoristas", "R": "Revendedores"}
-		tipo_producto_dict = {"T": "Todos", "P": "Producto", "S": "Servicio"}
-		
-		# param = {
-		# 	"Sucursal": sucursal.nombre_sucursal if sucursal else "Todas",
-		# 	"Desde": fecha_desde.strftime("%d/%m/%Y"),
-		# 	"Hasta": fecha_hasta.strftime("%d/%m/%Y"),
-		# 	"Tipo Venta": tipo_venta_dict.get(tipo_venta, "Desconocido"),
-		# 	"Tipo Cliente": tipo_cliente_dict.get(tipo_cliente, "Desconocido"),
-		# 	"Tipo Producto": tipo_producto_dict.get(tipo_producto, "Desconocido"),
-		# }
-		param_left = {
-			"Sucursal": sucursal.nombre_sucursal if sucursal else "Todas",
+		param = {
+			"Vendedor": vendedor.nombre_vendedor if vendedor else "Todos",
 			"Desde": fecha_desde.strftime("%d/%m/%Y"),
 			"Hasta": fecha_hasta.strftime("%d/%m/%Y"),
 		}
-		param_right = {
-			"Tipo Venta": tipo_venta_dict.get(tipo_venta, "Desconocido"),
-			"Tipo Cliente": tipo_cliente_dict.get(tipo_cliente, "Desconocido"),
-			"Tipo Producto": tipo_producto_dict.get(tipo_producto, "Desconocido"),
-		}
-
 		
-		fecha_hora_reporte = datetime.now().strftime("%d/%m/%Y %H:%M:%S")		
+		fecha_hora_reporte = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
 		
 		dominio = f"http://{self.request.get_host()}"
 		
-		#-- Calcular el total general.
-		total_general = sum(item.total for item in queryset if hasattr(item, "total"))
 		
-		#-- Convertir cada objeto del queryset a un diccionario.
-		objetos_serializables = [model_to_dict(item) for item in queryset]		
+		# **************************************************
+		#-- Estructura para agrupar datos por Vendedor.
+		datos_por_vendedor = {}
+		
+		for obj in queryset:
+			#-- Identificar al Vendedor.
+			vendedor_id = obj.id_vendedor_id
+			nombre_vendedor = obj.nombre_vendedor.strip()  #-- Limpieza en caso de espacios extras.
+			
+			#-- Si el Vendedor aún no está en el diccionario, se inicializa.
+			if vendedor_id not in datos_por_vendedor:
+				datos_por_vendedor[vendedor_id] = {
+					"id_vendedor": vendedor_id,
+					"vendedor": nombre_vendedor,
+					"detalle": [],
+					"total_gravado_vendedor": Decimal(0),
+					"total_comision_vendedor": Decimal(0),
+				}
+			
+			#-- Crear el diccionario con los datos del detalle del Vendedor.
+			detalle_data = {
+				"comprobante": obj.comprobante,
+				"fecha": obj.fecha_comprobante.strftime("%d/%m/%Y"),
+				"cliente": obj.nombre_cliente,
+				"reventa": obj.reventa,
+				"id_producto": obj.id_producto_id,
+				"producto": obj.medida,
+				"marca": obj.nombre_producto_marca,
+				"articulo": obj.nombre_producto_familia,
+				"gravado": obj.gravado,
+				"pje_comision": obj.pje_comision,
+				"monto_comision": round((obj.gravado*obj.pje_comision)/100, 2) if obj.pje_comision != 0 else 0.00
+			}
+			
+			#-- Agregar el detalle a la lista de detalles y acumular el total.
+			datos_por_vendedor[vendedor_id]["detalle"].append(detalle_data)
+			datos_por_vendedor[vendedor_id]["total_gravado_vendedor"] += obj.gravado
+			datos_por_vendedor[vendedor_id]["total_comision_vendedor"] += round((obj.gravado*obj.pje_comision)/100, 2)
+		
+		#-- Convertir a lista los datos para iterar con más facilidad en la plantilla.
+		datos_por_vendedor = list(datos_por_vendedor.values())
+		
+		# **************************************************
 		
 		#-- Se retorna un contexto que será consumido tanto para la vista en pantalla como para la generación del PDF.
 		return {
-			"objetos": objetos_serializables,
-			"total_general": total_general,
-			"parametros_i": param_left,
-			"parametros_d": param_right,
+			"objetos": datos_por_vendedor,
+			"parametros": param,
 			'fecha_hora_reporte': fecha_hora_reporte,
 			'titulo': ConfigViews.report_title,
 			'logo_url': f"{dominio}{static('img/logo_01.png')}",
@@ -190,7 +199,7 @@ class VLVentaMostradorInformeView(InformeFormView):
 		return context
 
 
-def vlventamostrador_vista_pantalla(request):
+def vlcomisionvendedor_vista_pantalla(request):
 	#-- Obtener el token de la querystring.
 	token = request.GET.get("token")
 	
@@ -198,7 +207,6 @@ def vlventamostrador_vista_pantalla(request):
 		return HttpResponse("Token no proporcionado", status=400)
 	
 	#-- Obtener el contexto(datos) previamente guardados en la sesión.
-	# contexto_reporte = request.session.pop(token, None)
 	contexto_reporte = deserializar_datos(request.session.pop(token, None))
 	
 	if not contexto_reporte:
@@ -206,10 +214,10 @@ def vlventamostrador_vista_pantalla(request):
 	
 	#-- Generar el listado a pantalla.
 	return render(request, ConfigViews.reporte_pantalla, contexto_reporte)
-	# return render(request, "informes/reportes/ventamostrador_list.html", contexto_reporte)
 
 
-def vlventamostrador_vista_pdf(request):
+def vlcomisionvendedor_vista_pdf(request):
+	return HttpResponse("Reporte en PDF aún no implementado.", status=400)
 	#-- Obtener el token de la querystring.
 	token = request.GET.get("token")
 	
@@ -224,17 +232,16 @@ def vlventamostrador_vista_pdf(request):
 		return HttpResponse("Contexto no encontrado o expirado", status=400)
 	
 	#-- Preparar la respuesta HTTP.
-	# html_string = render_to_string("informes/reportes/ventamostrador_pdf.html", contexto_reporte, request=request)
 	html_string = render_to_string(ConfigViews.reporte_pdf, contexto_reporte, request=request)
 	pdf_file = HTML(string=html_string, base_url=request.build_absolute_uri()).write_pdf()
-
+	
 	response = HttpResponse(pdf_file, content_type="application/pdf")
 	response["Content-Disposition"] = f'inline; filename="informe_{ConfigViews.model_string}.pdf"'
 	
 	return response
 
 
-def vlventamostrador_vista_excel(request):
+def vlcomisionvendedor_vista_excel(request):
 	token = request.GET.get("token")
 	if not token:
 		return HttpResponse("Token no proporcionado", status=400)
@@ -248,7 +255,7 @@ def vlventamostrador_vista_excel(request):
 	# ---------------------------------------------
 	
 	#-- Instanciar la vista y obtener el queryset.
-	view_instance = VLVentaMostradorInformeView()
+	view_instance = VLComisionVendedorInformeView()
 	view_instance.request = request
 	queryset = view_instance.obtener_queryset(cleaned_data)
 	
@@ -263,12 +270,12 @@ def vlventamostrador_vista_excel(request):
 		excel_data,
 		content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 	)
-	# Inline permite visualizarlo en el navegador si el navegador lo soporta.
+	#-- Inline permite visualizarlo en el navegador si el navegador lo soporta.
 	response["Content-Disposition"] = f'inline; filename="informe_{ConfigViews.model_string}.xlsx"'
 	return response
 
 
-def vlventamostrador_vista_csv(request):
+def vlcomisionvendedor_vista_csv(request):
 	token = request.GET.get("token")
 	if not token:
 		return HttpResponse("Token no proporcionado", status=400)
@@ -281,7 +288,7 @@ def vlventamostrador_vista_csv(request):
 	cleaned_data = data["cleaned_data"]
 	
 	#-- Instanciar la vista para reejecutar la consulta y obtener el queryset.
-	view_instance = VLVentaMostradorInformeView()
+	view_instance = VLComisionVendedorInformeView()
 	view_instance.request = request
 	queryset = view_instance.obtener_queryset(cleaned_data)
 	

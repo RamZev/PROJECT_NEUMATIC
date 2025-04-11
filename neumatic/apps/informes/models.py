@@ -1250,3 +1250,95 @@ class VLVentasResumenIB(models.Model):
 		ordering = ['fecha_comprobante']
 
 
+#-----------------------------------------------------------------------------
+# Resumen de Ventas Ing. Brutos Mercadolibre.
+#-----------------------------------------------------------------------------
+class ComisionVendedorIBManager(models.Manager):
+	
+	def obtener_datos_recibos(self, id_vendedor, fecha_desde, Fecha_hasta):
+		
+		#-- Se crea la consulta.
+		query = """
+			SELECT *
+			FROM VLComisionVendedor
+			WHERE 
+				fecha_comprobante BETWEEN %s AND %s
+		"""
+		
+		#-- Se añaden parámetros.
+		params = [fecha_desde, Fecha_hasta]
+		
+		#-- Filtros adicionales.
+		if id_vendedor:
+			query += " AND id_vendedor_id = %s"
+			params.append(id_vendedor)
+		
+		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
+		return self.raw(query, params)
+
+	def obtener_datos(self, id_vendedor, fecha_desde, Fecha_hasta):
+		
+		#-- Se crea la primera consulta (Recibos).
+		query1 = """
+			SELECT *
+			FROM VLComisionVendedor
+			WHERE 
+				pje_comision <> 0 AND 
+				fecha_comprobante BETWEEN %s AND %s
+		"""
+		
+		#-- Se crea la segunda consulta (Detalle).
+		query2 = """
+			SELECT *
+			FROM VLComisionVendedorDetalle
+			WHERE 
+				pje_comision <> 0 AND 
+				fecha_comprobante BETWEEN %s AND %s
+		"""
+		
+		#-- Se añaden parámetros.
+		params = [fecha_desde, Fecha_hasta]
+		
+		#-- Filtros adicionales.
+		if id_vendedor:
+			query1 += " AND id_vendedor_id = %s"
+			query2 += " AND id_vendedor_id = %s"
+			params.append(id_vendedor)
+		
+		#-- Unir las consultas.
+		query_full = f"{query1} UNION {query2} ORDER BY nombre_vendedor, fecha_comprobante, numero_comprobante"
+		
+		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
+		return self.raw(query_full, params*2)
+
+
+class VLComisionVendedor(models.Model):
+	id_factura = models.IntegerField(primary_key=True)
+	compro = models.CharField(max_length=3)	
+	letra_comprobante = models.CharField(max_length=1)
+	numero_comprobante = models.IntegerField()
+	comprobante = models.CharField(max_length=19)
+	fecha_comprobante = models.DateField()
+	nombre_cliente = models.CharField(max_length=50)
+	reventa = models.CharField(max_length=1)
+	id_producto_id = models.IntegerField()
+	medida = models.CharField(max_length=15)
+	nombre_producto_marca = models.CharField(max_length=50)
+	nombre_producto_familia = models.CharField(max_length=50)
+	gravado = models.DecimalField(max_digits=14, decimal_places=2)
+	pje_comision = models.DecimalField(max_digits=4, decimal_places=2)
+	monto_comision = models.DecimalField(max_digits=14, decimal_places=2)
+	id_vendedor_id = models.IntegerField()
+	nombre_vendedor = models.CharField(max_length=30)	
+	
+	
+	objects = ComisionVendedorIBManager()
+	
+	class Meta:
+		managed = False
+		db_table = 'VLComisionVendedor'
+		verbose_name = ('Comisión Vendedor')
+		verbose_name_plural = ('Comisión Vendedor')
+		ordering = ['nombre_vendedor','fecha_comprobante','numero_comprobante']
+
+
