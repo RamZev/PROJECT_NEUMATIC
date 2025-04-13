@@ -37,7 +37,8 @@ class BuscadorVLVentasResumenIBForm(InformesGenericForm):
 		widget=forms.NumberInput(attrs={**formclasstext})
 	)
 	provincias = forms.ModelMultipleChoiceField(
-		queryset=Provincia.objects.filter(estatus_provincia=True),
+		# queryset=Provincia.objects.filter(estatus_provincia=True),
+		queryset=Provincia.objects.filter(estatus_provincia=True).exclude(id_provincia=13),
 		label="Elegir Provincias distintas a Santa Fe",
 		required=True,
 		widget=forms.SelectMultiple(attrs={'size': 10, **formclassselect}),

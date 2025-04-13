@@ -53,6 +53,7 @@ from apps.informes.views.vlpercepibsubcuentatotales_list_views import *
 from apps.informes.views.vlpercepibsubcuentadetallado_list_views import *
 
 #- Lote 3:
+from apps.informes.views.vlcomisionvendedor_list_views import *
 from apps.informes.views.vlcomisionoperario_list_views import *
 from apps.informes.views.vlpreciodiferente_list_views import *
 from apps.informes.views.vlventasresumenib_list_views import *
@@ -466,6 +467,18 @@ urlpatterns = [
 		 name="vlpercepibsubcuentadetallado_vista_excel"),
 	path("vlpercepibsubcuentadetallado/vista-csv/", vlpercepibsubcuentadetallado_vista_csv, 
 		 name="vlpercepibsubcuentadetallado_vista_csv"),
+	
+	#-- VL Comisión Vendedor.
+	path('vlcomisionvendedor_informe/', VLComisionVendedorInformeView.as_view(), 
+		 name='vlcomisionvendedor_informe_list'),
+	path('vlcomisionvendedor/vista-preliminar/', vlcomisionvendedor_vista_pantalla, 
+		 name="vlcomisionvendedor_vista_pantalla"),
+	path("vlcomisionvendedor/vista-pdf/", vlcomisionvendedor_vista_pdf, 
+		 name="vlcomisionvendedor_vista_pdf"),
+	path("vlcomisionvendedor/vista-excel/", vlcomisionvendedor_vista_excel, 
+		 name="vlcomisionvendedor_vista_excel"),
+	path("vlcomisionvendedor/vista-csv/", vlcomisionvendedor_vista_csv, 
+		 name="vlcomisionvendedor_vista_csv"),
 	
 	#-- VL Comisión Operario.
 	path('vlcomisionoperario_informe/', VLComisionOperarioInformeView.as_view(), 

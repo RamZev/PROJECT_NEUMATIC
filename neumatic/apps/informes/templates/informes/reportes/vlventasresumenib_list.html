@@ -28,54 +28,39 @@
 		
 		<thead>
 			<tr>
-				<th>Comprobante</th>
-				<th>Fecha</th>
-				<th>Cliente</th>
-				<th>Nombre</th>
-				<th>Código</th>
-				<th>Detalle</th>
-				<th class="numeric">Cantidad</th>
-				<th class="numeric">Facturado</th>
-				<th class="numeric">Lista</th>
-				<th class="numeric">Diferencia</th>
-				<th class="numeric">Bonif.</th>
+				<th>Provincia</th>
+				<th class="numeric">Por Menor</th>
+				<th class="numeric">Reparación</th>
+				<th class="numeric">Por Mayor</th>
+				<th class="numeric">Total Gravado</th>
+				<th class="numeric">I.V.A.</th>
+				<th class="numeric">TOTAL</th>
 			</tr>
 		</thead>
 		
 		<tbody>
 			
 			{% for obj in objetos %}
-				<!-- Fila con los datos del Vendedor -->
 				<tr>
-					<td colspan="11" style="padding-top: 5px;">
-						<strong>Vendedor: [{{ obj.id_vendedor }}] {{ obj.vendedor }}</strong>
-					</td>
-				</tr>
-				
-				<!-- Filas con el detalle del Vendedor -->
-				{% for det in obj.detalle %}
-					<tr>
-						<td>{{ det.comprobante }}</td>
-						<td>{{ det.fecha }}</td>
-						<td>{{ det.id_cliente_id }}</td>
-						<td>{{ det.nombre_cliente }}</td>
-						<td>{{ det.id_producto_id }}</td>
-						<td>{{ det.nombre_producto }}</td>
-						<td class="numeric">{{ det.cantidad|formato_es_ar }}</td>
-						<td class="numeric">{{ det.precio|formato_es_ar }}</td>
-						<td class="numeric">{{ det.precio_lista|formato_es_ar }}</td>
-						<td class="numeric">{{ det.diferencia|formato_es_ar }}</td>
-						{% if det.descuento != 0 %}
-							<td class="numeric">{{ det.descuento|formato_es_ar }}%</td>
-						{% else %}
-							<td></td>
-						{% endif %}
-					</tr>
-				{% endfor %}
-				<tr>
-					<td colspan="11"><hr></td>
+					<td>{{ obj.provincia }}</td>
+					<td class="numeric">{{ obj.por_menor|formato_es_ar }}</td>
+					<td class="numeric">{{ obj.reparacion|formato_es_ar }}</td>
+					<td class="numeric">{{ obj.por_mayor|formato_es_ar }}</td>
+					<td class="numeric">{{ obj.total_gravado|formato_es_ar }}</td>
+					<td class="numeric">{{ obj.iva|formato_es_ar }}</td>
+					<td class="numeric">{{ obj.total|formato_es_ar }}</td>
 				</tr>
 			{% endfor %}
+			<!-- Totales -->
+			<tr style="border-top: 1px solid #000; border-bottom: 1px solid #000">
+				<td style="text-align: right;"><strong>Totales:</strong></td>
+				<td class="numeric"><strong>{{ tg_pmenor|formato_es_ar }}</strong></td>
+				<td class="numeric"><strong>{{ tg_reparacion|formato_es_ar }}</strong></td>
+				<td class="numeric"><strong>{{ tg_pmayor|formato_es_ar }}</strong></td>
+				<td class="numeric"><strong>{{ tg_gravado|formato_es_ar }}</strong></td>
+				<td class="numeric"><strong>{{ tg_iva|formato_es_ar }}</strong></td>
+				<td class="numeric"><strong>{{ tg_total|formato_es_ar }}</strong></td>
+			</tr>			
 			
 		</tbody>
 	</table>
