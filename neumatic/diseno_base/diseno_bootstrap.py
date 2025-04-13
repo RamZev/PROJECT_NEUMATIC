@@ -1,6 +1,6 @@
 # Diseños Base Bootstrap
 formclasstext = {'class': 'form-control form-control-sm border border-primary mb-2'}
-formclassnumb = {'class': 'form-control form-control-sm border border-primary mb-2 text-end'}
+formclassnumb = {'class': 'form-control form-control-sm border border-primary my-0 text-end fw-bold'}
 formclassselect = {'class': 'form-select form-select-sm border border-primary mb-2'}
 formclassdate = {'class': 'form-control form-control-sm border border-primary datetimepicker mb-2'}
 formclasscheck = {'class': 'form-check-input border border-primary mb-2'}

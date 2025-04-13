@@ -19,3 +19,4 @@ class MaestrosConfig(AppConfig):
         import apps.maestros.models.vendedor_models
         import apps.maestros.models.descuento_vendedor_models
         import apps.maestros.signals.signals
+        import apps.maestros.models.vendedor_comision_models

@@ -69,35 +69,7 @@
         color: #555;
         cursor: not-allowed;
     }
-
-    /* Oculta inputs pero mantiene funcionalidad (versión robusta) */
-    tfoot input[type="number"],
-    tfoot input[type="text"] {
-        position: absolute !important;
-        opacity: 0 !important;
-        width: 1px !important;  /* Cambiado de 0 a 1px para compatibilidad */
-        height: 1px !important; /* Cambiado de 0 a 1px para compatibilidad */
-        margin: -1px !important;
-        padding: 0 !important;
-        border: 0 !important;
-        overflow: hidden !important;
-        clip: rect(0, 0, 0, 0) !important; /* Soporte para navegadores antiguos */
-        pointer-events: none !important; /* Opcional: evita interacciones accidentales */
-    }
-
-    /* Estilo para números formateados (versión mejorada) */
-    .formatted-number {
-        display: block; /* Cambiado de inline-block para mejor alineación */
-        width: 100%;
-        padding: 0.375rem 0.15rem; /* Tamaño estándar de inputs Bootstrap */
-        text-align: right;
-        background-color: #e7f5ff; /* Azul claro similar a acordeones */
-        border: 1px solid #0d6efd; /* Borde azul Bootstrap primary */
-        border-radius: 0.25rem; /* Esquinas redondeadas */
-        font-family: monospace; /* Alineación perfecta de dígitos */
-        margin: 2px 0; /* Pequeño margen para separación visual */
-        font-size: 1.1rem;
-    }
+       
     
 {% endblock style %}
 
@@ -377,12 +349,25 @@
                         </div>
 
                         <div class="container my-3">
-                            <div class="d-flex justify-content-end align-items-center">
-                                <!-- Nuevo botón para agregar serial -->
-                                <button type="button" class="btn btn-outline-primary btn-sm me-2" id="btnAgregarSerial" data-bs-toggle="modal" data-bs-target="#serialModal">
-                                    Agregar Seriales
-                                    <i class="bi bi-upc-scan"></i>
-                                </button>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <!-- Botones a la izquierda -->
+                                <div>
+                                    <button type="submit" class="btn btn-outline-success btn-sm">
+                                        {% if is_edit %}Actualizar{% else %}Guardar{% endif %}
+                                        <i class="bi bi-floppy"></i>
+                                    </button>
+                                    
+
+                                    <a href="{% url 'factura_list' %}" class="btn btn-outline-secondary btn-sm me-2">
+                                        Cancelar
+                                        <i class="bi bi-x-circle"></i>
+                                    </a>
+                                </div>
+                                <!-- Botón a la derecha -->
+                                {% comment %} <button type="button" class="btn btn-outline-primary btn-sm me-2" data-bs-toggle="modal" data-bs-target="#detalleModal" id="btnAgregarDetalle">
+                                    Agregar Detalle
+                                    <i class="bi bi-file-earmark-plus"></i>
+                                </button> {% endcomment %}
 
                                 <button type="button" class="btn btn-outline-primary btn-sm me-2" id="btnAgregarDetalle">
                                     Agregar Detalle
@@ -394,7 +379,7 @@
                         <div class="accordion-item">
                             <h2 class="accordion-header">
                                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseTwo" aria-expanded="false" aria-controls="panelsStayOpen-collapseTwo">
-                                    Detalle del Comprobante de Venta
+                                    Detalle de Venta
                                 </button>
                             </h2>
                             
@@ -453,142 +438,58 @@
                                                 {% endfor %}
 
                                             </tbody>
-                                            
+
                                             <tfoot>
                                                 <tr>
-                                                    <td colspan="100%">
-                                                        <!-- Fila de Totales - Mismo estilo que el encabezado -->
-                                                        <div class="row align-items-center g-2 py-2" style="background-color: #f8f9fa; border-top: 2px solid #dee2e6;">
-                                                            <!-- Botones (3 columnas) -->
-                                                            <div class="col-md-2">
-                                                                <div class="d-flex flex-column gap-2">
-                                                                    <button type="submit" class="btn btn-outline-success btn-sm">
-                                                                        {% if is_edit %}Actualizar{% else %}Guardar{% endif %}
-                                                                        <i class="bi bi-floppy"></i>
-                                                                    </button>
-                                                                    <a href="{% url 'factura_list' %}" class="btn btn-outline-secondary btn-sm">
-                                                                        Cancelar
-                                                                        <i class="bi bi-x-circle"></i>
-                                                                    </a>
-                                                                </div>
-                                                            </div>
-                                                            
-                                                            <!-- Gravado (2 columnas) -->
-                                                            <div class="col-md-2">
-                                                                <div class="text-center">
-                                                                    <label class="form-label mb-0 text-primary">
-                                                                        <strong>Gravado</strong>
-                                                                    </label>
-                                                                    <div>
-                                                                        {{ form.gravado }}
-                                                                        <span class="formatted-number">{{ form.gravado.value|default:"0.00" }}</span>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            
-                                                            <!-- Exento (2 columnas) -->
-                                                            <div class="col-md-2">
-                                                                <div class="text-center">
-                                                                    <label class="form-label mb-0 text-primary">
-                                                                        <strong>Exento</strong>
-                                                                    </label>
-                                                                    <div>
-                                                                        {{ form.exento }}
-                                                                        <span class="formatted-number">{{ form.exento.value|default:"0.00" }}</span>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            
-                                                            <!-- IVA (2 columnas) -->
-                                                            <div class="col-md-2">
-                                                                <div class="text-center">
-                                                                    <label class="form-label mb-0 text-primary">
-                                                                        <strong>I.V.A.</strong>
-                                                                    </label>
-                                                                    <div>
-                                                                        {{ form.iva }}
-                                                                        <span class="formatted-number">{{ form.iva.value|default:"0.00" }}</span>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            
-                                                            <!-- IIBB (2 columnas) -->
-                                                            <div class="col-md-2">
-                                                                <div class="text-center">
-                                                                    <label class="form-label mb-0 text-primary">
-                                                                        <strong>IIBB PERCEPCION</strong>
-                                                                    </label>
-                                                                    <div>
-                                                                        {{ form.percep_ib }}
-                                                                        <span class="formatted-number">{{ form.percep_ib.value|default:"0.00" }}</span>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            
-                                                            <!-- Total (3 columnas) -->
-                                                            <div class="col-md-2">
-                                                                <div class="text-center">
-                                                                    <label class="form-label mb-0 text-primary">
-                                                                        <strong>TOTAL</strong>
-                                                                    </label>
-                                                                    <div>
-                                                                        {{ form.total }}
-                                                                        <span class="formatted-number">{{ form.total.value|default:"0.00" }}</span>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
+                                                    <td colspan="6" class="text-end"><strong>Gravado:</strong></td>
+                                                    <td>
+                                                        {{ form.gravado }}
                                                     </td>
                                                 </tr>
+                                                
+                                                <tr>
+                                                    <td colspan="6" class="text-end"><strong>Exento:</strong></td>
+                                                    <td>
+                                                        {{ form.exento }}
+                                                    </td>
+                                                </tr>
+                                                
+                                                <tr>
+                                                    <td colspan="6" class="text-end"><strong>I.V.A.:</strong></td>
+                                                    <td>
+                                                        {{ form.iva }}
+                                                    </td>
+                                                </tr>
+
+                                                <tr>
+                                                    <td colspan="6" class="text-end"><strong>IIBB PERCEPCION:</strong></td>
+                                                    <td>
+                                                        {{ form.percep_ib }}
+                                                    </td>
+                                                </tr>
+
+                                                <tr>
+                                                    <td colspan="6" class="text-end"><strong>T O T A L:</strong></td>
+                                                    <td>
+                                                        {{ form.total }}
+                                                    </td>
+                                                </tr>
+                                                
+                                                
                                             </tfoot>
                                             
                                         </table>
+
+                                        <td colspan="6" class="text-end"><strong>Gravado:</strong></td>
+                                            <td>
+                                                {{ form.gravado }}
+                                            </td>
+                                        </td>
                                     </div>
                                     
                                 </div>
                             </div>
                         </div>
-                        
-                        <!-- Acordeon de Seriales (y observaciones por confirmar)-->
-                        <div class="accordion-item">
-                            <h2 class="accordion-header">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseThree" aria-expanded="false" aria-controls="panelsStayOpen-collapseThree">
-                                    Seriales de Productos
-                                </button>
-                            </h2>
-                            <div id="panelsStayOpen-collapseThree" class="accordion-collapse collapse">
-                                <div class="accordion-body">
-                                    <div class="table-responsive tbl-fixed" style="max-height: 300px;">
-                                        {{ formset_serial.management_form }}
-                                        <table class="table table-striped table-hover">
-                                            <thead class="table-primary">
-                                                <tr>
-                                                    <th>Serial</th>
-                                                    <th>Acciones</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody id="serialTableBody">
-                                                {% for formser in formset_serial %}
-                                                <tr>
-                                                    <td>
-                                                        {{ formser.id_serial_factura }}
-                                                        {{ formser.id_factura }}
-                                                        {{ formser.producto_serial }}
-                                                    </td>
-                                                    <td>
-                                                        <button type="button" class="btn btn-danger btn-sm btn-delete-serial">
-                                                            <i class="bi bi-trash"></i>
-                                                        </button>
-                                                    </td>
-                                                </tr>
-                                                {% endfor %}
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
                     </div>
 
                     <!-- Card del Detalle de Factura - Inicio -->
@@ -774,103 +675,16 @@
         </div>
     </div>
 
-    <!-- Modal para seriales -->
-    <div class="modal fade" id="serialModal" tabindex="-1" aria-labelledby="serialModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header text-dark bg-primary bg-opacity-25 py-2">
-                    <h5 class="modal-title fs-6" id="serialModalLabel">Ingresar Serial</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="serialForm">
-                        {% csrf_token %}
-                        <div class="mb-3">
-                            <label for="serialInput" class="form-label">Número de Serial</label>
-                            <input type="text" class="form-control" id="serialInput" required>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-primary btn-sm" id="btnGuardarSerial">Insertar</button>
-                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancelar</button>
-                </div>
-            </div>
-        </div>
-    </div>
 {% endblock modals %}
 
 {% block script %}
     {% comment %} SCRIPTS JS Start {% endcomment %}
     <script>
         document.addEventListener('DOMContentLoaded', function () {
+            ////////////*
             const formsetContainer = document.getElementById('formset-container');
 
-            function actualizarVisualizacionTotales() {
-                const campos = ['id_gravado', 'id_exento', 'id_iva', 'id_percep_ib', 'id_total'];
-                
-                //alert("🔍 INICIANDO VERIFICACIÓN DE FORMATEO 🔍");
-                
-                campos.forEach(id => {
-                    // Verificar si el input existe
-                    const input = document.getElementById(id);
-                    if (!input) {
-                        //alert(`❌ ERROR: No se encontró el input con ID: ${id}`);
-                        return;
-                    }
-            
-                    // Verificar si el span de visualización existe
-                    const span = input.nextElementSibling;
-                    if (!span || !span.classList.contains('formatted-number')) {
-                        //alert(`❌ ERROR: No se encontró el span de visualización para: ${id}`);
-                        return;
-                    }
-            
-                    // Alerta 1: Mostrar valor crudo del input
-                    // alert(`📥 INPUT ${id}:\nValor original: ${input.value}\nTipo de dato: ${typeof input.value}`);
-                    
-                    // Alerta 2: Mostrar valor después de parsear
-                    const valorParseado = parseNumber(input.value);
-                    // alert(`🔢 ${id} PARSEADO:\nValor: ${valorParseado}\nTipo: ${typeof valorParseado}`);
-                    
-                    // Alerta 3: Mostrar valor después de formatear
-                    const valorFormateado = formatNumber(input.value);
-                    // alert(`🎨 ${id} FORMATEADO:\nResultado: ${valorFormateado}`);
-                    
-                    // Aplicar el valor al span
-                    span.textContent = valorFormateado;
-                    // alert(`✅ ${id} ACTUALIZADO:\nSe mostró: ${span.textContent}`);
-                });
-                
-                // alert("🏁 VERIFICACIÓN COMPLETADA");
-            }
-            
-            // Función para parsear valores (CRÍTICA)
-            function parseNumber(value) {
-                // Si es número, retornar directamente
-                if (typeof value === 'number') return value;
-                
-                // Si es string con formato "184.802,20"
-                if (typeof value === 'string' && value.includes('.') && value.includes(',')) {
-                    return parseFloat(
-                        value.replace(/\./g, '')  // Quita puntos de miles
-                             .replace(',', '.')   // Convierte coma decimal a punto
-                    );
-                }
-                
-                // Para strings numéricos simples "184802.20"
-                return parseFloat(value) || 0;
-            }
-            
-            // Función para formatear visualización
-            function formatNumber(value) {
-                const num = parseNumber(value);
-                return num.toLocaleString('es-AR', {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2
-                });
-            }
-            
+            ////////////
             function actualizarTotalFactura() {
                 let totalGravado = 0;
                 let totalExento = 0;
@@ -878,28 +692,53 @@
                 let totalPercepIb = 0;
                 let totalFactura = 0;
                 
-                // 1. Calcular con valores correctamente parseados
-                document.querySelectorAll('.detalle-form tbody tr:not([style*="display: none"])').forEach(row => {
-                    const total = parseNumber(row.querySelector('[name*="-total"]').value);
-                    const gravado = parseNumber(row.querySelector('[name*="-gravado"]').value);
-                    const iva = parseNumber(row.querySelector('[name*="-iva"]').value);
+                let hayFilasVisibles = false;
+            
+                // Recorre cada fila dentro de la tabla del detalle
+                const filas = document.querySelectorAll('.detalle-form tbody tr');
+                
+                filas.forEach(row => {
+                    // Solo considerar filas visibles (no eliminadas)
                     
-                    totalFactura += total;
-                    totalGravado += gravado;
-                    totalIva += iva;
+                    if (row.style.display !== 'none') {
+                        const gravadoField = row.querySelector('input[name^="detallefactura_set"][name$="-gravado"]');
+                        const ivaField = row.querySelector('input[name^="detallefactura_set"][name$="-iva"]');
+                        const totalField = row.querySelector('input[name^="detallefactura_set"][name$="-total"]');
+
+                        
+                        if (totalField && totalField.value) {  
+                            
+                            totalGravado += parseFloat(gravadoField.value) || 0;
+                            totalIva += parseFloat(ivaField.value) || 0;
+                            totalFactura += parseFloat(totalField.value) || 0;
+                            hayFilasVisibles = true;
+                        }
+                    }
                 });
             
-                // 2. Guardar valores numéricos puros
-                document.getElementById('id_gravado').value = totalGravado.toFixed(2);
-                document.getElementById('id_exento').value = totalExento.toFixed(2);
-                document.getElementById('id_iva').value = totalIva.toFixed(2);
-                document.getElementById('id_percep_ib').value = totalPercepIb.toFixed(2);
-                document.getElementById('id_total').value = totalFactura.toFixed(2);
-            
-                // 3. Formatear solo para visualización
-                actualizarVisualizacionTotales();
+
+                // Actualizar el campo total general
+                //const totalFacturaInput = document.getElementById('total-factura');
+                const totalGravadoInput = document.getElementById('id_gravado');
+                const totalExentoInput = document.getElementById('id_exento');
+                const totalIvaInput = document.getElementById('id_iva');
+                const totalPercepIbInput = document.getElementById('id_percep_ib');
+                const totalFacturaInput = document.getElementById('id_total');
+                
+                // Si no hay filas visibles o todas fueron eliminadas
+                if (!hayFilasVisibles && filas.length > 0) {
+                    totalGravado = 0;
+                    totalExento = 0;
+                    totalIva = 0;
+                    totalPercepIb = 0;
+                    totalFactura = 0;
+                }
+                
+                totalGravadoInput.value = totalGravado.toFixed(2);
+                totalIvaInput.value = totalIva.toFixed(2);
+                totalFacturaInput.value = totalFactura.toFixed(2);
             }
-            //
+            
     
             // Recalcular total general dinámicamente
             formsetContainer.addEventListener('input', function (event) {
@@ -970,113 +809,90 @@
             const buscarProductoForm = document.getElementById('detalleForm');
             const tablaResultados = document.querySelector('#tabla-resultados tbody');
             const detalleModal = document.getElementById('detalleModal');
+            //const formsetContainer = document.getElementById('formset-container');
             const insertarBtn = document.getElementById('agregarDetalle');
+            
+            // Almacenar los productos seleccionados temporalmente
+            let productosSeleccionados = [];
+
+            // Clase reutilizable
+            const formControlClass = 'form-control form-control-sm border border-primary small-font';
+            
+            // Evento para seleccionar productos
+            tablaResultados.addEventListener('change', function(event) {
+                if (event.target.matches('.seleccionar-producto')) {
+                    const isChecked = event.target.checked;
+                    const row = event.target.closest('tr');
+                    const idProducto = event.target.getAttribute('data-id'); // Capturar ID del producto
+                    //const medidaProducto = row.querySelector('td:nth-child(2)').textContent.trim();
+                    //const nombreProducto = row.querySelector('td:nth-child(4)').textContent.trim();
+                    const medidaProducto = event.target.getAttribute("data-medida"); // Obtener la medida del producto
+                    const nombreProducto = event.target.getAttribute("data-nombre"); // Obtener el nombre de
+                    //const precioProducto = parseFloat(row.querySelector('td:nth-child(5)').textContent.trim());
+                    const precioProducto = parseFloat(event.target.getAttribute("data-precio"));
+                    const descuentoVendedor = parseFloat(event.target.getAttribute("data-descuento-vendedor"));
+                    
+                    //const alicuotaIva = parseFloat(event.target.getAttribute("data-alicuota-iva"));
+                    const alicuotaIva = parseFloat(event.target.getAttribute("data-alicuota-iva")).toFixed(2);
+
+                    const producto = {
+                        id: idProducto,
+                        medida: medidaProducto,
+                        nombre: nombreProducto,
+                        precio: precioProducto,
+                        descuento_vendedor: descuentoVendedor,
+                        alicuota_iva: alicuotaIva   
+                    };
+
+                    if (isChecked) {
+                        productosSeleccionados.push(producto);
+                    } else {
+                        productosSeleccionados = productosSeleccionados.filter(p => p.idProducto !== idProducto);
+                    }
+                }
+            });
+            
             const cambia_precio_descripcion = {{ cambia_precio_descripcion|yesno:"true,false" }};
             //alert(cambia_precio_descripcion);
 
             // inicio del bloque
-            // Función para recalcular una fila específica
-            const recalcularFilaCompleta = (row) => {
-                const cantidad = parseFloat(row.querySelector('[name*="-cantidad"]').value) || 0;
-                const precio = parseFloat(row.querySelector('[name$="-precio"]').value) || 0;
-                const descuento = parseFloat(row.querySelector('[name*="-descuento"]').value) || 0;
-                const alicIva = parseFloat(row.querySelector('[name*="-alic_iva"]').value) || 0;
-                
-                // Calcular total con descuento porcentual
-                const subtotal = cantidad * precio;
-                const totalConDescuento = subtotal * (1 - (descuento/100));
-                
-                // Actualizar campos
-                row.querySelector('[name*="-total"]').value = totalConDescuento.toFixed(2);
-                
-                // Calcular impuestos
-                const gravado = totalConDescuento / (1 + (alicIva / 100));
-                row.querySelector('[name*="-gravado"]').value = gravado.toFixed(2);
-                row.querySelector('[name*="-iva"]').value = (totalConDescuento - gravado).toFixed(2);
-                
-                return totalConDescuento;
-            };
-
-            // Listener principal para cambios en los inputs
-            formsetContainer.addEventListener('input', function(event) {
-                const target = event.target;
-                const row = target.closest('tr');
-                
-                if (!row) return;
-                
-                // Validaciones específicas
-                if (target.matches('[name*="-precio"]') && parseFloat(target.value) <= 0) {
-                    alert("El precio debe ser mayor a 0.");
-                    target.value = "";
-                    target.focus();
-                    return;
-                }
-                
-                if (target.matches('[name*="-descuento"]')) {
-                    const descuento = parseFloat(target.value);
-                    if (descuento < 0 || descuento > 99) {
-                        alert("El descuento debe estar entre 0 y 99.");
-                        target.value = "0";
-                        target.focus();
-                        return;
-                    }
-                }
-                
-                // Recalcular solo si es un campo relevante
-                if (target.matches('[name*="-cantidad"], [name*="-precio"], [name*="-descuento"]')) {
-                    recalcularFilaCompleta(row);
-                    actualizarTotalFactura();
-                }
-            });
-
-            // Manejar el botón de insertar detalle de factura (versión optimizada)
+            // Manejar el botón de insertar detalle de factura
             insertarBtn.addEventListener('click', function() {
-                // Obtener todos los checkboxes marcados
-                const checkboxes = document.querySelectorAll('#tabla-resultados .seleccionar-producto:checked');
-
-                if (checkboxes.length === 0) {
-                    alert('Por favor seleccione al menos un producto');
-                    return;
-                }
-                
-                // Crear array temporal para los productos seleccionados
-                const productosSeleccionados = [];
-                
-                checkboxes.forEach(checkbox => {
-                    productosSeleccionados.push({
-                        id: checkbox.dataset.id,
-                        medida: checkbox.dataset.medida,
-                        nombre: checkbox.dataset.nombre,
-                        precio: parseFloat(checkbox.dataset.precio),
-                        descuento_vendedor: parseFloat(checkbox.dataset.descuentoVendedor),
-                        alicuota_iva: parseFloat(checkbox.dataset.alicuotaIva).toFixed(2)
-                    });
-                });
-                
-                // Insertar productos en la tabla detalle factura
                 productosSeleccionados.forEach(producto => {
                     const currentIndex = formsetContainer.querySelectorAll('.detalle-form tbody tr').length;
 
-                    // Cálculos iniciales
-                    const precioListaOriginal = parseFloat(producto.precio); // Precio SIN descuento
-                    //alert(`Precio Lista Original: ${precioListaOriginal}`)
+                    // 1. CÁLCULOS ORIGINALES (MANTENIDOS SIN MODIFICAR)
+                    const precioLista = parseFloat(producto.precio);
                     const descVendedor = parseFloat(producto.descuento_vendedor);
-                    const precioConDescuento = precioListaOriginal * (1 - (descVendedor / 100));
-
-                    const precioFinal = parseFloat(precioConDescuento.toFixed(2));
-                    
+                    const precioConDescuento = precioLista * (1 - (descVendedor / 100));
                     const cantidad = 1.00;
                     const montoTotal = precioConDescuento * cantidad;
+                    alert(precioConDescuento);
+
+                    // 2. CONFIGURACIÓN ORIGINAL DEL CAMPO NOMBRE (MANTENIDO)
+                    const nombreInputAttributes = cambia_precio_descripcion
+                        ? 'required' 
+                        : 'readonly';
+
+                    // 3. FORMATEO ORIGINAL DEL PRECIO (MANTENIDO)
+                    const precioFormateado = new Intl.NumberFormat("es-ES", {
+                        style: "decimal",
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                    }).format(producto.precio);
+
+                    // 4. CÁLCULOS ORIGINALES DE IMPUESTOS (MANTENIDOS)
                     const alicuotaIva = parseFloat(producto.alicuota_iva || 0);
                     const gravado = (montoTotal / (1 + (alicuotaIva / 100))).toFixed(2);
                     const iva = (montoTotal - gravado).toFixed(2);
-                    const nombreInputAttributes = cambia_precio_descripcion ? 'required' : 'readonly';
-                    const valorPorDefecto = document.getElementById('id_tipo_venta')?.value || "M";
 
-                    // Clase reutilizable
-                    const formControlClass = 'form-control form-control-sm border border-primary small-font';
+                    // 5. VALOR POR DEFECTO ORIGINAL (MANTENIDO)
+                    const valorPorDefecto = document.getElementById('id_tipo_venta') 
+                        ? document.getElementById('id_tipo_venta').value 
+                        : "M";
 
-                    // Crear y insertar la fila
+                    // 6. Creación del HTML de la fila
+                    alert(montoTotal);
                     const newFormHTML = `
                     <tr data-form-index="${currentIndex}" class="small-font">
 
@@ -1088,10 +904,7 @@
                         <input type="hidden" name="detallefactura_set-${currentIndex}-id_producto" 
                             id="id_detallefactura_set-${currentIndex}-id_producto" value="${producto.id}">
                         <input type="hidden" name="detallefactura_set-${currentIndex}-precio_lista" 
-                            id="id_detallefactura_set-${currentIndex}-precio_lista" 
-                            value="${precioListaOriginal}"
-                            data-original="${precioListaOriginal}" 
-                            oninput="this.value=this.dataset.original">
+                            id="id_detallefactura_set-${currentIndex}-precio_lista" value="${producto.precio}">
                         <input type="hidden" name="detallefactura_set-${currentIndex}-desc_vendedor" 
                             id="id_detallefactura_set-${currentIndex}-desc_vendedor" value="${producto.descuento_vendedor}">
                         <td>${producto.medida}</td> <!-- Mostrar medida -->
@@ -1113,7 +926,7 @@
                         </td>
                         <td>
                             <input type="number" name="detallefactura_set-${currentIndex}-precio" 
-                                class="${formControlClass} text-end" value="${precioFinal}" ${nombreInputAttributes}
+                                class="${formControlClass} text-end" value="${precioConDescuento}" ${nombreInputAttributes}
                                 min="0" step="0.1">
                         </td>
                         <td>
@@ -1144,90 +957,100 @@
                         </td>
                     </tr>
                     `;
-                    
+                    ////****
+
+                    // Agregar la nueva fila al cuerpo de la tabla
                     formsetContainer.querySelector('.detalle-form tbody').insertAdjacentHTML('beforeend', newFormHTML);
                     
-                    // Obtener la fila recién insertada
-                    const newRow = formsetContainer.querySelector('.detalle-form tbody tr:last-child');
+                    // Verificación inmediata después de la inserción
+                    const nuevoInputTotal = formsetContainer.querySelector(`input[name="detallefactura_set-${currentIndex}-total"]`);
 
-                    // Bloqueo mediante JavaScript de precio_lista
-                    const precioListaInput = newRow.querySelector('[name*="-precio_lista"]');
-                    precioListaInput._originalValue = precioListaOriginal;  // Backup interno
-                    Object.defineProperty(precioListaInput, 'value', {
-                        get() { return this._originalValue; },
-                        set(v) { 
-                            console.warn('Bloqueado: precio_lista no debe modificarse');
-                            return this._originalValue; 
-                        }
-                    });
-                    
-                    // Establecer valores directamente
-                    newRow.querySelector('[name*="-precio"]').value = precioConDescuento.toFixed(2);
-                    newRow.querySelector('[name*="-total"]').value = montoTotal.toFixed(2);
+                    alert(nuevoInputTotal.value);
 
-                    // alert(`Precio de Lista post inserción: ${newRow.querySelector('[name*="-precio_lista"]').value}`);
                     
-                    // Configurar el precio real como dato en el input
-                    newRow.querySelector('[name*="-precio"]').dataset.precioReal = precioConDescuento;
-                    
-                    // Actualizar totales generales
+                    // Llamar a actualizarTotalFactura() después de agregar la fila
                     actualizarTotalFactura();
                     
-                    // Actualizar el contador de formsets
-                    document.querySelector('[name$="TOTAL_FORMS"]').value = 
-                        formsetContainer.querySelectorAll('.detalle-form tbody tr').length;
+                    // //
+                    // Vincular eventos de cálculo a los nuevos campos
+                    const newRow = formsetContainer.querySelector('.detalle-form tbody tr:last-child');
+                    const cantidadInput = newRow.querySelector('[name*="-cantidad"]');
+                    const precioInput = newRow.querySelector('[name*="-precio"]');
+                    const descuentoInput = newRow.querySelector('[name*="-descuento"]');
+                    const totalInput = newRow.querySelector('[name*="-total"]');
+
+                    
+                    const recalcularTotalFila = () => {
+                        ////////////
+                        alert("Aqui es el rollo")
+                        
+                        const cantidad = parseFloat(cantidadInput.value) || 0;
+                        const precioMostrado = parseFloat(precioInput.value) || 0;
+                        const descuento = parseFloat(descuentoInput.value) || 0;
+
+                        // Validación básica
+                        if (precioMostrado <= 0) {
+                            alert("El precio debe ser mayor a 0.");
+                            precioInput.value = "";
+                            precioInput.focus();
+                            return; // Detiene la ejecución si hay error
+                        }
+
+                        if (descuento < 0 || descuento > 99) {
+                            alert("El descuento debe estar entre 0 y 99.");
+                            descuentoInput.value = "0";
+                            descuentoInput.focus();
+                            return;
+                        }
+
+                        // Obtener el precio real (sin descuentos previos)
+                        const precioReal = precioInput.dataset.precioReal || precioMostrado;
+                        
+                        // Guardar el precio real si no está almacenado
+                        if (!precioInput.dataset.precioReal) {
+                            precioInput.dataset.precioReal = precioReal;
+                        }
+
+                        // Calcular precio con descuento
+                        const precioConDescuento = precioReal - (precioReal * (descuento / 100));
+                        
+                        // Calcular el total (sin modificar el precio mostrado)
+                        const total = cantidad * precioConDescuento;
+                        totalInput.value = total.toFixed(2);
+
+                        // Opcional: Mostrar el precio con descuento como tooltip
+                        precioInput.title = `Precio base: ${precioReal} | Con ${descuento}% desc.: ${precioConDescuento.toFixed(2)}`;
+                        ////////////
+                        
+                    };
+
+                    cantidadInput.addEventListener('input', recalcularTotalFila);
+                    precioInput.addEventListener('input', recalcularTotalFila);
+                    descuentoInput.addEventListener('input', recalcularTotalFila);
+                    
+                    // Inicializar el cálculo al agregar la fila
+                    recalcularTotalFila();
+
+                    // Actualizar el valor de TOTAL_FORMS
+                    const totalFormsInput = document.querySelector('[name$="TOTAL_FORMS"]');
+                    totalFormsInput.value = formsetContainer.querySelectorAll('.detalle-form tbody tr').length;
+
                 });
-                
-                // Cerrar modal y limpiar selecciones
-                checkboxes.forEach(checkbox => checkbox.checked = false);
+
+                // Aquí es
+                // alert("Aqui es!");
+                // actualizarTotalFactura();
+
+                // Limpiar productos seleccionados y cerrar la ventana modal
+                productosSeleccionados = [];
                 detalleModal.querySelector('.btn-close').click();
-
-                // Función para manejar acordeones
-                const manageAccordions = () => {
-                    const accordionEncabezado = document.getElementById('panelsStayOpen-collapseOne');
-                    const accordionDetalle = document.getElementById('panelsStayOpen-collapseTwo');
-                    const btnEncabezado = document.querySelector('[data-bs-target="#panelsStayOpen-collapseOne"]');
-                    const btnDetalle = document.querySelector('[data-bs-target="#panelsStayOpen-collapseTwo"]');
-
-                    if (!accordionEncabezado || !accordionDetalle) return;
-
-                    // 1. Determinar estados iniciales
-                    const encabezadoAbierto = accordionEncabezado.classList.contains('show');
-                    const detalleAbierto = accordionDetalle.classList.contains('show');
-
-                    // 2. Si ambos están cerrados, solo abrir el detalle
-                    if (!encabezadoAbierto && !detalleAbierto) {
-                        new bootstrap.Collapse(accordionDetalle, { show: true });
-                        btnDetalle.classList.remove('collapsed');
-                        return;
-                    }
-
-                    // 3. Si el encabezado está abierto, cerrarlo primero
-                    if (encabezadoAbierto) {
-                        const collapseEncabezado = new bootstrap.Collapse(accordionEncabezado, { hide: true });
-                        
-                        accordionEncabezado.addEventListener('hidden.bs.collapse', () => {
-                            new bootstrap.Collapse(accordionDetalle, { show: true });
-                            btnDetalle.classList.remove('collapsed');
-                        }, { once: true });
-                        
-                        btnEncabezado.classList.add('collapsed');
-                    }
-                };
-
-                // Ejecutar con pequeño retraso
-                setTimeout(manageAccordions, 10);
-
-                //
             });
 
-            // Función para actualizar totales generales (optimizada) 
-            // La función fue eliminada de aqui por estar duplicada
-
-            // Mantener el evento de clic derecho para análisis de precios
+            // ✅ Evento que detecta clic derecho en inputs de precio
             formsetContainer.addEventListener('contextmenu', function(event) {
                 if (event.target.matches('input[name*="-precio"]')) {
                     event.preventDefault();
+                    
                     const row = event.target.closest('tr');
                     
                     // 1. Obtener valores base
@@ -1286,9 +1109,29 @@
                     // 10. Mostrar alerta con toda la información
                     alert(mensaje);
                 }
+                
+                // Función para actualizar el total general de la factura
+                function actualizarTotalFactura() {
+                    let totalGeneral = 0;
+                    let totalGravado = 0;
+                    let totalIva = 0;
+                    
+                    document.querySelectorAll('.detalle-form tbody tr').forEach(row => {
+                        if (row.style.display !== 'none') {
+                            totalGeneral += parseFloat(row.querySelector('[name*="-total"]').value) || 0;
+                            totalGravado += parseFloat(row.querySelector('[name*="-gravado"]').value) || 0;
+                            totalIva += parseFloat(row.querySelector('[name*="-iva"]').value) || 0;
+                        }
+                    });
+                    
+                    document.getElementById('id_total').value = totalGeneral.toFixed(2);
+                    document.getElementById('id_gravado').value = totalGravado.toFixed(2);
+                    document.getElementById('id_iva').value = totalIva.toFixed(2);
+                }
             });
-
-            // Mantener el evento de cambio para reventa si es necesario
+            ///////////
+            
+            // ✅ Evento que detecta cambios en los select de "reventa"
             formsetContainer.addEventListener('change', function(event) {
                 if (event.target.matches('[name*="-reventa"]')) {
                     const row = event.target.closest('tr');
@@ -1296,6 +1139,42 @@
                     alert(`Producto seleccionado: ${nombreProducto}`);
                 }
             });
+
+            ////////////
+            formsetContainer.addEventListener('input', function(event) {
+                if (event.target.matches('[name*="-precio"]')) {
+                    if (parseFloat(event.target.value) <= 0) {
+                        alert("El precio debe ser mayor a 0.");
+                        event.target.value = "";  // Borra el valor inválido
+                        event.target.focus();  // Vuelve a enfocar el input
+                    }
+                }
+            
+                if (event.target.matches('[name*="-descuento"]')) {
+                    let descuento = parseFloat(event.target.value);
+                    if (descuento < 0 || descuento > 99) {
+                        alert("El descuento debe estar entre 0 y 99.");
+                        event.target.value = "0";  // Restablece el valor a 0 si es inválido
+                        event.target.focus();
+                    }
+                }
+            });
+            ////////////
+
+            // Recalcular total dinámicamente
+            formsetContainer.addEventListener('input', function (event) {
+                if (['cantidad', 'precio', 'descuento'].some(field => event.target.name.includes(field))) {
+                    const row = event.target.closest('tr');
+                    const cantidad = parseFloat(row.querySelector('[name*="-cantidad"]').value) || 0;
+                    const precio = parseFloat(row.querySelector('[name*="-precio"]').value) || 0;
+                    const descuento = parseFloat(row.querySelector('[name*="-descuento"]').value) || 0;
+                    const totalField = row.querySelector('[name*="-total"]');
+
+                    const total = (cantidad * precio) - descuento;
+                    totalField.value = total.toFixed(2);
+                }
+            });
+
             // final del bloque
 
             // Limpiar filtros y resultados cuando se cierra la ventana modal
@@ -1479,6 +1358,10 @@
 
             }
 
+            ///////
+            
+            ///////
+
         });
     </script>
 
@@ -1651,6 +1534,20 @@
                     // document.getElementById('id_letra_comprobante').value = isChecked ? 'A' : 'B';
                     const esRemito = document.getElementById('id_es_remito').checked;
                     document.getElementById('id_letra_comprobante').value = esRemito ? 'R' : (isChecked ? 'A' : 'B');
+
+                    // Numeración
+                    // compro
+                    // letra_comprobante
+                    // numero_comprobante
+
+                    
+                    // const vip = seleccion.getAttribute('data-vip')
+                    //const mayorista = seleccion.getAttribute('data-mayorista');
+                    //const sub_cuenta = seleccion.getAttribute('data-sub_cuenta');
+                    //const observaciones = seleccion.getAttribute('data-observaciones');
+                    //const black_list = seleccion.getAttribute('data-black_list');
+                    //const black_list_motivo = seleccion.getAttribute('data-black_list_motivo');;
+
                     //alert(discrimina_iva);
                     
                     document.getElementById('id_id_cliente').value = id_cliente || '';
@@ -1742,6 +1639,14 @@
                     }
                     // Final Número de Comprobante
 
+                    //document.getElementById('id_id_sucursal').value = id_sucursal || '';
+                    //document.getElementById('id_vip').value = vip === 'true' ? 'Sí' : 'No';
+                    //document.getElementById('id_mayorista').value = mayorista === 'true' ? 'Sí' : 'No';
+                    //document.getElementById('id_sub_cuenta').value = sub_cuenta || '';
+                    //document.getElementById('id_observaciones').value = observaciones || '';
+                    //document.getElementById('id_black_list').value = black_list === 'true' ? 'Sí' : 'No';
+                    //document.getElementById('id_black_list_motivo').value = black_list_motivo || '';
+                    
                     // Cerrar el modal
                     const modal = bootstrap.Modal.getInstance(document.getElementById('agendaModal'));
                     modal.hide();
@@ -1756,6 +1661,24 @@
         });
 
         
+    </script>
+
+    <script>
+        /*
+        document.addEventListener("DOMContentLoaded", function () {
+            const depositoSelect = document.getElementById("id_deposito_select");
+            const depositoHidden = document.getElementById("id_id_deposito");  // Campo oculto
+    
+            // Sincronizar el valor del campo oculto con el select visible
+            depositoSelect.addEventListener("change", function () {
+                // Asignar el valor seleccionado al campo oculto
+                depositoHidden.value = depositoSelect.value;
+    
+                // Deshabilitar el select después de la selección
+                depositoSelect.disabled = true;
+            });
+        });
+        */
     </script>
 
     <script>
@@ -2083,73 +2006,4 @@
         });
     </script>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // ==================== SERIALES ====================
-            const serialModal = new bootstrap.Modal('#serialModal');
-            const serialTableBody = document.getElementById('serialTableBody');
-            
-            // 1. Validación al agregar serial (como en detalles)
-            document.getElementById('btnAgregarSerial').addEventListener('click', function(e) {
-                if (!document.getElementById('id_id_cliente')?.value) {
-                    e.preventDefault();
-                    alert('Primero seleccione un cliente');
-                    return;
-                }
-            });
-        
-            // 2. Insertar serial (mismo patrón que detalles)
-            document.getElementById('btnGuardarSerial').addEventListener('click', function() {
-                const serialInput = document.getElementById('serialInput');
-                const serialValue = serialInput.value.trim();
-                
-                if (!serialValue) {
-                    alert('Ingrese un serial válido');
-                    return;
-                }
-        
-                const totalForms = document.getElementById('id_serialfactura_set-TOTAL_FORMS');
-                const formCount = parseInt(totalForms.value);
-                
-                const newRow = `
-                <tr>
-                    <td>
-                        <input type="hidden" name="serialfactura_set-${formCount}-id_serial_factura">
-                        <input type="hidden" name="serialfactura_set-${formCount}-id_factura">
-                        <input type="text" name="serialfactura_set-${formCount}-producto_serial"
-                               class="form-control form-control-sm border border-secondary"
-                               value="${serialValue}" required>
-                    </td>
-                    <td>
-                        <button type="button" class="btn btn-danger btn-sm btn-delete-serial">
-                            <i class="bi bi-trash"></i>
-                        </button>
-                        <input type="checkbox" name="serialfactura_set-${formCount}-DELETE" hidden>
-                    </td>
-                </tr>`;
-                
-                serialTableBody.insertAdjacentHTML('beforeend', newRow);
-                totalForms.value = formCount + 1;
-                serialModal.hide();
-                serialInput.value = '';
-            });
-        
-            // 3. Eliminar serial (igual que detalles)
-            serialTableBody.addEventListener('click', function(e) {
-                if (e.target.closest('.btn-delete-serial')) {
-                    const row = e.target.closest('tr');
-                    if (confirm('¿Eliminar este serial?')) {
-                        const deleteInput = row.querySelector('[name$="-DELETE"]');
-                        if (deleteInput) {
-                            deleteInput.checked = true;
-                            row.style.display = 'none';
-                        } else {
-                            row.remove();
-                        }
-                    }
-                }
-            });
-        });
-    </script>
-    
 {% endblock script %}
