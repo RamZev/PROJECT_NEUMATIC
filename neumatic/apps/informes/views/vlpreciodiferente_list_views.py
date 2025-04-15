@@ -2,18 +2,20 @@
 
 from django.urls import reverse_lazy
 from django.shortcuts import render
-
 from django.http import HttpResponse
 from datetime import datetime
-from django.template.loader import render_to_string
-from weasyprint import HTML
 from django.templatetags.static import static
+
+#-- ReportLab:
+from reportlab.lib import colors
+from reportlab.lib.pagesizes import A4, landscape
+from reportlab.platypus import Paragraph
 
 from .report_views_generics import *
 from apps.informes.models import VLPrecioDiferente
 from ..forms.buscador_vlpreciodiferente_forms import BuscadorPrecioDiferenteForm
 from utils.utils import deserializar_datos, formato_argentino
-from utils.helpers.export_helpers import ExportHelper
+from utils.helpers.export_helpers import ExportHelper, PDFGenerator
 
 
 class ConfigViews:
@@ -139,14 +141,6 @@ class VLPrecioDiferenteInformeView(InformeFormView):
 		#-- Obtener los códigos de comprobantes.
 		codigos_comprobantes = ", ".join(list(comprobantes.values_list('codigo_comprobante_venta', flat=True)) if comprobantes else [])
 		
-		# param = {
-		# 	"Desde": fecha_desde.strftime("%d/%m/%Y"),
-		# 	"Hasta": fecha_hasta.strftime("%d/%m/%Y"),
-		# 	"Vendedor desde": id_vendedor_desde,
-		# 	"Vendedor hasta": id_vendedor_hasta,
-		# 	"Comprobantes": codigos_comprobantes,
-		# 	"Diferencias Superiores a": formato_argentino(dif_mayor)
-		# }
 		param_left = {
 			"Vendedor desde": id_vendedor_desde,
 			"Vendedor hasta": id_vendedor_hasta,
@@ -242,7 +236,6 @@ def vlpreciodiferente_vista_pantalla(request):
 
 
 def vlpreciodiferente_vista_pdf(request):
-	return HttpResponse("Reporte en PDF aún no implementado.", status=400)
 	#-- Obtener el token de la querystring.
 	token = request.GET.get("token")
 	
@@ -256,14 +249,147 @@ def vlpreciodiferente_vista_pdf(request):
 	if not contexto_reporte:
 		return HttpResponse("Contexto no encontrado o expirado", status=400)
 	
-	#-- Preparar la respuesta HTTP.
-	html_string = render_to_string(ConfigViews.reporte_pdf, contexto_reporte, request=request)
-	pdf_file = HTML(string=html_string, base_url=request.build_absolute_uri()).write_pdf()
+	#-- Generar el PDF usando ReportLab
+	pdf_file = generar_pdf(contexto_reporte)
 	
 	response = HttpResponse(pdf_file, content_type="application/pdf")
-	response["Content-Disposition"] = f'inline; filename="informe_{ConfigViews.model_string}.pdf"'
+	response["Content-Disposition"] = f'inline; filename="{ConfigViews.report_title}.pdf"'
 	
 	return response
+
+class CustomPDFGenerator(PDFGenerator):
+	#-- Método que se puede sobreescribir/extender según requerimientos.
+	def _get_header_bottom_left(self, context):
+		"""Personalización del Header-bottom-left"""
+		
+		params = context.get("parametros_i", {})
+		return "<br/>".join([f"<b>{k}:</b> {v}" for k, v in params.items()])
+
+		# custom_text = context.get("texto_personalizado", "")
+		# 
+		# if custom_text:
+		# 	return f"<b>NOTA:</b> {custom_text}"
+		
+		# id_cliente = 10025
+		# cliente = "Leoncio R. Barrios H."
+		# domicilio = "Jr. San Pedro 1256. Surquillo, Lima."
+		# Telefono = "971025647"
+		# 
+		# return f"Cliente: [{id_cliente}] {cliente} <br/> {domicilio}"
+		# return f"Cliente: [{id_cliente}] {cliente} <br/> {domicilio} <br/> Tel. {Telefono} <br/>"
+		# return f"Cliente: [{id_cliente}] {cliente} <br/> {domicilio} <br/> Tel. {Telefono} <br/> Tel. {Telefono} "
+		# return f"Cliente: [{id_cliente}] {cliente} <br/> {domicilio} <br/> Tel. {Telefono} <br/> Tel. {Telefono} <br/> Tel. {Telefono}"
+		
+		# return super()._get_header_bottom_left(context)
+	
+	#-- Método que se puede sobreescribir/extender según requerimientos.
+	def _get_header_bottom_right(self, context):
+		"""Añadir información adicional específica para este reporte"""
+		
+		params = context.get("parametros_d", {})
+		return "<br/>".join([f"<b>{k}:</b> {v}" for k, v in params.items()])
+
+		# base_content = super()._get_header_bottom_right(context)
+		# saldo_total = context.get("saldo_total", 0)
+		# return f"""
+		# 	{base_content}<br/>
+		# 	<b>Total General:</b> {formato_es_ar(saldo_total)}
+		# """
+	pass
+
+def generar_pdf(contexto_reporte):
+	#-- Crear instancia del generador personalizado.
+	generator = CustomPDFGenerator(contexto_reporte, pagesize=landscape(A4))
+	
+	#-- Construir datos de la tabla:
+	
+	#-- Datos de las columnas de la tabla (headers).
+	headers = [
+		("Comprobante", 80),
+		("Fecha", 40),
+		("Cliente", 30),
+		("Nombre", 180),
+		("Código", 30),
+		("Detalle", 180),
+		("Cantidad", 40),
+		("Facturado", 60),
+		("Lista", 60),
+		("Diferencia", 60),
+		("Bonif.", 40)
+	]
+	
+	#-- Extraer Títulos de las columnas de la tabla (headers).
+	headers_titles = [value[0] for value in headers]
+	
+	#-- Extraer Ancho de las columnas de la tabla.
+	col_widths = [value[1] for value in headers]
+	
+	table_data = [headers_titles]
+	
+	#-- Estilos específicos adicionales iniciales de la tabla.
+	table_style_config = [
+		('ALIGN', (6,0), (-1,-1), 'RIGHT'),
+	]
+	
+	#-- Contador de filas (empezamos en 1 porque la 0 es el header).
+	current_row = 1
+	
+	#-- Agregar los datos a la tabla.
+	for vendedor in contexto_reporte.get("objetos", []):
+		#-- Datos agrupado por.
+		table_data.append([
+			f"Vendedor: [{vendedor['id_vendedor']}] {vendedor['vendedor']}",
+			"", "", "", "", "", "", "", "", "", ""
+		])
+		
+		#-- Aplicar estilos a la fila de agrupación (fila actual).
+		table_style_config.extend([
+			('SPAN', (0,current_row), (-1,current_row)),
+			('FONTNAME', (0,current_row), (-1,current_row), 'Helvetica-Bold')
+		])
+		
+		current_row += 1
+		
+		#-- Agregar filas del detalle.
+		for det in vendedor['detalle']:
+			table_data.append([
+				det['comprobante'],
+				det['fecha'],
+				det['id_cliente_id'],
+				Paragraph(det['nombre_cliente'], generator.styles['CellStyle']),
+				det['id_producto_id'],
+				Paragraph(det['nombre_producto'], generator.styles['CellStyle']),
+				formato_argentino(det['cantidad']),
+				formato_argentino(det['precio']),
+				formato_argentino(det['precio_lista']),
+				formato_argentino(det['diferencia']),
+				f"{formato_argentino(det['descuento'])}%"
+			])
+			current_row += 1
+		
+		#-- Fila divisoria.
+		table_data.append(["", "", "", "", "", "", "", "", "", "", ""])
+		# table_style_config.append(
+		# 	# ('LINEBELOW', (0,current_row), (-1,current_row), 0.5, colors.gray),
+		# 	# ('LINEABOVE', (0,current_row), (-1,current_row), 0.5, colors.gray),
+		# )
+		current_row += 1
+	
+	return generator.generate(table_data, col_widths, table_style_config)		
+
+def _format_date(date_value):
+	"""Helper para formatear fechas"""
+	if not date_value:
+		return ""
+	
+	if isinstance(date_value, str):
+		try:
+			return datetime.strptime(date_value, "%Y-%m-%d").strftime("%d/%m/%Y")
+		except ValueError:
+			return date_value
+	else:
+		return date_value.strftime("%d/%m/%Y")
+# -------------------------------------------------------------------------------------------------
 
 
 def vlpreciodiferente_vista_excel(request):

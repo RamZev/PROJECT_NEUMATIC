@@ -2,19 +2,21 @@
 
 from django.urls import reverse_lazy
 from django.shortcuts import render
-
 from django.http import HttpResponse
 from datetime import datetime
-from django.template.loader import render_to_string
-from weasyprint import HTML
 from django.templatetags.static import static
 from decimal import Decimal
+
+#-- ReportLab:
+from reportlab.lib import colors
+from reportlab.lib.pagesizes import A4, landscape, portrait
+from reportlab.platypus import Paragraph
 
 from .report_views_generics import *
 from apps.informes.models import VLIVAVentasFULL
 from ..forms.buscador_vlivaventasfull_forms import BuscadorVLIVAVentasFULLForm
-from utils.utils import deserializar_datos, serializar_queryset
-from utils.helpers.export_helpers import ExportHelper
+from utils.utils import deserializar_datos, serializar_queryset, formato_argentino
+from utils.helpers.export_helpers import ExportHelper, PDFGenerator
 
 
 class ConfigViews:
@@ -72,16 +74,16 @@ class ConfigViews:
 	
 	#-- Establecer las columnas del reporte y sus anchos(en punto).
 	header_data = {
-		"comprobante": (40, "Comprobante"),
+		"comprobante": (70, "Comprobante"),
 		"fecha_comprobante": (40, "Fecha"),
-		"nombre_cliente": (40, "Nombre"),
-		"codigo_iva": (40, "Sit. IVA"),
+		"nombre_cliente": (180, "Nombre"),
+		"codigo_iva": (30, "Sit. IVA"),
 		"cuit": (40, "CUIT"),
-		"gravado": (180, "Gravado"),
-		"exento": (40, "Exento"),
-		"iva": (40, "I.V.A."),
-		"percep_ib": (40, "Percep. IB"),
-		"total": (40, "Total"),
+		"gravado": (60, "Gravado"),
+		"exento": (60, "Exento"),
+		"iva": (60, "I.V.A."),
+		"percep_ib": (60, "Percep. IB"),
+		"total": (60, "Total"),
 	}
 
 
@@ -203,12 +205,6 @@ class VLIVAVentasFULLInformeView(InformeFormView):
 			context["data_has_errors"] = True
 		return context
 
-# def raw_to_dict(instance):
-# 	"""Convierte una instancia de una consulta raw a un diccionario, eliminando claves internas."""
-# 	data = instance.__dict__.copy()
-# 	data.pop('_state', None)
-# 	return data
-
 
 def vlivaventasfull_vista_pantalla(request):
 	#-- Obtener el token de la querystring.
@@ -229,7 +225,6 @@ def vlivaventasfull_vista_pantalla(request):
 
 
 def vlivaventasfull_vista_pdf(request):
-	return HttpResponse("Reporte en PDF aún no implementado.", status=400)
 	#-- Obtener el token de la querystring.
 	token = request.GET.get("token")
 	
@@ -243,14 +238,118 @@ def vlivaventasfull_vista_pdf(request):
 	if not contexto_reporte:
 		return HttpResponse("Contexto no encontrado o expirado", status=400)
 	
-	#-- Preparar la respuesta HTTP.
-	html_string = render_to_string(ConfigViews.reporte_pdf, contexto_reporte, request=request)
-	pdf_file = HTML(string=html_string, base_url=request.build_absolute_uri()).write_pdf()
+	#-- Generar el PDF usando ReportLab
+	pdf_file = generar_pdf(contexto_reporte)
 	
+	#-- Preparar la respuesta HTTP.
 	response = HttpResponse(pdf_file, content_type="application/pdf")
-	response["Content-Disposition"] = f'inline; filename="informe_{ConfigViews.model_string}.pdf"'
+	response["Content-Disposition"] = f'inline; filename="{ConfigViews.report_title}.pdf"'
 	
 	return response
+
+class CustomPDFGenerator(PDFGenerator):
+	#-- Método que se puede sobreescribir/extender según requerimientos.
+	# def _get_header_bottom_left(self, context):
+	# 	"""Personalización del Header-bottom-left"""
+	# 	
+	# 	# custom_text = context.get("texto_personalizado", "")
+	# 	# 
+	# 	# if custom_text:
+	# 	# 	return f"<b>NOTA:</b> {custom_text}"
+	# 	
+	# 	id_cliente = 10025
+	# 	cliente = "Leoncio R. Barrios H."
+	# 	domicilio = "Jr. San Pedro 1256. Surquillo, Lima."
+	# 	Telefono = "971025647"
+	# 	
+	# 	# return f"Cliente: [{id_cliente}] {cliente} <br/> {domicilio}"
+	# 	# return f"Cliente: [{id_cliente}] {cliente} <br/> {domicilio} <br/> Tel. {Telefono} <br/>"
+	# 	return f"Cliente: [{id_cliente}] {cliente} <br/> {domicilio} <br/> Tel. {Telefono} <br/> Tel. {Telefono} "
+	# 	# return f"Cliente: [{id_cliente}] {cliente} <br/> {domicilio} <br/> Tel. {Telefono} <br/> Tel. {Telefono} <br/> Tel. {Telefono}"
+	# 	
+	# 	# return super()._get_header_bottom_left(context)
+	
+	#-- Método que se puede sobreescribir/extender según requerimientos.
+	# def _get_header_bottom_right(self, context):
+	# 	"""Añadir información adicional específica para este reporte"""
+	# 	base_content = super()._get_header_bottom_right(context)
+	# 	saldo_total = context.get("saldo_total", 0)
+	# 	return f"""
+	# 		{base_content}<br/>
+	# 		<b>Total General:</b> {formato_es_ar(saldo_total)}
+	# 	"""
+	pass
+
+def generar_pdf(contexto_reporte):
+	#-- Crear instancia del generador personalizado.
+	generator = CustomPDFGenerator(contexto_reporte, pagesize=landscape(A4))
+	
+	#-- Construir datos de la tabla:
+	
+	#-- Extraer Títulos de las columnas de la tabla (headers).
+	headers_titles = [value[1] for value in ConfigViews.header_data.values()]
+	
+	#-- Extraer Ancho de las columnas de la tabla.
+	col_widths = [value[0] for value in ConfigViews.header_data.values()]
+	
+	table_data = [headers_titles]
+	
+	#-- Estilos específicos adicionales iniciales de la tabla.
+	table_style_config = [
+		('ALIGN', (5,0), (-1,-1), 'RIGHT'),
+	]
+	
+	#-- Agregar los datos a la tabla.
+	for obj in contexto_reporte.get("objetos", []):
+		table_data.append([
+			obj['comprobante'],
+			_format_date(obj['fecha_comprobante']),
+			Paragraph(obj['nombre_cliente'], generator.styles['CellStyle']),
+			obj['codigo_iva'],
+			obj['cuit'],
+			formato_argentino(obj['gravado']),
+			formato_argentino(obj['exento']),
+			formato_argentino(obj['iva']),
+			formato_argentino(obj['percep_ib']),
+			formato_argentino(obj['total'])
+		])
+	
+	#-- Fila de Totales.
+	total_gravado = contexto_reporte.get('total_gravado')
+	total_exento = contexto_reporte.get('total_exento')
+	total_iva = contexto_reporte.get('total_iva')
+	total_percep_ib = contexto_reporte.get('total_percep_ib')
+	total_total = contexto_reporte.get('total_total')
+	
+	table_data.append(["", "", "", "", "Totales:", 
+						formato_argentino(total_gravado),
+						formato_argentino(total_exento),
+						formato_argentino(total_iva),
+						formato_argentino(total_percep_ib),
+						formato_argentino(total_total),
+					])
+	
+	#-- Aplicar estilos a la fila de total (fila actual).
+	table_style_config.extend([
+		('FONTNAME', (0,-1), (-1,-1), 'Helvetica-Bold'),
+		('LINEABOVE', (0,-1), (-1,-1), 0.5, colors.black),
+	])
+		
+	return generator.generate(table_data, col_widths, table_style_config)		
+
+def _format_date(date_value):
+	"""Helper para formatear fechas"""
+	if not date_value:
+		return ""
+	
+	if isinstance(date_value, str):
+		try:
+			return datetime.strptime(date_value, "%Y-%m-%d").strftime("%d/%m/%Y")
+		except ValueError:
+			return date_value
+	else:
+		return date_value.strftime("%d/%m/%Y")
+# -------------------------------------------------------------------------------------------------
 
 
 def vlivaventasfull_vista_excel(request):

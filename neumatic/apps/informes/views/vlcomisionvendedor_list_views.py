@@ -2,19 +2,21 @@
 
 from django.urls import reverse_lazy
 from django.shortcuts import render
-
 from django.http import HttpResponse
 from datetime import datetime
-from django.template.loader import render_to_string
-from weasyprint import HTML
 from django.templatetags.static import static
 from decimal import Decimal
+
+#-- ReportLab:
+from reportlab.lib import colors
+from reportlab.lib.pagesizes import A4, landscape
+from reportlab.platypus import Paragraph
 
 from .report_views_generics import *
 from apps.informes.models import VLComisionVendedor
 from ..forms.buscador_vlcomisionvendedor_forms import BuscadorComisionVendedorForm
-from utils.utils import deserializar_datos
-from utils.helpers.export_helpers import ExportHelper
+from utils.utils import deserializar_datos, formato_argentino
+from utils.helpers.export_helpers import ExportHelper, PDFGenerator
 
 
 class ConfigViews:
@@ -163,15 +165,15 @@ class VLComisionVendedorInformeView(InformeFormView):
 				"producto": obj.medida,
 				"marca": obj.nombre_producto_marca,
 				"articulo": obj.nombre_producto_familia,
-				"gravado": obj.gravado,
-				"pje_comision": obj.pje_comision,
-				"monto_comision": round((obj.gravado*obj.pje_comision)/100, 2) if obj.pje_comision != 0 else 0.00
+				"gravado": obj.gravado if obj.gravado else Decimal(0),
+				"pje_comision": obj.pje_comision if obj.pje_comision else Decimal(0),
+				"monto_comision": Decimal(0) if not obj.pje_comision or not obj.gravado or obj.pje_comision == 0 else round((obj.gravado * obj.pje_comision)/100, 2)
 			}
 			
 			#-- Agregar el detalle a la lista de detalles y acumular el total.
 			datos_por_vendedor[vendedor_id]["detalle"].append(detalle_data)
-			datos_por_vendedor[vendedor_id]["total_gravado_vendedor"] += obj.gravado
-			datos_por_vendedor[vendedor_id]["total_comision_vendedor"] += round((obj.gravado*obj.pje_comision)/100, 2)
+			datos_por_vendedor[vendedor_id]["total_gravado_vendedor"] += Decimal(0) if not obj.gravado else obj.gravado
+			datos_por_vendedor[vendedor_id]["total_comision_vendedor"] += Decimal(0) if not obj.pje_comision or not obj.gravado or obj.pje_comision == 0 else round((obj.gravado * obj.pje_comision)/100, 2)
 		
 		#-- Convertir a lista los datos para iterar con más facilidad en la plantilla.
 		datos_por_vendedor = list(datos_por_vendedor.values())
@@ -217,7 +219,6 @@ def vlcomisionvendedor_vista_pantalla(request):
 
 
 def vlcomisionvendedor_vista_pdf(request):
-	return HttpResponse("Reporte en PDF aún no implementado.", status=400)
 	#-- Obtener el token de la querystring.
 	token = request.GET.get("token")
 	
@@ -231,14 +232,156 @@ def vlcomisionvendedor_vista_pdf(request):
 	if not contexto_reporte:
 		return HttpResponse("Contexto no encontrado o expirado", status=400)
 	
-	#-- Preparar la respuesta HTTP.
-	html_string = render_to_string(ConfigViews.reporte_pdf, contexto_reporte, request=request)
-	pdf_file = HTML(string=html_string, base_url=request.build_absolute_uri()).write_pdf()
+	#-- Generar el PDF usando ReportLab
+	pdf_file = generar_pdf(contexto_reporte)
 	
+	#-- Preparar la respuesta HTTP.
 	response = HttpResponse(pdf_file, content_type="application/pdf")
-	response["Content-Disposition"] = f'inline; filename="informe_{ConfigViews.model_string}.pdf"'
+	response["Content-Disposition"] = f'inline; filename="{ConfigViews.report_title}.pdf"'
 	
 	return response
+
+class CustomPDFGenerator(PDFGenerator):
+	#-- Método que se puede sobreescribir/extender según requerimientos.
+	# def _get_header_bottom_left(self, context):
+	# 	"""Personalización del Header-bottom-left"""
+	# 	
+	# 	# custom_text = context.get("texto_personalizado", "")
+	# 	# 
+	# 	# if custom_text:
+	# 	# 	return f"<b>NOTA:</b> {custom_text}"
+	# 	
+	# 	id_cliente = 10025
+	# 	cliente = "Leoncio R. Barrios H."
+	# 	domicilio = "Jr. San Pedro 1256. Surquillo, Lima."
+	# 	Telefono = "971025647"
+	# 	
+	# 	# return f"Cliente: [{id_cliente}] {cliente} <br/> {domicilio}"
+	# 	# return f"Cliente: [{id_cliente}] {cliente} <br/> {domicilio} <br/> Tel. {Telefono} <br/>"
+	# 	return f"Cliente: [{id_cliente}] {cliente} <br/> {domicilio} <br/> Tel. {Telefono} <br/> Tel. {Telefono} "
+	# 	# return f"Cliente: [{id_cliente}] {cliente} <br/> {domicilio} <br/> Tel. {Telefono} <br/> Tel. {Telefono} <br/> Tel. {Telefono}"
+	# 	
+	# 	# return super()._get_header_bottom_left(context)
+	
+	#-- Método que se puede sobreescribir/extender según requerimientos.
+	# def _get_header_bottom_right(self, context):
+	# 	"""Añadir información adicional específica para este reporte"""
+	# 	base_content = super()._get_header_bottom_right(context)
+	# 	saldo_total = context.get("saldo_total", 0)
+	# 	return f"""
+	# 		{base_content}<br/>
+	# 		<b>Total General:</b> {formato_es_ar(saldo_total)}
+	# 	"""
+	pass
+
+def generar_pdf(contexto_reporte):
+	#-- Crear instancia del generador personalizado.
+	generator = CustomPDFGenerator(contexto_reporte, pagesize=landscape(A4))
+	
+	#-- Construir datos de la tabla:
+	
+	#-- Datos de las columnas de la tabla (headers).
+	headers = [
+		("Comprobante", 80),
+		("Fecha", 40),
+		("Cliente", 160),
+		("Rvta.", 20),
+		("Producto", 30),
+		("Medida", 60),
+		("Marca", 120),
+		("Artículo", 120),
+		("Gravado", 60),
+		("%", 30),
+		("Comisión", 60)
+	]
+	
+	#-- Extraer Títulos de las columnas de la tabla (headers).
+	headers_titles = [value[0] for value in headers]
+	
+	#-- Extraer Ancho de las columnas de la tabla.
+	col_widths = [value[1] for value in headers]
+	
+	table_data = [headers_titles]
+	
+	#-- Estilos específicos adicionales iniciales de la tabla.
+	table_style_config = [
+		('ALIGN', (8,0), (-1,-1), 'RIGHT'),
+	]
+	
+	#-- Contador de filas (empezamos en 1 porque la 0 es el header).
+	current_row = 1
+	
+	#-- Agregar los datos a la tabla.
+	for vendedor in contexto_reporte.get("objetos", []):
+		#-- Datos agrupado por.
+		table_data.append([
+			f"Vendedor: [{vendedor['id_vendedor']}] {vendedor['vendedor']}",
+			"", "", "", "", "", "", "", "", "", ""
+		])
+		
+		#-- Aplicar estilos a la fila de agrupación (fila actual).
+		table_style_config.extend([
+			('SPAN', (0,current_row), (-1,current_row)),
+			('FONTNAME', (0,current_row), (-1,current_row), 'Helvetica-Bold')
+		])
+		
+		current_row += 1
+		
+		#-- Agregar filas del detalle.
+		for det in vendedor['detalle']:
+			table_data.append([
+				det['comprobante'],
+				det['fecha'],
+				Paragraph(det['cliente'], generator.styles['CellStyle']),
+				det['reventa'],
+				det['id_producto'],
+				det['producto'],
+				Paragraph(det['marca'], generator.styles['CellStyle']),
+				Paragraph(det['articulo'], generator.styles['CellStyle']),
+				formato_argentino(det['gravado']),
+				f"{formato_argentino(det['pje_comision'])}%",
+				formato_argentino(det['monto_comision'])
+			])
+			current_row += 1
+		
+		#-- Fila Total agrupación.
+		total_gravado = vendedor['total_gravado_vendedor']
+		total_comision = vendedor['total_comision_vendedor']
+		
+		table_data.append(["", "", "", "", "", "", "", 
+					 "Totales:", formato_argentino(total_gravado), "", formato_argentino(total_comision)])
+		
+		#-- Aplicar estilos a la fila de total (fila actual).
+		table_style_config.extend([
+			('FONTNAME', (0,current_row), (-1,current_row), 'Helvetica-Bold'),
+			('LINEABOVE', (0,current_row), (-1,current_row), 0.5, colors.black),
+		])
+		
+		current_row += 1
+		
+		#-- Fila divisoria.
+		table_data.append(["", "", "", "", "", "", ""])
+		# table_style_config.append(
+		# 	('LINEBELOW', (0,current_row), (-1,current_row), 0.5, colors.blue),
+		# )
+		current_row += 1
+	
+	return generator.generate(table_data, col_widths, table_style_config)		
+
+def _format_date(date_value):
+	"""Helper para formatear fechas"""
+	if not date_value:
+		return ""
+	
+	if isinstance(date_value, str):
+		try:
+			return datetime.strptime(date_value, "%Y-%m-%d").strftime("%d/%m/%Y")
+		except ValueError:
+			return date_value
+	else:
+		return date_value.strftime("%d/%m/%Y")
+# -------------------------------------------------------------------------------------------------
+
 
 
 def vlcomisionvendedor_vista_excel(request):

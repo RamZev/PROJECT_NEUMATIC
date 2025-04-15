@@ -2,19 +2,20 @@
 
 from django.urls import reverse_lazy
 from django.shortcuts import render
-
 from django.http import HttpResponse
 from datetime import datetime
-from django.template.loader import render_to_string
-from weasyprint import HTML
 from django.templatetags.static import static
-# from django.forms.models import model_to_dict
+
+#-- ReportLab:
+from reportlab.lib import colors
+from reportlab.lib.pagesizes import A4, portrait
+from reportlab.platypus import Paragraph
 
 from .report_views_generics import *
 from apps.informes.models import VLComprobantesVencidos
 from ..forms.buscador_vlcomprobantesvencidos_forms import BuscadorComprobantesVencidosForm
-from utils.utils import deserializar_datos, serializar_queryset
-from utils.helpers.export_helpers import ExportHelper
+from utils.utils import deserializar_datos, serializar_queryset, formato_argentino
+from utils.helpers.export_helpers import ExportHelper, PDFGenerator
 
 
 class ConfigViews:
@@ -73,13 +74,13 @@ class ConfigViews:
 	#-- Establecer las columnas del reporte y sus anchos(en punto).
 	header_data = {
 		"fecha_comprobante": (40, "Fecha"),
-		"dias_vencidos": (40, "Días"),
-		"comprobante": (40, "Número"),
-		"id_cliente_id": (40, "Cliente"),
+		"dias_vencidos": (30, "Días"),
+		"comprobante": (80, "Número"),
+		"id_cliente_id": (30, "Cliente"),
 		"nombre_cliente": (180, "Nombre"),
-		"total": (40, "Total Comprobante"),
-		"entrega": (40, "Entrega a Cta."),
-		"saldo": (40, "Saldo Pendiente"),
+		"total": (60, "Total Comprobante"),
+		"entrega": (60, "Entrega a Cta."),
+		"saldo": (60, "Saldo Pendiente"),
 	}
 
 
@@ -172,7 +173,6 @@ def vlcomprobantesvencidos_vista_pantalla(request):
 
 
 def vlcomprobantesvencidos_vista_pdf(request):
-	return HttpResponse("Reporte en PDF aún no implementado.", status=400)
 	#-- Obtener el token de la querystring.
 	token = request.GET.get("token")
 	
@@ -186,15 +186,98 @@ def vlcomprobantesvencidos_vista_pdf(request):
 	if not contexto_reporte:
 		return HttpResponse("Contexto no encontrado o expirado", status=400)
 	
+	#-- Generar el PDF usando ReportLab
+	pdf_file = generar_pdf(contexto_reporte)
+	
 	#-- Preparar la respuesta HTTP.
-	# html_string = render_to_string("informes/reportes/ventacompro_pdf.html", contexto_reporte, request=request)
-	html_string = render_to_string(ConfigViews.reporte_pdf, contexto_reporte, request=request)
-	pdf_file = HTML(string=html_string, base_url=request.build_absolute_uri()).write_pdf()
-
 	response = HttpResponse(pdf_file, content_type="application/pdf")
-	response["Content-Disposition"] = f'inline; filename="informe_{ConfigViews.model_string}.pdf"'
+	response["Content-Disposition"] = f'inline; filename="{ConfigViews.report_title}.pdf"'
 	
 	return response
+
+class CustomPDFGenerator(PDFGenerator):
+	#-- Método que se puede sobreescribir/extender según requerimientos.
+	# def _get_header_bottom_left(self, context):
+	# 	"""Personalización del Header-bottom-left"""
+	# 	
+	# 	# custom_text = context.get("texto_personalizado", "")
+	# 	# 
+	# 	# if custom_text:
+	# 	# 	return f"<b>NOTA:</b> {custom_text}"
+	# 	
+	# 	id_cliente = 10025
+	# 	cliente = "Leoncio R. Barrios H."
+	# 	domicilio = "Jr. San Pedro 1256. Surquillo, Lima."
+	# 	Telefono = "971025647"
+	# 	
+	# 	# return f"Cliente: [{id_cliente}] {cliente} <br/> {domicilio}"
+	# 	# return f"Cliente: [{id_cliente}] {cliente} <br/> {domicilio} <br/> Tel. {Telefono} <br/>"
+	# 	return f"Cliente: [{id_cliente}] {cliente} <br/> {domicilio} <br/> Tel. {Telefono} <br/> Tel. {Telefono} "
+	# 	# return f"Cliente: [{id_cliente}] {cliente} <br/> {domicilio} <br/> Tel. {Telefono} <br/> Tel. {Telefono} <br/> Tel. {Telefono}"
+	# 	
+	# 	# return super()._get_header_bottom_left(context)
+	
+	#-- Método que se puede sobreescribir/extender según requerimientos.
+	# def _get_header_bottom_right(self, context):
+	# 	"""Añadir información adicional específica para este reporte"""
+	# 	base_content = super()._get_header_bottom_right(context)
+	# 	saldo_total = context.get("saldo_total", 0)
+	# 	return f"""
+	# 		{base_content}<br/>
+	# 		<b>Total General:</b> {formato_es_ar(saldo_total)}
+	# 	"""
+	pass
+
+def generar_pdf(contexto_reporte):
+	#-- Crear instancia del generador personalizado.
+	generator = CustomPDFGenerator(contexto_reporte, pagesize=portrait(A4))
+	
+	#-- Construir datos de la tabla:
+	
+	#-- Datos de las columnas de la tabla (headers).
+	
+	#-- Extraer Títulos de las columnas de la tabla (headers).
+	headers_titles = [value[1] for value in ConfigViews.header_data.values()]
+	
+	#-- Extraer Ancho de las columnas de la tabla.
+	col_widths = [value[0] for value in ConfigViews.header_data.values()]
+	
+	table_data = [headers_titles]
+	
+	#-- Estilos específicos adicionales iniciales de la tabla.
+	table_style_config = [
+		('ALIGN', (1,0), (1,-1), 'RIGHT'),
+		('ALIGN', (5,0), (-1,-1), 'RIGHT'),
+	]
+	
+	#-- Agregar los datos a la tabla.
+	for obj in contexto_reporte.get("objetos", []):
+		table_data.append([
+			_format_date(obj['fecha_comprobante']),
+			obj['dias_vencidos'],
+			obj['comprobante'],
+			obj['id_cliente_id'],
+			Paragraph(obj['nombre_cliente'], generator.styles['CellStyle']),
+			formato_argentino(obj['total']),
+			formato_argentino(obj['entrega']),
+			formato_argentino(obj['saldo'])
+		])
+	
+	return generator.generate(table_data, col_widths, table_style_config)		
+
+def _format_date(date_value):
+	"""Helper para formatear fechas"""
+	if not date_value:
+		return ""
+	
+	if isinstance(date_value, str):
+		try:
+			return datetime.strptime(date_value, "%Y-%m-%d").strftime("%d/%m/%Y")
+		except ValueError:
+			return date_value
+	else:
+		return date_value.strftime("%d/%m/%Y")
+# -------------------------------------------------------------------------------------------------
 
 
 def vlcomprobantesvencidos_vista_excel(request):
