@@ -59,19 +59,24 @@ def buscar_producto(request):
         print("stock")
         productos = productos.annotate(total_stock=Sum("productostock__stock")).filter(total_stock__gt=0)
 
-    
     # Preparar los datos de respuesta usando lista por comprensión
     resultados = []
     for producto in productos:
-        # Descuento vendedor seguro
-        descuento = 0
+        # Filtrar los descuentos del vendedor por marca y familia
         if col_descuento > 0:
             dv = DescuentoVendedor.objects.filter(
-                id_marca=producto.id_marca, 
-                id_familia=producto.id_familia
-            ).values(f"desc{col_descuento}").first()
-            if dv:
-                descuento = dv.get(f"desc{col_descuento}", 0)
+                id_marca=producto.id_marca.id_producto_marca, 
+                id_familia=producto.id_familia.id_producto_familia
+            ).first()
+        
+        # Obtener el valor del campo dinámico usando getattr
+        descuento = 0
+        if dv and col_descuento > 0:
+            descuento_field = f"desc{col_descuento}"
+            descuento = getattr(dv, descuento_field, 0)  # Devuelve 0 si el campo no existe
+            
+            #print("col_descuento:", col_descuento)
+            #print("descuento:", descuento)
                 
         # Obtener alícuota IVA
         alicuota_iva = 0
@@ -87,8 +92,8 @@ def buscar_producto(request):
             'precio': producto.precio,
             'stock': ProductoStock.objects.filter(id_producto=producto).aggregate(total_stock=Sum('stock'))['total_stock'] or 0,
             'minimo': ProductoMinimo.objects.filter(id_cai=producto.id_cai).aggregate(total_minimo=Sum('minimo'))['total_minimo'] or 0,
-            'id_marca': producto.id_marca_id if producto.id_marca else None,
-            'id_familia': producto.id_familia_id if producto.id_familia else None,
+            'id_marca': producto.id_marca.id_producto_marca if producto.id_marca else None,
+            'id_familia': producto.id_familia.id_producto_familia if producto.id_familia else None,
             'descuento_vendedor': descuento,
             'id_alicuota_iva': producto.id_alicuota_iva_id if producto.id_alicuota_iva else None,
             'alicuota_iva': alicuota_iva

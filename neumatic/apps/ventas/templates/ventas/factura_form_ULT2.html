@@ -70,34 +70,23 @@
         cursor: not-allowed;
     }
 
-    /* Oculta inputs pero mantiene funcionalidad (versión robusta) */
-    tfoot input[type="number"],
+    /* Oculta los inputs originales pero manténlos funcionales */
+    tfoot input[type="number"], 
     tfoot input[type="text"] {
-        position: absolute !important;
-        opacity: 0 !important;
-        width: 1px !important;  /* Cambiado de 0 a 1px para compatibilidad */
-        height: 1px !important; /* Cambiado de 0 a 1px para compatibilidad */
-        margin: -1px !important;
-        padding: 0 !important;
-        border: 0 !important;
-        overflow: hidden !important;
-        clip: rect(0, 0, 0, 0) !important; /* Soporte para navegadores antiguos */
-        pointer-events: none !important; /* Opcional: evita interacciones accidentales */
+        position: absolute;
+        opacity: 0;
+        width: 0;
+        height: 0;
     }
 
-    /* Estilo para números formateados (versión mejorada) */
+    /* Estilo para los números formateados */
     .formatted-number {
-        display: block; /* Cambiado de inline-block para mejor alineación */
+        display: inline-block;
         width: 100%;
-        padding: 0.375rem 0.15rem; /* Tamaño estándar de inputs Bootstrap */
+        padding: 0.25rem;
         text-align: right;
-        background-color: #e7f5ff; /* Azul claro similar a acordeones */
-        border: 1px solid #0d6efd; /* Borde azul Bootstrap primary */
-        border-radius: 0.25rem; /* Esquinas redondeadas */
-        font-family: monospace; /* Alineación perfecta de dígitos */
-        margin: 2px 0; /* Pequeño margen para separación visual */
-        font-size: 1.1rem;
     }
+       
     
 {% endblock style %}
 
@@ -378,12 +367,6 @@
 
                         <div class="container my-3">
                             <div class="d-flex justify-content-end align-items-center">
-                                <!-- Nuevo botón para agregar serial -->
-                                <button type="button" class="btn btn-outline-primary btn-sm me-2" id="btnAgregarSerial" data-bs-toggle="modal" data-bs-target="#serialModal">
-                                    Agregar Seriales
-                                    <i class="bi bi-upc-scan"></i>
-                                </button>
-
                                 <button type="button" class="btn btn-outline-primary btn-sm me-2" id="btnAgregarDetalle">
                                     Agregar Detalle
                                     <i class="bi bi-file-earmark-plus"></i>
@@ -453,93 +436,62 @@
                                                 {% endfor %}
 
                                             </tbody>
-                                            
+
                                             <tfoot>
                                                 <tr>
-                                                    <td colspan="100%">
-                                                        <!-- Fila de Totales - Mismo estilo que el encabezado -->
-                                                        <div class="row align-items-center g-2 py-2" style="background-color: #f8f9fa; border-top: 2px solid #dee2e6;">
-                                                            <!-- Botones (3 columnas) -->
-                                                            <div class="col-md-2">
-                                                                <div class="d-flex flex-column gap-2">
-                                                                    <button type="submit" class="btn btn-outline-success btn-sm">
-                                                                        {% if is_edit %}Actualizar{% else %}Guardar{% endif %}
-                                                                        <i class="bi bi-floppy"></i>
-                                                                    </button>
-                                                                    <a href="{% url 'factura_list' %}" class="btn btn-outline-secondary btn-sm">
-                                                                        Cancelar
-                                                                        <i class="bi bi-x-circle"></i>
-                                                                    </a>
-                                                                </div>
-                                                            </div>
-                                                            
-                                                            <!-- Gravado (2 columnas) -->
-                                                            <div class="col-md-2">
-                                                                <div class="text-center">
-                                                                    <label class="form-label mb-0 text-primary">
-                                                                        <strong>Gravado</strong>
-                                                                    </label>
-                                                                    <div>
-                                                                        {{ form.gravado }}
-                                                                        <span class="formatted-number">{{ form.gravado.value|default:"0.00" }}</span>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            
-                                                            <!-- Exento (2 columnas) -->
-                                                            <div class="col-md-2">
-                                                                <div class="text-center">
-                                                                    <label class="form-label mb-0 text-primary">
-                                                                        <strong>Exento</strong>
-                                                                    </label>
-                                                                    <div>
-                                                                        {{ form.exento }}
-                                                                        <span class="formatted-number">{{ form.exento.value|default:"0.00" }}</span>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            
-                                                            <!-- IVA (2 columnas) -->
-                                                            <div class="col-md-2">
-                                                                <div class="text-center">
-                                                                    <label class="form-label mb-0 text-primary">
-                                                                        <strong>I.V.A.</strong>
-                                                                    </label>
-                                                                    <div>
-                                                                        {{ form.iva }}
-                                                                        <span class="formatted-number">{{ form.iva.value|default:"0.00" }}</span>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            
-                                                            <!-- IIBB (2 columnas) -->
-                                                            <div class="col-md-2">
-                                                                <div class="text-center">
-                                                                    <label class="form-label mb-0 text-primary">
-                                                                        <strong>IIBB PERCEPCION</strong>
-                                                                    </label>
-                                                                    <div>
-                                                                        {{ form.percep_ib }}
-                                                                        <span class="formatted-number">{{ form.percep_ib.value|default:"0.00" }}</span>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            
-                                                            <!-- Total (3 columnas) -->
-                                                            <div class="col-md-2">
-                                                                <div class="text-center">
-                                                                    <label class="form-label mb-0 text-primary">
-                                                                        <strong>TOTAL</strong>
-                                                                    </label>
-                                                                    <div>
-                                                                        {{ form.total }}
-                                                                        <span class="formatted-number">{{ form.total.value|default:"0.00" }}</span>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
+                                                    <td colspan="6" class="text-end"><strong>Gravado:</strong></td>
+                                                    <td>
+                                                        {{ form.gravado }}
+                                                        <span class="formatted-number">{{ form.gravado.value|default:"0.00" }}</span>
                                                     </td>
                                                 </tr>
+                                                
+                                                <tr>
+                                                    <td colspan="6" class="text-end"><strong>Exento:</strong></td>
+                                                    <td>
+                                                        {{ form.exento }}
+                                                        <span class="formatted-number">{{ form.exento.value|default:"0.00" }}</span>
+                                                    </td>
+                                                </tr>
+                                                
+                                                <tr>
+                                                    <td colspan="6" class="text-end"><strong>I.V.A.:</strong></td>
+                                                    <td>
+                                                        {{ form.iva }}
+                                                        <span class="formatted-number">{{ form.iva.value|default:"0.00" }}</span>
+                                                    </td>
+                                                </tr>
+
+                                                <tr>
+                                                    <td colspan="6" class="text-end"><strong>IIBB PERCEPCION:</strong></td>
+                                                    <td>
+                                                        {{ form.percep_ib }}
+                                                        <span class="formatted-number">{{ form.percep_ib.value|default:"0.00" }}</span>
+                                                    </td>
+                                                </tr>
+
+                                                <tr>
+                                                    <td colspan="4" class="text-start">
+                                                        <div class="d-flex gap-2">
+                                                            <button type="submit" class="btn btn-outline-success btn-sm">
+                                                                {% if is_edit %}Actualizar{% else %}Guardar{% endif %}
+                                                                <i class="bi bi-floppy"></i>
+                                                            </button>
+                                                            <a href="{% url 'factura_list' %}" class="btn btn-outline-secondary btn-sm">
+                                                                Cancelar
+                                                                <i class="bi bi-x-circle"></i>
+                                                            </a>
+                                                        </div>
+                                                    </td>
+
+                                                    <td colspan="2" class="text-end"><strong>T O T A L:</strong></td>
+                                                    <td>
+                                                        {{ form.total }}
+                                                        <span class="formatted-number">{{ form.total.value|default:"0.00" }}</span>
+                                                    </td>
+                                                </tr>
+                                                
+                                                
                                             </tfoot>
                                             
                                         </table>
@@ -548,47 +500,6 @@
                                 </div>
                             </div>
                         </div>
-                        
-                        <!-- Acordeon de Seriales (y observaciones por confirmar)-->
-                        <div class="accordion-item">
-                            <h2 class="accordion-header">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseThree" aria-expanded="false" aria-controls="panelsStayOpen-collapseThree">
-                                    Seriales de Productos
-                                </button>
-                            </h2>
-                            <div id="panelsStayOpen-collapseThree" class="accordion-collapse collapse">
-                                <div class="accordion-body">
-                                    <div class="table-responsive tbl-fixed" style="max-height: 300px;">
-                                        {{ formset_serial.management_form }}
-                                        <table class="table table-striped table-hover">
-                                            <thead class="table-primary">
-                                                <tr>
-                                                    <th>Serial</th>
-                                                    <th>Acciones</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody id="serialTableBody">
-                                                {% for formser in formset_serial %}
-                                                <tr>
-                                                    <td>
-                                                        {{ formser.id_serial_factura }}
-                                                        {{ formser.id_factura }}
-                                                        {{ formser.producto_serial }}
-                                                    </td>
-                                                    <td>
-                                                        <button type="button" class="btn btn-danger btn-sm btn-delete-serial">
-                                                            <i class="bi bi-trash"></i>
-                                                        </button>
-                                                    </td>
-                                                </tr>
-                                                {% endfor %}
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
                     </div>
 
                     <!-- Card del Detalle de Factura - Inicio -->
@@ -774,97 +685,79 @@
         </div>
     </div>
 
-    <!-- Modal para seriales -->
-    <div class="modal fade" id="serialModal" tabindex="-1" aria-labelledby="serialModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header text-dark bg-primary bg-opacity-25 py-2">
-                    <h5 class="modal-title fs-6" id="serialModalLabel">Ingresar Serial</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="serialForm">
-                        {% csrf_token %}
-                        <div class="mb-3">
-                            <label for="serialInput" class="form-label">Número de Serial</label>
-                            <input type="text" class="form-control" id="serialInput" required>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-primary btn-sm" id="btnGuardarSerial">Insertar</button>
-                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancelar</button>
-                </div>
-            </div>
-        </div>
-    </div>
 {% endblock modals %}
 
 {% block script %}
     {% comment %} SCRIPTS JS Start {% endcomment %}
     <script>
         document.addEventListener('DOMContentLoaded', function () {
+            ////////////*
             const formsetContainer = document.getElementById('formset-container');
 
-            function actualizarVisualizacionTotales() {
-                const campos = ['id_gravado', 'id_exento', 'id_iva', 'id_percep_ib', 'id_total'];
+            // Inicio código original
+            /*
+            function actualizarTotalFactura() {
+                # alert("Aqui es donde totaliza  1")
+                let totalGravado = 0;
+                let totalExento = 0;
+                let totalIva = 0;
+                let totalPercepIb = 0;
+                let totalFactura = 0;
                 
-                //alert("🔍 INICIANDO VERIFICACIÓN DE FORMATEO 🔍");
+                let hayFilasVisibles = false;
+            
+                // Recorre cada fila dentro de la tabla del detalle
+                const filas = document.querySelectorAll('.detalle-form tbody tr');
                 
-                campos.forEach(id => {
-                    // Verificar si el input existe
-                    const input = document.getElementById(id);
-                    if (!input) {
-                        //alert(`❌ ERROR: No se encontró el input con ID: ${id}`);
-                        return;
+                filas.forEach(row => {
+                    // Solo considerar filas visibles (no eliminadas)
+                    
+                    if (row.style.display !== 'none') {
+                        const gravadoField = row.querySelector('input[name^="detallefactura_set"][name$="-gravado"]');
+                        const ivaField = row.querySelector('input[name^="detallefactura_set"][name$="-iva"]');
+                        const totalField = row.querySelector('input[name^="detallefactura_set"][name$="-total"]');
+
+                        
+                        if (totalField && totalField.value) {  
+                            
+                            totalGravado += parseFloat(gravadoField.value) || 0;
+                            totalIva += parseFloat(ivaField.value) || 0;
+                            totalFactura += parseFloat(totalField.value) || 0;
+                            hayFilasVisibles = true;
+                        }
                     }
-            
-                    // Verificar si el span de visualización existe
-                    const span = input.nextElementSibling;
-                    if (!span || !span.classList.contains('formatted-number')) {
-                        //alert(`❌ ERROR: No se encontró el span de visualización para: ${id}`);
-                        return;
-                    }
-            
-                    // Alerta 1: Mostrar valor crudo del input
-                    // alert(`📥 INPUT ${id}:\nValor original: ${input.value}\nTipo de dato: ${typeof input.value}`);
-                    
-                    // Alerta 2: Mostrar valor después de parsear
-                    const valorParseado = parseNumber(input.value);
-                    // alert(`🔢 ${id} PARSEADO:\nValor: ${valorParseado}\nTipo: ${typeof valorParseado}`);
-                    
-                    // Alerta 3: Mostrar valor después de formatear
-                    const valorFormateado = formatNumber(input.value);
-                    // alert(`🎨 ${id} FORMATEADO:\nResultado: ${valorFormateado}`);
-                    
-                    // Aplicar el valor al span
-                    span.textContent = valorFormateado;
-                    // alert(`✅ ${id} ACTUALIZADO:\nSe mostró: ${span.textContent}`);
                 });
-                
-                // alert("🏁 VERIFICACIÓN COMPLETADA");
-            }
             
-            // Función para parsear valores (CRÍTICA)
-            function parseNumber(value) {
-                // Si es número, retornar directamente
-                if (typeof value === 'number') return value;
+
+                // Actualizar el campo total general
+                //const totalFacturaInput = document.getElementById('total-factura');
+                const totalGravadoInput = document.getElementById('id_gravado');
+                const totalExentoInput = document.getElementById('id_exento');
+                const totalIvaInput = document.getElementById('id_iva');
+                const totalPercepIbInput = document.getElementById('id_percep_ib');
+                const totalFacturaInput = document.getElementById('id_total');
                 
-                // Si es string con formato "184.802,20"
-                if (typeof value === 'string' && value.includes('.') && value.includes(',')) {
-                    return parseFloat(
-                        value.replace(/\./g, '')  // Quita puntos de miles
-                             .replace(',', '.')   // Convierte coma decimal a punto
-                    );
+                // Si no hay filas visibles o todas fueron eliminadas
+                if (!hayFilasVisibles && filas.length > 0) {
+                    totalGravado = 0;
+                    totalExento = 0;
+                    totalIva = 0;
+                    totalPercepIb = 0;
+                    totalFactura = 0;
                 }
                 
-                // Para strings numéricos simples "184802.20"
-                return parseFloat(value) || 0;
+                totalGravadoInput.value = totalGravado.toFixed(2);
+                totalIvaInput.value = totalIva.toFixed(2);
+                totalFacturaInput.value = totalFactura.toFixed(2);
             }
-            
-            // Función para formatear visualización
-            function formatNumber(value) {
-                const num = parseNumber(value);
+            */
+            // Final código original
+
+            //
+            function formatNumber(number) {
+                // Convierte a número por si viene como string
+                const num = parseFloat(number) || 0;
+                // Formatea con separadores de miles y decimales
                 return num.toLocaleString('es-AR', {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2
@@ -878,26 +771,34 @@
                 let totalPercepIb = 0;
                 let totalFactura = 0;
                 
-                // 1. Calcular con valores correctamente parseados
+                // Recorre cada fila para calcular los totales
                 document.querySelectorAll('.detalle-form tbody tr:not([style*="display: none"])').forEach(row => {
-                    const total = parseNumber(row.querySelector('[name*="-total"]').value);
-                    const gravado = parseNumber(row.querySelector('[name*="-gravado"]').value);
-                    const iva = parseNumber(row.querySelector('[name*="-iva"]').value);
-                    
-                    totalFactura += total;
-                    totalGravado += gravado;
-                    totalIva += iva;
+                    const totalField = row.querySelector('[name*="-total"]');
+                    if (totalField && totalField.value) {
+                        const total = parseFloat(totalField.value) || 0;
+                        totalFactura += total;
+                        
+                        const gravado = parseFloat(row.querySelector('[name*="-gravado"]').value) || 0;
+                        const iva = parseFloat(row.querySelector('[name*="-iva"]').value) || 0;
+                        
+                        totalGravado += gravado;
+                        totalIva += iva;
+                    }
                 });
             
-                // 2. Guardar valores numéricos puros
+                // Actualizar campos con formato
                 document.getElementById('id_gravado').value = totalGravado.toFixed(2);
                 document.getElementById('id_exento').value = totalExento.toFixed(2);
                 document.getElementById('id_iva').value = totalIva.toFixed(2);
                 document.getElementById('id_percep_ib').value = totalPercepIb.toFixed(2);
                 document.getElementById('id_total').value = totalFactura.toFixed(2);
             
-                // 3. Formatear solo para visualización
-                actualizarVisualizacionTotales();
+                // Aplicar formato visual a los campos mostrados
+                document.querySelectorAll('[id^="id_gravado"], [id^="id_exento"], [id^="id_iva"], [id^="id_percep_ib"], [id^="id_total"]').forEach(field => {
+                    const formattedValue = formatNumber(field.value);
+                    // Mostrar el valor formateado en el campo de visualización
+                    field.nextElementSibling ? field.nextElementSibling.textContent = formattedValue : null;
+                });
             }
             //
     
@@ -970,7 +871,49 @@
             const buscarProductoForm = document.getElementById('detalleForm');
             const tablaResultados = document.querySelector('#tabla-resultados tbody');
             const detalleModal = document.getElementById('detalleModal');
+            //const formsetContainer = document.getElementById('formset-container');
             const insertarBtn = document.getElementById('agregarDetalle');
+            
+            // Almacenar los productos seleccionados temporalmente
+            let productosSeleccionados = [];
+
+            // Clase reutilizable
+            const formControlClass = 'form-control form-control-sm border border-primary small-font';
+            
+            // Evento para seleccionar productos
+            tablaResultados.addEventListener('change', function(event) {
+                if (event.target.matches('.seleccionar-producto')) {
+                    const isChecked = event.target.checked;
+                    const row = event.target.closest('tr');
+                    const idProducto = event.target.getAttribute('data-id'); // Capturar ID del producto
+                    //const medidaProducto = row.querySelector('td:nth-child(2)').textContent.trim();
+                    //const nombreProducto = row.querySelector('td:nth-child(4)').textContent.trim();
+                    const medidaProducto = event.target.getAttribute("data-medida"); // Obtener la medida del producto
+                    const nombreProducto = event.target.getAttribute("data-nombre"); // Obtener el nombre de
+                    //const precioProducto = parseFloat(row.querySelector('td:nth-child(5)').textContent.trim());
+                    const precioProducto = parseFloat(event.target.getAttribute("data-precio"));
+                    const descuentoVendedor = parseFloat(event.target.getAttribute("data-descuento-vendedor"));
+                    
+                    //const alicuotaIva = parseFloat(event.target.getAttribute("data-alicuota-iva"));
+                    const alicuotaIva = parseFloat(event.target.getAttribute("data-alicuota-iva")).toFixed(2);
+
+                    const producto = {
+                        id: idProducto,
+                        medida: medidaProducto,
+                        nombre: nombreProducto,
+                        precio: precioProducto,
+                        descuento_vendedor: descuentoVendedor,
+                        alicuota_iva: alicuotaIva   
+                    };
+
+                    if (isChecked) {
+                        productosSeleccionados.push(producto);
+                    } else {
+                        productosSeleccionados = productosSeleccionados.filter(p => p.idProducto !== idProducto);
+                    }
+                }
+            });
+            
             const cambia_precio_descripcion = {{ cambia_precio_descripcion|yesno:"true,false" }};
             //alert(cambia_precio_descripcion);
 
@@ -1031,29 +974,6 @@
 
             // Manejar el botón de insertar detalle de factura (versión optimizada)
             insertarBtn.addEventListener('click', function() {
-                // Obtener todos los checkboxes marcados
-                const checkboxes = document.querySelectorAll('#tabla-resultados .seleccionar-producto:checked');
-
-                if (checkboxes.length === 0) {
-                    alert('Por favor seleccione al menos un producto');
-                    return;
-                }
-                
-                // Crear array temporal para los productos seleccionados
-                const productosSeleccionados = [];
-                
-                checkboxes.forEach(checkbox => {
-                    productosSeleccionados.push({
-                        id: checkbox.dataset.id,
-                        medida: checkbox.dataset.medida,
-                        nombre: checkbox.dataset.nombre,
-                        precio: parseFloat(checkbox.dataset.precio),
-                        descuento_vendedor: parseFloat(checkbox.dataset.descuentoVendedor),
-                        alicuota_iva: parseFloat(checkbox.dataset.alicuotaIva).toFixed(2)
-                    });
-                });
-                
-                // Insertar productos en la tabla detalle factura
                 productosSeleccionados.forEach(producto => {
                     const currentIndex = formsetContainer.querySelectorAll('.detalle-form tbody tr').length;
 
@@ -1072,9 +992,6 @@
                     const iva = (montoTotal - gravado).toFixed(2);
                     const nombreInputAttributes = cambia_precio_descripcion ? 'required' : 'readonly';
                     const valorPorDefecto = document.getElementById('id_tipo_venta')?.value || "M";
-
-                    // Clase reutilizable
-                    const formControlClass = 'form-control form-control-sm border border-primary small-font';
 
                     // Crear y insertar la fila
                     const newFormHTML = `
@@ -1178,8 +1095,61 @@
                         formsetContainer.querySelectorAll('.detalle-form tbody tr').length;
                 });
                 
-                // Cerrar modal y limpiar selecciones
-                checkboxes.forEach(checkbox => checkbox.checked = false);
+                // Limpiar y cerrar modal
+                productosSeleccionados = [];
+                detalleModal.querySelector('.btn-close').click();
+
+                // Cerrar acordeón del encabezado y abrir el del detalle
+                productosSeleccionados = [];
+                detalleModal.querySelector('.btn-close').click();
+
+                // Manipulación de acordeones
+                // Limpiar y cerrar modal
+                productosSeleccionados = [];
+                detalleModal.querySelector('.btn-close').click();
+
+                // Manipulación de acordeones
+                // Limpiar y cerrar modal
+                productosSeleccionados = [];
+                detalleModal.querySelector('.btn-close').click();
+
+                // Manipulación de acordeones
+                /*
+                const manageAccordions = () => {
+                    const accordionEncabezado = document.getElementById('panelsStayOpen-collapseOne');
+                    const accordionDetalle = document.getElementById('panelsStayOpen-collapseTwo');
+                    
+                    if (!accordionEncabezado || !accordionDetalle) return;
+                
+                    // 1. Obtener instancias existentes o crear nuevas
+                    const collapseEncabezado = bootstrap.Collapse.getInstance(accordionEncabezado) || 
+                                             new bootstrap.Collapse(accordionEncabezado, { toggle: false });
+                    
+                    const collapseDetalle = bootstrap.Collapse.getInstance(accordionDetalle) || 
+                                          new bootstrap.Collapse(accordionDetalle, { toggle: false });
+                
+                    // 2. Primero cerrar el encabezado
+                    collapseEncabezado.hide();
+                    
+                    // 3. Esperar a que termine la animación de cierre
+                    accordionEncabezado.addEventListener('hidden.bs.collapse', () => {
+                        // 4. Luego abrir el detalle
+                        collapseDetalle.show();
+                        
+                        // 5. Actualizar estado de los botones
+                        document.querySelector('[data-bs-target="#panelsStayOpen-collapseOne"]')
+                               .classList.add('collapsed');
+                        document.querySelector('[data-bs-target="#panelsStayOpen-collapseTwo"]')
+                               .classList.remove('collapsed');
+                    }, { once: true }); // El evento se elimina automáticamente después de ejecutarse
+                };
+                
+                // Pequeño delay para asegurar que el DOM está listo
+                setTimeout(manageAccordions, 10);
+                */
+
+                // Cerrar modal de productos
+                productosSeleccionados = [];
                 detalleModal.querySelector('.btn-close').click();
 
                 // Función para manejar acordeones
@@ -1479,6 +1449,10 @@
 
             }
 
+            ///////
+            
+            ///////
+
         });
     </script>
 
@@ -1651,6 +1625,20 @@
                     // document.getElementById('id_letra_comprobante').value = isChecked ? 'A' : 'B';
                     const esRemito = document.getElementById('id_es_remito').checked;
                     document.getElementById('id_letra_comprobante').value = esRemito ? 'R' : (isChecked ? 'A' : 'B');
+
+                    // Numeración
+                    // compro
+                    // letra_comprobante
+                    // numero_comprobante
+
+                    
+                    // const vip = seleccion.getAttribute('data-vip')
+                    //const mayorista = seleccion.getAttribute('data-mayorista');
+                    //const sub_cuenta = seleccion.getAttribute('data-sub_cuenta');
+                    //const observaciones = seleccion.getAttribute('data-observaciones');
+                    //const black_list = seleccion.getAttribute('data-black_list');
+                    //const black_list_motivo = seleccion.getAttribute('data-black_list_motivo');;
+
                     //alert(discrimina_iva);
                     
                     document.getElementById('id_id_cliente').value = id_cliente || '';
@@ -1742,6 +1730,14 @@
                     }
                     // Final Número de Comprobante
 
+                    //document.getElementById('id_id_sucursal').value = id_sucursal || '';
+                    //document.getElementById('id_vip').value = vip === 'true' ? 'Sí' : 'No';
+                    //document.getElementById('id_mayorista').value = mayorista === 'true' ? 'Sí' : 'No';
+                    //document.getElementById('id_sub_cuenta').value = sub_cuenta || '';
+                    //document.getElementById('id_observaciones').value = observaciones || '';
+                    //document.getElementById('id_black_list').value = black_list === 'true' ? 'Sí' : 'No';
+                    //document.getElementById('id_black_list_motivo').value = black_list_motivo || '';
+                    
                     // Cerrar el modal
                     const modal = bootstrap.Modal.getInstance(document.getElementById('agendaModal'));
                     modal.hide();
@@ -2083,73 +2079,4 @@
         });
     </script>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // ==================== SERIALES ====================
-            const serialModal = new bootstrap.Modal('#serialModal');
-            const serialTableBody = document.getElementById('serialTableBody');
-            
-            // 1. Validación al agregar serial (como en detalles)
-            document.getElementById('btnAgregarSerial').addEventListener('click', function(e) {
-                if (!document.getElementById('id_id_cliente')?.value) {
-                    e.preventDefault();
-                    alert('Primero seleccione un cliente');
-                    return;
-                }
-            });
-        
-            // 2. Insertar serial (mismo patrón que detalles)
-            document.getElementById('btnGuardarSerial').addEventListener('click', function() {
-                const serialInput = document.getElementById('serialInput');
-                const serialValue = serialInput.value.trim();
-                
-                if (!serialValue) {
-                    alert('Ingrese un serial válido');
-                    return;
-                }
-        
-                const totalForms = document.getElementById('id_serialfactura_set-TOTAL_FORMS');
-                const formCount = parseInt(totalForms.value);
-                
-                const newRow = `
-                <tr>
-                    <td>
-                        <input type="hidden" name="serialfactura_set-${formCount}-id_serial_factura">
-                        <input type="hidden" name="serialfactura_set-${formCount}-id_factura">
-                        <input type="text" name="serialfactura_set-${formCount}-producto_serial"
-                               class="form-control form-control-sm border border-secondary"
-                               value="${serialValue}" required>
-                    </td>
-                    <td>
-                        <button type="button" class="btn btn-danger btn-sm btn-delete-serial">
-                            <i class="bi bi-trash"></i>
-                        </button>
-                        <input type="checkbox" name="serialfactura_set-${formCount}-DELETE" hidden>
-                    </td>
-                </tr>`;
-                
-                serialTableBody.insertAdjacentHTML('beforeend', newRow);
-                totalForms.value = formCount + 1;
-                serialModal.hide();
-                serialInput.value = '';
-            });
-        
-            // 3. Eliminar serial (igual que detalles)
-            serialTableBody.addEventListener('click', function(e) {
-                if (e.target.closest('.btn-delete-serial')) {
-                    const row = e.target.closest('tr');
-                    if (confirm('¿Eliminar este serial?')) {
-                        const deleteInput = row.querySelector('[name$="-DELETE"]');
-                        if (deleteInput) {
-                            deleteInput.checked = true;
-                            row.style.display = 'none';
-                        } else {
-                            row.remove();
-                        }
-                    }
-                }
-            });
-        });
-    </script>
-    
 {% endblock script %}

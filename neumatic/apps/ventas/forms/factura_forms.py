@@ -15,8 +15,14 @@ from diseno_base.diseno_bootstrap import (formclasstext,
 
 
 class FacturaForm(forms.ModelForm):
-    buscar_cliente = forms.CharField(required=False, 
-                                     widget=forms.TextInput(attrs={**formclasstext, 'id': 'buscar_cliente', 'readonly': 'readonly'}))
+    buscar_cliente = forms.CharField(
+        required=False,
+        widget=forms.TextInput(attrs={
+            **formclasstext, 'id': 'buscar_cliente', 
+            'readonly': 'readonly'
+            }
+                               )
+        )
     
     nombre_sucursal = forms.CharField(
         required=False,
@@ -91,6 +97,9 @@ class FacturaForm(forms.ModelForm):
             
             "gravado": forms.TextInput(attrs={**formclassnumb, 'readonly': 'readonly'}),
             "exento": forms.TextInput(attrs={**formclassnumb, 'readonly': 'readonly'}),
+            "iva": forms.TextInput(attrs={**formclassnumb, 'readonly': 'readonly'}),
+            "percep_ib": forms.TextInput(attrs={**formclassnumb, 'readonly': 'readonly'}),
+            "total": forms.TextInput(attrs={**formclassnumb, 'readonly': 'readonly'}),
         }
 
     def __init__(self, *args, **kwargs):
@@ -128,6 +137,7 @@ class FacturaForm(forms.ModelForm):
         self.fields['id_comprobante_venta'].queryset = ComprobanteVenta.objects.filter(
             Q(electronica=True) | Q(remito=True)
         )
+        
        
 class DetalleFacturaForm(forms.ModelForm):
     gravado = forms.DecimalField(
@@ -182,7 +192,7 @@ class DetalleFacturaForm(forms.ModelForm):
             
             'cantidad': forms.NumberInput(attrs={
                 'readonly': 'readonly',
-                'class': 'form-control form-control-sm border border-primary', 
+                'class': 'form-control form-control-sm border border-primary text-end', 
                 'step': '1',
                 'style': 'font-size: 0.8rem; padding: 0.25rem; margin-left: 0px; margin-right: 0px;'
                 }),
@@ -194,13 +204,13 @@ class DetalleFacturaForm(forms.ModelForm):
             'precio_lista': forms.HiddenInput(),
             'precio': forms.NumberInput(attrs={
                 'readonly': 'readonly',
-                'class': 'form-control form-control-sm border border-primary', 
+                'class': 'form-control form-control-sm border border-primary text-end', 
                 'step': '0.1',
                 'style': 'font-size: 0.8rem; padding: 0.25rem; margin-left: 0px; margin-right: 0px;'
                 }),
             'descuento': forms.NumberInput(attrs={
                 'readonly': 'readonly',
-                'class': 'form-control form-control-sm border border-primary', 'step': '0.1',
+                'class': 'form-control form-control-sm border border-primary  text-end', 'step': '0.1',
                 'style': 'font-size: 0.8rem; padding: 0.25rem; margin-left: 0px; margin-right: 0px;'
                 }),
             #'gravado': forms.HiddenInput(),
@@ -208,7 +218,7 @@ class DetalleFacturaForm(forms.ModelForm):
             #'iva': forms.HiddenInput(),
             'total': forms.NumberInput(attrs={
                 'readonly': 'readonly',
-                'class': 'form-control form-control-sm border border-primary', 'step': '0.1',
+                'class': 'form-control form-control-sm border border-primary text-end', 'step': '0.1',
                 'style': 'font-size: 0.8rem; padding: 0.25rem; margin-left: 0px; margin-right: 0px;'}),
         }
 

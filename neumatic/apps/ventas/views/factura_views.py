@@ -15,6 +15,7 @@ from .msdt_views_generics import *
 from ..models.factura_models import Factura
 from ...maestros.models.numero_models import Numero
 from ..forms.factura_forms import FacturaForm, DetalleFacturaFormSet
+from ..forms.factura_forms import SerialFacturaFormSet
 from ...maestros.models.base_models import ProductoStock
 
 from entorno.constantes_base import TIPO_VENTA
@@ -147,11 +148,11 @@ class FacturaCreateView(MaestroDetalleCreateView):
 		data['tipo_venta'] = TIPO_VENTA
 
 		if self.request.POST:
-			# print("Entro self.request.POST")
 			data['formset_detalle'] = DetalleFacturaFormSet(self.request.POST)
+			data['formset_serial'] = SerialFacturaFormSet(self.request.POST)
 		else:
-			print("NO Entro self.request.POST")
 			data['formset_detalle'] = DetalleFacturaFormSet(instance=self.object)
+			data['formset_serial'] = SerialFacturaFormSet(instance=self.object)
 
 		data['is_edit'] = False  # Indicar que es una creación
 
@@ -160,9 +161,13 @@ class FacturaCreateView(MaestroDetalleCreateView):
 	def form_valid(self, form):
 			context = self.get_context_data()
 			formset_detalle = context['formset_detalle']
+			formset_serial = context['formset_serial']
 
-			if not formset_detalle.is_valid():
-					return self.form_invalid(form)
+			# if not formset_detalle.is_valid():
+			# 		return self.form_invalid(form)
+   
+			if not all([formset_detalle.is_valid(), formset_serial.is_valid()]):
+				return self.form_invalid(form)
 
 			try:
 					with transaction.atomic():
@@ -197,9 +202,12 @@ class FacturaCreateView(MaestroDetalleCreateView):
 
 							# 3. Guardado directo (como en versión original que funcionaba)
 							self.object = form.save()
+       
 							formset_detalle.instance = self.object
-							# formset_detalle.save()
 							detalles = formset_detalle.save()
+       
+							formset_serial.instance = self.object 
+							formset_serial.save() 						
        
 							# 4. Actualización de inventario (NUEVA SECCIÓN)
 							for detalle in detalles:
@@ -291,8 +299,10 @@ class FacturaUpdateView(MaestroDetalleUpdateView):
 
 		if self.request.POST:
 			data['formset_detalle'] = DetalleFacturaFormSet(self.request.POST, instance=self.object)
+			data['formset_serial'] = SerialFacturaFormSet(self.request.POST, instance=self.object)
 		else:
 			data['formset_detalle'] = DetalleFacturaFormSet(instance=self.object)
+			data['formset_serial'] = SerialFacturaFormSet(instance=self.object)
 
 		data['is_edit'] = True  # Indicar que es una edición
 		return data
@@ -300,6 +310,7 @@ class FacturaUpdateView(MaestroDetalleUpdateView):
 	def form_valid(self, form):
 		context = self.get_context_data()
 		formset_detalle = context['formset_detalle']
+		formset_serial = context['formset_serial']
 
 		if formset_detalle.is_valid():
 			try:

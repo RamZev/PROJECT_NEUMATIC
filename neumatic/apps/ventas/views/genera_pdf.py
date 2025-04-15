@@ -184,15 +184,68 @@ class GeneraPDFView(View):
         p.drawString(x_right, current_y, f"Inicio de Actividades: {empresa.inicio_actividad.strftime('%d/%m/%Y') if empresa.inicio_actividad else ''}")
         current_y -= 15
 
-        y_position -= box_height + 15*mm
+        y_position -= box_height - 5*mm
+        
+        ############################
+        # 1.5 Sección de datos del cliente
+        # current_y = y_position - 15*mm  # Ajustar posición Y después del encabezado
+
+        # Estilo para etiquetas
+        style_label = ParagraphStyle(
+            'label',
+            fontName='Helvetica-Bold',
+            fontSize=9,
+            leading=10,
+            alignment=TA_LEFT
+        )
+
+        # Dibujar recuadro para datos del cliente
+        p.rect(margin, current_y - 30*mm, width - 2*margin, 30*mm)
+
+        # Datos del cliente - primera línea
+        p.setFont("Helvetica-Bold", 9)
+        p.drawString(margin + 5*mm, current_y - 15*mm, "Cuenta:")
+        p.setFont("Helvetica", 9)
+        p.drawString(margin + 25*mm, current_y - 15*mm, str(cliente.id_cliente))
+
+        p.setFont("Helvetica-Bold", 9)
+        p.drawString(margin + 60*mm, current_y - 15*mm, "Ap. y Nombre / Razón Social:")
+        p.setFont("Helvetica", 9)
+        p.drawString(margin + 120*mm, current_y - 15*mm, cliente.nombre_cliente[:40])  # Limitado a 40 caracteres
+
+        # Datos del cliente - segunda línea
+        p.setFont("Helvetica-Bold", 9)
+        p.drawString(margin + 5*mm, current_y - 20*mm, "I.V.A.:")
+        p.setFont("Helvetica", 9)
+        p.drawString(margin + 25*mm, current_y - 20*mm, cliente.id_tipo_iva.nombre_iva if cliente.id_tipo_iva else "")
+
+        p.setFont("Helvetica-Bold", 9)
+        p.drawString(margin + 60*mm, current_y - 20*mm, "Domicilio:")
+        p.setFont("Helvetica", 9)
+        p.drawString(margin + 120*mm, current_y - 20*mm, cliente.domicilio_cliente[:40])  # Limitado a 40 caracteres
+
+        # Datos del cliente - tercera línea
+        p.setFont("Helvetica-Bold", 9)
+        p.drawString(margin + 5*mm, current_y - 25*mm, "C.U.I.T:")
+        p.setFont("Helvetica", 9)
+        p.drawString(margin + 25*mm, current_y - 25*mm, str(cliente.cuit))
+
+        p.setFont("Helvetica-Bold", 9)
+        p.drawString(margin + 60*mm, current_y - 25*mm, "Localidad:")
+        p.setFont("Helvetica", 9)
+        p.drawString(margin + 120*mm, current_y - 25*mm, cliente.id_localidad.nombre_localidad if cliente.id_localidad else "")
+
+        # Ajustar posición Y para la tabla de detalles
+        y_position = current_y - 30*mm
+        ############################
 
         # 2. Tabla de detalles de factura
-        encabezados = ["Código", "Descripción", "Cantidad", "P. Unitario", "Desc.%", "Total"]
+        encabezados = ["Medida", "Descripción", "Cantidad", "Precio", "Desc.%", "Total"]
         detalle_data = [encabezados]
         
         for detalle in detalles:
             detalle_data.append([
-                detalle.id_producto.codigo_producto[:10] if detalle.id_producto else "",
+                detalle.id_producto.medida[:10] if detalle.id_producto else "",
                 detalle.producto_venta or "",
                 f"{detalle.cantidad:,.2f}".replace(",", ".") if detalle.cantidad else "0.00",
                 f"${detalle.precio:,.2f}".replace(",", ".") if detalle.precio else "$0.00",
@@ -201,17 +254,17 @@ class GeneraPDFView(View):
             ])
         
         # Configuración de la tabla
-        col_widths = [25*mm, 55*mm, 20*mm, 25*mm, 20*mm, 25*mm]
+        col_widths = [25*mm, 70*mm, 20*mm, 25*mm, 20*mm, 25*mm]
         tabla = Table(detalle_data, colWidths=col_widths, repeatRows=1)
         
         tabla.setStyle(TableStyle([
-            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor("#4472C4")),
-            ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
+            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor("#F0F0F0")),  # Gris claro para el encabezado
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.black),
             ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
             ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
             ('FONTSIZE', (0, 0), (-1, 0), 8),
             ('BOTTOMPADDING', (0, 0), (-1, 0), 6),
-            ('BACKGROUND', (0, 1), (-1, -1), colors.HexColor("#D9E1F2")),
+            ('BACKGROUND', (0, 1), (-1, -1), colors.white),  # Blanco para el cuerpo
             ('GRID', (0, 0), (-1, -1), 0.5, colors.HexColor("#7F7F7F")),
             ('FONTSIZE', (0, 1), (-1, -1), 8),
             ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
@@ -224,22 +277,42 @@ class GeneraPDFView(View):
         y_position -= (8 * len(detalle_data)*mm) + 20*mm
         
         # 3. Totales
+        '''
         p.setFont("Helvetica-Bold", 10)
-        p.drawString(width - 150, y_position, "Subtotal:")
-        p.drawString(width - 50, y_position, f"${factura.gravado + factura.exento:,.2f}".replace(",", "."))
+        p.drawString(width - 250, y_position, "Subtotal:")
+        p.drawString(width - 150, y_position, f"${factura.gravado + factura.exento:,.2f}".replace(",", "."))
         y_position -= 12
         
-        p.drawString(width - 150, y_position, "IVA 21%:")
-        p.drawString(width - 50, y_position, f"${factura.iva:,.2f}".replace(",", "."))
+        p.drawString(width - 250, y_position, "IVA 21%:")
+        p.drawString(width - 150, y_position, f"${factura.iva:,.2f}".replace(",", "."))
         y_position -= 12
         
-        p.drawString(width - 150, y_position, "Percep. IIBB:")
-        p.drawString(width - 50, y_position, f"${factura.percep_ib:,.2f}".replace(",", "."))
+        p.drawString(width - 250, y_position, "Percep. IIBB:")
+        p.drawString(width - 150, y_position, f"${factura.percep_ib:,.2f}".replace(",", "."))
         y_position -= 15
         
         p.setFont("Helvetica-Bold", 12)
-        p.drawString(width - 150, y_position, "TOTAL:")
-        p.drawString(width - 50, y_position, f"${factura.total:,.2f}".replace(",", "."))
+        p.drawString(width - 250, y_position, "TOTAL:")
+        p.drawString(width - 150, y_position, f"${factura.total:,.2f}".replace(",", "."))
+        y_position -= 25
+        '''
+        
+        p.setFont("Helvetica-Bold", 10)
+        p.drawString(width - 250, y_position, "Subtotal:")
+        p.drawRightString(width - 50, y_position, f"${factura.gravado + factura.exento:,.2f}".replace(",", "."))
+        y_position -= 12
+
+        p.drawString(width - 250, y_position, "IVA 21%:")
+        p.drawRightString(width - 50, y_position, f"${factura.iva:,.2f}".replace(",", "."))
+        y_position -= 12
+
+        p.drawString(width - 250, y_position, "Percep. IIBB:")
+        p.drawRightString(width - 50, y_position, f"${factura.percep_ib:,.2f}".replace(",", "."))
+        y_position -= 15
+
+        p.setFont("Helvetica-Bold", 12)
+        p.drawString(width - 250, y_position, "TOTAL:")
+        p.drawRightString(width - 50, y_position, f"${factura.total:,.2f}".replace(",", "."))
         y_position -= 25
         
         # 4. Datos CAE si existe
