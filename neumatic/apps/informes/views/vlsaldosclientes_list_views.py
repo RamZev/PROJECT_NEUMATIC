@@ -6,15 +6,10 @@ from django.http import HttpResponse
 from datetime import datetime
 from django.templatetags.static import static
 
-#-- Recursos necesarios para generar el pdf.
-from io import BytesIO
-from reportlab.lib.pagesizes import A4, landscape
-# from reportlab.lib.units import inch
+#-- Para generar el PDF (ReportLab).
 from reportlab.lib import colors
-from reportlab.platypus import BaseDocTemplate, Frame, PageTemplate, Paragraph, Table, TableStyle
-from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-# from reportlab.pdfgen import canvas
-from reportlab.lib.enums import TA_LEFT, TA_RIGHT
+from reportlab.lib.pagesizes import A4, landscape
+from reportlab.platypus import Paragraph
 
 from .report_views_generics import *
 from apps.informes.models import VLSaldosClientes
@@ -209,12 +204,10 @@ def vlsaldosclientes_vista_pdf(request):
 		return HttpResponse("Contexto no encontrado o expirado", status=400)
 	
 	#-- Generar el PDF usando ReportLab
-	# pdf_file = generar_pdf_saldos_clientes(contexto_reporte)
 	pdf_file = generar_pdf(contexto_reporte)
 	
 	#-- Preparar la respuesta HTTP.
 	response = HttpResponse(pdf_file, content_type="application/pdf")
-	# response["Content-Disposition"] = f'inline; filename="informe_{ConfigViews.model_string}.pdf"'
 	response["Content-Disposition"] = f'inline; filename="{ConfigViews.report_title}.pdf"'
 	
 	return response
@@ -464,25 +457,25 @@ def generar_pdf_saldos_clientes(contexto_reporte):
 
 class CustomPDFGenerator(PDFGenerator):
 	#-- Método que se puede sobreescribir/extender según requerimientos.
-	def _get_header_bottom_left(self, context):
-		"""Personalización del Header-bottom-left"""
-		
-		# custom_text = context.get("texto_personalizado", "")
-		# 
-		# if custom_text:
-		# 	return f"<b>NOTA:</b> {custom_text}"
-		
-		id_cliente = 10025
-		cliente = "Leoncio R. Barrios H."
-		domicilio = "Jr. San Pedro 1256. Surquillo, Lima."
-		Telefono = "971025647"
-		
-		# return f"Cliente: [{id_cliente}] {cliente} <br/> {domicilio}"
-		# return f"Cliente: [{id_cliente}] {cliente} <br/> {domicilio} <br/> Tel. {Telefono} <br/>"
-		return f"Cliente: [{id_cliente}] {cliente} <br/> {domicilio} <br/> Tel. {Telefono} <br/> Tel. {Telefono} "
-		# return f"Cliente: [{id_cliente}] {cliente} <br/> {domicilio} <br/> Tel. {Telefono} <br/> Tel. {Telefono} <br/> Tel. {Telefono}"
-		
-		# return super()._get_header_bottom_left(context)
+	# def _get_header_bottom_left(self, context):
+	# 	"""Personalización del Header-bottom-left"""
+	# 	
+	# 	# custom_text = context.get("texto_personalizado", "")
+	# 	# 
+	# 	# if custom_text:
+	# 	# 	return f"<b>NOTA:</b> {custom_text}"
+	# 	
+	# 	id_cliente = 10025
+	# 	cliente = "Leoncio R. Barrios H."
+	# 	domicilio = "Jr. San Pedro 1256. Surquillo, Lima."
+	# 	Telefono = "971025647"
+	# 	
+	# 	# return f"Cliente: [{id_cliente}] {cliente} <br/> {domicilio}"
+	# 	# return f"Cliente: [{id_cliente}] {cliente} <br/> {domicilio} <br/> Tel. {Telefono} <br/>"
+	# 	return f"Cliente: [{id_cliente}] {cliente} <br/> {domicilio} <br/> Tel. {Telefono} <br/> Tel. {Telefono} "
+	# 	# return f"Cliente: [{id_cliente}] {cliente} <br/> {domicilio} <br/> Tel. {Telefono} <br/> Tel. {Telefono} <br/> Tel. {Telefono}"
+	# 	
+	# 	# return super()._get_header_bottom_left(context)
 	
 	#-- Método que se puede sobreescribir/extender según requerimientos.
 	# def _get_header_bottom_right(self, context):
@@ -497,7 +490,7 @@ class CustomPDFGenerator(PDFGenerator):
 
 def generar_pdf(contexto_reporte):
 	#-- Crear instancia del generador personalizado.
-	generator = CustomPDFGenerator(contexto_reporte)
+	generator = CustomPDFGenerator(contexto_reporte, pagesize=landscape(A4))
 	
 	#-- Construir datos de la tabla:
 	

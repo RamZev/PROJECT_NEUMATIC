@@ -2,21 +2,24 @@
 
 from django.urls import reverse_lazy
 from django.shortcuts import render
-
 from django.http import HttpResponse
 from datetime import datetime
-from django.template.loader import render_to_string
-from weasyprint import HTML
 from django.templatetags.static import static
 from decimal import Decimal
 from django.db.models import Sum, F, FloatField, ExpressionWrapper
+
+#-- ReportLab:
+from reportlab.lib import colors
+from reportlab.lib.pagesizes import A4, portrait
+#------------------------
 
 from .report_views_generics import *
 from apps.informes.models import VLVentasResumenIB
 from apps.ventas.models.factura_models import DetalleFactura
 from ..forms.buscador_vlventasresumenib_forms import BuscadorVLVentasResumenIBForm
-from utils.utils import deserializar_datos, serializar_queryset, formato_argentino
-from utils.helpers.export_helpers import ExportHelper
+from utils.utils import deserializar_datos, formato_argentino
+from apps.maestros.templatetags.custom_tags import formato_es_ar
+from utils.helpers.export_helpers import ExportHelper, PDFGenerator
 
 
 class ConfigViews:
@@ -74,13 +77,13 @@ class ConfigViews:
 	
 	#-- Establecer las columnas del reporte y sus anchos(en punto).
 	header_data = {
-		"nombre_provincia": (40, "Provincia"),
-		"por_menor": (180, "Por Menor"),
-		"reparacion": (40, "Reparación"),
-		"por_mayor": (180, "Por Mayor"),
-		"total_gravado": (40, "TotalGravado"),
-		"iva": (40, "I.V.A."),
-		"total": (40, "Total"),
+		"provincia": (180, "Provincia"),
+		"por_menor": (65, "Por Menor"),
+		"reparacion": (65, "Reparación"),
+		"por_mayor": (65, "Por Mayor"),
+		"total_gravado": (65, "Total Gravado"),
+		"iva": (65, "I.V.A."),
+		"total": (65, "TOTAL"),
 	}
 
 
@@ -258,7 +261,6 @@ class VLVentasResumenIBInformeView(InformeFormView):
 			
 			#-- 3. Calcular por_menor (gravado total - por_mayor - reparacion).
 			totales[id_santa_fe]["por_menor"] = (totales[id_santa_fe]["gravado_bruto"] - totales[id_santa_fe]["por_mayor"] - totales[id_santa_fe]["reparacion"]).quantize(Decimal('0.00'))
-			print(f'{totales[id_santa_fe]["por_menor"] = }')
 			
 			#-- 4. Calcular total_gravado (suma de los tres conceptos).
 			totales[id_santa_fe]["total_gravado"] = (
@@ -333,8 +335,8 @@ def vlventasresumenib_vista_pantalla(request):
 	return render(request, ConfigViews.reporte_pantalla, contexto_reporte)
 
 
+# -------------------------------------------------------------------------------------------------
 def vlventasresumenib_vista_pdf(request):
-	return HttpResponse("Reporte en PDF aún no implementado.", status=400)
 	#-- Obtener el token de la querystring.
 	token = request.GET.get("token")
 	
@@ -348,14 +350,116 @@ def vlventasresumenib_vista_pdf(request):
 	if not contexto_reporte:
 		return HttpResponse("Contexto no encontrado o expirado", status=400)
 	
-	#-- Preparar la respuesta HTTP.
-	html_string = render_to_string(ConfigViews.reporte_pdf, contexto_reporte, request=request)
-	pdf_file = HTML(string=html_string, base_url=request.build_absolute_uri()).write_pdf()
+	#-- Generar el PDF usando ReportLab
+	pdf_file = generar_pdf(contexto_reporte)
 	
+	#-- Preparar la respuesta HTTP.
 	response = HttpResponse(pdf_file, content_type="application/pdf")
-	response["Content-Disposition"] = f'inline; filename="informe_{ConfigViews.model_string}.pdf"'
+	response["Content-Disposition"] = f'inline; filename="{ConfigViews.report_title}.pdf"'
 	
 	return response
+
+class CustomPDFGenerator(PDFGenerator):
+	#-- Método que se puede sobreescribir/extender según requerimientos.
+	# def _get_header_bottom_left(self, context):
+	# 	"""Personalización del Header-bottom-left"""
+	# 	
+	# 	# custom_text = context.get("texto_personalizado", "")
+	# 	# 
+	# 	# if custom_text:
+	# 	# 	return f"<b>NOTA:</b> {custom_text}"
+	# 	
+	# 	id_cliente = 10025
+	# 	cliente = "Leoncio R. Barrios H."
+	# 	domicilio = "Jr. San Pedro 1256. Surquillo, Lima."
+	# 	Telefono = "971025647"
+	# 	
+	# 	# return f"Cliente: [{id_cliente}] {cliente} <br/> {domicilio}"
+	# 	# return f"Cliente: [{id_cliente}] {cliente} <br/> {domicilio} <br/> Tel. {Telefono} <br/>"
+	# 	return f"Cliente: [{id_cliente}] {cliente} <br/> {domicilio} <br/> Tel. {Telefono} <br/> Tel. {Telefono} "
+	# 	# return f"Cliente: [{id_cliente}] {cliente} <br/> {domicilio} <br/> Tel. {Telefono} <br/> Tel. {Telefono} <br/> Tel. {Telefono}"
+	# 	
+	# 	# return super()._get_header_bottom_left(context)
+	
+	#-- Método que se puede sobreescribir/extender según requerimientos.
+	# def _get_header_bottom_right(self, context):
+	# 	"""Añadir información adicional específica para este reporte"""
+	# 	base_content = super()._get_header_bottom_right(context)
+	# 	saldo_total = context.get("saldo_total", 0)
+	# 	return f"""
+	# 		{base_content}<br/>
+	# 		<b>Total General:</b> {formato_es_ar(saldo_total)}
+	# 	"""
+	pass
+
+def generar_pdf(contexto_reporte):
+	#-- Crear instancia del generador personalizado.
+	generator = CustomPDFGenerator(contexto_reporte, pagesize=portrait(A4))
+	
+	#-- Construir datos de la tabla:
+	
+	#-- Obtener los títulos de las columnas (headers).
+	header_data = [value[1] for value in ConfigViews.header_data.values()]
+	table_data = [header_data]
+	
+	for obj in contexto_reporte.get("objetos", []):
+		
+		row = [
+			obj.get("provincia", ""),
+			formato_es_ar(obj.get("por_menor", 0)),
+			formato_es_ar(obj.get("reparacion", 0)),
+			formato_es_ar(obj.get("por_mayor", 0)),
+			formato_es_ar(obj.get("total_gravado", 0)),
+			formato_es_ar(obj.get("iva", 0)),
+			formato_es_ar(obj.get("total", 0))
+		]
+		table_data.append(row)
+		
+	#-- Agregar fila de total.
+	tg_pmenor = contexto_reporte.get("tg_pmenor", 0)
+	tg_reparacion = contexto_reporte.get("tg_reparacion", 0)
+	tg_pmayor = contexto_reporte.get("tg_pmayor", 0)
+	tg_gravado = contexto_reporte.get("tg_gravado", 0)
+	tg_iva = contexto_reporte.get("tg_iva", 0)
+	tg_total = contexto_reporte.get("tg_total", 0)
+	
+	total_row = ["Totales:", 
+			  formato_es_ar(tg_pmenor),
+			  formato_es_ar(tg_reparacion),
+			  formato_es_ar(tg_pmayor),
+			  formato_es_ar(tg_gravado),
+			  formato_es_ar(tg_iva),
+			  formato_es_ar(tg_total)
+	]
+	table_data.append(total_row)
+	
+	#-- Configuración específica de la tabla de datos:
+	
+	#-- Extrae los anchos de las columnas de la estructura ConfigViews.header_data.
+	col_widths = [value[0] for value in ConfigViews.header_data.values()]
+	
+	#-- Estilos específicos adicionales de la tabla.
+	table_style_config = [
+		('ALIGN', (1,0), (-1,-1), 'RIGHT'),
+		('LINEABOVE', (0, len(table_data)-1), (-1, len(table_data)-1), 0.5, colors.black),
+		('FONTNAME', (0, len(table_data)-1), (-1, len(table_data)-1), 'Helvetica-Bold'),
+	]
+	
+	return generator.generate(table_data, col_widths, table_style_config)		
+
+def _format_date(date_value):
+	"""Helper para formatear fechas"""
+	if not date_value:
+		return ""
+	
+	if isinstance(date_value, str):
+		try:
+			return datetime.strptime(date_value, "%Y-%m-%d").strftime("%d/%m/%Y")
+		except ValueError:
+			return date_value
+	else:
+		return date_value.strftime("%d/%m/%Y")
+# -------------------------------------------------------------------------------------------------
 
 
 def vlventasresumenib_vista_excel(request):
@@ -421,53 +525,3 @@ def vlventasresumenib_vista_csv(request):
 	response["Content-Disposition"] = f'inline; filename="informe_{ConfigViews.model_string}.csv"'
 	
 	return response
-
-
-
-'''
-# --------------------------------
-importe_max = 0
-objetos = []
-lista_provincias = []
-totales = {}
-
-for obj in objetos:
-	
-	if obj.id_provincia_id in lista_provincias:
-		id_prov = obj.id_provincia_id
-		
-		if id_prov not in totales:
-			totales[id_prov] = {
-				"provincia": obj.nombre_provincia,
-				"por_menor": Decimal(0),
-				"reparación": Decimal(0),
-				"por_mayor": Decimal(0),
-				"total_gravado": Decimal(0),
-				"iva": Decimal(0),
-				"total": Decimal(0),
-			}
-		
-		totales[id_prov]["por_mayor"] += obj.gravado
-		totales[id_prov]["iva"] += obj.iva
-		
-	else:
-		id_prov = 13   # Santan Fe.
-		
-		if id_prov not in totales:
-			totales[id_prov] = {
-				"provincia": obj.nombre_provincia,
-				"por_menor": Decimal(0),
-				"reparación": Decimal(0),
-				"por_mayor": Decimal(0),
-				"total_gravado": Decimal(0),
-				"iva": Decimal(0),
-				"total": Decimal(0),
-			}
-		
-		if abs(obj.gravado) > importe_max:
-			totales[id_prov]["por_mayor"] += obj.gravado
-		
-		totales[id_prov]["total_gravado"] += obj.gravado
-		totales[id_prov]["iva"] += obj.iva
-	
-'''

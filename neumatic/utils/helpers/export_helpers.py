@@ -2,7 +2,7 @@
 
 from io import BytesIO, TextIOWrapper
 from reportlab.platypus import BaseDocTemplate, SimpleDocTemplate, Frame, PageTemplate, Table, TableStyle, Paragraph, Spacer
-from reportlab.lib.pagesizes import A4, landscape
+from reportlab.lib.pagesizes import A4, portrait
 from reportlab.lib.enums import TA_LEFT, TA_RIGHT
 from reportlab.pdfgen import canvas
 from reportlab.lib import colors
@@ -345,7 +345,11 @@ class CustomCanvas(canvas.Canvas):
 
 #---------------------------------------------------------------------------------
 class PDFGenerator:
-	def __init__(self, context, pagesize=landscape(A4), margins=(10, 10, 0, 40)):
+	def __init__(self, context, pagesize=portrait(A4), margins=(10, 10, 0, 40)):
+		#-- Dimensiones formato A4:
+		#-- portrait:	595 pts. (210x297mm) vertical
+		#-- landscape:	842 pts. (297x210mm) horizontal
+		
 		self.buffer = BytesIO()
 		self.context = context
 		self.pagesize = pagesize
@@ -372,40 +376,6 @@ class PDFGenerator:
 		#-- Creación y Configuración inicial del frame.
 		self._setup_frame()
 		
-	# def _setup_frame(self, extra_header_height=0):
-	# 	"""Configura el frame con márgenes adaptables"""
-	# 	
-	# 	# Header-top fijo: 50pt
-	# 	# Header-bottom: Altura variable (medida en _calculate_header_bottom_height)
-	# 	# Footer fijo: 40pt
-	# 	# Margen seguridad: 15pt
-	# 	
-	# 	# #-- Margen base (80pt= 50+30) + espacio extra + margen de seguridad (20pt).
-	# 	espacio_ocupado = 50 + extra_header_height + 40 + 30
-	# 	body_height = self.doc.height - espacio_ocupado
-	# 	
-	# 	#-- Crear frame con altura ajustada.
-	# 	self.frame = Frame(
-	# 		self.doc.leftMargin,
-	# 		self.doc.bottomMargin + 40, #-- Respetar footer.
-	# 		self.doc.width,
-	# 		# max(body_height, 50), #-- Altura mínima.
-	# 		max(body_height, 50), #-- Altura mínima.
-	# 		id="body"
-	# 	)
-	# 	
-	# 	#-- Limpiar plantillas existentes (evita duplicados).
-	# 	if hasattr(self.doc, 'pageTemplates'):
-	# 		self.doc.pageTemplates.clear()  # Elimina plantillas viejas
-	# 	
-	# 	#-- Crear la plantilla nueva.
-	# 	self.doc.addPageTemplates([
-	# 		PageTemplate(
-	# 			id="reportTemplate",
-	# 			frames=[self.frame],
-	# 			onPage=self._header_footer
-	# 		)
-	# 	])
 	def _setup_frame(self, extra_header_height=0):
 		"""Configura el frame con márgenes adaptables"""
 		
@@ -524,24 +494,6 @@ class PDFGenerator:
 			self._get_header_bottom_right(doc.contexto_reporte),
 			content_top
 		)
-	# def _render_header_bottom(self, canvas_obj, doc, width, height):
-	# 	"""Renderiza el header-bottom con posición absoluta precisa"""
-	# 	
-	# 	#-- Posición Y calculada desde arriba del documento.
-	# 	header_bottom_top = height - 50  # 50pt para header-top
-	# 	content_height = self.extra_header_height
-	# 	
-	# 	#-- Línea separadora.
-	# 	line_y = header_bottom_top - content_height - 5  # 5pt de margen
-	# 	canvas_obj.line(doc.leftMargin, line_y, width - doc.rightMargin, line_y)
-	# 	
-	# 	#-- Contenido del header-bottom.
-	# 	self._draw_header_bottom_content(
-	# 		canvas_obj, doc,
-	# 		self._get_header_bottom_left(doc.contexto_reporte),
-	# 		self._get_header_bottom_right(doc.contexto_reporte),
-	# 		header_bottom_top - content_height - 10  # 10pt debajo de la línea
-	# 	)
 	
 	def _get_header_bottom_left(self, context):
 		"""SOBREESCRIBIR ESTE MÉTODO PARA CONTENIDO IZQUIERDO PERSONALIZADO"""
@@ -571,7 +523,6 @@ class PDFGenerator:
 		
 		#-- Línea inferior con 2pt de separación.
 		line_y = content_bottom - 2
-		# canvas_obj.line(doc.leftMargin, line_y, doc.width - doc.rightMargin, line_y)
 		canvas_obj.line(doc.leftMargin, line_y, doc.width + doc.rightMargin, line_y)
 	
 	def _header_footer(self, canvas_obj, doc):
@@ -579,12 +530,6 @@ class PDFGenerator:
 		
 		canvas_obj.saveState()
 		width_total, height_total = doc.pagesize
-		
-		#-----
-		# Dibujar bordes de referencia
-		# canvas_obj.setStrokeColorRGB(1, 0, 0)  # Rojo
-		# canvas_obj.rect(doc.leftMargin, doc.bottomMargin, doc.width, height_total - doc.topMargin - doc.bottomMargin)		
-		#-----
 		
 		#-- Header Top (logo + título) (altura fija).
 		self._render_header_top(canvas_obj, doc, width_total, height_total)
@@ -662,13 +607,22 @@ class PDFGenerator:
 		
 		#-- Estilo base.
 		table_style = TableStyle([
-			('BACKGROUND', (0,0), (-1,0), colors.gray),
-			('TEXTCOLOR', (0,0), (-1,0), colors.whitesmoke),
+			#-- Estilos comunes toda la tabla.
 			('VALIGN', (0,0), (-1,-1), 'TOP'),
 			('FONTSIZE', (0,0), (-1,-1), 6),
-			('TOPPADDING', (0,1), (-1,1), 2),
-			('TOPPADDING', (0,2), (-1,-1), 0),
+			# ('LEADING', (0,0), (-1,-1), 0),
+			('LEADING', (0,0), (-1,-1), 8),
+			
+			#-- Padding de la tabla exceptuando la primera fila (headers).
+			('TOPPADDING', (0,1), (-1,-1), 0),
 			('BOTTOMPADDING', (0,1), (-1,-1), 0),
+			
+			#-- Estilos para la priemra fila (headers).
+			('BACKGROUND', (0,0), (-1,0), colors.gray),
+			('FONTNAME', (0,0), (-1,0), 'Helvetica-Bold'),
+			('TEXTCOLOR', (0,0), (-1,0), colors.white),
+			('TOPPADDING', (0,0), (-1,0), 2),
+			('BOTTOMPADDING', (0,0), (-1,0), 2),
 		])
 		
 		#-- Añadir configuraciones de estilo adicionales.
