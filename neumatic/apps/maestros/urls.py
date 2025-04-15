@@ -35,6 +35,7 @@ from .views.empresa_views import *
 from .views.sucursal_views import *
 from .views.parametro_views import *
 from .views.numero_views import *
+from .views.valida_views import *
 
 #-- Otras rutas.
 from .views.consulta_views_maestros import filtrar_localidad
@@ -223,6 +224,12 @@ urlpatterns = [
 	path('punto_venta/nueva/', PuntoVentaCreateView.as_view(), name='punto_venta_create'),
 	path('punto_venta/<int:pk>/editar/', PuntoVentaUpdateView.as_view(), name='punto_venta_update'),
 	path('punto_venta/<int:pk>/eliminar/', PuntoVentaDeleteView.as_view(), name='punto_venta_delete'),
+ 
+	#-- Valida.
+	path('valida/', ValidaListView.as_view(), name='valida_list'),
+	path('valida/nueva/', ValidaCreateView.as_view(), name='valida_create'),
+	path('valida/<int:pk>/editar/', ValidaUpdateView.as_view(), name='valida_update'),
+	path('valida/<int:pk>/eliminar/', ValidaDeleteView.as_view(), name='valida_delete'),
  
 	#-- Otras rutas.
 	path('filtrar-localidad/', filtrar_localidad, name='filtrar_localidad'),

@@ -40,6 +40,8 @@
 				{% if request.session.is_staff or request.session.is_superuser %}
 					<li><a class="dropdown-item" href="{% url 'grupo_listar' %}">Grupos</a></li>
 					<li><a class="dropdown-item" href="{% url 'usuario_listar' %}">Usuarios</a></li>
+					<li><a class="dropdown-item" href="{% url 'valida_list' %}">Validar</a></li>
+					
 				{% endif %}
 				<li>
 					<hr class="dropdown-divider" />
