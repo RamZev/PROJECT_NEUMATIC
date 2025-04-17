@@ -33,6 +33,8 @@ class ValidaForm(CrudGenericForm):
 				forms.Select(attrs={**formclassselect}), 
 			'compro': 
 				forms.Select(attrs={**formclassselect}), 
+			'numero_comprobante':
+				forms.TextInput(attrs={**formclasstext}),
 		}
 
 	def __init__(self, *args, **kwargs):

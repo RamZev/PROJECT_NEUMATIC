@@ -4,16 +4,23 @@ from django.http import JsonResponse
 from django.db.models import Q
 from django.db.models import F
 from django.shortcuts import get_object_or_404
+from django.utils import timezone
+from django.conf import settings
+
+from datetime import date, timedelta
 
 from apps.maestros.models.base_models import (ProductoStock, 
                                               ProductoMinimo,
                                               AlicuotaIva,
                                               ComprobanteVenta)
+from apps.ventas.models.factura_models import Factura
 from apps.maestros.models.producto_models import Producto
 from apps.maestros.models.cliente_models import Cliente
 from apps.maestros.models.vendedor_models import Vendedor
+from apps.maestros.models.base_models import ComprobanteVenta
 from apps.maestros.models.descuento_vendedor_models import DescuentoVendedor
 from apps.maestros.models.numero_models import Numero
+from apps.maestros.models.valida_models import Valida
 
 
 import json
@@ -295,3 +302,42 @@ def obtener_numero_comprobante(request):
             'error': str(e),
             'success': False
         }, status=500)
+
+
+def validar_vencimientos_cliente(request, cliente_id):
+    try:
+        factura_antigua = Factura.objects.filter(
+            id_cliente_id=cliente_id,
+            condicion_comprobante=2,  # 2 = Crédito
+            total__gt=0,             # Monto mayor a cero
+            id_comprobante_venta__mult_saldo__ne=0  # Comprobante afecta saldo
+        ).exclude(
+            total=F('entrega')  # Excluir documentos totalmente pagados
+        ).order_by('fecha_comprobante').first()
+
+        if not factura_antigua:
+            return JsonResponse({
+                'requiere_autorizacion': False
+            })
+
+        # Cálculo de días vencidos
+        dias_credito = factura_antigua.id_vendedor.vence_factura if factura_antigua.id_vendedor else 0
+        fecha_vencimiento = factura_antigua.fecha_comprobante + timedelta(days=dias_credito)
+        dias_vencidos = (date.today() - fecha_vencimiento).days
+
+        return JsonResponse({
+            'requiere_autorizacion': dias_vencidos > 0,
+            'mensaje': f"Documento #{factura_antigua.numero_comprobante} vencido hace {dias_vencidos} días (Vence: {fecha_vencimiento.strftime('%d/%m/%Y')})",
+            'debug_data': {
+                'numero_comprobante': factura_antigua.numero_comprobante,
+                'fecha_comprobante': factura_antigua.fecha_comprobante.strftime('%Y-%m-%d'),
+                'dias_credito': dias_credito,
+                'fecha_vencimiento': fecha_vencimiento.strftime('%Y-%m-%d')
+            }
+        })
+
+    except Exception as e:
+        return JsonResponse({
+            'error': str(e),
+            'requiere_autorizacion': True  # Por seguridad, requiere autorización si hay error
+        }, status=400)
