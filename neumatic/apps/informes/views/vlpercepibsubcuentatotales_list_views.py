@@ -2,19 +2,20 @@
 
 from django.urls import reverse_lazy
 from django.shortcuts import render
-
 from django.http import HttpResponse
 from datetime import datetime
-from django.template.loader import render_to_string
-from weasyprint import HTML
 from django.templatetags.static import static
-from decimal import Decimal
+
+#-- ReportLab:
+from reportlab.lib import colors
+from reportlab.lib.pagesizes import A4, landscape, portrait
+from reportlab.platypus import Paragraph
 
 from .report_views_generics import *
 from apps.informes.models import VLPercepIBSubcuentaTotales
 from ..forms.buscador_vlpercepibsubcuentatotales_forms import BuscadorPercepIBSubcuentaTotalesForm
-from utils.utils import deserializar_datos, serializar_queryset
-from utils.helpers.export_helpers import ExportHelper
+from utils.utils import deserializar_datos, serializar_queryset, formato_argentino
+from utils.helpers.export_helpers import ExportHelper, PDFGenerator
 
 
 class ConfigViews:
@@ -72,10 +73,10 @@ class ConfigViews:
 	
 	#-- Establecer las columnas del reporte y sus anchos(en punto).
 	header_data = {
-		"sub_cuenta": (40, "Código"),
-		"nombre_cliente_padre": (40, "Sub-Cuenta"),
-		"neto": (180, "Neto"),
-		"percep_ib": (40, "Percepción"),
+		"sub_cuenta": (50, "Código"),
+		"nombre_cliente_padre": (220, "Sub-Cuenta"),
+		"neto": (80, "Neto"),
+		"percep_ib": (80, "Percepción"),
 	}
 
 
@@ -146,12 +147,6 @@ class VLPercepIBSubcuentaTotalesInformeView(InformeFormView):
 			context["data_has_errors"] = True
 		return context
 
-# def raw_to_dict(instance):
-# 	"""Convierte una instancia de una consulta raw a un diccionario, eliminando claves internas."""
-# 	data = instance.__dict__.copy()
-# 	data.pop('_state', None)
-# 	return data
-
 
 def vlpercepibsubcuentatotales_vista_pantalla(request):
 	#-- Obtener el token de la querystring.
@@ -172,7 +167,6 @@ def vlpercepibsubcuentatotales_vista_pantalla(request):
 
 
 def vlpercepibsubcuentatotales_vista_pdf(request):
-	return HttpResponse("Reporte en PDF aún no implementado.", status=400)
 	#-- Obtener el token de la querystring.
 	token = request.GET.get("token")
 	
@@ -186,14 +180,83 @@ def vlpercepibsubcuentatotales_vista_pdf(request):
 	if not contexto_reporte:
 		return HttpResponse("Contexto no encontrado o expirado", status=400)
 	
-	#-- Preparar la respuesta HTTP.
-	html_string = render_to_string(ConfigViews.reporte_pdf, contexto_reporte, request=request)
-	pdf_file = HTML(string=html_string, base_url=request.build_absolute_uri()).write_pdf()
+	#-- Generar el PDF usando ReportLab
+	pdf_file = generar_pdf(contexto_reporte)
 	
+	#-- Preparar la respuesta HTTP.
 	response = HttpResponse(pdf_file, content_type="application/pdf")
-	response["Content-Disposition"] = f'inline; filename="informe_{ConfigViews.model_string}.pdf"'
+	response["Content-Disposition"] = f'inline; filename="{ConfigViews.report_title}.pdf"'
 	
 	return response
+
+class CustomPDFGenerator(PDFGenerator):
+	#-- Método que se puede sobreescribir/extender según requerimientos.
+	# def _get_header_bottom_left(self, context):
+	# 	"""Personalización del Header-bottom-left"""
+	# 	# return super()._get_header_bottom_left(context)
+	# 	
+	# 	empresa = context.get('datos_empresa')
+	# 	
+	# 	return f"""{empresa['empresa']} <br/>
+	# 			   {empresa['domicilio']} <br/>
+	# 			   <strong>C.P.:</strong> {empresa['cp']} {empresa['provincia']} - {empresa['localidad']} <br/>
+	# 			   {empresa['sit_iva']}  <strong>C.U.I.T.:</strong> {empresa['cuit']}"""
+	
+	#-- Método que se puede sobreescribir/extender según requerimientos.
+	# def _get_header_bottom_right(self, context):
+	# 	"""Añadir información adicional específica para este reporte"""
+	# 	base_content = super()._get_header_bottom_right(context)
+	# 	saldo_total = context.get("saldo_total", 0)
+	# 	return f"""
+	# 		{base_content}<br/>
+	# 		<b>Total General:</b> {formato_es_ar(saldo_total)}
+	# 	"""
+	pass
+
+def generar_pdf(contexto_reporte):
+	#-- Crear instancia del generador personalizado.
+	generator = CustomPDFGenerator(contexto_reporte, pagesize=portrait(A4), body_font_size=8)
+	
+	#-- Construir datos de la tabla:
+	
+	#-- Extraer Títulos de las columnas de la tabla (headers).
+	headers_titles = [value[1] for value in ConfigViews.header_data.values()]
+	
+	#-- Extraer Ancho de las columnas de la tabla.
+	col_widths = [value[0] for value in ConfigViews.header_data.values()]
+	
+	table_data = [headers_titles]
+	
+	#-- Estilos específicos adicionales iniciales de la tabla.
+	table_style_config = [
+		('LEADING', (0,0), (-1,-1), 10),
+		('ALIGN', (2,0), (-1,-1), 'RIGHT'),
+	]
+	
+	#-- Agregar los datos a la tabla.
+	for obj in contexto_reporte.get("objetos", []):
+		table_data.append([
+			obj['sub_cuenta'] if obj['sub_cuenta'] else "N/A",
+			Paragraph(obj['nombre_cliente_padre'] if obj['nombre_cliente_padre'] else "N/A", generator.styles['CellStyle']),
+			formato_argentino(obj['neto']),
+			formato_argentino(obj['percep_ib']),
+		])
+	
+	return generator.generate(table_data, col_widths, table_style_config)		
+
+def _format_date(date_value):
+	"""Helper para formatear fechas"""
+	if not date_value:
+		return ""
+	
+	if isinstance(date_value, str):
+		try:
+			return datetime.strptime(date_value, "%Y-%m-%d").strftime("%d/%m/%Y")
+		except ValueError:
+			return date_value
+	else:
+		return date_value.strftime("%d/%m/%Y")
+# -------------------------------------------------------------------------------------------------
 
 
 def vlpercepibsubcuentatotales_vista_excel(request):

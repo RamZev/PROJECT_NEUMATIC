@@ -2,19 +2,21 @@
 
 from django.urls import reverse_lazy
 from django.shortcuts import render
-
 from django.http import HttpResponse
 from datetime import datetime
-from django.template.loader import render_to_string
-from weasyprint import HTML
 from django.templatetags.static import static
 from decimal import Decimal
+
+#-- ReportLab:
+from reportlab.lib import colors
+from reportlab.lib.pagesizes import A4, landscape, portrait
+from reportlab.platypus import Paragraph
 
 from .report_views_generics import *
 from apps.informes.models import VLPercepIBSubcuentaDetallado
 from ..forms.buscador_vlpercepibsubcuentadetallado_forms import BuscadorPercepIBSubcuentaDetalladoForm
-from utils.utils import deserializar_datos
-from utils.helpers.export_helpers import ExportHelper
+from utils.utils import deserializar_datos, formato_argentino
+from utils.helpers.export_helpers import ExportHelper, PDFGenerator
 
 
 class ConfigViews:
@@ -75,6 +77,7 @@ class ConfigViews:
 		"sub_cuenta": (40, "Sub Cuenta"),
 		"nombre_cliente_padre": (40, "Cliente Sub Cuenta"),
 		"comprobante": (40, "Comprobante"),
+		"fecha_comprobante": (40, "Fecha"),
 		"id_cliente_id": (40, "Código"),
 		"nombre_cliente": (40, "Cliente"),
 		"cuit": (40, "C.U.I.T."),
@@ -199,7 +202,6 @@ def vlpercepibsubcuentadetallado_vista_pantalla(request):
 
 
 def vlpercepibsubcuentadetallado_vista_pdf(request):
-	return HttpResponse("Reporte en PDF aún no implementado.", status=400)
 	#-- Obtener el token de la querystring.
 	token = request.GET.get("token")
 	
@@ -213,14 +215,151 @@ def vlpercepibsubcuentadetallado_vista_pdf(request):
 	if not contexto_reporte:
 		return HttpResponse("Contexto no encontrado o expirado", status=400)
 	
-	#-- Preparar la respuesta HTTP.
-	html_string = render_to_string(ConfigViews.reporte_pdf, contexto_reporte, request=request)
-	pdf_file = HTML(string=html_string, base_url=request.build_absolute_uri()).write_pdf()
+	#-- Generar el PDF usando ReportLab
+	pdf_file = generar_pdf(contexto_reporte)
 	
+	#-- Preparar la respuesta HTTP.
 	response = HttpResponse(pdf_file, content_type="application/pdf")
-	response["Content-Disposition"] = f'inline; filename="informe_{ConfigViews.model_string}.pdf"'
+	response["Content-Disposition"] = f'inline; filename="{ConfigViews.report_title}.pdf"'
 	
 	return response
+
+class CustomPDFGenerator(PDFGenerator):
+	#-- Método que se puede sobreescribir/extender según requerimientos.
+	# def _get_header_bottom_left(self, context):
+	# 	"""Personalización del Header-bottom-left"""
+	# 	
+	# 	# custom_text = context.get("texto_personalizado", "")
+	# 	# 
+	# 	# if custom_text:
+	# 	# 	return f"<b>NOTA:</b> {custom_text}"
+	# 	
+	# 	id_cliente = 10025
+	# 	cliente = "Leoncio R. Barrios H."
+	# 	domicilio = "Jr. San Pedro 1256. Surquillo, Lima."
+	# 	Telefono = "971025647"
+	# 	
+	# 	# return f"Cliente: [{id_cliente}] {cliente} <br/> {domicilio}"
+	# 	# return f"Cliente: [{id_cliente}] {cliente} <br/> {domicilio} <br/> Tel. {Telefono} <br/>"
+	# 	return f"Cliente: [{id_cliente}] {cliente} <br/> {domicilio} <br/> Tel. {Telefono} <br/> Tel. {Telefono} "
+	# 	# return f"Cliente: [{id_cliente}] {cliente} <br/> {domicilio} <br/> Tel. {Telefono} <br/> Tel. {Telefono} <br/> Tel. {Telefono}"
+	# 	
+	# 	# return super()._get_header_bottom_left(context)
+	
+	#-- Método que se puede sobreescribir/extender según requerimientos.
+	# def _get_header_bottom_right(self, context):
+	# 	"""Añadir información adicional específica para este reporte"""
+	# 	base_content = super()._get_header_bottom_right(context)
+	# 	saldo_total = context.get("saldo_total", 0)
+	# 	return f"""
+	# 		{base_content}<br/>
+	# 		<b>Total General:</b> {formato_es_ar(saldo_total)}
+	# 	"""
+	pass
+
+def generar_pdf(contexto_reporte):
+	#-- Crear instancia del generador personalizado.
+	generator = CustomPDFGenerator(contexto_reporte, pagesize=portrait(A4), body_font_size=7)
+	
+	#-- Construir datos de la tabla:
+	
+	#-- Datos de las columnas de la tabla (headers).
+	headers = [
+		("Comprobante", 80),
+		("Fecha", 40),
+		("Código", 35),
+		("Cliente", 220),
+		("C.U.I.T.", 40),
+		("Neto", 80),
+		("Percep. IB", 60)
+	]
+	
+	#-- Extraer Títulos de las columnas de la tabla (headers).
+	headers_titles = [value[0] for value in headers]
+	
+	#-- Extraer Ancho de las columnas de la tabla.
+	col_widths = [value[1] for value in headers]
+	
+	table_data = [headers_titles]
+	
+	#-- Estilos específicos adicionales iniciales de la tabla.
+	table_style_config = [
+		('ALIGN', (4,0), (-1,-1), 'RIGHT'),
+	]
+	
+	#-- Contador de filas (empezamos en 1 porque la 0 es el header).
+	current_row = 1
+	
+	#-- Agregar los datos a la tabla.
+	for sub_cuenta, datos in contexto_reporte.get("objetos", {}).items():
+		#-- Datos agrupado por.
+		
+		num_sc = sub_cuenta if sub_cuenta else "N/A"
+		nom_sc = datos['nombre_subcuenta'] if datos['nombre_subcuenta'] else "N/A"
+		
+		if num_sc == 'null':
+			num_sc = "N/A"
+		table_data.append([
+			f"Sub Cuenta: [{num_sc}] {nom_sc}",
+			"", "", "", "", "", ""
+		])
+		
+		#-- Aplicar estilos a la fila de agrupación (fila actual).
+		table_style_config.extend([
+			('SPAN', (0,current_row), (-1,current_row)),
+			('FONTNAME', (0,current_row), (-1,current_row), 'Helvetica-Bold')
+		])
+		
+		current_row += 1
+		
+		#-- Agregar filas del detalle.
+		for det in datos['comprobantes']:
+			table_data.append([
+				det['comprobante'],
+				_format_date(det['fecha_comprobante']),
+				det['id_cliente_id'],
+				Paragraph(det['nombre_cliente'], generator.styles['CellStyle']),
+				det['cuit'],
+				formato_argentino(det['neto']),
+				formato_argentino(det['percep_ib'])
+			])
+			current_row += 1
+		
+		#-- Fila Total agrupación.
+		total_neto = datos['total_neto']
+		total_percep = datos['total_percep']
+		table_data.append(["", "", "", "", "", formato_argentino(total_neto), formato_argentino(total_percep)])
+		
+		#-- Aplicar estilos a la fila de total (fila actual).
+		table_style_config.extend([
+			('FONTNAME', (0,current_row), (-1,current_row), 'Helvetica-Bold'),
+			# ('LINEABOVE', (4,current_row), (-1,current_row), 0.5, colors.black),
+		])
+		
+		current_row += 1
+		
+		#-- Fila divisoria.
+		table_data.append(["", "", "", "", "", "", ""])
+		# table_style_config.append(
+		# 	('LINEBELOW', (0,current_row), (-1,current_row), 0.5, colors.blue),
+		# )
+		current_row += 1
+	
+	return generator.generate(table_data, col_widths, table_style_config)		
+
+def _format_date(date_value):
+	"""Helper para formatear fechas"""
+	if not date_value:
+		return ""
+	
+	if isinstance(date_value, str):
+		try:
+			return datetime.strptime(date_value, "%Y-%m-%d").strftime("%d/%m/%Y")
+		except ValueError:
+			return date_value
+	else:
+		return date_value.strftime("%d/%m/%Y")
+# -------------------------------------------------------------------------------------------------
 
 
 def vlpercepibsubcuentadetallado_vista_excel(request):

@@ -1,33 +1,33 @@
-# neumatic\apps\informes\views\vlpercepibvendedorestotales_list_views.py
+# neumatic\apps\informes\views\vlventacompro_list_views.py
 
 from django.urls import reverse_lazy
 from django.shortcuts import render
-from django.http import HttpResponse
-from datetime import datetime
-from django.templatetags.static import static
 
-#-- ReportLab:
-from reportlab.lib import colors
-from reportlab.lib.pagesizes import A4, landscape, portrait
-from reportlab.platypus import Paragraph
+from django.http import HttpResponse
+from decimal import Decimal
+from datetime import datetime
+from django.template.loader import render_to_string
+from weasyprint import HTML
+from django.templatetags.static import static
+from collections import defaultdict
 
 from .report_views_generics import *
-from apps.informes.models import VLPercepIBVendedorTotales
-from ..forms.buscador_vlpercepibvendedortotales_forms import BuscadorPercepIBVendedorTotalesForm
-from utils.utils import deserializar_datos, serializar_queryset, formato_argentino
-from utils.helpers.export_helpers import ExportHelper, PDFGenerator
+from apps.informes.models import VLVentaCompro
+from ..forms.buscador_vlventacompro_forms import BuscadorVentaComproForm
+from utils.utils import deserializar_datos
+from utils.helpers.export_helpers import ExportHelper
 
 
 class ConfigViews:
 	
 	#-- Título del reporte.
-	report_title = "Percepciones por Vendedores - Totales"
+	report_title = "Ventas por Comprobantes"
 	
 	#-- Modelo.
-	model = VLPercepIBVendedorTotales
+	model = VLVentaCompro
 	
 	#-- Formulario asociado al modelo.
-	form_class = BuscadorPercepIBVendedorTotalesForm
+	form_class = BuscadorVentaComproForm
 	
 	#-- Aplicación asociada al modelo.
 	app_label = "informes"
@@ -36,7 +36,7 @@ class ConfigViews:
 	model_string = model.__name__.lower()
 	
 	# Vistas del CRUD del modelo
-	list_view_name = f"{model_string}_list"
+	list_view_name = f"{model_string}_list"  # <== vlventacompro_list
 	
 	#-- Plantilla base.
 	template_list = f'{app_label}/maestro_informe.html'
@@ -73,14 +73,20 @@ class ConfigViews:
 	
 	#-- Establecer las columnas del reporte y sus anchos(en punto).
 	header_data = {
-		"id_vendedor_id": (40, "Código"),
-		"nombre_vendedor": (200, "Vendedor"),
-		"neto": (80, "Neto"),
-		"percep_ib": (80, "Percepción"),
+		"nombre_comprobante_venta": (40, "Comprobante"),
+		"comprobante": (40, "Número"),
+		"fecha_comprobante": (40, "Fecha"),
+		"condicion": (40, "Condición"),
+		"id_cliente_id": (40, "Cliente"),
+		"nombre_cliente": (180, "Nombre"),
+		"gravado": (40, "Gravado"),
+		"iva": (40, "IVA"),
+		"percep_ib": (40, "Percep. IB"),
+		"total": (40, "Total"),
 	}
 
 
-class VLPercepIBVendedorTotalesInformeView(InformeFormView):
+class VLVentaComproInformeView(InformeFormView):
 	config = ConfigViews  #-- Ahora la configuración estará disponible en self.config.
 	form_class = ConfigViews.form_class
 	template_name = ConfigViews.template_list
@@ -96,10 +102,11 @@ class VLPercepIBVendedorTotalesInformeView(InformeFormView):
 	}
 	
 	def obtener_queryset(self, cleaned_data):
-		fecha_desde = cleaned_data.get('fecha_desde')
-		fecha_hasta = cleaned_data.get('fecha_hasta')
+		fecha_desde = cleaned_data.get("fecha_desde")
+		fecha_hasta = cleaned_data.get("fecha_hasta")
+		sucursal = cleaned_data.get("sucursal")
 		
-		return VLPercepIBVendedorTotales.objects.obtener_datos(fecha_desde, fecha_hasta)
+		return VLVentaCompro.objects.obtener_venta_compro(fecha_desde, fecha_hasta, sucursal)
 	
 	def obtener_contexto_reporte(self, queryset, cleaned_data):
 		"""
@@ -108,10 +115,13 @@ class VLPercepIBVendedorTotalesInformeView(InformeFormView):
 		"""
 		
 		#-- Parámetros del listado.
-		fecha_desde = cleaned_data.get('fecha_desde')
-		fecha_hasta = cleaned_data.get('fecha_hasta')
+		fecha_desde = cleaned_data.get("fecha_desde")
+		fecha_hasta = cleaned_data.get("fecha_hasta")
+		solo_totales_comprobante = cleaned_data.get("solo_totales_comprobante", False)
+		sucursal = cleaned_data.get('sucursal', None)
 		
 		param = {
+			"Sucursal": sucursal.nombre_sucursal if sucursal else "Todas",
 			"Desde": fecha_desde.strftime("%d/%m/%Y"),
 			"Hasta": fecha_hasta.strftime("%d/%m/%Y"),
 		}
@@ -120,16 +130,48 @@ class VLPercepIBVendedorTotalesInformeView(InformeFormView):
 		
 		dominio = f"http://{self.request.get_host()}"
 		
+		#-- Agrupar y estructurar datos del queryset.
+		datos_agrupados = []
+		totales_generales = {"contado": Decimal(0), "cta_cte": Decimal(0)}
+		agrupados = defaultdict(lambda: {
+			"comprobantes": [],
+			"subtotal": {
+				"contado": {"gravado": Decimal(0), "iva": Decimal(0), "percep_ib": Decimal(0), "total": Decimal(0)},
+				"cta_cte": {"gravado": Decimal(0), "iva": Decimal(0), "percep_ib": Decimal(0), "total": Decimal(0)},
+			},
+		})
 		
-		# **************************************************
-		# **************************************************
+		for item in queryset:
+			tipo = item.nombre_comprobante_venta
+			condicion = "contado" if item.condicion == "Contado" else "cta_cte"
+			monto_total = Decimal(item.total)
+			
+			agrupados[tipo]["comprobantes"].append({
+				"comprobante": item.comprobante,
+				"fecha": item.fecha_comprobante,
+				"condicion": item.condicion,
+				"cliente_id": item.id_cliente_id,
+				"cliente_nombre": item.nombre_cliente,
+				"gravado": Decimal(item.gravado),
+				"iva": Decimal(item.iva),
+				"percep_ib": Decimal(item.percep_ib),
+				"total": monto_total,
+			})
+			
+			agrupados[tipo]["subtotal"][condicion]["gravado"] += Decimal(item.gravado)
+			agrupados[tipo]["subtotal"][condicion]["iva"] += Decimal(item.iva)
+			agrupados[tipo]["subtotal"][condicion]["percep_ib"] += Decimal(item.percep_ib)
+			agrupados[tipo]["subtotal"][condicion]["total"] += monto_total
+			totales_generales[condicion] += monto_total
 		
-		#-- Serializar el queryset.
-		queryset_serializado = serializar_queryset(queryset)
-		
+		for tipo, datos in agrupados.items():
+			datos_agrupados.append({"tipo": tipo, **datos})
+		print(type(datos_agrupados))
 		#-- Se retorna un contexto que será consumido tanto para la vista en pantalla como para la generación del PDF.
 		return {
-			"objetos": queryset_serializado,
+			"objetos": datos_agrupados,
+			"total_general": totales_generales,
+			"solo_totales_comprobante": solo_totales_comprobante,
 			"parametros": param,
 			'fecha_hora_reporte': fecha_hora_reporte,
 			'titulo': ConfigViews.report_title,
@@ -148,7 +190,7 @@ class VLPercepIBVendedorTotalesInformeView(InformeFormView):
 		return context
 
 
-def vlpercepibvendedortotales_vista_pantalla(request):
+def vlventacompro_vista_pantalla(request):
 	#-- Obtener el token de la querystring.
 	token = request.GET.get("token")
 	
@@ -164,9 +206,10 @@ def vlpercepibvendedortotales_vista_pantalla(request):
 	
 	#-- Generar el listado a pantalla.
 	return render(request, ConfigViews.reporte_pantalla, contexto_reporte)
+	# return render(request, "informes/reportes/ventacompro_list.html", contexto_reporte)
 
 
-def vlpercepibvendedortotales_vista_pdf(request):
+def vlventacompro_vista_pdf(request):
 	#-- Obtener el token de la querystring.
 	token = request.GET.get("token")
 	
@@ -180,86 +223,18 @@ def vlpercepibvendedortotales_vista_pdf(request):
 	if not contexto_reporte:
 		return HttpResponse("Contexto no encontrado o expirado", status=400)
 	
-	#-- Generar el PDF usando ReportLab
-	pdf_file = generar_pdf(contexto_reporte)
-	
 	#-- Preparar la respuesta HTTP.
+	# html_string = render_to_string("informes/reportes/ventacompro_pdf.html", contexto_reporte, request=request)
+	html_string = render_to_string(ConfigViews.reporte_pdf, contexto_reporte, request=request)
+	pdf_file = HTML(string=html_string, base_url=request.build_absolute_uri()).write_pdf()
+
 	response = HttpResponse(pdf_file, content_type="application/pdf")
-	response["Content-Disposition"] = f'inline; filename="{ConfigViews.report_title}.pdf"'
+	response["Content-Disposition"] = f'inline; filename="informe_{ConfigViews.model_string}.pdf"'
 	
 	return response
 
-class CustomPDFGenerator(PDFGenerator):
-	#-- Método que se puede sobreescribir/extender según requerimientos.
-	# def _get_header_bottom_left(self, context):
-	# 	"""Personalización del Header-bottom-left"""
-	# 	# return super()._get_header_bottom_left(context)
-	# 	
-	# 	empresa = context.get('datos_empresa')
-	# 	
-	# 	return f"""{empresa['empresa']} <br/>
-	# 			   {empresa['domicilio']} <br/>
-	# 			   <strong>C.P.:</strong> {empresa['cp']} {empresa['provincia']} - {empresa['localidad']} <br/>
-	# 			   {empresa['sit_iva']}  <strong>C.U.I.T.:</strong> {empresa['cuit']}"""
-	
-	#-- Método que se puede sobreescribir/extender según requerimientos.
-	# def _get_header_bottom_right(self, context):
-	# 	"""Añadir información adicional específica para este reporte"""
-	# 	base_content = super()._get_header_bottom_right(context)
-	# 	saldo_total = context.get("saldo_total", 0)
-	# 	return f"""
-	# 		{base_content}<br/>
-	# 		<b>Total General:</b> {formato_es_ar(saldo_total)}
-	# 	"""
-	pass
 
-def generar_pdf(contexto_reporte):
-	#-- Crear instancia del generador personalizado.
-	generator = CustomPDFGenerator(contexto_reporte, pagesize=portrait(A4), body_font_size=8)
-	
-	#-- Construir datos de la tabla:
-	
-	#-- Extraer Títulos de las columnas de la tabla (headers).
-	headers_titles = [value[1] for value in ConfigViews.header_data.values()]
-	
-	#-- Extraer Ancho de las columnas de la tabla.
-	col_widths = [value[0] for value in ConfigViews.header_data.values()]
-	
-	table_data = [headers_titles]
-	
-	#-- Estilos específicos adicionales iniciales de la tabla.
-	table_style_config = [
-		('LEADING', (0,0), (-1,-1), 10),
-		('ALIGN', (2,0), (-1,-1), 'RIGHT'),
-	]
-	
-	#-- Agregar los datos a la tabla.
-	for obj in contexto_reporte.get("objetos", []):
-		table_data.append([
-			obj['id_vendedor_id'],
-			obj['nombre_vendedor'],
-			formato_argentino(obj['neto']),
-			formato_argentino(obj['percep_ib']),
-		])
-	
-	return generator.generate(table_data, col_widths, table_style_config)		
-
-def _format_date(date_value):
-	"""Helper para formatear fechas"""
-	if not date_value:
-		return ""
-	
-	if isinstance(date_value, str):
-		try:
-			return datetime.strptime(date_value, "%Y-%m-%d").strftime("%d/%m/%Y")
-		except ValueError:
-			return date_value
-	else:
-		return date_value.strftime("%d/%m/%Y")
-# -------------------------------------------------------------------------------------------------
-
-
-def vlpercepibvendedortotales_vista_excel(request):
+def vlventacompro_vista_excel(request):
 	token = request.GET.get("token")
 	if not token:
 		return HttpResponse("Token no proporcionado", status=400)
@@ -273,7 +248,7 @@ def vlpercepibvendedortotales_vista_excel(request):
 	# ---------------------------------------------
 	
 	#-- Instanciar la vista y obtener el queryset.
-	view_instance = VLPercepIBVendedorTotalesInformeView()
+	view_instance = VLVentaComproInformeView()
 	view_instance.request = request
 	queryset = view_instance.obtener_queryset(cleaned_data)
 	
@@ -288,12 +263,12 @@ def vlpercepibvendedortotales_vista_excel(request):
 		excel_data,
 		content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 	)
-	#-- Inline permite visualizarlo en el navegador si el navegador lo soporta.
+	# Inline permite visualizarlo en el navegador si el navegador lo soporta.
 	response["Content-Disposition"] = f'inline; filename="informe_{ConfigViews.model_string}.xlsx"'
 	return response
 
 
-def vlpercepibvendedortotales_vista_csv(request):
+def vlventacompro_vista_csv(request):
 	token = request.GET.get("token")
 	if not token:
 		return HttpResponse("Token no proporcionado", status=400)
@@ -306,7 +281,7 @@ def vlpercepibvendedortotales_vista_csv(request):
 	cleaned_data = data["cleaned_data"]
 	
 	#-- Instanciar la vista para reejecutar la consulta y obtener el queryset.
-	view_instance = VLPercepIBVendedorTotalesInformeView()
+	view_instance = VLVentaComproInformeView()
 	view_instance.request = request
 	queryset = view_instance.obtener_queryset(cleaned_data)
 	

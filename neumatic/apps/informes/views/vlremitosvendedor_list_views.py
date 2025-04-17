@@ -2,20 +2,21 @@
 
 from django.urls import reverse_lazy
 from django.shortcuts import render
-
 from django.http import HttpResponse
 from datetime import datetime
-from django.template.loader import render_to_string
-from weasyprint import HTML
 from django.templatetags.static import static
-# from django.forms.models import model_to_dict
 from decimal import Decimal
+
+#-- ReportLab:
+from reportlab.lib import colors
+from reportlab.lib.pagesizes import A4, landscape, portrait
+from reportlab.platypus import Paragraph
 
 from .report_views_generics import *
 from apps.informes.models import VLRemitosVendedor
 from ..forms.buscador_vlremitosvendedor_forms import BuscadorRemitosVendedorForm
-from utils.utils import deserializar_datos
-from utils.helpers.export_helpers import ExportHelper
+from utils.utils import deserializar_datos, formato_argentino
+from utils.helpers.export_helpers import ExportHelper, PDFGenerator
 
 
 class ConfigViews:
@@ -231,7 +232,6 @@ def vlremitosvendedor_vista_pantalla(request):
 
 
 def vlremitosvendedor_vista_pdf(request):
-	return HttpResponse("Reporte en PDF aún no implementado.", status=400)
 	#-- Obtener el token de la querystring.
 	token = request.GET.get("token")
 	
@@ -245,14 +245,166 @@ def vlremitosvendedor_vista_pdf(request):
 	if not contexto_reporte:
 		return HttpResponse("Contexto no encontrado o expirado", status=400)
 	
-	#-- Preparar la respuesta HTTP.
-	html_string = render_to_string(ConfigViews.reporte_pdf, contexto_reporte, request=request)
-	pdf_file = HTML(string=html_string, base_url=request.build_absolute_uri()).write_pdf()
+	#-- Generar el PDF usando ReportLab
+	pdf_file = generar_pdf(contexto_reporte)
 	
+	#-- Preparar la respuesta HTTP.
 	response = HttpResponse(pdf_file, content_type="application/pdf")
-	response["Content-Disposition"] = f'inline; filename="informe_{ConfigViews.model_string}.pdf"'
+	response["Content-Disposition"] = f'inline; filename="{ConfigViews.report_title}.pdf"'
 	
 	return response
+
+class CustomPDFGenerator(PDFGenerator):
+	#-- Método que se puede sobreescribir/extender según requerimientos.
+	# def _get_header_bottom_left(self, context):
+	# 	"""Personalización del Header-bottom-left"""
+	# 	
+	# 	# custom_text = context.get("texto_personalizado", "")
+	# 	# 
+	# 	# if custom_text:
+	# 	# 	return f"<b>NOTA:</b> {custom_text}"
+	# 	
+	# 	id_cliente = 10025
+	# 	cliente = "Leoncio R. Barrios H."
+	# 	domicilio = "Jr. San Pedro 1256. Surquillo, Lima."
+	# 	Telefono = "971025647"
+	# 	
+	# 	# return f"Cliente: [{id_cliente}] {cliente} <br/> {domicilio}"
+	# 	# return f"Cliente: [{id_cliente}] {cliente} <br/> {domicilio} <br/> Tel. {Telefono} <br/>"
+	# 	return f"Cliente: [{id_cliente}] {cliente} <br/> {domicilio} <br/> Tel. {Telefono} <br/> Tel. {Telefono} "
+	# 	# return f"Cliente: [{id_cliente}] {cliente} <br/> {domicilio} <br/> Tel. {Telefono} <br/> Tel. {Telefono} <br/> Tel. {Telefono}"
+	# 	
+	# 	# return super()._get_header_bottom_left(context)
+	
+	#-- Método que se puede sobreescribir/extender según requerimientos.
+	# def _get_header_bottom_right(self, context):
+	# 	"""Añadir información adicional específica para este reporte"""
+	# 	base_content = super()._get_header_bottom_right(context)
+	# 	saldo_total = context.get("saldo_total", 0)
+	# 	return f"""
+	# 		{base_content}<br/>
+	# 		<b>Total General:</b> {formato_es_ar(saldo_total)}
+	# 	"""
+	pass
+
+def generar_pdf(contexto_reporte):
+	#-- Crear instancia del generador personalizado.
+	generator = CustomPDFGenerator(contexto_reporte, pagesize=portrait(A4), body_font_size=7)
+	
+	#-- Construir datos de la tabla:
+	
+	#-- Datos de las columnas de la tabla (headers).
+	headers = [
+		("Fecha", 40),
+		("Comprobante", 70),
+		("Descripción", 200),
+		("Medida", 50),
+		("Cantidad", 60),
+		("Precio", 70),
+		("Total", 70)
+	]
+	
+	#-- Extraer Títulos de las columnas de la tabla (headers).
+	headers_titles = [value[0] for value in headers]
+	
+	#-- Extraer Ancho de las columnas de la tabla.
+	col_widths = [value[1] for value in headers]
+	
+	table_data = [headers_titles]
+	
+	#-- Estilos específicos adicionales iniciales de la tabla.
+	table_style_config = [
+		('ALIGN', (4,0), (-1,-1), 'RIGHT'),
+	]
+	
+	#-- Contador de filas (empezamos en 1 porque la 0 es el header).
+	current_row = 1
+	
+	#-- Agregar los datos a la tabla.
+	
+	for obj in contexto_reporte.get("objetos", []):
+		#-- Datos agrupado por.
+		table_data.append([
+			f"Cliente: [{obj['id_cliente']}] {obj['cliente']}",
+			"", "", "", "", "", ""
+		])
+		
+		#-- Aplicar estilos a la fila de agrupación (fila actual).
+		table_style_config.extend([
+			('SPAN', (0,current_row), (-1,current_row)),
+			('FONTNAME', (0,current_row), (-1,current_row), 'Helvetica-Bold')
+		])
+		
+		current_row += 1
+		
+		#-- Agregar filas del detalle.
+		for comprobante in obj['comprobantes']:
+			for producto in comprobante['productos']:
+				table_data.append([
+					_format_date(producto['fecha']),
+					producto['comprobante'],
+					Paragraph(producto['descripcion'], generator.styles['CellStyle']),
+					producto['medida'],
+					formato_argentino(producto['cantidad']),
+					formato_argentino(producto['precio']),
+					formato_argentino(producto['total'])
+				])
+				current_row += 1
+			
+			#-- Fila Total por comprobante.
+			table_data.append(["", "", "", "", "", "Total Comprobante:", formato_argentino(comprobante['total_comprobante'])])
+			
+			#-- Aplicar estilos a la fila de total (fila actual).
+			table_style_config.extend([
+				('FONTNAME', (0,current_row), (-1,current_row), 'Helvetica-Bold'),
+				# ('LINEABOVE', (0,current_row), (-1,current_row), 0.5, colors.black),
+			])
+			
+			current_row += 1
+		
+		#-- Fila Total por Cliente.
+		table_data.append(["", "", "", "", "", "Total Cliente:", formato_argentino(obj['total_cliente'])])
+		
+		#-- Aplicar estilos a la fila de total (fila actual).
+		table_style_config.extend([
+			('FONTNAME', (0,current_row), (-1,current_row), 'Helvetica-Bold'),
+			# ('LINEABOVE', (0,current_row), (-1,current_row), 0.5, colors.black),
+		])
+		
+		current_row += 1
+		
+		#-- Fila divisoria.
+		table_data.append(["", "", "", "", "", "", ""])
+		table_style_config.append(
+			('LINEBELOW', (0,current_row), (-1,current_row), 0.5, colors.gray),
+		)
+		current_row += 1
+	
+	#-- Fila Total General.
+	table_data.append(["", "", "", "", "", "Total General:", formato_argentino(contexto_reporte.get('total_general'))])
+	
+	#-- Aplicar estilos a la fila de total (fila actual).
+	table_style_config.extend([
+		('FONTNAME', (0,current_row), (-1,current_row), 'Helvetica-Bold'),
+		# ('LINEABOVE', (0,current_row), (-1,current_row), 0.5, colors.black),
+	])
+	
+	
+	return generator.generate(table_data, col_widths, table_style_config)		
+
+def _format_date(date_value):
+	"""Helper para formatear fechas"""
+	if not date_value:
+		return ""
+	
+	if isinstance(date_value, str):
+		try:
+			return datetime.strptime(date_value, "%Y-%m-%d").strftime("%d/%m/%Y")
+		except ValueError:
+			return date_value
+	else:
+		return date_value.strftime("%d/%m/%Y")
+# -------------------------------------------------------------------------------------------------
 
 
 def vlremitosvendedor_vista_excel(request):

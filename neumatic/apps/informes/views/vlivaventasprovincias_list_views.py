@@ -2,19 +2,22 @@
 
 from django.urls import reverse_lazy
 from django.shortcuts import render
-
 from django.http import HttpResponse
 from datetime import datetime
-from django.template.loader import render_to_string
-from weasyprint import HTML
 from django.templatetags.static import static
 from decimal import Decimal
 
+#-- ReportLab:
+from reportlab.lib import colors
+from reportlab.lib.pagesizes import A4, landscape, portrait
+from reportlab.platypus import Paragraph
+
 from .report_views_generics import *
 from apps.informes.models import VLIVAVentasProvincias
+from apps.maestros.models.empresa_models import Empresa
 from ..forms.buscador_vlivaventasprovincias_forms import BuscadorVLIVAVentasProvinciasForm
-from utils.utils import deserializar_datos, serializar_queryset
-from utils.helpers.export_helpers import ExportHelper
+from utils.utils import deserializar_datos, serializar_queryset, formato_argentino
+from utils.helpers.export_helpers import ExportHelper, PDFGenerator
 
 
 class ConfigViews:
@@ -72,12 +75,12 @@ class ConfigViews:
 	
 	#-- Establecer las columnas del reporte y sus anchos(en punto).
 	header_data = {
-		"nombre_provincia": (40, "Provincia"),
-		"gravado": (180, "Gravado"),
-		"exento": (40, "Exento"),
-		"iva": (40, "I.V.A."),
-		"percep_ib": (40, "Percep. IB"),
-		"total": (40, "Total"),
+		"nombre_provincia": (120, "Provincia"),
+		"gravado": (80, "Gravado"),
+		"exento": (80, "Exento"),
+		"iva": (80, "I.V.A."),
+		"percep_ib": (80, "Percep. IB"),
+		"total": (80, "Total"),
 	}
 
 
@@ -136,14 +139,15 @@ class VLIVAVentasProvinciasInformeView(InformeFormView):
 			"Año": anno,
 		}
 		
+		empresa = Empresa.objects.get(pk=1)
 		datos_empresa = {
-			"cuit": "30692402363",
-			"empresa": "DEBONA MARCELO FABIAN Y DEBONA VICTOR HUGO S.H.",
-			"domicilio": "INDEPENDENCIA 2994",
-			"cp": "S3040",
-			"provincia": "SANTA FE",
-			"localidad": "SAN JUSTO",
-			"sit_iva": "RESP. INSCRIPTOS"
+			"cuit": empresa.cuit,
+			"empresa": empresa.nombre_fiscal,
+			"domicilio": empresa.domicilio_empresa,
+			"cp": empresa.codigo_postal,
+			"provincia": empresa.id_provincia.nombre_provincia,
+			"localidad": empresa.id_localidad.nombre_localidad,
+			"sit_iva": empresa.id_iva.nombre_iva
 		}
 		
 		fecha_hora_reporte = datetime.now().strftime("%d/%m/%Y %H:%M:%S")		
@@ -197,12 +201,6 @@ class VLIVAVentasProvinciasInformeView(InformeFormView):
 			context["data_has_errors"] = True
 		return context
 
-# def raw_to_dict(instance):
-# 	"""Convierte una instancia de una consulta raw a un diccionario, eliminando claves internas."""
-# 	data = instance.__dict__.copy()
-# 	data.pop('_state', None)
-# 	return data
-
 
 def vlivaventasprovincias_vista_pantalla(request):
 	#-- Obtener el token de la querystring.
@@ -223,7 +221,6 @@ def vlivaventasprovincias_vista_pantalla(request):
 
 
 def vlivaventasprovincias_vista_pdf(request):
-	return HttpResponse("Reporte en PDF aún no implementado.", status=400)
 	#-- Obtener el token de la querystring.
 	token = request.GET.get("token")
 	
@@ -237,14 +234,109 @@ def vlivaventasprovincias_vista_pdf(request):
 	if not contexto_reporte:
 		return HttpResponse("Contexto no encontrado o expirado", status=400)
 	
-	#-- Preparar la respuesta HTTP.
-	html_string = render_to_string(ConfigViews.reporte_pdf, contexto_reporte, request=request)
-	pdf_file = HTML(string=html_string, base_url=request.build_absolute_uri()).write_pdf()
+	#-- Generar el PDF usando ReportLab
+	pdf_file = generar_pdf(contexto_reporte)
 	
+	#-- Preparar la respuesta HTTP.
 	response = HttpResponse(pdf_file, content_type="application/pdf")
-	response["Content-Disposition"] = f'inline; filename="informe_{ConfigViews.model_string}.pdf"'
+	response["Content-Disposition"] = f'inline; filename="{ConfigViews.report_title}.pdf"'
 	
 	return response
+
+class CustomPDFGenerator(PDFGenerator):
+	#-- Método que se puede sobreescribir/extender según requerimientos.
+	def _get_header_bottom_left(self, context):
+		"""Personalización del Header-bottom-left"""
+		# return super()._get_header_bottom_left(context)
+		
+		empresa = context.get('datos_empresa')
+		
+		return f"""{empresa['empresa']} <br/>
+				   {empresa['domicilio']} <br/>
+				   <strong>C.P.:</strong> {empresa['cp']} {empresa['provincia']} - {empresa['localidad']} <br/>
+				   {empresa['sit_iva']}  <strong>C.U.I.T.:</strong> {empresa['cuit']}"""
+	
+	#-- Método que se puede sobreescribir/extender según requerimientos.
+	# def _get_header_bottom_right(self, context):
+	# 	"""Añadir información adicional específica para este reporte"""
+	# 	base_content = super()._get_header_bottom_right(context)
+	# 	saldo_total = context.get("saldo_total", 0)
+	# 	return f"""
+	# 		{base_content}<br/>
+	# 		<b>Total General:</b> {formato_es_ar(saldo_total)}
+	# 	"""
+	pass
+
+def generar_pdf(contexto_reporte):
+	#-- Crear instancia del generador personalizado.
+	generator = CustomPDFGenerator(contexto_reporte, pagesize=portrait(A4))
+	
+	#-- Construir datos de la tabla:
+	
+	#-- Extraer Títulos de las columnas de la tabla (headers).
+	headers_titles = [value[1] for value in ConfigViews.header_data.values()]
+	
+	#-- Extraer Ancho de las columnas de la tabla.
+	col_widths = [value[0] for value in ConfigViews.header_data.values()]
+	
+	table_data = [headers_titles]
+	
+	#-- Estilos específicos adicionales iniciales de la tabla.
+	table_style_config = [
+		('FONTSIZE', (0,0), (-1,-1), 8),
+		('LEADING', (0,0), (-1,-1), 10),
+		('ALIGN', (1,0), (-1,-1), 'RIGHT'),
+	]
+	
+	#-- Agregar los datos a la tabla.
+	for obj in contexto_reporte.get("objetos", []):
+		table_data.append([
+			# Paragraph(obj['nombre_provincia'], generator.styles['CellStyle']),
+			obj['nombre_provincia'],
+			formato_argentino(obj['gravado']),
+			formato_argentino(obj['exento']),
+			formato_argentino(obj['iva']),
+			formato_argentino(obj['percep_ib']),
+			formato_argentino(obj['total'])
+		])
+	
+	#-- Fila de Totales.
+	total_gravado = contexto_reporte.get('total_gravado')
+	total_exento = contexto_reporte.get('total_exento')
+	total_iva = contexto_reporte.get('total_iva')
+	total_percep_ib = contexto_reporte.get('total_percep_ib')
+	total_total = contexto_reporte.get('total_total')
+	
+	table_data.append(["Totales:", 
+						formato_argentino(total_gravado),
+						formato_argentino(total_exento),
+						formato_argentino(total_iva),
+						formato_argentino(total_percep_ib),
+						formato_argentino(total_total),
+					])
+
+	#-- Aplicar estilos a la fila de total (fila actual).
+	table_style_config.extend([
+		('ALIGN', (0,-1), (-1,-1), 'RIGHT'),
+		('FONTNAME', (0,-1), (-1,-1), 'Helvetica-Bold'),
+		('LINEABOVE', (0,-1), (-1,-1), 0.5, colors.black),
+	])
+		
+	return generator.generate(table_data, col_widths, table_style_config)		
+
+def _format_date(date_value):
+	"""Helper para formatear fechas"""
+	if not date_value:
+		return ""
+	
+	if isinstance(date_value, str):
+		try:
+			return datetime.strptime(date_value, "%Y-%m-%d").strftime("%d/%m/%Y")
+		except ValueError:
+			return date_value
+	else:
+		return date_value.strftime("%d/%m/%Y")
+# -------------------------------------------------------------------------------------------------
 
 
 def vlivaventasprovincias_vista_excel(request):

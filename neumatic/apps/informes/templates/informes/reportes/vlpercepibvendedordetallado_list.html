@@ -31,6 +31,7 @@
 		<thead>
 			<tr>
 				<th>Comprobante</th>
+				<th>Fecha</th>
 				<th>Código</th>
 				<th>Cliente</th>
 				<th>C.U.I.T.</th>
@@ -44,7 +45,7 @@
 			{% for id_vendedor, data in objetos.items %}
 				<!-- Fila con los datos del Vendedor -->
 				<tr>
-					<td style="padding-top: 5px;">
+					<td colspan="7" style="padding-top: 5px;">
 						<strong>Vendedor: </strong> 
 						<strong>[{{ id_vendedor }}]</strong> 
 						<strong>{{ data.vendedor }}</strong> 
@@ -55,6 +56,7 @@
 				{% for comp in data.comprobantes %}
 					<tr>
 						<td style="white-space: pre">{{ comp.comprobante }}</td>
+						<td>{{ comp.fecha_comprobante|date:'d/m/Y' }}</td>
 						<td>{{ comp.id_cliente_id }}</td>
 						<td>{{ comp.nombre_cliente }}</td>
 						<td>{{ comp.cuit }}</td>
@@ -64,7 +66,7 @@
 				{% endfor %}
 				<tr>
 					{% comment %} <td colspan="4" style="text-align: right;"><strong>Total Comprobante:</strong></td> {% endcomment %}
-					<td class="numeric" colspan="5"><strong>{{ data.total_neto|formato_es_ar }}</strong></td>
+					<td class="numeric" colspan="6"><strong>{{ data.total_neto|formato_es_ar }}</strong></td>
 					<td class="numeric"><strong>{{ data.total_percep|formato_es_ar }}</strong></td>
 				</tr>
 			{% endfor %}

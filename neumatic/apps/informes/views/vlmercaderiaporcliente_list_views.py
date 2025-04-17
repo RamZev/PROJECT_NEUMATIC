@@ -3,19 +3,21 @@
 from django.urls import reverse_lazy
 from django.shortcuts import render
 from django.http import HttpResponse
-from decimal import Decimal
 from datetime import datetime
-from django.template.loader import render_to_string
-from weasyprint import HTML
 from django.templatetags.static import static
 from django.forms.models import model_to_dict
+
+#-- ReportLab:
+from reportlab.lib import colors
+from reportlab.lib.pagesizes import A4, landscape, portrait
+from reportlab.platypus import Paragraph
 
 from .report_views_generics import *
 from apps.informes.models import VLMercaderiaPorCliente
 from apps.maestros.models.cliente_models import Cliente
 from ..forms.buscador_vlmercaderiaporcliente_forms import BuscadorMercaderiaPorClienteForm
-from utils.utils import deserializar_datos
-from utils.helpers.export_helpers import ExportHelper
+from utils.utils import deserializar_datos, formato_argentino
+from utils.helpers.export_helpers import ExportHelper, PDFGenerator
 
 
 class ConfigViews:
@@ -96,9 +98,6 @@ class VLMercaderiaPorClienteInformeView(InformeFormView):
 	extra_context = {
 		"master_title": f'Informes - {ConfigViews.model._meta.verbose_name_plural}',
 		"home_view_name": ConfigViews.home_view_name,
-		# "list_view_name": ConfigViews.list_view_name,
-		# "table_headers": DataViewList.table_headers,
-		# "table_data": DataViewList.table_data,
 		"buscador_template": f"{ConfigViews.app_label}/buscador_{ConfigViews.model_string}.html",
 		"js_file": ConfigViews.js_file,
 		"url_pantalla": ConfigViews.url_pantalla,
@@ -211,15 +210,130 @@ def vlmercaderiaporcliente_vista_pdf(request):
 	if not contexto_reporte:
 		return HttpResponse("Contexto no encontrado o expirado", status=400)
 	
+	#-- Generar el PDF usando ReportLab
+	pdf_file = generar_pdf(contexto_reporte)
+	
 	#-- Preparar la respuesta HTTP.
-	# html_string = render_to_string("informes/reportes/mercaderiaporcliente_pdf.html", contexto_reporte, request=request)
-	html_string = render_to_string(ConfigViews.reporte_pdf, contexto_reporte, request=request)
-	pdf_file = HTML(string=html_string, base_url=request.build_absolute_uri()).write_pdf()
-
 	response = HttpResponse(pdf_file, content_type="application/pdf")
-	response["Content-Disposition"] = f'inline; filename="informe_{ConfigViews.model_string}.pdf"'
+	response["Content-Disposition"] = f'inline; filename="{ConfigViews.report_title}.pdf"'
 	
 	return response
+
+class CustomPDFGenerator(PDFGenerator):
+	#-- Método que se puede sobreescribir/extender según requerimientos.
+	def _get_header_bottom_left(self, context):
+		"""Personalización del Header-bottom-left"""
+		# return super()._get_header_bottom_left(context)
+		
+		# custom_text = context.get("texto_personalizado", "")
+		# 
+		# if custom_text:
+		# 	return f"<b>NOTA:</b> {custom_text}"
+		
+		cliente_data = context.get('cliente', '')
+		
+		return f"<strong>Cliente:</strong> <br/> [{cliente_data['id_cliente']}] {cliente_data['nombre_cliente']}"
+		
+	
+	#-- Método que se puede sobreescribir/extender según requerimientos.
+	# def _get_header_bottom_right(self, context):
+	# 	"""Añadir información adicional específica para este reporte"""
+	# 	base_content = super()._get_header_bottom_right(context)
+	# 	saldo_total = context.get("saldo_total", 0)
+	# 	return f"""
+	# 		{base_content}<br/>
+	# 		<b>Total General:</b> {formato_es_ar(saldo_total)}
+	# 	"""
+	pass
+
+def generar_pdf(contexto_reporte):
+	#-- Crear instancia del generador personalizado.
+	generator = CustomPDFGenerator(contexto_reporte, pagesize=landscape(A4), body_font_size=7)
+	
+	#-- Construir datos de la tabla:
+	
+	#-- Datos de las columnas de la tabla (headers).
+	headers = [
+		("Marca", 140),
+		("Medida", 60),
+		("Código", 40),
+		("Descripción", 200),
+		("Cantidad", 60),
+		("Precio", 80),
+		("Desc.", 80),
+		("Total", 80)
+	]
+	
+	#-- Extraer Títulos de las columnas de la tabla (headers).
+	headers_titles = [value[0] for value in headers]
+	
+	#-- Extraer Ancho de las columnas de la tabla.
+	col_widths = [value[1] for value in headers]
+	
+	table_data = [headers_titles]
+	
+	#-- Estilos específicos adicionales iniciales de la tabla.
+	table_style_config = [
+		('ALIGN', (4,0), (-1,-1), 'RIGHT'),
+	]
+	
+	#-- Contador de filas (empezamos en 1 porque la 0 es el header).
+	current_row = 1
+	
+	#-- Agregar los datos a la tabla.
+	
+	for comprobante_num, productos in contexto_reporte.get("objetos", {}).items():
+		#-- Datos agrupado por.
+		primer_producto = productos[0]
+		table_data.append([
+			f"{primer_producto['nombre_comprobante_venta']}  {primer_producto['numero']}  {primer_producto['fecha_comprobante'].strftime('%d/%m/%Y')}",
+			"", "", "", "", "", ""
+		])
+		
+		#-- Aplicar estilos a la fila de agrupación (fila actual).
+		table_style_config.extend([
+			('SPAN', (0,current_row), (-1,current_row)),
+			('FONTNAME', (0,current_row), (-1,current_row), 'Helvetica-Bold')
+		])
+		
+		current_row += 1
+		
+		#-- Agregar filas del detalle.
+		for producto in productos:
+			table_data.append([
+				Paragraph(producto.get('nombre_producto_marca', ''), generator.styles['CellStyle']),
+				producto.get('medida', ''),
+				producto.get('id_producto_id', ''),
+				Paragraph(producto.get('nombre_producto', ''), generator.styles['CellStyle']),
+				formato_argentino(producto.get('cantidad', 0)),
+				formato_argentino(producto.get('precio', 0)),
+				formato_argentino(producto.get('descuento', 0)),
+				formato_argentino(producto.get('total', 0))
+			])
+			current_row += 1
+			
+		#-- Fila divisoria.
+		table_data.append(["", "", "", "", "", "", ""])
+		table_style_config.append(
+			('LINEBELOW', (0,current_row), (-1,current_row), 0.5, colors.gray),
+		)
+		current_row += 1
+	
+	return generator.generate(table_data, col_widths, table_style_config)		
+
+def _format_date(date_value):
+	"""Helper para formatear fechas"""
+	if not date_value:
+		return ""
+	
+	if isinstance(date_value, str):
+		try:
+			return datetime.strptime(date_value, "%Y-%m-%d").strftime("%d/%m/%Y")
+		except ValueError:
+			return date_value
+	else:
+		return date_value.strftime("%d/%m/%Y")
+# -------------------------------------------------------------------------------------------------
 
 
 def vlmercaderiaporcliente_vista_excel(request):
