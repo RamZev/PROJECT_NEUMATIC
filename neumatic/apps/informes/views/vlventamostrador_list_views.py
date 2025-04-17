@@ -2,20 +2,21 @@
 
 from django.urls import reverse_lazy
 from django.shortcuts import render
-
 from django.http import HttpResponse
-from decimal import Decimal
 from datetime import datetime
-from django.template.loader import render_to_string
-from weasyprint import HTML
 from django.templatetags.static import static
 from django.forms.models import model_to_dict
+
+#-- ReportLab:
+from reportlab.lib import colors
+from reportlab.lib.pagesizes import A4, landscape, portrait
+from reportlab.platypus import Paragraph
 
 from .report_views_generics import *
 from apps.informes.models import VLVentaMostrador
 from ..forms.buscador_vlventamostrador_forms import BuscadorVentaMostradorForm
-from utils.utils import deserializar_datos
-from utils.helpers.export_helpers import ExportHelper
+from utils.utils import deserializar_datos, formato_argentino
+from utils.helpers.export_helpers import ExportHelper, PDFGenerator
 
 
 class ConfigViews:
@@ -73,16 +74,17 @@ class ConfigViews:
 	
 	#-- Establecer las columnas del reporte y sus anchos(en punto).
 	header_data = {
-		"fecha_comprobante": (40, "Fecha"),
-		"comprobante": (40, "Comprobante"),
-		"id_cliente_id": (40, "Cliente"),
-		"nombre_cliente": (180, "Nombre"),
-		"reventa": (40, "Rvta."),
-		"tipo_producto": (40, "T/P"),
-		"id_producto_id": (40, "Código"),
+		"fecha_comprobante": (45, "Fecha"),
+		"comprobante": (80, "Comprobante"),
+		"id_cliente_id": (35, "Cliente"),
+		"nombre_cliente": (190, "Nombre"),
+		"reventa": (20, "Rta."),
+		"tipo_producto": (20, "T/P"),
+		"id_producto_id": (30, "Código"),
+		"nombre_producto": (200, "Descripción"),
 		"cantidad": (40, "Cantidad"),
-		"precio": (40, "Precio"),
-		"total": (40, "Total"),
+		"precio": (70, "Precio"),
+		"total": (80, "Total")
 	}
 
 
@@ -137,26 +139,17 @@ class VLVentaMostradorInformeView(InformeFormView):
 		tipo_cliente_dict = {"T": "Todos", "M": "Minoristas", "R": "Revendedores"}
 		tipo_producto_dict = {"T": "Todos", "P": "Producto", "S": "Servicio"}
 		
-		# param = {
-		# 	"Sucursal": sucursal.nombre_sucursal if sucursal else "Todas",
-		# 	"Desde": fecha_desde.strftime("%d/%m/%Y"),
-		# 	"Hasta": fecha_hasta.strftime("%d/%m/%Y"),
-		# 	"Tipo Venta": tipo_venta_dict.get(tipo_venta, "Desconocido"),
-		# 	"Tipo Cliente": tipo_cliente_dict.get(tipo_cliente, "Desconocido"),
-		# 	"Tipo Producto": tipo_producto_dict.get(tipo_producto, "Desconocido"),
-		# }
-		param_left = {
+		param_right = {
 			"Sucursal": sucursal.nombre_sucursal if sucursal else "Todas",
 			"Desde": fecha_desde.strftime("%d/%m/%Y"),
 			"Hasta": fecha_hasta.strftime("%d/%m/%Y"),
 		}
-		param_right = {
+		param_left = {
 			"Tipo Venta": tipo_venta_dict.get(tipo_venta, "Desconocido"),
 			"Tipo Cliente": tipo_cliente_dict.get(tipo_cliente, "Desconocido"),
 			"Tipo Producto": tipo_producto_dict.get(tipo_producto, "Desconocido"),
 		}
 
-		
 		fecha_hora_reporte = datetime.now().strftime("%d/%m/%Y %H:%M:%S")		
 		
 		dominio = f"http://{self.request.get_host()}"
@@ -198,7 +191,6 @@ def vlventamostrador_vista_pantalla(request):
 		return HttpResponse("Token no proporcionado", status=400)
 	
 	#-- Obtener el contexto(datos) previamente guardados en la sesión.
-	# contexto_reporte = request.session.pop(token, None)
 	contexto_reporte = deserializar_datos(request.session.pop(token, None))
 	
 	if not contexto_reporte:
@@ -206,7 +198,6 @@ def vlventamostrador_vista_pantalla(request):
 	
 	#-- Generar el listado a pantalla.
 	return render(request, ConfigViews.reporte_pantalla, contexto_reporte)
-	# return render(request, "informes/reportes/ventamostrador_list.html", contexto_reporte)
 
 
 def vlventamostrador_vista_pdf(request):
@@ -223,15 +214,134 @@ def vlventamostrador_vista_pdf(request):
 	if not contexto_reporte:
 		return HttpResponse("Contexto no encontrado o expirado", status=400)
 	
+	#-- Generar el PDF usando ReportLab
+	pdf_file = generar_pdf(contexto_reporte)
+	
 	#-- Preparar la respuesta HTTP.
-	# html_string = render_to_string("informes/reportes/ventamostrador_pdf.html", contexto_reporte, request=request)
-	html_string = render_to_string(ConfigViews.reporte_pdf, contexto_reporte, request=request)
-	pdf_file = HTML(string=html_string, base_url=request.build_absolute_uri()).write_pdf()
-
 	response = HttpResponse(pdf_file, content_type="application/pdf")
-	response["Content-Disposition"] = f'inline; filename="informe_{ConfigViews.model_string}.pdf"'
+	response["Content-Disposition"] = f'inline; filename="{ConfigViews.report_title}.pdf"'
 	
 	return response
+
+class CustomPDFGenerator(PDFGenerator):
+	#-- Método que se puede sobreescribir/extender según requerimientos.
+	def _get_header_bottom_left(self, context):
+		"""Personalización del Header-bottom-left"""
+		
+		# return super()._get_header_bottom_left(context)
+		
+		# custom_text = context.get("texto_personalizado", "")
+		# 
+		# if custom_text:
+		# 	return f"<b>NOTA:</b> {custom_text}"
+		
+		params = context.get("parametros_i", {})
+		
+		return "<br/>".join([f"<b>{k}:</b> {v}" for k, v in params.items()])		
+	
+	#-- Método que se puede sobreescribir/extender según requerimientos.
+	def _get_header_bottom_right(self, context):
+		"""Añadir información adicional específica para este reporte"""
+		
+		# base_content = super()._get_header_bottom_right(context)
+		
+		params = context.get("parametros_d", {})
+		
+		return "<br/>".join([f"<b>{k}:</b> {v}" for k, v in params.items()])
+		
+		# saldo_total = context.get("saldo_total", 0)
+		# return f"""
+		# 	{base_content}<br/>
+		# 	<b>Total General:</b> {formato_es_ar(saldo_total)}
+		# """
+	pass
+
+def generar_pdf(contexto_reporte):
+	#-- Crear instancia del generador personalizado.
+	generator = CustomPDFGenerator(contexto_reporte, pagesize=landscape(A4), body_font_size=7)
+	
+	#-- Construir datos de la tabla:
+	
+	#-- Extraer Títulos de las columnas de la tabla (headers).
+	headers_titles = [value[1] for value in ConfigViews.header_data.values()]
+	
+	#-- Extraer Ancho de las columnas de la tabla.
+	col_widths = [value[0] for value in ConfigViews.header_data.values()]
+	
+	table_data = [headers_titles]
+	
+	#-- Estilos específicos adicionales iniciales de la tabla.
+	table_style_config = [
+		('ALIGN', (8,0), (-1,-1), 'RIGHT'),
+	]
+	
+	#-- Contador de filas (empezamos en 1 porque la 0 es el header).
+	current_row = 1
+	
+	#-- Agregar los datos a la tabla.
+	objetos = contexto_reporte.get("objetos", [])
+	previous_comprobante = None
+	
+	for obj in objetos:
+		#-- Agregar filas del detalle.
+		current_comprobante = obj['comprobante']
+		if current_comprobante != previous_comprobante:
+			table_data.append([
+				_format_date(obj['fecha_comprobante']),
+				obj['comprobante'],
+				obj['id_cliente_id'],
+				Paragraph(str(obj['nombre_cliente']), generator.styles['CellStyle']),
+				obj['reventa'],
+				obj['tipo_producto'],
+				obj['id_producto_id'],
+				Paragraph(str(obj['nombre_producto']), generator.styles['CellStyle']),
+				formato_argentino(obj['cantidad']),
+				formato_argentino(obj['precio']),
+				formato_argentino(obj['total'])
+			])
+		else:
+			table_data.append([
+				"",
+				"",
+				"",
+				"",
+				"",
+				obj['tipo_producto'],
+				obj['id_producto_id'],
+				Paragraph(str(obj['nombre_producto']), generator.styles['CellStyle']),
+				formato_argentino(obj['cantidad']),
+				formato_argentino(obj['precio']),
+				formato_argentino(obj['total'])
+			])
+		previous_comprobante = current_comprobante
+		
+		current_row += 1
+			
+	#-- Fila Total General.
+	table_data.append(["", "", "", "", "", "", "", "", "", "Total General:", formato_argentino(contexto_reporte.get('total_general'))])
+	
+	#-- Aplicar estilos a la fila de total (fila actual).
+	table_style_config.extend([
+		('FONTNAME', (0,current_row), (-1,current_row), 'Helvetica-Bold'),
+		('LINEABOVE', (0,current_row), (-1,current_row), 0.5, colors.black),
+	])
+	
+	
+	return generator.generate(table_data, col_widths, table_style_config)		
+
+def _format_date(date_value):
+	"""Helper para formatear fechas"""
+	if not date_value:
+		return ""
+	
+	if isinstance(date_value, str):
+		try:
+			return datetime.strptime(date_value, "%Y-%m-%d").strftime("%d/%m/%Y")
+		except ValueError:
+			return date_value
+	else:
+		return date_value.strftime("%d/%m/%Y")
+# -------------------------------------------------------------------------------------------------
 
 
 def vlventamostrador_vista_excel(request):

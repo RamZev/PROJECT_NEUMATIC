@@ -2,20 +2,21 @@
 
 from django.urls import reverse_lazy
 from django.shortcuts import render
-
 from django.http import HttpResponse
-from decimal import Decimal
 from datetime import datetime
-from django.template.loader import render_to_string
-from weasyprint import HTML
 from django.templatetags.static import static
 from django.forms.models import model_to_dict
+
+#-- ReportLab:
+from reportlab.lib import colors
+from reportlab.lib.pagesizes import A4, landscape, portrait
+from reportlab.platypus import Paragraph
 
 from .report_views_generics import *
 from apps.informes.models import VLVentaComproLocalidad
 from ..forms.buscador_vlventacomprolocalidad_forms import BuscadorVentaComproLocalidadForm
-from utils.utils import deserializar_datos
-from utils.helpers.export_helpers import ExportHelper
+from utils.utils import deserializar_datos, formato_argentino
+from utils.helpers.export_helpers import ExportHelper, PDFGenerator
 
 
 class ConfigViews:
@@ -73,16 +74,17 @@ class ConfigViews:
 	
 	#-- Establecer las columnas del reporte y sus anchos(en punto).
 	header_data = {
-		"fecha_comprobante": (40, "Fecha"),
-		"comprobante": (40, "Comprobante"),
-		"id_cliente_id": (40, "Cliente"),
-		"nombre_cliente": (180, "Nombre"),
+		"fecha_comprobante": (45, "Fecha"),
+		"comprobante": (80, "Comprobante"),
+		"id_cliente_id": (35, "Cliente"),
+		"nombre_cliente": (190, "Nombre"),
 		"cuit": (40, "CUIT"),
-		"gravado": (40, "Gravado"),
-		"exento": (40, "Exento"),
-		"iva": (40, "IVA"),
-		"percep_ib": (40, "Percep. IB"),
-		"total": (40, "Total Op."),
+		"gravado": (80, "Gravado"),
+		"exento": (70, "Exento"),
+		"iva": (70, "IVA"),
+		"percep_ib": (70, "Percep. IB"),
+		"total": (80, "Total Op."),
+		"iniciales": (30, "Op."),
 	}
 
 
@@ -130,10 +132,9 @@ class VLVentaComproLocalidadInformeView(InformeFormView):
 		param = {
 			"Desde": fecha_desde.strftime("%d/%m/%Y"),
 			"Hasta": fecha_hasta.strftime("%d/%m/%Y"),
+			"C.P.": codigo_postal if codigo_postal else "Todos",
+			"Sucursal": sucursal.nombre_sucursal if sucursal else "Todas",
 		}
-		
-		param.update({"C.P.": codigo_postal if codigo_postal else "Todos"})
-		param.update({"Sucursal": sucursal.nombre_sucursal if sucursal else "Todas"})
 		
 		#-- Calcular el total general.
 		total_general = sum(item.total for item in queryset if hasattr(item, "total"))
@@ -196,15 +197,95 @@ def vlventacomprolocalidad_vista_pdf(request):
 	if not contexto_reporte:
 		return HttpResponse("Contexto no encontrado o expirado", status=400)
 	
+	#-- Generar el PDF usando ReportLab
+	pdf_file = generar_pdf(contexto_reporte)
+	
 	#-- Preparar la respuesta HTTP.
-	# html_string = render_to_string("informes/reportes/ventacomprolocalidad_pdf.html", contexto_reporte, request=request)
-	html_string = render_to_string(ConfigViews.reporte_pdf, contexto_reporte, request=request)
-	pdf_file = HTML(string=html_string, base_url=request.build_absolute_uri()).write_pdf()
-
 	response = HttpResponse(pdf_file, content_type="application/pdf")
-	response["Content-Disposition"] = f'inline; filename="informe_{ConfigViews.model_string}.pdf"'
+	response["Content-Disposition"] = f'inline; filename="{ConfigViews.report_title}.pdf"'
 	
 	return response
+
+class CustomPDFGenerator(PDFGenerator):
+	#-- Método que se puede sobreescribir/extender según requerimientos.
+	# def _get_header_bottom_left(self, context):
+	# 	"""Personalización del Header-bottom-left"""
+	# 	# return super()._get_header_bottom_left(context)
+	# 	
+	# 	# custom_text = context.get("texto_personalizado", "")
+	# 	# 
+	# 	# if custom_text:
+	# 	# 	return f"<b>NOTA:</b> {custom_text}"
+	# 	
+	# 	cliente_data = context.get('cliente', '')
+	# 	
+	# 	return f"<strong>Cliente:</strong> <br/> [{cliente_data['id_cliente']}] {cliente_data['nombre_cliente']}"
+		
+	
+	#-- Método que se puede sobreescribir/extender según requerimientos.
+	# def _get_header_bottom_right(self, context):
+	# 	"""Añadir información adicional específica para este reporte"""
+	# 	base_content = super()._get_header_bottom_right(context)
+	# 	saldo_total = context.get("saldo_total", 0)
+	# 	return f"""
+	# 		{base_content}<br/>
+	# 		<b>Total General:</b> {formato_es_ar(saldo_total)}
+	# 	"""
+	pass
+
+def generar_pdf(contexto_reporte):
+	#-- Crear instancia del generador personalizado.
+	generator = CustomPDFGenerator(contexto_reporte, pagesize=landscape(A4), body_font_size=7)
+	
+	#-- Construir datos de la tabla:
+	
+	#-- Extraer Títulos de las columnas de la tabla (headers).
+	headers_titles = [value[1] for value in ConfigViews.header_data.values()]
+	
+	#-- Extraer Ancho de las columnas de la tabla.
+	col_widths = [value[0] for value in ConfigViews.header_data.values()]
+	
+	table_data = [headers_titles]
+	
+	#-- Estilos específicos adicionales iniciales de la tabla.
+	table_style_config = [
+		('ALIGN', (5,0), (-1,-1), 'RIGHT'),
+	]
+	
+	#-- Agregar los datos a la tabla.
+	
+	for obj in contexto_reporte.get("objetos", []):
+		#-- Agregar filas del detalle.
+		table_data.append([
+			_format_date(obj['fecha_comprobante']),
+			obj['comprobante'],
+			obj['id_cliente_id'],
+			Paragraph(str(obj['nombre_cliente']), generator.styles['CellStyle']),
+			obj['cuit'],
+			formato_argentino(obj['gravado']),
+			formato_argentino(obj['exento']),
+			formato_argentino(obj['iva']),
+			formato_argentino(obj['percep_ib']),
+			formato_argentino(obj['total']),
+			obj['iniciales']
+		])
+	
+	return generator.generate(table_data, col_widths, table_style_config)		
+
+def _format_date(date_value):
+	"""Helper para formatear fechas"""
+	if not date_value:
+		return ""
+	
+	if isinstance(date_value, str):
+		try:
+			return datetime.strptime(date_value, "%Y-%m-%d").strftime("%d/%m/%Y")
+		except ValueError:
+			return date_value
+	else:
+		return date_value.strftime("%d/%m/%Y")
+# -------------------------------------------------------------------------------------------------
+
 
 def vlventacomprolocalidad_vista_excel(request):
 	token = request.GET.get("token")

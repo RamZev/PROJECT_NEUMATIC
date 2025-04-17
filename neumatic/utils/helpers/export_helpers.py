@@ -345,7 +345,7 @@ class CustomCanvas(canvas.Canvas):
 
 #---------------------------------------------------------------------------------
 class PDFGenerator:
-	def __init__(self, context, pagesize=portrait(A4), margins=(10, 10, 0, 40)):
+	def __init__(self, context, pagesize=portrait(A4), margins=(10, 10, 0, 40), body_font_size=6, header_font_size=9):
 		#-- Dimensiones formato A4:
 		#-- portrait:	595 pts. (210x297mm) vertical
 		#-- landscape:	842 pts. (297x210mm) horizontal
@@ -354,6 +354,8 @@ class PDFGenerator:
 		self.context = context
 		self.pagesize = pagesize
 		self.left_margin, self.right_margin, self.top_margin, self.bottom_margin = margins
+		self.body_font_size = body_font_size
+		self.header_font_size = header_font_size
 		self.extra_header_height = 0
 		
 		#-- Creación y Configuración del documento base.
@@ -448,8 +450,9 @@ class PDFGenerator:
 		self.styles.add(ParagraphStyle(
 			name='CellStyle',
 			parent=self.styles["BodyText"],
-			fontSize=6,
-			leading=5.0,
+			fontSize=self.body_font_size,
+			# leading=5.0,
+			leading=8,
 			spaceBefore=0,
 			spaceAfter=0,
 			leftIndent=0,
@@ -460,7 +463,7 @@ class PDFGenerator:
 		#-- Estilo de párrafo para la sección Header-bottom-left.
 		self.styles.add(ParagraphStyle(
 			name='HeaderBottomLeft',
-			fontSize=9,
+			fontSize=self.header_font_size,
 			leading=12,
 			alignment=TA_LEFT
 		))
@@ -468,7 +471,7 @@ class PDFGenerator:
 		#-- Estilo de párrafo para la sección Header-bottom-right.
 		self.styles.add(ParagraphStyle(
 			name='HeaderBottomRight',
-			fontSize=9,
+			fontSize=self.header_font_size,
 			leading=12,
 			alignment=TA_RIGHT
 		))
@@ -609,15 +612,14 @@ class PDFGenerator:
 		table_style = TableStyle([
 			#-- Estilos comunes toda la tabla.
 			('VALIGN', (0,0), (-1,-1), 'TOP'),
-			('FONTSIZE', (0,0), (-1,-1), 6),
-			# ('LEADING', (0,0), (-1,-1), 0),
+			('FONTSIZE', (0,0), (-1,-1), self.body_font_size),
 			('LEADING', (0,0), (-1,-1), 8),
 			
 			#-- Padding de la tabla exceptuando la primera fila (headers).
 			('TOPPADDING', (0,1), (-1,-1), 0),
 			('BOTTOMPADDING', (0,1), (-1,-1), 0),
 			
-			#-- Estilos para la priemra fila (headers).
+			#-- Estilos para la primera fila (headers).
 			('BACKGROUND', (0,0), (-1,0), colors.gray),
 			('FONTNAME', (0,0), (-1,0), 'Helvetica-Bold'),
 			('TEXTCOLOR', (0,0), (-1,0), colors.white),

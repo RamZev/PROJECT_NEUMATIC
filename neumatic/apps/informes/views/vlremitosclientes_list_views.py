@@ -3,18 +3,21 @@
 from django.urls import reverse_lazy
 from django.shortcuts import render
 from django.http import HttpResponse
-from decimal import Decimal
 from datetime import datetime
-from django.template.loader import render_to_string
-from weasyprint import HTML
 from django.templatetags.static import static
+from decimal import Decimal
+
+#-- ReportLab:
+from reportlab.lib import colors
+from reportlab.lib.pagesizes import A4, landscape, portrait
+from reportlab.platypus import Paragraph
 
 from .report_views_generics import *
 from apps.informes.models import VLRemitosClientes
 from apps.maestros.models.cliente_models import Cliente
 from ..forms.buscador_vlremitosclientes_forms import BuscadorRemitosClientesForm
-from utils.utils import deserializar_datos
-from utils.helpers.export_helpers import ExportHelper
+from utils.utils import deserializar_datos, formato_argentino
+from utils.helpers.export_helpers import ExportHelper, PDFGenerator
 
 
 class ConfigViews:
@@ -73,12 +76,12 @@ class ConfigViews:
 	#-- Establecer las columnas del reporte y sus anchos(en punto).
 	header_data = {
 		"fecha_comprobante": (40, "Fecha"),
-		"numero": (40, "Número"),
-		"nombre_producto": (40, "Descripción"),
-		"medida": (180, "Medida"),
-		"cantidad": (40, "Cantidad"),
-		"precio": (40, "Precio"),
-		"total": (40, "Total"),
+		"numero": (70, "Número"),
+		"nombre_producto": (200, "Descripción"),
+		"medida": (50, "Medida"),
+		"cantidad": (50, "Cantidad"),
+		"precio": (75, "Precio"),
+		"total": (75, "Total"),
 	}
 
 
@@ -155,6 +158,7 @@ class VLRemitosClientesInformeView(InformeFormView):
 		
 		#-- Convertir los datos agrupados a un formato serializable:
 		# Se recorre cada grupo y se convierte cada producto a diccionario usando raw_to_dict.
+		
 		for comprobante, data in grouped_data.items():
 			data['productos'] = [raw_to_dict(producto) for producto in data['productos']]
 			data['subtotal'] = float(data['subtotal'])
@@ -181,6 +185,12 @@ class VLRemitosClientesInformeView(InformeFormView):
 		if form.errors:
 			context["data_has_errors"] = True
 		return context
+
+def raw_to_dict(instance):
+	"""Convierte una instancia de una consulta raw a un diccionario, eliminando claves internas."""
+	data = instance.__dict__.copy()
+	data.pop('_state', None)
+	return data
 
 
 def vlremitosclientes_vista_pantalla(request):
@@ -215,22 +225,124 @@ def vlremitosclientes_vista_pdf(request):
 	if not contexto_reporte:
 		return HttpResponse("Contexto no encontrado o expirado", status=400)
 	
+	#-- Generar el PDF usando ReportLab
+	pdf_file = generar_pdf(contexto_reporte)
+	
 	#-- Preparar la respuesta HTTP.
-	# html_string = render_to_string("informes/reportes/remitosclientes_pdf.html", contexto_reporte, request=request)
-	html_string = render_to_string(ConfigViews.reporte_pdf, contexto_reporte, request=request)
-	pdf_file = HTML(string=html_string, base_url=request.build_absolute_uri()).write_pdf()
-
 	response = HttpResponse(pdf_file, content_type="application/pdf")
-	response["Content-Disposition"] = f'inline; filename="informe_{ConfigViews.model_string}.pdf"'
+	response["Content-Disposition"] = f'inline; filename="{ConfigViews.report_title}.pdf"'
 	
 	return response
 
+class CustomPDFGenerator(PDFGenerator):
+	#-- Método que se puede sobreescribir/extender según requerimientos.
+	def _get_header_bottom_left(self, context):
+		"""Personalización del Header-bottom-left"""
+		# return super()._get_header_bottom_left(context)
+		
+		# custom_text = context.get("texto_personalizado", "")
+		# 
+		# if custom_text:
+		# 	return f"<b>NOTA:</b> {custom_text}"
+		
+		cliente_data = context.get('cliente', '')
+		
+		return f"<strong>Cliente:</strong> <br/> [{cliente_data['id_cliente']}] {cliente_data['nombre_cliente']}"
+		
+	
+	#-- Método que se puede sobreescribir/extender según requerimientos.
+	# def _get_header_bottom_right(self, context):
+	# 	"""Añadir información adicional específica para este reporte"""
+	# 	base_content = super()._get_header_bottom_right(context)
+	# 	saldo_total = context.get("saldo_total", 0)
+	# 	return f"""
+	# 		{base_content}<br/>
+	# 		<b>Total General:</b> {formato_es_ar(saldo_total)}
+	# 	"""
+	pass
 
-def raw_to_dict(instance):
-	"""Convierte una instancia de una consulta raw a un diccionario, eliminando claves internas."""
-	data = instance.__dict__.copy()
-	data.pop('_state', None)
-	return data
+def generar_pdf(contexto_reporte):
+	#-- Crear instancia del generador personalizado.
+	generator = CustomPDFGenerator(contexto_reporte, pagesize=portrait(A4), body_font_size=7)
+	
+	#-- Construir datos de la tabla:
+	
+	#-- Extraer Títulos de las columnas de la tabla (headers).
+	headers_titles = [value[1] for value in ConfigViews.header_data.values()]
+	
+	#-- Extraer Ancho de las columnas de la tabla.
+	col_widths = [value[0] for value in ConfigViews.header_data.values()]
+	
+	table_data = [headers_titles]
+	
+	#-- Estilos específicos adicionales iniciales de la tabla.
+	table_style_config = [
+		('ALIGN', (4,0), (-1,-1), 'RIGHT'),
+	]
+	
+	#-- Contador de filas (empezamos en 1 porque la 0 es el header).
+	current_row = 1
+	
+	#-- Agregar los datos a la tabla.
+	
+	for compro_num, data in contexto_reporte.get("objetos", {}).items():
+		#-- Agregar filas del detalle.
+		for producto in data['productos']:
+			table_data.append([
+				_format_date(producto['fecha_comprobante']),
+				producto['numero'],
+				Paragraph(producto['nombre_producto'], generator.styles['CellStyle']),
+				producto['medida'],
+				formato_argentino(producto['cantidad']),
+				formato_argentino(producto['precio']),
+				formato_argentino(producto['total'])
+			])
+			current_row += 1
+			
+		#-- Fila Total por comprobante.
+		table_data.append(["", "", "", "", "", "Total Comprobante:", formato_argentino(data['subtotal'])])
+		
+		#-- Aplicar estilos a la fila de total (fila actual).
+		table_style_config.extend([
+			('FONTNAME', (0,current_row), (-1,current_row), 'Helvetica-Bold'),
+			# ('LINEABOVE', (0,current_row), (-1,current_row), 0.5, colors.black),
+		])
+		
+		current_row += 1
+		
+		#-- Fila divisoria.
+		table_data.append(["", "", "", "", "", "", ""])
+		table_style_config.append(
+			('LINEBELOW', (0,current_row), (-1,current_row), 0.5, colors.gray),
+		)
+		current_row += 1
+	
+	#-- Fila Total General.
+	table_data.append(["", "", "", "", "", "Total General:", formato_argentino(contexto_reporte.get('total_general'))])
+	
+	#-- Aplicar estilos a la fila de total (fila actual).
+	table_style_config.extend([
+		('FONTNAME', (0,current_row), (-1,current_row), 'Helvetica-Bold'),
+		# ('LINEABOVE', (0,current_row), (-1,current_row), 0.5, colors.black),
+	])
+	
+	
+	return generator.generate(table_data, col_widths, table_style_config)		
+
+def _format_date(date_value):
+	"""Helper para formatear fechas"""
+	if not date_value:
+		return ""
+	
+	if isinstance(date_value, str):
+		try:
+			return datetime.strptime(date_value, "%Y-%m-%d").strftime("%d/%m/%Y")
+		except ValueError:
+			return date_value
+	else:
+		return date_value.strftime("%d/%m/%Y")
+# -------------------------------------------------------------------------------------------------
+
 
 def vlremitosclientes_vista_excel(request):
 	token = request.GET.get("token")

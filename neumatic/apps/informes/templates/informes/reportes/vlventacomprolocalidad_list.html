@@ -57,7 +57,7 @@
 					<td class="numeric">{{ obj.iva|formato_es_ar }}</td>
 					<td class="numeric">{{ obj.percep_ib|formato_es_ar }}</td>
 					<td class="numeric">{{ obj.total|formato_es_ar }}</td>
-					<td>{{ obj.iniciales }}</td>
+					<td>{{ obj.iniciales|default_if_none:"" }}</td>
 				</tr>
 			{% endfor %}
 			

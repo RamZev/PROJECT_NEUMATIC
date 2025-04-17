@@ -14,6 +14,7 @@ from reportlab.platypus import Paragraph
 
 from .report_views_generics import *
 from apps.informes.models import VLIVAVentasFULL
+from apps.maestros.models.empresa_models import Empresa
 from ..forms.buscador_vlivaventasfull_forms import BuscadorVLIVAVentasFULLForm
 from utils.utils import deserializar_datos, serializar_queryset, formato_argentino
 from utils.helpers.export_helpers import ExportHelper, PDFGenerator
@@ -74,16 +75,16 @@ class ConfigViews:
 	
 	#-- Establecer las columnas del reporte y sus anchos(en punto).
 	header_data = {
-		"comprobante": (70, "Comprobante"),
-		"fecha_comprobante": (40, "Fecha"),
-		"nombre_cliente": (180, "Nombre"),
-		"codigo_iva": (30, "Sit. IVA"),
-		"cuit": (40, "CUIT"),
-		"gravado": (60, "Gravado"),
-		"exento": (60, "Exento"),
-		"iva": (60, "I.V.A."),
-		"percep_ib": (60, "Percep. IB"),
-		"total": (60, "Total"),
+		"comprobante": (85, "Comprobante"),
+		"fecha_comprobante": (50, "Fecha"),
+		"nombre_cliente": (220, "Nombre"),
+		"codigo_iva": (40, "Sit. IVA"),
+		"cuit": (50, "CUIT"),
+		"gravado": (75, "Gravado"),
+		"exento": (75, "Exento"),
+		"iva": (75, "I.V.A."),
+		"percep_ib": (75, "Percep. IB"),
+		"total": (75, "Total"),
 	}
 
 
@@ -144,14 +145,15 @@ class VLIVAVentasFULLInformeView(InformeFormView):
 			"Último Nro. de Folio": folio,
 		}
 		
+		empresa = Empresa.objects.get(pk=1)
 		datos_empresa = {
-			"cuit": "30692402363",
-			"empresa": "DEBONA MARCELO FABIAN Y DEBONA VICTOR HUGO S.H.",
-			"domicilio": "INDEPENDENCIA 2994",
-			"cp": "S3040",
-			"provincia": "SANTA FE",
-			"localidad": "SAN JUSTO",
-			"sit_iva": "RESP. INSCRIPTOS"
+			"cuit": empresa.cuit,
+			"empresa": empresa.nombre_fiscal,
+			"domicilio": empresa.domicilio_empresa,
+			"cp": empresa.codigo_postal,
+			"provincia": empresa.id_provincia.nombre_provincia,
+			"localidad": empresa.id_localidad.nombre_localidad,
+			"sit_iva": empresa.id_iva.nombre_iva
 		}
 		
 		fecha_hora_reporte = datetime.now().strftime("%d/%m/%Y %H:%M:%S")		
@@ -249,25 +251,16 @@ def vlivaventasfull_vista_pdf(request):
 
 class CustomPDFGenerator(PDFGenerator):
 	#-- Método que se puede sobreescribir/extender según requerimientos.
-	# def _get_header_bottom_left(self, context):
-	# 	"""Personalización del Header-bottom-left"""
-	# 	
-	# 	# custom_text = context.get("texto_personalizado", "")
-	# 	# 
-	# 	# if custom_text:
-	# 	# 	return f"<b>NOTA:</b> {custom_text}"
-	# 	
-	# 	id_cliente = 10025
-	# 	cliente = "Leoncio R. Barrios H."
-	# 	domicilio = "Jr. San Pedro 1256. Surquillo, Lima."
-	# 	Telefono = "971025647"
-	# 	
-	# 	# return f"Cliente: [{id_cliente}] {cliente} <br/> {domicilio}"
-	# 	# return f"Cliente: [{id_cliente}] {cliente} <br/> {domicilio} <br/> Tel. {Telefono} <br/>"
-	# 	return f"Cliente: [{id_cliente}] {cliente} <br/> {domicilio} <br/> Tel. {Telefono} <br/> Tel. {Telefono} "
-	# 	# return f"Cliente: [{id_cliente}] {cliente} <br/> {domicilio} <br/> Tel. {Telefono} <br/> Tel. {Telefono} <br/> Tel. {Telefono}"
-	# 	
-	# 	# return super()._get_header_bottom_left(context)
+	def _get_header_bottom_left(self, context):
+		"""Personalización del Header-bottom-left"""
+		# return super()._get_header_bottom_left(context)
+		
+		empresa = context.get('datos_empresa')
+		
+		return f"""{empresa['empresa']} <br/>
+				   {empresa['domicilio']} <br/>
+				   <strong>C.P.:</strong> {empresa['cp']} {empresa['provincia']} - {empresa['localidad']} <br/>
+				   {empresa['sit_iva']}  <strong>C.U.I.T.:</strong> {empresa['cuit']}"""
 	
 	#-- Método que se puede sobreescribir/extender según requerimientos.
 	# def _get_header_bottom_right(self, context):
@@ -282,7 +275,7 @@ class CustomPDFGenerator(PDFGenerator):
 
 def generar_pdf(contexto_reporte):
 	#-- Crear instancia del generador personalizado.
-	generator = CustomPDFGenerator(contexto_reporte, pagesize=landscape(A4))
+	generator = CustomPDFGenerator(contexto_reporte, pagesize=landscape(A4), body_font_size=8)
 	
 	#-- Construir datos de la tabla:
 	
@@ -296,6 +289,8 @@ def generar_pdf(contexto_reporte):
 	
 	#-- Estilos específicos adicionales iniciales de la tabla.
 	table_style_config = [
+		('FONTSIZE', (0,0), (-1,-1), 8),
+		('LEADING', (0,0), (-1,-1), 10),
 		('ALIGN', (5,0), (-1,-1), 'RIGHT'),
 	]
 	
@@ -331,6 +326,7 @@ def generar_pdf(contexto_reporte):
 	
 	#-- Aplicar estilos a la fila de total (fila actual).
 	table_style_config.extend([
+		('ALIGN', (0,-1), (-1,-1), 'RIGHT'),
 		('FONTNAME', (0,-1), (-1,-1), 'Helvetica-Bold'),
 		('LINEABOVE', (0,-1), (-1,-1), 0.5, colors.black),
 	])

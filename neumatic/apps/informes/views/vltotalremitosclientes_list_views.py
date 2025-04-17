@@ -2,20 +2,21 @@
 
 from django.urls import reverse_lazy
 from django.shortcuts import render
-
 from django.http import HttpResponse
-from decimal import Decimal
 from datetime import datetime
-from django.template.loader import render_to_string
-from weasyprint import HTML
 from django.templatetags.static import static
 from django.forms.models import model_to_dict
+
+#-- ReportLab:
+from reportlab.lib import colors
+from reportlab.lib.pagesizes import A4, landscape, portrait
+from reportlab.platypus import Paragraph
 
 from .report_views_generics import *
 from apps.informes.models import VLTotalRemitosClientes
 from ..forms.buscador_vltotalremitosclientes_forms import BuscadorTotalRemitosClientesForm
-from utils.utils import deserializar_datos
-from utils.helpers.export_helpers import ExportHelper
+from utils.utils import deserializar_datos, formato_argentino
+from utils.helpers.export_helpers import ExportHelper, PDFGenerator
 
 
 class ConfigViews:
@@ -73,14 +74,14 @@ class ConfigViews:
 	
 	#-- Establecer las columnas del reporte y sus anchos(en punto).
 	header_data = {
-		"id_cliente_id": (40, "Cliente"),
-		"nombre_cliente": (40, "Nombre"),
-		"domicilio_cliente": (40, "Domicilio"),
-		"codigo_postal": (180, "C.P."),
-		"nombre_iva": (40, "Tipo IVA"),
-		"cuit": (40, "CUIT"),
-		"telefono_cliente": (40, "Teléfono"),
-		"total": (40, "Total Remitado"),
+		"id_cliente_id": (50, "Cliente"),
+		"nombre_cliente": (220, "Nombre"),
+		"domicilio_cliente": (220, "Domicilio"),
+		"codigo_postal": (40, "C.P."),
+		"nombre_iva": (70, "Tipo IVA"),
+		"cuit": (60, "CUIT"),
+		"telefono_cliente": (60, "Teléfono"),
+		"total": (80, "Total Remitado"),
 	}
 
 
@@ -103,8 +104,6 @@ class VLTotalRemitosClientesInformeView(InformeFormView):
 		id_cliente = cleaned_data.get('id_cliente', None)
 		fecha_desde = cleaned_data.get('fecha_desde')
 		fecha_hasta = cleaned_data.get('fecha_hasta')
-		
-		print(f"{id_cliente = }")
 		
 		queryset = VLTotalRemitosClientes.objects.obtener_total_remitos_cliente(id_cliente, fecha_desde, fecha_hasta)
 		
@@ -191,15 +190,106 @@ def vltotalremitosclientes_vista_pdf(request):
 	if not contexto_reporte:
 		return HttpResponse("Contexto no encontrado o expirado", status=400)
 	
+	#-- Generar el PDF usando ReportLab
+	pdf_file = generar_pdf(contexto_reporte)
+	
 	#-- Preparar la respuesta HTTP.
-	# html_string = render_to_string("informes/reportes/totalremitosclientes_pdf.html", contexto_reporte, request=request)
-	html_string = render_to_string(ConfigViews.reporte_pdf, contexto_reporte, request=request)
-	pdf_file = HTML(string=html_string, base_url=request.build_absolute_uri()).write_pdf()
-
 	response = HttpResponse(pdf_file, content_type="application/pdf")
-	response["Content-Disposition"] = f'inline; filename="informe_{ConfigViews.model_string}.pdf"'
+	response["Content-Disposition"] = f'inline; filename="{ConfigViews.report_title}.pdf"'
 	
 	return response
+
+class CustomPDFGenerator(PDFGenerator):
+	#-- Método que se puede sobreescribir/extender según requerimientos.
+	# def _get_header_bottom_left(self, context):
+	# 	"""Personalización del Header-bottom-left"""
+	# 	# return super()._get_header_bottom_left(context)
+	# 	
+	# 	# custom_text = context.get("texto_personalizado", "")
+	# 	# 
+	# 	# if custom_text:
+	# 	# 	return f"<b>NOTA:</b> {custom_text}"
+	# 	
+	# 	cliente_data = context.get('cliente', '')
+	# 	
+	# 	return f"<strong>Cliente:</strong> <br/> [{cliente_data['id_cliente']}] {cliente_data['nombre_cliente']}"
+		
+	
+	#-- Método que se puede sobreescribir/extender según requerimientos.
+	# def _get_header_bottom_right(self, context):
+	# 	"""Añadir información adicional específica para este reporte"""
+	# 	base_content = super()._get_header_bottom_right(context)
+	# 	saldo_total = context.get("saldo_total", 0)
+	# 	return f"""
+	# 		{base_content}<br/>
+	# 		<b>Total General:</b> {formato_es_ar(saldo_total)}
+	# 	"""
+	pass
+
+def generar_pdf(contexto_reporte):
+	#-- Crear instancia del generador personalizado.
+	generator = CustomPDFGenerator(contexto_reporte, pagesize=landscape(A4), body_font_size=7)
+	
+	#-- Construir datos de la tabla:
+	
+	#-- Extraer Títulos de las columnas de la tabla (headers).
+	headers_titles = [value[1] for value in ConfigViews.header_data.values()]
+	
+	#-- Extraer Ancho de las columnas de la tabla.
+	col_widths = [value[0] for value in ConfigViews.header_data.values()]
+	
+	table_data = [headers_titles]
+	
+	#-- Estilos específicos adicionales iniciales de la tabla.
+	table_style_config = [
+		('ALIGN', (-1,0), (-1,-1), 'RIGHT'),
+	]
+	
+	#-- Contador de filas (empezamos en 1 porque la 0 es el header).
+	current_row = 1
+	
+	#-- Agregar los datos a la tabla.
+	
+	for obj in contexto_reporte.get("objetos", []):
+		#-- Agregar filas del detalle.
+		table_data.append([
+			obj['id_cliente_id'],
+			Paragraph(str(obj['nombre_cliente']), generator.styles['CellStyle']),
+			Paragraph(str(obj['domicilio_cliente']), generator.styles['CellStyle']),
+			obj['codigo_postal'],
+			obj['nombre_iva'],
+			obj['cuit'],
+			obj['telefono_cliente'],
+			formato_argentino(obj['total'])
+		])
+		current_row += 1
+			
+	#-- Fila Total General.
+	table_data.append(["", "", "", "", "", "",  "Total General:", formato_argentino(contexto_reporte.get('total_general'))])
+	
+	#-- Aplicar estilos a la fila de total (fila actual).
+	table_style_config.extend([
+		('FONTNAME', (0,current_row), (-1,current_row), 'Helvetica-Bold'),
+		('LINEABOVE', (0,current_row), (-1,current_row), 0.5, colors.black),
+	])
+	
+	
+	return generator.generate(table_data, col_widths, table_style_config)		
+
+def _format_date(date_value):
+	"""Helper para formatear fechas"""
+	if not date_value:
+		return ""
+	
+	if isinstance(date_value, str):
+		try:
+			return datetime.strptime(date_value, "%Y-%m-%d").strftime("%d/%m/%Y")
+		except ValueError:
+			return date_value
+	else:
+		return date_value.strftime("%d/%m/%Y")
+# -------------------------------------------------------------------------------------------------
+
 
 def vltotalremitosclientes_vista_excel(request):
 	token = request.GET.get("token")
