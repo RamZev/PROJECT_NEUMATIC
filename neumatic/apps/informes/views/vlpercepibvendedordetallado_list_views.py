@@ -15,7 +15,7 @@ from reportlab.platypus import Paragraph
 from .report_views_generics import *
 from apps.informes.models import VLPercepIBVendedorDetallado
 from ..forms.buscador_vlpercepibvendedordetallado_forms import BuscadorPercepIBVendedorDetalladoForm
-from utils.utils import deserializar_datos, formato_argentino
+from utils.utils import deserializar_datos, formato_argentino, format_date, normalizar
 from utils.helpers.export_helpers import ExportHelper, PDFGenerator
 
 
@@ -125,7 +125,6 @@ class VLPercepIBVendedorDetalladoInformeView(InformeFormView):
 		
 		dominio = f"http://{self.request.get_host()}"
 		
-		
 		# **************************************************
 		
 		#-- Agrupar los objetos por el número de comprobante.
@@ -219,7 +218,7 @@ def vlpercepibvendedordetallado_vista_pdf(request):
 	
 	#-- Preparar la respuesta HTTP.
 	response = HttpResponse(pdf_file, content_type="application/pdf")
-	response["Content-Disposition"] = f'inline; filename="{ConfigViews.report_title}.pdf"'
+	response["Content-Disposition"] = f'inline; filename="{normalizar(ConfigViews.report_title)}.pdf"'
 	
 	return response
 
@@ -311,9 +310,9 @@ def generar_pdf(contexto_reporte):
 		for det in dato['comprobantes']:
 			table_data.append([
 				det['comprobante'],
-				_format_date(det['fecha_comprobante']),
+				format_date(det['fecha_comprobante']),
 				det['id_cliente_id'],
-				Paragraph(det['nombre_cliente'], generator.styles['CellStyle']),
+				Paragraph(str(det['nombre_cliente']), generator.styles['CellStyle']),
 				det['cuit'],
 				formato_argentino(det['neto']),
 				formato_argentino(det['percep_ib'])
@@ -335,26 +334,12 @@ def generar_pdf(contexto_reporte):
 		
 		#-- Fila divisoria.
 		table_data.append(["", "", "", "", "", "", ""])
-		# table_style_config.append(
-		# 	('LINEBELOW', (0,current_row), (-1,current_row), 0.5, colors.blue),
-		# )
+		table_style_config.append(
+			('LINEBELOW', (0,current_row), (-1,current_row), 0.5, colors.gray),
+		)
 		current_row += 1
 	
 	return generator.generate(table_data, col_widths, table_style_config)		
-
-def _format_date(date_value):
-	"""Helper para formatear fechas"""
-	if not date_value:
-		return ""
-	
-	if isinstance(date_value, str):
-		try:
-			return datetime.strptime(date_value, "%Y-%m-%d").strftime("%d/%m/%Y")
-		except ValueError:
-			return date_value
-	else:
-		return date_value.strftime("%d/%m/%Y")
-# -------------------------------------------------------------------------------------------------
 
 
 def vlpercepibvendedordetallado_vista_excel(request):
@@ -387,7 +372,8 @@ def vlpercepibvendedordetallado_vista_excel(request):
 		content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 	)
 	#-- Inline permite visualizarlo en el navegador si el navegador lo soporta.
-	response["Content-Disposition"] = f'inline; filename="informe_{ConfigViews.model_string}.xlsx"'
+	response["Content-Disposition"] = f'inline; filename="{ConfigViews.report_title}.xlsx"'
+	
 	return response
 
 
@@ -417,6 +403,6 @@ def vlpercepibvendedordetallado_vista_csv(request):
 	csv_data = helper.export_to_csv()
 	
 	response = HttpResponse(csv_data, content_type="text/csv; charset=utf-8")
-	response["Content-Disposition"] = f'inline; filename="informe_{ConfigViews.model_string}.csv"'
+	response["Content-Disposition"] = f'inline; filename="{ConfigViews.report_title}.csv"'
 	
 	return response

@@ -8,13 +8,13 @@ from django.templatetags.static import static
 
 #-- ReportLab:
 from reportlab.lib import colors
-from reportlab.lib.pagesizes import A4, portrait
+from reportlab.lib.pagesizes import A4, portrait, landscape
 from reportlab.platypus import Paragraph
 
 from .report_views_generics import *
 from apps.informes.models import VLComprobantesVencidos
 from ..forms.buscador_vlcomprobantesvencidos_forms import BuscadorComprobantesVencidosForm
-from utils.utils import deserializar_datos, serializar_queryset, formato_argentino
+from utils.utils import deserializar_datos, serializar_queryset, formato_argentino, format_date, normalizar
 from utils.helpers.export_helpers import ExportHelper, PDFGenerator
 
 
@@ -67,9 +67,6 @@ class ConfigViews:
 	
 	#-- Plantilla Vista Preliminar Pantalla.
 	reporte_pantalla = f"informes/reportes/{model_string}_list.html"
-	
-	#-- Plantilla Vista Preliminar PDF.
-	reporte_pdf = f"informes/reportes/{model_string}_pdf.html"
 	
 	#-- Establecer las columnas del reporte y sus anchos(en punto).
 	header_data = {
@@ -162,7 +159,6 @@ def vlcomprobantesvencidos_vista_pantalla(request):
 		return HttpResponse("Token no proporcionado", status=400)
 	
 	#-- Obtener el contexto(datos) previamente guardados en la sesión.
-	# contexto_reporte = request.session.pop(token, None)
 	contexto_reporte = deserializar_datos(request.session.pop(token, None))
 	
 	if not contexto_reporte:
@@ -191,7 +187,7 @@ def vlcomprobantesvencidos_vista_pdf(request):
 	
 	#-- Preparar la respuesta HTTP.
 	response = HttpResponse(pdf_file, content_type="application/pdf")
-	response["Content-Disposition"] = f'inline; filename="{ConfigViews.report_title}.pdf"'
+	response["Content-Disposition"] = f'inline; filename="{normalizar(ConfigViews.report_title)}.pdf"'
 	
 	return response
 
@@ -253,31 +249,17 @@ def generar_pdf(contexto_reporte):
 	#-- Agregar los datos a la tabla.
 	for obj in contexto_reporte.get("objetos", []):
 		table_data.append([
-			_format_date(obj['fecha_comprobante']),
+			format_date(obj['fecha_comprobante']),
 			obj['dias_vencidos'],
 			obj['comprobante'],
 			obj['id_cliente_id'],
-			Paragraph(obj['nombre_cliente'], generator.styles['CellStyle']),
+			Paragraph(str(obj['nombre_cliente']), generator.styles['CellStyle']),
 			formato_argentino(obj['total']),
 			formato_argentino(obj['entrega']),
 			formato_argentino(obj['saldo'])
 		])
 	
 	return generator.generate(table_data, col_widths, table_style_config)		
-
-def _format_date(date_value):
-	"""Helper para formatear fechas"""
-	if not date_value:
-		return ""
-	
-	if isinstance(date_value, str):
-		try:
-			return datetime.strptime(date_value, "%Y-%m-%d").strftime("%d/%m/%Y")
-		except ValueError:
-			return date_value
-	else:
-		return date_value.strftime("%d/%m/%Y")
-# -------------------------------------------------------------------------------------------------
 
 
 def vlcomprobantesvencidos_vista_excel(request):
@@ -310,7 +292,8 @@ def vlcomprobantesvencidos_vista_excel(request):
 		content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 	)
 	#-- Inline permite visualizarlo en el navegador si el navegador lo soporta.
-	response["Content-Disposition"] = f'inline; filename="informe_{ConfigViews.model_string}.xlsx"'
+	response["Content-Disposition"] = f'inline; filename="{ConfigViews.report_title}.xlsx"'
+	
 	return response
 
 
@@ -340,6 +323,6 @@ def vlcomprobantesvencidos_vista_csv(request):
 	csv_data = helper.export_to_csv()
 	
 	response = HttpResponse(csv_data, content_type="text/csv; charset=utf-8")
-	response["Content-Disposition"] = f'inline; filename="informe_{ConfigViews.model_string}.csv"'
+	response["Content-Disposition"] = f'inline; filename="{ConfigViews.report_title}.csv"'
 	
 	return response

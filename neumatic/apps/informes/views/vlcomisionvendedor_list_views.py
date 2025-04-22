@@ -9,13 +9,13 @@ from decimal import Decimal
 
 #-- ReportLab:
 from reportlab.lib import colors
-from reportlab.lib.pagesizes import A4, landscape
+from reportlab.lib.pagesizes import A4, portrait, landscape
 from reportlab.platypus import Paragraph
 
 from .report_views_generics import *
 from apps.informes.models import VLComisionVendedor
 from ..forms.buscador_vlcomisionvendedor_forms import BuscadorComisionVendedorForm
-from utils.utils import deserializar_datos, formato_argentino
+from utils.utils import deserializar_datos, formato_argentino, normalizar
 from utils.helpers.export_helpers import ExportHelper, PDFGenerator
 
 
@@ -68,9 +68,6 @@ class ConfigViews:
 	
 	#-- Plantilla Vista Preliminar Pantalla.
 	reporte_pantalla = f"informes/reportes/{model_string}_list.html"
-	
-	#-- Plantilla Vista Preliminar PDF.
-	reporte_pdf = f"informes/reportes/{model_string}_pdf.html"
 	
 	#-- Establecer las columnas del reporte y sus anchos(en punto).
 	header_data = {
@@ -134,7 +131,6 @@ class VLComisionVendedorInformeView(InformeFormView):
 		fecha_hora_reporte = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
 		
 		dominio = f"http://{self.request.get_host()}"
-		
 		
 		# **************************************************
 		#-- Estructura para agrupar datos por Vendedor.
@@ -237,7 +233,7 @@ def vlcomisionvendedor_vista_pdf(request):
 	
 	#-- Preparar la respuesta HTTP.
 	response = HttpResponse(pdf_file, content_type="application/pdf")
-	response["Content-Disposition"] = f'inline; filename="{ConfigViews.report_title}.pdf"'
+	response["Content-Disposition"] = f'inline; filename="{normalizar(ConfigViews.report_title)}.pdf"'
 	
 	return response
 
@@ -332,12 +328,12 @@ def generar_pdf(contexto_reporte):
 			table_data.append([
 				det['comprobante'],
 				det['fecha'],
-				Paragraph(det['cliente'], generator.styles['CellStyle']),
+				Paragraph(str(det['cliente']), generator.styles['CellStyle']),
 				det['reventa'],
 				det['id_producto'],
 				det['producto'],
-				Paragraph(det['marca'], generator.styles['CellStyle']),
-				Paragraph(det['articulo'], generator.styles['CellStyle']),
+				Paragraph(str(det['marca']), generator.styles['CellStyle']),
+				Paragraph(str(det['articulo']), generator.styles['CellStyle']),
 				formato_argentino(det['gravado']),
 				f"{formato_argentino(det['pje_comision'])}%",
 				formato_argentino(det['monto_comision'])
@@ -353,35 +349,21 @@ def generar_pdf(contexto_reporte):
 		
 		#-- Aplicar estilos a la fila de total (fila actual).
 		table_style_config.extend([
+			('ALIGN', (7,current_row), (-1,current_row), 'RIGHT'),
 			('FONTNAME', (0,current_row), (-1,current_row), 'Helvetica-Bold'),
-			('LINEABOVE', (0,current_row), (-1,current_row), 0.5, colors.black),
+			('LINEABOVE', (8,current_row), (-1,current_row), 0.5, colors.black),
 		])
 		
 		current_row += 1
 		
 		#-- Fila divisoria.
 		table_data.append(["", "", "", "", "", "", ""])
-		# table_style_config.append(
-		# 	('LINEBELOW', (0,current_row), (-1,current_row), 0.5, colors.blue),
-		# )
+		table_style_config.append(
+			('LINEBELOW', (0,current_row), (-1,current_row), 0.5, colors.gray),
+		)
 		current_row += 1
 	
 	return generator.generate(table_data, col_widths, table_style_config)		
-
-def _format_date(date_value):
-	"""Helper para formatear fechas"""
-	if not date_value:
-		return ""
-	
-	if isinstance(date_value, str):
-		try:
-			return datetime.strptime(date_value, "%Y-%m-%d").strftime("%d/%m/%Y")
-		except ValueError:
-			return date_value
-	else:
-		return date_value.strftime("%d/%m/%Y")
-# -------------------------------------------------------------------------------------------------
-
 
 
 def vlcomisionvendedor_vista_excel(request):
@@ -414,7 +396,8 @@ def vlcomisionvendedor_vista_excel(request):
 		content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 	)
 	#-- Inline permite visualizarlo en el navegador si el navegador lo soporta.
-	response["Content-Disposition"] = f'inline; filename="informe_{ConfigViews.model_string}.xlsx"'
+	response["Content-Disposition"] = f'inline; filename="{ConfigViews.report_title}.xlsx"'
+	
 	return response
 
 
@@ -444,6 +427,6 @@ def vlcomisionvendedor_vista_csv(request):
 	csv_data = helper.export_to_csv()
 	
 	response = HttpResponse(csv_data, content_type="text/csv; charset=utf-8")
-	response["Content-Disposition"] = f'inline; filename="informe_{ConfigViews.model_string}.csv"'
+	response["Content-Disposition"] = f'inline; filename="{ConfigViews.report_title}.csv"'
 	
 	return response

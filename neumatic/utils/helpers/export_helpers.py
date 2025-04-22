@@ -383,7 +383,6 @@ class PDFGenerator:
 		
 		HEADER_TOP_HEIGHT = 50
 		FOOTER_HEIGHT = 40
-		# SEPARATION = 10
 		SEPARATION = 5
 		
 		#-- Calcular espacio total ocupado por headers.
@@ -422,6 +421,10 @@ class PDFGenerator:
 	def _calculate_header_bottom_height(self):
 		"""Calcula la altura necesaria para el header-bottom"""
 		
+		# #-- Crear un contexto temporal con pageNumber=1 para el cálculo de altura.
+		# temp_context = self.context.copy()
+		# temp_context['_pageNumber'] = 1
+		
 		#-- Medir contenido izquierdo.
 		left_content = self._get_header_bottom_left(self.context)
 		left_para = Paragraph(left_content, self.styles['HeaderBottomLeft'])
@@ -451,7 +454,6 @@ class PDFGenerator:
 			name='CellStyle',
 			parent=self.styles["BodyText"],
 			fontSize=self.body_font_size,
-			# leading=5.0,
 			leading=8,
 			spaceBefore=0,
 			spaceAfter=0,
@@ -582,6 +584,10 @@ class PDFGenerator:
 		
 	def _render_footer(self, canvas_obj, doc, width):
 		# --- Footer -----------------------------------------------------------------------
+		
+		# Guardar el número de página actual para usarlo en los headers
+		self._pageNumber = canvas_obj._pageNumber
+		
 		footer_y = 15
 		
 		#-- Línea decorativa.

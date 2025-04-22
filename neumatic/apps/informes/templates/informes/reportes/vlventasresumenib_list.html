@@ -52,7 +52,8 @@
 				</tr>
 			{% endfor %}
 			<!-- Totales -->
-			<tr style="border-top: 1px solid #000; border-bottom: 1px solid #000">
+			{% comment %} <tr style="border-top: 1px solid #000; border-bottom: 1px solid #000"> {% endcomment %}
+			<tr style="border-top: 1px solid #000;">
 				<td style="text-align: right;"><strong>Totales:</strong></td>
 				<td class="numeric"><strong>{{ tg_pmenor|formato_es_ar }}</strong></td>
 				<td class="numeric"><strong>{{ tg_reparacion|formato_es_ar }}</strong></td>

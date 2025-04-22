@@ -15,7 +15,7 @@ from reportlab.platypus import Paragraph
 from .report_views_generics import *
 from apps.informes.models import VLPercepIBSubcuentaDetallado
 from ..forms.buscador_vlpercepibsubcuentadetallado_forms import BuscadorPercepIBSubcuentaDetalladoForm
-from utils.utils import deserializar_datos, formato_argentino
+from utils.utils import deserializar_datos, formato_argentino, format_date, normalizar
 from utils.helpers.export_helpers import ExportHelper, PDFGenerator
 
 
@@ -68,9 +68,6 @@ class ConfigViews:
 	
 	#-- Plantilla Vista Preliminar Pantalla.
 	reporte_pantalla = f"informes/reportes/{model_string}_list.html"
-	
-	#-- Plantilla Vista Preliminar PDF.
-	reporte_pdf = f"informes/reportes/{model_string}_pdf.html"
 	
 	#-- Establecer las columnas del reporte y sus anchos(en punto).
 	header_data = {
@@ -126,9 +123,7 @@ class VLPercepIBSubcuentaDetalladoInformeView(InformeFormView):
 		
 		dominio = f"http://{self.request.get_host()}"
 		
-		
 		# **************************************************
-		
 		#-- Agrupar los objetos por Sub Cuenta.
 		grouped_data = {}
 		
@@ -191,7 +186,6 @@ def vlpercepibsubcuentadetallado_vista_pantalla(request):
 		return HttpResponse("Token no proporcionado", status=400)
 	
 	#-- Obtener el contexto(datos) previamente guardados en la sesión.
-	# contexto_reporte = request.session.pop(token, None)
 	contexto_reporte = deserializar_datos(request.session.pop(token, None))
 	
 	if not contexto_reporte:
@@ -220,7 +214,7 @@ def vlpercepibsubcuentadetallado_vista_pdf(request):
 	
 	#-- Preparar la respuesta HTTP.
 	response = HttpResponse(pdf_file, content_type="application/pdf")
-	response["Content-Disposition"] = f'inline; filename="{ConfigViews.report_title}.pdf"'
+	response["Content-Disposition"] = f'inline; filename="{normalizar(ConfigViews.report_title)}.pdf"'
 	
 	return response
 
@@ -299,6 +293,7 @@ def generar_pdf(contexto_reporte):
 		
 		if num_sc == 'null':
 			num_sc = "N/A"
+		
 		table_data.append([
 			f"Sub Cuenta: [{num_sc}] {nom_sc}",
 			"", "", "", "", "", ""
@@ -316,9 +311,9 @@ def generar_pdf(contexto_reporte):
 		for det in datos['comprobantes']:
 			table_data.append([
 				det['comprobante'],
-				_format_date(det['fecha_comprobante']),
+				format_date(det['fecha_comprobante']),
 				det['id_cliente_id'],
-				Paragraph(det['nombre_cliente'], generator.styles['CellStyle']),
+				Paragraph(str(det['nombre_cliente']), generator.styles['CellStyle']),
 				det['cuit'],
 				formato_argentino(det['neto']),
 				formato_argentino(det['percep_ib'])
@@ -340,26 +335,12 @@ def generar_pdf(contexto_reporte):
 		
 		#-- Fila divisoria.
 		table_data.append(["", "", "", "", "", "", ""])
-		# table_style_config.append(
-		# 	('LINEBELOW', (0,current_row), (-1,current_row), 0.5, colors.blue),
-		# )
+		table_style_config.append(
+			('LINEBELOW', (0,current_row), (-1,current_row), 0.5, colors.gray),
+		)
 		current_row += 1
 	
 	return generator.generate(table_data, col_widths, table_style_config)		
-
-def _format_date(date_value):
-	"""Helper para formatear fechas"""
-	if not date_value:
-		return ""
-	
-	if isinstance(date_value, str):
-		try:
-			return datetime.strptime(date_value, "%Y-%m-%d").strftime("%d/%m/%Y")
-		except ValueError:
-			return date_value
-	else:
-		return date_value.strftime("%d/%m/%Y")
-# -------------------------------------------------------------------------------------------------
 
 
 def vlpercepibsubcuentadetallado_vista_excel(request):
@@ -392,7 +373,8 @@ def vlpercepibsubcuentadetallado_vista_excel(request):
 		content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 	)
 	#-- Inline permite visualizarlo en el navegador si el navegador lo soporta.
-	response["Content-Disposition"] = f'inline; filename="informe_{ConfigViews.model_string}.xlsx"'
+	response["Content-Disposition"] = f'inline; filename="{ConfigViews.report_title}.xlsx"'
+	
 	return response
 
 
@@ -422,6 +404,6 @@ def vlpercepibsubcuentadetallado_vista_csv(request):
 	csv_data = helper.export_to_csv()
 	
 	response = HttpResponse(csv_data, content_type="text/csv; charset=utf-8")
-	response["Content-Disposition"] = f'inline; filename="informe_{ConfigViews.model_string}.csv"'
+	response["Content-Disposition"] = f'inline; filename="{ConfigViews.report_title}.csv"'
 	
 	return response

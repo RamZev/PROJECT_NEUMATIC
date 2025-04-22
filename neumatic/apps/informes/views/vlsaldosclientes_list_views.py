@@ -1,4 +1,4 @@
-# neumatic\apps\informes\views\saldosclientes_list_views.py
+# neumatic\apps\informes\views\vlsaldosclientes_list_views.py
 
 from django.urls import reverse_lazy
 from django.shortcuts import render
@@ -14,7 +14,7 @@ from reportlab.platypus import Paragraph
 from .report_views_generics import *
 from apps.informes.models import VLSaldosClientes
 from ..forms.buscador_vlsaldosclientes_forms import BuscadorSaldosClientesForm
-from utils.utils import deserializar_datos
+from utils.utils import deserializar_datos, format_date, normalizar
 from apps.maestros.templatetags.custom_tags import formato_es_ar
 from utils.helpers.export_helpers import ExportHelper, PDFGenerator
 
@@ -68,9 +68,6 @@ class ConfigViews:
 	
 	#-- Plantilla Vista Preliminar Pantalla.
 	reporte_pantalla = f"informes/reportes/{model_string}_list.html"
-	
-	#-- Plantilla Vista Preliminar PDF.
-	reporte_pdf = f"informes/reportes/{model_string}_pdf.html"
 	
 	#-- Establecer las columnas del reporte y sus anchos(en punto).
 	header_data = {
@@ -185,10 +182,8 @@ def vlsaldosclientes_vista_pantalla(request):
 	
 	#-- Generar el listado a pantalla.
 	return render(request, ConfigViews.reporte_pantalla, contexto_reporte)
-	# return render(request, "informes/reportes/mercaderiaporcliente_list.html", contexto_reporte)
 
 
-#-- Vista para generar el PDF con ReportLab. ------------------------------------
 def vlsaldosclientes_vista_pdf(request):
 	#-- Obtener el token de la querystring.
 	token = request.GET.get("token")
@@ -208,252 +203,10 @@ def vlsaldosclientes_vista_pdf(request):
 	
 	#-- Preparar la respuesta HTTP.
 	response = HttpResponse(pdf_file, content_type="application/pdf")
-	response["Content-Disposition"] = f'inline; filename="{ConfigViews.report_title}.pdf"'
+	response["Content-Disposition"] = f'inline; filename="{normalizar(ConfigViews.report_title)}.pdf"'
 	
 	return response
 
-
-#-- Para generar el PDF. ----------------------------------------------------------------------------------
-#-- Función para dibujar header y footer en cada página.
-''' Funcionalidad anterior
-def header_footer(canvas_obj, doc):
-	canvas_obj.saveState()
-	width, height = doc.pagesize
-	
-	#---------------------------------------
-	#  Header
-	#---------------------------------------
-	header_top_height = 50
-	
-	# --- Header-top -------------------------------------------------------------------
-	
-	#-- Sección Superior Izquierda: logotipo.
-	logo_path = doc.contexto_reporte.get("logo_url", "")
-	logo_area_width = (width - doc.leftMargin - doc.rightMargin) * 0.25
-	logo_height = 30
-	logo_x = doc.leftMargin - 30
-	logo_y = height - header_top_height + (header_top_height - logo_height) / 2
-	try:
-		canvas_obj.drawImage(logo_path, logo_x, logo_y, width=logo_area_width,
-							height=logo_height, preserveAspectRatio=True, mask='auto')
-	except Exception:
-		canvas_obj.setFont("Helvetica", 10)
-		canvas_obj.drawString(logo_x, logo_y, "[Logo]")
-	
-	#-- Sección Superior Perecha: título.
-	titulo = doc.contexto_reporte.get("titulo", "Reporte")
-	canvas_obj.setFont("Helvetica-BoldOblique", 12)
-	canvas_obj.drawRightString(width - doc.rightMargin, (height - header_top_height/2)-10, titulo)
-	
-	# --- Header-bottom ----------------------------------------------------------------
-	
-	#-- Línea superior de header-bottom.
-	line_y_start = height - header_top_height  
-	canvas_obj.setLineWidth(1)
-	canvas_obj.setStrokeColor(colors.black)
-	canvas_obj.line(doc.leftMargin, line_y_start, width - doc.rightMargin, line_y_start)
-	
-	#-- Sección inferior Izquierda.
-	header_bottom_text_left = doc.contexto_reporte.get("header_bottom_left", "")
-	
-	#-- Sección inferior Derecha.
-	parametros = doc.contexto_reporte.get("parametros", {})
-	lines = []
-	for key, value in parametros.items():
-		lines.append(f"<b>{key}:</b> {value}")
-	header_bottom_text_right = "<br/>".join(lines)
-	
-	# Definir estilos para cada sección
-	p_style_left = ParagraphStyle('headerBottomLeft', fontSize=9, leading=12, alignment=TA_LEFT)
-	p_style_right = ParagraphStyle('headerBottomRight', fontSize=9, leading=12, alignment=TA_RIGHT)
-	
-	p_left = Paragraph(header_bottom_text_left, p_style_left)
-	p_right = Paragraph(header_bottom_text_right, p_style_right)
-	
-	available_width = (width - doc.leftMargin - doc.rightMargin) / 2.0
-	# Llamar wrap() para cada Paragraph
-	left_w, left_h = p_left.wrap(available_width, 100)
-	right_w, right_h = p_right.wrap(available_width, 100)
-	header_bottom_height = max(left_h, right_h)
-	header_bottom_y = height - header_top_height - header_bottom_height
-	
-	p_left.drawOn(canvas_obj, doc.leftMargin, header_bottom_y)
-	p_right.drawOn(canvas_obj, doc.leftMargin + available_width, header_bottom_y)
-	
-	#-- Dibujar línea horizontal al final del header-bottom.
-	line_y_end = header_bottom_y
-	canvas_obj.line(doc.leftMargin, line_y_end, width - doc.rightMargin, line_y_end)	
-	# ----------------------------------------------------------------------------------
-	
-	#---------------------------------------
-	#  Footer
-	#---------------------------------------
-	footer_y = 15
-	
-	#-- Dibujar línea decorativa justo encima del footer.
-	line_y = footer_y + 12  # 12 puntos por encima del footer
-	canvas_obj.setLineWidth(1)
-	canvas_obj.setStrokeColor(colors.black)
-	canvas_obj.line(doc.leftMargin, line_y, width - doc.rightMargin, line_y)
-	
-	#-- Texto nombre empresa a la izquierda.
-	canvas_obj.setFont("Helvetica-Oblique", 9)
-	canvas_obj.drawString(doc.leftMargin, footer_y, "M.A.A.Soft")
-	
-	#-- Número de página formateado al centro.
-	numero_pagina_text = f"Página {canvas_obj._pageNumber}"
-	canvas_obj.setFont("Helvetica", 9)
-	canvas_obj.drawCentredString(width/2.0, 15, numero_pagina_text)
-	
-	#-- Fecha y hora del reporte a la derecha.
-	fecha_reporte = datetime.now().strftime("%d/%m/%Y %H:%M")
-	canvas_obj.setFont("Helvetica", 9)
-	canvas_obj.drawRightString(width - doc.rightMargin, footer_y, fecha_reporte)
-	
-	canvas_obj.restoreState()
-
-def generar_pdf_saldos_clientes(contexto_reporte):
-	"""
-	Recibe el contexto del reporte y retorna un PDF generado con ReportLab.
-	"""
-	
-	buffer = BytesIO()
-	
-	#-- Configuración del documento: tamaño, márgenes.
-	doc = BaseDocTemplate(
-		buffer,
-		# pagesize=A4,				#-- Vertical, ancho máximo 595.
-		pagesize=landscape(A4),		#-- Horizontal, ancho máximo 842.
-		leftMargin=10,
-		rightMargin=10,
-		topMargin=0,
-		bottomMargin=40
-	)
-	
-	#-- Definir el Frame para el cuerpo (ajustando la altura restando espacio para header/footer).
-	frame = Frame(
-		doc.leftMargin,
-		doc.bottomMargin,
-		doc.width,
-		doc.height - 80,  #-- Ajustar según lo usado en header y footer.
-		id="body"
-	)
-	
-	#-- PageTemplate con función header_footer.
-	template = PageTemplate(id="reportTemplate", frames=[frame], onPage=header_footer)
-	doc.addPageTemplates([template])
-	
-	contenido = []
-	styles = getSampleStyleSheet()
-	
-	#-- Estilo de párrafo.
-	cell_style = ParagraphStyle(
-		name="cellStyle",
-		parent=styles["BodyText"],
-		fontSize=6,
-		leading=5.0,
-		spaceBefore=0,
-		spaceAfter=0,
-		leftIndent=0,
-		rightIndent=0,
-		firstLineIndent=0,
-	)
-	
-	#-- Construir datos de la tabla:
-	
-	#-- Obtener los títulos de las columnas (headers).
-	header_data = [value[1] for value in ConfigViews.header_data.values()]
-	
-	table_data = [header_data]
-	
-	for obj in contexto_reporte.get("objetos", []):
-		primer_fact = obj.get("primer_fact_impaga")
-		if primer_fact:
-			if isinstance(primer_fact, str):
-				primer_fact = datetime.strptime(primer_fact, "%Y-%m-%d").strftime("%d/%m/%Y")
-			else:
-				primer_fact = primer_fact.strftime("%d/%m/%Y")
-		else:
-			primer_fact = ""
-		ultimo_pago = obj.get("ultimo_pago")
-		if ultimo_pago:
-			if isinstance(ultimo_pago, str):
-				try:
-					ultimo_pago = datetime.strptime(ultimo_pago, "%Y-%m-%d").strftime("%d/%m/%Y")
-				except Exception:
-					ultimo_pago = ultimo_pago
-			else:
-				ultimo_pago = ultimo_pago.strftime("%d/%m/%Y")
-		else:
-			ultimo_pago = ""
-		row = [
-			obj.get("id_cliente_id", ""),
-			Paragraph(obj.get("nombre_cliente", ""), cell_style),
-			Paragraph(obj.get("domicilio_cliente", ""), cell_style),
-			obj.get("codigo_postal", ""),
-			Paragraph(obj.get("nombre_localidad", ""), cell_style),
-			obj.get("telefono_cliente", ""),
-			formato_es_ar(obj.get("saldo", 0)),
-			primer_fact,
-			ultimo_pago,
-			obj.get("sub_cuenta", "")
-		]
-		table_data.append(row)
-	
-	#-- Agregar la fila del total.
-	saldo_total = contexto_reporte.get("saldo_total", 0)
-	total_row = [
-		"", "", "", "", "",
-		"Total Pendiente:", 
-		formato_es_ar(saldo_total),
-		"", "", ""
-	]
-	table_data.append(total_row)	
-	
-	#-- Crear la tabla y aplicar estilos.
-	
-	#-- Extrae los anchos de las columnas de la estructura ConfigViews.header_data.
-	ancho_cols = [value[0] for value in ConfigViews.header_data.values()]
-	
-	table = Table(table_data, colWidths=ancho_cols, repeatRows=1)
-	table_style = TableStyle([
-		('BACKGROUND', (0,0), (-1,0), colors.gray), # Color de fondo primera fila, Encabezados.
-		
-		# ('TEXTCOLOR', (0,0), (-1,0), colors.whitesmoke), # Color del texto desde la 2da. fila en adelante.
-		('TEXTCOLOR', (0,0), (-1,0), colors.whitesmoke), # Color del texto desde la 2da. fila en adelante.
-		
-		# ('ALIGN', (0,0), (-1,-1), 'CENTER'),
-		('ALIGN', (6,0), (6,-1), 'RIGHT'),
-		('FONTNAME', (0,0), (-1,0), 'Helvetica-Bold'),
-		
-		('VALIGN', (0,0), (-1,-1), 'TOP'),  # Alinea verticalmente todas las celdas a la parte superior
-		#('FONTSIZE', (0,0), (-1,0), 8), # Solo la primera fila (desde primera col, primera row hasta última col, primea row).
-		('FONTSIZE', (0,0), (-1,-1), 6), # Solo la primera fila (desde primera col, primera row hasta última col, última row).
-		
-		('TOPPADDING', (0,1), (-1,1),2),
-		('TOPPADDING', (0,2), (-1,-1), 0),
-		('BOTTOMPADDING', (0,1), (-1,-1), 0),
-		
-		#-- Línea horizontal encima de la fila total.
-		('LINEABOVE', (0, len(table_data)-1), (-1, len(table_data)-1), 0.5, colors.black),
-		('FONTNAME', (0, len(table_data)-1), (-1, len(table_data)-1), 'Helvetica-Bold'),
-		
-		# ('GRID', (0,0), (-1,-1), 0.5, colors.black),
-	])
-	
-	table.setStyle(table_style)
-	
-	contenido.append(table)
-	
-	doc.contexto_reporte = contexto_reporte
-	# doc.build(contenido, canvasmaker=NumberedCanvas)
-	doc.build(contenido)
-	
-	pdf = buffer.getvalue()
-	buffer.close()
-	
-	return pdf
-'''
 
 class CustomPDFGenerator(PDFGenerator):
 	#-- Método que se puede sobreescribir/extender según requerimientos.
@@ -502,14 +255,14 @@ def generar_pdf(contexto_reporte):
 		
 		row = [
 			obj.get("id_cliente_id", ""),
-			Paragraph(obj.get("nombre_cliente", ""), generator.styles['CellStyle']),
-			Paragraph(obj.get("domicilio_cliente", ""), generator.styles['CellStyle']),
+			Paragraph(str(obj.get("nombre_cliente", "")), generator.styles['CellStyle']),
+			Paragraph(str(obj.get("domicilio_cliente", "")), generator.styles['CellStyle']),
 			obj.get("codigo_postal", ""),
-			Paragraph(obj.get("nombre_localidad", ""), generator.styles['CellStyle']),
+			Paragraph(str(obj.get("nombre_localidad", "")), generator.styles['CellStyle']),
 			obj.get("telefono_cliente", ""),
 			formato_es_ar(obj.get("saldo", 0)),
-			_format_date(obj.get("primer_fact_impaga", "")),
-			_format_date(obj.get("ultimo_pago", "")),
+			format_date(obj.get("primer_fact_impaga", "")),
+			format_date(obj.get("ultimo_pago", "")),
 			obj.get("sub_cuenta", "")
 		]
 		table_data.append(row)
@@ -535,20 +288,6 @@ def generar_pdf(contexto_reporte):
 	
 	return generator.generate(table_data, col_widths, table_style_config)		
 
-def _format_date(date_value):
-	"""Helper para formatear fechas"""
-	if not date_value:
-		return ""
-	
-	if isinstance(date_value, str):
-		try:
-			return datetime.strptime(date_value, "%Y-%m-%d").strftime("%d/%m/%Y")
-		except ValueError:
-			return date_value
-	else:
-		return date_value.strftime("%d/%m/%Y")
-
-#-- Para generar el PDF. (Fin) ----------------------------------------------------------------------------
 
 def vlsaldosclientes_vista_excel(request):
 	token = request.GET.get("token")
@@ -579,9 +318,8 @@ def vlsaldosclientes_vista_excel(request):
 		excel_data,
 		content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 	)
-	# Inline permite visualizarlo en el navegador si el navegador lo soporta.
-	# response["Content-Disposition"] = 'inline; filename="informe.xlsx"'
-	response["Content-Disposition"] = f'inline; filename="informe_{ConfigViews.model_string}.xlsx"'
+	#-- Inline permite visualizarlo en el navegador si el navegador lo soporta.
+	response["Content-Disposition"] = f'inline; filename="{ConfigViews.report_title}.xlsx"'
 	
 	return response
 
@@ -612,7 +350,6 @@ def vlsaldosclientes_vista_csv(request):
 	csv_data = helper.export_to_csv()
 	
 	response = HttpResponse(csv_data, content_type="text/csv; charset=utf-8")
-	# response["Content-Disposition"] = 'inline; filename="informe.csv"'
-	response["Content-Disposition"] = f'inline; filename="informe_{ConfigViews.model_string}.csv"'
+	response["Content-Disposition"] = f'inline; filename="{ConfigViews.report_title}.csv"'
 	
 	return response

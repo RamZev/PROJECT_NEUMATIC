@@ -64,11 +64,17 @@
 						<td class="numeric">{{ comp.percep_ib|formato_es_ar }}</td>
 					</tr>
 				{% endfor %}
+				
 				<tr>
 					{% comment %} <td colspan="4" style="text-align: right;"><strong>Total Comprobante:</strong></td> {% endcomment %}
-					<td class="numeric" colspan="5"><strong>{{ data.total_neto|formato_es_ar }}</strong></td>
+					<td class="numeric" colspan="6"><strong>{{ data.total_neto|formato_es_ar }}</strong></td>
 					<td class="numeric"><strong>{{ data.total_percep|formato_es_ar }}</strong></td>
 				</tr>
+				
+				<tr>
+					<td colspan="7"><hr></td>
+				</tr>
+				
 			{% endfor %}
 			
 		</tbody>

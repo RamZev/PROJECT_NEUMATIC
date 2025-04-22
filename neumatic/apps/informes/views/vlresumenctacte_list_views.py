@@ -1,23 +1,23 @@
-# neumatic\apps\informes\views\resumenctacte_list_views.py
+# neumatic\apps\informes\views\vlresumenctacte_list_views.py
 
 from django.urls import reverse_lazy
 from django.shortcuts import render
 from django.http import HttpResponse
+from datetime import datetime
 from decimal import Decimal
-from datetime import date, datetime
-from django.template.loader import render_to_string
-from weasyprint import HTML
 from django.templatetags.static import static
-from django.forms.models import model_to_dict
 
-from django.db.models.fields.related import ManyToManyField
+#-- ReportLab:
+from reportlab.lib import colors
+from reportlab.lib.pagesizes import A4, landscape, portrait
+from reportlab.platypus import Paragraph
 
 from .report_views_generics import *
 from apps.informes.models import VLResumenCtaCte
 from apps.maestros.models.cliente_models import Cliente
 from ..forms.buscador_vlresumenctacte_forms import BuscadorResumenCtaCteForm
-from utils.utils import deserializar_datos
-from utils.helpers.export_helpers import ExportHelper
+from utils.utils import deserializar_datos, formato_argentino, format_date, normalizar
+from utils.helpers.export_helpers import ExportHelper, PDFGenerator
 
 
 class ConfigViews:
@@ -70,19 +70,16 @@ class ConfigViews:
 	#-- Plantilla Vista Preliminar Pantalla.
 	reporte_pantalla = f"informes/reportes/{model_string}_list.html"
 	
-	#-- Plantilla Vista Preliminar PDF.
-	reporte_pdf = f"informes/reportes/{model_string}_pdf.html"
-	
 	#-- Establecer las columnas del reporte y sus anchos(en punto).
 	header_data = {
-		"nombre_comprobante_venta": (40, "Comprobante"),
-		"numero": (180, "Número"),
-		"fecha_comprobante": (40, "Fecha"),
-		"remito": (40, "Remito"),
+		"nombre_comprobante_venta": (100, "Comprobante"),
+		"numero": (80, "Número"),
+		"fecha_comprobante": (50, "Fecha"),
+		"remito": (50, "Remito"),
 		"condicion": (40, "Cond. Venta"),
-		"debe": (40, "Debe"),
-		"haber": (40, "Haber"),
-		"saldo_acumulado": (40, "Saldo"),
+		"debe": (80, "Debe"),
+		"haber": (80, "Haber"),
+		"saldo_acumulado": (80, "Saldo"),
 	}
 
 
@@ -95,9 +92,6 @@ class VLResumenCtaCteInformeView(InformeFormView):
 	extra_context = {
 		"master_title": f'Informes - {ConfigViews.model._meta.verbose_name_plural}',
 		"home_view_name": ConfigViews.home_view_name,
-		# "list_view_name": ConfigViews.list_view_name,
-		# "table_headers": DataViewList.table_headers,
-		# "table_data": DataViewList.table_data,
 		"buscador_template": f"{ConfigViews.app_label}/buscador_{ConfigViews.model_string}.html",
 		"js_file": ConfigViews.js_file,
 		"url_pantalla": ConfigViews.url_pantalla,
@@ -156,38 +150,37 @@ class VLResumenCtaCteInformeView(InformeFormView):
 		# ------------------------------------------------------------------------------
 		saldo_anterior = 0
 		
-		param = {}
+		param = {
+			"Vendedor": cliente_data["nombre_vendedor"]
+		}
 		if resumen_pendiente:
 			#-- Reporte Resumen de Cuenta Pendiente.
 			
 			#-- Plantilla Vista Preliminar Pantalla.
-			ConfigViews.reporte_pantalla = 'informes/reportes/facturas_pendientes_list.html'
+			ConfigViews.reporte_pantalla = 'informes/reportes/vlfacturas_pendientes_list.html'
 			
-			#-- Plantilla Vista Preliminar PDF.
-			ConfigViews.reporte_pdf = 'informes/reportes/facturas_pendientes_pdf.html'
+			# #-- Plantilla Vista Preliminar PDF.
+			# ConfigViews.reporte_pdf = 'informes/reportes/facturas_pendientes_pdf.html'
 			
 			param["Tipo"] = "Resumen de Cuenta Pendiente"
 		else:
 			#-- Reporte Resumen de Cuenta Corriente.
 			
 			#-- Plantilla Vista Preliminar Pantalla.
-			ConfigViews.reporte_pantalla = 'informes/reportes/resumen_cta_cte_list.html'
+			ConfigViews.reporte_pantalla = 'informes/reportes/vlresumenctacte_list.html'
 			
-			#-- Plantilla Vista Preliminar PDF.
-			ConfigViews.reporte_pdf = 'informes/reportes/resumen_cta_cte_pdf.html'
+			# #-- Plantilla Vista Preliminar PDF.
+			# ConfigViews.reporte_pdf = 'informes/reportes/vlresumenctacte_pdf.html'
 			
-			param = {
-				"Desde": fecha_desde.strftime("%d/%m/%Y"),
-				"Hasta": fecha_hasta.strftime("%d/%m/%Y"),
+			param["Desde"] = fecha_desde.strftime("%d/%m/%Y")
+			param["Hasta"] = fecha_hasta.strftime("%d/%m/%Y")
+			
+			cond_vta = {
+				"0": "Ambos",
+				"1": "Contado",
+				"2": "Cta. Cte.",
 			}
-			
-			match condicion_venta:
-				case "1":
-					param["Condición"] = "Contado"
-				case "2":
-					param["Condición"] = "Cuenta Corriente"
-				case "0":
-					param["Condición"] = "Ambos"
+			param["Condición"] = cond_vta[condicion_venta]
 			
 			#-- Determinar Saldo Anterior.
 			saldo_anterior_queryset = VLResumenCtaCte.objects.obtener_saldo_anterior(id_cliente, fecha_desde)
@@ -202,8 +195,26 @@ class VLResumenCtaCteInformeView(InformeFormView):
 		#-- Calcular la sumatoria de los intereses.
 		intereses_total = sum(item.intereses for item in queryset)
 		
-		#-- Convertir cada objeto del queryset a un diccionario.
-		objetos_serializables = [model_to_dict(item) for item in queryset]
+		#-- Serialización eficiente con lista por comprensión.
+		objetos_serializables = [
+			{
+				'nombre_comprobante_venta': item.nombre_comprobante_venta,
+				'numero_comprobante': item.numero_comprobante,
+				'numero': item.numero,
+				'fecha_comprobante': item.fecha_comprobante,
+				'remito': item.remito,
+				'condicion_comprobante': item.condicion_comprobante,
+				'condicion': item.condicion,
+				'total': float(item.total),
+				'entrega': float(item.entrega),
+				'debe': float(item.debe),
+				'haber': float(item.haber),
+				'saldo_acumulado': float(item.saldo_acumulado),
+				'intereses': float(item.intereses),
+			}
+			for item in queryset
+		]
+		
 		# ------------------------------------------------------------------------------
 		#-- Se retorna un contexto que será consumido tanto para la vista en pantalla como para la generación del PDF.
 		return {
@@ -215,6 +226,7 @@ class VLResumenCtaCteInformeView(InformeFormView):
 			'observaciones': observaciones,
 			'cliente': cliente_data,
 			"parametros": param,
+			"resumen_pendiente": resumen_pendiente,
 			'fecha_hora_reporte': fecha_hora_reporte,
 			'titulo': ConfigViews.report_title,
 			'logo_url': f"{dominio}{static('img/logo_01.png')}",
@@ -239,7 +251,6 @@ def vlresumenctacte_vista_pantalla(request):
 		return HttpResponse("Token no proporcionado", status=400)
 	
 	#-- Obtener el contexto(datos) previamente guardados en la sesión.
-	# contexto_reporte = request.session.pop(token, None)
 	contexto_reporte = deserializar_datos(request.session.pop(token, None))
 	
 	if not contexto_reporte:
@@ -247,7 +258,6 @@ def vlresumenctacte_vista_pantalla(request):
 	
 	#-- Generar el listado a pantalla.
 	return render(request, ConfigViews.reporte_pantalla, contexto_reporte)
-	# return render(request, "informes/reportes/mercaderiaporcliente_list.html", contexto_reporte)
 
 
 def vlresumenctacte_vista_pdf(request):
@@ -264,15 +274,159 @@ def vlresumenctacte_vista_pdf(request):
 	if not contexto_reporte:
 		return HttpResponse("Contexto no encontrado o expirado", status=400)
 	
+	#-- Generar el PDF usando ReportLab
+	pdf_file = generar_pdf(contexto_reporte)
+	
 	#-- Preparar la respuesta HTTP.
-	# html_string = render_to_string("informes/reportes/mercaderiaporcliente_pdf.html", contexto_reporte, request=request)
-	html_string = render_to_string(ConfigViews.reporte_pdf, contexto_reporte, request=request)
-	pdf_file = HTML(string=html_string, base_url=request.build_absolute_uri()).write_pdf()
-
 	response = HttpResponse(pdf_file, content_type="application/pdf")
-	response["Content-Disposition"] = f'inline; filename="informe_{ConfigViews.model_string}.pdf"'
+	response["Content-Disposition"] = f'inline; filename="{normalizar(ConfigViews.report_title)}.pdf"'
 	
 	return response
+
+class CustomPDFGenerator(PDFGenerator):
+	#-- Método que se puede sobreescribir/extender según requerimientos.
+	def _get_header_bottom_left(self, context):
+		"""Personalización del Header-bottom-left"""
+		
+		cliente = context.get('cliente', None)
+		
+		return f"""<strong>Cliente: </strong> <br/>
+				   [{cliente['id_cliente']}]  {cliente['nombre_cliente']} <br/>
+				   {cliente['domicilio_cliente']}  <strong>Tel.:</strong> {cliente['telefono_cliente']} <br/>
+				   <strong>C.P.:</strong> {cliente['codigo_postal']} {cliente['localidad']} - {cliente['provincia']} <br/>"""
+	
+	#-- Método que se puede sobreescribir/extender según requerimientos.
+	# def _get_header_bottom_right(self, context):
+	# 	"""Añadir información adicional específica para este reporte"""
+	# 	base_content = super()._get_header_bottom_right(context)
+	# 	saldo_total = context.get("saldo_total", 0)
+	# 	return f"""
+	# 		{base_content}<br/>
+	# 		<b>Total General:</b> {formato_es_ar(saldo_total)}
+	# 	"""
+	pass
+
+def generar_pdf(contexto_reporte):
+	resumen_pendiente = contexto_reporte.get('resumen_pendiente', None)
+	
+	#-- Crear instancia del generador personalizado.
+	generator = CustomPDFGenerator(contexto_reporte, pagesize=portrait(A4), body_font_size=7)
+	
+	#-- Construir datos de la tabla:
+	headers = [
+		("Comprobante", 100),
+		("Número", 75),
+		("Fehca", 50),
+		("Remito", 60)
+	]
+	
+	if resumen_pendiente:
+		headers.extend([
+			("Total Comp.", 70),
+			("Entrega", 70),
+			("Saldo", 70),
+			("Intereses",70)
+		])
+		#-- Estilos específicos adicionales iniciales de la tabla.
+		table_style_config = [
+			('ALIGN', (4,0), (-1,-1), 'RIGHT'),
+		]
+	else:
+		headers.extend([
+			("Cond. Venta", 40),
+			("Debe", 70),
+			("Haber", 70),
+			("Saldo", 70)
+		])
+		#-- Estilos específicos adicionales iniciales de la tabla.
+		table_style_config = [
+			('ALIGN', (5,0), (-1,-1), 'RIGHT'),
+		]
+	
+	#-- Extraer Títulos de las columnas de la tabla (headers).
+	headers_titles = [value[0] for value in headers]
+	
+	#-- Extraer Ancho de las columnas de la tabla.
+	col_widths = [value[1] for value in headers]
+	
+	table_data = [headers_titles]
+	
+	#-- Agregar los datos a la tabla.
+	if resumen_pendiente:
+		#-- Agregar filas del detalle.
+		for obj in contexto_reporte['objetos']:
+			table_data.append([
+				obj['nombre_comprobante_venta'],
+				obj['numero'],
+				format_date(obj['fecha_comprobante']),
+				obj['remito'],
+				formato_argentino(obj['total']),
+				formato_argentino(obj['entrega']),
+				formato_argentino(obj['saldo_acumulado']),
+				formato_argentino(obj['intereses']),
+			])
+	
+	else:
+		#-- Agregar Saldo Anterior.
+		table_data.append([
+			"", "", "", "", "", "", "Saldo Anterior:",
+			formato_argentino(contexto_reporte['saldo_anterior'])
+		])
+		
+		#-- Aplicar estilos a la fila de agrupación (fila actual).
+		table_style_config.extend([
+			('FONTNAME', (0,1), (-1,1), 'Helvetica-Bold')
+		])
+		
+		#-- Agregar filas del detalle.
+		for obj in contexto_reporte['objetos']:
+			table_data.append([
+				obj['nombre_comprobante_venta'],
+				obj['numero'],
+				format_date(obj['fecha_comprobante']),
+				obj['remito'],
+				'Contado' if obj['condicion_comprobante'] == 1 else 'Cta. Cte.',
+				formato_argentino(obj['debe']),
+				formato_argentino(obj['haber']),
+				formato_argentino(obj['saldo_acumulado']),
+			])
+	
+	
+	#-- Fila Total General.
+	table_data.append(
+		["", "", "", "", "", "", "Total Intereses:", 
+			formato_argentino(contexto_reporte['intereses_total'])
+		]
+	)
+	
+	table_data.append(
+		["", "", "", "", "", "", "Total General:", 
+			formato_argentino(contexto_reporte['total_general'])
+		]
+	)
+	
+	#-- Aplicar estilos a la fila de total (fila actual).
+	table_style_config.extend([
+		('ALIGN', (6,-1), (-1,-1), 'RIGHT'),
+		('FONTNAME', (0,-2), (-1,-1), 'Helvetica-Bold'),
+		('LINEABOVE', (0,-2), (-1,-2), 0.5, colors.black),
+	])
+	
+	#-- Fila divisoria.
+	table_data.append(["", "", "", "", "", "", "", ""])
+	
+	#-- Observaciones.
+	table_data.append(["Observaciones:", "", "", "", "", "", "", ""])
+	table_data.append([Paragraph(str(contexto_reporte['observaciones']), generator.styles['CellStyle']), "", "", "", "", "", "", ""])
+	
+	
+	#-- Aplicar estilos a la fila de agrupación (fila actual).
+	table_style_config.extend([
+		('SPAN', (0,-1), (-1,-1)),
+	])
+
+	
+	return generator.generate(table_data, col_widths, table_style_config)		
 
 
 def vlresumenctacte_vista_excel(request):
@@ -305,8 +459,7 @@ def vlresumenctacte_vista_excel(request):
 		content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 	)
 	# Inline permite visualizarlo en el navegador si el navegador lo soporta.
-	# response["Content-Disposition"] = 'inline; filename="informe.xlsx"'
-	response["Content-Disposition"] = f'inline; filename="informe_{ConfigViews.model_string}.xlsx"'
+	response["Content-Disposition"] = f'inline; filename="{ConfigViews.report_title}.xlsx"'
 	return response
 
 
@@ -336,7 +489,6 @@ def vlresumenctacte_vista_csv(request):
 	csv_data = helper.export_to_csv()
 	
 	response = HttpResponse(csv_data, content_type="text/csv; charset=utf-8")
-	# response["Content-Disposition"] = 'inline; filename="informe.csv"'
-	response["Content-Disposition"] = f'inline; filename="informe_{ConfigViews.model_string}.csv"'
+	response["Content-Disposition"] = f'inline; filename="{ConfigViews.report_title}.csv"'
 	
 	return response

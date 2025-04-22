@@ -2,7 +2,7 @@
 
 from io import BytesIO, TextIOWrapper
 from reportlab.platypus import BaseDocTemplate, SimpleDocTemplate, Frame, PageTemplate, Table, TableStyle, Paragraph, Spacer
-from reportlab.lib.pagesizes import A4, landscape
+from reportlab.lib.pagesizes import A4, portrait
 from reportlab.lib.enums import TA_LEFT, TA_RIGHT
 from reportlab.pdfgen import canvas
 from reportlab.lib import colors
@@ -344,15 +344,21 @@ class CustomCanvas(canvas.Canvas):
 
 
 #---------------------------------------------------------------------------------
-'''
 class PDFGenerator:
-	def __init__(self, context, pagesize=landscape(A4), margins=(10, 10, 0, 40)):
+	def __init__(self, context, pagesize=portrait(A4), margins=(10, 10, 0, 40), body_font_size=6, header_font_size=9):
+		#-- Dimensiones formato A4:
+		#-- portrait:	595 pts. (210x297mm) vertical
+		#-- landscape:	842 pts. (297x210mm) horizontal
+		
 		self.buffer = BytesIO()
 		self.context = context
 		self.pagesize = pagesize
 		self.left_margin, self.right_margin, self.top_margin, self.bottom_margin = margins
+		self.body_font_size = body_font_size
+		self.header_font_size = header_font_size
+		self.extra_header_height = 0
 		
-		#-- Creación y Configuración del documento.
+		#-- Creación y Configuración del documento base.
 		self.doc = BaseDocTemplate(
 			self.buffer,
 			pagesize=self.pagesize,
@@ -362,234 +368,79 @@ class PDFGenerator:
 			bottomMargin=self.bottom_margin
 		)
 		
-		#-- Crear y Configurar frame.
-		frame = Frame(
-			self.doc.leftMargin,
-			self.doc.bottomMargin,
-			self.doc.width,
-			self.doc.height - 80,  # Ajustar según necesidades
-			id="body"
-		)
-		
-		#-- Crear y Configurar template.
-		template = PageTemplate(
-			id="reportTemplate", 
-			frames=[frame], 
-			onPage=self._header_footer
-		)
-		self.doc.addPageTemplates([template])
+		#-- Asignar el contexto del reporte al documento.
 		self.doc.contexto_reporte = self.context
 		
 		#-- Estilos.
 		self.styles = getSampleStyleSheet()
 		self._setup_custom_styles()
 	
-	def _setup_custom_styles(self):
-		#-- Estilos personalizados.
+		#-- Creación y Configuración inicial del frame.
+		self._setup_frame()
 		
-		#-- Estilo de párrafo para los datos en la tabla del reporte.
-		self.styles.add(ParagraphStyle(
-			name='CellStyle',
-			parent=self.styles["BodyText"],
-			fontSize=6,
-			leading=5.0,
-			spaceBefore=0,
-			spaceAfter=0,
-			leftIndent=0,
-			rightIndent=0,
-			firstLineIndent=0,
-		))
+	def _setup_frame(self, extra_header_height=0):
+		"""Configura el frame con márgenes adaptables"""
 		
-		#-- Estilo de párrafo para la sección Header-bottom-left.
-		self.styles.add(ParagraphStyle(
-			name='HeaderBottomLeft',
-			fontSize=9,
-			leading=12,
-			alignment=TA_LEFT
-		))
+		HEADER_TOP_HEIGHT = 50
+		FOOTER_HEIGHT = 40
+		SEPARATION = 5
 		
-		#-- Estilo de párrafo para la sección Header-bottom-right.
-		self.styles.add(ParagraphStyle(
-			name='HeaderBottomRight',
-			fontSize=9,
-			leading=12,
-			alignment=TA_RIGHT
-		))
-	
-	def _header_footer(self, canvas_obj, doc):
-		"""Método para dibujar header y footer en cada página"""
-		canvas_obj.saveState()
-		width, height = doc.pagesize
+		#-- Calcular espacio total ocupado por headers.
+		total_header_height = HEADER_TOP_HEIGHT + extra_header_height + SEPARATION
 		
-		#-----------------------------------------------------------------------------------
-		#  HEADER
-		#-----------------------------------------------------------------------------------
+		#-- Calcular altura disponible para el cuerpo.
+		usable_height = self.doc.height - total_header_height - FOOTER_HEIGHT
 		
-		header_top_height = 50
-		
-		# --- Header-top -------------------------------------------------------------------
-		
-		#-- Sección Superior Izquierda: logotipo.
-		logo_path = doc.contexto_reporte.get("logo_url", "")
-		logo_area_width = (width - doc.leftMargin - doc.rightMargin) * 0.25
-		logo_height = 30
-		logo_x = doc.leftMargin - 30
-		logo_y = height - header_top_height + (header_top_height - logo_height) / 2
-		
-		try:
-			canvas_obj.drawImage(
-				logo_path, logo_x, logo_y, 
-				width=logo_area_width, height=logo_height, 
-				preserveAspectRatio=True, mask='auto'
-			)
-		except Exception:
-			canvas_obj.setFont("Helvetica", 10)
-			canvas_obj.drawString(logo_x, logo_y, "[Logo]")
-		
-		#-- Sección Superior Perecha: título.
-		titulo = doc.contexto_reporte.get("titulo", "Reporte")
-		canvas_obj.setFont("Helvetica-BoldOblique", 12)
-		canvas_obj.drawRightString(
-			width - doc.rightMargin, 
-			(height - header_top_height/2)-10, 
-			titulo
+		#-- Crear frame con altura ajustada.
+		# Posicionamiento preciso del Frame
+		self.frame = Frame(
+			self.doc.leftMargin,	# X: desde margen izquierdo
+			FOOTER_HEIGHT,			# Y: desde el borde inferior (justo arriba del footer)
+			self.doc.width,			# Ancho completo disponible
+			usable_height,			# Altura calculada
+			id="body",
+			topPadding=0,
+			bottomPadding=0,
+			leftPadding=0,
+			rightPadding=0
 		)
 		
-		# --- Header-bottom ----------------------------------------------------------------
+		#-- Limpiar plantillas existentes (evita duplicados).
+		if hasattr(self.doc, 'pageTemplates'):
+			self.doc.pageTemplates.clear()  # Elimina plantillas viejas
 		
-		#-- Línea superior de header-bottom.
-		line_y_start = height - header_top_height  
-		canvas_obj.setLineWidth(1)
-		canvas_obj.setStrokeColor(colors.black)
-		canvas_obj.line(doc.leftMargin, line_y_start, width - doc.rightMargin, line_y_start)
-		
-		#-- Sección inferior Izquierda.
-		header_bottom_text_left = doc.contexto_reporte.get("header_bottom_left", "")
-		
-		#-- Sección inferior Derecha.
-		parametros = doc.contexto_reporte.get("parametros", {})
-		lines = [f"<b>{key}:</b> {value}" for key, value in parametros.items()]
-		header_bottom_text_right = "<br/>".join(lines)
-		
-		#-- Definir estilos y posición para cada sección.
-		p_left = Paragraph(header_bottom_text_left, self.styles['HeaderBottomLeft'])
-		p_right = Paragraph(header_bottom_text_right, self.styles['HeaderBottomRight'])
-		
-		available_width = (width - doc.leftMargin - doc.rightMargin) / 2.0
-		left_w, left_h = p_left.wrap(available_width, 100)
-		right_w, right_h = p_right.wrap(available_width, 100)
-		header_bottom_height = max(left_h, right_h)
-		header_bottom_y = height - header_top_height - header_bottom_height
-		
-		p_left.drawOn(canvas_obj, doc.leftMargin, header_bottom_y)
-		p_right.drawOn(canvas_obj, doc.leftMargin + available_width, header_bottom_y)
-		
-		#-- Línea inferior de header-bottom.
-		canvas_obj.line(doc.leftMargin, header_bottom_y, width - doc.rightMargin, header_bottom_y)
-		
-		#-----------------------------------------------------------------------------------
-		#  Footer
-		#-----------------------------------------------------------------------------------
-		footer_y = 15
-		
-		#-- Línea decorativa.
-		line_y = footer_y + 12
-		canvas_obj.setLineWidth(1)
-		canvas_obj.setStrokeColor(colors.black)
-		canvas_obj.line(doc.leftMargin, line_y, width - doc.rightMargin, line_y)
-		
-		#-- Texto a la izquierda del footer.
-		canvas_obj.setFont("Helvetica-Oblique", 9)
-		canvas_obj.drawString(doc.leftMargin, footer_y, "M.A.A.Soft")
-		
-		#-- Número de página formateado al centro.
-		numero_pagina_text = f"Página {canvas_obj._pageNumber}"
-		canvas_obj.setFont("Helvetica", 9)
-		canvas_obj.drawCentredString(width/2.0, footer_y, numero_pagina_text)
-		
-		#-- Fecha y hora del reporte a la derecha.
-		fecha_reporte = datetime.now().strftime("%d/%m/%Y %H:%M")
-		canvas_obj.setFont("Helvetica", 9)
-		canvas_obj.drawRightString(width - doc.rightMargin, footer_y, fecha_reporte)
-		
-		canvas_obj.restoreState()
-	
-	def _create_table(self, data, col_widths, style_config):
-		"""Crea una tabla con los datos y estilos proporcionados"""
-		table = Table(data, colWidths=col_widths, repeatRows=1)
-		
-		#-- Estilo base.
-		table_style = TableStyle([
-			('BACKGROUND', (0,0), (-1,0), colors.gray),
-			('TEXTCOLOR', (0,0), (-1,0), colors.whitesmoke),
-			('VALIGN', (0,0), (-1,-1), 'TOP'),
-			('FONTSIZE', (0,0), (-1,-1), 6),
-			('TOPPADDING', (0,1), (-1,1), 2),
-			('TOPPADDING', (0,2), (-1,-1), 0),
-			('BOTTOMPADDING', (0,1), (-1,-1), 0),
+		#-- Crear la plantilla nueva.
+		self.doc.addPageTemplates([
+			PageTemplate(
+				id="reportTemplate",
+				frames=[self.frame],
+				onPage=self._header_footer
+			)
 		])
 		
-		#-- Añadir configuraciones de estilo adicionales.
-		for config in style_config:
-			table_style.add(*config)
+	def _calculate_header_bottom_height(self):
+		"""Calcula la altura necesaria para el header-bottom"""
 		
-		table.setStyle(table_style)
-		return table
-	
-	def generate(self, table_data, col_widths, table_style_config):
-		"""Genera el PDF con los datos proporcionados"""
-		content = []
+		#-- Medir contenido izquierdo.
+		left_content = self._get_header_bottom_left(self.context)
+		left_para = Paragraph(left_content, self.styles['HeaderBottomLeft'])
 		
-		#-- Crear tabla.
-		table = self._create_table(table_data, col_widths, table_style_config)
-		content.append(table)
+		#-- Medir contenido derecho.
+		right_content = self._get_header_bottom_right(self.context)
+		right_para = Paragraph(right_content, self.styles['HeaderBottomRight'])
 		
-		#-- Construir documento.
-		self.doc.build(content)
+		#-- Calcular dimensiones (usando un canvas temporal).
+		#-- doc.width ya incluye el descuento de márgenes (ver __init__).
+		temp_canvas = canvas.Canvas(self.buffer)
+		available_width = self.doc.width / 2.0
 		
-		pdf = self.buffer.getvalue()
-		self.buffer.close()
-		return pdf
-'''
-
-class PDFGenerator:
-	def __init__(self, context, pagesize=landscape(A4), margins=(10, 10, 0, 40)):
-		self.buffer = BytesIO()
-		self.context = context
-		self.pagesize = pagesize
-		self.left_margin, self.right_margin, self.top_margin, self.bottom_margin = margins
+		left_para.wrapOn(temp_canvas, available_width, self.doc.height)
+		right_para.wrapOn(temp_canvas, available_width, self.doc.height)
 		
-		#-- Creación y Configuración del documento.
-		self.doc = BaseDocTemplate(
-			self.buffer,
-			pagesize=self.pagesize,
-			leftMargin=self.left_margin,
-			rightMargin=self.right_margin,
-			topMargin=self.top_margin,
-			bottomMargin=self.bottom_margin
-		)
+		#-- Calcular altura extra necesaria (30pt es la altura base).
+		extra_height = max(left_para.height, right_para.height) - 30
 		
-		#-- Crear y Configurar frame.
-		frame = Frame(
-			self.doc.leftMargin,
-			self.doc.bottomMargin,
-			self.doc.width,
-			self.doc.height - 80,  # Ajustar según necesidades
-			id="body"
-		)
-		
-		#-- Crear y Configurar template.
-		template = PageTemplate(
-			id="reportTemplate", 
-			frames=[frame], 
-			onPage=self._header_footer
-		)
-		self.doc.addPageTemplates([template])
-		self.doc.contexto_reporte = self.context
-		
-		#-- Estilos.
-		self.styles = getSampleStyleSheet()
-		self._setup_custom_styles()
+		return max(0, extra_height)  #-- No permitir valores negativos.
 	
 	def _setup_custom_styles(self):
 		#-- Estilos personalizados.
@@ -598,8 +449,8 @@ class PDFGenerator:
 		self.styles.add(ParagraphStyle(
 			name='CellStyle',
 			parent=self.styles["BodyText"],
-			fontSize=6,
-			leading=5.0,
+			fontSize=self.body_font_size,
+			leading=8,
 			spaceBefore=0,
 			spaceAfter=0,
 			leftIndent=0,
@@ -610,7 +461,7 @@ class PDFGenerator:
 		#-- Estilo de párrafo para la sección Header-bottom-left.
 		self.styles.add(ParagraphStyle(
 			name='HeaderBottomLeft',
-			fontSize=9,
+			fontSize=self.header_font_size,
 			leading=12,
 			alignment=TA_LEFT
 		))
@@ -618,28 +469,31 @@ class PDFGenerator:
 		#-- Estilo de párrafo para la sección Header-bottom-right.
 		self.styles.add(ParagraphStyle(
 			name='HeaderBottomRight',
-			fontSize=9,
+			fontSize=self.header_font_size,
 			leading=12,
 			alignment=TA_RIGHT
 		))
 	
 	# ----------------------------------------------------------------------------------
 	def _render_header_bottom(self, canvas_obj, doc, width, height):
-		"""Nuevo método modular para el header inferior"""
-		#-- Línea superior.
-		line_y_start = height - 50  
+		"""Renderiza el header-bottom en posición fija respecto al header-top"""
+		
+		#-- Posición FIJA: 50pt desde el borde superior (header-top) + margen.
+		line_y_start = height - 50
+		
+		#-- Dibujar línea superior del header-bottom.
 		canvas_obj.setLineWidth(1)
 		canvas_obj.line(doc.leftMargin, line_y_start, width - doc.rightMargin, line_y_start)
 		
-		#-- Contenido personalizable.
-		left_content = self._get_header_bottom_left(doc.contexto_reporte)
-		right_content = self._get_header_bottom_right(doc.contexto_reporte)
+		#-- Renderizar contenido (posición relativa al borde superior).
+		content_top = line_y_start - 2  #-- 2pt de margen bajo la línea.
 		
-		#-- Renderizado.
+		#-- Renderizar contenido (crece hacia abajo).
 		self._draw_header_bottom_content(
-			canvas_obj, doc, 
-			left_content, right_content,
-			line_y_start
+			canvas_obj, doc,
+			self._get_header_bottom_left(doc.contexto_reporte),
+			self._get_header_bottom_right(doc.contexto_reporte),
+			content_top
 		)
 	
 	def _get_header_bottom_left(self, context):
@@ -652,55 +506,64 @@ class PDFGenerator:
 		return "<br/>".join([f"<b>{k}:</b> {v}" for k, v in params.items()])
 	
 	def _draw_header_bottom_content(self, canvas_obj, doc, left_content, right_content, start_y):
-		"""Lógica compartida para renderizar ambos lados"""
+		"""Dibuja el contenido del header-bottom desde la posición start_y hacia abajo"""
+		
 		p_left = Paragraph(left_content, self.styles['HeaderBottomLeft'])
 		p_right = Paragraph(right_content, self.styles['HeaderBottomRight'])
 		
-		available_width = (doc.width - doc.leftMargin - doc.rightMargin) / 2.0
-		left_w, left_h = p_left.wrap(available_width, 100)
-		right_w, right_h = p_right.wrap(available_width, 100)
-		content_height = max(left_h, right_h)
-		content_y = start_y - content_height
+		available_width = doc.width / 2.0
 		
-		p_left.drawOn(canvas_obj, doc.leftMargin, content_y)
-		p_right.drawOn(canvas_obj, doc.leftMargin + available_width, content_y)
+		#-- Medir contenido.
+		p_left.wrapOn(canvas_obj, available_width, doc.height)
+		p_right.wrapOn(canvas_obj, available_width, doc.height)
 		
-		#-- Línea inferior.
-		canvas_obj.line(doc.leftMargin, content_y, doc.width - doc.rightMargin, content_y)
-	# ----------------------------------------------------------------------------------
+		#-- Dibujar contenido alineado desde start_y hacia abajo.
+		content_bottom = start_y - max(p_left.height, p_right.height)
+		p_left.drawOn(canvas_obj, doc.leftMargin + 10, content_bottom)
+		p_right.drawOn(canvas_obj, doc.leftMargin + available_width - 10, content_bottom)
+		
+		#-- Línea inferior con 2pt de separación.
+		line_y = content_bottom - 2
+		canvas_obj.line(doc.leftMargin, line_y, doc.width + doc.rightMargin, line_y)
 	
 	def _header_footer(self, canvas_obj, doc):
 		"""Método para dibujar header y footer en cada página"""
+		
 		canvas_obj.saveState()
-		width, height = doc.pagesize
+		width_total, height_total = doc.pagesize
 		
-		#-- Header Top (logo + título).
-		self._render_header_top(canvas_obj, doc, width, height)
+		#-- Header Top (logo + título) (altura fija).
+		self._render_header_top(canvas_obj, doc, width_total, height_total)
 		
-		#-- Header Bottom.
-		self._render_header_bottom(canvas_obj, doc, width, height)
+		#-- Header Bottom (altura dinámica).
+		self._render_header_bottom(canvas_obj, doc, width_total, height_total)
 		
-		#-- Footer.
-		self._render_footer(canvas_obj, doc, width)
+		#-- Footer (altura fija).
+		self._render_footer(canvas_obj, doc, width_total)
 		
 		canvas_obj.restoreState()
 		
-	def _render_header_top(self, canvas_obj, doc, width, height):
+	def _render_header_top(self, canvas_obj, doc, width_total, height_total):
 		# --- Header-top -------------------------------------------------------------------
-		header_top_height = 50
+		header_top_height = 50  #-- Altura fija de la sección header-top.
 		
 		#-- Sección Superior Izquierda: logotipo.
 		logo_path = doc.contexto_reporte.get("logo_url", "")
-		logo_area_width = (width - doc.leftMargin - doc.rightMargin) * 0.25
 		logo_height = 30
-		logo_x = doc.leftMargin - 30
-		logo_y = height - header_top_height + (header_top_height - logo_height) / 2
+		logo_width = 100
+		
+		logo_x = doc.leftMargin - 10
+		logo_y = height_total - header_top_height + (header_top_height - logo_height) / 2
 		
 		try:
 			canvas_obj.drawImage(
-				logo_path, logo_x, logo_y, 
-				width=logo_area_width, height=logo_height, 
-				preserveAspectRatio=True, mask='auto'
+				logo_path, 
+				logo_x, 
+				logo_y, 
+				width=logo_width, 
+				height=logo_height, 
+				preserveAspectRatio=True, 
+				mask='auto'
 			)
 		except Exception:
 			canvas_obj.setFont("Helvetica", 10)
@@ -710,8 +573,8 @@ class PDFGenerator:
 		titulo = doc.contexto_reporte.get("titulo", "Reporte")
 		canvas_obj.setFont("Helvetica-BoldOblique", 12)
 		canvas_obj.drawRightString(
-			width - doc.rightMargin, 
-			(height - header_top_height/2)-10, 
+			width_total - doc.rightMargin-10, 
+			(height_total - header_top_height/2)-10, 
 			titulo
 		)
 		
@@ -745,13 +608,21 @@ class PDFGenerator:
 		
 		#-- Estilo base.
 		table_style = TableStyle([
-			('BACKGROUND', (0,0), (-1,0), colors.gray),
-			('TEXTCOLOR', (0,0), (-1,0), colors.whitesmoke),
+			#-- Estilos comunes toda la tabla.
 			('VALIGN', (0,0), (-1,-1), 'TOP'),
-			('FONTSIZE', (0,0), (-1,-1), 6),
-			('TOPPADDING', (0,1), (-1,1), 2),
-			('TOPPADDING', (0,2), (-1,-1), 0),
+			('FONTSIZE', (0,0), (-1,-1), self.body_font_size),
+			('LEADING', (0,0), (-1,-1), 8),
+			
+			#-- Padding de la tabla exceptuando la primera fila (headers).
+			('TOPPADDING', (0,1), (-1,-1), 0),
 			('BOTTOMPADDING', (0,1), (-1,-1), 0),
+			
+			#-- Estilos para la primera fila (headers).
+			('BACKGROUND', (0,0), (-1,0), colors.gray),
+			('FONTNAME', (0,0), (-1,0), 'Helvetica-Bold'),
+			('TEXTCOLOR', (0,0), (-1,0), colors.white),
+			('TOPPADDING', (0,0), (-1,0), 2),
+			('BOTTOMPADDING', (0,0), (-1,0), 2),
 		])
 		
 		#-- Añadir configuraciones de estilo adicionales.
@@ -763,6 +634,14 @@ class PDFGenerator:
 	
 	def generate(self, table_data, col_widths, table_style_config):
 		"""Genera el PDF con los datos proporcionados"""
+		
+		#-- Pre-calcular altura del header ANTES de construir.
+		self.extra_header_height = self._calculate_header_bottom_height()		
+		
+		#-- Reconfigurar frame con la altura calculada.
+		self._setup_frame(self.extra_header_height)
+		
+		#-- Generar contenido.
 		content = []
 		
 		#-- Crear tabla.
@@ -774,4 +653,5 @@ class PDFGenerator:
 		
 		pdf = self.buffer.getvalue()
 		self.buffer.close()
+		
 		return pdf

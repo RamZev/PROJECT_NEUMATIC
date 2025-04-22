@@ -16,7 +16,7 @@ from .report_views_generics import *
 from apps.informes.models import VLRemitosClientes
 from apps.maestros.models.cliente_models import Cliente
 from ..forms.buscador_vlremitosclientes_forms import BuscadorRemitosClientesForm
-from utils.utils import deserializar_datos, formato_argentino
+from utils.utils import deserializar_datos, formato_argentino, format_date, normalizar
 from utils.helpers.export_helpers import ExportHelper, PDFGenerator
 
 
@@ -69,9 +69,6 @@ class ConfigViews:
 	
 	#-- Plantilla Vista Preliminar Pantalla.
 	reporte_pantalla = f"informes/reportes/{model_string}_list.html"
-	
-	#-- Plantilla Vista Preliminar PDF.
-	reporte_pdf = f"informes/reportes/{model_string}_pdf.html"
 	
 	#-- Establecer las columnas del reporte y sus anchos(en punto).
 	header_data = {
@@ -157,7 +154,7 @@ class VLRemitosClientesInformeView(InformeFormView):
 			total_general += obj.total
 		
 		#-- Convertir los datos agrupados a un formato serializable:
-		# Se recorre cada grupo y se convierte cada producto a diccionario usando raw_to_dict.
+		#-- Se recorre cada grupo y se convierte cada producto a diccionario usando raw_to_dict.
 		
 		for comprobante, data in grouped_data.items():
 			data['productos'] = [raw_to_dict(producto) for producto in data['productos']]
@@ -201,7 +198,6 @@ def vlremitosclientes_vista_pantalla(request):
 		return HttpResponse("Token no proporcionado", status=400)
 	
 	#-- Obtener el contexto(datos) previamente guardados en la sesión.
-	# contexto_reporte = request.session.pop(token, None)
 	contexto_reporte = deserializar_datos(request.session.pop(token, None))
 	
 	if not contexto_reporte:
@@ -230,7 +226,7 @@ def vlremitosclientes_vista_pdf(request):
 	
 	#-- Preparar la respuesta HTTP.
 	response = HttpResponse(pdf_file, content_type="application/pdf")
-	response["Content-Disposition"] = f'inline; filename="{ConfigViews.report_title}.pdf"'
+	response["Content-Disposition"] = f'inline; filename="{normalizar(ConfigViews.report_title)}.pdf"'
 	
 	return response
 
@@ -289,9 +285,9 @@ def generar_pdf(contexto_reporte):
 		#-- Agregar filas del detalle.
 		for producto in data['productos']:
 			table_data.append([
-				_format_date(producto['fecha_comprobante']),
+				format_date(producto['fecha_comprobante']),
 				producto['numero'],
-				Paragraph(producto['nombre_producto'], generator.styles['CellStyle']),
+				Paragraph(str(producto['nombre_producto']), generator.styles['CellStyle']),
 				producto['medida'],
 				formato_argentino(producto['cantidad']),
 				formato_argentino(producto['precio']),
@@ -318,7 +314,7 @@ def generar_pdf(contexto_reporte):
 		current_row += 1
 	
 	#-- Fila Total General.
-	table_data.append(["", "", "", "", "", "Total General:", formato_argentino(contexto_reporte.get('total_general'))])
+	table_data.append(["", "", "", "", "", "Total Remitado:", formato_argentino(contexto_reporte.get('total_general'))])
 	
 	#-- Aplicar estilos a la fila de total (fila actual).
 	table_style_config.extend([
@@ -326,22 +322,7 @@ def generar_pdf(contexto_reporte):
 		# ('LINEABOVE', (0,current_row), (-1,current_row), 0.5, colors.black),
 	])
 	
-	
 	return generator.generate(table_data, col_widths, table_style_config)		
-
-def _format_date(date_value):
-	"""Helper para formatear fechas"""
-	if not date_value:
-		return ""
-	
-	if isinstance(date_value, str):
-		try:
-			return datetime.strptime(date_value, "%Y-%m-%d").strftime("%d/%m/%Y")
-		except ValueError:
-			return date_value
-	else:
-		return date_value.strftime("%d/%m/%Y")
-# -------------------------------------------------------------------------------------------------
 
 
 def vlremitosclientes_vista_excel(request):
@@ -373,8 +354,9 @@ def vlremitosclientes_vista_excel(request):
 		excel_data,
 		content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 	)
-	# Inline permite visualizarlo en el navegador si el navegador lo soporta.
-	response["Content-Disposition"] = f'inline; filename="informe_{ConfigViews.model_string}.xlsx"'
+	#-- Inline permite visualizarlo en el navegador si el navegador lo soporta.
+	response["Content-Disposition"] = f'inline; filename="{ConfigViews.report_title}.xlsx"'
+	
 	return response
 
 
@@ -404,6 +386,6 @@ def vlremitosclientes_vista_csv(request):
 	csv_data = helper.export_to_csv()
 	
 	response = HttpResponse(csv_data, content_type="text/csv; charset=utf-8")
-	response["Content-Disposition"] = f'inline; filename="informe_{ConfigViews.model_string}.csv"'
+	response["Content-Disposition"] = f'inline; filename="{ConfigViews.report_title}.csv"'
 	
 	return response

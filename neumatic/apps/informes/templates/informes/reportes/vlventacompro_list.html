@@ -1,4 +1,4 @@
-<!-- neumatic\apps\informes\templates\informes\reportes\ventacompro_list.html -->
+<!-- neumatic\apps\informes\templates\informes\reportes\vlventacompro_list.html -->
 
 {% extends 'informes/reportes/base_reportes_new.html' %}
 {% load static %}
@@ -77,26 +77,28 @@
 					<td class="numeric" style="border-top: 1px solid;"><strong>{{ grupo.subtotal.cta_cte.total|formato_es_ar }}</strong></td>
 				</tr>
 				<tr class="compact-line-spacing">
-					<td style="text-align: right;" colspan="5">Gravado:</td>
-					<td class="numeric">{{ grupo.subtotal.contado.gravado|formato_es_ar }}</td>
-					<td class="numeric">{{ grupo.subtotal.cta_cte.gravado|formato_es_ar }}</td>
+					<td style="text-align: right;" colspan="5"><strong>Gravado:</strong></td>
+					<td class="numeric"><strong>{{ grupo.subtotal.contado.gravado|formato_es_ar }}</strong></td>
+					<td class="numeric"><strong>{{ grupo.subtotal.cta_cte.gravado|formato_es_ar }}</strong></td>
 				</tr>
 				<tr class="compact-line-spacing">
-					<td style="text-align: right;" colspan="5">I.V.A.:</td>
-					<td class="numeric">{{ grupo.subtotal.contado.iva|formato_es_ar }}</td>
-					<td class="numeric">{{ grupo.subtotal.cta_cte.iva|formato_es_ar }}</td>
+					<td style="text-align: right;" colspan="5"><strong>I.V.A.:</strong></td>
+					<td class="numeric"><strong>{{ grupo.subtotal.contado.iva|formato_es_ar }}</strong></td>
+					<td class="numeric"><strong>{{ grupo.subtotal.cta_cte.iva|formato_es_ar }}</strong></td>
 				</tr>
 				<tr class="compact-line-spacing">
-					<td style="text-align: right;" colspan="5">Percepción IB:</td>
-					<td class="numeric">{{ grupo.subtotal.contado.percep_ib|formato_es_ar }}</td>
-					<td class="numeric">{{ grupo.subtotal.cta_cte.percep_ib|formato_es_ar }}</td>
+					<td style="text-align: right;" colspan="5"><strong>Percepción IB:</strong></td>
+					<td class="numeric"><strong>{{ grupo.subtotal.contado.percep_ib|formato_es_ar }}</strong></td>
+					<td class="numeric"><strong>{{ grupo.subtotal.cta_cte.percep_ib|formato_es_ar }}</strong></td>
+				</tr>
+				
+				<tr>
+					<td colspan="7"><hr></td>
 				</tr>
 				
 			{% endfor %}
 			<tr style="border-top: 2px double; ">
 				<td style="text-align: right;" colspan="5"><strong>Total General:</strong></td>
-				<!-- <td class="numeric"><strong>{{ total_general.contado.total|formato_es_ar }}</strong></td>
-				<td class="numeric"><strong>{{ total_general.cta_cte.total|formato_es_ar }}</strong></td> -->
 				<td class="numeric"><strong>{{ total_general.contado|formato_es_ar }}</strong></td>
 				<td class="numeric"><strong>{{ total_general.cta_cte|formato_es_ar }}</strong></td>
 			</tr>

@@ -53,13 +53,19 @@
 					<td colspan="6" style="text-align: right;"><strong>Total Comprobante:</strong></td>
 					<td class="numeric"><strong>{{ data.subtotal|formato_es_ar }}</strong></td>
 				</tr>
+				
+				<tr>
+					<td colspan="7"><hr></td>
+				</tr>
+				
 			{% endfor %}
 			
-			<tr class="total-general" style="border-top: 1px solid #000;">
+			{% comment %} <tr class="total-general" style="border-top: 1px solid #000;"> {% endcomment %}
+			<tr class="total-general">
 				<td class="numeric" colspan="6"><strong>Total Remitado:</strong></td>
 				<td class="numeric"><strong>{{ total_general|formato_es_ar }}</strong></td>
 			</tr>
-		
+			
 		</tbody>
 		
 	</table>

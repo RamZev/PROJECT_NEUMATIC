@@ -8,13 +8,13 @@ from django.templatetags.static import static
 
 #-- ReportLab:
 from reportlab.lib import colors
-from reportlab.lib.pagesizes import A4, landscape
+from reportlab.lib.pagesizes import A4, portrait, landscape
 from reportlab.platypus import Paragraph
 
 from .report_views_generics import *
 from apps.informes.models import VLPrecioDiferente
 from ..forms.buscador_vlpreciodiferente_forms import BuscadorPrecioDiferenteForm
-from utils.utils import deserializar_datos, formato_argentino
+from utils.utils import deserializar_datos, formato_argentino, normalizar
 from utils.helpers.export_helpers import ExportHelper, PDFGenerator
 
 
@@ -67,9 +67,6 @@ class ConfigViews:
 	
 	#-- Plantilla Vista Preliminar Pantalla.
 	reporte_pantalla = f"informes/reportes/{model_string}_list.html"
-	
-	#-- Plantilla Vista Preliminar PDF.
-	reporte_pdf = f"informes/reportes/{model_string}_pdf.html"
 	
 	#-- Establecer las columnas del reporte y sus anchos(en punto).
 	header_data = {
@@ -156,7 +153,6 @@ class VLPrecioDiferenteInformeView(InformeFormView):
 		
 		dominio = f"http://{self.request.get_host()}"
 		
-		
 		# **************************************************
 		#-- Estructura para agrupar datos por Vendedor.
 		datos_por_vendedor = {}
@@ -198,7 +194,6 @@ class VLPrecioDiferenteInformeView(InformeFormView):
 		#-- Se retorna un contexto que será consumido tanto para la vista en pantalla como para la generación del PDF.
 		return {
 			"objetos": datos_por_vendedor,
-			# "parametros": param,
 			"parametros_i": param_left,
 			"parametros_d": param_right,
 			'fecha_hora_reporte': fecha_hora_reporte,
@@ -253,7 +248,7 @@ def vlpreciodiferente_vista_pdf(request):
 	pdf_file = generar_pdf(contexto_reporte)
 	
 	response = HttpResponse(pdf_file, content_type="application/pdf")
-	response["Content-Disposition"] = f'inline; filename="{ConfigViews.report_title}.pdf"'
+	response["Content-Disposition"] = f'inline; filename="{normalizar(ConfigViews.report_title)}.pdf"'
 	
 	return response
 
@@ -264,23 +259,6 @@ class CustomPDFGenerator(PDFGenerator):
 		
 		params = context.get("parametros_i", {})
 		return "<br/>".join([f"<b>{k}:</b> {v}" for k, v in params.items()])
-
-		# custom_text = context.get("texto_personalizado", "")
-		# 
-		# if custom_text:
-		# 	return f"<b>NOTA:</b> {custom_text}"
-		
-		# id_cliente = 10025
-		# cliente = "Leoncio R. Barrios H."
-		# domicilio = "Jr. San Pedro 1256. Surquillo, Lima."
-		# Telefono = "971025647"
-		# 
-		# return f"Cliente: [{id_cliente}] {cliente} <br/> {domicilio}"
-		# return f"Cliente: [{id_cliente}] {cliente} <br/> {domicilio} <br/> Tel. {Telefono} <br/>"
-		# return f"Cliente: [{id_cliente}] {cliente} <br/> {domicilio} <br/> Tel. {Telefono} <br/> Tel. {Telefono} "
-		# return f"Cliente: [{id_cliente}] {cliente} <br/> {domicilio} <br/> Tel. {Telefono} <br/> Tel. {Telefono} <br/> Tel. {Telefono}"
-		
-		# return super()._get_header_bottom_left(context)
 	
 	#-- Método que se puede sobreescribir/extender según requerimientos.
 	def _get_header_bottom_right(self, context):
@@ -289,13 +267,6 @@ class CustomPDFGenerator(PDFGenerator):
 		params = context.get("parametros_d", {})
 		return "<br/>".join([f"<b>{k}:</b> {v}" for k, v in params.items()])
 
-		# base_content = super()._get_header_bottom_right(context)
-		# saldo_total = context.get("saldo_total", 0)
-		# return f"""
-		# 	{base_content}<br/>
-		# 	<b>Total General:</b> {formato_es_ar(saldo_total)}
-		# """
-	pass
 
 def generar_pdf(contexto_reporte):
 	#-- Crear instancia del generador personalizado.
@@ -356,9 +327,9 @@ def generar_pdf(contexto_reporte):
 				det['comprobante'],
 				det['fecha'],
 				det['id_cliente_id'],
-				Paragraph(det['nombre_cliente'], generator.styles['CellStyle']),
+				Paragraph(str(det['nombre_cliente']), generator.styles['CellStyle']),
 				det['id_producto_id'],
-				Paragraph(det['nombre_producto'], generator.styles['CellStyle']),
+				Paragraph(str(det['nombre_producto']), generator.styles['CellStyle']),
 				formato_argentino(det['cantidad']),
 				formato_argentino(det['precio']),
 				formato_argentino(det['precio_lista']),
@@ -369,27 +340,13 @@ def generar_pdf(contexto_reporte):
 		
 		#-- Fila divisoria.
 		table_data.append(["", "", "", "", "", "", "", "", "", "", ""])
-		# table_style_config.append(
-		# 	# ('LINEBELOW', (0,current_row), (-1,current_row), 0.5, colors.gray),
-		# 	# ('LINEABOVE', (0,current_row), (-1,current_row), 0.5, colors.gray),
-		# )
+		table_style_config.append(
+			# ('LINEBELOW', (0,current_row), (-1,current_row), 0.5, colors.gray),
+			('LINEABOVE', (0,current_row), (-1,current_row), 0.5, colors.gray),
+		)
 		current_row += 1
 	
 	return generator.generate(table_data, col_widths, table_style_config)		
-
-def _format_date(date_value):
-	"""Helper para formatear fechas"""
-	if not date_value:
-		return ""
-	
-	if isinstance(date_value, str):
-		try:
-			return datetime.strptime(date_value, "%Y-%m-%d").strftime("%d/%m/%Y")
-		except ValueError:
-			return date_value
-	else:
-		return date_value.strftime("%d/%m/%Y")
-# -------------------------------------------------------------------------------------------------
 
 
 def vlpreciodiferente_vista_excel(request):
@@ -422,7 +379,8 @@ def vlpreciodiferente_vista_excel(request):
 		content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 	)
 	#-- Inline permite visualizarlo en el navegador si el navegador lo soporta.
-	response["Content-Disposition"] = f'inline; filename="informe_{ConfigViews.model_string}.xlsx"'
+	response["Content-Disposition"] = f'inline; filename="{ConfigViews.report_title}.xlsx"'
+	
 	return response
 
 
@@ -452,6 +410,6 @@ def vlpreciodiferente_vista_csv(request):
 	csv_data = helper.export_to_csv()
 	
 	response = HttpResponse(csv_data, content_type="text/csv; charset=utf-8")
-	response["Content-Disposition"] = f'inline; filename="informe_{ConfigViews.model_string}.csv"'
+	response["Content-Disposition"] = f'inline; filename="{ConfigViews.report_title}.csv"'
 	
 	return response

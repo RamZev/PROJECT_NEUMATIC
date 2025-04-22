@@ -16,7 +16,7 @@ from .report_views_generics import *
 from apps.informes.models import VLIVAVentasFULL
 from apps.maestros.models.empresa_models import Empresa
 from ..forms.buscador_vlivaventasfull_forms import BuscadorVLIVAVentasFULLForm
-from utils.utils import deserializar_datos, serializar_queryset, formato_argentino
+from utils.utils import deserializar_datos, serializar_queryset, formato_argentino, format_date, normalizar
 from utils.helpers.export_helpers import ExportHelper, PDFGenerator
 
 
@@ -69,9 +69,6 @@ class ConfigViews:
 	
 	#-- Plantilla Vista Preliminar Pantalla.
 	reporte_pantalla = f"informes/reportes/{model_string}_list.html"
-	
-	#-- Plantilla Vista Preliminar PDF.
-	reporte_pdf = f"informes/reportes/{model_string}_pdf.html"
 	
 	#-- Establecer las columnas del reporte y sus anchos(en punto).
 	header_data = {
@@ -216,7 +213,6 @@ def vlivaventasfull_vista_pantalla(request):
 		return HttpResponse("Token no proporcionado", status=400)
 	
 	#-- Obtener el contexto(datos) previamente guardados en la sesión.
-	# contexto_reporte = request.session.pop(token, None)
 	contexto_reporte = deserializar_datos(request.session.pop(token, None))
 	
 	if not contexto_reporte:
@@ -245,7 +241,7 @@ def vlivaventasfull_vista_pdf(request):
 	
 	#-- Preparar la respuesta HTTP.
 	response = HttpResponse(pdf_file, content_type="application/pdf")
-	response["Content-Disposition"] = f'inline; filename="{ConfigViews.report_title}.pdf"'
+	response["Content-Disposition"] = f'inline; filename="{normalizar(ConfigViews.report_title)}.pdf"'
 	
 	return response
 
@@ -253,7 +249,6 @@ class CustomPDFGenerator(PDFGenerator):
 	#-- Método que se puede sobreescribir/extender según requerimientos.
 	def _get_header_bottom_left(self, context):
 		"""Personalización del Header-bottom-left"""
-		# return super()._get_header_bottom_left(context)
 		
 		empresa = context.get('datos_empresa')
 		
@@ -263,15 +258,38 @@ class CustomPDFGenerator(PDFGenerator):
 				   {empresa['sit_iva']}  <strong>C.U.I.T.:</strong> {empresa['cuit']}"""
 	
 	#-- Método que se puede sobreescribir/extender según requerimientos.
-	# def _get_header_bottom_right(self, context):
-	# 	"""Añadir información adicional específica para este reporte"""
-	# 	base_content = super()._get_header_bottom_right(context)
-	# 	saldo_total = context.get("saldo_total", 0)
-	# 	return f"""
-	# 		{base_content}<br/>
-	# 		<b>Total General:</b> {formato_es_ar(saldo_total)}
-	# 	"""
-	pass
+	def _get_header_bottom_right(self, context):
+		"""Añadir información adicional específica para este reporte"""
+		
+		params = context.get("parametros", {})
+		self.folio_base = params.get("Último Nro. de Folio", 0)
+		
+		try:
+			self.folio_base = int(self.folio_base) if self.folio_base else 0
+		except (ValueError, TypeError):
+			self.folio_base = 0
+		
+		#-- Devolver solo los otros parámetros aquí, el folio se calculará en _draw_header_bottom_content.
+		# other_params = "<br/>".join([f"<b>{k}:</b> {v}" for k, v in params.items() if k != "Último Nro. de Folio"])
+		other_params = "<br/>".join([f"<b>{k}:</b> {v}" for k, v in params.items()])
+		return other_params
+	
+	def _draw_header_bottom_content(self, canvas_obj, doc, left_content, right_content, start_y):
+		"""Dibuja el contenido del header-bottom incluyendo el folio dinámico"""
+		#-- Calcular el folio actual basado en la página.
+		current_page = getattr(canvas_obj, '_pageNumber', 1)
+		folio_display = current_page if self.folio_base == 0 else self.folio_base + current_page
+		
+		#-- Añadir el folio al contenido derecho.
+		folio_info = f"<b>Folio:</b> {folio_display}"
+		if right_content:
+			right_content += f"<br/>{folio_info}"
+		else:
+			right_content = folio_info
+		
+		#-- Llamar al método original con el contenido modificado.
+		super()._draw_header_bottom_content(canvas_obj, doc, left_content, right_content, start_y)
+
 
 def generar_pdf(contexto_reporte):
 	#-- Crear instancia del generador personalizado.
@@ -298,8 +316,8 @@ def generar_pdf(contexto_reporte):
 	for obj in contexto_reporte.get("objetos", []):
 		table_data.append([
 			obj['comprobante'],
-			_format_date(obj['fecha_comprobante']),
-			Paragraph(obj['nombre_cliente'], generator.styles['CellStyle']),
+			format_date(obj['fecha_comprobante']),
+			Paragraph(str(obj['nombre_cliente']), generator.styles['CellStyle']),
 			obj['codigo_iva'],
 			obj['cuit'],
 			formato_argentino(obj['gravado']),
@@ -333,20 +351,6 @@ def generar_pdf(contexto_reporte):
 		
 	return generator.generate(table_data, col_widths, table_style_config)		
 
-def _format_date(date_value):
-	"""Helper para formatear fechas"""
-	if not date_value:
-		return ""
-	
-	if isinstance(date_value, str):
-		try:
-			return datetime.strptime(date_value, "%Y-%m-%d").strftime("%d/%m/%Y")
-		except ValueError:
-			return date_value
-	else:
-		return date_value.strftime("%d/%m/%Y")
-# -------------------------------------------------------------------------------------------------
-
 
 def vlivaventasfull_vista_excel(request):
 	token = request.GET.get("token")
@@ -378,7 +382,8 @@ def vlivaventasfull_vista_excel(request):
 		content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 	)
 	#-- Inline permite visualizarlo en el navegador si el navegador lo soporta.
-	response["Content-Disposition"] = f'inline; filename="informe_{ConfigViews.model_string}.xlsx"'
+	response["Content-Disposition"] = f'inline; filename="{ConfigViews.report_title}.xlsx"'
+	
 	return response
 
 
@@ -408,6 +413,6 @@ def vlivaventasfull_vista_csv(request):
 	csv_data = helper.export_to_csv()
 	
 	response = HttpResponse(csv_data, content_type="text/csv; charset=utf-8")
-	response["Content-Disposition"] = f'inline; filename="informe_{ConfigViews.model_string}.csv"'
+	response["Content-Disposition"] = f'inline; filename="{ConfigViews.report_title}.csv"'
 	
 	return response

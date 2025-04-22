@@ -1,5 +1,6 @@
 from django.db import models
 
+
 #-----------------------------------------------------------------------------
 # Saldos Clientes.
 #-----------------------------------------------------------------------------
@@ -109,11 +110,11 @@ class ResumenCtaCteManager(models.Manager):
 				r.entrega, 
 				CASE
 					WHEN r.total >= 0 THEN r.total * 1.0
-					ELSE ''
+					ELSE 0.0
 				END AS debe,
 				CASE
 					WHEN r.total < 0 THEN r.total * 1.0
-					ELSE ''
+					ELSE 0.0
 				END AS haber,
 				(
 					SELECT SUM(a.saldo)
@@ -159,11 +160,11 @@ class ResumenCtaCteManager(models.Manager):
 				r.entrega, 
 				CASE
 					WHEN r.total >= 0 THEN r.total * 1.0
-					ELSE ''
+					ELSE 0.0
 				END AS debe,
 				CASE
 					WHEN r.total < 0 THEN r.total * 1.0
-					ELSE ''
+					ELSE 0.0
 				END AS haber,
 				SUM(r.total) OVER (
 					PARTITION BY r.id_cliente_id 

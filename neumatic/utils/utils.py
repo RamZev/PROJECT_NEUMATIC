@@ -1,5 +1,5 @@
 # neumatic\utils\utils.py
-import re, locale
+import re, locale, unicodedata
 from datetime import date, datetime
 from decimal import Decimal
 from django.forms.models import model_to_dict
@@ -48,3 +48,41 @@ def serializar_queryset(queryset):
 
 def formato_argentino(valor):
     return locale.format_string('%.2f', valor, grouping=True)
+
+
+def format_date(date_value):
+	"""Helper para formatear fechas en formato dd/mm/yyyy."""
+	if not date_value:
+		return ""
+	
+	if isinstance(date_value, str):
+		try:
+			return datetime.strptime(date_value, "%Y-%m-%d").strftime("%d/%m/%Y")
+		except ValueError:
+			return date_value
+	else:
+		return date_value.strftime("%d/%m/%Y")
+
+
+def normalizar(nombre):
+    #-- Normaliza los caracteres Unicode (descompone acentos en caracteres base + acento).
+    nombre_normalizado = unicodedata.normalize('NFKD', nombre)
+    
+    #-- Elimina los caracteres diacríticos (acentos, diéresis, etc.).
+    nombre_sin_acentos = ''.join([c for c in nombre_normalizado if not unicodedata.combining(c)])
+    
+    #-- Reemplaza caracteres específicos que pueden causar problemas.
+    reemplazos = {
+        'ñ': 'n',
+        'Ñ': 'N',
+        ' ': '_',  #-- Opcional: reemplazar espacios por guiones bajos.
+    }
+    
+    #-- Aplica los reemplazos personalizados.
+    for original, reemplazo in reemplazos.items():
+        nombre_sin_acentos = nombre_sin_acentos.replace(original, reemplazo)
+    
+    #-- Elimina cualquier otro carácter que no sea alfanumérico, guión o punto.
+    nombre_limpio = re.sub(r'[^\w\-.]', '', nombre_sin_acentos)
+    
+    return nombre_limpio
