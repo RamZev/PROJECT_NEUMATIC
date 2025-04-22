@@ -247,8 +247,6 @@ def buscar_cliente(request):
             'nombre_vendedor': cliente.id_vendedor.nombre_vendedor if cliente.id_vendedor else "Sin asignar",
             'id_sucursal': cliente.id_sucursal.id_sucursal,
             'vip': cliente.vip,
-            'black_list': cliente.black_list,
-            'black_list_motivo': cliente.black_list_motivo
         }
     else:
         response_data = {'error': 'No se encontraron resultados'}
@@ -306,13 +304,52 @@ def obtener_numero_comprobante(request):
         }, status=500)
 
 
+# def validar_vencimientos_cliente(request, cliente_id):
+#     try:
+#         factura_antigua = Factura.objects.filter(
+#             id_cliente_id=cliente_id,
+#             condicion_comprobante=2,  # 2 = Crédito
+#             total__gt=0,             # Monto mayor a cero
+#             id_comprobante_venta__mult_saldo__ne=0  # Comprobante afecta saldo
+#         ).exclude(
+#             total=F('entrega')  # Excluir documentos totalmente pagados
+#         ).order_by('fecha_comprobante').first()
+
+#         if not factura_antigua:
+#             return JsonResponse({
+#                 'requiere_autorizacion': False
+#             })
+
+#         # Cálculo de días vencidos
+#         dias_credito = factura_antigua.id_vendedor.vence_factura if factura_antigua.id_vendedor else 0
+#         fecha_vencimiento = factura_antigua.fecha_comprobante + timedelta(days=dias_credito)
+#         dias_vencidos = (date.today() - fecha_vencimiento).days
+        
+#         print("dias vencidos: ", dias_vencidos)
+
+#         return JsonResponse({
+#             'requiere_autorizacion': dias_vencidos > 0,
+#             'mensaje': f"Documento #{factura_antigua.numero_comprobante} vencido hace {dias_vencidos} días (Vence: {fecha_vencimiento.strftime('%d/%m/%Y')})",
+#             'debug_data': {
+#                 'numero_comprobante': factura_antigua.numero_comprobante,
+#                 'fecha_comprobante': factura_antigua.fecha_comprobante.strftime('%Y-%m-%d'),
+#                 'dias_credito': dias_credito,
+#                 'fecha_vencimiento': fecha_vencimiento.strftime('%Y-%m-%d')
+#             }
+#         })
+
+#     except Exception as e:
+#         return JsonResponse({
+#             'error': str(e),
+#             'requiere_autorizacion': True  # Por seguridad, requiere autorización si hay error
+#         }, status=400)
+
 def validar_vencimientos_cliente(request, cliente_id):
     try:
         cliente = Cliente.objects.filter(pk=cliente_id).first()
         if not cliente:
             return JsonResponse({'error': 'Cliente no encontrado', 'requiere_autorizacion': False}, status=404)
 
-        # 1. Primero buscar factura en cuenta corriente 
         factura_antigua = Factura.objects.filter(
             id_cliente_id=cliente_id,
             condicion_comprobante=2,
@@ -322,58 +359,28 @@ def validar_vencimientos_cliente(request, cliente_id):
         ).select_related('id_vendedor', 'id_comprobante_venta'
         ).order_by('fecha_comprobante').first()
 
-        if factura_antigua:
-            dias_credito = factura_antigua.id_vendedor.vence_factura if factura_antigua.id_vendedor else 0
-            fecha_vencimiento = factura_antigua.fecha_comprobante + timedelta(days=dias_credito)
-            dias_vencidos = (date.today() - fecha_vencimiento).days
+        if not factura_antigua:
+            return JsonResponse({'requiere_autorizacion': False})
 
-            return JsonResponse({
-                'requiere_autorizacion': dias_vencidos > 0,
-                'datos_comprobante': {
-                    'tipo_comprobante': factura_antigua.id_comprobante_venta.nombre_comprobante_venta if factura_antigua.id_comprobante_venta else 'N/A',
-                    'letra_comprobante': factura_antigua.letra_comprobante or 'N/A',
-                    'numero_comprobante': factura_antigua.numero_comprobante or 'N/A',
-                    'fecha_comprobante': factura_antigua.fecha_comprobante.strftime('%d/%m/%Y') if factura_antigua.fecha_comprobante else 'N/A',
-                    'dias_credito': dias_credito,
-                    'fecha_vencimiento': fecha_vencimiento.strftime('%d/%m/%Y') if fecha_vencimiento else 'N/A',
-                    'dias_vencidos': dias_vencidos,
-                    'monto_pendiente': float((factura_antigua.total or 0) - (factura_antigua.entrega or 0)),
-                    'vendedor': factura_antigua.id_vendedor.nombre_vendedor if factura_antigua.id_vendedor else 'No asignado'
-                }
-            })
+        dias_credito = factura_antigua.id_vendedor.vence_factura if factura_antigua.id_vendedor else 0
+        fecha_vencimiento = factura_antigua.fecha_comprobante + timedelta(days=dias_credito)
+        dias_vencidos = (date.today() - fecha_vencimiento).days
 
-        # 2. Solo si no hay factura pendiente, buscar remito (nueva lógica)
-        remito_pendiente = Factura.objects.filter(
-            id_cliente_id=cliente_id,
-            estado="",
-            id_comprobante_venta__mult_venta=0,
-            id_comprobante_venta__mult_stock__lt=0
-        ).select_related('id_vendedor', 'id_comprobante_venta'
-        ).order_by('fecha_comprobante').first()
+        return JsonResponse({
+            'requiere_autorizacion': dias_vencidos > 0,
+            'datos_comprobante': {
+                'tipo_comprobante': factura_antigua.id_comprobante_venta.nombre_comprobante_venta if factura_antigua.id_comprobante_venta else 'N/A',
+                'letra_comprobante': factura_antigua.letra_comprobante or 'N/A',
+                'numero_comprobante': factura_antigua.numero_comprobante or 'N/A',
+                'fecha_comprobante': factura_antigua.fecha_comprobante.strftime('%d/%m/%Y') if factura_antigua.fecha_comprobante else 'N/A',
+                'dias_credito': dias_credito,
+                'fecha_vencimiento': fecha_vencimiento.strftime('%d/%m/%Y') if fecha_vencimiento else 'N/A',
+                'dias_vencidos': dias_vencidos,
+                'monto_pendiente': float((factura_antigua.total or 0) - (factura_antigua.entrega or 0)),
+                'vendedor': factura_antigua.id_vendedor.nombre_vendedor if factura_antigua.id_vendedor else 'No asignado'
+            }
+        })
 
-        if remito_pendiente:
-            dias_credito = remito_pendiente.id_vendedor.vence_remito if remito_pendiente.id_vendedor else 0
-            fecha_vencimiento = remito_pendiente.fecha_comprobante + timedelta(days=dias_credito)
-            dias_vencidos = (date.today() - fecha_vencimiento).days
-
-            return JsonResponse({
-                'requiere_autorizacion': dias_vencidos > 0,
-                'datos_comprobante': {
-                    'tipo_comprobante': remito_pendiente.id_comprobante_venta.nombre_comprobante_venta if remito_pendiente.id_comprobante_venta else 'N/A',
-                    'letra_comprobante': remito_pendiente.letra_comprobante or 'N/A',
-                    'numero_comprobante': remito_pendiente.numero_comprobante or 'N/A',
-                    'fecha_comprobante': remito_pendiente.fecha_comprobante.strftime('%d/%m/%Y') if remito_pendiente.fecha_comprobante else 'N/A',
-                    'dias_credito': dias_credito,
-                    'fecha_vencimiento': fecha_vencimiento.strftime('%d/%m/%Y') if fecha_vencimiento else 'N/A',
-                    'dias_vencidos': dias_vencidos,
-                    'monto_pendiente': 0,  # Remitos no tienen monto pendiente
-                    'vendedor': remito_pendiente.id_vendedor.nombre_vendedor if remito_pendiente.id_vendedor else 'No asignado'
-                }
-            })
-
-        # Si no hay ningún documento pendiente
-        return JsonResponse({'requiere_autorizacion': False})
-    
     except Exception as e:
         print(f"Error completo en validar_vencimientos_cliente - Cliente ID: {cliente_id}: {str(e)}", exc_info=True)
         return JsonResponse({

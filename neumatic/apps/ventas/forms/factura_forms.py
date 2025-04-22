@@ -65,10 +65,9 @@ class FacturaForm(forms.ModelForm):
         
         widgets = {
             "id_factura": forms.HiddenInput(),
+            "id_valida": forms.HiddenInput(),
             "estatus_comprobante": forms.Select(attrs={**formclassselect}),
             
-            # "id_sucursal": forms.Select(attrs={**formclassselect}),
-            # "id_punto_venta": forms.Select(attrs={**formclassselect}),
             "id_sucursal": forms.HiddenInput(),
             "id_punto_venta": forms.HiddenInput(),
             'jerarquia': forms.HiddenInput(),

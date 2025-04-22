@@ -69,12 +69,12 @@ class Valida(ModeloBaseGenerico):
         blank=True
     )
     hs = models.TimeField(
-        'Hora Solicitud',
+        'Hora Aplicación',
         null=True,
         blank=True
     )
     validacion = models.CharField(
-        'Validación',
+        verbose_name='Validación',
         max_length=4,
         blank=True,
         null=True
