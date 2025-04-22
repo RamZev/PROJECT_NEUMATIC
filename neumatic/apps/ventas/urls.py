@@ -10,7 +10,8 @@ from .views.consultas_factura_views import (buscar_agenda,
                                             detalle_producto,
                                             datos_comprobante,
                                             obtener_numero_comprobante,
-                                            validar_vencimientos_cliente)
+                                            validar_vencimientos_cliente,
+                                            valida_autorizacion)
 
 from .views.crear_agenda import crear_agenda
 from .views.genera_pdf import GeneraPDFView
@@ -39,4 +40,5 @@ urlpatterns = [
    path('obtener-numero-comprobante/', obtener_numero_comprobante, name='obtener_numero_comprobante'),
    path('<str:model_name>/pdf/<int:pk>/', GeneraPDFView.as_view(), name='generic_pdf'),
    path('clientes/<int:cliente_id>/validar-vencimientos/', validar_vencimientos_cliente, name='validar_vencimientos'),
+   path('clientes/validar-autorizacion/', valida_autorizacion, name='validar_autorizacion'),
 ]

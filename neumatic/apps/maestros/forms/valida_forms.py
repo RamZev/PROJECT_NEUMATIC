@@ -1,5 +1,6 @@
 # neumatic\apps\maestros\forms\valida_forms.py
 from django import forms
+from django.db.models import Q 
 from datetime import time
 
 
@@ -35,6 +36,8 @@ class ValidaForm(CrudGenericForm):
 				forms.Select(attrs={**formclassselect}), 
 			'numero_comprobante':
 				forms.TextInput(attrs={**formclasstext}),
+			'hs':
+				forms.TextInput(attrs={**formclasstext, 'readonly': 'readonly'}),
 		}
 
 	def __init__(self, *args, **kwargs):
@@ -45,8 +48,8 @@ class ValidaForm(CrudGenericForm):
 		# Filtra los últimos 50 clientes (por id descendente)
 		# self.fields['id_cliente'].queryset = Cliente.objects.order_by('-id_cliente')[:50]
 		self.fields['id_cliente'].queryset = Cliente.objects.filter(
-			condicion_venta=2
-		).order_by('-id_cliente')[:50]
+				Q(id_cliente=114384)
+		).order_by('-nombre_cliente')[:50]
 		
   	# Añadir clases a campos relevantes
 		# for field in ['solicitado', 'comentario', 'compro', 'validacion']:

@@ -2,14 +2,9 @@
 from django.urls import reverse_lazy, reverse
 from django.shortcuts import redirect
 from django.db import transaction
-from django.core.exceptions import ValidationError
 from django.db.models import F
 from django.db import DatabaseError
-
-from django.http import HttpResponseRedirect
-from django.http import HttpResponse
-from reportlab.pdfgen import canvas
-from io import BytesIO
+from django.utils import timezone
 
 from .msdt_views_generics import *
 from ..models.factura_models import Factura
@@ -17,6 +12,7 @@ from ...maestros.models.numero_models import Numero
 from ..forms.factura_forms import FacturaForm, DetalleFacturaFormSet
 from ..forms.factura_forms import SerialFacturaFormSet
 from ...maestros.models.base_models import ProductoStock
+from ...maestros.models.valida_models import Valida
 
 from entorno.constantes_base import TIPO_VENTA
 
@@ -163,9 +159,6 @@ class FacturaCreateView(MaestroDetalleCreateView):
 			formset_detalle = context['formset_detalle']
 			formset_serial = context['formset_serial']
 
-			# if not formset_detalle.is_valid():
-			# 		return self.form_invalid(form)
-   
 			if not all([formset_detalle.is_valid(), formset_serial.is_valid()]):
 				return self.form_invalid(form)
 
@@ -200,12 +193,24 @@ class FacturaCreateView(MaestroDetalleCreateView):
 							form.instance.numero_comprobante = nuevo_numero
 							form.instance.full_clean()
 
-							# 3. Guardado directo (como en versión original que funcionaba)
+							# 3. Guardado en el modelo Factura
 							self.object = form.save()
        
+							# 4. ACTUALIZACIÓN DE LA AUTORIZACIÓN (NUEVO)
+							if form.cleaned_data.get('id_valida'):  # Si tiene autorización asociada
+									autorizacion = form.cleaned_data['id_valida']
+									Valida.objects.filter(pk=autorizacion.pk).update(
+											hs=timezone.now().time(),
+											estatus_valida=False,
+											# fecha_uso=timezone.now().date()  # Campo adicional para auditoría
+									)
+									print(f"Autorización {autorizacion.id_valida} marcada como utilizada")
+       
+							# Guardado en el modelo Detallefactura
 							formset_detalle.instance = self.object
 							detalles = formset_detalle.save()
        
+							# Guardado en el modelo DetalleSerial
 							formset_serial.instance = self.object 
 							formset_serial.save() 						
        

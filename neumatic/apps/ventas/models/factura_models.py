@@ -11,6 +11,7 @@ from apps.maestros.models.sucursal_models import Sucursal
 from apps.maestros.models.cliente_models import Cliente
 from apps.maestros.models.producto_models import Producto
 from apps.maestros.models.vendedor_models import Vendedor
+from apps.maestros.models.valida_models import Valida
 
 
 class Factura(ModeloBaseGenerico):
@@ -149,24 +150,6 @@ class Factura(ModeloBaseGenerico):
 		blank=True,
 		default=0.0
 	)
-	# Esta campo no es necesario pero se deja por tema de migración de datos y confirmar si se elimina o no.
-	# acrece = models.DecimalField(
-	# 	verbose_name="Acrece",
-	# 	max_digits=14,
-	# 	decimal_places=2,
-	# 	null=True,
-	# 	blank=True,
-	# 	default=0.0
-	# )
-	# Esta campo no es necesario
-	# impint = models.DecimalField(
-	# 	verbose_name="Imp. Interno",
-	# 	max_digits=14,
-	# 	decimal_places=2,
-	# 	null=True,
-	# 	blank=True,
-	# 	default=0.0
-	# )
 	percep_ib = models.DecimalField(
 		verbose_name="Percepción IB",
 		max_digits=14,
@@ -197,74 +180,28 @@ class Factura(ModeloBaseGenerico):
 		null=True,
 		blank=True
 	)
-	# Esta campo no es necesario
-	# codimp = models.SmallIntegerField(
-	# 	verbose_name="codimp",
-	# 	null=True,
-	# 	blank=True,
-	# 	default=1
-	# )
 	marca = models.CharField(
 		verbose_name="Marca",
 		max_length=1,
 		null=True,
 		blank=True
 	)
-	# id_usuario = models.ForeignKey(
-	# 	User,
-	# 	on_delete=models.PROTECT,
-	# 	verbose_name="Usuario",
-	# 	null=True,
-	# 	blank=True		
-	# )
-	
-	#-- Campo usado cuando se generan recibos y si el tipo de producto es para Camión se coloca una "C".
-	#-- utilizado en reporte "Comisión a Vendedores Según Facturación".
 	comision = models.CharField(
 		verbose_name="Comisión",
 		max_length=1,
 		null=True,
 		blank=True
 	)
-	# Esta campo no es necesario
-	# codcomis = models.SmallIntegerField(
-	# 	verbose_name="codcomis",
-	# 	null=True,
-	# 	blank=True,
-	# 	default=0
-	# )
 	fecha_pago = models.DateField(
 		verbose_name="Fecha Pago",
 		null=True,
 		blank=True
 	)
-	# Esta campo no es necesario
-	# nombre = models.CharField(
-	# 	verbose_name="Nombre",
-	# 	max_length=30,
-	# 	null=True,
-	# 	blank=True
-	# )
-	# Esta campo no es necesario
-	# id_tipo_iva = models.ForeignKey(
-	# 	TipoIva,
-	# 	on_delete=models.PROTECT,
-	# 	verbose_name="Topo IVA",
-	# 	null=True,
-	# 	blank=True
-	# )
 	no_estadist = models.BooleanField(
 		verbose_name="No estadist.",
 		null=True,
 		blank=True
 	)
-	# Esta campo no es necesario
-	# usuario = models.CharField(
-	# 	verbose_name="Nombre Usuario",
-	# 	max_length=15,
-	# 	null=True,
-	# 	blank=True
-	# )
 	suc_imp = models.SmallIntegerField(
 		verbose_name="sucimp",
 		null=True,
@@ -301,6 +238,13 @@ class Factura(ModeloBaseGenerico):
 	)
 	promo = models.BooleanField(
 		verbose_name="Promo",
+		null=True,
+		blank=True
+	)
+	id_valida = models.ForeignKey(
+		Valida,
+		on_delete=models.PROTECT,
+		verbose_name="Validar",
 		null=True,
 		blank=True
 	)
