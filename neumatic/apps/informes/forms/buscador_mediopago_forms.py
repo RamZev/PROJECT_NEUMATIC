@@ -1,4 +1,4 @@
-# neumatic\apps\informes\forms\buscador_comprobanteventa_forms.py
+# neumatic\apps\informes\forms\buscador_mediopago_forms.py
 from django import forms
 
 from .informes_generics_forms import InformesGenericForm

@@ -351,6 +351,9 @@ def generar_pdf(contexto_reporte):
 	
 	table_data = [headers_titles]
 	
+	#-- Contador de filas (empezamos en 1 porque la 0 es el header).
+	current_row = 1
+	
 	#-- Agregar los datos a la tabla.
 	if resumen_pendiente:
 		#-- Agregar filas del detalle.
@@ -365,6 +368,8 @@ def generar_pdf(contexto_reporte):
 				formato_argentino(obj['saldo_acumulado']),
 				formato_argentino(obj['intereses']),
 			])
+			
+			current_row += 1
 	
 	else:
 		#-- Agregar Saldo Anterior.
@@ -375,8 +380,10 @@ def generar_pdf(contexto_reporte):
 		
 		#-- Aplicar estilos a la fila de agrupación (fila actual).
 		table_style_config.extend([
-			('FONTNAME', (0,1), (-1,1), 'Helvetica-Bold')
+			('FONTNAME', (0,current_row), (-1,current_row), 'Helvetica-Bold')
 		])
+		
+		current_row += 1
 		
 		#-- Agregar filas del detalle.
 		for obj in contexto_reporte['objetos']:
@@ -390,41 +397,66 @@ def generar_pdf(contexto_reporte):
 				formato_argentino(obj['haber']),
 				formato_argentino(obj['saldo_acumulado']),
 			])
+			
+			current_row += 1
 	
-	
-	#-- Fila Total General.
+	#-- Fila Total Intereses.
 	table_data.append(
 		["", "", "", "", "", "", "Total Intereses:", 
 			formato_argentino(contexto_reporte['intereses_total'])
 		]
 	)
 	
+	#-- Aplicar estilos a la fila actual.
+	table_style_config.extend([
+		('ALIGN', (6,-current_row), (-1,current_row), 'RIGHT'),
+		('FONTNAME', (6,current_row), (-1,current_row), 'Helvetica-Bold'),
+		('LINEABOVE', (0,current_row), (-1,current_row), 0.5, colors.black),
+		# ('LINEBELOW', (0,current_row), (-1,current_row), 0.5, colors.black),
+	])
+	
+	current_row += 1
+	
+	#-- Fila Total General.
 	table_data.append(
 		["", "", "", "", "", "", "Total General:", 
 			formato_argentino(contexto_reporte['total_general'])
 		]
 	)
 	
-	#-- Aplicar estilos a la fila de total (fila actual).
+	#-- Aplicar estilos a la fila actual.
 	table_style_config.extend([
-		('ALIGN', (6,-1), (-1,-1), 'RIGHT'),
-		('FONTNAME', (0,-2), (-1,-1), 'Helvetica-Bold'),
-		('LINEABOVE', (0,-2), (-1,-2), 0.5, colors.black),
+		('ALIGN', (6,current_row), (-1,current_row), 'RIGHT'),
+		('FONTNAME', (6,current_row), (-1,current_row), 'Helvetica-Bold'),
+		# ('LINEABOVE', (0,-2), (-1,-2), 0.5, colors.black),
 	])
+	
+	current_row += 1
 	
 	#-- Fila divisoria.
 	table_data.append(["", "", "", "", "", "", "", ""])
 	
-	#-- Observaciones.
+	current_row += 1
+	
+	#-- Observaciones (Título).
 	table_data.append(["Observaciones:", "", "", "", "", "", "", ""])
+	
+	#-- Aplicar estilos a la fila actual.
+	table_style_config.extend([
+		('SPAN', (0,current_row), (-1,current_row)),
+		('FONTNAME', (0,current_row), (-1,current_row), 'Helvetica-Bold'),
+	])
+	
+	current_row += 1
+	
+	#-- Observaciones (Contenido).
 	table_data.append([Paragraph(str(contexto_reporte['observaciones']), generator.styles['CellStyle']), "", "", "", "", "", "", ""])
 	
-	
-	#-- Aplicar estilos a la fila de agrupación (fila actual).
+	#-- Aplicar estilos a la fila actual.
 	table_style_config.extend([
-		('SPAN', (0,-1), (-1,-1)),
+		('SPAN', (0,current_row), (-1,current_row)),
+		# ('FONTNAME', (0,current_row), (-1,current_row), 'Helvetica-Bold'),
 	])
-
 	
 	return generator.generate(table_data, col_widths, table_style_config)		
 
@@ -458,7 +490,7 @@ def vlresumenctacte_vista_excel(request):
 		excel_data,
 		content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 	)
-	# Inline permite visualizarlo en el navegador si el navegador lo soporta.
+	#-- Inline permite visualizarlo en el navegador si el navegador lo soporta.
 	response["Content-Disposition"] = f'inline; filename="{ConfigViews.report_title}.xlsx"'
 	return response
 

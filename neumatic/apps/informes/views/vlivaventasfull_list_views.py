@@ -116,7 +116,6 @@ class VLIVAVentasFULLInformeView(InformeFormView):
 		"""
 		
 		#-- Parámetros del listado.
-		sucursal = cleaned_data.get("sucursal", None)
 		anno = cleaned_data.get("anno") or 0
 		mes = cleaned_data.get("mes")
 		folio = cleaned_data.get("folio") or 0
@@ -136,10 +135,8 @@ class VLIVAVentasFULLInformeView(InformeFormView):
 			"12": "Diciembre",
 		}
 		param = {
-			"Sucursal": sucursal.nombre_sucursal if sucursal else "Todas",
 			"Mes": meses[mes],
 			"Año": anno,
-			"Último Nro. de Folio": folio,
 		}
 		
 		empresa = Empresa.objects.get(pk=1)
@@ -187,10 +184,11 @@ class VLIVAVentasFULLInformeView(InformeFormView):
 			"total_percep_ib": total_percep_ib,
 			"total_total": total_total,
 			"parametros": param,
+			"ultimo_folio": folio,
 			"datos_empresa": datos_empresa,
 			'fecha_hora_reporte': fecha_hora_reporte,
 			'titulo': ConfigViews.report_title,
-			'logo_url': f"{dominio}{static('img/logo_01.png')}",
+			'logo_url': "",
 			'css_url': f"{dominio}{static('css/reportes.css')}",
 			'css_url_new': f"{dominio}{static('css/reportes_new.css')}",
 		}
@@ -262,7 +260,7 @@ class CustomPDFGenerator(PDFGenerator):
 		"""Añadir información adicional específica para este reporte"""
 		
 		params = context.get("parametros", {})
-		self.folio_base = params.get("Último Nro. de Folio", 0)
+		self.folio_base = context.get("ultimo_folio", 0)
 		
 		try:
 			self.folio_base = int(self.folio_base) if self.folio_base else 0
@@ -270,18 +268,22 @@ class CustomPDFGenerator(PDFGenerator):
 			self.folio_base = 0
 		
 		#-- Devolver solo los otros parámetros aquí, el folio se calculará en _draw_header_bottom_content.
-		# other_params = "<br/>".join([f"<b>{k}:</b> {v}" for k, v in params.items() if k != "Último Nro. de Folio"])
 		other_params = "<br/>".join([f"<b>{k}:</b> {v}" for k, v in params.items()])
+		
 		return other_params
 	
 	def _draw_header_bottom_content(self, canvas_obj, doc, left_content, right_content, start_y):
-		"""Dibuja el contenido del header-bottom incluyendo el folio dinámico"""
+		"""Se extiende el método que dibuja el contenido del header-bottom incluyendo el folio dinámico"""
+		
 		#-- Calcular el folio actual basado en la página.
 		current_page = getattr(canvas_obj, '_pageNumber', 1)
 		folio_display = current_page if self.folio_base == 0 else self.folio_base + current_page
 		
+		#-- Formatear el folio con 6 dígitos y ceros a la izquierda.
+		folio_formateado = str(folio_display).zfill(6)
+		
 		#-- Añadir el folio al contenido derecho.
-		folio_info = f"<b>Folio:</b> {folio_display}"
+		folio_info = f"<b>Folio:</b> {folio_formateado}"
 		if right_content:
 			right_content += f"<br/>{folio_info}"
 		else:

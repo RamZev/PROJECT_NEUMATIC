@@ -1,4 +1,4 @@
-<!-- neumatic\apps\informes\templates\informes\reportes\mercaderiaporcliente_pdf.html -->
+<!-- neumatic\apps\informes\templates\informes\reportes\vlmercaderiaporcliente_list.html -->
 
 {% extends 'informes/reportes/base_reportes_new.html' %}
 {% load static %}
@@ -59,6 +59,11 @@
 						<td class="numeric">{{ producto.total|formato_es_ar }}</td>
 					</tr>
 				{% endfor %}
+				
+				<tr>
+					<td colspan="8"><hr></td>
+				</tr>
+				
 			{% endfor %}
 			
 		</tbody>

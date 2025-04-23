@@ -1,4 +1,4 @@
-# neumatic\apps\informes\forms\buscador_productomarca_forms.py
+# neumatic\apps\informes\forms\buscador_productoestado_forms.py
 from django import forms
 
 from .informes_generics_forms import InformesGenericForm
