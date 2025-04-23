@@ -1,4 +1,4 @@
-# D:\SIG_PROJECTS\SIGCOERP\apps\facturacion\views\consultas_factura_views.py
+# neumatic\apps\informes\views\consultas_informes_views.py
 from django.http import JsonResponse
 from django.db.models import Q
 

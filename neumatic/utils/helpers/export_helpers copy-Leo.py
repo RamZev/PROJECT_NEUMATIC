@@ -474,7 +474,6 @@ class PDFGenerator:
 			alignment=TA_RIGHT
 		))
 	
-	# ----------------------------------------------------------------------------------
 	def _render_header_bottom(self, canvas_obj, doc, width, height):
 		"""Renderiza el header-bottom en posición fija respecto al header-top"""
 		
@@ -580,6 +579,10 @@ class PDFGenerator:
 		
 	def _render_footer(self, canvas_obj, doc, width):
 		# --- Footer -----------------------------------------------------------------------
+		
+		# Guardar el número de página actual para usarlo en los headers
+		self._pageNumber = canvas_obj._pageNumber
+		
 		footer_y = 15
 		
 		#-- Línea decorativa.

@@ -1,4 +1,4 @@
-# neumatic\apps\informes\forms\buscador_cliente_forms.py
+# neumatic\apps\informes\forms\buscador_proveedor_forms.py
 from django import forms
 from django.core.exceptions import ValidationError
 

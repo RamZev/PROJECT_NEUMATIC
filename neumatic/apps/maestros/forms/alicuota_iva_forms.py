@@ -1,4 +1,4 @@
-# neumatic\apps\maestros\forms\punto_venta_forms.py
+# neumatic\apps\maestros\forms\alicuota_iva_forms.py
 from django import forms
 from .crud_forms_generics import CrudGenericForm
 from ..models.base_models import AlicuotaIva

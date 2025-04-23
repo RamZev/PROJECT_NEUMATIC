@@ -112,7 +112,6 @@ class VLIVAVentasProvinciasInformeView(InformeFormView):
 		"""
 		
 		#-- Parámetros del listado.
-		sucursal = cleaned_data.get("sucursal")
 		anno = cleaned_data.get("anno") or 0
 		mes = cleaned_data.get("mes")
 		
@@ -131,7 +130,6 @@ class VLIVAVentasProvinciasInformeView(InformeFormView):
 			"12": "Diciembre",
 		}
 		param = {
-			"Sucursal": sucursal.nombre_sucursal if sucursal else "Todas",
 			"Mes": meses[mes],
 			"Año": anno,
 		}
@@ -150,7 +148,6 @@ class VLIVAVentasProvinciasInformeView(InformeFormView):
 		fecha_hora_reporte = datetime.now().strftime("%d/%m/%Y %H:%M:%S")		
 		
 		dominio = f"http://{self.request.get_host()}"
-		
 		
 		# **************************************************
 		#-- Inicializar los totales como Decimals.
@@ -184,7 +181,7 @@ class VLIVAVentasProvinciasInformeView(InformeFormView):
 			"datos_empresa": datos_empresa,
 			'fecha_hora_reporte': fecha_hora_reporte,
 			'titulo': ConfigViews.report_title,
-			'logo_url': f"{dominio}{static('img/logo_01.png')}",
+			'logo_url': "",
 			'css_url': f"{dominio}{static('css/reportes.css')}",
 			'css_url_new': f"{dominio}{static('css/reportes_new.css')}",
 		}

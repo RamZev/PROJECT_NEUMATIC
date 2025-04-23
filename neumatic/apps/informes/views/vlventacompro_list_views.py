@@ -318,8 +318,8 @@ def generar_pdf(contexto_reporte):
 				compro['condicion'],
 				compro['cliente_id'],
 				Paragraph(str(compro['cliente_nombre']), generator.styles['CellStyle']),
-				formato_argentino(compro['total']) if compro['condicion'] == 'Contado' else Decimal(0),
-				formato_argentino(compro['total']) if compro['condicion'] == 'Cta. Cte.' else Decimal(0),
+				formato_argentino(compro['total']) if compro['condicion'] == 'Contado' else formato_argentino(Decimal(0)),
+				formato_argentino(compro['total']) if compro['condicion'] == 'Cta. Cte.' else formato_argentino(Decimal(0)),
 			])
 			current_row += 1
 			

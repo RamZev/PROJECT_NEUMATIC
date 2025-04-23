@@ -418,34 +418,6 @@ class PDFGenerator:
 			)
 		])
 		
-	def _calculate_header_bottom_height(self):
-		"""Calcula la altura necesaria para el header-bottom"""
-		
-		# #-- Crear un contexto temporal con pageNumber=1 para el cálculo de altura.
-		# temp_context = self.context.copy()
-		# temp_context['_pageNumber'] = 1
-		
-		#-- Medir contenido izquierdo.
-		left_content = self._get_header_bottom_left(self.context)
-		left_para = Paragraph(left_content, self.styles['HeaderBottomLeft'])
-		
-		#-- Medir contenido derecho.
-		right_content = self._get_header_bottom_right(self.context)
-		right_para = Paragraph(right_content, self.styles['HeaderBottomRight'])
-		
-		#-- Calcular dimensiones (usando un canvas temporal).
-		#-- doc.width ya incluye el descuento de márgenes (ver __init__).
-		temp_canvas = canvas.Canvas(self.buffer)
-		available_width = self.doc.width / 2.0
-		
-		left_para.wrapOn(temp_canvas, available_width, self.doc.height)
-		right_para.wrapOn(temp_canvas, available_width, self.doc.height)
-		
-		#-- Calcular altura extra necesaria (30pt es la altura base).
-		extra_height = max(left_para.height, right_para.height) - 30
-		
-		return max(0, extra_height)  #-- No permitir valores negativos.
-	
 	def _setup_custom_styles(self):
 		#-- Estilos personalizados.
 		
@@ -478,28 +450,6 @@ class PDFGenerator:
 			alignment=TA_RIGHT
 		))
 	
-	# ----------------------------------------------------------------------------------
-	def _render_header_bottom(self, canvas_obj, doc, width, height):
-		"""Renderiza el header-bottom en posición fija respecto al header-top"""
-		
-		#-- Posición FIJA: 50pt desde el borde superior (header-top) + margen.
-		line_y_start = height - 50
-		
-		#-- Dibujar línea superior del header-bottom.
-		canvas_obj.setLineWidth(1)
-		canvas_obj.line(doc.leftMargin, line_y_start, width - doc.rightMargin, line_y_start)
-		
-		#-- Renderizar contenido (posición relativa al borde superior).
-		content_top = line_y_start - 2  #-- 2pt de margen bajo la línea.
-		
-		#-- Renderizar contenido (crece hacia abajo).
-		self._draw_header_bottom_content(
-			canvas_obj, doc,
-			self._get_header_bottom_left(doc.contexto_reporte),
-			self._get_header_bottom_right(doc.contexto_reporte),
-			content_top
-		)
-	
 	def _get_header_bottom_left(self, context):
 		"""SOBREESCRIBIR ESTE MÉTODO PARA CONTENIDO IZQUIERDO PERSONALIZADO"""
 		return context.get("header_bottom_left", "")
@@ -509,26 +459,31 @@ class PDFGenerator:
 		params = context.get("parametros", {})
 		return "<br/>".join([f"<b>{k}:</b> {v}" for k, v in params.items()])
 	
-	def _draw_header_bottom_content(self, canvas_obj, doc, left_content, right_content, start_y):
-		"""Dibuja el contenido del header-bottom desde la posición start_y hacia abajo"""
+	def _calculate_header_bottom_height(self):
+		"""Calcula la altura necesaria para el header-bottom"""
 		
-		p_left = Paragraph(left_content, self.styles['HeaderBottomLeft'])
-		p_right = Paragraph(right_content, self.styles['HeaderBottomRight'])
+		#-- Medir contenido izquierdo.
+		left_content = self._get_header_bottom_left(self.context)
+		left_para = Paragraph(left_content, self.styles['HeaderBottomLeft'])
 		
-		available_width = doc.width / 2.0
+		#-- Medir contenido derecho.
+		right_content = self._get_header_bottom_right(self.context)
+		right_para = Paragraph(right_content, self.styles['HeaderBottomRight'])
 		
-		#-- Medir contenido.
-		p_left.wrapOn(canvas_obj, available_width, doc.height)
-		p_right.wrapOn(canvas_obj, available_width, doc.height)
+		#-- Calcular dimensiones (usando un canvas temporal).
+		#-- doc.width ya incluye el descuento de márgenes (ver __init__).
+		temp_canvas = canvas.Canvas(self.buffer)
+		available_width = self.doc.width / 2.0
 		
-		#-- Dibujar contenido alineado desde start_y hacia abajo.
-		content_bottom = start_y - max(p_left.height, p_right.height)
-		p_left.drawOn(canvas_obj, doc.leftMargin + 10, content_bottom)
-		p_right.drawOn(canvas_obj, doc.leftMargin + available_width - 10, content_bottom)
+		left_para.wrapOn(temp_canvas, available_width, self.doc.height)
+		right_para.wrapOn(temp_canvas, available_width, self.doc.height)
 		
-		#-- Línea inferior con 2pt de separación.
-		line_y = content_bottom - 2
-		canvas_obj.line(doc.leftMargin, line_y, doc.width + doc.rightMargin, line_y)
+		#-- Calcular altura extra necesaria (30pt es la altura base).
+		extra_height = max(left_para.height, right_para.height) - 30
+		
+		return max(0, extra_height)  #-- No permitir valores negativos.
+	
+	# -------------------------------------------------------------------------------------
 	
 	def _header_footer(self, canvas_obj, doc):
 		"""Método para dibujar header y footer en cada página"""
@@ -571,7 +526,8 @@ class PDFGenerator:
 			)
 		except Exception:
 			canvas_obj.setFont("Helvetica", 10)
-			canvas_obj.drawString(logo_x, logo_y, "[Logo]")
+			# canvas_obj.drawString(logo_x, logo_y, "[Logo]")
+			canvas_obj.drawString(logo_x, logo_y, "")
 		
 		#-- Sección Superior Perecha: título.
 		titulo = doc.contexto_reporte.get("titulo", "Reporte")
@@ -581,7 +537,28 @@ class PDFGenerator:
 			(height_total - header_top_height/2)-10, 
 			titulo
 		)
+	
+	def _render_header_bottom(self, canvas_obj, doc, width, height):
+		"""Renderiza el header-bottom en posición fija respecto al header-top"""
 		
+		#-- Posición FIJA: 50pt desde el borde superior (header-top) + margen.
+		line_y_start = height - 50
+		
+		#-- Dibujar línea superior del header-bottom.
+		canvas_obj.setLineWidth(1)
+		canvas_obj.line(doc.leftMargin, line_y_start, width - doc.rightMargin, line_y_start)
+		
+		#-- Renderizar contenido (posición relativa al borde superior).
+		content_top = line_y_start - 2  #-- 2pt de margen bajo la línea.
+		
+		#-- Renderizar contenido (crece hacia abajo).
+		self._draw_header_bottom_content(
+			canvas_obj, doc,
+			self._get_header_bottom_left(doc.contexto_reporte),
+			self._get_header_bottom_right(doc.contexto_reporte),
+			content_top
+		)
+	
 	def _render_footer(self, canvas_obj, doc, width):
 		# --- Footer -----------------------------------------------------------------------
 		
@@ -609,6 +586,27 @@ class PDFGenerator:
 		fecha_reporte = datetime.now().strftime("%d/%m/%Y %H:%M")
 		canvas_obj.setFont("Helvetica", 9)
 		canvas_obj.drawRightString(width - doc.rightMargin, footer_y, fecha_reporte)
+	
+	def _draw_header_bottom_content(self, canvas_obj, doc, left_content, right_content, start_y):
+		"""Dibuja el contenido del header-bottom desde la posición start_y hacia abajo"""
+		
+		p_left = Paragraph(left_content, self.styles['HeaderBottomLeft'])
+		p_right = Paragraph(right_content, self.styles['HeaderBottomRight'])
+		
+		available_width = doc.width / 2.0
+		
+		#-- Medir contenido.
+		p_left.wrapOn(canvas_obj, available_width, doc.height)
+		p_right.wrapOn(canvas_obj, available_width, doc.height)
+		
+		#-- Dibujar contenido alineado desde start_y hacia abajo.
+		content_bottom = start_y - max(p_left.height, p_right.height)
+		p_left.drawOn(canvas_obj, doc.leftMargin + 10, content_bottom)
+		p_right.drawOn(canvas_obj, doc.leftMargin + available_width - 10, content_bottom)
+		
+		#-- Línea inferior con 2pt de separación.
+		line_y = content_bottom - 2
+		canvas_obj.line(doc.leftMargin, line_y, doc.width + doc.rightMargin, line_y)
 	
 	def _create_table(self, data, col_widths, style_config):
 		"""Crea una tabla con los datos y estilos proporcionados"""

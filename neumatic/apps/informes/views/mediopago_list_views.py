@@ -1,4 +1,4 @@
-# neumatic\apps\informes\views\productofamilia_list_views.py
+# neumatic\apps\informes\views\mediopago_list_views.py
 from django.urls import reverse_lazy
 from django.http import HttpResponse, JsonResponse
 from django.views import View
