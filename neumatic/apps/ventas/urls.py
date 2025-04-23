@@ -16,19 +16,12 @@ from .views.consultas_factura_views import (buscar_agenda,
 from .views.crear_agenda import crear_agenda
 from .views.genera_pdf import GeneraPDFView
 
-# from .views.buscar_clientes import buscar_cliente_por_id, buscar_cliente_por_nombre
-
 urlpatterns = [
    path('factura/listar/', FacturaListView.as_view(), name='factura_list'),
    path('factura/crear/', FacturaCreateView.as_view(), name='factura_create'),
    path('factura/editar/<int:pk>/', FacturaUpdateView.as_view(), name='factura_update'),
    path('factura/eliminar/<int:pk>/', FacturaDeleteView.as_view(), name='factura_delete'),
-   
-   # Ruta para buscar cliente por ID
-   # path('buscar_cliente_por_id/<int:id_cliente>/', buscar_cliente_por_id, name='buscar_cliente_por_id'),
-   # Ruta para buscar cliente por nombre
-   # path('buscar_cliente_por_nombre/<str:nombre_cliente>/', buscar_cliente_por_nombre, name='buscar_cliente_por_nombre'),
-   
+      
    path('buscar/producto/', buscar_producto, name='buscar_producto'),
    path('validar/documento/', validar_documento, name='validar_documento'),
    path('buscar/agenda/', buscar_agenda, name='buscar_agenda'),
