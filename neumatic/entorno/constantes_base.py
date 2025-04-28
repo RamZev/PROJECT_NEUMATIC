@@ -103,11 +103,6 @@ ORDEN_CHOICES = [
 	('codigo', 'Código'), 
 ]
 
-ORDEN_CHOICES = [ 
-	('nombre', 'Nombre'),
-	('codigo', 'Código'), 
-]
-
 PRECIO_DESCRIPCION = [
 	(True, 'SI'),
 	(False, 'NO')
@@ -127,3 +122,15 @@ MESES = [
 		('11', 'Noviembre'),
 		('12', 'Diciembre'),
 	]
+
+AGRUPAR = [
+	("Producto", "Produto Individual"),
+	("Familia", "Familia"),
+	("Modelo", "Modelo"),
+	("Marca", "Marca")
+]
+ORDENAR = [
+	("Cantidad", "Cantidad"),
+	("Importe", "Importe"),
+]
+	

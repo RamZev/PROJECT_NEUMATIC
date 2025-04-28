@@ -135,23 +135,27 @@ class VLResumenCtaCteInformeView(InformeFormView):
 		
 		#-- Obtener los datos el cliente.
 		cliente_data = {}
-		cliente = Cliente.objects.get(pk=id_cliente)
-		cliente_data = {
-			"id_cliente": cliente.id_cliente,
-			"nombre_cliente": cliente.nombre_cliente,
-			"domicilio_cliente": cliente.domicilio_cliente,
-			"telefono_cliente": cliente.telefono_cliente,
-			"codigo_postal": cliente.codigo_postal,
-			"localidad": cliente.id_localidad.nombre_localidad if cliente.id_localidad else "",
-			"provincia": cliente.id_provincia.nombre_provincia if cliente.id_provincia else "",
-			"nombre_vendedor": cliente.id_vendedor.nombre_vendedor if cliente.id_vendedor else "",
-		}
+		cliente = Cliente.objects.filter(pk=id_cliente).first() if id_cliente else None
+		vendedor = None
 		
+		if cliente:
+			cliente_data = {
+				"id_cliente": cliente.id_cliente,
+				"nombre_cliente": cliente.nombre_cliente,
+				"domicilio_cliente": cliente.domicilio_cliente,
+				"telefono_cliente": cliente.telefono_cliente,
+				"codigo_postal": cliente.codigo_postal,
+				"localidad": cliente.id_localidad.nombre_localidad if cliente.id_localidad else "",
+				"provincia": cliente.id_provincia.nombre_provincia if cliente.id_provincia else "",
+				"nombre_vendedor": cliente.id_vendedor.nombre_vendedor if cliente.id_vendedor else "",
+			}
+			vendedor = cliente.id_vendedor.nombre_vendedor if cliente.id_vendedor else None
 		# ------------------------------------------------------------------------------
 		saldo_anterior = 0
 		
 		param = {
-			"Vendedor": cliente_data["nombre_vendedor"]
+			# "Vendedor": cliente_data["nombre_vendedor" if cliente else ""]
+			"Vendedor": vendedor
 		}
 		if resumen_pendiente:
 			#-- Reporte Resumen de Cuenta Pendiente.

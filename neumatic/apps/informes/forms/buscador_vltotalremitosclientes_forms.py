@@ -4,6 +4,7 @@ from django import forms
 from datetime import date
 
 from .informes_generics_forms import InformesGenericForm
+from apps.maestros.models.cliente_models import Cliente
 from diseno_base.diseno_bootstrap import formclasstext, formclassdate
 
 
@@ -51,10 +52,11 @@ class BuscadorTotalRemitosClientesForm(InformesGenericForm):
 	def clean(self):
 		cleaned_data = super().clean()
 		
+		id_cliente = cleaned_data.get("id_cliente")
 		fecha_desde = cleaned_data.get("fecha_desde")
 		fecha_hasta = cleaned_data.get("fecha_hasta")
 		
-		#-- Validar fechas.
+		#-- Validaciones.
 		if not fecha_desde:
 			self.add_error("fecha_desde", "Debe indicar una fecha válida.")
 		
@@ -64,5 +66,10 @@ class BuscadorTotalRemitosClientesForm(InformesGenericForm):
 		if fecha_desde and fecha_hasta and fecha_desde > fecha_hasta:
 			self.add_error("fecha_hasta", "La fecha hasta no puede ser anterior a la fecha desde.")
 		
+		if id_cliente:
+			try:
+				cliente = Cliente.objects.get(id_cliente=id_cliente)
+			except Cliente.DoesNotExist:
+				self.add_error("id_cliente", "El cliente no existe. Por favor, verifique el código.")
+		
 		return cleaned_data
-	

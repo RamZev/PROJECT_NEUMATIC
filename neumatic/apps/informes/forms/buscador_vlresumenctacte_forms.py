@@ -2,6 +2,7 @@
 from django import forms
 from datetime import date
 from .informes_generics_forms import InformesGenericForm
+from apps.maestros.models.cliente_models import Cliente
 from diseno_base.diseno_bootstrap import formclassselect, formclassdate, formclasscheck, formclasstext
 
 
@@ -91,6 +92,11 @@ class BuscadorResumenCtaCteForm(InformesGenericForm):
 		if not id_cliente:
 			self.add_error("id_cliente", "Debe indicar un Código de Cliente.")
 		
+		if id_cliente:
+			try:
+				cliente = Cliente.objects.get(id_cliente=id_cliente)
+			except Cliente.DoesNotExist:
+				self.add_error("id_cliente", "El cliente no existe. Por favor, verifique el código.")
 		
 		return cleaned_data
 	

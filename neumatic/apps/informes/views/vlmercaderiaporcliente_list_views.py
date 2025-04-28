@@ -132,11 +132,14 @@ class VLMercaderiaPorClienteInformeView(InformeFormView):
 		
 		#-- Obtener los datos el cliente.
 		cliente_data = {}
-		cliente = Cliente.objects.get(pk=id_cliente)
-		cliente_data = {
-			"id_cliente": cliente.id_cliente,
-			"nombre_cliente": cliente.nombre_cliente,
-		}
+		# cliente = Cliente.objects.get(pk=id_cliente)
+		cliente = Cliente.objects.filter(pk=id_cliente).first() if id_cliente else None
+		
+		if cliente:
+			cliente_data = {
+				"id_cliente": cliente.id_cliente,
+				"nombre_cliente": cliente.nombre_cliente,
+			}
 		
 		# ------------------------------------------------------------------------------
 		#-- Agrupar los objetos por el número de comprobante.

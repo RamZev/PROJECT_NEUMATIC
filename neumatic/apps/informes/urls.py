@@ -58,6 +58,10 @@ from apps.informes.views.vlcomisionoperario_list_views import *
 from apps.informes.views.vlpreciodiferente_list_views import *
 from apps.informes.views.vlventasresumenib_list_views import *
 
+#- Lote 4:
+from apps.informes.views.vlestadisticasventas_list_views import *
+
+
 
 #-- Otras rutas.
 from apps.maestros.views.consulta_views_maestros import filtrar_localidad
@@ -515,6 +519,18 @@ urlpatterns = [
 		 name="vlventasresumenib_vista_excel"),
 	path("vlventasresumenib/vista-csv/", vlventasresumenib_vista_csv, 
 		 name="vlventasresumenib_vista_csv"),
+	
+	#-- VL Estadísticas de Ventas.
+	path('vlestadisticasventasre_informe/', VLEstadisticasVentasInformeView.as_view(), 
+		 name='vlestadisticasventas_informe_list'),
+	path('vlestadisticasventas/vista-preliminar/', vlestadisticasventas_vista_pantalla, 
+		 name="vlestadisticasventas_vista_pantalla"),
+	path("vlestadisticasventas/vista-pdf/", vlestadisticasventas_vista_pdf, 
+		 name="vlestadisticasventas_vista_pdf"),
+	path("vlestadisticasventas/vista-excel/", vlestadisticasventas_vista_excel, 
+		 name="vlestadisticasventas_vista_excel"),
+	path("vlestadisticasventas/vista-csv/", vlestadisticasventas_vista_csv, 
+		 name="vlestadisticasventas_vista_csv"),
 	
 	
 	
