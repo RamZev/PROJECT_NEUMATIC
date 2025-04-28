@@ -277,9 +277,16 @@
 
                                             </div>
 
-                                            <div class="col-md-5">
+                                            <div class="col-md-3">
                                                 {{ form.numero_comprobante }}
 
+                                            </div>
+
+                                            <div class="col-md-2">
+                                                {{ form.discrimina_iva }}
+                                                <label class="form-check-label" for="{{ form.discrimina_iva.id_for_label }}">
+                                                    DIVA
+                                                </label>
                                             </div>
                                         </div>
 
@@ -288,15 +295,12 @@
                                                 <label for="{{ form.remito.id_for_label }}">Remito</label>
                                             </div>
 
-                                            <div class="col-md-4">
-                                                {{ form.remito }}
+                                            <div class="col-md-2">
+                                                {{ form.comprobante_remito }}
                                             </div>
 
-                                            <div class="col-md-2">
-                                                {{ form.discrimina_iva }}
-                                                <label class="form-check-label" for="{{ form.discrimina_iva.id_for_label }}">
-                                                    DIVA
-                                                </label>
+                                            <div class="col-md-4">
+                                                {{ form.remito }}
                                             </div>
 
                                             <div class="col-md-3">
@@ -343,7 +347,7 @@
 
                                         <div class="row my-1">
                                             <div class="col-md-3">
-                                                <label for="{{ form.movil_factura.id_for_label }}">Teléfono Móvil</label>
+                                                <label for="{{ form.movil_factura.id_for_label }}">Móvil</label>
                                             </div>
                                         
                                             <div class="col-md-4">
@@ -366,7 +370,7 @@
                                             <div class="col-md-9">
                                                 {{ form.email_factura }}
                                             </div>
-                                            
+
                                         </div>
                                         
                                     </div>
@@ -2276,7 +2280,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const buscarClienteInput = document.getElementById('buscar_cliente');
-
+    
             buscarClienteInput.addEventListener('blur', function () {
                 let busqueda = buscarClienteInput.value.trim();
         
@@ -2316,116 +2320,74 @@
                             return;
                         }
                         
-                        ////
-                        /*
-                        // 3. Función para asignar datos (reutilizable)
-                        alert("entró!");
-                        const asignarDatosCliente = () => {
-                            alert("2")
-                            document.getElementById('id_id_cliente').value = data.id_cliente || '';
-                            document.getElementById('id_nombre_factura').value = data.nombre || '';
-                            document.getElementById('id_domicilio_factura').value = data.direccion || '';
-                            document.getElementById('id_cuit').value = data.cuit || '';
-                            document.getElementById('id_movil_factura').value = data.movil || '';
-                            document.getElementById('id_email_factura').value = data.email || '';
-                            document.getElementById('id_id_vendedor').value = data.id_vendedor || '';
-                            document.getElementById('id_vendedor_factura').value = data.nombre_vendedor || '';
-
-                            if (data.id_sucursal !== document.getElementById('id_id_sucursal').value) {
-                                alert('Atención: El cliente pertenece a otra sucursal.');
-                            }
-
-                            if (data.vip) {
-                                alert("⚠️ Este es un Cliente VIP - Trato Especial ⚠️");
-                                document.getElementById('id_cliente_vip').value = "Cliente VIP"; 
-                            }
-
-                            document.getElementById('listar_agenda').disabled = true;
-                            document.getElementById('buscar_cliente').disabled = true;
-                        };
-
-                        // 4. Ejecutar validación y manejar resultados
-                        validarVencimientos().then(vencimientoData => {
-                            if (vencimientoData.requiere_autorizacion) {
-                                // Configurar modal temporal
-                                const comp = vencimientoData.datos_comprobante;
-                                const modal = document.getElementById('autorizacionModalTemporal');
-                                
-                                modal.querySelector('#modalTituloTemporal').textContent = 
-                                    `Autorización Requerida para ${data.nombre}`;
-                                modal.querySelector('#modalComprobanteTemporal').textContent = 
-                                    `${comp.tipo_comprobante}-${comp.letra_comprobante}`;
-                                // ... (completar otros campos como en el ejemplo anterior)
-
-                                // Configurar evento del botón confirmar
-                                modal.querySelector('#btnConfirmarAutorizacionTemporal').onclick = () => {
-                                    const codigo = modal.querySelector('#codigoAutorizacionTemporal').value;
+                        // Validar vencimientos de documentos
+                        const clienteId = data.id_cliente;
+                        if (clienteId) {
+                            fetch(`/ventas/clientes/${clienteId}/validar-vencimientos/`)
+                            .then(response => response.json())
+                            .then(vencimientoData => {
+                                if (vencimientoData.requiere_autorizacion) {
+                                    // Mostrar alerta con los detalles del vencimiento
+                                    const comprobante = vencimientoData.datos_comprobante || {};
+                                    let mensaje = `⚠️ CLIENTE CON DOCUMENTO VENCIDO ⚠️\n\n`;
+                                    mensaje += `Comprobante: ${comprobante.tipo_comprobante || 'N/A'}\n`;
+                                    mensaje += `Número: ${comprobante.numero_comprobante || 'N/A'}\n`;
+                                    mensaje += `Fecha Emisión: ${comprobante.fecha_comprobante || 'N/A'}\n`;
+                                    mensaje += `Días Vencidos: ${comprobante.dias_vencidos || 0}\n`;
+                                    mensaje += `Monto Pendiente: $${(comprobante.monto_pendiente || 0).toLocaleString('es-AR')}\n\n`;
+                                    mensaje += `Contacte a un supervisor para autorización.`;
                                     
-                                    fetch('/ventas/clientes/validar-autorizacion/', {
-                                        method: 'POST',
-                                        headers: {
-                                            'Content-Type': 'application/json',
-                                            'X-CSRFToken': getCookie('csrftoken')
-                                        },
-                                        body: JSON.stringify({
-                                            codigo: codigo,
-                                            cliente_id: data.id_cliente,
-                                            sucursal_id: document.getElementById('id_id_sucursal').value,
-                                            fecha_comprobante: document.getElementById('id_fecha_comprobante').value
-                                        })
-                                    })
-                                    .then(response => response.json())
-                                    .then(authData => {
-                                        if (authData.valido) {
-                                            bootstrap.Modal.getInstance(modal).hide();
-                                            asignarDatosCliente(); // Solo asignar si autorización es válida
-                                        } else {
-                                            alert(`Código inválido: ${authData.mensaje}`);
-                                        }
-                                    });
-                                };
-
-                                new bootstrap.Modal(modal).show();
-                            } else {
-                                asignarDatosCliente(); // Asignar directamente si no requiere autorización
-                            }
-                        });
-                        */
-                        ////
-                        
-                        
-                        // Solo ejecutar el resto si no está en blacklist
-                        document.getElementById('id_id_cliente').value = data.id_cliente || '';
-                        document.getElementById('id_nombre_factura').value = data.nombre || '';
-                        document.getElementById('id_domicilio_factura').value = data.direccion || '';
-                        document.getElementById('id_cuit').value = data.cuit || '';
-                        document.getElementById('id_movil_factura').value = data.movil || '';
-                        document.getElementById('id_email_factura').value = data.email || '';
-                        document.getElementById('id_id_vendedor').value = data.id_vendedor || '';
-                        document.getElementById('id_vendedor_factura').value = data.nombre_vendedor || '';
-
-                        // Verificación de sucursal
-                        const id_sucursal_factura = document.getElementById('id_id_sucursal').value;
-                        if (data.id_sucursal !== id_sucursal_factura) {
-                            alert('Atención: El cliente pertenece a otra sucursal.');
+                                    alert(mensaje);
+                                    buscarClienteInput.value = '';
+                                    buscarClienteInput.focus();
+                                    return;
+                                } else {
+                                    // Continuar con el flujo normal si no hay vencimientos
+                                    completarDatosCliente(data);
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error validando vencimientos:', error);
+                                // Continuar con el flujo normal si hay error en la validación
+                                completarDatosCliente(data);
+                            });
+                        } else {
+                            completarDatosCliente(data);
                         }
-
-                        // Verificación VIP
-                        if (data.vip) {
-                            alert("⚠️ Este es un Cliente VIP - Trato Especial ⚠️");
-                            document.getElementById('id_cliente_vip').value = "Cliente VIP"; 
-                        }
-
-                        // Deshabilitar botones
-                        document.getElementById('listar_agenda').disabled = true;
-                        document.getElementById('buscar_cliente').disabled = true;
-                        
                     }
                 })
                 .catch(error => {
                     console.error('Error en la búsqueda:', error);
                     alert("Hubo un error en la búsqueda.");
                 });
+    
+                // Función para completar los datos del cliente (extraída para reutilización)
+                function completarDatosCliente(data) {
+                    document.getElementById('id_id_cliente').value = data.id_cliente || '';
+                    document.getElementById('id_nombre_factura').value = data.nombre || '';
+                    document.getElementById('id_domicilio_factura').value = data.direccion || '';
+                    document.getElementById('id_cuit').value = data.cuit || '';
+                    document.getElementById('id_movil_factura').value = data.movil || '';
+                    document.getElementById('id_email_factura').value = data.email || '';
+                    document.getElementById('id_id_vendedor').value = data.id_vendedor || '';
+                    document.getElementById('id_vendedor_factura').value = data.nombre_vendedor || '';
+    
+                    // Verificación de sucursal
+                    const id_sucursal_factura = document.getElementById('id_id_sucursal').value;
+                    if (data.id_sucursal !== id_sucursal_factura) {
+                        alert('Atención: El cliente pertenece a otra sucursal.');
+                    }
+    
+                    // Verificación VIP
+                    if (data.vip) {
+                        alert("⚠️ Este es un Cliente VIP - Trato Especial ⚠️");
+                        document.getElementById('id_cliente_vip').value = "Cliente VIP"; 
+                    }
+    
+                    // Deshabilitar botones
+                    document.getElementById('listar_agenda').disabled = true;
+                    document.getElementById('buscar_cliente').disabled = true;
+                }
             });
         });
     </script>
@@ -2525,6 +2487,41 @@
                                 esRemitoCheckbox.parentElement.classList.remove('checked');
                             }
                         }
+
+                        // Revisar si existe un comprobante asociado
+                        if (data.compro_asociado) {
+                            // alert(data.compro_asociado);
+                        }
+
+                        ////
+                        // ---- Nuevo: Llenar el select comprobante_remito ----
+                        const selectRemito = document.getElementById('id_comprobante_remito');
+                        const selectIdRemito = document.getElementById('id_remito');
+                        if (selectRemito && data.compro_asociado) {
+                            selectIdRemito.removeAttribute('readonly');
+                            
+                            // Limpiar opciones existentes
+                            selectRemito.innerHTML = '';
+                            
+                            // Agregar opción vacía (opcional)
+                            const defaultOption = document.createElement('option');
+                            defaultOption.value = '';
+                            defaultOption.textContent = 'Seleccione...';
+                            selectRemito.appendChild(defaultOption);
+
+                            // Procesar el string (ej: "FA, FX, TY" -> ["FA", "FX", "TY"])
+                            const opciones = data.compro_asociado.split(',').map(item => item.trim());
+                            
+                            // Agregar cada opción al select
+                            opciones.forEach(opcion => {
+                                const option = document.createElement('option');
+                                option.value = opcion;  // Ej: "FA"
+                                option.textContent = opcion; // Mismo valor que el texto
+                                selectRemito.appendChild(option);
+                            });
+                        }    
+                        ////
+
                     })
                     .catch(error => {
                         console.error('Error al obtener código:', error);
@@ -2532,6 +2529,54 @@
                     });
 
             }
+
+            ///
+            const remitoInput = document.getElementById('id_remito');
+            const comprobanteRemitoSelect = document.getElementById('id_comprobante_remito');
+            document.getElementById('id_remito').addEventListener('blur', function() {
+                const valor = this.value.trim();
+            
+                // Si está vacío, no hacer nada
+                if (!valor) return;
+            
+                // Verificar que tenga exactamente 10 dígitos
+                if (!/^\d{10}$/.test(valor)) {
+                    alert("Error: Debe ingresar exactamente 10 dígitos numéricos (ej: 3400000001).");
+                    this.value = '';
+                    this.focus();
+                    return;
+                }
+
+                if (!comprobanteRemitoSelect.value) {
+                    alert("Debe seleccionar un tipo de comprobante remito primero");
+                    comprobanteRemitoSelect.focus();
+                    return;
+                }
+
+                // Implementación estandarizada con .then()/.catch()
+                fetch(`/ventas/verificar/remito/?comprobante_remito=${encodeURIComponent(comprobanteRemitoSelect.value)}&remito=${encodeURIComponent(valor)}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`Error en la solicitud: ${response.statusText}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.existe) {
+                        alert(`El remito ya está registrado en la factura ID: ${data.id_factura}`);
+                        remitoInput.value = '';
+                        remitoInput.focus();
+                    }
+                    // Si no existe, continúa el flujo normalmente
+                })
+                .catch(error => {
+                    console.error('Error al verificar remito:', error);
+                    alert("Error al conectar con el servidor");
+                });
+
+            });
+            ///
+
         });
     </script>
 
@@ -2603,5 +2648,53 @@
             });
         });
     </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Seleccionar todos los inputs editables (excluyendo hidden, buttons y submits)
+            const inputs = document.querySelectorAll(`
+                #factura-form input:not([type="hidden"]):not([type="submit"]):not([type="button"]),
+                #factura-form select,
+                #factura-form textarea
+            `);
     
+            // Agregar evento 'keydown' a cada campo
+            inputs.forEach((input, index) => {
+                input.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault(); // Evitar envío del formulario
+    
+                        // Encontrar el siguiente campo disponible
+                        let nextIndex = index + 1;
+                        while (nextIndex < inputs.length && 
+                              (inputs[nextIndex].disabled || inputs[nextIndex].readOnly || inputs[nextIndex].offsetParent === null)) {
+                            nextIndex++;
+                        }
+    
+                        // Si hay un siguiente campo, mover el foco
+                        if (nextIndex < inputs.length) {
+                            inputs[nextIndex].focus();
+    
+                            // Si es un <select>, abrir el dropdown automáticamente
+                            if (inputs[nextIndex].tagName === 'SELECT') {
+                                setTimeout(() => {
+                                    inputs[nextIndex].click();
+                                }, 50);
+                            }
+                        }
+                    }
+                });
+            });
+    
+            // Bloqueo adicional para evitar envío por Enter en cualquier campo
+            const form = document.getElementById('factura-form');
+            form.addEventListener('submit', function(e) {
+                const activeElement = document.activeElement;
+                if (activeElement && activeElement.tagName !== 'BUTTON' && activeElement.type !== 'submit') {
+                    e.preventDefault(); // Cancelar envío si no fue desde un botón
+                }
+            });
+        });
+    </script>
+        
 {% endblock script %}

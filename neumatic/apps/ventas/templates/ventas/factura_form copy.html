@@ -133,6 +133,7 @@
                                             </div>
 
                                             <div class="col-md-5">
+                                                {{ form.id_valida }}
                                                 {{ form.estatus_comprobante }}
                                             </div>
                                         </div>
@@ -799,32 +800,204 @@
         </div>
     </div>
 
-    <!-- Modal para Autorización -->
+    <!-- Modal de Autorización -->
     <div class="modal fade" id="autorizacionModal" tabindex="-1" aria-labelledby="autorizacionModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
-                <div class="modal-header text-dark bg-warning bg-opacity-25 py-2">
-                    <h5 class="modal-title fs-6" id="autorizacionModalLabel">Autorización Requerida</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <div class="modal-header text-white bg-danger py-2">
+                    <h5 class="modal-title fs-6" id="autorizacionModalLabel">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                        <span id="modalTitulo">Autorización Requerida</span>
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <form id="autorizacionForm">
                         {% csrf_token %}
+                        <!-- AGREGAR ESTOS CAMPOS OCULTOS -->
+                        <input type="hidden" id="validaClienteId" name="cliente_id">
+                        <input type="hidden" id="validaSucursalId" name="sucursal_id">
+                        <input type="hidden" id="validaFecha" name="fecha_comprobante">
+
+                        <div id="mensajePrincipal" class="mb-3 p-2 bg-light rounded">
+                            <!-- Mensaje dinámico se insertará aquí -->
+                        </div>
+                        
+                        <div class="alert alert-warning mb-3">
+                            <h6 class="alert-heading">
+                                <i class="bi bi-file-earmark-text-fill me-2"></i>Documento con vencimiento pendiente
+                            </h6>
+                            <div class="row small mt-2">
+                                <div class="col-md-6">
+                                    <ul class="list-unstyled">
+                                        <li class="mb-2 pb-2 border-bottom">
+                                            <strong><i class="bi bi-receipt me-2"></i>Comprobante:</strong> 
+                                            <span id="modalComprobante">-</span>
+                                        </li>
+                                        <li class="mb-2 pb-2 border-bottom">
+                                            <strong><i class="bi bi-hash me-2"></i>Número:</strong> 
+                                            <span id="modalNumero">-</span>
+                                        </li>
+                                        <li class="mb-2 pb-2 border-bottom">
+                                            <strong><i class="bi bi-calendar-event me-2"></i>Fecha Emisión:</strong> 
+                                            <span id="modalFecha">-</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <ul class="list-unstyled">
+                                        <li class="mb-2 pb-2 border-bottom">
+                                            <strong><i class="bi bi-clock-history me-2"></i>Días Crédito:</strong> 
+                                            <span id="modalDiasCredito">-</span>
+                                        </li>
+                                        <li class="mb-2 pb-2 border-bottom">
+                                            <strong><i class="bi bi-calendar-x me-2"></i>Fecha Vencimiento:</strong> 
+                                            <span id="modalVencimiento">-</span>
+                                        </li>
+                                        <li class="mb-2 pb-2 border-bottom">
+                                            <strong><i class="bi bi-exclamation-octagon me-2"></i>Días Vencidos:</strong> 
+                                            <span id="modalDiasVencidos" class="fw-bold text-danger">-</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="row mt-2 small">
+                                <div class="col-md-6">
+                                    <p class="mb-1">
+                                        <strong><i class="bi bi-cash-stack me-2"></i>Monto Pendiente:</strong> 
+                                        <span id="modalMonto" class="fw-bold">$-</span>
+                                    </p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p class="mb-1">
+                                        <strong><i class="bi bi-person-badge me-2"></i>Vendedor:</strong> 
+                                        <span id="modalVendedor">-</span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        
                         <div class="mb-3">
-                            <p id="autorizacionMensaje" class="fw-bold"></p>
-                            <label for="codigoAutorizacion" class="form-label">Código de Autorización</label>
-                            <input type="text" class="form-control border border-warning" id="codigoAutorizacion" required>
+                            <label for="codigoAutorizacion" class="form-label">
+                                <i class="bi bi-shield-lock me-2"></i>Código de Autorización:
+                            </label>
+                            <input type="password" class="form-control border border-danger" 
+                                id="codigoAutorizacion" name="codigo" required placeholder="Ingrese el código de autorización">
+                            <div id="mensajeErrorAutorizacion" class="invalid-feedback mt-2"></div>
                         </div>
                     </form>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-primary btn-sm" id="btnConfirmarAutorizacion">Confirmar</button>
-                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancelar</button>
+                <div class="modal-footer py-2">
+                    <button type="submit" class="btn btn-danger btn-sm" id="btnConfirmarAutorizacion">
+                        <i class="bi bi-check-circle-fill me-2"></i>Confirmar
+                    </button>
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">
+                        <i class="bi bi-x-circle-fill me-2"></i>Cancelar
+                    </button>
                 </div>
             </div>
         </div>
     </div>
-    
+
+    <!-- Modal de Autorización Temporal -->
+    <div class="modal fade" id="autorizacionModalTemporal" tabindex="-1" aria-labelledby="autorizacionModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header text-white bg-danger py-2">
+                    <h5 class="modal-title fs-6" id="autorizacionModalLabel">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                        <span id="modalTitulo">Autorización Requerida</span>
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="autorizacionForm">
+                        {% csrf_token %}
+                        <!-- AGREGAR ESTOS CAMPOS OCULTOS -->
+                        <input type="hidden" id="validaClienteId" name="cliente_id">
+                        <input type="hidden" id="validaSucursalId" name="sucursal_id">
+                        <input type="hidden" id="validaFecha" name="fecha_comprobante">
+
+                        <div id="mensajePrincipal" class="mb-3 p-2 bg-light rounded">
+                            <!-- Mensaje dinámico se insertará aquí -->
+                        </div>
+                        
+                        <div class="alert alert-warning mb-3">
+                            <h6 class="alert-heading">
+                                <i class="bi bi-file-earmark-text-fill me-2"></i>Documento con vencimiento pendiente
+                            </h6>
+                            <div class="row small mt-2">
+                                <div class="col-md-6">
+                                    <ul class="list-unstyled">
+                                        <li class="mb-2 pb-2 border-bottom">
+                                            <strong><i class="bi bi-receipt me-2"></i>Comprobante:</strong> 
+                                            <span id="modalComprobante">-</span>
+                                        </li>
+                                        <li class="mb-2 pb-2 border-bottom">
+                                            <strong><i class="bi bi-hash me-2"></i>Número:</strong> 
+                                            <span id="modalNumero">-</span>
+                                        </li>
+                                        <li class="mb-2 pb-2 border-bottom">
+                                            <strong><i class="bi bi-calendar-event me-2"></i>Fecha Emisión:</strong> 
+                                            <span id="modalFecha">-</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <ul class="list-unstyled">
+                                        <li class="mb-2 pb-2 border-bottom">
+                                            <strong><i class="bi bi-clock-history me-2"></i>Días Crédito:</strong> 
+                                            <span id="modalDiasCredito">-</span>
+                                        </li>
+                                        <li class="mb-2 pb-2 border-bottom">
+                                            <strong><i class="bi bi-calendar-x me-2"></i>Fecha Vencimiento:</strong> 
+                                            <span id="modalVencimiento">-</span>
+                                        </li>
+                                        <li class="mb-2 pb-2 border-bottom">
+                                            <strong><i class="bi bi-exclamation-octagon me-2"></i>Días Vencidos:</strong> 
+                                            <span id="modalDiasVencidos" class="fw-bold text-danger">-</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="row mt-2 small">
+                                <div class="col-md-6">
+                                    <p class="mb-1">
+                                        <strong><i class="bi bi-cash-stack me-2"></i>Monto Pendiente:</strong> 
+                                        <span id="modalMonto" class="fw-bold">$-</span>
+                                    </p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p class="mb-1">
+                                        <strong><i class="bi bi-person-badge me-2"></i>Vendedor:</strong> 
+                                        <span id="modalVendedor">-</span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="codigoAutorizacion" class="form-label">
+                                <i class="bi bi-shield-lock me-2"></i>Código de Autorización:
+                            </label>
+                            <input type="password" class="form-control border border-danger" 
+                                id="codigoAutorizacion" name="codigo" required placeholder="Ingrese el código de autorización">
+                            <div id="mensajeErrorAutorizacion" class="invalid-feedback mt-2"></div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer py-2">
+                    <button type="submit" class="btn btn-danger btn-sm" id="btnConfirmarAutorizacionTemporal">
+                        <i class="bi bi-check-circle-fill me-2"></i>Confirmar
+                    </button>
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">
+                        <i class="bi bi-x-circle-fill me-2"></i>Cancelar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 {% endblock modals %}
 
 {% block script %}
@@ -1654,133 +1827,232 @@
                 });
             });
         
-            // Botón seleccionar de Lista de Clientes
-            document.getElementById('seleccionarAgenda').addEventListener('click', function () {
+            //**-->>
+            document.getElementById('seleccionarAgenda').addEventListener('click', function() {
                 const seleccion = document.querySelector('input[name="seleccionar-agenda"]:checked');
-
-                if (seleccion) {
-                    // const clienteId = seleccion.getAttribute('data-id');
-                    const id_cliente = seleccion.getAttribute('data-id');
-                    const cuit = seleccion.getAttribute('data-cuit');
-                    const nombre = seleccion.getAttribute('data-nombre');
-                    const direccion = seleccion.getAttribute('data-direccion');
-                    const movil = seleccion.getAttribute('data-movil');
-                    const email = seleccion.getAttribute('data-email');
-                    const id_vendedor = seleccion.getAttribute('data-id_vendedor');
-                    const nombre_vendedor = seleccion.getAttribute('data-nombre_vendedor');
-                    const tipo_venta = seleccion.getAttribute('data-tipo_venta');
-                    const discrimina_iva = seleccion.getAttribute('data-discrimina_iva');
-                    const isChecked = discrimina_iva === "true";
-                    const condicion_comprobante = seleccion.getAttribute('data-condicion_venta');
-                    const id_sucursal_cliente = seleccion.getAttribute('data-id_sucursal');
-                    // Genera un booleano sin es string
-                    const vip = seleccion.getAttribute('data-vip') === 'true';
-
-                    // document.getElementById('id_letra_comprobante').value = isChecked ? 'A' : 'B';
-                    const esRemito = document.getElementById('id_es_remito').checked;
-                    document.getElementById('id_letra_comprobante').value = esRemito ? 'R' : (isChecked ? 'A' : 'B');
-                    //alert(discrimina_iva);
-                    
-                    document.getElementById('id_id_cliente').value = id_cliente || '';
-                    document.getElementById('id_nombre_factura').value = nombre || '';
-                    document.getElementById('id_domicilio_factura').value = direccion || '';
-                    document.getElementById('id_cuit').value = cuit || '';
-                    document.getElementById('id_movil_factura').value = movil || '';
-                    document.getElementById('id_email_factura').value = email || '';
-                    document.getElementById('id_id_vendedor').value = id_vendedor || '';
-                    document.getElementById('id_vendedor_factura').value = nombre_vendedor || '';
-                    document.getElementById('id_tipo_venta').value = tipo_venta || '';
-                    document.getElementById('id_condicion_comprobante').value = condicion_comprobante || '';
-                    document.getElementById('id_discrimina_iva').checked = isChecked;
-                    
-                    const id_sucursal_factura = document.getElementById('id_id_sucursal').value;
-                    //alert(`id_sucursal_factura ${id_sucursal_factura}`);
-                    //alert(`id_sucursal_cliente ${id_sucursal_cliente}`);
-
-                    // Asignar el valor de condicion_comprobante
-                    const condicionComprobanteSelect = document.getElementById('id_condicion_comprobante');
-                    if (condicionComprobanteSelect) {
-                        condicionComprobanteSelect.value = condicion_comprobante || '';
-
-                        // Aplicar la lógica de solo lectura si el valor es "1"
-                        if (condicion_comprobante === "1") {
-                            // Deshabilitar todas las opciones excepto la seleccionada
-                            Array.from(condicionComprobanteSelect.options).forEach(function(option) {
-                                if (option.value !== condicion_comprobante) {
-                                    option.disabled = true;
+                
+                if (!seleccion) {
+                    alert('Por favor seleccione un cliente');
+                    return;
+                }
+            
+                const clienteId = seleccion.getAttribute('data-id');
+                const nombreCliente = seleccion.getAttribute('data-nombre');
+                
+                fetch(`/ventas/clientes/${clienteId}/validar-vencimientos/`)
+                    .then(response => {
+                        if (!response.ok) throw new Error('Error en la respuesta del servidor');
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.error) {
+                            throw new Error(data.error);
+                        }
+            
+                        if (data.requiere_autorizacion) {
+                            const autorizacionModal = new bootstrap.Modal(document.getElementById('autorizacionModal'));
+                            
+                            // Asegurarnos de que tenemos los datos del comprobante
+                            const comprobante = data.datos_comprobante || data.debug || {};
+                            
+                            // Llenar datos en el modal con valores por defecto seguros
+                            document.getElementById('modalTitulo').textContent = `Autorización requerida para ${nombreCliente}`;
+                            document.getElementById('modalComprobante').textContent = 
+                                `${comprobante.tipo_comprobante || comprobante.id_comprobante_venta?.nombre_comprobante_venta || 'N/A'}-${comprobante.letra_comprobante || 'N/A'}`;
+                            document.getElementById('modalNumero').textContent = comprobante.numero_comprobante || data.numero_comprobante || 'N/A';
+                            document.getElementById('modalFecha').textContent = comprobante.fecha_comprobante || (data.debug?.fecha_comprobante || 'N/A');
+                            document.getElementById('modalDiasCredito').textContent = 
+                                `${comprobante.dias_credito || data.dias_credito || '0'} días`;
+                            document.getElementById('modalVencimiento').textContent = comprobante.fecha_vencimiento || data.fecha_vencimiento || 'N/A';
+                            
+                            // Mostrar días vencidos correctamente
+                            const diasVencidos = comprobante.dias_vencidos || data.dias_vencidos || 0;
+                            const diasVencidosElement = document.getElementById('modalDiasVencidos');
+                            diasVencidosElement.textContent = `${diasVencidos} días`;
+                            if (diasVencidos > 0) {
+                                diasVencidosElement.classList.add('text-danger', 'fw-bold');
+                            }
+                            
+                            document.getElementById('modalMonto').textContent = 
+                                `$${(comprobante.monto_pendiente || 0).toLocaleString('es-AR', {minimumFractionDigits: 2})}`;
+                            document.getElementById('modalVendedor').textContent = 
+                                comprobante.vendedor || (data.id_vendedor?.nombre_vendedor || 'No asignado');
+                            
+                            autorizacionModal.show();
+                            
+                            // Limpiar y configurar el botón de confirmación
+                            const btnConfirmar = document.getElementById('btnConfirmarAutorizacion');
+                            btnConfirmar.onclick = function() {
+                                const codigo = document.getElementById('codigoAutorizacion').value.trim();
+                                
+                                if (!codigo) {
+                                    alert('Ingrese el código de autorización');
+                                    return;
                                 }
-                            });
+                                
+                                // Captura los valores de los campos del formulario
+                                const sucursal_id = document.getElementById('id_id_sucursal').value;
+                                const fecha_comprobante = document.getElementById('id_fecha_comprobante').value;
 
-                            // Aplicar estilo visual para indicar que es de solo lectura
-                            condicionComprobanteSelect.classList.add('readonly-select');
+                                // Verifica en consola (opcional)
+                                // alert(`Sucursal: ${sucursal_id} | Fecha: ${fecha_comprobante}`);
+
+                                fetch('/ventas/clientes/validar-autorizacion/', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'X-CSRFToken': getCookie('csrftoken') 
+                                    },
+                                    body: JSON.stringify({
+                                        codigo: codigo,
+                                        cliente_id: clienteId,
+                                        sucursal_id: sucursal_id,
+                                        fecha_comprobante: fecha_comprobante
+                                    })
+                                })
+                                .then(response => response.json())
+                                .then(authData => {
+                                    if (authData.valido) {
+                                        // 1. Asignar el ID de autorización al campo oculto
+                                        // document.getElementById('id_id_valida').value = authData.id_autorizacion;
+                                        document.getElementById('id_id_valida').value = authData.datos_autorizacion.codigo;
+                                        
+                                        autorizacionModal.hide();
+                                        completarSeleccionCliente(seleccion);
+                                    } else {
+                                        alert(authData.mensaje || 'Código incorrecto');
+                                    }
+                                })
+                                .catch(error => {
+                                    console.error('Error:', error);
+                                    alert('Error al validar autorización');
+                                });
+                            };
+                        } else {
+                            completarSeleccionCliente(seleccion);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        const autorizacionModal = new bootstrap.Modal(document.getElementById('autorizacionModal'));
+                        document.getElementById('modalTitulo').textContent = 'Error en validación';
+                        document.getElementById('mensajePrincipal').innerHTML = `
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                            ${error.message || 'Error al verificar documentos pendientes'}
+                        `;
+                        autorizacionModal.show();
+                    });
+            });
+            
+            // Mantener las funciones completarSeleccionCliente y getCookie exactamente igual que en tu versión original
+
+            // Función para completar la selección del cliente (extraída del código original)
+            function completarSeleccionCliente(seleccion) {
+                const id_cliente = seleccion.getAttribute('data-id');
+                const cuit = seleccion.getAttribute('data-cuit');
+                const nombre = seleccion.getAttribute('data-nombre');
+                const direccion = seleccion.getAttribute('data-direccion');
+                const movil = seleccion.getAttribute('data-movil');
+                const email = seleccion.getAttribute('data-email');
+                const id_vendedor = seleccion.getAttribute('data-id_vendedor');
+                const nombre_vendedor = seleccion.getAttribute('data-nombre_vendedor');
+                const tipo_venta = seleccion.getAttribute('data-tipo_venta');
+                const discrimina_iva = seleccion.getAttribute('data-discrimina_iva');
+                const isChecked = discrimina_iva === "true";
+                const condicion_comprobante = seleccion.getAttribute('data-condicion_venta');
+                const id_sucursal_cliente = seleccion.getAttribute('data-id_sucursal');
+                const vip = seleccion.getAttribute('data-vip') === 'true';
+            
+                document.getElementById('id_letra_comprobante').value = document.getElementById('id_es_remito').checked ? 'R' : (isChecked ? 'A' : 'B');
+                
+                document.getElementById('id_id_cliente').value = id_cliente || '';
+                document.getElementById('id_nombre_factura').value = nombre || '';
+                document.getElementById('id_domicilio_factura').value = direccion || '';
+                document.getElementById('id_cuit').value = cuit || '';
+                document.getElementById('id_movil_factura').value = movil || '';
+                document.getElementById('id_email_factura').value = email || '';
+                document.getElementById('id_id_vendedor').value = id_vendedor || '';
+                document.getElementById('id_vendedor_factura').value = nombre_vendedor || '';
+                document.getElementById('id_tipo_venta').value = tipo_venta || '';
+                document.getElementById('id_condicion_comprobante').value = condicion_comprobante || '';
+                document.getElementById('id_discrimina_iva').checked = isChecked;
+                
+                const id_sucursal_factura = document.getElementById('id_id_sucursal').value;
+            
+                const condicionComprobanteSelect = document.getElementById('id_condicion_comprobante');
+                if (condicionComprobanteSelect) {
+                    condicionComprobanteSelect.value = condicion_comprobante || '';
+                    if (condicion_comprobante === "1") {
+                        Array.from(condicionComprobanteSelect.options).forEach(function(option) {
+                            if (option.value !== condicion_comprobante) {
+                                option.disabled = true;
+                            }
+                        });
+                        condicionComprobanteSelect.classList.add('readonly-select');
+                    }
+                }
+            
+                if (id_sucursal_cliente !== id_sucursal_factura) {
+                    alert('Atención: El cliente pertenece a otra sucursal.');
+                }
+            
+                if (vip) {
+                    alert("⚠️ Este es un Cliente VIP - Trato Especial ⚠️");
+                    document.getElementById('id_cliente_vip').value = "Cliente VIP" 
+                }
+            
+                // Obtener número de comprobante (código existente)
+                const id_sucursal = document.getElementById('id_id_sucursal').value;
+                const id_punto_venta = document.getElementById('id_id_punto_venta').value;
+                const compro = document.getElementById('id_compro').value;
+                const letra_comprobante = document.getElementById('id_letra_comprobante').value;
+            
+                if (id_sucursal && id_punto_venta && compro && letra_comprobante) {
+                    const url = new URL('/ventas/obtener-numero-comprobante/', window.location.origin);
+                    url.searchParams.append('id_sucursal', id_sucursal);
+                    url.searchParams.append('id_punto_venta', id_punto_venta);
+                    url.searchParams.append('comprobante', compro);
+                    url.searchParams.append('letra', letra_comprobante);
+            
+                    fetch(url, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            document.getElementById('id_numero_comprobante').value = data.numero_referencial;
+                            const inputDefinitivo = document.getElementById('id_numero_definitivo');
+                            if (inputDefinitivo) {
+                                inputDefinitivo.value = data.numero_definitivo;
+                            }
+                        }
+                    });
+                }
+            
+                // Cerrar el modal de agenda
+                const modal = bootstrap.Modal.getInstance(document.getElementById('agendaModal'));
+                modal.hide();
+            }
+            
+            // Función auxiliar para obtener el token CSRF
+            function getCookie(name) {
+                let cookieValue = null;
+                if (document.cookie && document.cookie !== '') {
+                    const cookies = document.cookie.split(';');
+                    for (let i = 0; i < cookies.length; i++) {
+                        const cookie = cookies[i].trim();
+                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
                         }
                     }
-
-                    // Comparar sucursales
-                    if (id_sucursal_cliente !== id_sucursal_factura) {
-                        alert('Atención: El cliente pertenece a otra sucursal.');
-                    }
-
-                    if (vip) {
-                        alert("⚠️ Este es un Cliente VIP - Trato Especial ⚠️");
-                        document.getElementById('id_cliente_vip').value = "Cliente VIP" 
-                    }
-
-                    // Inicio Número de Comprobante
-                    // Obtener valores para el número de comprobante
-                    const id_sucursal = document.getElementById('id_id_sucursal').value;
-                    const id_punto_venta = document.getElementById('id_id_punto_venta').value;
-                    const compro = document.getElementById('id_compro').value;
-                    const letra_comprobante = document.getElementById('id_letra_comprobante').value;
-
-                    // Solo hacer la solicitud si tenemos todos los valores necesarios
-                    if (id_sucursal && id_punto_venta && compro && letra_comprobante) {
-                        const url = new URL('/ventas/obtener-numero-comprobante/', window.location.origin);
-                        url.searchParams.append('id_sucursal', id_sucursal);
-                        url.searchParams.append('id_punto_venta', id_punto_venta);
-                        url.searchParams.append('comprobante', compro);
-                        url.searchParams.append('letra', letra_comprobante);
-
-                        fetch(url, {
-                            method: 'GET',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            },
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.success) {
-                                // Asignar el número referencial al campo del formulario
-                                document.getElementById('id_numero_comprobante').value = data.numero_referencial;
-                                
-                                // Opcional: Guardar el número definitivo en un campo oculto
-                                const inputDefinitivo = document.getElementById('id_numero_definitivo');
-                                if (inputDefinitivo) {
-                                    inputDefinitivo.value = data.numero_definitivo;
-                                }
-                            } else {
-                                console.error('Error al obtener número:', data.error);
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error en la solicitud:', error);
-                        });
-                    } else {
-                        console.log('Faltan datos para obtener el número de comprobante');
-                    }
-                    // Final Número de Comprobante
-
-                    // Cerrar el modal
-                    const modal = bootstrap.Modal.getInstance(document.getElementById('agendaModal'));
-                    modal.hide();
                 }
-            });
-
-            // Limpiar filtros y resultados cuando se cierra la ventana modal
-            agendaModal.addEventListener('hidden.bs.modal', function () {
-                buscarAgendaForm.reset(); // Restablecer el formulario
-                tablaResultadosAgenda.innerHTML = ''; // Limpiar la tabla de resultados
-            });
+                return cookieValue;
+            }
+            //**-->>
 
             document.getElementById('tablaResultadosAgenda').addEventListener('click', function(e) {
                 const radio = e.target.closest('input[name="seleccionar-agenda"]');
@@ -1791,9 +2063,75 @@
                     e.stopPropagation();
                 }
             });
+
+            const autorizacionForm = document.getElementById('autorizacionForm');
+            const codigoInput = document.getElementById('codigoAutorizacion');
+            const mensajeError = document.getElementById('mensajeErrorAutorizacion');
+
+            // Configurar datos ocultos al mostrar el modal
+            document.getElementById('autorizacionModal').addEventListener('show.bs.modal', function() {
+                document.getElementById('validaClienteId').value = document.getElementById('id_id_cliente').value;
+                document.getElementById('validaSucursalId').value = document.getElementById('id_id_sucursal').value;
+                document.getElementById('validaFecha').value = document.getElementById('id_fecha_comprobante').value;
+            });
+
+            // Manejar el envío del formulario
+            autorizacionForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Validación básica
+                const codigo = codigoInput.value.trim();
+                if (!/^[1-9]\d*$/.test(codigo)) {
+                    mensajeError.textContent = 'Ingrese un número entero positivo';
+                    mensajeError.style.display = 'block';
+                    return;
+                }
+
+                // Deshabilitar botón durante la validación
+                const btnConfirmar = document.getElementById('btnConfirmarAutorizacion');
+                const btnOriginalHTML = btnConfirmar.innerHTML;
+                btnConfirmar.disabled = true;
+                btnConfirmar.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Validando...';
+
+                fetch('/ventas/valida-autorizacion/', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': getCookie('csrftoken'),
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: new FormData(autorizacionForm)
+                })
+                .then(response => {
+                    if (!response.ok) throw new Error('Error en la respuesta del servidor');
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.valido) {
+                        bootstrap.Modal.getInstance(document.getElementById('autorizacionModal')).hide();
+                        // Continuar con el flujo después de validar
+                    } else {
+                        mensajeError.innerHTML = `<i class="bi bi-exclamation-triangle me-2"></i>${data.mensaje || 'Error en la validación'}`;
+                        mensajeError.style.display = 'block';
+                    }
+                })
+                .catch(error => {
+                    mensajeError.innerHTML = `<i class="bi bi-exclamation-triangle me-2"></i>Error de conexión`;
+                    mensajeError.style.display = 'block';
+                })
+                .finally(() => {
+                    btnConfirmar.disabled = false;
+                    btnConfirmar.innerHTML = btnOriginalHTML;
+                });
+            });
+
+            // Resetear al cerrar el modal
+            document.getElementById('autorizacionModal').addEventListener('hidden.bs.modal', function() {
+                autorizacionForm.reset();
+                mensajeError.style.display = 'none';
+            });
+
         });
 
-        
     </script>
 
     <script>
@@ -1941,8 +2279,6 @@
 
             buscarClienteInput.addEventListener('blur', function () {
                 let busqueda = buscarClienteInput.value.trim();
-
-                
         
                 // Si está vacío, no hacer nada
                 if (!busqueda) return;
@@ -1972,39 +2308,42 @@
                         buscarClienteInput.value = '';
                         buscarClienteInput.focus();
                     } else {
-                        console.log("Cliente encontrado:", data);
-                        // Aquí puedes actualizar otros campos si es necesario
-                        //document.getElementById('id_nombre_factura').value = data.nombre_cliente || '';
-                        //document.getElementById('id_domicilio_factura').value = data.domicilio_cliente || '';
-
-                        ///////
+                        // Verificar primero si el cliente está en blacklist
+                        if (data.black_list) {
+                            alert(`🚨 CLIENTE EN LISTA NEGRA 🚨\nMotivo: ${data.black_list_motivo || 'No especificado'}`);
+                            buscarClienteInput.value = '';
+                            buscarClienteInput.focus();
+                            return;
+                        }
+                        
+                        // Aqui debemos validar el vencimiento de los documentos
+                        
+                        // Solo ejecutar el resto si no está en blacklist
                         document.getElementById('id_id_cliente').value = data.id_cliente || '';
-
                         document.getElementById('id_nombre_factura').value = data.nombre || '';
                         document.getElementById('id_domicilio_factura').value = data.direccion || '';
-                        
                         document.getElementById('id_cuit').value = data.cuit || '';
                         document.getElementById('id_movil_factura').value = data.movil || '';
                         document.getElementById('id_email_factura').value = data.email || '';
                         document.getElementById('id_id_vendedor').value = data.id_vendedor || '';
                         document.getElementById('id_vendedor_factura').value = data.nombre_vendedor || '';
 
+                        // Verificación de sucursal
                         const id_sucursal_factura = document.getElementById('id_id_sucursal').value;
-                        //alert(`id_sucursal_factura ${id_sucursal_factura}`);
-                        //alert(`id_sucursal_cliente ${id_sucursal_cliente}`);
-
                         if (data.id_sucursal !== id_sucursal_factura) {
                             alert('Atención: El cliente pertenece a otra sucursal.');
                         }
 
+                        // Verificación VIP
                         if (data.vip) {
                             alert("⚠️ Este es un Cliente VIP - Trato Especial ⚠️");
-                            document.getElementById('id_cliente_vip').value = "Cliente VIP" 
+                            document.getElementById('id_cliente_vip').value = "Cliente VIP"; 
                         }
 
+                        // Deshabilitar botones
                         document.getElementById('listar_agenda').disabled = true;
                         document.getElementById('buscar_cliente').disabled = true;
-                        ///////
+                        
                     }
                 })
                 .catch(error => {
@@ -2015,7 +2354,6 @@
         });
     </script>
 
-    
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             // Obtener el elemento HTML que contiene el valor de is_edit

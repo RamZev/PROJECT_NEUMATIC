@@ -11,7 +11,8 @@ from .views.consultas_factura_views import (buscar_agenda,
                                             datos_comprobante,
                                             obtener_numero_comprobante,
                                             validar_vencimientos_cliente,
-                                            valida_autorizacion)
+                                            valida_autorizacion,
+                                            verificar_remito)
 
 from .views.crear_agenda import crear_agenda
 from .views.genera_pdf import GeneraPDFView
@@ -34,4 +35,5 @@ urlpatterns = [
    path('<str:model_name>/pdf/<int:pk>/', GeneraPDFView.as_view(), name='generic_pdf'),
    path('clientes/<int:cliente_id>/validar-vencimientos/', validar_vencimientos_cliente, name='validar_vencimientos'),
    path('clientes/validar-autorizacion/', valida_autorizacion, name='validar_autorizacion'),
+   path('verificar/remito/', verificar_remito, name='verificar_remito'),
 ]

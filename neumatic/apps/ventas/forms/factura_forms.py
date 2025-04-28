@@ -70,14 +70,15 @@ class FacturaForm(forms.ModelForm):
             
             "id_sucursal": forms.HiddenInput(),
             "id_punto_venta": forms.HiddenInput(),
-            'jerarquia': forms.HiddenInput(),
+            "jerarquia": forms.HiddenInput(),
             "id_deposito": forms.Select(attrs={**formclassselect}),
-            
             "id_comprobante_venta": forms.Select(attrs={**formclassselect}),
             "compro": forms.TextInput(attrs={**formclasstext, 'readonly': 'readonly'}),
             "letra_comprobante": forms.TextInput(attrs={**formclasstext, 'readonly': 'readonly'}),
             "numero_comprobante": forms.TextInput(attrs={**formclasstext, 'readonly': 'readonly', 'type': 'number', 'step': 'any'}),
-            "remito": forms.TextInput(attrs={**formclasstext}),
+            
+            "comprobante_remito": forms.Select(attrs={**formclassselect}),            
+            "remito": forms.TextInput(attrs={**formclasstext, 'readonly': 'readonly'}),
             "fecha_comprobante": forms.TextInput(attrs={**formclassdate, 'type': 'date'}),
                         
             "cuit": forms.TextInput(attrs={**formclasstext, 'type': 'number', 'step': '1'}),  # Sin decimales

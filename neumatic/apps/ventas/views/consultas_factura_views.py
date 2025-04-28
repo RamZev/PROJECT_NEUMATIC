@@ -3,7 +3,8 @@ from django.db.models import Sum
 from django.http import JsonResponse
 from django.db.models import Q, F
 from django.shortcuts import get_object_or_404
-from django.views.decorators.http import require_POST
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST, require_GET
 from django.utils import timezone
 from django.conf import settings
 
@@ -260,9 +261,13 @@ def buscar_cliente(request):
 def datos_comprobante(request, pk):
     try:
         comprobante = ComprobanteVenta.objects.get(pk=pk)
+        
+        print("Entramos a la vista:", comprobante.compro_asociado)
+        
         return JsonResponse({
             'codigo': comprobante.codigo_comprobante_venta,
-            'es_remito': comprobante.remito
+            'es_remito': comprobante.remito,
+            'compro_asociado': comprobante.compro_asociado
         })
     except ComprobanteVenta.DoesNotExist:
         return JsonResponse({'error': 'Comprobante no encontrado'}, status=404)
@@ -468,3 +473,46 @@ def valida_autorizacion(request):
             'valido': False,
             'mensaje': f'Error interno: {str(e)}'
         }, status=500)
+        
+
+@require_GET
+@login_required
+def verificar_remito(request):
+    """
+    Verifica si existe una factura con comprobante_remito y remito especificados.
+    Devuelve JSON con:
+    - existe: bool
+    - id_factura: int (si existe)
+    """
+    comprobante_remito = request.GET.get('comprobante_remito', '').strip()
+    remito = request.GET.get('remito', '').strip()
+    
+    print("comprobante_remito:", comprobante_remito) 
+    print("remito:", remito)
+    
+
+    if not comprobante_remito or not remito:
+        return JsonResponse(
+            {'error': 'comprobante_remito y remito son requeridos'},
+            status=400
+        )
+
+    try:
+        # Búsqueda optimizada con first()
+        factura = Factura.objects.filter(
+            compro=comprobante_remito,
+            numero_comprobante=remito
+        ).only('id_factura').first()  # Solo trae el ID
+        
+        print(factura)
+
+        return JsonResponse({
+            'existe': factura is not None,
+            'id_factura': factura.id_factura if factura else None
+        })
+
+    except Exception as e:
+        return JsonResponse(
+            {'error': f'Error en el servidor: {str(e)}'},
+            status=500
+        )

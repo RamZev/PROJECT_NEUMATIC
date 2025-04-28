@@ -73,6 +73,13 @@ class Factura(ModeloBaseGenerico):
 		null=True,
 		blank=True
 	)
+	comprobante_remito = models.CharField(
+		verbose_name="Comprobante Remito",
+		max_length=2,
+		default="",
+		null=True,
+		blank=True
+	)
 	remito = models.CharField(
 		verbose_name="Remito",
 		max_length=15,
