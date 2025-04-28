@@ -87,6 +87,9 @@ class BuscadorPrecioDiferenteForm(InformesGenericForm):
 		if id_vendedor_hasta < 1:
 			self.add_error("id_vendedor_hasta", "Debe indicar un Código de Vendedor")
 		
+		if id_vendedor_desde > id_vendedor_hasta:
+			self.add_error("id_vendedor_hasta", "El Código de Vendedor hasta no puede ser menor al desde.")
+		
 		if dif_mayor < 0:
 			self.add_error("dif_mayor", "El valor no puede ser negativo")
 		

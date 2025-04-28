@@ -4,6 +4,7 @@ from django import forms
 from datetime import date
 
 from .informes_generics_forms import InformesGenericForm
+from apps.maestros.models.cliente_models import Cliente
 from diseno_base.diseno_bootstrap import formclasstext, formclassdate
 
 
@@ -55,11 +56,16 @@ class BuscadorRemitosClientesForm(InformesGenericForm):
 		fecha_desde = cleaned_data.get("fecha_desde")
 		fecha_hasta = cleaned_data.get("fecha_hasta")
 		
-		#-- Validar que se haya indicado un cliente solo si hay datos enviados.
+		#-- Validaciones.
 		if not id_cliente:
 			self.add_error("id_cliente", "Debe indicar un Código de Cliente.")
 		
-		#-- Validar fechas.
+		if id_cliente:
+			try:
+				cliente = Cliente.objects.get(id_cliente=id_cliente)
+			except Cliente.DoesNotExist:
+				self.add_error("id_cliente", "El cliente no existe. Por favor, verifique el código.")
+		
 		if not fecha_desde:
 			self.add_error("fecha_desde", "Debe indicar una fecha válida.")
 		
