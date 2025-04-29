@@ -60,6 +60,7 @@ from apps.informes.views.vlventasresumenib_list_views import *
 
 #- Lote 4:
 from apps.informes.views.vlestadisticasventas_list_views import *
+from apps.informes.views.vlestadisticasventasvendedor_list_views import *
 
 
 
@@ -521,7 +522,7 @@ urlpatterns = [
 		 name="vlventasresumenib_vista_csv"),
 	
 	#-- VL Estadísticas de Ventas.
-	path('vlestadisticasventasre_informe/', VLEstadisticasVentasInformeView.as_view(), 
+	path('vlestadisticasventas_informe/', VLEstadisticasVentasInformeView.as_view(), 
 		 name='vlestadisticasventas_informe_list'),
 	path('vlestadisticasventas/vista-preliminar/', vlestadisticasventas_vista_pantalla, 
 		 name="vlestadisticasventas_vista_pantalla"),
@@ -531,6 +532,18 @@ urlpatterns = [
 		 name="vlestadisticasventas_vista_excel"),
 	path("vlestadisticasventas/vista-csv/", vlestadisticasventas_vista_csv, 
 		 name="vlestadisticasventas_vista_csv"),
+	
+	#-- VL Estadísticas de Ventas Vendedor.
+	path('vlestadisticasventasvendedor_informe/', VLEstadisticasVentasVendedorInformeView.as_view(), 
+		 name='vlestadisticasventasvendedor_informe_list'),
+	path('vlestadisticasventasvendedor/vista-preliminar/', vlestadisticasventasvendedor_vista_pantalla, 
+		 name="vlestadisticasventasvendedor_vista_pantalla"),
+	path("vlestadisticasventasvendedor/vista-pdf/", vlestadisticasventasvendedor_vista_pdf, 
+		 name="vlestadisticasventasvendedor_vista_pdf"),
+	path("vlestadisticasventasvendedor/vista-excel/", vlestadisticasventasvendedor_vista_excel, 
+		 name="vlestadisticasventasvendedor_vista_excel"),
+	path("vlestadisticasventasvendedor/vista-csv/", vlestadisticasventasvendedor_vista_csv, 
+		 name="vlestadisticasventasvendedor_vista_csv"),
 	
 	
 	

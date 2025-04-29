@@ -27,7 +27,7 @@
 		<thead>
 			<tr>
 				<th>Marca</th>
-				{% if ordenar == 'Cantidad' %}
+				{% if mostrar == 'Cantidad' %}
 					<th class="numeric">Cantidad</th>
 				{% else %}
 					<th class="numeric">Total</th>
@@ -40,7 +40,7 @@
 			{% for obj in objetos %}
 				<tr>
 					<td>{{ obj.nombre_producto_marca }}</td>
-					{% if ordenar == 'Cantidad' %}
+					{% if mostrar == 'Cantidad' %}
 						<td class="numeric">{{ obj.cantidad|formato_es_ar }}</td>
 						<td class="numeric">{{ obj.porcentaje_cantidad|formato_es_ar }}%</td>
 					{% else %}
@@ -52,7 +52,7 @@
 			
 			<tr style="border-top: 1px solid #000;">
 				<td class="numeric"><strong>Total General:</strong></td>
-				{% if ordenar == 'Cantidad' %}
+				{% if mostrar == 'Cantidad' %}
 					<td class="numeric"><strong>{{ total_cantidad|formato_es_ar }}</strong></td>
 					<td class="numeric"><strong>{{ total_porcentaje_cantidad|formato_es_ar }}%</strong></td>
 				{% else %}

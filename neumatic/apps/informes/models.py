@@ -1326,15 +1326,8 @@ class VLVentasResumenIB(models.Model):
 #-----------------------------------------------------------------------------
 class EstadisticasVentasManager(models.Manager):
 	
-	def obtener_datos(self, id_sucursal, id_cliente, fecha_desde, fecha_hasta, id_marca_desede, id_marca_hasta, agrupar, ordenar):
+	def obtener_datos(self, fecha_desde, fecha_hasta, id_marca_desede, id_marca_hasta, agrupar, mostrar, id_sucursal=None, id_cliente=None):
 		
-		#-- Se crea la consulta.
-		# query = """
-		# 	SELECT *, sum(cantidad) AS cantidad_sumada, sum(total) AS total_sumado
-		# 	FROM VLEstadisticasVentas
-		# 	WHERE fecha_comprobante BETWEEN %s AND %s AND
-		# 		id_marca_id BETWEEN %s AND %s
-		# """
 		query = """
 			SELECT 
 				id_factura,
@@ -1374,8 +1367,8 @@ class EstadisticasVentasManager(models.Manager):
 			case "Marca":
 				query += " GROUP BY id_marca_id"
 		
-		if ordenar:
-			match ordenar:
+		if mostrar:
+			match mostrar:
 				case "Cantidad":
 					query += " ORDER BY cantidad DESC"
 				case "Importe":
@@ -1408,111 +1401,160 @@ class VLEstadisticasVentas(models.Model):
 		verbose_name_plural = ('Estadísticas de Ventas')
 		# ordering = ['fecha_comprobante']
 
+#-----------------------------------------------------------------------------
+# Estadísticas de Ventas por Vendedor.
+#-----------------------------------------------------------------------------
+class EstadisticasVentasVendedorManager(models.Manager):
+	
+	def obtener_datos(self, fecha_desde, fecha_hasta, id_marca_desede, id_marca_hasta, agrupar, mostrar, id_sucursal=None, id_vendedor=None):
+		
+		query = """
+			SELECT 
+				id_factura,
+				id_producto_id,
+				nombre_producto,
+				nombre_producto_familia,
+				nombre_modelo,
+				nombre_producto_marca,
+				SUM(cantidad) AS cantidad, 
+				SUM(total) AS total
+			FROM VLEstadisticasVentasVendedor
+			WHERE fecha_comprobante BETWEEN %s AND %s AND
+				id_marca_id BETWEEN %s AND %s
+		"""
+		
+		#-- Se añaden parámetros.
+		params = [fecha_desde, fecha_hasta, id_marca_desede, id_marca_hasta]
+		
+		#-- Filtros adicionales.
+		if id_sucursal:
+			query += " AND id_sucursal_id = %s"
+			params.append(id_sucursal)
+		
+		if id_vendedor:
+			query += " AND id_vendedor_id = %s"
+			params.append(id_vendedor)
+		
+		match agrupar:
+			case "Producto":
+				query += " GROUP BY id_producto_id"
+			case "Familia":
+				query += " GROUP BY id_familia_id, id_marca_id"
+			case "Modelo":
+				# query += " GROUP BY id_modelo_id, id_marca_id"
+				query += " GROUP BY id_modelo_id"
+			case "Marca":
+				query += " GROUP BY id_marca_id"
+		
+		if mostrar:
+			match mostrar:
+				case "Cantidad":
+					query += " ORDER BY cantidad DESC"
+				case "Importe":
+					query += " ORDER BY total DESC"
+		
+		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
+		return self.raw(query, params)
 
-"""
----------------------------------------------------------------------------------------
--- Genérica:
-SELECT factura.compro, 
-	detalle_factura.id_factura, 
-	detalle_factura.id_producto_id, 
-	producto.cai,
-	producto.nombre_producto,
-	producto_familia.nombre_producto_familia, 
-	producto_modelo.nombre_modelo,
-	producto_marca.nombre_producto_marca,
-	detalle_factura.cantidad*comprobante_venta.mult_estadistica AS cantidad,
-	((detalle_factura.cantidad*detalle_factura.precio)+(detalle_factura.cantidad*detalle_factura.precio*detalle_factura.descuento/100))*comprobante_venta.mult_estadistica AS total,
-	factura.id_cliente_id,
-	factura.fecha_comprobante,
-	fatura.id_sucursal_id
-FROM 
-	detalle_factura INNER JOIN factura ON detalle_factura.id_factura_id = factura.id_factura
-		INNER JOIN producto ON detalle_factura.id_producto_id = producto.id_producto
-		INNER JOIN producto_modelo ON producto.id_modelo_id = producto_modelo.id_modelo
-		INNER JOIN producto_familia ON producto.id_familia_id = producto_familia.id_producto_familia
-		INNER JOIN producto_marca ON producto.id_marca_id = producto_marca.id_producto_marca
-		INNER JOIN comprobante_venta ON factura.id_comprobante_venta_id = comprobante_venta.id_comprobante_venta
-WHERE 
-	detalle_factura.id_producto_id <> 0 AND comprobante_venta.mult_estadistica <> 0 AND factura.no_estadist = False
 
----------------------------------------------------------------------------------------
---Producto:
-SELECT 
-	detalle_factura.id_producto_id, 
-	producto.cai,
-	producto.nombre_producto,
-	producto_familia.nombre_producto_familia, 
-	producto_modelo.nombre_modelo,
-	producto_marca.nombre_producto_marca,
-	--producto.unidad,
-	SUM(detalle_factura.cantidad*comprobante_venta.mult_estadistica) AS cantidad,
-	SUM(((detalle_factura.cantidad*detalle_factura.precio)+(detalle_factura.cantidad*detalle_factura.precio*detalle_factura.descuento/100))*comprobante_venta.mult_estadistica) AS total
-FROM 
-	detalle_factura INNER JOIN factura ON detalle_factura.id_factura_id = factura.id_factura
-		INNER JOIN producto ON detalle_factura.id_producto_id = producto.id_producto
-		INNER JOIN producto_modelo ON producto.id_modelo_id = producto_modelo.id_modelo
-		INNER JOIN producto_familia ON producto.id_familia_id = producto_familia.id_producto_familia
-		INNER JOIN producto_marca ON producto.id_marca_id = producto_marca.id_producto_marca
-		INNER JOIN comprobante_venta ON factura.id_comprobante_venta_id = comprobante_venta.id_comprobante_venta
-WHERE 
-	detalle_factura.id_producto_id <> 0 AND comprobante_venta.mult_estadistica <> 0 AND factura.no_estadist = False
-GROUP BY detalle_factura.id_producto_id
-ORDER BY producto.nombre_producto
+class VLEstadisticasVentasVendedor(models.Model):
+	id_factura = models.IntegerField(primary_key=True)
+	id_producto_id = models.IntegerField()
+	nombre_producto = models.CharField(max_length=50)
+	nombre_producto_familia = models.CharField(max_length=50)
+	nombre_modelo = models.CharField(max_length=50)
+	nombre_producto_marca = models.CharField(max_length=50)
+	cantidad = models.DecimalField(max_digits=7, decimal_places=2)
+	total = models.DecimalField(max_digits=14, decimal_places=2)
+	fecha_comprobante = models.DateField()
+	id_sucursal_id = models.IntegerField()
+	id_vendedor_id = models.IntegerField()
+	
+	objects = EstadisticasVentasVendedorManager()
+	
+	class Meta:
+		managed = False
+		db_table = 'VLEstadisticasVentasVendedor'
+		verbose_name = ('Estadísticas de Ventas')
+		verbose_name_plural = ('Estadísticas de Ventas')
+		# ordering = ['fecha_comprobante']
 
----------------------------------------------------------------------------------------
--- Familia:
-SELECT 
-	producto_familia.nombre_producto_familia, 
-	producto_marca.nombre_producto_marca,
-	SUM(detalle_factura.cantidad*comprobante_venta.mult_estadistica) AS cantidad,
-	SUM(((detalle_factura.cantidad*detalle_factura.precio)+(detalle_factura.cantidad*detalle_factura.precio*detalle_factura.descuento/100))*comprobante_venta.mult_estadistica) AS total
-FROM 
-	detalle_factura INNER JOIN factura ON detalle_factura.id_factura_id = factura.id_factura
-		INNER JOIN producto ON detalle_factura.id_producto_id = producto.id_producto
-		INNER JOIN producto_modelo ON producto.id_modelo_id = producto_modelo.id_modelo
-		INNER JOIN producto_familia ON producto.id_familia_id = producto_familia.id_producto_familia
-		INNER JOIN producto_marca ON producto.id_marca_id = producto_marca.id_producto_marca
-		INNER JOIN comprobante_venta ON factura.id_comprobante_venta_id = comprobante_venta.id_comprobante_venta
-WHERE 
-	detalle_factura.id_producto_id <> 0 AND comprobante_venta.mult_estadistica <> 0 AND factura.no_estadist = False
-GROUP BY producto.id_familia_id, producto.id_marca_id
-ORDER BY producto_familia.nombre_producto_familia, producto.id_marca_id
 
----------------------------------------------------------------------------------------
--- Modelo:
-SELECT 
-	producto_modelo.nombre_modelo,
-	producto_marca.nombre_producto_marca,
-	SUM(detalle_factura.cantidad*comprobante_venta.mult_estadistica) AS cantidad,
-	SUM(((detalle_factura.cantidad*detalle_factura.precio)+(detalle_factura.cantidad*detalle_factura.precio*detalle_factura.descuento/100))*comprobante_venta.mult_estadistica) AS total
-FROM 
-	detalle_factura INNER JOIN factura ON detalle_factura.id_factura_id = factura.id_factura
-		INNER JOIN producto ON detalle_factura.id_producto_id = producto.id_producto
-		INNER JOIN producto_modelo ON producto.id_modelo_id = producto_modelo.id_modelo
-		INNER JOIN producto_familia ON producto.id_familia_id = producto_familia.id_producto_familia
-		INNER JOIN producto_marca ON producto.id_marca_id = producto_marca.id_producto_marca
-		INNER JOIN comprobante_venta ON factura.id_comprobante_venta_id = comprobante_venta.id_comprobante_venta
-WHERE 
-	detalle_factura.id_producto_id <> 0 AND comprobante_venta.mult_estadistica <> 0 AND factura.no_estadist = False
-GROUP BY producto.id_modelo_id, producto.id_modelo_id
-ORDER BY producto_modelo.nombre_modelo, producto.id_modelo_id
-
----------------------------------------------------------------------------------------
--- Marca:
-SELECT 
-	producto_marca.nombre_producto_marca,
-	SUM(detalle_factura.cantidad*comprobante_venta.mult_estadistica) AS cantidad,
-	SUM(((detalle_factura.cantidad*detalle_factura.precio)+(detalle_factura.cantidad*detalle_factura.precio*detalle_factura.descuento/100))*comprobante_venta.mult_estadistica) AS total
-FROM 
-	detalle_factura INNER JOIN factura ON detalle_factura.id_factura_id = factura.id_factura
-		INNER JOIN producto ON detalle_factura.id_producto_id = producto.id_producto
-		INNER JOIN producto_modelo ON producto.id_modelo_id = producto_modelo.id_modelo
-		INNER JOIN producto_familia ON producto.id_familia_id = producto_familia.id_producto_familia
-		INNER JOIN producto_marca ON producto.id_marca_id = producto_marca.id_producto_marca
-		INNER JOIN comprobante_venta ON factura.id_comprobante_venta_id = comprobante_venta.id_comprobante_venta
-WHERE 
-	detalle_factura.id_producto_id <> 0 AND comprobante_venta.mult_estadistica <> 0 AND factura.no_estadist = False
-GROUP BY producto.id_marca_id
-ORDER BY producto.id_marca_id
-
-"""
+#-----------------------------------------------------------------------------
+# Estadísticas de Ventas por Vendedor Clientes.
+#-----------------------------------------------------------------------------
+# class EstadisticasVentasVendedorClienteManager(models.Manager):
+# 	
+# 	def obtener_datos(self, fecha_desde, fecha_hasta, id_marca_desede, id_marca_hasta, agrupar, mostrar, estadisticas, id_sucursal=None, id_vendedor=None):
+# 		
+# 		query = """
+# 			SELECT 
+# 				id_factura,
+# 				id_producto_id,
+# 				nombre_producto,
+# 				nombre_producto_familia,
+# 				nombre_modelo,
+# 				nombre_producto_marca,
+# 				SUM(cantidad) AS cantidad, 
+# 				SUM(total) AS total
+# 			FROM VLEstadisticasVentasVendedorCliente
+# 			WHERE fecha_comprobante BETWEEN %s AND %s AND
+# 				id_marca_id BETWEEN %s AND %s AND
+# 				no_estadisticas = %s
+# 		"""
+# 		
+# 		#-- Se añaden parámetros.
+# 		params = [fecha_desde, fecha_hasta, id_marca_desede, id_marca_hasta]
+# 		
+# 		#-- Filtros adicionales.
+# 		if id_sucursal:
+# 			query += " AND id_sucursal_id = %s"
+# 			params.append(id_sucursal)
+# 		
+# 		if id_vendedor:
+# 			query += " AND id_vendedor_id = %s"
+# 			params.append(id_vendedor)
+# 		
+# 		match agrupar:
+# 			case "Producto":
+# 				query += " GROUP BY id_producto_id"
+# 			case "Familia":
+# 				query += " GROUP BY id_familia_id, id_marca_id"
+# 			case "Modelo":
+# 				# query += " GROUP BY id_modelo_id, id_marca_id"
+# 				query += " GROUP BY id_modelo_id"
+# 			case "Marca":
+# 				query += " GROUP BY id_marca_id"
+# 		
+# 		if mostrar:
+# 			match mostrar:
+# 				case "Cantidad":
+# 					query += " ORDER BY cantidad DESC"
+# 				case "Importe":
+# 					query += " ORDER BY total DESC"
+# 		
+# 		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
+# 		return self.raw(query, params)
+# 
+# 
+# class VLEstadisticasVentasVendedorCliente(models.Model):
+# 	id_factura = models.IntegerField(primary_key=True)
+# 	id_producto_id = models.IntegerField()
+# 	nombre_producto = models.CharField(max_length=50)
+# 	nombre_producto_familia = models.CharField(max_length=50)
+# 	nombre_modelo = models.CharField(max_length=50)
+# 	nombre_producto_marca = models.CharField(max_length=50)
+# 	cantidad = models.DecimalField(max_digits=7, decimal_places=2)
+# 	total = models.DecimalField(max_digits=14, decimal_places=2)
+# 	fecha_comprobante = models.DateField()
+# 	id_sucursal_id = models.IntegerField()
+# 	id_vendedor_id = models.IntegerField()
+# 	
+# 	objects = EstadisticasVentasVendedorClienteManager()
+# 	
+# 	class Meta:
+# 		managed = False
+# 		db_table = 'VLEstadisticasVentasVendedorCliente'
+# 		verbose_name = ('Estadísticas de Ventas')
+# 		verbose_name_plural = ('Estadísticas de Ventas')
+# 		# ordering = ['fecha_comprobante']

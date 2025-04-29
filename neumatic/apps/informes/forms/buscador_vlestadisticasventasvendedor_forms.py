@@ -1,4 +1,4 @@
-# neumatic\apps\informes\forms\buscador_vlestadisticasventas_forms.py
+# neumatic\apps\informes\forms\buscador_vlestadisticasventasvendedor_forms.py
 
 from django import forms
 from datetime import date
@@ -6,11 +6,11 @@ from datetime import date
 from .informes_generics_forms import InformesGenericForm
 from diseno_base.diseno_bootstrap import formclasstext, formclassdate, formclassselect
 from apps.maestros.models.sucursal_models import Sucursal
-from apps.maestros.models.cliente_models import Cliente
+from apps.maestros.models.vendedor_models import Vendedor
 from entorno.constantes_base import AGRUPAR, MOSTRAR
 
 
-class BuscadorEstadisticasVentasForm(InformesGenericForm):
+class BuscadorEstadisticasVentasVendedorForm(InformesGenericForm):
 	
 	sucursal = forms.ModelChoiceField(
 		queryset=Sucursal.objects.filter(estatus_sucursal=True), 
@@ -18,15 +18,11 @@ class BuscadorEstadisticasVentasForm(InformesGenericForm):
 		label="Sucursal",
 		widget=forms.Select(attrs={**formclassselect})
 	)
-	id_cliente = forms.IntegerField(
-		label="Cód. Cliente",
-		required=False,
-		widget=forms.NumberInput(attrs={**formclasstext})
-	)
-	nombre_cliente = forms.CharField(
-		label="Cliente",
-		required=False,
-		widget=forms.TextInput(attrs={**formclasstext, 'readonly': 'readonly'})
+	vendedor = forms.ModelChoiceField(
+		queryset=Vendedor.objects.filter(estatus_vendedor=True), 
+		required=True,
+		label="Vendedor",
+		widget=forms.Select(attrs={**formclassselect})
 	)
 	fecha_desde = forms.DateField(
 		required=False, 
@@ -64,11 +60,6 @@ class BuscadorEstadisticasVentasForm(InformesGenericForm):
 	)
 	
 	def __init__(self, *args, **kwargs):
-		"""
-		Inicializa el formulario con valores predeterminados:
-		- `fecha_desde` se establece en el 1 del mes y año actual.
-		- `fecha_hasta` se establece en la fecha actual.
-		"""
 		
 		user = kwargs.pop('user', None)
 		super().__init__(*args, **kwargs)
@@ -80,6 +71,15 @@ class BuscadorEstadisticasVentasForm(InformesGenericForm):
 			
 			#-- Deshabilitar el combo Sucursal.
 			self.fields['sucursal'].disabled = True
+			
+			#-- Filtrar vendedores por la sucursal del usuario.
+			self.fields['vendedor'].queryset = Vendedor.objects.filter(
+				estatus_vendedor=True,
+				id_sucursal=user.id_sucursal
+			)
+		else:
+			#-- Para usuarios con jerarquía 'A', mostrar todos los vendedores activos.
+			self.fields['vendedor'].queryset = Vendedor.objects.filter(estatus_vendedor=True)
 		
 		if "fecha_desde" not in self.initial:
 			fecha_inicial = date(date.today().year, date.today().month, 1)
@@ -93,7 +93,6 @@ class BuscadorEstadisticasVentasForm(InformesGenericForm):
 	def clean(self):
 		cleaned_data = super().clean()
 		
-		id_cliente = cleaned_data.get("id_cliente")
 		fecha_desde = cleaned_data.get("fecha_desde")
 		fecha_hasta = cleaned_data.get("fecha_hasta")
 		id_marca_desde = cleaned_data.get("id_marca_desde") or 0
@@ -117,12 +116,6 @@ class BuscadorEstadisticasVentasForm(InformesGenericForm):
 		
 		if id_marca_desde > id_marca_hasta:
 			self.add_error("id_marca_hasta", "El Código de Marca hasta no puede ser menor al Código de Marca desde.")
-		
-		if id_cliente:
-			try:
-				cliente = Cliente.objects.get(id_cliente=id_cliente)
-			except Cliente.DoesNotExist:
-				self.add_error("id_cliente", "El cliente no existe. Por favor, verifique el código.")
 		
 		return cleaned_data
 	

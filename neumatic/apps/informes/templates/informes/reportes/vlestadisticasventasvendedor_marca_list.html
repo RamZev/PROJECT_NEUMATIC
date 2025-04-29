@@ -1,4 +1,4 @@
-<!-- neumatic\apps\informes\templates\informes\reportes\vlestadisticasventas_familia_list.html -->
+<!-- neumatic\apps\informes\templates\informes\reportes\vlestadisticasventasvendedor_marca_list.html -->
 
 {% extends 'informes/reportes/base_reportes_new.html' %}
 {% load static %}
@@ -23,10 +23,9 @@
 <!-- Bloque Content ------------------------------------------------------------------------ -->
 
 {% block content %}
-	<table style="max-width: 80%; margin: auto;">
+	<table style="max-width: 60%; margin: auto;">
 		<thead>
 			<tr>
-				<th>Familia</th>
 				<th>Marca</th>
 				{% if mostrar == 'Cantidad' %}
 					<th class="numeric">Cantidad</th>
@@ -40,7 +39,6 @@
 			
 			{% for obj in objetos %}
 				<tr>
-					<td>{{ obj.nombre_producto_familia }}</td>
 					<td>{{ obj.nombre_producto_marca }}</td>
 					{% if mostrar == 'Cantidad' %}
 						<td class="numeric">{{ obj.cantidad|formato_es_ar }}</td>
@@ -53,7 +51,7 @@
 			{% endfor %}
 			
 			<tr style="border-top: 1px solid #000;">
-				<td class="numeric" colspan="2"><strong>Total General:</strong></td>
+				<td class="numeric"><strong>Total General:</strong></td>
 				{% if mostrar == 'Cantidad' %}
 					<td class="numeric"><strong>{{ total_cantidad|formato_es_ar }}</strong></td>
 					<td class="numeric"><strong>{{ total_porcentaje_cantidad|formato_es_ar }}%</strong></td>

@@ -129,7 +129,7 @@ AGRUPAR = [
 	("Modelo", "Modelo"),
 	("Marca", "Marca")
 ]
-ORDENAR = [
+MOSTRAR = [
 	("Cantidad", "Cantidad"),
 	("Importe", "Importe"),
 ]

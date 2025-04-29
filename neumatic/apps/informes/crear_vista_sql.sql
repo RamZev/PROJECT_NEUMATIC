@@ -732,7 +732,6 @@ CREATE VIEW "VLEstadisticasVentas" AS
 		df.cantidad*cv.mult_estadistica AS cantidad,
 		((df.cantidad*df.precio)+(df.cantidad*df.precio*df.descuento/100))*cv.mult_estadistica AS total,
 		f.fecha_comprobante,
-		p.id_marca_id,
 		f.id_cliente_id,
 		f.id_sucursal_id
 	FROM 
@@ -746,3 +745,34 @@ CREATE VIEW "VLEstadisticasVentas" AS
 		df.id_producto_id <> 0 AND cv.mult_estadistica <> 0 AND f.no_estadist = False;
 
 
+-- ---------------------------------------------------------------------------
+-- Estadísticas de Ventas Vendedor.
+-- Modelo: VLEstadisticasVentasVendedor
+-- ---------------------------------------------------------------------------
+DROP VIEW IF EXISTS "main"."VLEstadisticasVentasVendedor";
+CREATE VIEW "VLEstadisticasVentasVendedor" AS 
+	SELECT 
+		f.id_factura, 
+		df.id_producto_id, 
+		p.nombre_producto,
+		p.id_familia_id,
+		pf.nombre_producto_familia, 
+		p.id_modelo_id,
+		pm.nombre_modelo,
+		p.id_marca_id,
+		m.nombre_producto_marca,
+		df.cantidad*cv.mult_estadistica AS cantidad,
+		((df.cantidad*df.precio)+(df.cantidad*df.precio*df.descuento/100))*cv.mult_estadistica AS total,
+		f.fecha_comprobante,
+		p.id_marca_id,
+		f.id_sucursal_id,
+		f.id_vendedor_id
+	FROM 
+		detalle_factura df JOIN factura f ON df.id_factura_id = f.id_factura
+			INNER JOIN producto p ON df.id_producto_id = p.id_producto
+			INNER JOIN producto_modelo pm ON p.id_modelo_id = pm.id_modelo
+			INNER JOIN producto_familia pf ON p.id_familia_id = pf.id_producto_familia
+			INNER JOIN producto_marca m ON p.id_marca_id = m.id_producto_marca
+			INNER JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
+	WHERE 
+		df.id_producto_id <> 0 AND cv.mult_estadistica <> 0 AND f.no_estadist = False;
