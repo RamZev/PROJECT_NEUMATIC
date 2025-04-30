@@ -1614,8 +1614,10 @@
                             //
                             let tieneStock = false; // Bandera para verificar si hay stock mayor a cero
                             data.stock.forEach(stock => {
-                                if (parseFloat(stock.stock) > 0) { // Solo mostrar si el stock es mayor a cero
-                                    const row = `<tr><td>${stock.deposito}</td><td>${stock.stock}</td></tr>`;
+                                if (parseFloat(stock.stock) !== 0) { // Solo mostrar si el stock es distinto a cero
+                                    //const row = `<tr><td>${stock.deposito}</td><td>${stock.stock}</td></tr>`;
+                                    const row = `<tr><td style="color: ${parseFloat(stock.deposito) < 0 ? 'red' : 'inherit'}">${stock.deposito}</td><td>${stock.stock}</td></tr>`;
+
                                     tablaStock.insertAdjacentHTML("beforeend", row);
                                     tieneStock = true;
                                 }

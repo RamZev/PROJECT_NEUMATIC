@@ -126,6 +126,8 @@ def detalle_producto(request, id_producto):
         for stock in stock_por_deposito
     ]
     
+    # print("stock_por_deposito", stock_por_deposito)
+    
     # Obtener mínimos por depósito (usando id_cai)
     minimos_por_deposito = ProductoMinimo.objects.filter(id_cai=producto.id_cai).select_related('id_deposito')
     minimos_data = [
