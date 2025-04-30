@@ -23,3 +23,4 @@ DROP VIEW IF EXISTS "main"."VLComisionOperario";
 DROP VIEW IF EXISTS "main"."VLPrecioDiferente";
 DROP VIEW IF EXISTS "main"."VLVentasResumenIB";
 DROP VIEW IF EXISTS "main"."VLEstadisticasVentas";
+DROP VIEW IF EXISTS "main"."VLEstadisticasVentasVendedor";

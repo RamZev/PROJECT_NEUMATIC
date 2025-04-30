@@ -1,4 +1,4 @@
-# neumatic\apps\informes\views\vlestadisticasventas_list_views.py
+# neumatic\apps\informes\views\vlestadisticasventasvendedor_list_views.py
 
 from django.urls import reverse_lazy
 from django.shortcuts import render
@@ -13,9 +13,9 @@ from reportlab.lib.pagesizes import A4, landscape, portrait
 from reportlab.platypus import Paragraph
 
 from .report_views_generics import *
-from apps.informes.models import VLEstadisticasVentas
-from apps.maestros.models.cliente_models import Cliente
-from ..forms.buscador_vlestadisticasventas_forms import BuscadorEstadisticasVentasForm
+from apps.informes.models import VLEstadisticasVentasVendedor
+from apps.maestros.models.vendedor_models import Vendedor
+from ..forms.buscador_vlestadisticasventasvendedor_forms import BuscadorEstadisticasVentasVendedorForm
 from utils.utils import deserializar_datos, formato_argentino, normalizar
 from utils.helpers.export_helpers import ExportHelper, PDFGenerator
 
@@ -26,10 +26,10 @@ class ConfigViews:
 	report_title = "Estadísticas de Ventas"
 	
 	#-- Modelo.
-	model = VLEstadisticasVentas
+	model = VLEstadisticasVentasVendedor
 	
 	#-- Formulario asociado al modelo.
-	form_class = BuscadorEstadisticasVentasForm
+	form_class = BuscadorEstadisticasVentasVendedorForm
 	
 	#-- Aplicación asociada al modelo.
 	app_label = "informes"
@@ -85,7 +85,7 @@ class ConfigViews:
 	}
 
 
-class VLEstadisticasVentasInformeView(InformeFormView):
+class VLEstadisticasVentasVendedorInformeView(InformeFormView):
 	config = ConfigViews  #-- Ahora la configuración estará disponible en self.config.
 	form_class = ConfigViews.form_class
 	template_name = ConfigViews.template_list
@@ -102,7 +102,7 @@ class VLEstadisticasVentasInformeView(InformeFormView):
 	
 	def obtener_queryset(self, cleaned_data):
 		sucursal = cleaned_data.get('sucursal', None)
-		id_cliente = cleaned_data.get('id_cliente', None)
+		vendedor = cleaned_data.get('vendedor', None)
 		fecha_desde = cleaned_data.get('fecha_desde')
 		fecha_hasta = cleaned_data.get('fecha_hasta')
 		id_marca_desde = cleaned_data.get('id_marca_desde')
@@ -111,8 +111,9 @@ class VLEstadisticasVentasInformeView(InformeFormView):
 		mostrar = cleaned_data.get('mostrar', None)
 		
 		id_sucursal = sucursal.id_sucursal if sucursal else None
+		id_vendedor = vendedor.id_vendedor if vendedor else None
 		
-		queryset = VLEstadisticasVentas.objects.obtener_datos(
+		queryset = VLEstadisticasVentasVendedor.objects.obtener_datos(
 			fecha_desde, 
 			fecha_hasta, 
 			id_marca_desde, 
@@ -120,7 +121,7 @@ class VLEstadisticasVentasInformeView(InformeFormView):
 			agrupar,
 			mostrar,
 			id_sucursal=id_sucursal,
-			id_cliente=id_cliente
+			id_vendedor=id_vendedor
 		)
 		
 		#-- Calcular totales solo si hay registros.
@@ -143,7 +144,7 @@ class VLEstadisticasVentasInformeView(InformeFormView):
 		
 		#-- Parámetros del listado.
 		sucursal = cleaned_data.get('sucursal', None)
-		id_cliente = cleaned_data.get('id_cliente', None)
+		vendedor = cleaned_data.get('vendedor', None)
 		fecha_desde = cleaned_data.get('fecha_desde')
 		fecha_hasta = cleaned_data.get('fecha_hasta')
 		id_marca_desde = cleaned_data.get('id_marca_desde')
@@ -152,8 +153,8 @@ class VLEstadisticasVentasInformeView(InformeFormView):
 		mostrar = cleaned_data.get('mostrar', None)
 		
 		# cliente = Cliente.objects.get(pk=id_cliente) if id_cliente else None  #-- de esta manera me arroja error si no existe el cliente por lo tanto hay que manejar la excepción.
-		cliente = Cliente.objects.filter(pk=id_cliente).first() if id_cliente else None   #-- De esta manera si no existe no salta la excepción, sino que retorna None.
-		cliente = cliente.nombre_cliente if cliente else None   #-- Para poder serializar el cliente en el contexto.
+		vendedor = Vendedor.objects.filter(pk=vendedor.id_vendedor).first() if vendedor else None   #-- De esta manera si no existe no salta la excepción, sino que retorna None.
+		vendedor = vendedor.nombre_vendedor if vendedor else None   #-- Para poder serializar el vendedor en el contexto.
 		
 		fecha_hora_reporte = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
 		
@@ -161,7 +162,7 @@ class VLEstadisticasVentasInformeView(InformeFormView):
 		
 		param_left = {
 			"Sucursal": sucursal.nombre_sucursal if sucursal else "Todas",
-			"Cliente": cliente if cliente else "Todos",
+			"Vendedor": vendedor if vendedor else "Todos",
 			"Agrupado por": agrupar,
 			"Mostrar por": mostrar
 		}
@@ -229,7 +230,7 @@ def raw_to_dict(instance):
 	return data
 
 
-def vlestadisticasventas_vista_pantalla(request):
+def vlestadisticasventasvendedor_vista_pantalla(request):
 	#-- Obtener el token de la querystring.
 	token = request.GET.get("token")
 	
@@ -257,7 +258,7 @@ def vlestadisticasventas_vista_pantalla(request):
 	return render(request, ConfigViews.reporte_pantalla, contexto_reporte)
 
 
-def vlestadisticasventas_vista_pdf(request):
+def vlestadisticasventasvendedor_vista_pdf(request):
 	#-- Obtener el token de la querystring.
 	token = request.GET.get("token")
 	
@@ -333,7 +334,6 @@ def generar_pdf(contexto_reporte):
 		if agrupar == "Producto":
 			row.extend([
 				obj['id_producto_id'],
-				obj['cai'],
 				Paragraph(str(obj['nombre_producto']), generator.styles['CellStyle']),
 				Paragraph(str(obj['nombre_producto_familia']), generator.styles['CellStyle']),
 				Paragraph(str(obj['nombre_modelo']), generator.styles['CellStyle']),
@@ -386,7 +386,7 @@ def generar_pdf(contexto_reporte):
 	return generator.generate(table_data, col_widths, table_style_config)		
 
 
-def vlestadisticasventas_vista_excel(request):
+def vlestadisticasventasvendedor_vista_excel(request):
 	token = request.GET.get("token")
 	
 	if not token:
@@ -403,7 +403,7 @@ def vlestadisticasventas_vista_excel(request):
 	# ---------------------------------------------
 	
 	#-- Instanciar la vista y obtener el queryset.
-	view_instance = VLEstadisticasVentasInformeView()
+	view_instance = VLEstadisticasVentasVendedorInformeView()
 	view_instance.request = request
 	queryset = view_instance.obtener_queryset(cleaned_data)
 	
@@ -426,7 +426,7 @@ def vlestadisticasventas_vista_excel(request):
 	return response
 
 
-def vlestadisticasventas_vista_csv(request):
+def vlestadisticasventasvendedor_vista_csv(request):
 	token = request.GET.get("token")
 	if not token:
 		return HttpResponse("Token no proporcionado", status=400)
@@ -441,7 +441,7 @@ def vlestadisticasventas_vista_csv(request):
 	mostrar = cleaned_data.get("mostrar", None)
 	
 	#-- Instanciar la vista para reejecutar la consulta y obtener el queryset.
-	view_instance = VLEstadisticasVentasInformeView()
+	view_instance = VLEstadisticasVentasVendedorInformeView()
 	view_instance.request = request
 	queryset = view_instance.obtener_queryset(cleaned_data)
 	
@@ -467,13 +467,12 @@ def headers_titles(agrupar, mostrar):
 	
 	if agrupar == "Producto":
 		headers = {
-			"id_producto_id": (40, "Código"),
-			"cai": (70, "CAI"),
-			"nombre_producto": (210, "Descripción"),
-			"nombre_producto_familia": (140, "Familia"),
-			"nombre_modelo": (140, "Modelo")
+			"id_producto_id": (50, "Código"),
+			"nombre_producto": (240, "Descripción"),
+			"nombre_producto_familia": (150, "Familia"),
+			"nombre_modelo": (150, "Modelo")
 		}
-		blank_cols = ["", "", "", "", ""]
+		blank_cols = ["", "", "", ""]
 	elif agrupar == "Familia":
 		headers = {
 			"nombre_producto_familia": (200, "Familia")
@@ -489,7 +488,7 @@ def headers_titles(agrupar, mostrar):
 		blank_cols = []
 	
 	headers.update({
-		"nombre_producto_marca": (100, "Marca"),
+		"nombre_producto_marca": (110, "Marca"),
 	})
 	
 	if mostrar == "Cantidad":
