@@ -58,6 +58,18 @@ class FacturaForm(forms.ModelForm):
         widget=forms.CheckboxInput(attrs={'class': 'form-check-input', 'disabled': 'disabled'})
     )
     
+    es_pendiente = forms.BooleanField(
+        required=False,
+        widget=forms.CheckboxInput(attrs={'class': 'form-check-input', 'disabled': 'disabled'})
+    )
+    
+    es_presupuesto = forms.BooleanField(
+        required=False,
+        widget=forms.CheckboxInput(attrs={'class': 'form-check-input', 'disabled': 'disabled'})
+    )
+    
+    
+    
     class Meta:
         model = Factura
         

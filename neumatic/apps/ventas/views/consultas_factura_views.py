@@ -14,7 +14,7 @@ from apps.maestros.models.base_models import (ProductoStock,
                                               ProductoMinimo,
                                               AlicuotaIva,
                                               ComprobanteVenta)
-from apps.ventas.models.factura_models import Factura
+from apps.ventas.models.factura_models import Factura, DetalleFactura
 from apps.maestros.models.producto_models import Producto
 from apps.maestros.models.cliente_models import Cliente
 from apps.maestros.models.vendedor_models import Vendedor
@@ -99,7 +99,7 @@ def buscar_producto(request):
             'nombre': producto.nombre_producto,
             'precio': producto.precio,
             'stock': ProductoStock.objects.filter(id_producto=producto).aggregate(total_stock=Sum('stock'))['total_stock'] or 0,
-            'minimo': ProductoMinimo.objects.filter(id_cai=producto.id_cai).aggregate(total_minimo=Sum('minimo'))['total_minimo'] or 0,
+            'minimo': producto.minimo,
             'id_marca': producto.id_marca.id_producto_marca if producto.id_marca else None,
             'id_familia': producto.id_familia.id_producto_familia if producto.id_familia else None,
             'descuento_vendedor': descuento,
@@ -267,6 +267,8 @@ def datos_comprobante(request, pk):
         return JsonResponse({
             'codigo': comprobante.codigo_comprobante_venta,
             'es_remito': comprobante.remito,
+            'es_pendiente': comprobante.pendiente,
+            'es_presupuesto': comprobante.presupuesto,
             'compro_asociado': comprobante.compro_asociado
         })
     except ComprobanteVenta.DoesNotExist:
@@ -401,11 +403,13 @@ def valida_autorizacion(request):
         sucursal_id = data.get('sucursal_id')
         fecha_comprobante = data.get('fecha_comprobante')
         
+        '''
         print("Datos recibidos:")
         print(f"Código: {codigo}")
         print(f"Cliente ID: {cliente_id}")
         print(f"Sucursal ID: {sucursal_id}")
         print(f"Fecha Comprobante: {fecha_comprobante}")
+        '''
 
         # Validación básica del código
         if not codigo.isdigit() or int(codigo) <= 0:
@@ -478,19 +482,9 @@ def valida_autorizacion(request):
 @require_GET
 @login_required
 def verificar_remito(request):
-    """
-    Verifica si existe una factura con comprobante_remito y remito especificados.
-    Devuelve JSON con:
-    - existe: bool
-    - id_factura: int (si existe)
-    """
     comprobante_remito = request.GET.get('comprobante_remito', '').strip()
     remito = request.GET.get('remito', '').strip()
     
-    print("comprobante_remito:", comprobante_remito) 
-    print("remito:", remito)
-    
-
     if not comprobante_remito or not remito:
         return JsonResponse(
             {'error': 'comprobante_remito y remito son requeridos'},
@@ -501,14 +495,70 @@ def verificar_remito(request):
         # Búsqueda optimizada con first()
         factura = Factura.objects.filter(
             compro=comprobante_remito,
-            numero_comprobante=remito
-        ).only('id_factura').first()  # Solo trae el ID
+            numero_comprobante=remito,
+        ).filter(
+            Q(estado="") | Q(estado__isnull=True)
+        ).select_related('id_comprobante_venta').only(
+            'id_factura',
+            'id_comprobante_venta__pendiente'
+        ).first()
         
-        print(factura)
+        # print("factura.estado:", factura.estado, factura.compro, factura.numero_comprobante)
+                        
+        if not factura:
+            return JsonResponse({
+                'existe': False,
+                'id_factura': None,
+                'pendiente': None,
+                'detalles': []
+            })
+
+
+        # Obtener los detalles relacionados
+        detalles = DetalleFactura.objects.filter(
+            id_factura=factura.id_factura
+        ).select_related('id_producto').values(
+            'id_producto',
+            'id_producto__medida',
+            'producto_venta',
+            'cantidad',
+            'precio',
+            'precio_lista',
+            'desc_vendedor',
+            'descuento',
+            'gravado',
+            'alic_iva',
+            'iva',
+            'total',
+            'id_producto__id_alicuota_iva__alicuota_iva'
+        )
+        
+        # Convertir el QuerySet a lista y asegurar valores decimales como float
+        detalles_lista = []
+        for detalle in detalles:
+            detalle_dict = {
+                'id_producto': detalle['id_producto'],
+                'medida': detalle['id_producto__medida'],
+                'nombre': detalle['producto_venta'],
+                'cantidad': float(detalle['cantidad']),
+                'precio': float(detalle['precio']),
+                'precio_lista': float(detalle['precio_lista']),
+                'desc_vendedor': float(detalle['desc_vendedor']),
+                'descuento': float(detalle['descuento']),
+                'gravado': float(detalle['gravado']),
+                'alic_iva': float(detalle.get('id_producto__id_alicuota_iva__alicuota_iva', detalle['alic_iva'])),
+                'iva': float(detalle['iva']),
+                'total': float(detalle['total'])
+            }
+            detalles_lista.append(detalle_dict)
+
+        print(detalles_lista)
 
         return JsonResponse({
-            'existe': factura is not None,
-            'id_factura': factura.id_factura if factura else None
+            'existe': True,
+            'id_factura': factura.id_factura,
+            'pendiente': factura.id_comprobante_venta.pendiente,
+            'detalles': detalles_lista  # Convertimos el QuerySet a lista
         })
 
     except Exception as e:
