@@ -170,7 +170,17 @@ class FacturaCreateView(MaestroDetalleCreateView):
 									form.add_error('id_deposito', 'Debe seleccionar un depósito')
 									return self.form_invalid(form)
 
-							# 2. Numeración (igual que en versión original)
+							# 2. Validación para documentos pendientes
+							comprobante_venta = form.cleaned_data['id_comprobante_venta']
+							if comprobante_venta.pendiente:
+									comprobante_remito = form.cleaned_data.get('comprobante_remito')
+									remito = form.cleaned_data.get('remito')
+									
+									if not all([comprobante_remito, remito]):
+											form.add_error(None, 'Para este tipo de comprobante debe especificar el documento asociado')
+											return self.form_invalid(form)
+       
+       				# 3. Numeración
 							sucursal = form.cleaned_data['id_sucursal']
 							punto_venta = form.cleaned_data['id_punto_venta']
 							comprobante = form.cleaned_data['compro']
@@ -193,10 +203,32 @@ class FacturaCreateView(MaestroDetalleCreateView):
 							form.instance.numero_comprobante = nuevo_numero
 							form.instance.full_clean()
 
-							# 3. Guardado en el modelo Factura
+							# 4. Guardado en el modelo Factura
 							self.object = form.save()
        
-							# 4. ACTUALIZACIÓN DE LA AUTORIZACIÓN (NUEVO)
+							# 5. ACTUALIZACIÓN DEL DOCUMENTO ASOCIADO (PARTE CLAVE)
+							if comprobante_venta.pendiente:
+									try:
+											# Buscar el documento asociado (remito) con estado NULL o vacío
+											documento_asociado = Factura.objects.filter(
+													Q(compro=form.cleaned_data['comprobante_remito']) &
+													Q(numero_comprobante=form.cleaned_data['remito']) &
+													(Q(estado="") | Q(estado__isnull=True))
+											).select_for_update().first()
+											
+											if documento_asociado:
+													# Actualización directa y eficiente
+													Factura.objects.filter(pk=documento_asociado.pk).update(
+															estado="F"
+													)
+													print(f"Documento {documento_asociado.compro}-{documento_asociado.numero_comprobante} actualizado a estado 'F'")
+											else:
+													print("Advertencia: No se encontró el documento asociado para actualizar")
+									except Exception as e:
+											print(f"Error al actualizar documento asociado: {str(e)}")
+											# No hacemos return para no impedir la creación de la factura principal
+       
+							# 6. ACTUALIZACIÓN DE LA AUTORIZACIÓN (NUEVO)
 							if form.cleaned_data.get('id_valida'):  # Si tiene autorización asociada
 									autorizacion = form.cleaned_data['id_valida']
 									Valida.objects.filter(pk=autorizacion.pk).update(
@@ -206,25 +238,24 @@ class FacturaCreateView(MaestroDetalleCreateView):
 									)
 									print(f"Autorización {autorizacion.id_valida} marcada como utilizada")
        
-							# Guardado en el modelo Detallefactura
+							# 7. Guardado en el modelo Detallefactura y DetalleSerial
 							formset_detalle.instance = self.object
 							detalles = formset_detalle.save()
-       
-							# Guardado en el modelo DetalleSerial
+							
 							formset_serial.instance = self.object 
 							formset_serial.save() 						
        
-							# 4. Actualización de inventario (NUEVA SECCIÓN)
+							# 8. Actualización de inventario
 							for detalle in detalles:
 								# Solo actualizamos si es producto físico (tipo_producto = "P")
-								print("entró al bucle detalles!!!")
+								# print("entró al bucle detalles!!!")
 				
 								if (hasattr(detalle.id_producto, 'tipo_producto') and 
 										detalle.id_producto.tipo_producto == "P" and 
 										detalle.cantidad):
 										
 										# Actualización segura con bloqueo
-										print("mult_stock", self.object.id_comprobante_venta.mult_stock)
+										# print("mult_stock", self.object.id_comprobante_venta.mult_stock)
 					
 										ProductoStock.objects.select_for_update().filter(
 												id_producto=detalle.id_producto,
