@@ -608,9 +608,11 @@ class PDFGenerator:
 		line_y = content_bottom - 2
 		canvas_obj.line(doc.leftMargin, line_y, doc.width + doc.rightMargin, line_y)
 	
-	def _create_table(self, data, col_widths, style_config):
+	# def _create_table(self, data, col_widths, style_config):
+	def _create_table(self, data, col_widths, style_config, repeat_rows=1):
 		"""Crea una tabla con los datos y estilos proporcionados"""
-		table = Table(data, colWidths=col_widths, repeatRows=1)
+		# table = Table(data, colWidths=col_widths, repeatRows=1)
+		table = Table(data, colWidths=col_widths, repeatRows=repeat_rows)
 		
 		#-- Estilo base.
 		table_style = TableStyle([
@@ -620,15 +622,15 @@ class PDFGenerator:
 			('LEADING', (0,0), (-1,-1), 8),
 			
 			#-- Padding de la tabla exceptuando la primera fila (headers).
-			('TOPPADDING', (0,1), (-1,-1), 0),
-			('BOTTOMPADDING', (0,1), (-1,-1), 0),
+			('TOPPADDING', (0,repeat_rows), (-1,-1), 0),
+			('BOTTOMPADDING', (0,repeat_rows), (-1,-1), 0),
 			
 			#-- Estilos para la primera fila (headers).
-			('BACKGROUND', (0,0), (-1,0), colors.gray),
-			('FONTNAME', (0,0), (-1,0), 'Helvetica-Bold'),
-			('TEXTCOLOR', (0,0), (-1,0), colors.white),
-			('TOPPADDING', (0,0), (-1,0), 2),
-			('BOTTOMPADDING', (0,0), (-1,0), 2),
+			('BACKGROUND', (0,0), (-1,(repeat_rows-1)), colors.gray),
+			('FONTNAME', (0,0), (-1,(repeat_rows-1)), 'Helvetica-Bold'),
+			('TEXTCOLOR', (0,0), (-1,(repeat_rows-1)), colors.white),
+			('TOPPADDING', (0,0), (-1,(repeat_rows-1)), 2),
+			('BOTTOMPADDING', (0,0), (-1,(repeat_rows-1)), 2),
 		])
 		
 		#-- Añadir configuraciones de estilo adicionales.
@@ -638,7 +640,8 @@ class PDFGenerator:
 		table.setStyle(table_style)
 		return table
 	
-	def generate(self, table_data, col_widths, table_style_config):
+	# def generate(self, table_data, col_widths, table_style_config):
+	def generate(self, table_data, col_widths, table_style_config, repeat_rows=1):
 		"""Genera el PDF con los datos proporcionados"""
 		
 		#-- Pre-calcular altura del header ANTES de construir.
@@ -651,7 +654,8 @@ class PDFGenerator:
 		content = []
 		
 		#-- Crear tabla.
-		table = self._create_table(table_data, col_widths, table_style_config)
+		# table = self._create_table(table_data, col_widths, table_style_config)
+		table = self._create_table(table_data, col_widths, table_style_config, repeat_rows)
 		content.append(table)
 		
 		#-- Construir documento.

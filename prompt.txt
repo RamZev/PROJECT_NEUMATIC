@@ -1,8 +1,41 @@
-cantidad	| % Cant	| total	| % total
-------------------------------------------
-	20		|	40.00	|	25	|	18.52
-	15		|	30.00	|	30	|	22.22
-	10		|	20.00	|	60	|	44.44
-	 5		|	10.00	|	20	|	14.82
-------------|-----------|-------|---------
-	50		|  100.00	|  135	|  100.00
+-- Pruebas consulta VLEstadisticasSegunCondicion
+
+SELECT
+	id,
+	nombre_producto_familia,
+	nombre_producto_marca,
+	nombre_modelo,
+	id_producto_id,
+	nombre_producto,
+	SUM(CASE WHEN reventa = 'M' THEN cantidad ELSE 0 END) AS cantidad_m,
+	SUM(CASE WHEN reventa = 'M' THEN importe ELSE 0 END) AS importe_m,
+	SUM(CASE WHEN reventa = 'M' THEN costo ELSE 0 END) AS costo_m,
+	SUM(CASE WHEN reventa = 'M' THEN (importe - costo) ELSE 0 END) AS ganancia_m,
+	SUM(CASE WHEN reventa = 'R' THEN cantidad ELSE 0 END) AS cantidad_r,
+	SUM(CASE WHEN reventa = 'R' THEN importe ELSE 0 END) AS importe_r,
+	SUM(CASE WHEN reventa = 'R' THEN costo ELSE 0 END) AS costo_r,
+	SUM(CASE WHEN reventa = 'R' THEN (importe - costo) ELSE 0 END) AS ganancia_r,
+	SUM(CASE WHEN reventa = 'E' THEN cantidad ELSE 0 END) AS cantidad_e,
+	SUM(CASE WHEN reventa = 'E' THEN importe ELSE 0 END) AS importe_e,
+	SUM(CASE WHEN reventa = 'E' THEN costo ELSE 0 END) AS costo_e,
+	SUM(CASE WHEN reventa = 'E' THEN (importe - costo) ELSE 0 END) AS ganancia_e
+FROM
+	VLEstadisticasSegunCondicion
+WHERE
+	fecha_comprobante BETWEEN '2025-01-01' AND '2025-01-10'
+	AND id_marca_id BETWEEN 1 AND 50
+GROUP BY 
+--	id_familia_id, id_marca_id, id_modelo_id, id_producto_id	-- Producto
+	id_familia_id, id_modelo_id, id_producto_id					-- Producto
+--	id_familia_id, id_marca_id									-- Familia
+--	id_marca_id, id_modelo_id									-- Modelo
+--	id_marca_id													-- Marca
+	
+	
+	
+	
+-------------------------------------------------------------------------------------------------------------------------------------------
+|				MOSTRADOR					  |					REVENTA					    |				E-COMERCE					  |
+-------------------------------------------------------------------------------------------------------------------------------------------
+| Cantidad  |  Venta  |  Precio  |  Ganancia  | Cantidad  |  Venta  |  Precio  |  Ganancia  | Cantidad  |  Venta  |  Precio  |  Ganancia  |
+-------------------------------------------------------------------------------------------------------------------------------------------

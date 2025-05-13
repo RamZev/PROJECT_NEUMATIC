@@ -1,4 +1,4 @@
-# neumatic\apps\informes\views\vlestadisticasventas_list_views.py
+# neumatic\apps\informes\views\vlestadisticasventasmarca_list_views.py
 
 from django.urls import reverse_lazy
 from django.shortcuts import render
@@ -13,23 +13,23 @@ from reportlab.lib.pagesizes import A4, landscape, portrait
 from reportlab.platypus import Paragraph
 
 from .report_views_generics import *
-from apps.informes.models import VLEstadisticasVentas
-from apps.maestros.models.cliente_models import Cliente
-from ..forms.buscador_vlestadisticasventas_forms import BuscadorEstadisticasVentasForm
-from utils.utils import deserializar_datos, formato_argentino, normalizar
+from apps.informes.models import VLEstadisticasVentasMarca
+from apps.maestros.models.base_models import ProductoMarca
+from ..forms.buscador_vlestadisticasventasmarca_forms import BuscadorEstadisticasVentasMarcaForm
+from utils.utils import deserializar_datos, formato_argentino, normalizar, format_date
 from utils.helpers.export_helpers import ExportHelper, PDFGenerator
 
 
 class ConfigViews:
 	
 	#-- Título del reporte.
-	report_title = "Estadísticas de Ventas"
+	report_title = "Estadísticas de Ventas por Marca y Familia"
 	
 	#-- Modelo.
-	model = VLEstadisticasVentas
+	model = VLEstadisticasVentasMarca
 	
 	#-- Formulario asociado al modelo.
-	form_class = BuscadorEstadisticasVentasForm
+	form_class = BuscadorEstadisticasVentasMarcaForm
 	
 	#-- Aplicación asociada al modelo.
 	app_label = "informes"
@@ -68,24 +68,25 @@ class ConfigViews:
 	url_csv = f"{model_string}_vista_csv"
 	
 	#-- Plantilla Vista Preliminar Pantalla.
-	reporte_pantalla = f"informes/reportes/{model_string}_producto_list.html"
+	reporte_pantalla = f"informes/reportes/{model_string}_list.html"
 	
 	#-- Establecer las columnas del reporte y sus anchos(en punto).
 	header_data = {
+		"comprobante": (80, "Comprobante"),
+		"fecha_comprobante": (50, "Fecha"),
+		"id_cliente_id": (40, "Cliente"),
 		"id_producto_id": (40, "Código"),
-		"cai": (70, "CAI"),
 		"nombre_producto": (200, "Descripción"),
-		"nombre_producto_familia": (50, "Familia"),
-		"nombre_modelo": (50, "Modelo"),
-		"nombre_producto_marca": (50, "Marca"),
+		"medida": (50, "Medida"),
 		"cantidad": (50, "Cantidad"),
-		"porcentaje_cantidad": (50, "% Cant"),
+		"precio": (75, "Precio"),
+		"descuento": (50, "Desc."),
 		"total": (75, "Total"),
-		"porcentaje_total": (50, "% Total")
+		"compra": (75, "Compra"),
 	}
 
 
-class VLEstadisticasVentasInformeView(InformeFormView):
+class VLEstadisticasVentasMarcaInformeView(InformeFormView):
 	config = ConfigViews  #-- Ahora la configuración estará disponible en self.config.
 	form_class = ConfigViews.form_class
 	template_name = ConfigViews.template_list
@@ -102,36 +103,19 @@ class VLEstadisticasVentasInformeView(InformeFormView):
 	
 	def obtener_queryset(self, cleaned_data):
 		sucursal = cleaned_data.get('sucursal', None)
-		id_cliente = cleaned_data.get('id_cliente', None)
+		marca = cleaned_data.get('marca', None)
 		fecha_desde = cleaned_data.get('fecha_desde')
 		fecha_hasta = cleaned_data.get('fecha_hasta')
-		id_marca_desde = cleaned_data.get('id_marca_desde')
-		id_marca_hasta = cleaned_data.get('id_marca_hasta')
-		agrupar = cleaned_data.get('agrupar', None)
-		mostrar = cleaned_data.get('mostrar', None)
 		
 		id_sucursal = sucursal.id_sucursal if sucursal else None
+		id_marca = marca.id_producto_marca if marca else None
 		
-		queryset = VLEstadisticasVentas.objects.obtener_datos(
-			fecha_desde, 
-			fecha_hasta, 
-			id_marca_desde, 
-			id_marca_hasta,
-			agrupar,
-			mostrar,
-			id_sucursal=id_sucursal,
-			id_cliente=id_cliente
+		queryset = VLEstadisticasVentasMarca.objects.obtener_datos(
+			id_marca,
+			fecha_desde,
+			fecha_hasta,
+			id_sucursal=id_sucursal
 		)
-		
-		#-- Calcular totales solo si hay registros.
-		if queryset:
-			total_cantidad = sum(float(obj.cantidad) for obj in queryset)
-			total_importes = sum(float(obj.total) for obj in queryset)
-			
-			#-- Agregar porcentajes a cada objeto.
-			for obj in queryset:
-				obj.porcentaje_cantidad = (float(obj.cantidad) / total_cantidad * 100) if total_cantidad else 0
-				obj.porcentaje_total = (float(obj.total) / total_importes * 100) if total_importes else 0
 		
 		return queryset
 	
@@ -143,16 +127,11 @@ class VLEstadisticasVentasInformeView(InformeFormView):
 		
 		#-- Parámetros del listado.
 		sucursal = cleaned_data.get('sucursal', None)
-		id_cliente = cleaned_data.get('id_cliente', None)
+		marca = cleaned_data.get('marca', None)
 		fecha_desde = cleaned_data.get('fecha_desde')
 		fecha_hasta = cleaned_data.get('fecha_hasta')
-		id_marca_desde = cleaned_data.get('id_marca_desde')
-		id_marca_hasta = cleaned_data.get('id_marca_hasta')
-		agrupar = cleaned_data.get('agrupar', None)
-		mostrar = cleaned_data.get('mostrar', None)
 		
-		# cliente = Cliente.objects.get(pk=id_cliente) if id_cliente else None  #-- de esta manera me arroja error si no existe el cliente por lo tanto hay que manejar la excepción.
-		cliente = Cliente.objects.filter(pk=id_cliente).first() if id_cliente else None   #-- De esta manera si no existe no salta la excepción, sino que retorna None.
+		marca = ProductoMarca.objects.filter(pk=marca.id_producto_marca).first() if marca else None
 		
 		fecha_hora_reporte = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
 		
@@ -160,49 +139,82 @@ class VLEstadisticasVentasInformeView(InformeFormView):
 		
 		param_left = {
 			"Sucursal": sucursal.nombre_sucursal if sucursal else "Todas",
-			"Cliente": cliente.nombre_cliente if cliente else "Todos",
-			"Agrupado por": agrupar,
-			"Mostrar por": mostrar
+			"Marca": marca.nombre_producto_marca if marca else "Todas",
 		}
 		param_right = {
 			"Desde": fecha_desde.strftime("%d/%m/%Y"),
-			"Hasta": fecha_hasta.strftime("%d/%m/%Y"),
-			"Marca Desde": id_marca_desde,
-			"Marca Hasta": id_marca_hasta
+			"Hasta": fecha_hasta.strftime("%d/%m/%Y")
 		}
 		
 		# **************************************************
-		#-- Convertir los datos agrupados a un formato serializable:
-		objetos_serializables = []
-		total_cantidad = Decimal('0')
-		total_porcentaje_cantidad = Decimal('0')
-		total_importe = Decimal('0')
-		total_porcentaje_total = Decimal('0')
+		grouped_data = {}
+		tg_cantidad = 0
+		tg_total = Decimal('0')
+		tg_compra = Decimal('0')
 		
 		for obj in queryset:
-			obj_dict = {
-				**raw_to_dict(obj),
-				'porcentaje_cantidad': getattr(obj, 'porcentaje_cantidad', 0),
-				'porcentaje_total': getattr(obj, 'porcentaje_total', 0)
-			}
-			objetos_serializables.append(obj_dict)
+			#-- Agrupar los objetos por Familia.
+			id_familia = obj.id_familia_id
+			if id_familia not in grouped_data:
+				grouped_data[id_familia] = {
+					'familia': obj.nombre_producto_familia,
+					'modelos': {},
+					'stf_cantidad': 0,
+					'stf_total': Decimal('0'),
+					'stf_compra': Decimal('0')
+				}
 			
-			total_cantidad += Decimal(str(obj.cantidad))
-			total_porcentaje_cantidad += Decimal(str(getattr(obj, 'porcentaje_cantidad', 0)))
-			total_importe += Decimal(str(obj.total))
-			total_porcentaje_total += Decimal(str(getattr(obj, 'porcentaje_total', 0)))
+			#-- Agrupar los objetos por Modelos de la Familia.
+			id_modelo = obj.id_modelo_id
+			if id_modelo not in grouped_data[id_familia]['modelos']:
+				grouped_data[id_familia]['modelos'][id_modelo] = {
+					'modelo': obj.nombre_modelo,
+					'detalle': [],
+					'stm_cantidad': 0,
+					'stm_total': Decimal('0'),
+					'stm_compra': Decimal('0')
+				}
+			
+			#-- Añadir el detalle al grupo.
+			grouped_data[id_familia]["modelos"][id_modelo]["detalle"].append(obj)
+			
+			#-- Acumular totales por Familia.
+			grouped_data[id_familia]['stf_cantidad'] += obj.cantidad
+			grouped_data[id_familia]['stf_total'] += Decimal(str(obj.total))
+			grouped_data[id_familia]['stf_compra'] += Decimal(str(obj.compra))
+			
+			#-- Acumular totales por Modelo.
+			grouped_data[id_familia]['modelos'][id_modelo]['stm_cantidad'] += obj.cantidad
+			grouped_data[id_familia]['modelos'][id_modelo]['stm_total'] += Decimal(str(obj.total))
+			grouped_data[id_familia]['modelos'][id_modelo]['stm_compra'] += Decimal(str(obj.compra))
+			
+			#-- Acumular totales generales.
+			tg_cantidad += obj.cantidad
+			tg_total += Decimal(str(obj.total))
+			tg_compra += Decimal(str(obj.compra))
+		
+		#-- Convertir los datos agrupados a un formato serializable:
+		for familia_id, familia_data in grouped_data.items():
+			#-- Convertir totales por Familia a float.
+			familia_data['stf_total'] = float(familia_data['stf_total'])
+			familia_data['stf_compra'] = float(familia_data['stf_compra'])
+			
+			for modelo_id, modelo_data in familia_data['modelos'].items():
+				#-- Se convierte cada detalle a diccionario usando raw_to_dict.
+				modelo_data['detalle'] = [raw_to_dict(detalle) for detalle in modelo_data['detalle']]
+				
+				#-- Convertir totales por Modelo a float.
+				modelo_data['stm_total'] = float(modelo_data['stm_total'])
+				modelo_data['stm_compra'] = float(modelo_data['stm_compra'])
 		
 		# **************************************************
 		
 		#-- Se retorna un contexto que será consumido tanto para la vista en pantalla como para la generación del PDF.
 		return {
-			"objetos": objetos_serializables,
-			"total_cantidad": float(total_cantidad),
-			"total_porcentaje_cantidad": float(total_porcentaje_cantidad),
-			"total_importe": float(total_importe),
-			"total_porcentaje_importe": float(total_porcentaje_total),
-			"agrupar": agrupar,
-			"mostrar": mostrar,
+			"objetos": grouped_data,
+			"tg_cantidad": tg_cantidad,
+			"tg_total": float(tg_total),
+			"tg_compra": float(tg_compra),
 			"parametros_i": param_left,
 			"parametros_d": param_right,
 			'fecha_hora_reporte': fecha_hora_reporte,
@@ -228,7 +240,7 @@ def raw_to_dict(instance):
 	return data
 
 
-def vlestadisticasventas_vista_pantalla(request):
+def vlestadisticasventasmarca_vista_pantalla(request):
 	#-- Obtener el token de la querystring.
 	token = request.GET.get("token")
 	
@@ -242,21 +254,10 @@ def vlestadisticasventas_vista_pantalla(request):
 		return HttpResponse("Contexto no encontrado o expirado", status=400)
 	
 	#-- Generar el listado a pantalla.
-	agrupar = contexto_reporte.get("agrupar", None)
-	match agrupar:
-		case "Producto":
-			ConfigViews.reporte_pantalla = f"informes/reportes/{ConfigViews.model_string}_producto_list.html"
-		case "Familia":
-			ConfigViews.reporte_pantalla = f"informes/reportes/{ConfigViews.model_string}_familia_list.html"
-		case "Modelo":
-			ConfigViews.reporte_pantalla = f"informes/reportes/{ConfigViews.model_string}_modelo_list.html"
-		case "Marca":
-			ConfigViews.reporte_pantalla = f"informes/reportes/{ConfigViews.model_string}_marca_list.html"
-	
 	return render(request, ConfigViews.reporte_pantalla, contexto_reporte)
 
 
-def vlestadisticasventas_vista_pdf(request):
+def vlestadisticasventasmarca_vista_pdf(request):
 	#-- Obtener el token de la querystring.
 	token = request.GET.get("token")
 	
@@ -295,99 +296,154 @@ class CustomPDFGenerator(PDFGenerator):
 		params = context.get("parametros_d", {})
 		return "<br/>".join([f"<b>{k}:</b> {v}" for k, v in params.items()])
 
+
 def generar_pdf(contexto_reporte):
-	
-	agrupar = contexto_reporte.get("agrupar", None)
-	mostrar = contexto_reporte.get("mostrar", None)
-	
 	#-- Crear instancia del generador personalizado.
-	if agrupar == "Producto":
-		generator = CustomPDFGenerator(contexto_reporte, pagesize=landscape(A4), body_font_size=7)
-	else:
-		generator = CustomPDFGenerator(contexto_reporte, pagesize=portrait(A4), body_font_size=7)
+	generator = CustomPDFGenerator(contexto_reporte, pagesize=landscape(A4), body_font_size=7)
 	
 	#-- Construir datos de la tabla:
 	
 	#-- Títulos de las columnas de la tabla (headers).
-	headers, blank_cols = headers_titles(agrupar, mostrar)
-	
-	headers_tit = [value[1] for value in headers.values()]
+	headers_titles = [value[1] for value in ConfigViews.header_data.values()]
+	headers_titles.insert(0, "")
 	
 	#-- Extraer Ancho de las columnas de la tabla.
-	col_widths = [value[0] for value in headers.values()]
+	col_widths = [value[0] for value in ConfigViews.header_data.values()]
+	col_widths.insert(0, 10)
+	blank_cols = [""] * 10
 	
-	table_data = [headers_tit]
+	table_data = [headers_titles]
 	
 	#-- Estilos específicos adicionales iniciales de la tabla.
 	table_style_config = [
-		('ALIGN', (-2,0), (-1,-1), 'RIGHT'),
+		('ALIGN', (7,0), (-1,-1), 'RIGHT'),
 	]
 	
-	#-- Agregar los datos a la tabla.
+	#-- Contador de filas (empezamos en 1 porque la 0 es el header).
+	current_row = 1
 	
-	for obj in contexto_reporte.get("objetos", {}):
-		row = []
+	#-- Agregar los datos a la tabla.
+	for familia_id, familia_data in contexto_reporte.get("objetos", {}).items():
 		
-		#-- Construir fila según agrupamiento.
-		if agrupar == "Producto":
-			row.extend([
-				obj['id_producto_id'],
-				obj['cai'],
-				Paragraph(str(obj['nombre_producto']), generator.styles['CellStyle']),
-				Paragraph(str(obj['nombre_producto_familia']), generator.styles['CellStyle']),
-				Paragraph(str(obj['nombre_modelo']), generator.styles['CellStyle']),
-				Paragraph(str(obj['nombre_producto_marca']), generator.styles['CellStyle'])
-			])
+		#-- Datos agrupado por Familia.
+		table_data.append([f"Familia: {familia_data['familia']}", ""] + blank_cols)
 		
-		elif agrupar == "Familia":
-			row.extend([
-				Paragraph(str(obj['nombre_producto_familia']), generator.styles['CellStyle']),
-				Paragraph(str(obj['nombre_producto_marca']), generator.styles['CellStyle'])
-			])
-		
-		elif agrupar == "Modelo":
-			row.extend([
-				Paragraph(str(obj['nombre_modelo']), generator.styles['CellStyle']),
-				Paragraph(str(obj['nombre_producto_marca']), generator.styles['CellStyle'])
-			])
-		
-		elif agrupar == "Marca":
-			row.extend([
-				Paragraph(str(obj['nombre_producto_marca']), generator.styles['CellStyle'])
-			])
-		
-		#-- Agregar valores comunes.
-		row.extend([
-			formato_argentino(obj['cantidad']) if mostrar == "Cantidad" else formato_argentino(obj['total']),
-			formato_argentino(obj['porcentaje_cantidad']) if mostrar == "Cantidad" else formato_argentino(obj['porcentaje_total'])
+		#-- Aplicar estilos a la fila de agrupación (fila actual).
+		table_style_config.extend([
+			('SPAN', (0,current_row), (-1,current_row)),
+			('FONTNAME', (0,current_row), (-1,current_row), 'Helvetica-Bold')
 		])
 		
-		table_data.append(row)
+		current_row += 1
+		#---------------------
+		
+		for modelo_id, modelo_data in familia_data["modelos"].items():
+		
+			#-- Datos agrupado por Modelo.
+			table_data.append(["", f"Modelo: {modelo_data['modelo']}"] + blank_cols)
 			
-	#-- Fila Total General.
-	if mostrar == "Cantidad":
-		total_gen = contexto_reporte.get("total_cantidad", 0)
-		total_gen_porcentaje = contexto_reporte.get("total_porcentaje_cantidad", 0)
-	else:
-		total_gen = contexto_reporte.get("total_importe", 0)
-		total_gen_porcentaje = contexto_reporte.get("total_porcentaje_importe", 0)
+			#-- Aplicar estilos a la fila de agrupación (fila actual).
+			table_style_config.extend([
+				('SPAN', (1,current_row), (-1,current_row)),
+				('FONTNAME', (1,current_row), (-1,current_row), 'Helvetica-Bold')
+			])
+			
+			current_row += 1
+			
+			#-- Agregar filas del detalle.
+			for obj in modelo_data['detalle']:
+				
+				table_data.append([
+					"",
+					obj['comprobante'],
+					format_date(obj['fecha_comprobante']),
+					obj['id_cliente_id'],
+					obj['id_producto_id'],
+					Paragraph(str(obj['nombre_producto']), generator.styles['CellStyle']),
+					obj['medida'],
+					formato_argentino(obj['cantidad']),
+					formato_argentino(obj['precio']),
+					f"{formato_argentino(obj['descuento'])}%" if obj['descuento'] != 0 else "",
+					formato_argentino(obj['total']),
+					formato_argentino(obj['compra'])
+				])
+				
+				current_row += 1
+			
+			#-- Fila subtotal por Modelo.
+			table_data.append(
+				[""]*6 + 
+				[
+					"Total por Modelo:", 
+					formato_argentino(modelo_data["stm_cantidad"]), 
+					"", "", 
+					formato_argentino(modelo_data["stm_total"]), 
+					formato_argentino(modelo_data["stm_compra"])
+				]
+			)
+			#-- Aplicar estilos a la fila de total (fila actual).
+			table_style_config.extend([
+				('ALIGN', (0,current_row), (-1,current_row), 'RIGHT'),
+				('FONTNAME', (0,current_row), (-1,current_row), 'Helvetica-Bold'),
+				# ('LINEABOVE', (8,current_row), (-1,current_row), 0.5, colors.black),
+			])
+			current_row += 1
+		
+		#-- Fila subtotal por Familia.
+		table_data.append(
+			[""]*6 + 
+			[
+				"Total por Familia:", 
+				formato_argentino(familia_data["stf_cantidad"]), 
+				"", "", 
+				formato_argentino(familia_data["stf_total"]), 
+				formato_argentino(familia_data["stf_compra"])
+			]
+		)
+		#-- Aplicar estilos a la fila de total (fila actual).
+		table_style_config.extend([
+			('ALIGN', (0,current_row), (-1,current_row), 'RIGHT'),
+			('FONTNAME', (0,current_row), (-1,current_row), 'Helvetica-Bold'),
+			# ('LINEABOVE', (8,current_row), (-1,current_row), 0.5, colors.black),
+		])
+		current_row += 1
+		
+		#-- Fila divisoria.
+		table_data.append(["", ""] + blank_cols)
+		table_style_config.append(
+			('LINEBELOW', (0,current_row), (-1,current_row), 0.5, colors.gray),
+		)
+		current_row += 1
 	
-	table_data.append(blank_cols + ["Total General:", formato_argentino(total_gen), formato_argentino(total_gen_porcentaje)])
+	#-- Fila Total General.
+	tg_cantidad = contexto_reporte.get("tg_cantidad", 0)
+	tg_total = contexto_reporte.get("tg_total", 0)
+	tg_compra = contexto_reporte.get("tg_compra", 0)
+	
+	table_data.append(
+		[""]*6 + 
+		[
+			"Total por Marca:", 
+			formato_argentino(tg_cantidad), 
+			"", "", 
+			formato_argentino(tg_total), 
+			formato_argentino(tg_compra)
+		]
+	)
 	
 	#-- Aplicar estilos a la fila de total (fila actual).
 	table_style_config.extend([
-		('ALIGN', (-3,-1), (-1,-1), 'RIGHT'),
+		('ALIGN', (0,-1), (-1,-1), 'RIGHT'),
 		('FONTNAME', (0,-1), (-1,-1), 'Helvetica-Bold'),
-		('LINEABOVE', (0,-1), (-1,-1), 0.5, colors.black),  #-- Línea superior.
+		# ('LINEABOVE', (0,-1), (-1,-1), 0.5, colors.black),  #-- Línea superior.
 		# ('LINEBELOW', (0,current_row), (-1,current_row), 0.5, colors.black),  #-- Línea inferior.
 	])
 	
 	return generator.generate(table_data, col_widths, table_style_config)		
 
 
-def vlestadisticasventas_vista_excel(request):
+def vlestadisticasventasmarca_vista_excel(request):
 	token = request.GET.get("token")
-	
 	if not token:
 		return HttpResponse("Token no proporcionado", status=400)
 	
@@ -397,16 +453,19 @@ def vlestadisticasventas_vista_excel(request):
 		return HttpResponse("Datos no encontrados o expirados", status=400)
 	
 	cleaned_data = data["cleaned_data"]
-	agrupar = cleaned_data.get("agrupar", None)
-	mostrar = cleaned_data.get("mostrar", None)
 	# ---------------------------------------------
 	
 	#-- Instanciar la vista y obtener el queryset.
-	view_instance = VLEstadisticasVentasInformeView()
+	view_instance = VLEstadisticasVentasMarcaInformeView()
 	view_instance.request = request
 	queryset = view_instance.obtener_queryset(cleaned_data)
 	
-	headers, blank_cols = headers_titles(agrupar, mostrar)
+	headers = ConfigViews.header_data.copy()
+	headers.update({
+		"nombre_producto_marca": (110, "Marca"),
+		"nombre_producto_familia": (110, "Familia"),
+		"nombre_modelo": (110, "Modelo"),
+	})
 	
 	helper = ExportHelper(
 		queryset=queryset,
@@ -425,7 +484,7 @@ def vlestadisticasventas_vista_excel(request):
 	return response
 
 
-def vlestadisticasventas_vista_csv(request):
+def vlestadisticasventasmarca_vista_csv(request):
 	token = request.GET.get("token")
 	if not token:
 		return HttpResponse("Token no proporcionado", status=400)
@@ -436,17 +495,20 @@ def vlestadisticasventas_vista_csv(request):
 		return HttpResponse("Datos no encontrados o expirados", status=400)
 	
 	cleaned_data = data["cleaned_data"]
-	agrupar = cleaned_data.get("agrupar", None)
-	mostrar = cleaned_data.get("mostrar", None)
 	
 	#-- Instanciar la vista para reejecutar la consulta y obtener el queryset.
-	view_instance = VLEstadisticasVentasInformeView()
+	view_instance = VLEstadisticasVentasMarcaInformeView()
 	view_instance.request = request
 	queryset = view_instance.obtener_queryset(cleaned_data)
 	
-	#-- Usar el helper para exportar a CSV.
-	headers, blank_cols = headers_titles(agrupar, mostrar)
+	headers = ConfigViews.header_data.copy()
+	headers.update({
+		"nombre_producto_marca": (110, "Marca"),
+		"nombre_producto_familia": (110, "Familia"),
+		"nombre_modelo": (110, "Modelo"),
+	})
 	
+	#-- Usar el helper para exportar a CSV.
 	helper = ExportHelper(
 		queryset=queryset,
 		table_headers=headers,
@@ -458,48 +520,3 @@ def vlestadisticasventas_vista_csv(request):
 	response["Content-Disposition"] = f'inline; filename="{ConfigViews.report_title}.csv"'
 	
 	return response
-
-
-def headers_titles(agrupar, mostrar):
-	headers = {}
-	blank_cols = []
-	
-	if agrupar == "Producto":
-		headers = {
-			"id_producto_id": (40, "Código"),
-			"cai": (70, "CAI"),
-			"nombre_producto": (210, "Descripción"),
-			"nombre_producto_familia": (140, "Familia"),
-			"nombre_modelo": (140, "Modelo")
-		}
-		blank_cols = ["", "", "", "", ""]
-	elif agrupar == "Familia":
-		headers = {
-			"nombre_producto_familia": (200, "Familia")
-		}
-		blank_cols = [""]
-	elif agrupar == "Modelo":
-		headers = {
-			"nombre_modelo": (200, "Modelo")
-		}
-		blank_cols = [""]
-	elif agrupar == "Marca":
-		headers = {}
-		blank_cols = []
-	
-	headers.update({
-		"nombre_producto_marca": (100, "Marca"),
-	})
-	
-	if mostrar == "Cantidad":
-		headers.update({
-			"cantidad": (60, "Cantidad"),
-			"porcentaje_cantidad": (50, "Porcentaje")
-		})
-	else:
-		headers.update({
-			"total": (60, "Total"),
-			"porcentaje_total": (50, "Porcentaje")
-		})
-	
-	return headers, blank_cols

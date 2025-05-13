@@ -61,6 +61,12 @@ from apps.informes.views.vlventasresumenib_list_views import *
 #- Lote 4:
 from apps.informes.views.vlestadisticasventas_list_views import *
 from apps.informes.views.vlestadisticasventasvendedor_list_views import *
+from apps.informes.views.vlestadisticasventasprovincia_list_views import *
+from apps.informes.views.vlestadisticasseguncondicion_list_views import *
+from apps.informes.views.vlestadisticasventasmarca_list_views import *
+from apps.informes.views.vlestadisticasventasmarcavendedor_list_views import *
+
+from apps.informes.views.vlestadisticasventasvendedorcliente_list_views import *
 
 
 
@@ -257,6 +263,8 @@ urlpatterns = [
 	
 	#-- Informes-Procesos. --------------------------------------------------------
 	
+	#-- 1er. Lote.
+	
 	# #-- VL Saldos Clientes.
 	path('vlsaldosclientes_informe/', VLSaldosClientesInformeView.as_view(), 
 		 name='vlsaldosclientes_informe_list'),
@@ -352,6 +360,8 @@ urlpatterns = [
 		 name="vlventacompro_vista_excel"),
 	path("vlventacompro/vista-csv/", vlventacompro_vista_csv, 
 		 name="vlventacompro_vista_csv"),
+	
+	#-- 2do. Lote.
 	
 	#-- VL Comprobantes Vencidos.
 	path('vlcomprobantesvencidos_informe/', VLComprobantesVencidosInformeView.as_view(), 
@@ -473,6 +483,8 @@ urlpatterns = [
 	path("vlpercepibsubcuentadetallado/vista-csv/", vlpercepibsubcuentadetallado_vista_csv, 
 		 name="vlpercepibsubcuentadetallado_vista_csv"),
 	
+	#-- 3er. Lote.
+	
 	#-- VL Comisión Vendedor.
 	path('vlcomisionvendedor_informe/', VLComisionVendedorInformeView.as_view(), 
 		 name='vlcomisionvendedor_informe_list'),
@@ -521,6 +533,8 @@ urlpatterns = [
 	path("vlventasresumenib/vista-csv/", vlventasresumenib_vista_csv, 
 		 name="vlventasresumenib_vista_csv"),
 	
+	#-- 4to. Lote.
+	
 	#-- VL Estadísticas de Ventas.
 	path('vlestadisticasventas_informe/', VLEstadisticasVentasInformeView.as_view(), 
 		 name='vlestadisticasventas_informe_list'),
@@ -544,6 +558,70 @@ urlpatterns = [
 		 name="vlestadisticasventasvendedor_vista_excel"),
 	path("vlestadisticasventasvendedor/vista-csv/", vlestadisticasventasvendedor_vista_csv, 
 		 name="vlestadisticasventasvendedor_vista_csv"),
+	
+		#-- VL Estadísticas de Ventas Vendedor Cliente.
+	path('vlestadisticasventasvendedorcliente_informe/', VLEstadisticasVentasVendedorClienteInformeView.as_view(), 
+		 name='vlestadisticasventasvendedorcliente_informe_list'),
+	path('vlestadisticasventasvendedorcliente/vista-preliminar/', vlestadisticasventasvendedorcliente_vista_pantalla, 
+		 name="vlestadisticasventasvendedorcliente_vista_pantalla"),
+	path("vlestadisticasventasvendedorcliente/vista-pdf/", vlestadisticasventasvendedorcliente_vista_pdf, 
+		 name="vlestadisticasventasvendedorcliente_vista_pdf"),
+	path("vlestadisticasventasvendedorcliente/vista-excel/", vlestadisticasventasvendedorcliente_vista_excel, 
+		 name="vlestadisticasventasvendedorcliente_vista_excel"),
+	path("vlestadisticasventasvendedorcliente/vista-csv/", vlestadisticasventasvendedorcliente_vista_csv, 
+		 name="vlestadisticasventasvendedorcliente_vista_csv"),
+	
+	#-- VL Estadísticas Según Condición.
+	path('vlestadisticasseguncondicion_informe/', VLEstadisticasSegunCondicionInformeView.as_view(), 
+		 name='vlestadisticasseguncondicion_informe_list'),
+	path('vlestadisticasseguncondicion/vista-preliminar/', vlestadisticasseguncondicion_vista_pantalla, 
+		 name="vlestadisticasseguncondicion_vista_pantalla"),
+	path("vlestadisticasseguncondicion/vista-pdf/", vlestadisticasseguncondicion_vista_pdf, 
+		 name="vlestadisticasseguncondicion_vista_pdf"),
+	path("vlestadisticasseguncondicion/vista-excel/", vlestadisticasseguncondicion_vista_excel, 
+		 name="vlestadisticasseguncondicion_vista_excel"),
+	path("vlestadisticasseguncondicion/vista-csv/", vlestadisticasseguncondicion_vista_csv, 
+		 name="vlestadisticasseguncondicion_vista_csv"),
+	
+	#-- VL Estadísticas de Ventas Marca.
+	path('vlestadisticasventasmarca_informe/', VLEstadisticasVentasMarcaInformeView.as_view(), 
+		 name='vlestadisticasventasmarca_informe_list'),
+	path('vlestadisticasventasmarca/vista-preliminar/', vlestadisticasventasmarca_vista_pantalla, 
+		 name="vlestadisticasventasmarca_vista_pantalla"),
+	path("vlestadisticasventasmarca/vista-pdf/", vlestadisticasventasmarca_vista_pdf, 
+		 name="vlestadisticasventasmarca_vista_pdf"),
+	path("vlestadisticasventasmarca/vista-excel/", vlestadisticasventasmarca_vista_excel, 
+		 name="vlestadisticasventasmarca_vista_excel"),
+	path("vlestadisticasventasmarca/vista-csv/", vlestadisticasventasmarca_vista_csv, 
+		 name="vlestadisticasventasmarca_vista_csv"),
+	
+	#-- VL Estadísticas de Ventas Marca Vendedor.
+	path('vlestadisticasventasmarcavendedor_informe/', VLEstadisticasVentasMarcaVendedorInformeView.as_view(), 
+		 name='vlestadisticasventasmarcavendedor_informe_list'),
+	path('vlestadisticasventasmarcavendedor/vista-preliminar/', vlestadisticasventasmarcavendedor_vista_pantalla, 
+		 name="vlestadisticasventasmarcavendedor_vista_pantalla"),
+	path("vlestadisticasventasmarcavendedor/vista-pdf/", vlestadisticasventasmarcavendedor_vista_pdf, 
+		 name="vlestadisticasventasmarcavendedor_vista_pdf"),
+	path("vlestadisticasventasmarcavendedor/vista-excel/", vlestadisticasventasmarcavendedor_vista_excel, 
+		 name="vlestadisticasventasmarcavendedor_vista_excel"),
+	path("vlestadisticasventasmarcavendedor/vista-csv/", vlestadisticasventasmarcavendedor_vista_csv, 
+		 name="vlestadisticasventasmarcavendedor_vista_csv"),
+	
+	#-- VL Estadísticas de Clientes sin Ventas.
+	
+	
+	
+	#-- VL Estadísticas de Ventas Provincia.
+	path('vlestadisticasventasprovincia_informe/', VLEstadisticasVentasProvinciaInformeView.as_view(), 
+		 name='vlestadisticasventasprovincia_informe_list'),
+	path('vlestadisticasventasprovincia/vista-preliminar/', vlestadisticasventasprovincia_vista_pantalla, 
+		 name="vlestadisticasventasprovincia_vista_pantalla"),
+	path("vlestadisticasventasprovincia/vista-pdf/", vlestadisticasventasprovincia_vista_pdf, 
+		 name="vlestadisticasventasprovincia_vista_pdf"),
+	path("vlestadisticasventasprovincia/vista-excel/", vlestadisticasventasprovincia_vista_excel, 
+		 name="vlestadisticasventasprovincia_vista_excel"),
+	path("vlestadisticasventasprovincia/vista-csv/", vlestadisticasventasprovincia_vista_csv, 
+		 name="vlestadisticasventasprovincia_vista_csv"),
 	
 	
 	

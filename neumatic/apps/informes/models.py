@@ -10,20 +10,21 @@ class SaldosClientesManager(models.Manager):
 		
 		#-- Se crea la consulta.
 		query = """
-		SELECT 
-			id_cliente_id, 
-			nombre_cliente, 
-			domicilio_cliente, 
-			nombre_localidad, 
-			codigo_postal, 
-			telefono_cliente, 
-			sub_cuenta, 
-			SUM(total * (mult_saldo * 1.00)) AS saldo,
-			MIN(CASE WHEN condicion_comprobante = 2 AND mult_saldo <> 0 AND total <> entrega THEN fecha_comprobante END) AS primer_fact_impaga, 
-			MAX(fecha_pago) AS ultimo_pago 
-		FROM VLSaldosClientes
-		WHERE 
-			fecha_comprobante <= %s
+			SELECT 
+				id_cliente_id, 
+				nombre_cliente, 
+				domicilio_cliente, 
+				nombre_localidad, 
+				codigo_postal, 
+				telefono_cliente, 
+				sub_cuenta, 
+				SUM(total * (mult_saldo * 1.00)) AS saldo,
+				MIN(CASE WHEN condicion_comprobante = 2 AND mult_saldo <> 0 AND total <> entrega THEN fecha_comprobante END) AS primer_fact_impaga, 
+				MAX(fecha_pago) AS ultimo_pago 
+			FROM
+				VLSaldosClientes
+			WHERE 
+				fecha_comprobante <= %s
 		"""
 		
 		#-- Se añaden parámetros.
@@ -129,10 +130,13 @@ class ResumenCtaCteManager(models.Manager):
 					)
 				) AS saldo_acumulado,
 				r.intereses
-			FROM VLResumenCtaCte r
-			WHERE r.id_cliente_id = %s AND r.total <> r.entrega
-			ORDER BY r.fecha_comprobante, r.numero_comprobante;
-			"""
+			FROM
+				VLResumenCtaCte r
+			WHERE
+				r.id_cliente_id = %s AND r.total <> r.entrega
+			ORDER BY
+				r.fecha_comprobante, r.numero_comprobante;
+		"""
 		
 		#-- Se añaden parámetros.
 		params = [id_cliente, id_cliente]
@@ -146,36 +150,39 @@ class ResumenCtaCteManager(models.Manager):
 		#-- Se crea la consulta.
 		query = """
 			SELECT 
-				r.id_cliente_id, 
-				r.razon_social, 
-				r.nombre_comprobante_venta, 
-				r.letra_comprobante, 
-				r.numero_comprobante, 
-				r.numero, 
-				r.fecha_comprobante, 
-				r.remito, 
-				r.condicion_comprobante, 
-				r.condicion, 
-				r.total, 
-				r.entrega, 
+				id_cliente_id, 
+				razon_social, 
+				nombre_comprobante_venta, 
+				letra_comprobante, 
+				numero_comprobante, 
+				numero, 
+				fecha_comprobante, 
+				remito, 
+				condicion_comprobante, 
+				condicion, 
+				total, 
+				entrega, 
 				CASE
-					WHEN r.total >= 0 THEN r.total * 1.0
+					WHEN total >= 0 THEN total * 1.0
 					ELSE 0.0
 				END AS debe,
 				CASE
-					WHEN r.total < 0 THEN r.total * 1.0
+					WHEN total < 0 THEN total * 1.0
 					ELSE 0.0
 				END AS haber,
-				SUM(r.total) OVER (
-					PARTITION BY r.id_cliente_id 
-					ORDER BY r.fecha_comprobante, r.numero_comprobante
+				SUM(total) OVER (
+					PARTITION BY id_cliente_id 
+					ORDER BY fecha_comprobante, numero_comprobante
 				) AS saldo_acumulado,
-				r.intereses
-			FROM VLResumenCtaCte r
-			WHERE r.id_cliente_id = %s 
-				AND r.fecha_comprobante BETWEEN %s AND %s 
-				AND r.condicion_comprobante BETWEEN %s AND %s
-			ORDER BY r.fecha_comprobante, r.numero_comprobante;
+				intereses
+			FROM
+				VLResumenCtaCte
+			WHERE
+				id_cliente_id = %s 
+				AND fecha_comprobante BETWEEN %s AND %s 
+				AND condicion_comprobante BETWEEN %s AND %s
+			ORDER BY
+				fecha_comprobante, numero_comprobante;
 		"""
 		
 		#-- Se añaden parámetros.
@@ -191,8 +198,11 @@ class ResumenCtaCteManager(models.Manager):
 			SELECT 
 				v.id_cliente_id, 
 				COALESCE(ROUND(SUM(v.total * 1.0), 2), 0.00) AS saldo_anterior 
-			FROM VLResumenCtaCte v 
-			WHERE v.id_cliente_id = %s AND v.fecha_comprobante < %s;
+			FROM
+				VLResumenCtaCte v 
+			WHERE
+				v.id_cliente_id = %s
+				AND v.fecha_comprobante < %s;
 		"""
 		
 		#-- Se añaden parámetros.
@@ -237,9 +247,13 @@ class MercaderiaPorClienteManager(models.Manager):
 		
 		#-- Se crea la consulta.
 		query = """
-			SELECT * 
-			FROM VLMercaderiaPorCliente v 
-			WHERE v.id_cliente_id = %s AND v.fecha_comprobante BETWEEN %s AND %s;
+			SELECT
+				* 
+			FROM
+				VLMercaderiaPorCliente v 
+			WHERE
+				v.id_cliente_id = %s
+				AND v.fecha_comprobante BETWEEN %s AND %s;
 		"""
 		
 		#-- Se añaden parámetros.
@@ -285,11 +299,14 @@ class RemitosClientesManager(models.Manager):
 		
 		#-- Se crea la consulta parametrizada.
 		query = """
-			SELECT * 
-			FROM VLRemitosClientes
-			WHERE id_cliente_id = %s AND 
-				codigo_comprobante_venta BETWEEN %s AND %s AND
-				fecha_comprobante BETWEEN %s AND %s;
+			SELECT
+				*
+			FROM
+				VLRemitosClientes
+			WHERE
+				id_cliente_id = %s
+				AND codigo_comprobante_venta BETWEEN %s AND %s
+				AND fecha_comprobante BETWEEN %s AND %s;
 		"""
 		
 		#-- Se añaden parámetros.
@@ -345,9 +362,12 @@ class TotalRemitosClientesManager(models.Manager):
 				cuit, 
 				telefono_cliente, 
 				SUM(total) AS total
-			FROM VLTotalRemitosClientes 
-			WHERE fecha_comprobante BETWEEN %s AND %s
+			FROM
+				VLTotalRemitosClientes 
+			WHERE
+				fecha_comprobante BETWEEN %s AND %s
 		"""
+		
 		#-- Se añaden parámetros.
 		params = [fecha_desde, fecha_hasta]
 		
@@ -397,9 +417,12 @@ class VentaComproLocalidadManager(models.Manager):
 		
 		#-- Se crea la consulta parametrizada.
 		query = """
-			SELECT *
-			FROM VLVentaComproLocalidad 
-			WHERE fecha_comprobante BETWEEN %s AND %s
+			SELECT
+				*
+			FROM
+				VLVentaComproLocalidad 
+			WHERE
+				fecha_comprobante BETWEEN %s AND %s
 		"""
 		
 		#-- Se añaden parámetros.
@@ -457,9 +480,12 @@ class VentaMostradorManager(models.Manager):
 		
 		#-- Se crea la consulta.
 		query = """
-			SELECT *
-			FROM VLVentaMostrador 
-			WHERE fecha_comprobante BETWEEN %s AND %s
+			SELECT
+				*
+			FROM
+				VLVentaMostrador 
+			WHERE
+				fecha_comprobante BETWEEN %s AND %s
 		"""
 		
 		#-- Se añaden parámetros.
@@ -529,9 +555,12 @@ class VentaComproManager(models.Manager):
 		
 		#-- Se crea la consulta parametrizada.
 		query = """
-			SELECT *
-			FROM VLVentaCompro 
-			WHERE fecha_comprobante BETWEEN %s AND %s
+			SELECT
+				*
+			FROM
+				VLVentaCompro 
+			WHERE
+				fecha_comprobante BETWEEN %s AND %s
 		"""
 		
 		#-- Se añaden parámetros.
@@ -585,9 +614,12 @@ class ComprobantesVencidosManager(models.Manager):
 		
 		#-- Se crea la consulta.
 		query = """
-			SELECT * 
-			FROM VLComprobantesVencidos 
-			WHERE dias_vencidos > %s
+			SELECT
+				* 
+			FROM
+				VLComprobantesVencidos 
+			WHERE
+				dias_vencidos > %s
 		"""
 		
 		#-- Se añaden parámetros.
@@ -642,24 +674,29 @@ class RemitosPendientesManager(models.Manager):
 		Sucursal de Facturación o Sucursal del Cliente. """
 		
 		#-- Se crea la consulta.
-		query = "SELECT * FROM VLRemitosPendientes "
+		query = """
+			SELECT
+				*
+			FROM
+				VLRemitosPendientes
+		"""
 		
 		#-- Filtros adicionales.
 		match filtrar_por:
 			case "vendedor":
-				query += "WHERE id_vendedor_id = %s"
+				query += " WHERE id_vendedor_id = %s"
 				params = [id_vendedor]
 				
 			case "clientes":
-				query += "WHERE id_cliente_id BETWEEN %s AND %s"
+				query += " WHERE id_cliente_id BETWEEN %s AND %s"
 				params = [id_cli_desde, id_cli_hasta]
 				
 			case "sucursal_fac":
-				query += "WHERE id_sucursal_fac = %s"
+				query += " WHERE id_sucursal_fac = %s"
 				params = [id_sucursal]
 				
 			case "sucursal_cli":
-				query += "WHERE id_sucursal_cli = %s"
+				query += " WHERE id_sucursal_cli = %s"
 				params = [id_sucursal]
 		
 		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
@@ -707,10 +744,14 @@ class RemitosVendedorManager(models.Manager):
 		
 		#-- Se crea la consulta.
 		query = """
-			SELECT * 
-			FROM VLRemitosVendedor 
-			WHERE id_vendedor_id = %s AND 
-				fecha_comprobante BETWEEN %s AND %s"""
+			SELECT
+				* 
+			FROM
+				VLRemitosVendedor 
+			WHERE
+				id_vendedor_id = %s
+				AND fecha_comprobante BETWEEN %s AND %s
+		"""
 		
 		#-- Se añaden parámetros.
 		params = [id_vendedor, fecha_desde, fecha_hasta]
@@ -755,9 +796,13 @@ class IVAVentasFULLManager(models.Manager):
 		
 		#-- Se crea la consulta.
 		query = """
-			SELECT * FROM VLIVAVentasFULL
-			WHERE STRFTIME('%%Y', fecha_comprobante) = %s AND
-				  STRFTIME('%%m', fecha_comprobante) = %s
+			SELECT
+				*
+			FROM
+				VLIVAVentasFULL
+			WHERE
+			 	STRFTIME('%%Y', fecha_comprobante) = %s
+				AND STRFTIME('%%m', fecha_comprobante) = %s
 		"""
 		
 		#-- Se añaden parámetros.
@@ -816,9 +861,11 @@ class VLIVAVentasProvinciasManager(models.Manager):
 				ROUND(SUM(iva), 2) AS iva,
 				ROUND(SUM(percep_ib), 2) AS percep_ib,
 				ROUND(SUM(total), 2) AS total
-			FROM VLIVAVentasProvincias
-			WHERE STRFTIME('%%Y', fecha_comprobante) = %s AND
-				  STRFTIME('%%m', fecha_comprobante) = %s
+			FROM
+				VLIVAVentasProvincias
+			WHERE
+				STRFTIME('%%Y', fecha_comprobante) = %s
+				AND STRFTIME('%%m', fecha_comprobante) = %s
 		"""
 		
 		#-- Se añaden parámetros.
@@ -875,9 +922,11 @@ class VLIVAVentasSitribManager(models.Manager):
 				ROUND(SUM(iva), 2) AS iva, 
 				ROUND(SUM(percep_ib), 2) AS percep_ib, 
 				ROUND(SUM(total), 2) AS total
-			FROM VLIVAVentasSitrib
-			WHERE STRFTIME('%%Y', fecha_comprobante) = %s AND
-				  STRFTIME('%%m', fecha_comprobante) = %s
+			FROM
+				VLIVAVentasSitrib
+			WHERE
+			 	STRFTIME('%%Y', fecha_comprobante) = %s
+				AND STRFTIME('%%m', fecha_comprobante) = %s
 		"""
 		
 		#-- Se añaden parámetros.
@@ -931,10 +980,14 @@ class VLPercepIBVendedorTotalesManager(models.Manager):
 				nombre_vendedor,
 				ROUND(SUM(neto), 2) AS neto, 
 				ROUND(SUM(percep_ib), 2) AS percep_ib
-			FROM VLPercepIBVendedorTotales
-			WHERE fecha_comprobante BETWEEN %s AND %s
-			GROUP BY id_vendedor_id
-			ORDER by nombre_vendedor
+			FROM
+				VLPercepIBVendedorTotales
+			WHERE
+				fecha_comprobante BETWEEN %s AND %s
+			GROUP BY
+				id_vendedor_id
+			ORDER BY
+				nombre_vendedor
 		"""
 		
 		#-- Se añaden parámetros.
@@ -970,9 +1023,12 @@ class VLPercepIBVendedorDetalladoManager(models.Manager):
 		
 		#-- Se crea la consulta.
 		query = """
-			SELECT * 
-			FROM VLPercepIBVendedorDetallado
-			WHERE fecha_comprobante BETWEEN %s AND %s
+			SELECT
+				* 
+			FROM
+				VLPercepIBVendedorDetallado
+			WHERE
+				fecha_comprobante BETWEEN %s AND %s
 		"""
 		
 		#-- Lista de parámetros.
@@ -1016,15 +1072,19 @@ class VLPercepIBSubcuentaTotalesManager(models.Manager):
 		#-- Base de la consulta SQL.
 		query = """
 			SELECT 
-					id_factura,
-					sub_cuenta,
-					nombre_cliente_padre,
-					ROUND(SUM(neto), 2) AS neto, 
-					ROUND(SUM(percep_ib), 2) AS percep_ib
-				FROM VLPercepIBSubcuentaTotales
-				WHERE fecha_comprobante BETWEEN %s AND %s
-				GROUP BY sub_cuenta
-				ORDER by sub_cuenta
+				id_factura,
+				sub_cuenta,
+				nombre_cliente_padre,
+				ROUND(SUM(neto), 2) AS neto, 
+				ROUND(SUM(percep_ib), 2) AS percep_ib
+			FROM
+				VLPercepIBSubcuentaTotales
+			WHERE
+				fecha_comprobante BETWEEN %s AND %s
+			GROUP BY 
+				sub_cuenta
+			ORDER by 
+				sub_cuenta
 		"""
 		
 		#-- Se añaden parámetros.
@@ -1062,9 +1122,12 @@ class VLPercepIBSubcuentaDetalladoManager(models.Manager):
 		
 		#-- Se crea la consulta.
 		query = """
-			SELECT * 
-			FROM VLPercepIBSubcuentaDetallado
-			WHERE fecha_comprobante BETWEEN %s AND %s
+			SELECT
+				*
+			FROM
+				VLPercepIBSubcuentaDetallado
+			WHERE
+				fecha_comprobante BETWEEN %s AND %s
 		"""
 		
 		#-- Se añaden parámetros.
@@ -1107,20 +1170,24 @@ class ComisionVendedorIBManager(models.Manager):
 		
 		#-- Se crea la primera consulta (Recibos).
 		query1 = """
-			SELECT *
-			FROM VLComisionVendedor
+			SELECT 
+				*
+			FROM 
+				VLComisionVendedor
 			WHERE 
-				pje_comision <> 0 AND 
-				fecha_comprobante BETWEEN %s AND %s
+				pje_comision <> 0
+				AND fecha_comprobante BETWEEN %s AND %s
 		"""
 		
 		#-- Se crea la segunda consulta (Detalle).
 		query2 = """
-			SELECT *
-			FROM VLComisionVendedorDetalle
+			SELECT 
+				*
+			FROM 
+				VLComisionVendedorDetalle
 			WHERE 
-				pje_comision <> 0 AND 
-				fecha_comprobante BETWEEN %s AND %s
+				pje_comision <> 0
+				AND fecha_comprobante BETWEEN %s AND %s
 		"""
 		
 		#-- Se añaden parámetros.
@@ -1177,9 +1244,13 @@ class ComisionOperarioManager(models.Manager):
 		
 		#-- Se crea la consulta.
 		query = """
-			SELECT * 
-			FROM VLComisionOperario 
-			WHERE fecha_comprobante BETWEEN %s AND %s"""
+			SELECT 
+				* 
+			FROM 
+				VLComisionOperario 
+			WHERE 
+				fecha_comprobante BETWEEN %s AND %s
+		"""
 		
 		#-- Se añaden parámetros.
 		params = [fecha_desde, fecha_hasta]
@@ -1230,9 +1301,12 @@ class PrecioDiferenteManager(models.Manager):
 		
 		#-- Se crea la consulta.
 		query = """
-			SELECT * 
-			FROM VLPrecioDiferente 
-			WHERE fecha_comprobante BETWEEN %s AND %s 
+			SELECT 
+				* 
+			FROM 
+				VLPrecioDiferente 
+			WHERE 
+				fecha_comprobante BETWEEN %s AND %s 
 				AND id_vendedor_id BETWEEN %s AND %s 
 				AND ABS(precio - precio_lista) > %s
 		"""
@@ -1287,11 +1361,14 @@ class VentasResumenIBManager(models.Manager):
 		
 		#-- Se crea la consulta.
 		query = """
-			SELECT *
-			FROM VLVentasResumenIB
-			WHERE STRFTIME('%%Y', fecha_comprobante) = %s AND
-				  STRFTIME('%%m', fecha_comprobante) = %s AND
-				  suc_imp = %s
+			SELECT
+				*
+			FROM 
+				VLVentasResumenIB
+			WHERE 
+				STRFTIME('%%Y', fecha_comprobante) = %s
+				AND STRFTIME('%%m', fecha_comprobante) = %s
+				AND suc_imp = %s
 		"""
 		
 		#-- Se añaden parámetros.
@@ -1339,9 +1416,11 @@ class EstadisticasVentasManager(models.Manager):
 				nombre_producto_marca,
 				SUM(cantidad) AS cantidad, 
 				SUM(total) AS total
-			FROM VLEstadisticasVentas
-			WHERE fecha_comprobante BETWEEN %s AND %s AND
-				id_marca_id BETWEEN %s AND %s
+			FROM 
+				VLEstadisticasVentas
+			WHERE 
+				fecha_comprobante BETWEEN %s AND %s
+				AND id_marca_id BETWEEN %s AND %s
 		"""
 		
 		#-- Se añaden parámetros.
@@ -1418,9 +1497,10 @@ class EstadisticasVentasVendedorManager(models.Manager):
 				nombre_producto_marca,
 				SUM(cantidad) AS cantidad, 
 				SUM(total) AS total
-			FROM VLEstadisticasVentasVendedor
-			WHERE fecha_comprobante BETWEEN %s AND %s AND
-				id_marca_id BETWEEN %s AND %s
+			FROM 
+				VLEstadisticasVentasVendedor
+			WHERE fecha_comprobante BETWEEN %s AND %s 
+				AND id_marca_id BETWEEN %s AND %s
 		"""
 		
 		#-- Se añaden parámetros.
@@ -1475,86 +1555,461 @@ class VLEstadisticasVentasVendedor(models.Model):
 	class Meta:
 		managed = False
 		db_table = 'VLEstadisticasVentasVendedor'
-		verbose_name = ('Estadísticas de Ventas')
-		verbose_name_plural = ('Estadísticas de Ventas')
+		verbose_name = ('Estadísticas de Ventas por Vendedor')
+		verbose_name_plural = ('Estadísticas de Ventas por Vendedor')
 		# ordering = ['fecha_comprobante']
 
 
 #-----------------------------------------------------------------------------
 # Estadísticas de Ventas por Vendedor Clientes.
 #-----------------------------------------------------------------------------
-# class EstadisticasVentasVendedorClienteManager(models.Manager):
-# 	
-# 	def obtener_datos(self, fecha_desde, fecha_hasta, id_marca_desede, id_marca_hasta, agrupar, mostrar, estadisticas, id_sucursal=None, id_vendedor=None):
-# 		
-# 		query = """
-# 			SELECT 
-# 				id_factura,
-# 				id_producto_id,
-# 				nombre_producto,
-# 				nombre_producto_familia,
-# 				nombre_modelo,
-# 				nombre_producto_marca,
-# 				SUM(cantidad) AS cantidad, 
-# 				SUM(total) AS total
-# 			FROM VLEstadisticasVentasVendedorCliente
-# 			WHERE fecha_comprobante BETWEEN %s AND %s AND
-# 				id_marca_id BETWEEN %s AND %s AND
-# 				no_estadisticas = %s
-# 		"""
-# 		
-# 		#-- Se añaden parámetros.
-# 		params = [fecha_desde, fecha_hasta, id_marca_desede, id_marca_hasta]
-# 		
-# 		#-- Filtros adicionales.
-# 		if id_sucursal:
-# 			query += " AND id_sucursal_id = %s"
-# 			params.append(id_sucursal)
-# 		
-# 		if id_vendedor:
-# 			query += " AND id_vendedor_id = %s"
-# 			params.append(id_vendedor)
-# 		
-# 		match agrupar:
-# 			case "Producto":
-# 				query += " GROUP BY id_producto_id"
-# 			case "Familia":
-# 				query += " GROUP BY id_familia_id, id_marca_id"
-# 			case "Modelo":
-# 				# query += " GROUP BY id_modelo_id, id_marca_id"
-# 				query += " GROUP BY id_modelo_id"
-# 			case "Marca":
-# 				query += " GROUP BY id_marca_id"
-# 		
-# 		if mostrar:
-# 			match mostrar:
-# 				case "Cantidad":
-# 					query += " ORDER BY cantidad DESC"
-# 				case "Importe":
-# 					query += " ORDER BY total DESC"
-# 		
-# 		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
-# 		return self.raw(query, params)
-# 
-# 
-# class VLEstadisticasVentasVendedorCliente(models.Model):
-# 	id_factura = models.IntegerField(primary_key=True)
-# 	id_producto_id = models.IntegerField()
-# 	nombre_producto = models.CharField(max_length=50)
-# 	nombre_producto_familia = models.CharField(max_length=50)
-# 	nombre_modelo = models.CharField(max_length=50)
-# 	nombre_producto_marca = models.CharField(max_length=50)
-# 	cantidad = models.DecimalField(max_digits=7, decimal_places=2)
-# 	total = models.DecimalField(max_digits=14, decimal_places=2)
-# 	fecha_comprobante = models.DateField()
-# 	id_sucursal_id = models.IntegerField()
-# 	id_vendedor_id = models.IntegerField()
-# 	
-# 	objects = EstadisticasVentasVendedorClienteManager()
-# 	
-# 	class Meta:
-# 		managed = False
-# 		db_table = 'VLEstadisticasVentasVendedorCliente'
-# 		verbose_name = ('Estadísticas de Ventas')
-# 		verbose_name_plural = ('Estadísticas de Ventas')
-# 		# ordering = ['fecha_comprobante']
+class EstadisticasVentasVendedorClienteManager(models.Manager):
+	
+	def obtener_datos(self, fecha_desde, fecha_hasta, id_marca_desede, id_marca_hasta, agrupar, mostrar, estadisticas, id_sucursal=None, id_vendedor=None):
+		
+		#-- Convertir el parámetro estadisticas a booleano.
+		estadisticas = estadisticas.lower() == 'true' if isinstance(estadisticas, str) else bool(estadisticas)
+		
+		query = """
+			SELECT 
+				id,
+				id_producto_id,
+				nombre_producto,
+				nombre_producto_familia,
+				nombre_modelo,
+				nombre_producto_marca,
+				id_vendedor_id,
+				nombre_vendedor,
+				id_cliente_id,
+				nombre_cliente,
+				SUM(cantidad) AS cantidad, 
+				SUM(total) AS total
+			FROM 
+				VLEstadisticasVentasVendedorCliente
+			WHERE 
+				no_estadist = %s
+			 	AND fecha_comprobante BETWEEN %s AND %s
+				AND id_marca_id BETWEEN %s AND %s
+		"""
+		
+		#-- Se añaden parámetros.
+		params = [estadisticas, fecha_desde, fecha_hasta, id_marca_desede, id_marca_hasta]
+		
+		#-- Filtros adicionales.
+		if id_sucursal:
+			query += " AND id_sucursal_id = %s"
+			params.append(id_sucursal)
+		
+		if id_vendedor:
+			query += " AND id_vendedor_id = %s"
+			params.append(id_vendedor)
+		
+		match agrupar:
+			case "Producto":
+				query += " GROUP BY id_producto_id"
+			case "Familia":
+				query += " GROUP BY id_familia_id, id_marca_id"
+			case "Modelo":
+				# query += " GROUP BY id_modelo_id, id_marca_id"
+				query += " GROUP BY id_modelo_id"
+			case "Marca":
+				query += " GROUP BY id_marca_id"
+		
+		query += " ORDER BY nombre_vendedor, nombre_cliente"
+		
+		if mostrar:
+			match mostrar:
+				case "Cantidad":
+					query += ", cantidad DESC"
+				case "Importe":
+					query += ", total DESC"
+		
+		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
+		return self.raw(query, params)
+
+
+class VLEstadisticasVentasVendedorCliente(models.Model):
+	id = models.AutoField(primary_key=True)
+	id_vendedor_id = models.IntegerField()
+	nombre_vendedor = models.CharField(max_length=30)
+	id_cliente_id = models.IntegerField()
+	nombre_cliente = models.CharField(max_length=50)
+	id_producto_id = models.IntegerField()
+	nombre_producto = models.CharField(max_length=50)
+	nombre_producto_familia = models.CharField(max_length=50)
+	nombre_modelo = models.CharField(max_length=50)
+	nombre_producto_marca = models.CharField(max_length=50)
+	cantidad = models.DecimalField(max_digits=7, decimal_places=2)
+	total = models.DecimalField(max_digits=14, decimal_places=2)
+	fecha_comprobante = models.DateField()
+	id_sucursal_id = models.IntegerField()
+	no_estadist = models.BooleanField()
+	
+	objects = EstadisticasVentasVendedorClienteManager()
+	
+	class Meta:
+		managed = False
+		db_table = 'VLEstadisticasVentasVendedorCliente'
+		verbose_name = ('Estadísticas de Ventas Vendedor Clientes')
+		verbose_name_plural = ('Estadísticas de Ventas Vendedor Clientes')
+		# ordering = ['fecha_comprobante']
+
+
+#-----------------------------------------------------------------------------
+# Ventas de Productos según Condición.
+#-----------------------------------------------------------------------------
+class EstadisticasSegunCondicionManager(models.Manager):
+	
+	def obtener_datos(self, fecha_desde, fecha_hasta, id_marca_desede, id_marca_hasta, agrupar, id_sucursal=None):
+		'''
+		query = """
+			SELECT
+				id,
+				nombre_producto_familia,
+				nombre_producto_marca,
+				nombre_modelo,
+				id_producto_id,
+				nombre_producto,
+				reventa,
+				SUM(cantidad) AS cantidad, 
+				SUM(importe) AS importe,
+				SUM(costo) AS costo
+			FROM
+				VLEstadisticasSegunCondicion
+			WHERE
+				fecha_comprobante BETWEEN %s AND %s
+				AND id_marca_id BETWEEN %s AND %s
+		"""
+		'''
+		query = """
+			SELECT
+				id,
+				nombre_producto_familia,
+				nombre_producto_marca,
+				nombre_modelo,
+				id_producto_id,
+				nombre_producto,
+				SUM(CASE WHEN reventa = 'M' THEN cantidad ELSE 0 END) AS cantidad_m,
+				SUM(CASE WHEN reventa = 'M' THEN importe ELSE 0 END) AS importe_m,
+				SUM(CASE WHEN reventa = 'M' THEN costo ELSE 0 END) AS costo_m,
+				SUM(CASE WHEN reventa = 'M' THEN (importe - costo) ELSE 0 END) AS ganancia_m,
+				SUM(CASE WHEN reventa = 'R' THEN cantidad ELSE 0 END) AS cantidad_r,
+				SUM(CASE WHEN reventa = 'R' THEN importe ELSE 0 END) AS importe_r,
+				SUM(CASE WHEN reventa = 'R' THEN costo ELSE 0 END) AS costo_r,
+				SUM(CASE WHEN reventa = 'R' THEN (importe - costo) ELSE 0 END) AS ganancia_r,
+				SUM(CASE WHEN reventa = 'E' THEN cantidad ELSE 0 END) AS cantidad_e,
+				SUM(CASE WHEN reventa = 'E' THEN importe ELSE 0 END) AS importe_e,
+				SUM(CASE WHEN reventa = 'E' THEN costo ELSE 0 END) AS costo_e,
+				SUM(CASE WHEN reventa = 'E' THEN (importe - costo) ELSE 0 END) AS ganancia_e
+			FROM
+				VLEstadisticasSegunCondicion
+			WHERE
+				fecha_comprobante BETWEEN %s AND %s
+				AND id_marca_id BETWEEN %s AND %s
+		"""
+		
+		#-- Se añaden parámetros.
+		params = [fecha_desde, fecha_hasta, id_marca_desede, id_marca_hasta]
+		
+		#-- Filtros adicionales.
+		if id_sucursal:
+			query += " AND id_sucursal_id = %s"
+			params.append(id_sucursal)
+		
+		match agrupar:
+			case "Producto":
+				# query += " GROUP BY id_familia_id, id_marca_id, id_modelo_id, id_producto_id"
+				query += " GROUP BY id_familia_id, id_modelo_id, id_producto_id"
+			case "Familia":
+				query += " GROUP BY id_familia_id, id_marca_id"
+			case "Modelo":
+				query += " GROUP BY id_marca_id, id_modelo_id"
+			case "Marca":
+				query += " GROUP BY id_marca_id"
+		
+		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
+		return self.raw(query, params)
+
+
+class VLEstadisticasSegunCondicion(models.Model):
+	id = models.AutoField(primary_key=True)
+	id_familia_id = models.IntegerField()
+	nombre_producto_familia = models.CharField(max_length=50)
+	id_marca_id = models.IntegerField()
+	nombre_producto_marca = models.CharField(max_length=50)
+	id_modelo_id = models.IntegerField()
+	nombre_modelo = models.CharField(max_length=50)
+	id_producto_id = models.IntegerField()
+	nombre_producto = models.CharField(max_length=50)
+	reventa = models.CharField(max_length=1)
+	cantidad = models.DecimalField(max_digits=7, decimal_places=2)
+	importe = models.DecimalField(max_digits=14, decimal_places=2)
+	costo = models.DecimalField(max_digits=14, decimal_places=2)
+	fecha_comprobante = models.DateField()
+	id_sucursal_id = models.IntegerField()
+	
+	objects = EstadisticasSegunCondicionManager()
+	
+	class Meta:
+		managed = False
+		db_table = 'VLEstadisticasSegunCondicion'
+		verbose_name = ('Ventas Según Condición')
+		verbose_name_plural = ('Ventas Según Condición')
+
+
+#-----------------------------------------------------------------------------
+# Estadísticas de Ventas por Marcas.
+#-----------------------------------------------------------------------------
+class EstadisticasVentasMarcaManager(models.Manager):
+	
+	def obtener_datos(self, id_marca, fecha_desde, fecha_hasta, id_sucursal=None):
+		
+		query = """
+			SELECT
+				*
+			FROM
+				VLEstadisticasVentasMarca
+			WHERE
+				id_marca_id = %s
+			 	AND fecha_comprobante BETWEEN %s AND %s
+		"""
+		
+		#-- Se añaden parámetros.
+		params = [id_marca, fecha_desde, fecha_hasta ]
+		
+		#-- Filtros adicionales.
+		if id_sucursal:
+			query += " AND id_sucursal_id = %s"
+			params.append(id_sucursal)
+		
+		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
+		return self.raw(query, params)
+
+
+class VLEstadisticasVentasMarca(models.Model):
+	id = models.AutoField(primary_key=True)
+	comprobante = models.CharField(max_length=19)
+	fecha_comprobante = models.DateField()
+	id_cliente_id = models.IntegerField()
+	id_producto_id = models.IntegerField()
+	nombre_producto = models.CharField(max_length=50)
+	medida = models.CharField(max_length=15)
+	cantidad = models.DecimalField(max_digits=7, decimal_places=2)
+	precio = models.DecimalField(max_digits=12, decimal_places=2)
+	descuento = models.DecimalField(max_digits=6, decimal_places=2)
+	total = models.DecimalField(max_digits=14, decimal_places=2)
+	compra = models.DecimalField(max_digits=14, decimal_places=2)
+	id_sucursal_id = models.IntegerField()
+	id_marca_id = models.IntegerField()
+	nombre_producto_marca = models.CharField(max_length=50)
+	id_familia_id = models.IntegerField()
+	nombre_producto_familia = models.CharField(max_length=50)
+	id_modelo_id = models.IntegerField()
+	nombre_modelo = models.CharField(max_length=50)
+	
+	objects = EstadisticasVentasMarcaManager()
+	
+	class Meta:
+		managed = False
+		db_table = 'VLEstadisticasVentasMarca'
+		verbose_name = ('Estadísticas de Ventas por Marca y Artículo')
+		verbose_name_plural = ('Estadísticas de Ventas por Marca y Artículo')
+		# ordering = ['fecha_comprobante']
+
+
+#-----------------------------------------------------------------------------
+# Estadísticas de Ventas por Marcas-Vendedor.
+#-----------------------------------------------------------------------------
+class EstadisticasVentasMarcaVendedorManager(models.Manager):
+	
+	def obtener_datos(self, id_marca, id_vendedor, fecha_desde, fecha_hasta, id_sucursal=None):
+		
+		query = """
+			SELECT
+				*
+			FROM
+				VLEstadisticasVentasMarcaVendedor
+			WHERE
+				id_marca_id = %s
+				AND id_vendedor_id = %s
+			 	AND fecha_comprobante BETWEEN %s AND %s
+		"""
+		
+		#-- Se añaden parámetros.
+		params = [id_marca, id_vendedor, fecha_desde, fecha_hasta]
+		
+		#-- Filtros adicionales.
+		if id_sucursal:
+			query += " AND id_sucursal_id = %s"
+			params.append(id_sucursal)
+		
+		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
+		return self.raw(query, params)
+
+
+class VLEstadisticasVentasMarcaVendedor(models.Model):
+	id = models.AutoField(primary_key=True)
+	comprobante = models.CharField(max_length=19)
+	fecha_comprobante = models.DateField()
+	id_cliente_id = models.IntegerField()
+	id_producto_id = models.IntegerField()
+	nombre_producto = models.CharField(max_length=50)
+	medida = models.CharField(max_length=15)
+	cantidad = models.DecimalField(max_digits=7, decimal_places=2)
+	precio = models.DecimalField(max_digits=12, decimal_places=2)
+	descuento = models.DecimalField(max_digits=6, decimal_places=2)
+	total = models.DecimalField(max_digits=14, decimal_places=2)
+	# comision = models.DecimalField(max_digits=14, decimal_places=2)
+	id_sucursal_id = models.IntegerField()
+	id_vendedor_id = models.IntegerField()
+	id_marca_id = models.IntegerField()
+	nombre_producto_marca = models.CharField(max_length=50)
+	id_familia_id = models.IntegerField()
+	nombre_producto_familia = models.CharField(max_length=50)
+	id_modelo_id = models.IntegerField()
+	nombre_modelo = models.CharField(max_length=50)
+	
+	objects = EstadisticasVentasMarcaVendedorManager()
+	
+	class Meta:
+		managed = False
+		db_table = 'VLEstadisticasVentasMarcaVendedor'
+		verbose_name = ('Estadísticas de Ventas por Marca y Familia por Vendedor')
+		verbose_name_plural = ('Estadísticas de Ventas por Marca y Familia por Vendedor')
+		# ordering = ['fecha_comprobante']
+
+
+#-----------------------------------------------------------------------------
+# Estadísticas de Clientes sin Movimiento.
+#-----------------------------------------------------------------------------
+class ClienteUltimaVentaManager(models.Manager):
+	
+	def obtener_datos(self, id_marca, id_vendedor, fecha_desde, fecha_hasta, id_sucursal=None):
+		
+		query = """
+			SELECT
+				*
+			FROM
+				VLEstadisticasVentasMarcaVendedor
+			WHERE
+				id_marca_id = %s
+				AND id_vendedor_id = %s
+			 	AND fecha_comprobante BETWEEN %s AND %s
+		"""
+		
+		#-- Se añaden parámetros.
+		params = [id_marca, id_vendedor, fecha_desde, fecha_hasta]
+		
+		#-- Filtros adicionales.
+		if id_sucursal:
+			query += " AND id_sucursal_id = %s"
+			params.append(id_sucursal)
+		
+		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
+		return self.raw(query, params)
+
+
+class VLClienteUltimaVenta(models.Model):
+	id = models.AutoField(primary_key=True)
+	id_cliente_id = models.IntegerField()
+	nombre_cliente = models.CharField(max_length=50)
+	fecha_comprobante = models.DateField()
+	
+	objects = ClienteUltimaVentaManager()
+	
+	class Meta:
+		managed = False
+		db_table = 'VLEstadisticasVentasMarcaVendedor'
+		verbose_name = ('Estadísticas de Ventas por Marca y Familia por Vendedor')
+		verbose_name_plural = ('Estadísticas de Ventas por Marca y Familia por Vendedor')
+		# ordering = ['fecha_comprobante']
+
+
+#-----------------------------------------------------------------------------
+# Estadísticas de Ventas por Provincia.
+#-----------------------------------------------------------------------------
+class EstadisticasVentasProvinciaManager(models.Manager):
+	
+	def obtener_datos(self, fecha_desde, fecha_hasta, id_marca_desede, id_marca_hasta, agrupar, mostrar, id_vendedor, id_sucursal=None, id_provincia=None):
+		
+		query = """
+			SELECT 
+				ROW_NUMBER() OVER() AS id,
+				id_provincia,
+				nombre_provincia,
+				id_producto_id,
+				nombre_producto,
+				nombre_producto_familia,
+				nombre_modelo,
+				nombre_producto_marca,
+				SUM(cantidad) AS cantidad, 
+				SUM(total) AS total
+			FROM 
+				VLEstadisticasVentasProvincia
+			WHERE 
+				fecha_comprobante BETWEEN %s AND %s
+				AND id_marca_id BETWEEN %s AND %s
+				AND id_vendedor_id = %s
+		"""
+		
+		#-- Se añaden parámetros.
+		params = [fecha_desde, fecha_hasta, id_marca_desede, id_marca_hasta, id_vendedor]
+		
+		#-- Filtros adicionales.
+		if id_sucursal:
+			query += " AND id_sucursal_id = %s"
+			params.append(id_sucursal)
+		
+		if id_provincia:
+			query += " AND id_provincia = %s"
+			params.append(id_provincia)
+		
+		match agrupar:
+			case "Producto":
+				query += " GROUP BY id_producto_id"
+			case "Familia":
+				query += " GROUP BY id_familia_id, id_marca_id"
+			case "Modelo":
+				# query += " GROUP BY id_modelo_id, id_marca_id"
+				query += " GROUP BY id_modelo_id"
+			case "Marca":
+				query += " GROUP BY id_marca_id"
+		
+		query += " ORDER BY nombre_provincia"
+		
+		if mostrar:
+			match mostrar:
+				case "Cantidad":
+					query += ", cantidad DESC"
+				case "Importe":
+					query += ", total DESC"
+		
+		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
+		return self.raw(query, params)
+
+
+class VLEstadisticasVentasProvincia(models.Model):
+	id = models.AutoField(primary_key=True)
+	id_producto_id = models.IntegerField()
+	nombre_producto = models.CharField(max_length=50)
+	nombre_producto_familia = models.CharField(max_length=50)
+	nombre_modelo = models.CharField(max_length=50)
+	nombre_producto_marca = models.CharField(max_length=50)
+	cantidad = models.DecimalField(max_digits=7, decimal_places=2)
+	total = models.DecimalField(max_digits=14, decimal_places=2)
+	fecha_comprobante = models.DateField()
+	id_sucursal_id = models.IntegerField()
+	id_vendedor_id = models.IntegerField()
+	id_provincia = models.IntegerField()
+	nombre_provincia = models.CharField(max_length=30)
+	
+	objects = EstadisticasVentasProvinciaManager()
+	
+	class Meta:
+		managed = False
+		db_table = 'VLEstadisticasVentasProvincia'
+		verbose_name = ('Estadísticas de Ventas por Provincia')
+		verbose_name_plural = ('Estadísticas de Ventas por Provincia')
+		# ordering = ['fecha_comprobante']
+
+

@@ -238,7 +238,8 @@ def vlremitospendientes_vista_pantalla(request):
 		return HttpResponse("Token no proporcionado", status=400)
 	
 	#-- Obtener el contexto(datos) previamente guardados en la sesión.
-	contexto_reporte = deserializar_datos(request.session.pop(token, None))
+	contexto_reporte = deserializar_datos(request.session.get(token, None))
+	# contexto_reporte = deserializar_datos(request.session.pop(token, None))
 	
 	if not contexto_reporte:
 		return HttpResponse("Contexto no encontrado o expirado", status=400)

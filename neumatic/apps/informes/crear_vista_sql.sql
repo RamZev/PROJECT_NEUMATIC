@@ -776,3 +776,208 @@ CREATE VIEW "VLEstadisticasVentasVendedor" AS
 			INNER JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
 	WHERE 
 		df.id_producto_id <> 0 AND cv.mult_estadistica <> 0 AND f.no_estadist = False;
+
+
+-- ---------------------------------------------------------------------------
+-- Estadísticas de Ventas Vendedores Clientes.
+-- Modelo: VLEstadisticasVentasVendedorCliente
+-- ---------------------------------------------------------------------------
+DROP VIEW IF EXISTS "main"."VLEstadisticasVentasVendedorCliente";
+CREATE VIEW "VLEstadisticasVentasVendedorCliente" AS 
+	SELECT 
+		ROW_NUMBER() OVER() AS id,
+		df.id_producto_id,
+		p.nombre_producto,
+		p.id_familia_id,
+		pf.nombre_producto_familia, 
+		p.id_modelo_id,
+		pm.nombre_modelo,
+		p.id_marca_id,
+		m.nombre_producto_marca,
+		df.cantidad*cv.mult_estadistica AS cantidad,
+		((df.cantidad*df.precio)+(df.cantidad*df.precio*df.descuento/100))*cv.mult_estadistica AS total,
+		f.fecha_comprobante,
+		f.id_sucursal_id,
+		f.id_cliente_id,
+		c.nombre_cliente,
+		f.id_vendedor_id,
+		v.nombre_vendedor,
+		f.no_estadist
+	FROM 
+		detalle_factura df 
+		JOIN factura f ON df.id_factura_id = f.id_factura
+		JOIN producto p ON df.id_producto_id = p.id_producto
+		JOIN producto_modelo pm ON p.id_modelo_id = pm.id_modelo
+		JOIN producto_familia pf ON p.id_familia_id = pf.id_producto_familia
+		JOIN producto_marca m ON p.id_marca_id = m.id_producto_marca
+		JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
+		JOIN cliente c ON f.id_cliente_id = c.id_cliente
+		JOIN vendedor v ON f.id_vendedor_id = v.id_vendedor
+	WHERE 
+		--df.id_producto_id <> 0 AND cv.mult_estadistica <> 0 AND f.no_estadist = False
+		df.id_producto_id <> 0 AND cv.mult_estadistica <> 0
+	ORDER BY
+		--f.id_vendedor_id, c.nombre_cliente
+		v.nombre_vendedor, c.nombre_cliente;
+
+
+-- ---------------------------------------------------------------------------
+-- Ventas de Productos según Condición.
+-- Modelo: VLEstadisticasSegunCondicion
+-- ---------------------------------------------------------------------------
+DROP VIEW IF EXISTS "main"."VLEstadisticasSegunCondicion";
+CREATE VIEW "VLEstadisticasSegunCondicion" AS 
+	SELECT
+		ROW_NUMBER() OVER() AS id,
+		p.id_familia_id,
+		pf.nombre_producto_familia,
+		p.id_marca_id,
+		pk.nombre_producto_marca,
+		p.id_modelo_id,
+		pm.nombre_modelo,
+		df.id_producto_id, 
+		p.nombre_producto,
+		df.reventa,
+		df.cantidad*cv.mult_estadistica AS cantidad,
+		((df.precio+(df.precio*df.descuento/100))*df.cantidad)*cv.mult_estadistica AS importe,
+		df.costo*df.cantidad*cv.mult_estadistica AS costo,
+		f.fecha_comprobante,
+		f.id_sucursal_id
+	FROM
+		detalle_factura df
+		JOIN factura f ON df.id_factura_id = f.id_factura 
+		JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
+		JOIN producto p ON df.id_producto_id = p.id_producto
+		JOIN producto_familia pf ON p.id_familia_id = pf.id_producto_familia
+		JOIN producto_marca pk ON p.id_marca_id = pk.id_producto_marca
+		JOIN producto_modelo pm ON p.id_modelo_id = pm.id_modelo
+	WHERE
+		f.no_estadist = False AND cv.mult_estadistica <> 0
+	ORDER BY
+		p.id_familia_id, p.id_marca_id, p.id_modelo_id, df.id_producto_id;
+
+
+-- ---------------------------------------------------------------------------
+-- Estadísticas de Ventas por Marcas.
+-- Modelo: VLEstadisticasVentasMarca
+-- ---------------------------------------------------------------------------
+DROP VIEW IF EXISTS "main"."VLEstadisticasVentasMarca";
+CREATE VIEW "VLEstadisticasVentasMarca" AS 
+	SELECT
+		ROW_NUMBER() OVER() AS id,
+		(f.compro || '  ' || f.letra_comprobante || '  ' || SUBSTR(printf('%012d', f.numero_comprobante), 1, 4) || '-' || SUBSTR(printf('%012d', f.numero_comprobante), 5)) AS comprobante,
+		f.fecha_comprobante,
+		f.id_cliente_id,
+		df.id_producto_id,
+		p.nombre_producto,
+		p.medida,
+		df.cantidad,
+		df.precio,
+		df.descuento,
+		df.total,
+		df.precio*df.cantidad*cv.mult_estadistica AS compra,
+		f.id_sucursal_id,
+		p.id_marca_id,
+		pk.nombre_producto_marca,
+		p.id_familia_id,
+		pf.nombre_producto_familia,
+		p.id_modelo_id,
+		pm.nombre_modelo
+	FROM
+		detalle_factura df
+		JOIN factura f ON df.id_factura_id = f.id_factura
+		JOIN producto p ON df.id_producto_id = p.id_producto
+		JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
+		JOIN producto_marca pk ON p.id_marca_id = pk.id_producto_marca
+		JOIN producto_familia pf ON p.id_familia_id = pf.id_producto_familia
+		JOIN producto_modelo pm ON p.id_modelo_id = pm.id_modelo
+	WHERE
+		cv.mult_estadistica <> 0 AND f.no_estadist <> True
+	ORDER BY
+		p.id_marca_id, p.id_familia_id, p.id_modelo_id, p.id_producto;
+
+
+-- ---------------------------------------------------------------------------
+-- Estadísticas de Ventas por Marcas Vendedor.
+-- Modelo: VLEstadisticasVentasMarcaVendedor
+-- ---------------------------------------------------------------------------
+DROP VIEW IF EXISTS "main"."VLEstadisticasVentasMarcaVendedor";
+CREATE VIEW "VLEstadisticasVentasMarcaVendedor" AS 
+	SELECT
+		ROW_NUMBER() OVER() AS id,
+		(f.compro || '  ' || f.letra_comprobante || '  ' || SUBSTR(printf('%012d', f.numero_comprobante), 1, 4) || '-' || SUBSTR(printf('%012d', f.numero_comprobante), 5)) AS comprobante,
+		f.fecha_comprobante,
+		f.id_cliente_id,
+		df.id_producto_id,
+		p.nombre_producto,
+		p.medida,
+		df.cantidad,
+		df.precio,
+		df.descuento,
+		df.total,
+		f.id_sucursal_id,
+		c.id_vendedor_id,
+		p.id_marca_id,
+		pk.nombre_producto_marca,
+		p.id_familia_id,
+		pf.nombre_producto_familia,
+		p.id_modelo_id,
+		pm.nombre_modelo
+	FROM
+		detalle_factura df
+		JOIN factura f ON df.id_factura_id = f.id_factura
+		JOIN cliente c ON f.id_cliente_id = c.id_cliente
+		JOIN producto p ON df.id_producto_id = p.id_producto
+		JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
+		JOIN producto_marca pk ON p.id_marca_id = pk.id_producto_marca
+		JOIN producto_familia pf ON p.id_familia_id = pf.id_producto_familia
+		JOIN producto_modelo pm ON p.id_modelo_id = pm.id_modelo
+	WHERE
+		cv.mult_estadistica <> 0 AND f.no_estadist <> True
+	ORDER BY
+		p.id_marca_id, p.id_familia_id, p.id_modelo_id, p.id_producto;
+
+
+
+
+
+
+
+-- ---------------------------------------------------------------------------
+-- Estadísticas de Ventas por Provincia.
+-- Modelo: VLEstadisticasVentasProvincia
+-- ---------------------------------------------------------------------------
+DROP VIEW IF EXISTS "main"."VLEstadisticasVentasProvincia";
+CREATE VIEW "VLEstadisticasVentasProvincia" AS 
+	SELECT 
+		f.id_factura,
+		df.id_producto_id,
+		p.nombre_producto,
+		p.id_familia_id,
+		pf.nombre_producto_familia,
+		p.id_modelo_id,
+		pm.nombre_modelo,
+		p.id_marca_id,
+		m.nombre_producto_marca,
+		df.cantidad*cv.mult_estadistica AS cantidad,
+		((df.cantidad*df.precio)+(df.cantidad*df.precio*df.descuento/100))*cv.mult_estadistica AS total,
+		f.fecha_comprobante,
+		p.id_marca_id,
+		f.id_sucursal_id,
+		f.id_vendedor_id,
+		pr.id_provincia,
+		pr.nombre_provincia
+	FROM 
+		detalle_factura df JOIN factura f ON df.id_factura_id = f.id_factura
+			JOIN producto p ON df.id_producto_id = p.id_producto
+			JOIN producto_modelo pm ON p.id_modelo_id = pm.id_modelo
+			JOIN producto_familia pf ON p.id_familia_id = pf.id_producto_familia
+			JOIN producto_marca m ON p.id_marca_id = m.id_producto_marca
+			JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
+			JOIN cliente c ON f.id_cliente_id = c.id_cliente
+			JOIN provincia pr ON c.id_provincia_id = pr.id_provincia
+	WHERE 
+		df.id_producto_id <> 0 AND cv.mult_estadistica <> 0 AND f.no_estadist = False;
+
+
+

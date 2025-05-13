@@ -24,3 +24,9 @@ DROP VIEW IF EXISTS "main"."VLPrecioDiferente";
 DROP VIEW IF EXISTS "main"."VLVentasResumenIB";
 DROP VIEW IF EXISTS "main"."VLEstadisticasVentas";
 DROP VIEW IF EXISTS "main"."VLEstadisticasVentasVendedor";
+DROP VIEW IF EXISTS "main"."VLEstadisticasVentasVendedorCliente";
+DROP VIEW IF EXISTS "main"."VLEstadisticasSegunCondicion";
+DROP VIEW IF EXISTS "main"."VLEstadisticasVentasMarca";
+DROP VIEW IF EXISTS "main"."VLEstadisticasVentasMarcaVendedor";
+
+DROP VIEW IF EXISTS "main"."VLEstadisticasVentasProvincia";

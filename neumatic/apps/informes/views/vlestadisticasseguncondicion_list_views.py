@@ -1,0 +1,848 @@
+# neumatic\apps\informes\views\vlestadisticasseguncondicion_list_views.py
+
+from django.urls import reverse_lazy
+from django.shortcuts import render
+from django.http import HttpResponse
+from datetime import datetime
+from django.templatetags.static import static
+from decimal import Decimal
+
+#-- ReportLab:
+from reportlab.lib import colors
+from reportlab.lib.pagesizes import A4, landscape, portrait
+from reportlab.platypus import Paragraph
+
+from .report_views_generics import *
+from apps.informes.models import VLEstadisticasSegunCondicion
+from ..forms.buscador_vlestadisticasseguncondicion_forms import BuscadorEstadisticasSegunCondicionForm
+from utils.utils import deserializar_datos, formato_argentino, normalizar, serializar_queryset
+from utils.helpers.export_helpers import ExportHelper, PDFGenerator
+
+
+class ConfigViews:
+	
+	#-- Título del reporte.
+	report_title = "Ventas Según Condición"
+	
+	#-- Modelo.
+	model = VLEstadisticasSegunCondicion
+	
+	#-- Formulario asociado al modelo.
+	form_class = BuscadorEstadisticasSegunCondicionForm
+	
+	#-- Aplicación asociada al modelo.
+	app_label = "informes"
+	
+	#-- Nombre del modelo en minúsculas.
+	model_string = model.__name__.lower()
+	
+	#-- Vistas del CRUD del modelo.
+	list_view_name = f"{model_string}_list"  # <== vlventacompro_list
+	
+	#-- Plantilla base.
+	template_list = f'{app_label}/maestro_informe.html'
+	
+	#-- Vista del home del proyecto.
+	home_view_name = "home"
+	
+	#-- Nombre de la url.
+	success_url = reverse_lazy(list_view_name)
+	
+	#-- Archivo JavaScript específico.
+	js_file = None
+	
+	# #-- URL de la vista que genera el .zip con los informes.
+	# url_zip = f"{model_string}_informe_generado"
+	
+	#-- URL de la vista que genera la salida a pantalla.
+	url_pantalla = f"{model_string}_vista_pantalla"
+	
+	#-- URL de la vista que genera el .pdf.
+	url_pdf = f"{model_string}_vista_pdf"
+	
+	#-- URL de la vista que genera el Excel.
+	url_excel = f"{model_string}_vista_excel"
+	
+	#-- URL de la vista que genera el CSV.
+	url_csv = f"{model_string}_vista_csv"
+	
+	#-- Plantilla Vista Preliminar Pantalla.
+	reporte_pantalla = f"informes/reportes/{model_string}_producto_list.html"
+	
+	#-- Establecer las columnas del reporte y sus anchos(en punto).
+	header_data = {
+		"nombre_producto_familia": (80, "Familia"),
+		"nombre_producto_marca": (60, "Marca"),
+		"nombre_modelo": (60, "Modelo"),
+		"id_producto_id": (40, "Código"),
+		"nombre_producto": (180, "Descripción"),
+		"costo": (60, "Costo"),
+		"cantidad_m": (30, "Cantidad"),
+		"importe_m": (60, "Importe"),
+		"ganancia_m": (60, "Ganancia"),
+		"cantidad_r": (30, "Cantidad"),
+		"importe_r": (60, "Importe"),
+		"ganancia_r": (60, "Ganancia"),
+		"cantidad_e": (30, "Cantidad"),
+		"importe_e": (60, "Importe"),
+		"ganancia_e": (60, "Ganancia")
+	}
+
+
+class VLEstadisticasSegunCondicionInformeView(InformeFormView):
+	config = ConfigViews  #-- Ahora la configuración estará disponible en self.config.
+	form_class = ConfigViews.form_class
+	template_name = ConfigViews.template_list
+	success_url = ConfigViews.success_url
+	
+	extra_context = {
+		"master_title": f'Informes - {ConfigViews.model._meta.verbose_name_plural}',
+		"home_view_name": ConfigViews.home_view_name,
+		"buscador_template": f"{ConfigViews.app_label}/buscador_{ConfigViews.model_string}.html",
+		"js_file": ConfigViews.js_file,
+		"url_pantalla": ConfigViews.url_pantalla,
+		"url_pdf": ConfigViews.url_pdf,
+	}
+	
+	def obtener_queryset(self, cleaned_data):
+		sucursal = cleaned_data.get('sucursal', None)
+		fecha_desde = cleaned_data.get('fecha_desde')
+		fecha_hasta = cleaned_data.get('fecha_hasta')
+		id_marca_desde = cleaned_data.get('id_marca_desde')
+		id_marca_hasta = cleaned_data.get('id_marca_hasta')
+		agrupar = cleaned_data.get('agrupar', None)
+		
+		id_sucursal = sucursal.id_sucursal if sucursal else None
+		
+		queryset = VLEstadisticasSegunCondicion.objects.obtener_datos(
+			fecha_desde,
+			fecha_hasta,
+			id_marca_desde,
+			id_marca_hasta,
+			agrupar,
+			id_sucursal=id_sucursal
+		)
+		
+		return queryset
+	
+	def obtener_contexto_reporte(self, queryset, cleaned_data):
+		"""
+		Aquí se estructura el contexto para el reporte, agrupando los comprobantes,
+		calculando subtotales y totales generales, tal como se requiere para el listado.
+		"""
+		
+		#-- Parámetros del listado.
+		sucursal = cleaned_data.get('sucursal', None)
+		fecha_desde = cleaned_data.get('fecha_desde')
+		fecha_hasta = cleaned_data.get('fecha_hasta')
+		id_marca_desde = cleaned_data.get('id_marca_desde')
+		id_marca_hasta = cleaned_data.get('id_marca_hasta')
+		agrupar = cleaned_data.get('agrupar', None)
+		
+		fecha_hora_reporte = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+		
+		dominio = f"http://{self.request.get_host()}"
+		
+		param_left = {
+			"Sucursal": sucursal.nombre_sucursal if sucursal else "Todas",
+			"Agrupado por": agrupar,
+		}
+		param_right = {
+			"Desde": fecha_desde.strftime("%d/%m/%Y"),
+			"Hasta": fecha_hasta.strftime("%d/%m/%Y"),
+			"Marca Desde": id_marca_desde,
+			"Marca Hasta": id_marca_hasta
+		}
+		
+		# **************************************************
+		#-- Agrupar los objetos por el número de comprobante.
+		grouped_data = {}
+		tg_cantidad_m = Decimal('0')
+		tg_importe_m = Decimal('0')
+		tg_ganancia_m = Decimal('0')
+		tg_cantidad_r = Decimal('0')
+		tg_importe_r = Decimal('0')
+		tg_ganancia_r = Decimal('0')
+		tg_cantidad_e = Decimal('0')
+		tg_importe_e = Decimal('0')
+		tg_ganancia_e = Decimal('0')
+		
+		match agrupar:
+			case "Producto":
+				#-- Agrupar por producto.
+				for obj in queryset:
+					familia = obj.nombre_producto_familia  #-- Campo que agrupa los datos.
+					if familia not in grouped_data:
+						grouped_data[familia] = {
+							'modelos': {},
+							'stf_cantidad_m': 0,
+							'stf_importe_m': Decimal('0'),
+							'stf_ganancia_m': Decimal('0'),
+							'stf_cantidad_r': 0,
+							'stf_importe_r': Decimal('0'),
+							'stf_ganancia_r': Decimal('0'),
+							'stf_cantidad_e': 0,
+							'stf_importe_e': Decimal('0'),
+							'stf_ganancia_e': Decimal('0'),
+						}
+					
+					#-- Agrupar los objetos por Modelos de la Familia.
+					modelo = obj.nombre_modelo
+					if modelo not in grouped_data[familia]['modelos']:
+						grouped_data[familia]['modelos'][modelo] = {
+							'detalle': [],
+							'stm_cantidad_m': 0,
+							'stm_importe_m': Decimal('0'),
+							'stm_ganancia_m': Decimal('0'),
+							'stm_cantidad_r': 0,
+							'stm_importe_r': Decimal('0'),
+							'stm_ganancia_r': Decimal('0'),
+							'stm_cantidad_e': 0,
+							'stm_importe_e': Decimal('0'),
+							'stm_ganancia_e': Decimal('0'),
+						}
+					
+					#-- Añadir el detalle al grupo.
+					grouped_data[familia]["modelos"][modelo]["detalle"].append(obj)
+					
+					#-- Acumular totales por Familia.
+					grouped_data[familia]['stf_cantidad_m'] += obj.cantidad_m
+					grouped_data[familia]['stf_importe_m'] += Decimal(str(obj.importe_m))
+					grouped_data[familia]['stf_ganancia_m'] += Decimal(str(obj.ganancia_m))
+					grouped_data[familia]['stf_cantidad_r'] += obj.cantidad_r
+					grouped_data[familia]['stf_importe_r'] += Decimal(str(obj.importe_r))
+					grouped_data[familia]['stf_ganancia_r'] += Decimal(str(obj.ganancia_r))
+					grouped_data[familia]['stf_cantidad_e'] += obj.cantidad_e
+					grouped_data[familia]['stf_importe_e'] += Decimal(str(obj.importe_e))
+					grouped_data[familia]['stf_ganancia_e'] += Decimal(str(obj.ganancia_e))
+					
+					#-- Acumular totales por Modelo.
+					grouped_data[familia]['modelos'][modelo]['stm_cantidad_m'] += obj.cantidad_m
+					grouped_data[familia]['modelos'][modelo]['stm_importe_m'] += Decimal(str(obj.importe_m))
+					grouped_data[familia]['modelos'][modelo]['stm_ganancia_m'] += Decimal(str(obj.ganancia_m))
+					grouped_data[familia]['modelos'][modelo]['stm_cantidad_r'] += obj.cantidad_r
+					grouped_data[familia]['modelos'][modelo]['stm_importe_r'] += Decimal(str(obj.importe_r))
+					grouped_data[familia]['modelos'][modelo]['stm_ganancia_r'] += Decimal(str(obj.ganancia_r))
+					grouped_data[familia]['modelos'][modelo]['stm_cantidad_e'] += obj.cantidad_e
+					grouped_data[familia]['modelos'][modelo]['stm_importe_e'] += Decimal(str(obj.importe_e))
+					grouped_data[familia]['modelos'][modelo]['stm_ganancia_e'] += Decimal(str(obj.ganancia_e))
+					
+					#-- Acumular totales generales.
+					tg_cantidad_m += obj.cantidad_m
+					tg_importe_m += Decimal(str(obj.importe_m))
+					tg_ganancia_m += Decimal(str(obj.ganancia_m))
+					tg_cantidad_r += obj.cantidad_r
+					tg_importe_r += Decimal(str(obj.importe_r))
+					tg_ganancia_r += Decimal(str(obj.ganancia_r))
+					tg_cantidad_e += obj.cantidad_e
+					tg_importe_e += Decimal(str(obj.importe_e))
+					tg_ganancia_e += Decimal(str(obj.ganancia_e))
+				
+				#-- Convertir los datos agrupados a un formato serializable:
+				#-- Se recorre cada grupo y se convierte cada detalle a diccionario usando raw_to_dict.
+				
+				for familia, familia_data in grouped_data.items():
+					familia_data['stf_cantidad_m'] = float(familia_data['stf_cantidad_m'])
+					familia_data['stf_importe_m'] = float(familia_data['stf_importe_m'])
+					familia_data['stf_ganancia_m'] = float(familia_data['stf_ganancia_m'])
+					familia_data['stf_cantidad_r'] = float(familia_data['stf_cantidad_r'])
+					familia_data['stf_importe_r'] = float(familia_data['stf_importe_r'])
+					familia_data['stf_ganancia_r'] = float(familia_data['stf_ganancia_r'])
+					familia_data['stf_cantidad_e'] = float(familia_data['stf_cantidad_e'])
+					familia_data['stf_importe_e'] = float(familia_data['stf_importe_e'])
+					familia_data['stf_ganancia_e'] = float(familia_data['stf_ganancia_e'])
+					
+					for modelo, modelo_data in familia_data['modelos'].items():
+						modelo_data['detalle'] = [raw_to_dict(detalle) for detalle in modelo_data['detalle']]
+						
+						modelo_data['stm_cantidad_m'] = float(modelo_data['stm_cantidad_m'])
+						modelo_data['stm_importe_m'] = float(modelo_data['stm_importe_m'])
+						modelo_data['stm_ganancia_m'] = float(modelo_data['stm_ganancia_m'])
+						modelo_data['stm_cantidad_r'] = float(modelo_data['stm_cantidad_r'])
+						modelo_data['stm_importe_r'] = float(modelo_data['stm_importe_r'])
+						modelo_data['stm_ganancia_r'] = float(modelo_data['stm_ganancia_r'])
+						modelo_data['stm_cantidad_e'] = float(modelo_data['stm_cantidad_e'])
+						modelo_data['stm_importe_e'] = float(modelo_data['stm_importe_e'])
+						modelo_data['stm_ganancia_e'] = float(modelo_data['stm_ganancia_e'])
+				
+			case "Familia":
+				#-- Agrupar por familia.
+				for obj in queryset:
+					familia = obj.nombre_producto_familia  #-- Campo que agrupa los datos.
+					if familia not in grouped_data:
+						grouped_data[familia] = {
+							'detalle': [],
+							'stf_cantidad_m': 0,
+							'stf_importe_m': Decimal('0'),
+							'stf_ganancia_m': Decimal('0'),
+							'stf_cantidad_r': 0,
+							'stf_importe_r': Decimal('0'),
+							'stf_ganancia_r': Decimal('0'),
+							'stf_cantidad_e': 0,
+							'stf_importe_e': Decimal('0'),
+							'stf_ganancia_e': Decimal('0'),
+						}
+					
+					#-- Añadir el detalle al grupo.
+					grouped_data[familia]["detalle"].append(obj)
+					
+					#-- Acumular totales por Familia.
+					grouped_data[familia]['stf_cantidad_m'] += obj.cantidad_m
+					grouped_data[familia]['stf_importe_m'] += Decimal(str(obj.importe_m))
+					grouped_data[familia]['stf_ganancia_m'] += Decimal(str(obj.ganancia_m))
+					grouped_data[familia]['stf_cantidad_r'] += obj.cantidad_r
+					grouped_data[familia]['stf_importe_r'] += Decimal(str(obj.importe_r))
+					grouped_data[familia]['stf_ganancia_r'] += Decimal(str(obj.ganancia_r))
+					grouped_data[familia]['stf_cantidad_e'] += obj.cantidad_e
+					grouped_data[familia]['stf_importe_e'] += Decimal(str(obj.importe_e))
+					grouped_data[familia]['stf_ganancia_e'] += Decimal(str(obj.ganancia_e))
+					
+					#-- Acumular totales generales.
+					tg_cantidad_m += obj.cantidad_m
+					tg_importe_m += Decimal(str(obj.importe_m))
+					tg_ganancia_m += Decimal(str(obj.ganancia_m))
+					tg_cantidad_r += obj.cantidad_r
+					tg_importe_r += Decimal(str(obj.importe_r))
+					tg_ganancia_r += Decimal(str(obj.ganancia_r))
+					tg_cantidad_e += obj.cantidad_e
+					tg_importe_e += Decimal(str(obj.importe_e))
+					tg_ganancia_e += Decimal(str(obj.ganancia_e))
+				
+				#-- Convertir los datos agrupados a un formato serializable:
+				#-- Se recorre cada grupo y se convierte cada detalle a diccionario usando raw_to_dict.
+				for familia, familia_data in grouped_data.items():
+					familia_data['stf_cantidad_m'] = float(familia_data['stf_cantidad_m'])
+					familia_data['stf_importe_m'] = float(familia_data['stf_importe_m'])
+					familia_data['stf_ganancia_m'] = float(familia_data['stf_ganancia_m'])
+					familia_data['stf_cantidad_r'] = float(familia_data['stf_cantidad_r'])
+					familia_data['stf_importe_r'] = float(familia_data['stf_importe_r'])
+					familia_data['stf_ganancia_r'] = float(familia_data['stf_ganancia_r'])
+					familia_data['stf_cantidad_e'] = float(familia_data['stf_cantidad_e'])
+					familia_data['stf_importe_e'] = float(familia_data['stf_importe_e'])
+					familia_data['stf_ganancia_e'] = float(familia_data['stf_ganancia_e'])
+					familia_data['detalle'] = [raw_to_dict(detalle) for detalle in familia_data['detalle']]
+			
+			case "Modelo":
+				#-- Agrupar por modelo.
+				for obj in queryset:
+					marca = obj.nombre_producto_marca  #-- Campo que agrupa los datos.
+					if marca not in grouped_data:
+						grouped_data[marca] = {
+							'detalle': [],
+							'stm_cantidad_m': 0,
+							'stm_importe_m': Decimal('0'),
+							'stm_ganancia_m': Decimal('0'),
+							'stm_cantidad_r': 0,
+							'stm_importe_r': Decimal('0'),
+							'stm_ganancia_r': Decimal('0'),
+							'stm_cantidad_e': 0,
+							'stm_importe_e': Decimal('0'),
+							'stm_ganancia_e': Decimal('0'),
+						}
+					
+					#-- Añadir el detalle al grupo.
+					grouped_data[marca]["detalle"].append(obj)
+					
+					#-- Acumular totales por Familia.
+					grouped_data[marca]['stm_cantidad_m'] += obj.cantidad_m
+					grouped_data[marca]['stm_importe_m'] += Decimal(str(obj.importe_m))
+					grouped_data[marca]['stm_ganancia_m'] += Decimal(str(obj.ganancia_m))
+					grouped_data[marca]['stm_cantidad_r'] += obj.cantidad_r
+					grouped_data[marca]['stm_importe_r'] += Decimal(str(obj.importe_r))
+					grouped_data[marca]['stm_ganancia_r'] += Decimal(str(obj.ganancia_r))
+					grouped_data[marca]['stm_cantidad_e'] += obj.cantidad_e
+					grouped_data[marca]['stm_importe_e'] += Decimal(str(obj.importe_e))
+					grouped_data[marca]['stm_ganancia_e'] += Decimal(str(obj.ganancia_e))
+					
+					#-- Acumular totales generales.
+					tg_cantidad_m += obj.cantidad_m
+					tg_importe_m += Decimal(str(obj.importe_m))
+					tg_ganancia_m += Decimal(str(obj.ganancia_m))
+					tg_cantidad_r += obj.cantidad_r
+					tg_importe_r += Decimal(str(obj.importe_r))
+					tg_ganancia_r += Decimal(str(obj.ganancia_r))
+					tg_cantidad_e += obj.cantidad_e
+					tg_importe_e += Decimal(str(obj.importe_e))
+					tg_ganancia_e += Decimal(str(obj.ganancia_e))
+				
+				#-- Convertir los datos agrupados a un formato serializable:
+				#-- Se recorre cada grupo y se convierte cada detalle a diccionario usando raw_to_dict.
+				for marca, marca_data in grouped_data.items():
+					marca_data['stm_cantidad_m'] = float(marca_data['stm_cantidad_m'])
+					marca_data['stm_importe_m'] = float(marca_data['stm_importe_m'])
+					marca_data['stm_ganancia_m'] = float(marca_data['stm_ganancia_m'])
+					marca_data['stm_cantidad_r'] = float(marca_data['stm_cantidad_r'])
+					marca_data['stm_importe_r'] = float(marca_data['stm_importe_r'])
+					marca_data['stm_ganancia_r'] = float(marca_data['stm_ganancia_r'])
+					marca_data['stm_cantidad_e'] = float(marca_data['stm_cantidad_e'])
+					marca_data['stm_importe_e'] = float(marca_data['stm_importe_e'])
+					marca_data['stm_ganancia_e'] = float(marca_data['stm_ganancia_e'])
+					marca_data['detalle'] = [raw_to_dict(detalle) for detalle in marca_data['detalle']]
+				
+			case "Marca":
+				
+				#-- Agrupar por marca.
+				for obj in queryset:
+					#-- Acumular totales generales.
+					tg_cantidad_m += obj.cantidad_m
+					tg_importe_m += Decimal(str(obj.importe_m))
+					tg_ganancia_m += Decimal(str(obj.ganancia_m))
+					tg_cantidad_r += obj.cantidad_r
+					tg_importe_r += Decimal(str(obj.importe_r))
+					tg_ganancia_r += Decimal(str(obj.ganancia_r))
+					tg_cantidad_e += obj.cantidad_e
+					tg_importe_e += Decimal(str(obj.importe_e))
+					tg_ganancia_e += Decimal(str(obj.ganancia_e))
+				
+				#-- Convertir cada objeto del queryset a un diccionario.
+				grouped_data = [raw_to_dict(obj) for obj in queryset]
+		
+		# **************************************************
+		
+		#-- Se retorna un contexto que será consumido tanto para la vista en pantalla como para la generación del PDF.
+		return {
+			"objetos": grouped_data,
+			"tg_cantidad_m": tg_cantidad_m,
+			"tg_importe_m": float(tg_importe_m),
+			"tg_ganancia_m": float(tg_ganancia_m),
+			"tg_cantidad_r": tg_cantidad_r,
+			"tg_importe_r": float(tg_importe_r),
+			"tg_ganancia_r": float(tg_ganancia_r),
+			"tg_cantidad_e": tg_cantidad_e,
+			"tg_importe_e": float(tg_importe_e),
+			"tg_ganancia_e": float(tg_ganancia_e),
+			"agrupar": agrupar,
+			"parametros_i": param_left,
+			"parametros_d": param_right,
+			'fecha_hora_reporte': fecha_hora_reporte,
+			'titulo': ConfigViews.report_title,
+			'logo_url': f"{dominio}{static('img/logo_01.png')}",
+			'css_url': f"{dominio}{static('css/reportes.css')}",
+			'css_url_new': f"{dominio}{static('css/reportes_new.css')}",
+		}
+	
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
+		form = kwargs.get("form") or self.get_form()
+		
+		context["form"] = form
+		if form.errors:
+			context["data_has_errors"] = True
+		return context
+
+def raw_to_dict(instance):
+	"""Convierte una instancia de una consulta raw a un diccionario, eliminando claves internas."""
+	data = instance.__dict__.copy()
+	data.pop('_state', None)
+	return data
+
+
+def vlestadisticasseguncondicion_vista_pantalla(request):
+	#-- Obtener el token de la querystring.
+	token = request.GET.get("token")
+	
+	if not token:
+		return HttpResponse("Token no proporcionado", status=400)
+	
+	#-- Obtener el contexto(datos) previamente guardados en la sesión.
+	contexto_reporte = deserializar_datos(request.session.pop(token, None))
+	
+	if not contexto_reporte:
+		return HttpResponse("Contexto no encontrado o expirado", status=400)
+	
+	#-- Generar el listado a pantalla.
+	agrupar = contexto_reporte.get("agrupar", None)
+	match agrupar:
+		case "Producto":
+			ConfigViews.reporte_pantalla = f"informes/reportes/{ConfigViews.model_string}_producto_list.html"
+		case "Familia":
+			ConfigViews.reporte_pantalla = f"informes/reportes/{ConfigViews.model_string}_familia_list.html"
+		case "Modelo":
+			ConfigViews.reporte_pantalla = f"informes/reportes/{ConfigViews.model_string}_modelo_list.html"
+		case "Marca":
+			ConfigViews.reporte_pantalla = f"informes/reportes/{ConfigViews.model_string}_marca_list.html"
+	
+	return render(request, ConfigViews.reporte_pantalla, contexto_reporte)
+
+
+def vlestadisticasseguncondicion_vista_pdf(request):
+	#-- Obtener el token de la querystring.
+	token = request.GET.get("token")
+	
+	if not token:
+		return HttpResponse("Token no proporcionado", status=400)
+	
+	#-- Obtener el contexto(datos) previamente guardados en la sesión.
+	# contexto_reporte = deserializar_datos(request.session.pop(token, None))
+	contexto_reporte = deserializar_datos(request.session.get(token, None))
+	
+	if not contexto_reporte:
+		return HttpResponse("Contexto no encontrado o expirado", status=400)
+	
+	#-- Generar el PDF usando ReportLab
+	pdf_file = generar_pdf(contexto_reporte)
+	
+	#-- Preparar la respuesta HTTP.
+	response = HttpResponse(pdf_file, content_type="application/pdf")
+	response["Content-Disposition"] = f'inline; filename="{normalizar(ConfigViews.report_title)}.pdf"'
+	
+	return response
+
+
+class CustomPDFGenerator(PDFGenerator):
+	#-- Método que se puede sobreescribir/extender según requerimientos.
+	def _get_header_bottom_left(self, context):
+		"""Personalización del Header-bottom-left"""
+		
+		params = context.get("parametros_i", {})
+		return "<br/>".join([f"<b>{k}:</b> {v}" for k, v in params.items()])
+	
+	#-- Método que se puede sobreescribir/extender según requerimientos.
+	def _get_header_bottom_right(self, context):
+		"""Añadir información adicional específica para este reporte"""
+		
+		params = context.get("parametros_d", {})
+		return "<br/>".join([f"<b>{k}:</b> {v}" for k, v in params.items()])
+
+def generar_pdf(contexto_reporte):
+	agrupar = contexto_reporte.get("agrupar", None)
+	
+	#-- Crear instancia del generador personalizado.
+	generator = CustomPDFGenerator(contexto_reporte, pagesize=landscape(A4))
+	
+	#-- Construir datos de la tabla:
+	
+	#-- Títulos de las columnas de la tabla (headers).
+	headers, blank_cols = headers_titles(agrupar)
+	
+	headers_tit_line1 = [""] + blank_cols + ["MOSTRADOR", "", "", "", "REVENTA", "", "", "", "E-COMERCE", "", "", ""]
+	
+	headers_tit_line2 = [value[1] for value in headers.values()]
+	headers_tit_line2.insert(0, "")
+	
+	#-- Extraer Ancho de las columnas de la tabla.
+	col_widths = [value[0] for value in headers.values()]
+	col_widths.insert(0, 10)
+	
+	table_data = [headers_tit_line1, headers_tit_line2]
+	
+	#-- Estilos específicos adicionales iniciales de la tabla.
+	table_style_config = [
+		#-- Estilos para la primera línea de encabezados.
+		('SPAN', (-12,0), (-9,0)),  # MOSTRADOR
+		('SPAN', (-8,0), (-5,0)),  # REVENTA
+		('SPAN', (-4,0), (-1,0)),  # E-COMERCE
+		('ALIGN', (0,0), (-1,0), 'CENTER'),
+		('FONTNAME', (0,0), (-1,0), 'Helvetica-Bold'),
+		
+		#-- Estilos para la segunda línea de encabezados.
+		('FONTNAME', (0,1), (-1,1), 'Helvetica-Bold'),
+		
+		#-- Bordes izquierdos para separar secciones.
+		('LINEAFTER', (-13,0), (-13,1), 1, colors.white),  # Después de columnas de agrupamiento
+		('LINEAFTER', (-9,0), (-9,1), 1, colors.white),  # Después de MOSTRADOR
+		('LINEAFTER', (-5,0), (-5,1), 1, colors.white),  # Después de REVENTA
+		
+		#-- Alineación de datos numéricos.
+		('ALIGN', (-12,1), (-1,-1), 'RIGHT'),
+	]
+	
+	#-- Contador de filas (empezamos en 1 porque la 0 es el header).
+	current_row = 2
+	
+	#-- Agregar los datos a la tabla.
+	for familia, familia_data in contexto_reporte.get("objetos", {}).items():
+		
+		#-- Datos agrupado por.
+		table_data.append([f"Familia: {familia}"] + [""]*14)
+		
+		#-- Aplicar estilos a la fila de agrupación (fila actual).
+		table_style_config.extend([
+			('SPAN', (0,current_row), (-1,current_row)),
+			('FONTNAME', (0,current_row), (-1,current_row), 'Helvetica-Bold')
+		])
+		
+		current_row += 1
+		#---------------------
+		
+		for modelo, modelo_data in familia_data["modelos"].items():
+			
+			#-- Datos agrupado por.
+			table_data.append(["", f"Modelo: {modelo}"] + [""]*13)
+			
+			#-- Aplicar estilos a la fila de agrupación (fila actual).
+			table_style_config.extend([
+				('SPAN', (1,current_row), (-1,current_row)),
+				('FONTNAME', (0,current_row), (-1,current_row), 'Helvetica-Bold')
+			])
+			
+			current_row += 1
+			
+			#-- Agregar filas del detalle.
+			for obj in modelo_data['detalle']:
+				
+				row = []
+				
+				#-- Construir fila según agrupamiento.
+				if agrupar == "Producto":
+					row.extend([
+						"",
+						obj['id_producto_id'],
+						Paragraph(str(obj['nombre_producto']), generator.styles['CellStyle']),
+					])
+				
+				elif agrupar == "Familia":
+					row.extend([
+						"",
+						Paragraph(str(obj['nombre_producto_marca']), generator.styles['CellStyle'])
+					])
+				
+				elif agrupar == "Modelo":
+					row.extend([
+						"",
+						Paragraph(str(obj['nombre_modelo']), generator.styles['CellStyle']),
+					])
+				
+				elif agrupar == "Marca":
+					row.extend([
+						"",
+						Paragraph(str(obj['nombre_producto_marca']), generator.styles['CellStyle'])
+					])
+				
+				#-- Agregar valores comunes.
+				row.extend([
+					formato_argentino(obj['cantidad_m']),
+					formato_argentino(obj['importe_m']),
+					formato_argentino(obj['costo_m']),
+					formato_argentino(obj['ganancia_m']),
+					
+					formato_argentino(obj['cantidad_r']),
+					formato_argentino(obj['importe_r']),
+					formato_argentino(obj['costo_r']),
+					formato_argentino(obj['ganancia_r']),
+					
+					formato_argentino(obj['cantidad_e']),
+					formato_argentino(obj['importe_e']),
+					formato_argentino(obj['costo_e']),
+					formato_argentino(obj['ganancia_e']),
+				])
+				
+				table_data.append(row)
+				
+				current_row += 1
+				
+			#-- Fila Totales por Modelo.
+			
+			table_data.append(
+				blank_cols + [f"Sub Total {modelo}:",
+				formato_argentino(modelo_data["stm_cantidad_m"]),
+				formato_argentino(modelo_data["stm_importe_m"]),
+				"",
+				formato_argentino(modelo_data["stm_ganancia_m"]),
+			
+				formato_argentino(modelo_data["stm_cantidad_r"]),
+				formato_argentino(modelo_data["stm_importe_r"]),
+				"",
+				formato_argentino(modelo_data["stm_ganancia_r"]),
+				
+				formato_argentino(modelo_data["stm_cantidad_e"]),
+				formato_argentino(modelo_data["stm_importe_e"]),
+				"",
+				formato_argentino(modelo_data["stm_ganancia_e"]),
+				]
+			)
+			
+			#-- Aplicar estilos a la fila de total (fila actual).
+			table_style_config.extend([
+				('ALIGN', (-13,current_row), (-1,current_row), 'RIGHT'),
+				('FONTNAME', (-13,current_row), (-1,current_row), 'Helvetica-Bold'),
+				# ('LINEABOVE', (0,current_row), (-1,current_row), 0.5, colors.black),
+			])
+			
+			current_row += 1
+		
+		#-- Fila Totales por Familia.
+		
+		table_data.append(
+			blank_cols + [f"Sub Total {familia}:",
+			formato_argentino(familia_data["stf_cantidad_m"]),
+			formato_argentino(familia_data["stf_importe_m"]),
+			"",
+			formato_argentino(familia_data["stf_ganancia_m"]),
+		
+			formato_argentino(familia_data["stf_cantidad_r"]),
+			formato_argentino(familia_data["stf_importe_r"]),
+			"",
+			formato_argentino(familia_data["stf_ganancia_r"]),
+			
+			formato_argentino(familia_data["stf_cantidad_e"]),
+			formato_argentino(familia_data["stf_importe_e"]),
+			"",
+			formato_argentino(familia_data["stf_ganancia_e"]),
+			]
+		)
+		
+		#-- Aplicar estilos a la fila de total (fila actual).
+		table_style_config.extend([
+			('ALIGN', (-13,current_row), (-1,current_row), 'RIGHT'),
+			('FONTNAME', (-13,current_row), (-1,current_row), 'Helvetica-Bold'),
+			# ('LINEABOVE', (0,current_row), (-1,current_row), 0.5, colors.black),
+		])
+		
+		current_row += 1
+		
+		#-- Fila divisoria.
+		table_data.append(blank_cols + [""]*13)
+		table_style_config.append(
+			('LINEBELOW', (0,current_row), (-1,current_row), 0.5, colors.gray),
+		)
+		current_row += 1
+		
+	#-- Fila Totales Generales.
+	table_data.append(
+		blank_cols + ["Totales Generales:", 
+			formato_argentino(contexto_reporte.get("tg_cantidad_m")),
+			formato_argentino(contexto_reporte.get("tg_importe_m")),
+			"",
+			formato_argentino(contexto_reporte.get("tg_ganancia_m")),
+		
+			formato_argentino(contexto_reporte.get("tg_cantidad_r")),
+			formato_argentino(contexto_reporte.get("tg_importe_r")),
+			"",
+			formato_argentino(contexto_reporte.get("tg_ganancia_r")),
+			
+			formato_argentino(contexto_reporte.get("tg_cantidad_e")),
+			formato_argentino(contexto_reporte.get("tg_importe_e")),
+			"",
+			formato_argentino(contexto_reporte.get("tg_ganancia_e")),
+			]
+		)
+	
+	#-- Aplicar estilos a la fila de total (fila actual).
+	table_style_config.extend([
+		('ALIGN', (-13,-1), (-1,-1), 'RIGHT'),
+		('FONTNAME', (-13,-1), (-1,-1), 'Helvetica-Bold'),
+		# ('LINEABOVE', (0,-1), (-1,-1), 0.5, colors.black),  #-- Línea superior.
+		# ('LINEBELOW', (0,current_row), (-1,current_row), 0.5, colors.black),  #-- Línea inferior.
+	])
+	
+	return generator.generate(table_data, col_widths, table_style_config, repeat_rows=2)		
+
+
+def vlestadisticasseguncondicion_vista_excel(request):
+	token = request.GET.get("token")
+	
+	if not token:
+		return HttpResponse("Token no proporcionado", status=400)
+	
+	# ---------------------------------------------
+	data = cache.get(token)
+	if not data or "cleaned_data" not in data:
+		return HttpResponse("Datos no encontrados o expirados", status=400)
+	
+	cleaned_data = data["cleaned_data"]
+	agrupar = cleaned_data.get("agrupar", None)
+	# ---------------------------------------------
+	
+	#-- Instanciar la vista y obtener el queryset.
+	view_instance = VLEstadisticasSegunCondicionInformeView()
+	view_instance.request = request
+	queryset = view_instance.obtener_queryset(cleaned_data)
+	
+	headers, blank_cols = headers_titles(agrupar)
+	
+	helper = ExportHelper(
+		queryset=queryset,
+		table_headers=headers,
+		report_title=ConfigViews.report_title
+	)
+	excel_data = helper.export_to_excel()
+	
+	response = HttpResponse(
+		excel_data,
+		content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+	)
+	#-- Inline permite visualizarlo en el navegador si el navegador lo soporta.
+	response["Content-Disposition"] = f'inline; filename="{ConfigViews.report_title}.xlsx"'
+	
+	return response
+
+
+def vlestadisticasseguncondicion_vista_csv(request):
+	token = request.GET.get("token")
+	if not token:
+		return HttpResponse("Token no proporcionado", status=400)
+	
+	#-- Recuperar los parámetros de filtrado desde la cache.
+	data = cache.get(token)
+	if not data or "cleaned_data" not in data:
+		return HttpResponse("Datos no encontrados o expirados", status=400)
+	
+	cleaned_data = data["cleaned_data"]
+	agrupar = cleaned_data.get("agrupar", None)
+	
+	#-- Instanciar la vista para reejecutar la consulta y obtener el queryset.
+	view_instance = VLEstadisticasSegunCondicionInformeView()
+	view_instance.request = request
+	queryset = view_instance.obtener_queryset(cleaned_data)
+	
+	#-- Usar el helper para exportar a CSV.
+	headers, blank_cols = headers_titles(agrupar)
+	
+	helper = ExportHelper(
+		queryset=queryset,
+		table_headers=headers,
+		report_title=ConfigViews.report_title
+	)
+	csv_data = helper.export_to_csv()
+	
+	response = HttpResponse(csv_data, content_type="text/csv; charset=utf-8")
+	response["Content-Disposition"] = f'inline; filename="{ConfigViews.report_title}.csv"'
+	
+	return response
+
+
+def headers_titles(agrupar):
+	headers = {}
+	blank_cols = []
+	
+	if agrupar == "Producto":
+		headers = {
+			"id_producto_id": (30, "Código"),
+			"nombre_producto": (185, "Descripción"),
+		}
+		blank_cols = ["", ""]
+	elif agrupar == "Familia":
+		headers = {
+			"nombre_producto_familia": (180, "Marca")
+		}
+		blank_cols = [""]
+	elif agrupar == "Modelo":
+		headers = {
+			"nombre_modelo": (180, "Modelo")
+		}
+		blank_cols = [""]
+	elif agrupar == "Marca":
+		headers = {
+			"nombre_producto_marca": (110, "Marca"),
+		}
+		blank_cols = []
+	
+	headers.update({
+		"cantidad_m": (35, "Cantidad"),
+		"importe_m": (55, "Venta"),
+		"costo_m": (55, "Costo"),
+		"ganancia_m": (55, "Ganancia"),
+		
+		"cantidad_r": (35, "Cantidad"),
+		"importe_r": (55, "Venta"),
+		"costo_r": (55, "Costo"),
+		"ganancia_r": (55, "Ganancia"),
+		
+		"cantidad_e": (35, "Cantidad"),
+		"importe_e": (55, "Venta"),
+		"costo_e": (55, "Costo"),
+		"ganancia_e": (55, "Ganancia"),
+	})
+	
+	return headers, blank_cols

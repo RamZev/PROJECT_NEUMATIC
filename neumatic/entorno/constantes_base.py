@@ -134,3 +134,7 @@ MOSTRAR = [
 	("Importe", "Importe"),
 ]
 	
+ESTADISTICAS = [
+	(True, 'Participan en Estadísticas'),
+	(False, 'NO Participan en Estadísticas')
+]
