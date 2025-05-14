@@ -513,16 +513,18 @@ def generar_pdf(contexto_reporte):
 	#-- Construir datos de la tabla:
 	
 	#-- Títulos de las columnas de la tabla (headers).
-	headers, blank_cols = headers_titles(agrupar)
+	headers, blank_cols = headers_titles(agrupar, "pdf")
 	
 	headers_tit_line1 = [""] + blank_cols + ["MOSTRADOR", "", "", "", "REVENTA", "", "", "", "E-COMERCE", "", "", ""]
 	
 	headers_tit_line2 = [value[1] for value in headers.values()]
-	headers_tit_line2.insert(0, "")
 	
 	#-- Extraer Ancho de las columnas de la tabla.
 	col_widths = [value[0] for value in headers.values()]
-	col_widths.insert(0, 10)
+	
+	if agrupar != "Marca":
+		headers_tit_line2.insert(0, "")
+		col_widths.insert(0, 10)
 	
 	table_data = [headers_tit_line1, headers_tit_line2]
 	
@@ -530,8 +532,8 @@ def generar_pdf(contexto_reporte):
 	table_style_config = [
 		#-- Estilos para la primera línea de encabezados.
 		('SPAN', (-12,0), (-9,0)),  # MOSTRADOR
-		('SPAN', (-8,0), (-5,0)),  # REVENTA
-		('SPAN', (-4,0), (-1,0)),  # E-COMERCE
+		('SPAN', (-8,0), (-5,0)),   # REVENTA
+		('SPAN', (-4,0), (-1,0)),   # E-COMERCE
 		('ALIGN', (0,0), (-1,0), 'CENTER'),
 		('FONTNAME', (0,0), (-1,0), 'Helvetica-Bold'),
 		
@@ -539,78 +541,189 @@ def generar_pdf(contexto_reporte):
 		('FONTNAME', (0,1), (-1,1), 'Helvetica-Bold'),
 		
 		#-- Bordes izquierdos para separar secciones.
-		('LINEAFTER', (-13,0), (-13,1), 1, colors.white),  # Después de columnas de agrupamiento
-		('LINEAFTER', (-9,0), (-9,1), 1, colors.white),  # Después de MOSTRADOR
-		('LINEAFTER', (-5,0), (-5,1), 1, colors.white),  # Después de REVENTA
+		('LINEBEFORE', (-12,0), (-12,1), 1, colors.white),  # Después de columnas de agrupamiento
+		('LINEBEFORE', (-8,0), (-8,1), 1, colors.white),    # Después de MOSTRADOR
+		('LINEBEFORE', (-4,0), (-4,1), 1, colors.white),    # Después de REVENTA
 		
 		#-- Alineación de datos numéricos.
 		('ALIGN', (-12,1), (-1,-1), 'RIGHT'),
 	]
 	
-	#-- Contador de filas (empezamos en 1 porque la 0 es el header).
+	#-- Contador de filas (empezamos en 2 porque el header tien 2 líneas (0 y 1)).
 	current_row = 2
 	
 	#-- Agregar los datos a la tabla.
-	for familia, familia_data in contexto_reporte.get("objetos", {}).items():
-		
-		#-- Datos agrupado por.
-		table_data.append([f"Familia: {familia}"] + [""]*14)
-		
-		#-- Aplicar estilos a la fila de agrupación (fila actual).
-		table_style_config.extend([
-			('SPAN', (0,current_row), (-1,current_row)),
-			('FONTNAME', (0,current_row), (-1,current_row), 'Helvetica-Bold')
-		])
-		
-		current_row += 1
-		#---------------------
-		
-		for modelo, modelo_data in familia_data["modelos"].items():
+	if agrupar == "Producto":
+		for familia, familia_data in contexto_reporte.get("objetos", {}).items():
 			
 			#-- Datos agrupado por.
-			table_data.append(["", f"Modelo: {modelo}"] + [""]*13)
+			table_data.append([f"Familia: {familia}"] + [""]*14)
 			
 			#-- Aplicar estilos a la fila de agrupación (fila actual).
 			table_style_config.extend([
-				('SPAN', (1,current_row), (-1,current_row)),
+				('SPAN', (0,current_row), (-1,current_row)),
 				('FONTNAME', (0,current_row), (-1,current_row), 'Helvetica-Bold')
 			])
 			
 			current_row += 1
+			#---------------------
 			
-			#-- Agregar filas del detalle.
-			for obj in modelo_data['detalle']:
+			for modelo, modelo_data in familia_data["modelos"].items():
 				
-				row = []
+				#-- Datos agrupado por.
+				table_data.append(["", f"Modelo: {modelo}"] + [""]*13)
 				
-				#-- Construir fila según agrupamiento.
-				if agrupar == "Producto":
-					row.extend([
+				#-- Aplicar estilos a la fila de agrupación (fila actual).
+				table_style_config.extend([
+					('SPAN', (1,current_row), (-1,current_row)),
+					('FONTNAME', (0,current_row), (-1,current_row), 'Helvetica-Bold')
+				])
+				
+				current_row += 1
+				
+				#-- Agregar filas del detalle.
+				for obj in modelo_data['detalle']:
+					
+					table_data.append([
 						"",
 						obj['id_producto_id'],
 						Paragraph(str(obj['nombre_producto']), generator.styles['CellStyle']),
+						
+						formato_argentino(obj['cantidad_m']),
+						formato_argentino(obj['importe_m']),
+						formato_argentino(obj['costo_m']),
+						formato_argentino(obj['ganancia_m']),
+						
+						formato_argentino(obj['cantidad_r']),
+						formato_argentino(obj['importe_r']),
+						formato_argentino(obj['costo_r']),
+						formato_argentino(obj['ganancia_r']),
+						
+						formato_argentino(obj['cantidad_e']),
+						formato_argentino(obj['importe_e']),
+						formato_argentino(obj['costo_e']),
+						formato_argentino(obj['ganancia_e'])
 					])
+					
+					current_row += 1
+					
+				#-- Fila Totales por Modelo.
 				
-				elif agrupar == "Familia":
-					row.extend([
-						"",
-						Paragraph(str(obj['nombre_producto_marca']), generator.styles['CellStyle'])
-					])
+				table_data.append(
+					blank_cols + [f"Sub Total {modelo}:",
+					formato_argentino(modelo_data["stm_cantidad_m"]),
+					formato_argentino(modelo_data["stm_importe_m"]),
+					"",
+					formato_argentino(modelo_data["stm_ganancia_m"]),
 				
-				elif agrupar == "Modelo":
-					row.extend([
-						"",
-						Paragraph(str(obj['nombre_modelo']), generator.styles['CellStyle']),
-					])
+					formato_argentino(modelo_data["stm_cantidad_r"]),
+					formato_argentino(modelo_data["stm_importe_r"]),
+					"",
+					formato_argentino(modelo_data["stm_ganancia_r"]),
+					
+					formato_argentino(modelo_data["stm_cantidad_e"]),
+					formato_argentino(modelo_data["stm_importe_e"]),
+					"",
+					formato_argentino(modelo_data["stm_ganancia_e"]),
+					]
+				)
 				
-				elif agrupar == "Marca":
-					row.extend([
-						"",
-						Paragraph(str(obj['nombre_producto_marca']), generator.styles['CellStyle'])
-					])
+				#-- Aplicar estilos a la fila de total (fila actual).
+				table_style_config.extend([
+					('ALIGN', (-13,current_row), (-1,current_row), 'RIGHT'),
+					('FONTNAME', (-13,current_row), (-1,current_row), 'Helvetica-Bold'),
+					# ('LINEABOVE', (0,current_row), (-1,current_row), 0.5, colors.black),
+				])
 				
-				#-- Agregar valores comunes.
-				row.extend([
+				current_row += 1
+			
+			#-- Fila Totales por Familia.
+			
+			table_data.append(
+				blank_cols + [f"Sub Total {familia}:",
+				formato_argentino(familia_data["stf_cantidad_m"]),
+				formato_argentino(familia_data["stf_importe_m"]),
+				"",
+				formato_argentino(familia_data["stf_ganancia_m"]),
+			
+				formato_argentino(familia_data["stf_cantidad_r"]),
+				formato_argentino(familia_data["stf_importe_r"]),
+				"",
+				formato_argentino(familia_data["stf_ganancia_r"]),
+				
+				formato_argentino(familia_data["stf_cantidad_e"]),
+				formato_argentino(familia_data["stf_importe_e"]),
+				"",
+				formato_argentino(familia_data["stf_ganancia_e"]),
+				]
+			)
+			
+			#-- Aplicar estilos a la fila de total (fila actual).
+			table_style_config.extend([
+				('ALIGN', (-13,current_row), (-1,current_row), 'RIGHT'),
+				('FONTNAME', (-13,current_row), (-1,current_row), 'Helvetica-Bold'),
+				# ('LINEABOVE', (0,current_row), (-1,current_row), 0.5, colors.black),
+			])
+			
+			current_row += 1
+			
+			#-- Fila divisoria.
+			table_data.append(blank_cols + [""]*13)
+			table_style_config.append(
+				('LINEBELOW', (0,current_row), (-1,current_row), 0.5, colors.gray),
+			)
+			current_row += 1
+			
+		#-- Fila Totales Generales.
+		table_data.append(
+			blank_cols + ["Totales Generales:", 
+				formato_argentino(contexto_reporte.get("tg_cantidad_m")),
+				formato_argentino(contexto_reporte.get("tg_importe_m")),
+				"",
+				formato_argentino(contexto_reporte.get("tg_ganancia_m")),
+			
+				formato_argentino(contexto_reporte.get("tg_cantidad_r")),
+				formato_argentino(contexto_reporte.get("tg_importe_r")),
+				"",
+				formato_argentino(contexto_reporte.get("tg_ganancia_r")),
+				
+				formato_argentino(contexto_reporte.get("tg_cantidad_e")),
+				formato_argentino(contexto_reporte.get("tg_importe_e")),
+				"",
+				formato_argentino(contexto_reporte.get("tg_ganancia_e")),
+				]
+			)
+		
+		#-- Aplicar estilos a la fila de total (fila actual).
+		table_style_config.extend([
+			('ALIGN', (-13,-1), (-1,-1), 'RIGHT'),
+			('FONTNAME', (-13,-1), (-1,-1), 'Helvetica-Bold'),
+			# ('LINEABOVE', (0,-1), (-1,-1), 0.5, colors.black),  #-- Línea superior.
+			# ('LINEBELOW', (0,current_row), (-1,current_row), 0.5, colors.black),  #-- Línea inferior.
+		])
+		
+	elif agrupar == "Familia":
+		for familia, familia_data in contexto_reporte.get("objetos", {}).items():
+			
+			#-- Datos agrupado por.
+			table_data.append([f"Familia: {familia}"] + [""]*13)
+			
+			#-- Aplicar estilos a la fila de agrupación (fila actual).
+			table_style_config.extend([
+				('SPAN', (0,current_row), (-1,current_row)),
+				('FONTNAME', (0,current_row), (-1,current_row), 'Helvetica-Bold')
+			])
+			
+			current_row += 1
+			#---------------------
+			
+			#-- Agregar filas del detalle.
+			for obj in familia_data['detalle']:
+				
+				table_data.append([
+					"",
+					Paragraph(str(obj['nombre_producto_marca']), generator.styles['CellStyle']),
+					
 					formato_argentino(obj['cantidad_m']),
 					formato_argentino(obj['importe_m']),
 					formato_argentino(obj['costo_m']),
@@ -624,31 +737,29 @@ def generar_pdf(contexto_reporte):
 					formato_argentino(obj['cantidad_e']),
 					formato_argentino(obj['importe_e']),
 					formato_argentino(obj['costo_e']),
-					formato_argentino(obj['ganancia_e']),
+					formato_argentino(obj['ganancia_e'])
 				])
-				
-				table_data.append(row)
 				
 				current_row += 1
 				
-			#-- Fila Totales por Modelo.
+			#-- Fila Totales por Familia.
 			
 			table_data.append(
-				blank_cols + [f"Sub Total {modelo}:",
-				formato_argentino(modelo_data["stm_cantidad_m"]),
-				formato_argentino(modelo_data["stm_importe_m"]),
+				blank_cols + [f"Sub Total {familia}:",
+				formato_argentino(familia_data["stf_cantidad_m"]),
+				formato_argentino(familia_data["stf_importe_m"]),
 				"",
-				formato_argentino(modelo_data["stm_ganancia_m"]),
+				formato_argentino(familia_data["stf_ganancia_m"]),
 			
-				formato_argentino(modelo_data["stm_cantidad_r"]),
-				formato_argentino(modelo_data["stm_importe_r"]),
+				formato_argentino(familia_data["stf_cantidad_r"]),
+				formato_argentino(familia_data["stf_importe_r"]),
 				"",
-				formato_argentino(modelo_data["stm_ganancia_r"]),
+				formato_argentino(familia_data["stf_ganancia_r"]),
 				
-				formato_argentino(modelo_data["stm_cantidad_e"]),
-				formato_argentino(modelo_data["stm_importe_e"]),
+				formato_argentino(familia_data["stf_cantidad_e"]),
+				formato_argentino(familia_data["stf_importe_e"]),
 				"",
-				formato_argentino(modelo_data["stm_ganancia_e"]),
+				formato_argentino(familia_data["stf_ganancia_e"]),
 				]
 			)
 			
@@ -660,36 +771,175 @@ def generar_pdf(contexto_reporte):
 			])
 			
 			current_row += 1
-		
-		#-- Fila Totales por Familia.
-		
-		table_data.append(
-			blank_cols + [f"Sub Total {familia}:",
-			formato_argentino(familia_data["stf_cantidad_m"]),
-			formato_argentino(familia_data["stf_importe_m"]),
-			"",
-			formato_argentino(familia_data["stf_ganancia_m"]),
-		
-			formato_argentino(familia_data["stf_cantidad_r"]),
-			formato_argentino(familia_data["stf_importe_r"]),
-			"",
-			formato_argentino(familia_data["stf_ganancia_r"]),
 			
-			formato_argentino(familia_data["stf_cantidad_e"]),
-			formato_argentino(familia_data["stf_importe_e"]),
-			"",
-			formato_argentino(familia_data["stf_ganancia_e"]),
-			]
-		)
+			#-- Fila divisoria.
+			table_data.append(blank_cols + [""]*13)
+			table_style_config.append(
+				('LINEBELOW', (0,current_row), (-1,current_row), 0.5, colors.gray),
+			)
+			current_row += 1
+			
+		#-- Fila Totales Generales.
+		table_data.append(
+			blank_cols + ["Totales Generales:", 
+				formato_argentino(contexto_reporte.get("tg_cantidad_m")),
+				formato_argentino(contexto_reporte.get("tg_importe_m")),
+				"",
+				formato_argentino(contexto_reporte.get("tg_ganancia_m")),
+			
+				formato_argentino(contexto_reporte.get("tg_cantidad_r")),
+				formato_argentino(contexto_reporte.get("tg_importe_r")),
+				"",
+				formato_argentino(contexto_reporte.get("tg_ganancia_r")),
+				
+				formato_argentino(contexto_reporte.get("tg_cantidad_e")),
+				formato_argentino(contexto_reporte.get("tg_importe_e")),
+				"",
+				formato_argentino(contexto_reporte.get("tg_ganancia_e")),
+				]
+			)
 		
 		#-- Aplicar estilos a la fila de total (fila actual).
 		table_style_config.extend([
-			('ALIGN', (-13,current_row), (-1,current_row), 'RIGHT'),
-			('FONTNAME', (-13,current_row), (-1,current_row), 'Helvetica-Bold'),
-			# ('LINEABOVE', (0,current_row), (-1,current_row), 0.5, colors.black),
+			('ALIGN', (-13,-1), (-1,-1), 'RIGHT'),
+			('FONTNAME', (-13,-1), (-1,-1), 'Helvetica-Bold'),
+			# ('LINEABOVE', (0,-1), (-1,-1), 0.5, colors.black),  #-- Línea superior.
+			# ('LINEBELOW', (0,current_row), (-1,current_row), 0.5, colors.black),  #-- Línea inferior.
 		])
 		
-		current_row += 1
+	elif agrupar == "Modelo":
+		for marca, marca_data in contexto_reporte.get("objetos", {}).items():
+			
+			#-- Datos agrupado por.
+			table_data.append([f"Marca: {marca}"] + [""]*13)
+			
+			#-- Aplicar estilos a la fila de agrupación (fila actual).
+			table_style_config.extend([
+				('SPAN', (0,current_row), (-1,current_row)),
+				('FONTNAME', (0,current_row), (-1,current_row), 'Helvetica-Bold')
+			])
+			
+			current_row += 1
+			#---------------------
+			
+			#-- Agregar filas del detalle.
+			for obj in marca_data['detalle']:
+				
+				table_data.append([
+					"",
+					Paragraph(str(obj['nombre_modelo']), generator.styles['CellStyle']),
+					
+					formato_argentino(obj['cantidad_m']),
+					formato_argentino(obj['importe_m']),
+					formato_argentino(obj['costo_m']),
+					formato_argentino(obj['ganancia_m']),
+					
+					formato_argentino(obj['cantidad_r']),
+					formato_argentino(obj['importe_r']),
+					formato_argentino(obj['costo_r']),
+					formato_argentino(obj['ganancia_r']),
+					
+					formato_argentino(obj['cantidad_e']),
+					formato_argentino(obj['importe_e']),
+					formato_argentino(obj['costo_e']),
+					formato_argentino(obj['ganancia_e'])
+				])
+				
+				current_row += 1
+				
+			#-- Fila Totales por Familia.
+			
+			table_data.append(
+				blank_cols + [f"Sub Total {marca}:",
+				formato_argentino(marca_data["stm_cantidad_m"]),
+				formato_argentino(marca_data["stm_importe_m"]),
+				"",
+				formato_argentino(marca_data["stm_ganancia_m"]),
+			
+				formato_argentino(marca_data["stm_cantidad_r"]),
+				formato_argentino(marca_data["stm_importe_r"]),
+				"",
+				formato_argentino(marca_data["stm_ganancia_r"]),
+				
+				formato_argentino(marca_data["stm_cantidad_e"]),
+				formato_argentino(marca_data["stm_importe_e"]),
+				"",
+				formato_argentino(marca_data["stm_ganancia_e"]),
+				]
+			)
+			
+			#-- Aplicar estilos a la fila de total (fila actual).
+			table_style_config.extend([
+				('ALIGN', (-13,current_row), (-1,current_row), 'RIGHT'),
+				('FONTNAME', (-13,current_row), (-1,current_row), 'Helvetica-Bold'),
+				# ('LINEABOVE', (0,current_row), (-1,current_row), 0.5, colors.black),
+			])
+			
+			current_row += 1
+			
+			#-- Fila divisoria.
+			table_data.append(blank_cols + [""]*13)
+			table_style_config.append(
+				('LINEBELOW', (0,current_row), (-1,current_row), 0.5, colors.gray),
+			)
+			current_row += 1
+			
+		#-- Fila Totales Generales.
+		table_data.append(
+			blank_cols + ["Totales Generales:", 
+				formato_argentino(contexto_reporte.get("tg_cantidad_m")),
+				formato_argentino(contexto_reporte.get("tg_importe_m")),
+				"",
+				formato_argentino(contexto_reporte.get("tg_ganancia_m")),
+			
+				formato_argentino(contexto_reporte.get("tg_cantidad_r")),
+				formato_argentino(contexto_reporte.get("tg_importe_r")),
+				"",
+				formato_argentino(contexto_reporte.get("tg_ganancia_r")),
+				
+				formato_argentino(contexto_reporte.get("tg_cantidad_e")),
+				formato_argentino(contexto_reporte.get("tg_importe_e")),
+				"",
+				formato_argentino(contexto_reporte.get("tg_ganancia_e")),
+				]
+			)
+		
+		#-- Aplicar estilos a la fila de total (fila actual).
+		table_style_config.extend([
+			('ALIGN', (-13,-1), (-1,-1), 'RIGHT'),
+			('FONTNAME', (-13,-1), (-1,-1), 'Helvetica-Bold'),
+			# ('LINEABOVE', (0,-1), (-1,-1), 0.5, colors.black),  #-- Línea superior.
+			# ('LINEBELOW', (0,current_row), (-1,current_row), 0.5, colors.black),  #-- Línea inferior.
+		])
+		
+	elif agrupar == "Marca":
+		
+		o = contexto_reporte.get("objetos", {})
+		print(type(o))
+		
+		#-- Agregar filas del detalle.
+		for obj in contexto_reporte.get("objetos", {}):
+			
+			table_data.append([
+				Paragraph(str(obj['nombre_producto_marca']), generator.styles['CellStyle']),
+				
+				formato_argentino(obj['cantidad_m']),
+				formato_argentino(obj['importe_m']),
+				formato_argentino(obj['costo_m']),
+				formato_argentino(obj['ganancia_m']),
+				
+				formato_argentino(obj['cantidad_r']),
+				formato_argentino(obj['importe_r']),
+				formato_argentino(obj['costo_r']),
+				formato_argentino(obj['ganancia_r']),
+				
+				formato_argentino(obj['cantidad_e']),
+				formato_argentino(obj['importe_e']),
+				formato_argentino(obj['costo_e']),
+				formato_argentino(obj['ganancia_e'])
+			])
+			
+			current_row += 1
 		
 		#-- Fila divisoria.
 		table_data.append(blank_cols + [""]*13)
@@ -698,35 +948,35 @@ def generar_pdf(contexto_reporte):
 		)
 		current_row += 1
 		
-	#-- Fila Totales Generales.
-	table_data.append(
-		blank_cols + ["Totales Generales:", 
-			formato_argentino(contexto_reporte.get("tg_cantidad_m")),
-			formato_argentino(contexto_reporte.get("tg_importe_m")),
-			"",
-			formato_argentino(contexto_reporte.get("tg_ganancia_m")),
-		
-			formato_argentino(contexto_reporte.get("tg_cantidad_r")),
-			formato_argentino(contexto_reporte.get("tg_importe_r")),
-			"",
-			formato_argentino(contexto_reporte.get("tg_ganancia_r")),
+		#-- Fila Totales Generales.
+		table_data.append(
+			blank_cols + ["Totales Generales:", 
+				formato_argentino(contexto_reporte.get("tg_cantidad_m")),
+				formato_argentino(contexto_reporte.get("tg_importe_m")),
+				"",
+				formato_argentino(contexto_reporte.get("tg_ganancia_m")),
 			
-			formato_argentino(contexto_reporte.get("tg_cantidad_e")),
-			formato_argentino(contexto_reporte.get("tg_importe_e")),
-			"",
-			formato_argentino(contexto_reporte.get("tg_ganancia_e")),
-			]
-		)
-	
-	#-- Aplicar estilos a la fila de total (fila actual).
-	table_style_config.extend([
-		('ALIGN', (-13,-1), (-1,-1), 'RIGHT'),
-		('FONTNAME', (-13,-1), (-1,-1), 'Helvetica-Bold'),
-		# ('LINEABOVE', (0,-1), (-1,-1), 0.5, colors.black),  #-- Línea superior.
-		# ('LINEBELOW', (0,current_row), (-1,current_row), 0.5, colors.black),  #-- Línea inferior.
-	])
-	
-	return generator.generate(table_data, col_widths, table_style_config, repeat_rows=2)		
+				formato_argentino(contexto_reporte.get("tg_cantidad_r")),
+				formato_argentino(contexto_reporte.get("tg_importe_r")),
+				"",
+				formato_argentino(contexto_reporte.get("tg_ganancia_r")),
+				
+				formato_argentino(contexto_reporte.get("tg_cantidad_e")),
+				formato_argentino(contexto_reporte.get("tg_importe_e")),
+				"",
+				formato_argentino(contexto_reporte.get("tg_ganancia_e")),
+				]
+			)
+		
+		#-- Aplicar estilos a la fila de total (fila actual).
+		table_style_config.extend([
+			('ALIGN', (-13,-1), (-1,-1), 'RIGHT'),
+			('FONTNAME', (-13,-1), (-1,-1), 'Helvetica-Bold'),
+			# ('LINEABOVE', (0,-1), (-1,-1), 0.5, colors.black),  #-- Línea superior.
+			# ('LINEBELOW', (0,current_row), (-1,current_row), 0.5, colors.black),  #-- Línea inferior.
+		])
+		
+	return generator.generate(table_data, col_widths, table_style_config, repeat_rows=2)
 
 
 def vlestadisticasseguncondicion_vista_excel(request):
@@ -749,7 +999,7 @@ def vlestadisticasseguncondicion_vista_excel(request):
 	view_instance.request = request
 	queryset = view_instance.obtener_queryset(cleaned_data)
 	
-	headers, blank_cols = headers_titles(agrupar)
+	headers, blank_cols = headers_titles(agrupar, "excel")
 	
 	helper = ExportHelper(
 		queryset=queryset,
@@ -787,7 +1037,7 @@ def vlestadisticasseguncondicion_vista_csv(request):
 	queryset = view_instance.obtener_queryset(cleaned_data)
 	
 	#-- Usar el helper para exportar a CSV.
-	headers, blank_cols = headers_titles(agrupar)
+	headers, blank_cols = headers_titles(agrupar, "csv")
 	
 	helper = ExportHelper(
 		queryset=queryset,
@@ -802,47 +1052,66 @@ def vlestadisticasseguncondicion_vista_csv(request):
 	return response
 
 
-def headers_titles(agrupar):
+def headers_titles(agrupar, destino):
 	headers = {}
 	blank_cols = []
 	
 	if agrupar == "Producto":
-		headers = {
+		if destino != "pdf":
+			headers.update({
+				"nombre_producto_familia": (110, "Familia"),
+				"nombre_modelo": (110, "Modelo"),
+			})
+		
+		headers.update({
 			"id_producto_id": (30, "Código"),
 			"nombre_producto": (185, "Descripción"),
-		}
+		})
 		blank_cols = ["", ""]
+		
 	elif agrupar == "Familia":
-		headers = {
-			"nombre_producto_familia": (180, "Marca")
-		}
+		if destino != "pdf":
+			headers.update({
+				"nombre_producto_familia": (110, "Familia"),
+			})
+		
+		headers.update({
+			"nombre_producto_marca": (180, "Marca")
+		})
 		blank_cols = [""]
+		
 	elif agrupar == "Modelo":
-		headers = {
+		if destino != "pdf":
+			headers.update({
+				"nombre_producto_marca": (110, "Marca"),
+			})
+		
+		headers.update({
 			"nombre_modelo": (180, "Modelo")
-		}
+		})
 		blank_cols = [""]
+		
 	elif agrupar == "Marca":
-		headers = {
+		headers.update({
 			"nombre_producto_marca": (110, "Marca"),
-		}
+		})
 		blank_cols = []
 	
 	headers.update({
-		"cantidad_m": (35, "Cantidad"),
-		"importe_m": (55, "Venta"),
-		"costo_m": (55, "Costo"),
-		"ganancia_m": (55, "Ganancia"),
+		"cantidad_m": (35, "Cantidad" if destino=="pdf" else "cantidad_mostrador"),
+		"importe_m": (55, "Venta" if destino=="pdf" else "venta_mostrador"),
+		"costo_m": (55, "Costo" if destino=="pdf" else "costo_mostrador"),
+		"ganancia_m": (55, "Ganancia" if destino=="pdf" else "ganancia_mostrador"),
 		
-		"cantidad_r": (35, "Cantidad"),
-		"importe_r": (55, "Venta"),
-		"costo_r": (55, "Costo"),
-		"ganancia_r": (55, "Ganancia"),
+		"cantidad_r": (35, "Cantidad" if destino=="pdf" else "cantidad_reventa"),
+		"importe_r": (55, "Venta" if destino=="pdf" else "venta_reventa"),
+		"costo_r": (55, "Costo" if destino=="pdf" else "costo_reventa"),
+		"ganancia_r": (55, "Ganancia" if destino=="pdf" else "ganancia_reventa"),
 		
-		"cantidad_e": (35, "Cantidad"),
-		"importe_e": (55, "Venta"),
-		"costo_e": (55, "Costo"),
-		"ganancia_e": (55, "Ganancia"),
+		"cantidad_e": (35, "Cantidad" if destino=="pdf" else "cantidad_e-comerce"),
+		"importe_e": (55, "Venta" if destino=="pdf" else "venta_e-comerce"),
+		"costo_e": (55, "Costo" if destino=="pdf" else "costo_e-comerce"),
+		"ganancia_e": (55, "Ganancia" if destino=="pdf" else "ganancia_e-comerce"),
 	})
-	
+
 	return headers, blank_cols
