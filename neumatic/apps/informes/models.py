@@ -1884,45 +1884,46 @@ class VLEstadisticasVentasMarcaVendedor(models.Model):
 #-----------------------------------------------------------------------------
 class ClienteUltimaVentaManager(models.Manager):
 	
-	def obtener_datos(self, id_marca, id_vendedor, fecha_desde, fecha_hasta, id_sucursal=None):
+	def obtener_datos(self, id_vendedor, fecha_consulta, orden="Alf"):
 		
 		query = """
 			SELECT
 				*
 			FROM
-				VLEstadisticasVentasMarcaVendedor
+				VLClienteUltimaVenta
 			WHERE
-				id_marca_id = %s
-				AND id_vendedor_id = %s
-			 	AND fecha_comprobante BETWEEN %s AND %s
+				id_vendedor_id = %s
+			 	AND fecha_ultimo_comprobante < %s
 		"""
 		
 		#-- Se añaden parámetros.
-		params = [id_marca, id_vendedor, fecha_desde, fecha_hasta]
+		params = [id_vendedor, fecha_consulta]
 		
-		#-- Filtros adicionales.
-		if id_sucursal:
-			query += " AND id_sucursal_id = %s"
-			params.append(id_sucursal)
+		#-- Ordenar resultados.
+		if orden == "Alf":
+			query += " ORDER BY nombre_cliente"
+		elif orden == "Asc":
+			query += " ORDER BY fecha_ultimo_comprobante ASC"
+		else:
+			query += " ORDER BY fecha_ultimo_comprobante DESC"
 		
 		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
 		return self.raw(query, params)
 
 
 class VLClienteUltimaVenta(models.Model):
-	id = models.AutoField(primary_key=True)
-	id_cliente_id = models.IntegerField()
+	id_cliente_id = models.IntegerField(primary_key=True)
 	nombre_cliente = models.CharField(max_length=50)
-	fecha_comprobante = models.DateField()
+	fecha_ultimo_comprobante = models.DateField()
+	id_vendedor_id = models.IntegerField()	
 	
 	objects = ClienteUltimaVentaManager()
 	
 	class Meta:
 		managed = False
-		db_table = 'VLEstadisticasVentasMarcaVendedor'
-		verbose_name = ('Estadísticas de Ventas por Marca y Familia por Vendedor')
-		verbose_name_plural = ('Estadísticas de Ventas por Marca y Familia por Vendedor')
-		# ordering = ['fecha_comprobante']
+		db_table = 'VLClienteUltimaVenta'
+		verbose_name = ('Estadísticas de Clientes sin Ventas')
+		verbose_name_plural = ('Estadísticas de Clientes sin Ventas')
 
 
 #-----------------------------------------------------------------------------

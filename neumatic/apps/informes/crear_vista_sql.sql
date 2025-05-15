@@ -938,9 +938,24 @@ CREATE VIEW "VLEstadisticasVentasMarcaVendedor" AS
 		p.id_marca_id, p.id_familia_id, p.id_modelo_id, p.id_producto;
 
 
-
-
-
+-- ---------------------------------------------------------------------------
+-- Estadísticas de clientes sin Ventas.
+-- Modelo: VLClienteUltimaVenta
+-- ---------------------------------------------------------------------------
+DROP VIEW IF EXISTS "main"."VLClienteUltimaVenta";
+CREATE VIEW "VLClienteUltimaVenta" AS 
+	SELECT 
+		f.id_cliente_id,
+		c.nombre_cliente,
+		MAX(f.fecha_comprobante) fecha_ultimo_comprobante,
+		f.id_vendedor_id
+	FROM
+		factura f
+		JOIN cliente c ON f.id_cliente_id = c.id_cliente
+	GROUP BY
+		f.id_cliente_id
+	ORDER BY
+		f.id_cliente_id;
 
 
 -- ---------------------------------------------------------------------------

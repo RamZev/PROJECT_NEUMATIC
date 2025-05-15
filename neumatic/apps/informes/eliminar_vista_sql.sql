@@ -28,5 +28,5 @@ DROP VIEW IF EXISTS "main"."VLEstadisticasVentasVendedorCliente";
 DROP VIEW IF EXISTS "main"."VLEstadisticasSegunCondicion";
 DROP VIEW IF EXISTS "main"."VLEstadisticasVentasMarca";
 DROP VIEW IF EXISTS "main"."VLEstadisticasVentasMarcaVendedor";
-
+DROP VIEW IF EXISTS "main"."VLClienteUltimaVenta";
 DROP VIEW IF EXISTS "main"."VLEstadisticasVentasProvincia";

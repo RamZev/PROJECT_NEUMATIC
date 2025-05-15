@@ -1,4 +1,4 @@
-# neumatic\apps\informes\views\vlpreciodiferente_list_views.py
+# neumatic\apps\informes\views\vlclienteultimaventa_list_views.py
 
 from django.urls import reverse_lazy
 from django.shortcuts import render
@@ -12,22 +12,22 @@ from reportlab.lib.pagesizes import A4, portrait, landscape
 from reportlab.platypus import Paragraph
 
 from .report_views_generics import *
-from apps.informes.models import VLPrecioDiferente
-from ..forms.buscador_vlpreciodiferente_forms import BuscadorPrecioDiferenteForm
-from utils.utils import deserializar_datos, formato_argentino, normalizar
+from apps.informes.models import VLClienteUltimaVenta
+from ..forms.buscador_vlclienteultimaventa_forms import BuscadorClienteUltimaVentaForm
+from utils.utils import deserializar_datos, serializar_queryset, formato_argentino, format_date, normalizar
 from utils.helpers.export_helpers import ExportHelper, PDFGenerator
 
 
 class ConfigViews:
 	
 	#-- Título del reporte.
-	report_title = "Diferencias de Precios en Facturación"
+	report_title = "Estadísticas de Clientes Sin Ventas"
 	
 	#-- Modelo.
-	model = VLPrecioDiferente
+	model = VLClienteUltimaVenta
 	
 	#-- Formulario asociado al modelo.
-	form_class = BuscadorPrecioDiferenteForm
+	form_class = BuscadorClienteUltimaVentaForm
 	
 	#-- Aplicación asociada al modelo.
 	app_label = "informes"
@@ -70,22 +70,13 @@ class ConfigViews:
 	
 	#-- Establecer las columnas del reporte y sus anchos(en punto).
 	header_data = {
-		"nombre_vendedor": (40, "Vendedor"),
-		"comprobante": (40, "Comprobante"),
-		"fecha_comprobante": (40, "Fecha"),
-		"id_cliente_id": (40, "Cliente"),
-		"nombre_cliente": (40, "Nombre"),
-		"id_producto_id": (180, "Código"),
-		"nombre_producto_familia": (40, "Detalle"),
-		"cantidad": (40, "Cantidad"),
-		"precio": (40, "Facturado"),
-		"precio_lista": (40, "Lista"),
-		"diferencia": (40, "Diferencia"),
-		"descuento": (40, "Bonif."),
+		"id_cliente_id": (40, "Código"),
+		"nombre_cliente": (200, "Cliente"),
+		"fecha_ultimo_comprobante": (50, "Última Venta"),
 	}
 
 
-class VLPrecioDiferenteInformeView(InformeFormView):
+class VLClienteUltimaVentaInformeView(InformeFormView):
 	config = ConfigViews  #-- Ahora la configuración estará disponible en self.config.
 	form_class = ConfigViews.form_class
 	template_name = ConfigViews.template_list
@@ -101,100 +92,52 @@ class VLPrecioDiferenteInformeView(InformeFormView):
 	}
 	
 	def obtener_queryset(self, cleaned_data):
-		fecha_desde = cleaned_data.get("fecha_desde")
-		fecha_hasta = cleaned_data.get("fecha_hasta")
-		id_vendedor_desde = cleaned_data.get("id_vendedor_desde")
-		id_vendedor_hasta = cleaned_data.get("id_vendedor_hasta")
-		comprobantes = cleaned_data.get("comprobantes")
-		dif_mayor = cleaned_data.get("operario") or 0
+		vendedor = cleaned_data.get("vendedor", None)
+		fecha_consulta = cleaned_data.get("fecha_consulta", None)
+		orden = cleaned_data.get("orden", None)
 		
-		#-- Convertir a lista explícitamente.
-		codigos_comprobantes = list(comprobantes.values_list('codigo_comprobante_venta', flat=True)) if comprobantes else []
+		id_vendedor = vendedor.id_vendedor if vendedor else None
 		
-		return VLPrecioDiferente.objects.obtener_datos(
-			fecha_desde,
-			fecha_hasta,
-			id_vendedor_desde,
-			id_vendedor_hasta,
-			codigos_comprobantes,
-			dif_mayor
-		)
+		return VLClienteUltimaVenta.objects.obtener_datos(id_vendedor, fecha_consulta, orden)
 	
 	def obtener_contexto_reporte(self, queryset, cleaned_data):
 		"""
-		Aquí se estructura el contexto para el reporte, agrupando, calculando subtotales y totales generales, etc,
-		tal como se requiere para el listado. Si APLICA!
+		Aquí se estructura el contexto para el reporte, agrupando los comprobantes,
+		calculando subtotales y totales generales, tal como se requiere para el listado.
 		"""
 		
 		#-- Parámetros del listado.
-		fecha_desde = cleaned_data.get("fecha_desde")
-		fecha_hasta = cleaned_data.get("fecha_hasta")
-		id_vendedor_desde = cleaned_data.get("id_vendedor_desde")
-		id_vendedor_hasta = cleaned_data.get("id_vendedor_hasta")
-		comprobantes = cleaned_data.get("comprobantes")
-		dif_mayor = cleaned_data.get("dif_mayor") or 0
+		vendedor = cleaned_data.get("vendedor", None)
+		fecha_consulta = cleaned_data.get("fecha_consulta", None)
+		orden = cleaned_data.get("orden", None)
 		
-		#-- Obtener los códigos de comprobantes.
-		codigos_comprobantes = ", ".join(list(comprobantes.values_list('codigo_comprobante_venta', flat=True)) if comprobantes else [])
-		
-		param_left = {
-			"Vendedor desde": id_vendedor_desde,
-			"Vendedor hasta": id_vendedor_hasta,
-			"Comprobantes": codigos_comprobantes,
-		}
-		param_right = {
-			"Desde": fecha_desde.strftime("%d/%m/%Y"),
-			"Hasta": fecha_hasta.strftime("%d/%m/%Y"),
-			"Diferencias Superiores a": formato_argentino(dif_mayor),
+		orden_dic ={
+			"Alf": 'Orden Alfabético',
+			"Asc": 'Fecha Ascendente',
+			"Des": 'Fecha Descendente',
 		}
 		
-		fecha_hora_reporte = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+		param = {
+			"Vendedor": vendedor.nombre_vendedor,
+			"Sin Movimiento desde": fecha_consulta.strftime("%d/%m/%Y"),
+			"Ordenado por": orden_dic[orden]
+		}
+		
+		fecha_hora_reporte = datetime.now().strftime("%d/%m/%Y %H:%M:%S")		
 		
 		dominio = f"http://{self.request.get_host()}"
 		
 		# **************************************************
-		#-- Estructura para agrupar datos por Vendedor.
-		datos_por_vendedor = {}
 		
-		for obj in queryset:
-			#-- Identificar al Vendedor.
-			vendedor_id = obj.id_vendedor_id
-			nombre_vendedor = obj.nombre_vendedor.strip()  #-- Limpieza en caso de espacios extras.
-			
-			#-- Si el Vendedor aún no está en el diccionario, se inicializa.
-			if vendedor_id not in datos_por_vendedor:
-				datos_por_vendedor[vendedor_id] = {
-					"id_vendedor": vendedor_id,
-					"vendedor": nombre_vendedor,
-					"detalle": []
-				}
-			
-			#-- Crear el diccionario con los datos del detalle del Vendedor.
-			detalle_data = {
-				"comprobante": obj.comprobante,
-				"fecha": obj.fecha_comprobante.strftime("%d/%m/%Y"),
-				"id_cliente_id": obj.id_cliente_id,
-				"nombre_cliente": obj.nombre_cliente,
-				"id_producto_id": obj.id_producto_id,
-				"nombre_producto": obj.nombre_producto,
-				"cantidad": obj.cantidad,
-				"precio": obj.precio,
-				"precio_lista": obj.precio_lista,
-				"diferencia": obj.diferencia,
-				"descuento": obj.descuento,
-			}
-			
-			#-- Agregar el detalle a la lista de detalles.
-			datos_por_vendedor[vendedor_id]["detalle"].append(detalle_data)
+		# **************************************************
 		
-		#-- Convertir a lista los datos para iterar con más facilidad en la plantilla.
-		datos_por_vendedor = list(datos_por_vendedor.values())
+		#-- Convertir cada objeto del queryset a un diccionario.
+		objetos_serializables = serializar_queryset(queryset)
 		
 		#-- Se retorna un contexto que será consumido tanto para la vista en pantalla como para la generación del PDF.
 		return {
-			"objetos": datos_por_vendedor,
-			"parametros_i": param_left,
-			"parametros_d": param_right,
+			"objetos": objetos_serializables,
+			"parametros": param,
 			'fecha_hora_reporte': fecha_hora_reporte,
 			'titulo': ConfigViews.report_title,
 			'logo_url': f"{dominio}{static('img/logo_01.png')}",
@@ -212,7 +155,7 @@ class VLPrecioDiferenteInformeView(InformeFormView):
 		return context
 
 
-def vlpreciodiferente_vista_pantalla(request):
+def vlclienteultimaventa_vista_pantalla(request):
 	#-- Obtener el token de la querystring.
 	token = request.GET.get("token")
 	
@@ -229,7 +172,7 @@ def vlpreciodiferente_vista_pantalla(request):
 	return render(request, ConfigViews.reporte_pantalla, contexto_reporte)
 
 
-def vlpreciodiferente_vista_pdf(request):
+def vlclienteultimaventa_vista_pdf(request):
 	#-- Obtener el token de la querystring.
 	token = request.GET.get("token")
 	
@@ -246,6 +189,7 @@ def vlpreciodiferente_vista_pdf(request):
 	#-- Generar el PDF usando ReportLab
 	pdf_file = generar_pdf(contexto_reporte)
 	
+	#-- Preparar la respuesta HTTP.
 	response = HttpResponse(pdf_file, content_type="application/pdf")
 	response["Content-Disposition"] = f'inline; filename="{normalizar(ConfigViews.report_title)}.pdf"'
 	
@@ -253,102 +197,71 @@ def vlpreciodiferente_vista_pdf(request):
 
 class CustomPDFGenerator(PDFGenerator):
 	#-- Método que se puede sobreescribir/extender según requerimientos.
-	def _get_header_bottom_left(self, context):
-		"""Personalización del Header-bottom-left"""
-		
-		params = context.get("parametros_i", {})
-		return "<br/>".join([f"<b>{k}:</b> {v}" for k, v in params.items()])
+	# def _get_header_bottom_left(self, context):
+	# 	"""Personalización del Header-bottom-left"""
+	# 	
+	# 	# custom_text = context.get("texto_personalizado", "")
+	# 	# 
+	# 	# if custom_text:
+	# 	# 	return f"<b>NOTA:</b> {custom_text}"
+	# 	
+	# 	id_cliente = 10025
+	# 	cliente = "Leoncio R. Barrios H."
+	# 	domicilio = "Jr. San Pedro 1256. Surquillo, Lima."
+	# 	Telefono = "971025647"
+	# 	
+	# 	# return f"Cliente: [{id_cliente}] {cliente} <br/> {domicilio}"
+	# 	# return f"Cliente: [{id_cliente}] {cliente} <br/> {domicilio} <br/> Tel. {Telefono} <br/>"
+	# 	return f"Cliente: [{id_cliente}] {cliente} <br/> {domicilio} <br/> Tel. {Telefono} <br/> Tel. {Telefono} "
+	# 	# return f"Cliente: [{id_cliente}] {cliente} <br/> {domicilio} <br/> Tel. {Telefono} <br/> Tel. {Telefono} <br/> Tel. {Telefono}"
+	# 	
+	# 	# return super()._get_header_bottom_left(context)
 	
 	#-- Método que se puede sobreescribir/extender según requerimientos.
-	def _get_header_bottom_right(self, context):
-		"""Añadir información adicional específica para este reporte"""
-		
-		params = context.get("parametros_d", {})
-		return "<br/>".join([f"<b>{k}:</b> {v}" for k, v in params.items()])
-
+	# def _get_header_bottom_right(self, context):
+	# 	"""Añadir información adicional específica para este reporte"""
+	# 	base_content = super()._get_header_bottom_right(context)
+	# 	saldo_total = context.get("saldo_total", 0)
+	# 	return f"""
+	# 		{base_content}<br/>
+	# 		<b>Total General:</b> {formato_es_ar(saldo_total)}
+	# 	"""
+	pass
 
 def generar_pdf(contexto_reporte):
 	#-- Crear instancia del generador personalizado.
-	generator = CustomPDFGenerator(contexto_reporte, pagesize=landscape(A4))
+	generator = CustomPDFGenerator(contexto_reporte, pagesize=portrait(A4))
 	
 	#-- Construir datos de la tabla:
 	
 	#-- Datos de las columnas de la tabla (headers).
-	headers = [
-		("Comprobante", 80),
-		("Fecha", 40),
-		("Cliente", 30),
-		("Nombre", 180),
-		("Código", 30),
-		("Detalle", 180),
-		("Cantidad", 40),
-		("Facturado", 60),
-		("Lista", 60),
-		("Diferencia", 60),
-		("Bonif.", 40)
-	]
 	
 	#-- Extraer Títulos de las columnas de la tabla (headers).
-	headers_titles = [value[0] for value in headers]
+	headers_titles = [value[1] for value in ConfigViews.header_data.values()]
 	
 	#-- Extraer Ancho de las columnas de la tabla.
-	col_widths = [value[1] for value in headers]
+	col_widths = [value[0] for value in ConfigViews.header_data.values()]
 	
 	table_data = [headers_titles]
 	
 	#-- Estilos específicos adicionales iniciales de la tabla.
 	table_style_config = [
-		('ALIGN', (6,0), (-1,-1), 'RIGHT'),
+		# ('ALIGN', (1,0), (1,-1), 'RIGHT'),
+		# ('ALIGN', (5,0), (-1,-1), 'RIGHT'),
 	]
 	
-	#-- Contador de filas (empezamos en 1 porque la 0 es el header).
-	current_row = 1
-	
 	#-- Agregar los datos a la tabla.
-	for vendedor in contexto_reporte.get("objetos", []):
-		#-- Datos agrupado por.
+	for obj in contexto_reporte.get("objetos", []):
 		table_data.append([
-			f"Vendedor: [{vendedor['id_vendedor']}] {vendedor['vendedor']}",
-			"", "", "", "", "", "", "", "", "", ""
+			obj['id_cliente_id'],
+			Paragraph(str(obj['nombre_cliente']), generator.styles['CellStyle']),
+			format_date(obj['fecha_ultimo_comprobante']),
 		])
-		
-		#-- Aplicar estilos a la fila de agrupación (fila actual).
-		table_style_config.extend([
-			('SPAN', (0,current_row), (-1,current_row)),
-			('FONTNAME', (0,current_row), (-1,current_row), 'Helvetica-Bold')
-		])
-		
-		current_row += 1
-		
-		#-- Agregar filas del detalle.
-		for det in vendedor['detalle']:
-			table_data.append([
-				det['comprobante'],
-				det['fecha'],
-				det['id_cliente_id'],
-				Paragraph(str(det['nombre_cliente']), generator.styles['CellStyle']),
-				det['id_producto_id'],
-				Paragraph(str(det['nombre_producto']), generator.styles['CellStyle']),
-				formato_argentino(det['cantidad']),
-				formato_argentino(det['precio']),
-				formato_argentino(det['precio_lista']),
-				formato_argentino(det['diferencia']),
-				f"{formato_argentino(det['descuento'])}%"
-			])
-			current_row += 1
-		
-		#-- Fila divisoria.
-		table_data.append(["", "", "", "", "", "", "", "", "", "", ""])
-		table_style_config.append(
-			# ('LINEBELOW', (0,current_row), (-1,current_row), 0.5, colors.gray),
-			('LINEABOVE', (0,current_row), (-1,current_row), 0.5, colors.gray),
-		)
-		current_row += 1
 	
 	return generator.generate(table_data, col_widths, table_style_config)		
 
 
-def vlpreciodiferente_vista_excel(request):
+def vlclienteultimaventa_vista_excel(request):
 	token = request.GET.get("token")
 	if not token:
 		return HttpResponse("Token no proporcionado", status=400)
@@ -362,7 +275,7 @@ def vlpreciodiferente_vista_excel(request):
 	# ---------------------------------------------
 	
 	#-- Instanciar la vista y obtener el queryset.
-	view_instance = VLPrecioDiferenteInformeView()
+	view_instance = VLClienteUltimaVentaInformeView()
 	view_instance.request = request
 	queryset = view_instance.obtener_queryset(cleaned_data)
 	
@@ -383,7 +296,7 @@ def vlpreciodiferente_vista_excel(request):
 	return response
 
 
-def vlpreciodiferente_vista_csv(request):
+def vlclienteultimaventa_vista_csv(request):
 	token = request.GET.get("token")
 	if not token:
 		return HttpResponse("Token no proporcionado", status=400)
@@ -396,7 +309,7 @@ def vlpreciodiferente_vista_csv(request):
 	cleaned_data = data["cleaned_data"]
 	
 	#-- Instanciar la vista para reejecutar la consulta y obtener el queryset.
-	view_instance = VLPrecioDiferenteInformeView()
+	view_instance = VLClienteUltimaVentaInformeView()
 	view_instance.request = request
 	queryset = view_instance.obtener_queryset(cleaned_data)
 	

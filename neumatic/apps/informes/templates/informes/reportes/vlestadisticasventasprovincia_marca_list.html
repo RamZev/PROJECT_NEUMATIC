@@ -37,17 +37,17 @@
 		</thead>
 		<tbody>
 			
-			{% for id_provincia, data in objetos.items %}
+			{% for id_provincia, data_provincia in objetos.items %}
 				<!-- Fila con los datos de la Provincia -->
 				<tr>
 					<td colspan="3" style="padding-top: 5px;">
 						<strong>Provincia: </strong> 
-						<strong>{{ data.provincia }}</strong> 
+						<strong>{{ data_provincia.provincia }}</strong> 
 					</td>
 				</tr>
 				
 				<!-- Filas con el detalle de la Provincia -->
-				{% for det in data.detalle %}
+				{% for det in data_provincia.detalle %}
 					<tr>
 						<td>{{ det.nombre_producto_marca }}</td>
 						{% if mostrar == 'Cantidad' %}
@@ -62,11 +62,11 @@
 				<tr>
 					<td style="text-align: right;"><strong>Sub Total:</strong></td>
 					{% if mostrar == 'Cantidad' %}
-						<td class="numeric"><strong>{{ data.subtotal_cantidad|formato_es_ar }}</strong></td>
-						<td class="numeric"><strong>{{ data.subtotal_porcentaje_cantidad|formato_es_ar }}%</strong></td>
+						<td class="numeric"><strong>{{ data_provincia.subtotal_cantidad|formato_es_ar }}</strong></td>
+						<td class="numeric"><strong>{{ data_provincia.subtotal_porcentaje_cantidad|formato_es_ar }}%</strong></td>
 					{% else %}
-						<td class="numeric"><strong>{{ data.subtotal_importe|formato_es_ar }}</strong></td>
-						<td class="numeric"><strong>{{ data.subtotal_porcentaje_importe|formato_es_ar }}%</strong></td>
+						<td class="numeric"><strong>{{ data_provincia.subtotal_importe|formato_es_ar }}</strong></td>
+						<td class="numeric"><strong>{{ data_provincia.subtotal_porcentaje_importe|formato_es_ar }}%</strong></td>
 					{% endif %}
 				</tr>
 				

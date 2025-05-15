@@ -332,7 +332,7 @@ def generar_pdf(contexto_reporte):
 	#-- Construir datos de la tabla:
 	
 	#-- Títulos de las columnas de la tabla (headers).
-	headers, blank_cols = headers_titles(agrupar, mostrar)
+	headers, blank_cols = headers_titles(agrupar, mostrar, "pdf")
 	
 	headers_tit = [value[1] for value in headers.values()]
 	
@@ -476,7 +476,7 @@ def vlestadisticasventasprovincia_vista_excel(request):
 	view_instance.request = request
 	queryset = view_instance.obtener_queryset(cleaned_data)
 	
-	headers, blank_cols = headers_titles(agrupar, mostrar)
+	headers, blank_cols = headers_titles(agrupar, mostrar, "excel")
 	
 	helper = ExportHelper(
 		queryset=queryset,
@@ -515,7 +515,7 @@ def vlestadisticasventasprovincia_vista_csv(request):
 	queryset = view_instance.obtener_queryset(cleaned_data)
 	
 	#-- Usar el helper para exportar a CSV.
-	headers, blank_cols = headers_titles(agrupar, mostrar)
+	headers, blank_cols = headers_titles(agrupar, mostrar, "csv")
 	
 	helper = ExportHelper(
 		queryset=queryset,
@@ -530,30 +530,34 @@ def vlestadisticasventasprovincia_vista_csv(request):
 	return response
 
 
-def headers_titles(agrupar, mostrar):
+def headers_titles(agrupar, mostrar, destino):
 	headers = {}
 	blank_cols = []
 	
+	if destino != "pdf":
+		headers.update({
+			"nombre_provincia": (0, "Provincia"),
+		})
+	
 	if agrupar == "Producto":
-		headers = {
+		headers.update({
 			"id_producto_id": (50, "Código"),
 			"nombre_producto": (240, "Descripción"),
 			"nombre_producto_familia": (150, "Familia"),
 			"nombre_modelo": (150, "Modelo")
-		}
+		})
 		blank_cols = ["", "", "", ""]
 	elif agrupar == "Familia":
-		headers = {
+		headers.update({
 			"nombre_producto_familia": (200, "Familia")
-		}
+		})
 		blank_cols = [""]
 	elif agrupar == "Modelo":
-		headers = {
+		headers.update({
 			"nombre_modelo": (200, "Modelo")
-		}
+		})
 		blank_cols = [""]
 	elif agrupar == "Marca":
-		headers = {}
 		blank_cols = []
 	
 	headers.update({

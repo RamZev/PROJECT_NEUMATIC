@@ -31,6 +31,7 @@ class ExportHelper:
 		
 		headers = [header[1] for header in self.table_headers.values()]
 		fields = list(self.table_headers.keys())
+		
 		return headers, fields
 	
 	def _resolve_field(self, obj, field_name, frmto=None):
@@ -199,7 +200,7 @@ class ExportHelper:
 		return buffer.getvalue()
 	
 	def export_to_csv(self):
-		"""Exporta los datos del queryset a un archivo CSV."""
+		"""Exporta los datos del queryset a un archivo CSV, compatible con RawQuerySet y diccionarios."""
 		
 		#-- Crear buffer binario.
 		buffer = BytesIO()
@@ -212,12 +213,38 @@ class ExportHelper:
 		
 		writer = csv.writer(text_buffer)
 		
+		#-- Obtener encabezados y campos.
 		headers, fields = self._get_headers_and_fields()
 		writer.writerow(headers)  #-- Escribir encabezados.
 		
-		for obj in self.queryset:
-			row = [self._resolve_field(obj, field) for field in fields]
-			writer.writerow(row)
+		#-- Procesar datos según el tipo de queryset.
+		if isinstance(self.queryset, dict):
+			#-- Caso cuando el queryset es un diccionario.
+			for key, data in self.queryset.items():
+				if isinstance(data, dict):
+					#-- Para diccionarios anidados.
+					row = []
+					for field in fields:
+						value = data
+						for part in field.split('.'):
+							if isinstance(value, dict) and part in value:
+								value = value[part]
+							elif hasattr(value, part):
+								value = getattr(value, part)
+							else:
+								value = None
+								break
+						row.append(self._resolve_field(value, ''))  #-- Sin formato especial para CSV.
+					writer.writerow(row)
+				else:
+					#-- Para valores directos.
+					row = [self._resolve_field(data, field) for field in fields]
+					writer.writerow(row)
+		else:
+			#-- Caso tradicional (RawQuerySet, QuerySet, lista).
+			for obj in self.queryset:
+				row = [self._resolve_field(obj, field) for field in fields]
+				writer.writerow(row)
 		
 		#-- Vaciar contenido al buffer binario.
 		text_buffer.flush()
@@ -270,7 +297,7 @@ class ExportHelper:
 		
 		wb = Workbook()
 		ws = wb.active
-		ws.title = self.report_title
+		ws.title = self.report_title[:31]  # Limitar a 31 caracteres (restricción de Excel)
 		
 		#-- Obtener encabezados y campos dinámicos.
 		headers, fields = self._get_headers_and_fields()
@@ -278,10 +305,35 @@ class ExportHelper:
 		#-- Encabezados.
 		ws.append(headers)
 		
-		#-- Datos.
-		for obj in self.queryset:
-			row = [self._resolve_field(obj, field) for field in fields]
-			ws.append(row)
+		#-- Procesar datos según el tipo de queryset.
+		if isinstance(self.queryset, dict):
+			#-- Caso cuando el queryset es un diccionario.
+			for key, data in self.queryset.items():
+				if isinstance(data, dict):
+					#-- Para diccionarios anidados.
+					row = []
+					for field in fields:
+						#-- Manejar campos anidados.
+						value = data
+						for part in field.split('.'):
+							if isinstance(value, dict) and part in value:
+								value = value[part]
+							elif hasattr(value, part):
+								value = getattr(value, part)
+							else:
+								value = None
+								break
+						row.append(self._resolve_field(value, '', frmto='excel'))
+					ws.append(row)
+				else:
+					#-- Para otros tipos de valores en el diccionario.
+					row = [self._resolve_field(data, field, frmto='excel') for field in fields]
+					ws.append(row)
+		else:
+			#-- Caso normal (RawQuerySet, QuerySet, lista).
+			for obj in self.queryset:
+				row = [self._resolve_field(obj, field, frmto='excel') for field in fields]
+				ws.append(row)		
 		
 		buffer = BytesIO()
 		wb.save(buffer)

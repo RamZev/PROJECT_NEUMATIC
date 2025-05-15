@@ -65,7 +65,7 @@ from apps.informes.views.vlestadisticasventasprovincia_list_views import *
 from apps.informes.views.vlestadisticasseguncondicion_list_views import *
 from apps.informes.views.vlestadisticasventasmarca_list_views import *
 from apps.informes.views.vlestadisticasventasmarcavendedor_list_views import *
-
+from apps.informes.views.vlclienteultimaventa_list_views import *
 from apps.informes.views.vlestadisticasventasvendedorcliente_list_views import *
 
 
@@ -608,6 +608,16 @@ urlpatterns = [
 		 name="vlestadisticasventasmarcavendedor_vista_csv"),
 	
 	#-- VL Estadísticas de Clientes sin Ventas.
+	path('vlclienteultimaventa_informe/', VLClienteUltimaVentaInformeView.as_view(), 
+		 name='vlclienteultimaventa_informe_list'),
+	path('vlclienteultimaventa/vista-preliminar/', vlclienteultimaventa_vista_pantalla, 
+		 name="vlclienteultimaventa_vista_pantalla"),
+	path("vlclienteultimaventa/vista-pdf/", vlclienteultimaventa_vista_pdf, 
+		 name="vlclienteultimaventa_vista_pdf"),
+	path("vlclienteultimaventa/vista-excel/", vlclienteultimaventa_vista_excel, 
+		 name="vlclienteultimaventa_vista_excel"),
+	path("vlclienteultimaventa/vista-csv/", vlclienteultimaventa_vista_csv, 
+		 name="vlclienteultimaventa_vista_csv"),
 	
 	
 	

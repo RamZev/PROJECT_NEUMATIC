@@ -66,7 +66,7 @@ class DataViewList():
 		'estatus_moneda': (1, 'Estatus'),
 		# 'id_moneda': (1, 'ID'),
 		'nombre_moneda': (3, 'Moneda'),
-		'simbolo_moneda': (1, 'Sómbolo'),
+		'simbolo_moneda': (1, 'Símbolo'),
 		'ws_afip': (2, 'WS AFIP'),
 		'cotizacion_moneda': (2, 'Cotización'),
 		'predeterminada': (1, 'Predeterminada'),

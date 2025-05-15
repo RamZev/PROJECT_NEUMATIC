@@ -138,3 +138,9 @@ ESTADISTICAS = [
 	(True, 'Participan en Estadísticas'),
 	(False, 'NO Participan en Estadísticas')
 ]
+
+ORDEN = [
+	("Alf", 'Orden Alfabético'),
+	("Asc", 'Fecha Ascendente'),
+	("Des", 'Fecha Descendente'),
+]

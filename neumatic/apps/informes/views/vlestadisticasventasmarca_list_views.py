@@ -460,12 +460,12 @@ def vlestadisticasventasmarca_vista_excel(request):
 	view_instance.request = request
 	queryset = view_instance.obtener_queryset(cleaned_data)
 	
-	headers = ConfigViews.header_data.copy()
-	headers.update({
-		"nombre_producto_marca": (110, "Marca"),
-		"nombre_producto_familia": (110, "Familia"),
-		"nombre_modelo": (110, "Modelo"),
-	})
+	headers ={
+		"nombre_producto_marca": (0, "Marca"),
+		"nombre_producto_familia": (0, "Familia"),
+		"nombre_modelo": (0, "Modelo"),
+	}
+	headers.update(ConfigViews.header_data)
 	
 	helper = ExportHelper(
 		queryset=queryset,
@@ -501,12 +501,12 @@ def vlestadisticasventasmarca_vista_csv(request):
 	view_instance.request = request
 	queryset = view_instance.obtener_queryset(cleaned_data)
 	
-	headers = ConfigViews.header_data.copy()
-	headers.update({
-		"nombre_producto_marca": (110, "Marca"),
-		"nombre_producto_familia": (110, "Familia"),
-		"nombre_modelo": (110, "Modelo"),
-	})
+	headers = {
+		"nombre_producto_marca": (0, "Marca"),
+		"nombre_producto_familia": (0, "Familia"),
+		"nombre_modelo": (0, "Modelo"),
+	}
+	headers.update(ConfigViews.header_data)
 	
 	#-- Usar el helper para exportar a CSV.
 	helper = ExportHelper(

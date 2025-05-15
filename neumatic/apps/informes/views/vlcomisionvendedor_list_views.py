@@ -71,8 +71,7 @@ class ConfigViews:
 	
 	#-- Establecer las columnas del reporte y sus anchos(en punto).
 	header_data = {
-		"id_vendedor_id": (40, "Vendedor"),
-		"nombre_vendedor": (40, "Nombre"),
+		"nombre_vendedor": (40, "Vendedor"),
 		"comprobante": (40, "Comprobante"),
 		"fecha_comprobante": (40, "Fecha"),
 		"nombre_cliente": (40, "Nombre"),

@@ -329,7 +329,7 @@ def generar_pdf(contexto_reporte):
 	#-- Construir datos de la tabla:
 	
 	#-- Títulos de las columnas de la tabla (headers).
-	headers, blank_cols = headers_titles(agrupar, mostrar)
+	headers, blank_cols = headers_titles(agrupar, mostrar, "pdf")
 	
 	headers_tit = [value[1] for value in headers.values()]
 	headers_tit.insert(0, "")
@@ -472,11 +472,7 @@ def vlestadisticasventasvendedorcliente_vista_excel(request):
 	view_instance.request = request
 	queryset = view_instance.obtener_queryset(cleaned_data)
 	
-	headers, blank_cols = headers_titles(agrupar, mostrar)
-	headers.update({
-		"nombre_vendedor": (110, "Vendedor"),
-		"nombre_cliente": (110, "Cliente"),
-	})
+	headers, blank_cols = headers_titles(agrupar, mostrar, "excel")
 	
 	helper = ExportHelper(
 		queryset=queryset,
@@ -515,7 +511,7 @@ def vlestadisticasventasvendedorcliente_vista_csv(request):
 	queryset = view_instance.obtener_queryset(cleaned_data)
 	
 	#-- Usar el helper para exportar a CSV.
-	headers, blank_cols = headers_titles(agrupar, mostrar)
+	headers, blank_cols = headers_titles(agrupar, mostrar, "csv")
 	headers.update({
 		"nombre_vendedor": (110, "Vendedor"),
 		"nombre_cliente": (110, "Cliente"),
@@ -534,30 +530,36 @@ def vlestadisticasventasvendedorcliente_vista_csv(request):
 	return response
 
 
-def headers_titles(agrupar, mostrar):
+def headers_titles(agrupar, mostrar, destino):
 	headers = {}
 	blank_cols = []
 	
+	if destino != "pdf":
+		headers.update({
+			"nombre_vendedor": (0, "Vendedor"),
+			"nombre_cliente": (0, "Cliente"),
+		})
+	
 	if agrupar == "Producto":
-		headers = {
+		headers.update({
 			"id_producto_id": (50, "Código"),
 			"nombre_producto": (240, "Descripción"),
 			"nombre_producto_familia": (150, "Familia"),
 			"nombre_modelo": (150, "Modelo")
-		}
+		})
 		blank_cols = ["", "", "", ""]
 	elif agrupar == "Familia":
-		headers = {
+		headers.update({
 			"nombre_producto_familia": (200, "Familia")
-		}
+		})
 		blank_cols = [""]
 	elif agrupar == "Modelo":
-		headers = {
+		headers.update({
 			"nombre_modelo": (200, "Modelo")
-		}
+		})
 		blank_cols = [""]
 	elif agrupar == "Marca":
-		headers = {}
+		# headers = {}
 		blank_cols = []
 	
 	headers.update({

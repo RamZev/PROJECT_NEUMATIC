@@ -1,41 +1,64 @@
--- Pruebas consulta VLEstadisticasSegunCondicion
+Datos del QuerySet:
+151570	ABRANCHUK RUBEN DARIO	07/02/2024
+125156	BALZI MARIA, FARGIONI MARCOS Y	28/10/2024
+111795	BCC TRANSPORTE SRL	27/05/2024
+149557	BECERRA EDGARDO	12/11/2024
+159355	BERTINI S. A.	24/09/2024
+155366	BILBAO S.A.	09/02/2024
+157061	CARASSO MAURO SEBASTIAN	24/05/2024
+159051	CARNEVALI MARCHI SRL	20/09/2024
+155861	CERYSAN SRL	21/03/2024
+127497	CIARLO GASTON ARIEL	21/09/2024
+150171	COZZI GERARDO	08/08/2024
+126437	CURZIO MARIELA ALEJANDRA	13/08/2024
+104083	ENRIA JUAN RAMON	11/05/2024
+105394	F Y M LOGISTICA SRL	29/05/2024
+122178	FERREIRA JORGE JOSE	14/11/2024
+159162	GARCIA HORACIO FABIAN	07/11/2024
+155444	GINE NESTOR MARCELO Y GINE MAR	01/02/2024
+131605	GONZALO FERNANDEZ Y ALEJANDRO	23/04/2024
+151606	HERRERA ALEJANDRO	28/02/2024
+130519	LA GRINGA TRANSPORTE SRL	05/11/2024
+114417	LEDESMA JORGE DAMIAN	15/08/2024
+140046	LINIERS LEONARDO	01/01/2024
 
-SELECT
-	id,
-	nombre_producto_familia,
-	nombre_producto_marca,
-	nombre_modelo,
-	id_producto_id,
-	nombre_producto,
-	SUM(CASE WHEN reventa = 'M' THEN cantidad ELSE 0 END) AS cantidad_m,
-	SUM(CASE WHEN reventa = 'M' THEN importe ELSE 0 END) AS importe_m,
-	SUM(CASE WHEN reventa = 'M' THEN costo ELSE 0 END) AS costo_m,
-	SUM(CASE WHEN reventa = 'M' THEN (importe - costo) ELSE 0 END) AS ganancia_m,
-	SUM(CASE WHEN reventa = 'R' THEN cantidad ELSE 0 END) AS cantidad_r,
-	SUM(CASE WHEN reventa = 'R' THEN importe ELSE 0 END) AS importe_r,
-	SUM(CASE WHEN reventa = 'R' THEN costo ELSE 0 END) AS costo_r,
-	SUM(CASE WHEN reventa = 'R' THEN (importe - costo) ELSE 0 END) AS ganancia_r,
-	SUM(CASE WHEN reventa = 'E' THEN cantidad ELSE 0 END) AS cantidad_e,
-	SUM(CASE WHEN reventa = 'E' THEN importe ELSE 0 END) AS importe_e,
-	SUM(CASE WHEN reventa = 'E' THEN costo ELSE 0 END) AS costo_e,
-	SUM(CASE WHEN reventa = 'E' THEN (importe - costo) ELSE 0 END) AS ganancia_e
-FROM
-	VLEstadisticasSegunCondicion
-WHERE
-	fecha_comprobante BETWEEN '2025-01-01' AND '2025-01-10'
-	AND id_marca_id BETWEEN 1 AND 50
-GROUP BY 
---	id_familia_id, id_marca_id, id_modelo_id, id_producto_id	-- Producto
-	id_familia_id, id_modelo_id, id_producto_id					-- Producto
---	id_familia_id, id_marca_id									-- Familia
---	id_marca_id, id_modelo_id									-- Modelo
---	id_marca_id													-- Marca
-	
-	
-	
-	
--------------------------------------------------------------------------------------------------------------------------------------------
-|				MOSTRADOR					  |					REVENTA					    |				E-COMERCE					  |
--------------------------------------------------------------------------------------------------------------------------------------------
-| Cantidad  |  Venta  |  Precio  |  Ganancia  | Cantidad  |  Venta  |  Precio  |  Ganancia  | Cantidad  |  Venta  |  Precio  |  Ganancia  |
--------------------------------------------------------------------------------------------------------------------------------------------
+
+Como quiero el reporte:
+----------------------------------------------------------------------------------------------------------------------------------
+| Código	| Cliente								| Fecha		 | Código	| Cliente								| Fecha		 |
+----------------------------------------------------------------------------------------------------------------------------------
+| 151570	| ABRANCHUK RUBEN DARIO					| 07/02/2024 | 155861	| CERYSAN SRL							| 21/03/2024 |
+| 125156	| BALZI MARIA, FARGIONI MARCOS Y		| 28/10/2024 | 127497	| CIARLO GASTON ARIEL					| 21/09/2024 |
+| 111795	| BCC TRANSPORTE SRL					| 27/05/2024 | 150171	| COZZI GERARDO							| 08/08/2024 |
+| 149557	| BECERRA EDGARDO						| 12/11/2024 | 126437	| CURZIO MARIELA ALEJANDRA				| 13/08/2024 |
+| 159355	| BERTINI S. A.							| 24/09/2024 | 104083	| ENRIA JUAN RAMON						| 11/05/2024 |
+| 155366	| BILBAO S.A.							| 09/02/2024 | 105394	| F Y M LOGISTICA SRL					| 29/05/2024 |
+| 157061	| CARASSO MAURO SEBASTIAN				| 24/05/2024 | 122178	| FERREIRA JORGE JOSE					| 14/11/2024 |
+| 159051	| CARNEVALI MARCHI SRL					| 20/09/2024 | 159162	| GARCIA HORACIO FABIAN					| 07/11/2024 |
+
+----------------------------------------------------------------------------------------------------------------------------------
+| Código	| Cliente								| Fecha		 | Código	| Cliente								| Fecha		 |
+----------------------------------------------------------------------------------------------------------------------------------
+| 155444	| GINE NESTOR MARCELO Y GINE MAR		| 01/02/2024
+| 131605	| GONZALO FERNANDEZ Y ALEJANDRO			| 23/04/2024
+| 151606	| HERRERA ALEJANDRO						| 28/02/2024
+| 130519	| LA GRINGA TRANSPORTE SRL				| 05/11/2024
+| 114417	| LEDESMA JORGE DAMIAN					| 15/08/2024
+| 140046	| LINIERS LEONARDO						| 01/01/2024
+
+***************************
+
+["151570", "ABRANCHUK RUBEN DARIO",	"07/02/2024", [155861], "CERYSAN SRL", "21/03/2024"]
+["125156", "BALZI MARIA, FARGIONI MARCOS Y","28/10/2024", "127497", "CIARLO GASTON ARIEL", "21/09/2024"]
+["111795", "BCC TRANSPORTE SRL", "27/05/2024", "150171", "COZZI GERARDO", "08/08/2024"]
+["149557", "BECERRA EDGARDO", "12/11/2024", "126437", "CURZIO MARIELA ALEJANDRA", "13/08/2024"]
+["159355", "BERTINI S. A.", "24/09/2024", "104083", "ENRIA JUAN RAMON", "11/05/2024"]
+["155366", "BILBAO S.A.", "09/02/2024", "105394", "F Y M LOGISTICA SRL", "29/05/2024"]
+["157061", "CARASSO MAURO SEBASTIAN", "24/05/2024", "122178", "FERREIRA JORGE JOSE", "14/11/2024"]
+["159051", "CARNEVALI MARCHI SRL", "20/09/2024", "159162", "GARCIA HORACIO FABIAN", "07/11/2024"]
+["155444", GINE NESTOR MARCELO Y GINE MAR",	"01/02/2024", "", ""]
+["131605", GONZALO FERNANDEZ Y ALEJANDRO", "23/04/2024", "", ""]
+["151606", HERRERA ALEJANDRO", "28/02/2024", "", ""]
+["130519", LA GRINGA TRANSPORTE SRL", "05/11/2024", "", ""]
+["114417", LEDESMA JORGE DAMIAN", "15/08/2024", "", ""]
+["140046", LINIERS LEONARDO", "01/01/2024", "", ""]
