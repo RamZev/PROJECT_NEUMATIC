@@ -11,3 +11,5 @@ venv/
 migrations/
 staticfiles/
 neumatic_bak/
+neumatic_bak2/
+datavfox_old/

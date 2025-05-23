@@ -56,10 +56,6 @@
 				<tr>
 					<td colspan="14" style="padding-top: 5px;">
 						<strong>Marca: {{ marca }}</strong>
-						<!--
-						<strong>Artículo: {{ familia_data.familia }}</strong>
-						<strong>{{ familia_data.familia }}</strong>
-						-->
 					</td>
 				</tr>
 				
@@ -69,19 +65,37 @@
 						<td></td>
 						<td>{{ det.nombre_modelo }}</td>
 						<td class="numeric">{{ det.cantidad_m|formato_es_ar }}</td>
-						<td class="numeric">{{ det.importe_m|formato_es_ar }}</td>
-						<td class="numeric">{{ det.costo_m|formato_es_ar }}</td>
-						<td class="numeric" style="padding-right: 10px;">{{ det.ganancia_m|formato_es_ar }}</td>
+						{% if imprimir_importes %}
+							<td class="numeric">{{ det.importe_m|formato_es_ar }}</td>
+							<td class="numeric">{{ det.costo_m|formato_es_ar }}</td>
+							<td class="numeric" style="padding-right: 10px;">{{ det.ganancia_m|formato_es_ar }}</td>
+						{% else %}
+							<td></td>
+							<td></td>
+							<td></td>
+						{% endif %}
 						
 						<td class="numeric">{{ det.cantidad_r|formato_es_ar }}</td>
-						<td class="numeric">{{ det.importe_r|formato_es_ar }}</td>
-						<td class="numeric">{{ det.costo_r|formato_es_ar }}</td>
-						<td class="numeric" style="padding-right: 10px;">{{ det.ganancia_r|formato_es_ar }}</td>
+						{% if imprimir_importes %}
+							<td class="numeric">{{ det.importe_r|formato_es_ar }}</td>
+							<td class="numeric">{{ det.costo_r|formato_es_ar }}</td>
+							<td class="numeric" style="padding-right: 10px;">{{ det.ganancia_r|formato_es_ar }}</td>
+						{% else %}
+							<td></td>
+							<td></td>
+							<td></td>
+						{% endif %}
 						
 						<td class="numeric">{{ det.cantidad_e|formato_es_ar }}</td>
-						<td class="numeric">{{ det.importe_e|formato_es_ar }}</td>
-						<td class="numeric">{{ det.costo_e|formato_es_ar }}</td>
-						<td class="numeric" style="padding-right: 10px;">{{ det.ganancia_e|formato_es_ar }}</td>
+						{% if imprimir_importes %}
+							<td class="numeric">{{ det.importe_e|formato_es_ar }}</td>
+							<td class="numeric">{{ det.costo_e|formato_es_ar }}</td>
+							<td class="numeric" style="padding-right: 10px;">{{ det.ganancia_e|formato_es_ar }}</td>
+						{% else %}
+							<td></td>
+							<td></td>
+							<td></td>
+						{% endif %}
 					</tr>
 				
 				{% endfor %}
@@ -91,19 +105,37 @@
 					<td class="numeric" colspan="2"><strong>Sub Total {{ marca }}:</strong></td>
 					
 					<td class="numeric"><strong>{{ marca_data.stm_cantidad_m|formato_es_ar }}</strong></td>
-					<td class="numeric"><strong>{{ marca_data.stm_importe_m|formato_es_ar }}</strong></td>
-					<td></td>
-					<td class="numeric" style="padding-right: 10px;"><strong>{{ marca_data.stm_ganancia_m|formato_es_ar }}</strong></td>
+					{% if imprimir_importes %}
+						<td class="numeric"><strong>{{ marca_data.stm_importe_m|formato_es_ar }}</strong></td>
+						<td></td>
+						<td class="numeric" style="padding-right: 10px;"><strong>{{ marca_data.stm_ganancia_m|formato_es_ar }}</strong></td>
+					{% else %}
+						<td></td>
+						<td></td>
+						<td></td>
+					{% endif %}
 					
 					<td class="numeric"><strong>{{ marca_data.stm_cantidad_r|formato_es_ar }}</strong></td>
-					<td class="numeric"><strong>{{ marca_data.stm_importe_r|formato_es_ar }}</strong></td>
-					<td></td>
-					<td class="numeric" style="padding-right: 10px;"><strong>{{ marca_data.stm_ganancia_r|formato_es_ar }}</strong></td>
+					{% if imprimir_importes %}
+						<td class="numeric"><strong>{{ marca_data.stm_importe_r|formato_es_ar }}</strong></td>
+						<td></td>
+						<td class="numeric" style="padding-right: 10px;"><strong>{{ marca_data.stm_ganancia_r|formato_es_ar }}</strong></td>
+					{% else %}
+						<td></td>
+						<td></td>
+						<td></td>
+					{% endif %}
 					
 					<td class="numeric"><strong>{{ marca_data.stm_cantidad_e|formato_es_ar }}</strong></td>
-					<td class="numeric"><strong>{{ marca_data.stm_importe_e|formato_es_ar }}</strong></td>
-					<td></td>
-					<td class="numeric" style="padding-right: 10px;"><strong>{{ marca_data.stm_ganancia_e|formato_es_ar }}</strong></td>
+					{% if imprimir_importes %}
+						<td class="numeric"><strong>{{ marca_data.stm_importe_e|formato_es_ar }}</strong></td>
+						<td></td>
+						<td class="numeric" style="padding-right: 10px;"><strong>{{ marca_data.stm_ganancia_e|formato_es_ar }}</strong></td>
+					{% else %}
+						<td></td>
+						<td></td>
+						<td></td>
+					{% endif %}
 				</tr>
 				
 				<tr>
@@ -118,19 +150,37 @@
 				<td class="numeric" colspan="2"><strong>Totales Generales:</strong></td>
 				
 				<td class="numeric"><strong>{{ tg_cantidad_m|formato_es_ar }}</strong></td>
-				<td class="numeric"><strong>{{ tg_importe_m|formato_es_ar }}</strong></td>
-				<td></td>
-				<td class="numeric" style="padding-right: 10px;"><strong>{{ tg_ganancia_m|formato_es_ar }}</strong></td>
+				{% if imprimir_importes %}
+					<td class="numeric"><strong>{{ tg_importe_m|formato_es_ar }}</strong></td>
+					<td></td>
+					<td class="numeric" style="padding-right: 10px;"><strong>{{ tg_ganancia_m|formato_es_ar }}</strong></td>
+				{% else %}
+					<td></td>
+					<td></td>
+					<td></td>
+				{% endif %}
 				
 				<td class="numeric"><strong>{{ tg_cantidad_r|formato_es_ar }}</strong></td>
-				<td class="numeric"><strong>{{ tg_importe_r|formato_es_ar }}</strong></td>
-				<td></td>
-				<td class="numeric" style="padding-right: 10px;"><strong>{{ tg_ganancia_r|formato_es_ar }}</strong></td>
+				{% if imprimir_importes %}
+					<td class="numeric"><strong>{{ tg_importe_r|formato_es_ar }}</strong></td>
+					<td></td>
+					<td class="numeric" style="padding-right: 10px;"><strong>{{ tg_ganancia_r|formato_es_ar }}</strong></td>
+				{% else %}
+					<td></td>
+					<td></td>
+					<td></td>
+				{% endif %}
 				
 				<td class="numeric"><strong>{{ tg_cantidad_e|formato_es_ar }}</strong></td>
-				<td class="numeric"><strong>{{ tg_importe_e|formato_es_ar }}</strong></td>
-				<td></td>
-				<td class="numeric" style="padding-right: 10px;"><strong>{{ tg_ganancia_e|formato_es_ar }}</strong></td>
+				{% if imprimir_importes %}
+					<td class="numeric"><strong>{{ tg_importe_e|formato_es_ar }}</strong></td>
+					<td></td>
+					<td class="numeric" style="padding-right: 10px;"><strong>{{ tg_ganancia_e|formato_es_ar }}</strong></td>
+				{% else %}
+					<td></td>
+					<td></td>
+					<td></td>
+				{% endif %}
 			</tr>
 			
 		</tbody>

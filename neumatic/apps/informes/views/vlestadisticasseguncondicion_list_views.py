@@ -138,6 +138,7 @@ class VLEstadisticasSegunCondicionInformeView(InformeFormView):
 		id_marca_desde = cleaned_data.get('id_marca_desde')
 		id_marca_hasta = cleaned_data.get('id_marca_hasta')
 		agrupar = cleaned_data.get('agrupar', None)
+		imprimir_importes = cleaned_data.get('imprimir_importes', False)
 		
 		fecha_hora_reporte = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
 		
@@ -155,23 +156,27 @@ class VLEstadisticasSegunCondicionInformeView(InformeFormView):
 		}
 		
 		# **************************************************
+		
+		#-- Convertir QUERYSET a LISTA DE DICCIONARIOS al inicio (optimización clave).
+		queryset_list = [raw_to_dict(obj) for obj in queryset]
+		
 		#-- Agrupar los objetos por el número de comprobante.
 		grouped_data = {}
-		tg_cantidad_m = Decimal('0')
+		tg_cantidad_m = 0
 		tg_importe_m = Decimal('0')
 		tg_ganancia_m = Decimal('0')
-		tg_cantidad_r = Decimal('0')
+		tg_cantidad_r = 0
 		tg_importe_r = Decimal('0')
 		tg_ganancia_r = Decimal('0')
-		tg_cantidad_e = Decimal('0')
+		tg_cantidad_e = 0
 		tg_importe_e = Decimal('0')
 		tg_ganancia_e = Decimal('0')
 		
 		match agrupar:
 			case "Producto":
 				#-- Agrupar por producto.
-				for obj in queryset:
-					familia = obj.nombre_producto_familia  #-- Campo que agrupa los datos.
+				for obj in queryset_list:
+					familia = obj['nombre_producto_familia']  #-- Campo que agrupa los datos.
 					if familia not in grouped_data:
 						grouped_data[familia] = {
 							'modelos': {},
@@ -187,7 +192,7 @@ class VLEstadisticasSegunCondicionInformeView(InformeFormView):
 						}
 					
 					#-- Agrupar los objetos por Modelos de la Familia.
-					modelo = obj.nombre_modelo
+					modelo = obj['nombre_modelo']
 					if modelo not in grouped_data[familia]['modelos']:
 						grouped_data[familia]['modelos'][modelo] = {
 							'detalle': [],
@@ -206,69 +211,70 @@ class VLEstadisticasSegunCondicionInformeView(InformeFormView):
 					grouped_data[familia]["modelos"][modelo]["detalle"].append(obj)
 					
 					#-- Acumular totales por Familia.
-					grouped_data[familia]['stf_cantidad_m'] += obj.cantidad_m
-					grouped_data[familia]['stf_importe_m'] += Decimal(str(obj.importe_m))
-					grouped_data[familia]['stf_ganancia_m'] += Decimal(str(obj.ganancia_m))
-					grouped_data[familia]['stf_cantidad_r'] += obj.cantidad_r
-					grouped_data[familia]['stf_importe_r'] += Decimal(str(obj.importe_r))
-					grouped_data[familia]['stf_ganancia_r'] += Decimal(str(obj.ganancia_r))
-					grouped_data[familia]['stf_cantidad_e'] += obj.cantidad_e
-					grouped_data[familia]['stf_importe_e'] += Decimal(str(obj.importe_e))
-					grouped_data[familia]['stf_ganancia_e'] += Decimal(str(obj.ganancia_e))
+					#-- Conversión directa a Decimal (optimización).
+					cantidad_m = obj['cantidad_m']
+					importe_m = Decimal(str(obj['importe_m']))
+					ganancia_m = Decimal(str(obj['ganancia_m']))
+					cantidad_r = obj['cantidad_r']
+					importe_r = Decimal(str(obj['importe_r']))
+					ganancia_r = Decimal(str(obj['ganancia_r']))
+					cantidad_e = obj['cantidad_e']
+					importe_e = Decimal(str(obj['importe_e']))
+					ganancia_e = Decimal(str(obj['ganancia_e']))
+					
+					grouped_data[familia]['stf_cantidad_m'] += cantidad_m
+					grouped_data[familia]['stf_importe_m'] += importe_m
+					grouped_data[familia]['stf_ganancia_m'] += ganancia_m
+					grouped_data[familia]['stf_cantidad_r'] += cantidad_r
+					grouped_data[familia]['stf_importe_r'] += importe_r
+					grouped_data[familia]['stf_ganancia_r'] += ganancia_r
+					grouped_data[familia]['stf_cantidad_e'] += cantidad_e
+					grouped_data[familia]['stf_importe_e'] += importe_e
+					grouped_data[familia]['stf_ganancia_e'] += ganancia_e
 					
 					#-- Acumular totales por Modelo.
-					grouped_data[familia]['modelos'][modelo]['stm_cantidad_m'] += obj.cantidad_m
-					grouped_data[familia]['modelos'][modelo]['stm_importe_m'] += Decimal(str(obj.importe_m))
-					grouped_data[familia]['modelos'][modelo]['stm_ganancia_m'] += Decimal(str(obj.ganancia_m))
-					grouped_data[familia]['modelos'][modelo]['stm_cantidad_r'] += obj.cantidad_r
-					grouped_data[familia]['modelos'][modelo]['stm_importe_r'] += Decimal(str(obj.importe_r))
-					grouped_data[familia]['modelos'][modelo]['stm_ganancia_r'] += Decimal(str(obj.ganancia_r))
-					grouped_data[familia]['modelos'][modelo]['stm_cantidad_e'] += obj.cantidad_e
-					grouped_data[familia]['modelos'][modelo]['stm_importe_e'] += Decimal(str(obj.importe_e))
-					grouped_data[familia]['modelos'][modelo]['stm_ganancia_e'] += Decimal(str(obj.ganancia_e))
+					grouped_data[familia]['modelos'][modelo]['stm_cantidad_m'] += cantidad_m
+					grouped_data[familia]['modelos'][modelo]['stm_importe_m'] += importe_m
+					grouped_data[familia]['modelos'][modelo]['stm_ganancia_m'] += ganancia_m
+					grouped_data[familia]['modelos'][modelo]['stm_cantidad_r'] += cantidad_r
+					grouped_data[familia]['modelos'][modelo]['stm_importe_r'] += importe_r
+					grouped_data[familia]['modelos'][modelo]['stm_ganancia_r'] += ganancia_r
+					grouped_data[familia]['modelos'][modelo]['stm_cantidad_e'] += cantidad_e
+					grouped_data[familia]['modelos'][modelo]['stm_importe_e'] += importe_e
+					grouped_data[familia]['modelos'][modelo]['stm_ganancia_e'] += ganancia_e
 					
 					#-- Acumular totales generales.
-					tg_cantidad_m += obj.cantidad_m
-					tg_importe_m += Decimal(str(obj.importe_m))
-					tg_ganancia_m += Decimal(str(obj.ganancia_m))
-					tg_cantidad_r += obj.cantidad_r
-					tg_importe_r += Decimal(str(obj.importe_r))
-					tg_ganancia_r += Decimal(str(obj.ganancia_r))
-					tg_cantidad_e += obj.cantidad_e
-					tg_importe_e += Decimal(str(obj.importe_e))
-					tg_ganancia_e += Decimal(str(obj.ganancia_e))
+					tg_cantidad_m += cantidad_m
+					tg_importe_m += importe_m
+					tg_ganancia_m += ganancia_m
+					tg_cantidad_r += cantidad_r
+					tg_importe_r += importe_r
+					tg_ganancia_r += ganancia_r
+					tg_cantidad_e += cantidad_e
+					tg_importe_e += importe_e
+					tg_ganancia_e += ganancia_e
 				
 				#-- Convertir los datos agrupados a un formato serializable:
-				#-- Se recorre cada grupo y se convierte cada detalle a diccionario usando raw_to_dict.
-				
-				for familia, familia_data in grouped_data.items():
-					familia_data['stf_cantidad_m'] = float(familia_data['stf_cantidad_m'])
+				for familia_data in grouped_data.values():
 					familia_data['stf_importe_m'] = float(familia_data['stf_importe_m'])
 					familia_data['stf_ganancia_m'] = float(familia_data['stf_ganancia_m'])
-					familia_data['stf_cantidad_r'] = float(familia_data['stf_cantidad_r'])
 					familia_data['stf_importe_r'] = float(familia_data['stf_importe_r'])
 					familia_data['stf_ganancia_r'] = float(familia_data['stf_ganancia_r'])
-					familia_data['stf_cantidad_e'] = float(familia_data['stf_cantidad_e'])
 					familia_data['stf_importe_e'] = float(familia_data['stf_importe_e'])
 					familia_data['stf_ganancia_e'] = float(familia_data['stf_ganancia_e'])
 					
-					for modelo, modelo_data in familia_data['modelos'].items():
-						modelo_data['detalle'] = [raw_to_dict(detalle) for detalle in modelo_data['detalle']]
-						
-						modelo_data['stm_cantidad_m'] = float(modelo_data['stm_cantidad_m'])
+					for modelo_data in familia_data['modelos'].values():
 						modelo_data['stm_importe_m'] = float(modelo_data['stm_importe_m'])
 						modelo_data['stm_ganancia_m'] = float(modelo_data['stm_ganancia_m'])
-						modelo_data['stm_cantidad_r'] = float(modelo_data['stm_cantidad_r'])
 						modelo_data['stm_importe_r'] = float(modelo_data['stm_importe_r'])
 						modelo_data['stm_ganancia_r'] = float(modelo_data['stm_ganancia_r'])
-						modelo_data['stm_cantidad_e'] = float(modelo_data['stm_cantidad_e'])
 						modelo_data['stm_importe_e'] = float(modelo_data['stm_importe_e'])
 						modelo_data['stm_ganancia_e'] = float(modelo_data['stm_ganancia_e'])
 				
 			case "Familia":
 				#-- Agrupar por familia.
-				for obj in queryset:
-					familia = obj.nombre_producto_familia  #-- Campo que agrupa los datos.
+				for obj in queryset_list:
+					familia = obj['nombre_producto_familia']  #-- Campo que agrupa los datos.
 					if familia not in grouped_data:
 						grouped_data[familia] = {
 							'detalle': [],
@@ -287,45 +293,50 @@ class VLEstadisticasSegunCondicionInformeView(InformeFormView):
 					grouped_data[familia]["detalle"].append(obj)
 					
 					#-- Acumular totales por Familia.
-					grouped_data[familia]['stf_cantidad_m'] += obj.cantidad_m
-					grouped_data[familia]['stf_importe_m'] += Decimal(str(obj.importe_m))
-					grouped_data[familia]['stf_ganancia_m'] += Decimal(str(obj.ganancia_m))
-					grouped_data[familia]['stf_cantidad_r'] += obj.cantidad_r
-					grouped_data[familia]['stf_importe_r'] += Decimal(str(obj.importe_r))
-					grouped_data[familia]['stf_ganancia_r'] += Decimal(str(obj.ganancia_r))
-					grouped_data[familia]['stf_cantidad_e'] += obj.cantidad_e
-					grouped_data[familia]['stf_importe_e'] += Decimal(str(obj.importe_e))
-					grouped_data[familia]['stf_ganancia_e'] += Decimal(str(obj.ganancia_e))
+					cantidad_m = obj['cantidad_m']
+					importe_m = Decimal(str(obj['importe_m']))
+					ganancia_m = Decimal(str(obj['ganancia_m']))
+					cantidad_r = obj['cantidad_r']
+					importe_r = Decimal(str(obj['importe_r']))
+					ganancia_r = Decimal(str(obj['ganancia_r']))
+					cantidad_e = obj['cantidad_e']
+					importe_e = Decimal(str(obj['importe_e']))
+					ganancia_e = Decimal(str(obj['ganancia_e']))
+					
+					grouped_data[familia]['stf_cantidad_m'] += cantidad_m
+					grouped_data[familia]['stf_importe_m'] += importe_m
+					grouped_data[familia]['stf_ganancia_m'] += ganancia_m
+					grouped_data[familia]['stf_cantidad_r'] += cantidad_r
+					grouped_data[familia]['stf_importe_r'] += importe_r
+					grouped_data[familia]['stf_ganancia_r'] += ganancia_r
+					grouped_data[familia]['stf_cantidad_e'] += cantidad_e
+					grouped_data[familia]['stf_importe_e'] += importe_e
+					grouped_data[familia]['stf_ganancia_e'] += ganancia_e
 					
 					#-- Acumular totales generales.
-					tg_cantidad_m += obj.cantidad_m
-					tg_importe_m += Decimal(str(obj.importe_m))
-					tg_ganancia_m += Decimal(str(obj.ganancia_m))
-					tg_cantidad_r += obj.cantidad_r
-					tg_importe_r += Decimal(str(obj.importe_r))
-					tg_ganancia_r += Decimal(str(obj.ganancia_r))
-					tg_cantidad_e += obj.cantidad_e
-					tg_importe_e += Decimal(str(obj.importe_e))
-					tg_ganancia_e += Decimal(str(obj.ganancia_e))
+					tg_cantidad_m += cantidad_m
+					tg_importe_m += importe_m
+					tg_ganancia_m += ganancia_m
+					tg_cantidad_r += cantidad_r
+					tg_importe_r += importe_r
+					tg_ganancia_r += ganancia_r
+					tg_cantidad_e += cantidad_e
+					tg_importe_e += importe_e
+					tg_ganancia_e += ganancia_e
 				
 				#-- Convertir los datos agrupados a un formato serializable:
-				#-- Se recorre cada grupo y se convierte cada detalle a diccionario usando raw_to_dict.
-				for familia, familia_data in grouped_data.items():
-					familia_data['stf_cantidad_m'] = float(familia_data['stf_cantidad_m'])
+				for familia_data in grouped_data.values():
 					familia_data['stf_importe_m'] = float(familia_data['stf_importe_m'])
 					familia_data['stf_ganancia_m'] = float(familia_data['stf_ganancia_m'])
-					familia_data['stf_cantidad_r'] = float(familia_data['stf_cantidad_r'])
 					familia_data['stf_importe_r'] = float(familia_data['stf_importe_r'])
 					familia_data['stf_ganancia_r'] = float(familia_data['stf_ganancia_r'])
-					familia_data['stf_cantidad_e'] = float(familia_data['stf_cantidad_e'])
 					familia_data['stf_importe_e'] = float(familia_data['stf_importe_e'])
 					familia_data['stf_ganancia_e'] = float(familia_data['stf_ganancia_e'])
-					familia_data['detalle'] = [raw_to_dict(detalle) for detalle in familia_data['detalle']]
 			
 			case "Modelo":
 				#-- Agrupar por modelo.
-				for obj in queryset:
-					marca = obj.nombre_producto_marca  #-- Campo que agrupa los datos.
+				for obj in queryset_list:
+					marca = obj['nombre_producto_marca']  #-- Campo que agrupa los datos.
 					if marca not in grouped_data:
 						grouped_data[marca] = {
 							'detalle': [],
@@ -344,59 +355,60 @@ class VLEstadisticasSegunCondicionInformeView(InformeFormView):
 					grouped_data[marca]["detalle"].append(obj)
 					
 					#-- Acumular totales por Familia.
-					grouped_data[marca]['stm_cantidad_m'] += obj.cantidad_m
-					grouped_data[marca]['stm_importe_m'] += Decimal(str(obj.importe_m))
-					grouped_data[marca]['stm_ganancia_m'] += Decimal(str(obj.ganancia_m))
-					grouped_data[marca]['stm_cantidad_r'] += obj.cantidad_r
-					grouped_data[marca]['stm_importe_r'] += Decimal(str(obj.importe_r))
-					grouped_data[marca]['stm_ganancia_r'] += Decimal(str(obj.ganancia_r))
-					grouped_data[marca]['stm_cantidad_e'] += obj.cantidad_e
-					grouped_data[marca]['stm_importe_e'] += Decimal(str(obj.importe_e))
-					grouped_data[marca]['stm_ganancia_e'] += Decimal(str(obj.ganancia_e))
+					cantidad_m = obj['cantidad_m']
+					importe_m = Decimal(str(obj['importe_m']))
+					ganancia_m = Decimal(str(obj['ganancia_m']))
+					cantidad_r = obj['cantidad_r']
+					importe_r = Decimal(str(obj['importe_r']))
+					ganancia_r = Decimal(str(obj['ganancia_r']))
+					cantidad_e = obj['cantidad_e']
+					importe_e = Decimal(str(obj['importe_e']))
+					ganancia_e = Decimal(str(obj['ganancia_e']))
+					
+					grouped_data[marca]['stm_cantidad_m'] += cantidad_m
+					grouped_data[marca]['stm_importe_m'] += importe_m
+					grouped_data[marca]['stm_ganancia_m'] += ganancia_m
+					grouped_data[marca]['stm_cantidad_r'] += cantidad_r
+					grouped_data[marca]['stm_importe_r'] += importe_r
+					grouped_data[marca]['stm_ganancia_r'] += ganancia_r
+					grouped_data[marca]['stm_cantidad_e'] += cantidad_e
+					grouped_data[marca]['stm_importe_e'] += importe_e
+					grouped_data[marca]['stm_ganancia_e'] += ganancia_e
 					
 					#-- Acumular totales generales.
-					tg_cantidad_m += obj.cantidad_m
-					tg_importe_m += Decimal(str(obj.importe_m))
-					tg_ganancia_m += Decimal(str(obj.ganancia_m))
-					tg_cantidad_r += obj.cantidad_r
-					tg_importe_r += Decimal(str(obj.importe_r))
-					tg_ganancia_r += Decimal(str(obj.ganancia_r))
-					tg_cantidad_e += obj.cantidad_e
-					tg_importe_e += Decimal(str(obj.importe_e))
-					tg_ganancia_e += Decimal(str(obj.ganancia_e))
+					tg_cantidad_m += cantidad_m
+					tg_importe_m += importe_m
+					tg_ganancia_m += ganancia_m
+					tg_cantidad_r += cantidad_r
+					tg_importe_r += importe_r
+					tg_ganancia_r += ganancia_r
+					tg_cantidad_e += cantidad_e
+					tg_importe_e += importe_e
+					tg_ganancia_e += ganancia_e
 				
 				#-- Convertir los datos agrupados a un formato serializable:
-				#-- Se recorre cada grupo y se convierte cada detalle a diccionario usando raw_to_dict.
-				for marca, marca_data in grouped_data.items():
-					marca_data['stm_cantidad_m'] = float(marca_data['stm_cantidad_m'])
+				for marca_data in grouped_data.values():
 					marca_data['stm_importe_m'] = float(marca_data['stm_importe_m'])
 					marca_data['stm_ganancia_m'] = float(marca_data['stm_ganancia_m'])
-					marca_data['stm_cantidad_r'] = float(marca_data['stm_cantidad_r'])
 					marca_data['stm_importe_r'] = float(marca_data['stm_importe_r'])
 					marca_data['stm_ganancia_r'] = float(marca_data['stm_ganancia_r'])
-					marca_data['stm_cantidad_e'] = float(marca_data['stm_cantidad_e'])
 					marca_data['stm_importe_e'] = float(marca_data['stm_importe_e'])
 					marca_data['stm_ganancia_e'] = float(marca_data['stm_ganancia_e'])
-					marca_data['detalle'] = [raw_to_dict(detalle) for detalle in marca_data['detalle']]
 				
 			case "Marca":
 				
-				#-- Agrupar por marca.
-				for obj in queryset:
-					#-- Acumular totales generales.
-					tg_cantidad_m += obj.cantidad_m
-					tg_importe_m += Decimal(str(obj.importe_m))
-					tg_ganancia_m += Decimal(str(obj.ganancia_m))
-					tg_cantidad_r += obj.cantidad_r
-					tg_importe_r += Decimal(str(obj.importe_r))
-					tg_ganancia_r += Decimal(str(obj.ganancia_r))
-					tg_cantidad_e += obj.cantidad_e
-					tg_importe_e += Decimal(str(obj.importe_e))
-					tg_ganancia_e += Decimal(str(obj.ganancia_e))
+				#-- Acumular totales generales.
+				for obj in queryset_list:
+					tg_cantidad_m += obj['cantidad_m']
+					tg_importe_m += Decimal(str(obj['importe_m']))
+					tg_ganancia_m += Decimal(str(obj['ganancia_m']))
+					tg_cantidad_r += obj['cantidad_r']
+					tg_importe_r += Decimal(str(obj['importe_r']))
+					tg_ganancia_r += Decimal(str(obj['ganancia_r']))
+					tg_cantidad_e += obj['cantidad_e']
+					tg_importe_e += Decimal(str(obj['importe_e']))
+					tg_ganancia_e += Decimal(str(obj['ganancia_e']))
 				
-				#-- Convertir cada objeto del queryset a un diccionario.
-				grouped_data = [raw_to_dict(obj) for obj in queryset]
-		
 		# **************************************************
 		
 		#-- Se retorna un contexto que será consumido tanto para la vista en pantalla como para la generación del PDF.
@@ -412,6 +424,7 @@ class VLEstadisticasSegunCondicionInformeView(InformeFormView):
 			"tg_importe_e": float(tg_importe_e),
 			"tg_ganancia_e": float(tg_ganancia_e),
 			"agrupar": agrupar,
+			"imprimir_importes": imprimir_importes,
 			"parametros_i": param_left,
 			"parametros_d": param_right,
 			'fecha_hora_reporte': fecha_hora_reporte,
@@ -506,6 +519,7 @@ class CustomPDFGenerator(PDFGenerator):
 
 def generar_pdf(contexto_reporte):
 	agrupar = contexto_reporte.get("agrupar", None)
+	imprimir_importes = contexto_reporte.get("imprimir_importes", False)
 	
 	#-- Crear instancia del generador personalizado.
 	generator = CustomPDFGenerator(contexto_reporte, pagesize=landscape(A4))
@@ -590,19 +604,19 @@ def generar_pdf(contexto_reporte):
 						Paragraph(str(obj['nombre_producto']), generator.styles['CellStyle']),
 						
 						formato_argentino(obj['cantidad_m']),
-						formato_argentino(obj['importe_m']),
-						formato_argentino(obj['costo_m']),
-						formato_argentino(obj['ganancia_m']),
+						formato_argentino(obj['importe_m']) if imprimir_importes else "",
+						formato_argentino(obj['costo_m']) if imprimir_importes else "",
+						formato_argentino(obj['ganancia_m']) if imprimir_importes else "",
 						
 						formato_argentino(obj['cantidad_r']),
-						formato_argentino(obj['importe_r']),
-						formato_argentino(obj['costo_r']),
-						formato_argentino(obj['ganancia_r']),
+						formato_argentino(obj['importe_r']) if imprimir_importes else "",
+						formato_argentino(obj['costo_r']) if imprimir_importes else "",
+						formato_argentino(obj['ganancia_r']) if imprimir_importes else "",
 						
 						formato_argentino(obj['cantidad_e']),
-						formato_argentino(obj['importe_e']),
-						formato_argentino(obj['costo_e']),
-						formato_argentino(obj['ganancia_e'])
+						formato_argentino(obj['importe_e']) if imprimir_importes else "",
+						formato_argentino(obj['costo_e']) if imprimir_importes else "",
+						formato_argentino(obj['ganancia_e']) if imprimir_importes else ""
 					])
 					
 					current_row += 1
@@ -612,19 +626,19 @@ def generar_pdf(contexto_reporte):
 				table_data.append(
 					blank_cols + [f"Sub Total {modelo}:",
 					formato_argentino(modelo_data["stm_cantidad_m"]),
-					formato_argentino(modelo_data["stm_importe_m"]),
+					formato_argentino(modelo_data["stm_importe_m"]) if imprimir_importes else "",
 					"",
-					formato_argentino(modelo_data["stm_ganancia_m"]),
+					formato_argentino(modelo_data["stm_ganancia_m"]) if imprimir_importes else "",
 				
 					formato_argentino(modelo_data["stm_cantidad_r"]),
-					formato_argentino(modelo_data["stm_importe_r"]),
+					formato_argentino(modelo_data["stm_importe_r"]) if imprimir_importes else "",
 					"",
-					formato_argentino(modelo_data["stm_ganancia_r"]),
+					formato_argentino(modelo_data["stm_ganancia_r"]) if imprimir_importes else "",
 					
 					formato_argentino(modelo_data["stm_cantidad_e"]),
-					formato_argentino(modelo_data["stm_importe_e"]),
+					formato_argentino(modelo_data["stm_importe_e"]) if imprimir_importes else "",
 					"",
-					formato_argentino(modelo_data["stm_ganancia_e"]),
+					formato_argentino(modelo_data["stm_ganancia_e"]) if imprimir_importes else "",
 					]
 				)
 				
@@ -642,19 +656,19 @@ def generar_pdf(contexto_reporte):
 			table_data.append(
 				blank_cols + [f"Sub Total {familia}:",
 				formato_argentino(familia_data["stf_cantidad_m"]),
-				formato_argentino(familia_data["stf_importe_m"]),
+				formato_argentino(familia_data["stf_importe_m"]) if imprimir_importes else "",
 				"",
-				formato_argentino(familia_data["stf_ganancia_m"]),
+				formato_argentino(familia_data["stf_ganancia_m"]) if imprimir_importes else "",
 			
 				formato_argentino(familia_data["stf_cantidad_r"]),
-				formato_argentino(familia_data["stf_importe_r"]),
+				formato_argentino(familia_data["stf_importe_r"]) if imprimir_importes else "",
 				"",
-				formato_argentino(familia_data["stf_ganancia_r"]),
+				formato_argentino(familia_data["stf_ganancia_r"]) if imprimir_importes else "",
 				
 				formato_argentino(familia_data["stf_cantidad_e"]),
-				formato_argentino(familia_data["stf_importe_e"]),
+				formato_argentino(familia_data["stf_importe_e"]) if imprimir_importes else "",
 				"",
-				formato_argentino(familia_data["stf_ganancia_e"]),
+				formato_argentino(familia_data["stf_ganancia_e"]) if imprimir_importes else "",
 				]
 			)
 			
@@ -678,19 +692,19 @@ def generar_pdf(contexto_reporte):
 		table_data.append(
 			blank_cols + ["Totales Generales:", 
 				formato_argentino(contexto_reporte.get("tg_cantidad_m")),
-				formato_argentino(contexto_reporte.get("tg_importe_m")),
+				formato_argentino(contexto_reporte.get("tg_importe_m")) if imprimir_importes else "",
 				"",
-				formato_argentino(contexto_reporte.get("tg_ganancia_m")),
+				formato_argentino(contexto_reporte.get("tg_ganancia_m")) if imprimir_importes else "",
 			
 				formato_argentino(contexto_reporte.get("tg_cantidad_r")),
-				formato_argentino(contexto_reporte.get("tg_importe_r")),
+				formato_argentino(contexto_reporte.get("tg_importe_r")) if imprimir_importes else "",
 				"",
-				formato_argentino(contexto_reporte.get("tg_ganancia_r")),
+				formato_argentino(contexto_reporte.get("tg_ganancia_r")) if imprimir_importes else "",
 				
 				formato_argentino(contexto_reporte.get("tg_cantidad_e")),
-				formato_argentino(contexto_reporte.get("tg_importe_e")),
+				formato_argentino(contexto_reporte.get("tg_importe_e")) if imprimir_importes else "",
 				"",
-				formato_argentino(contexto_reporte.get("tg_ganancia_e")),
+				formato_argentino(contexto_reporte.get("tg_ganancia_e")) if imprimir_importes else "",
 				]
 			)
 		
@@ -725,19 +739,19 @@ def generar_pdf(contexto_reporte):
 					Paragraph(str(obj['nombre_producto_marca']), generator.styles['CellStyle']),
 					
 					formato_argentino(obj['cantidad_m']),
-					formato_argentino(obj['importe_m']),
-					formato_argentino(obj['costo_m']),
-					formato_argentino(obj['ganancia_m']),
+					formato_argentino(obj['importe_m']) if imprimir_importes else "",
+					formato_argentino(obj['costo_m']) if imprimir_importes else "",
+					formato_argentino(obj['ganancia_m']) if imprimir_importes else "",
 					
 					formato_argentino(obj['cantidad_r']),
-					formato_argentino(obj['importe_r']),
-					formato_argentino(obj['costo_r']),
-					formato_argentino(obj['ganancia_r']),
+					formato_argentino(obj['importe_r']) if imprimir_importes else "",
+					formato_argentino(obj['costo_r']) if imprimir_importes else "",
+					formato_argentino(obj['ganancia_r']) if imprimir_importes else "",
 					
 					formato_argentino(obj['cantidad_e']),
-					formato_argentino(obj['importe_e']),
-					formato_argentino(obj['costo_e']),
-					formato_argentino(obj['ganancia_e'])
+					formato_argentino(obj['importe_e']) if imprimir_importes else "",
+					formato_argentino(obj['costo_e']) if imprimir_importes else "",
+					formato_argentino(obj['ganancia_e']) if imprimir_importes else ""
 				])
 				
 				current_row += 1
@@ -747,19 +761,19 @@ def generar_pdf(contexto_reporte):
 			table_data.append(
 				blank_cols + [f"Sub Total {familia}:",
 				formato_argentino(familia_data["stf_cantidad_m"]),
-				formato_argentino(familia_data["stf_importe_m"]),
+				formato_argentino(familia_data["stf_importe_m"]) if imprimir_importes else "",
 				"",
-				formato_argentino(familia_data["stf_ganancia_m"]),
+				formato_argentino(familia_data["stf_ganancia_m"]) if imprimir_importes else "",
 			
 				formato_argentino(familia_data["stf_cantidad_r"]),
-				formato_argentino(familia_data["stf_importe_r"]),
+				formato_argentino(familia_data["stf_importe_r"]) if imprimir_importes else "",
 				"",
-				formato_argentino(familia_data["stf_ganancia_r"]),
+				formato_argentino(familia_data["stf_ganancia_r"]) if imprimir_importes else "",
 				
 				formato_argentino(familia_data["stf_cantidad_e"]),
-				formato_argentino(familia_data["stf_importe_e"]),
+				formato_argentino(familia_data["stf_importe_e"]) if imprimir_importes else "",
 				"",
-				formato_argentino(familia_data["stf_ganancia_e"]),
+				formato_argentino(familia_data["stf_ganancia_e"]) if imprimir_importes else "",
 				]
 			)
 			
@@ -783,19 +797,19 @@ def generar_pdf(contexto_reporte):
 		table_data.append(
 			blank_cols + ["Totales Generales:", 
 				formato_argentino(contexto_reporte.get("tg_cantidad_m")),
-				formato_argentino(contexto_reporte.get("tg_importe_m")),
+				formato_argentino(contexto_reporte.get("tg_importe_m")) if imprimir_importes else "",
 				"",
-				formato_argentino(contexto_reporte.get("tg_ganancia_m")),
+				formato_argentino(contexto_reporte.get("tg_ganancia_m")) if imprimir_importes else "",
 			
 				formato_argentino(contexto_reporte.get("tg_cantidad_r")),
-				formato_argentino(contexto_reporte.get("tg_importe_r")),
+				formato_argentino(contexto_reporte.get("tg_importe_r")) if imprimir_importes else "",
 				"",
-				formato_argentino(contexto_reporte.get("tg_ganancia_r")),
+				formato_argentino(contexto_reporte.get("tg_ganancia_r")) if imprimir_importes else "",
 				
 				formato_argentino(contexto_reporte.get("tg_cantidad_e")),
-				formato_argentino(contexto_reporte.get("tg_importe_e")),
+				formato_argentino(contexto_reporte.get("tg_importe_e")) if imprimir_importes else "",
 				"",
-				formato_argentino(contexto_reporte.get("tg_ganancia_e")),
+				formato_argentino(contexto_reporte.get("tg_ganancia_e")) if imprimir_importes else "",
 				]
 			)
 		
@@ -830,19 +844,19 @@ def generar_pdf(contexto_reporte):
 					Paragraph(str(obj['nombre_modelo']), generator.styles['CellStyle']),
 					
 					formato_argentino(obj['cantidad_m']),
-					formato_argentino(obj['importe_m']),
-					formato_argentino(obj['costo_m']),
-					formato_argentino(obj['ganancia_m']),
+					formato_argentino(obj['importe_m']) if imprimir_importes else "",
+					formato_argentino(obj['costo_m']) if imprimir_importes else "",
+					formato_argentino(obj['ganancia_m']) if imprimir_importes else "",
 					
 					formato_argentino(obj['cantidad_r']),
-					formato_argentino(obj['importe_r']),
-					formato_argentino(obj['costo_r']),
-					formato_argentino(obj['ganancia_r']),
+					formato_argentino(obj['importe_r']) if imprimir_importes else "",
+					formato_argentino(obj['costo_r']) if imprimir_importes else "",
+					formato_argentino(obj['ganancia_r']) if imprimir_importes else "",
 					
 					formato_argentino(obj['cantidad_e']),
-					formato_argentino(obj['importe_e']),
-					formato_argentino(obj['costo_e']),
-					formato_argentino(obj['ganancia_e'])
+					formato_argentino(obj['importe_e']) if imprimir_importes else "",
+					formato_argentino(obj['costo_e']) if imprimir_importes else "",
+					formato_argentino(obj['ganancia_e']) if imprimir_importes else ""
 				])
 				
 				current_row += 1
@@ -852,19 +866,19 @@ def generar_pdf(contexto_reporte):
 			table_data.append(
 				blank_cols + [f"Sub Total {marca}:",
 				formato_argentino(marca_data["stm_cantidad_m"]),
-				formato_argentino(marca_data["stm_importe_m"]),
+				formato_argentino(marca_data["stm_importe_m"]) if imprimir_importes else "",
 				"",
-				formato_argentino(marca_data["stm_ganancia_m"]),
+				formato_argentino(marca_data["stm_ganancia_m"]) if imprimir_importes else "",
 			
 				formato_argentino(marca_data["stm_cantidad_r"]),
-				formato_argentino(marca_data["stm_importe_r"]),
+				formato_argentino(marca_data["stm_importe_r"]) if imprimir_importes else "",
 				"",
-				formato_argentino(marca_data["stm_ganancia_r"]),
+				formato_argentino(marca_data["stm_ganancia_r"]) if imprimir_importes else "",
 				
 				formato_argentino(marca_data["stm_cantidad_e"]),
-				formato_argentino(marca_data["stm_importe_e"]),
+				formato_argentino(marca_data["stm_importe_e"]) if imprimir_importes else "",
 				"",
-				formato_argentino(marca_data["stm_ganancia_e"]),
+				formato_argentino(marca_data["stm_ganancia_e"]) if imprimir_importes else "",
 				]
 			)
 			
@@ -888,19 +902,19 @@ def generar_pdf(contexto_reporte):
 		table_data.append(
 			blank_cols + ["Totales Generales:", 
 				formato_argentino(contexto_reporte.get("tg_cantidad_m")),
-				formato_argentino(contexto_reporte.get("tg_importe_m")),
+				formato_argentino(contexto_reporte.get("tg_importe_m")) if imprimir_importes else "",
 				"",
-				formato_argentino(contexto_reporte.get("tg_ganancia_m")),
+				formato_argentino(contexto_reporte.get("tg_ganancia_m")) if imprimir_importes else "",
 			
 				formato_argentino(contexto_reporte.get("tg_cantidad_r")),
-				formato_argentino(contexto_reporte.get("tg_importe_r")),
+				formato_argentino(contexto_reporte.get("tg_importe_r")) if imprimir_importes else "",
 				"",
-				formato_argentino(contexto_reporte.get("tg_ganancia_r")),
+				formato_argentino(contexto_reporte.get("tg_ganancia_r")) if imprimir_importes else "",
 				
 				formato_argentino(contexto_reporte.get("tg_cantidad_e")),
-				formato_argentino(contexto_reporte.get("tg_importe_e")),
+				formato_argentino(contexto_reporte.get("tg_importe_e")) if imprimir_importes else "",
 				"",
-				formato_argentino(contexto_reporte.get("tg_ganancia_e")),
+				formato_argentino(contexto_reporte.get("tg_ganancia_e")) if imprimir_importes else "",
 				]
 			)
 		
@@ -924,19 +938,19 @@ def generar_pdf(contexto_reporte):
 				Paragraph(str(obj['nombre_producto_marca']), generator.styles['CellStyle']),
 				
 				formato_argentino(obj['cantidad_m']),
-				formato_argentino(obj['importe_m']),
-				formato_argentino(obj['costo_m']),
-				formato_argentino(obj['ganancia_m']),
+				formato_argentino(obj['importe_m']) if imprimir_importes else "",
+				formato_argentino(obj['costo_m']) if imprimir_importes else "",
+				formato_argentino(obj['ganancia_m']) if imprimir_importes else "",
 				
 				formato_argentino(obj['cantidad_r']),
-				formato_argentino(obj['importe_r']),
-				formato_argentino(obj['costo_r']),
-				formato_argentino(obj['ganancia_r']),
+				formato_argentino(obj['importe_r']) if imprimir_importes else "",
+				formato_argentino(obj['costo_r']) if imprimir_importes else "",
+				formato_argentino(obj['ganancia_r']) if imprimir_importes else "",
 				
 				formato_argentino(obj['cantidad_e']),
-				formato_argentino(obj['importe_e']),
-				formato_argentino(obj['costo_e']),
-				formato_argentino(obj['ganancia_e'])
+				formato_argentino(obj['importe_e']) if imprimir_importes else "",
+				formato_argentino(obj['costo_e']) if imprimir_importes else "",
+				formato_argentino(obj['ganancia_e']) if imprimir_importes else ""
 			])
 			
 			current_row += 1
@@ -952,19 +966,19 @@ def generar_pdf(contexto_reporte):
 		table_data.append(
 			blank_cols + ["Totales Generales:", 
 				formato_argentino(contexto_reporte.get("tg_cantidad_m")),
-				formato_argentino(contexto_reporte.get("tg_importe_m")),
+				formato_argentino(contexto_reporte.get("tg_importe_m")) if imprimir_importes else "",
 				"",
-				formato_argentino(contexto_reporte.get("tg_ganancia_m")),
+				formato_argentino(contexto_reporte.get("tg_ganancia_m")) if imprimir_importes else "",
 			
 				formato_argentino(contexto_reporte.get("tg_cantidad_r")),
-				formato_argentino(contexto_reporte.get("tg_importe_r")),
+				formato_argentino(contexto_reporte.get("tg_importe_r")) if imprimir_importes else "",
 				"",
-				formato_argentino(contexto_reporte.get("tg_ganancia_r")),
+				formato_argentino(contexto_reporte.get("tg_ganancia_r")) if imprimir_importes else "",
 				
 				formato_argentino(contexto_reporte.get("tg_cantidad_e")),
-				formato_argentino(contexto_reporte.get("tg_importe_e")),
+				formato_argentino(contexto_reporte.get("tg_importe_e")) if imprimir_importes else "",
 				"",
-				formato_argentino(contexto_reporte.get("tg_ganancia_e")),
+				formato_argentino(contexto_reporte.get("tg_ganancia_e")) if imprimir_importes else "",
 				]
 			)
 		

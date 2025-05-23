@@ -1,0 +1,140 @@
+2025-05-10 21:19:49,514 - INFO - Iniciando migración de clientes
+2025-05-10 21:19:49,525 - INFO - Eliminados 0 registros existentes de Cliente
+2025-05-10 21:19:50,122 - INFO - Diccionarios de relaciones precargados
+2025-05-10 21:19:50,537 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:19:51,054 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:19:51,672 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:19:52,206 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:19:52,761 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:19:53,253 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:19:53,770 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:19:54,295 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:19:54,837 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:19:55,353 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:19:55,937 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:19:56,512 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:19:57,044 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:19:57,596 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:19:58,126 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:19:58,679 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:19:59,212 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:19:59,695 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:20:00,245 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:20:00,795 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:20:01,678 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:20:02,236 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:20:02,794 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:20:03,360 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:20:03,919 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:20:04,494 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:20:05,019 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:20:05,554 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:20:06,154 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:20:06,264 - ERROR - Error procesando registro: invalid literal for int() with base 10: '201000000000.0'
+2025-05-10 21:20:06,837 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:20:07,370 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:20:07,987 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:20:08,528 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:20:09,110 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:20:09,695 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:20:10,285 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:20:10,845 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:20:11,528 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:20:12,119 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:20:12,736 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:20:13,319 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:20:13,878 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:20:14,544 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:20:15,127 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:20:15,720 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:20:16,344 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:20:16,927 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:20:17,552 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:20:18,218 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:20:18,811 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:20:19,378 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:20:19,969 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:20:20,618 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:20:21,228 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:20:21,836 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:20:22,469 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:20:23,111 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:20:23,711 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:20:24,369 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:20:24,968 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:20:25,594 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:20:26,220 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:20:26,810 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:20:27,435 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:20:28,044 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:20:28,677 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:20:29,301 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:20:29,927 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:20:30,552 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:20:31,210 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:20:31,868 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:20:32,444 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:20:33,035 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:20:33,677 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:20:34,352 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:20:35,010 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:20:35,636 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:20:36,286 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:20:37,018 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:20:37,701 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:20:37,740 - ERROR - Error procesando registro: invalid literal for int() with base 10: '307190000000.0'
+2025-05-10 21:20:38,375 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:20:39,034 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:20:39,727 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:20:40,402 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:20:41,068 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:20:41,768 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:20:42,394 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:20:43,043 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:20:43,718 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:20:44,385 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:20:45,026 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:20:45,735 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:20:46,459 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:20:46,474 - ERROR - Error procesando registro: invalid literal for int() with base 10: '270000000000.0'
+2025-05-10 21:20:47,110 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:20:47,834 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:20:48,501 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:20:49,209 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:20:49,211 - ERROR - Error procesando registro: invalid literal for int() with base 10: '270000000000.0'
+2025-05-10 21:20:49,868 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:20:50,534 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:20:51,227 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:20:52,034 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:20:52,783 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:20:52,838 - ERROR - Error procesando registro: invalid literal for int() with base 10: '270000000000.0'
+2025-05-10 21:20:53,451 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:20:54,168 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:20:54,266 - ERROR - Error procesando registro: invalid literal for int() with base 10: '2255500000000.0'
+2025-05-10 21:20:54,893 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:20:54,961 - ERROR - Error procesando registro: invalid literal for int() with base 10: '101010000000.0'
+2025-05-10 21:20:55,625 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:20:56,318 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:20:57,001 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:20:57,009 - ERROR - Error procesando registro: invalid literal for int() with base 10: '343430000000.0'
+2025-05-10 21:20:57,009 - ERROR - Error procesando registro: invalid literal for int() with base 10: '121210000000000.0'
+2025-05-10 21:20:57,700 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:20:58,442 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:20:59,293 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:20:59,975 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:21:00,101 - ERROR - Error procesando registro: invalid literal for int() with base 10: '27000000000000.0'
+2025-05-10 21:21:00,884 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:21:01,892 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:21:02,758 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:21:03,525 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:21:04,292 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:21:05,017 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:21:05,734 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:21:06,517 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:21:06,599 - ERROR - Error procesando registro: invalid literal for int() with base 10: '2700000000000.0'
+2025-05-10 21:21:07,266 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:21:08,042 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:21:08,742 - INFO - Lote guardado: 1000 registros
+2025-05-10 21:21:08,763 - ERROR - Error procesando registro: invalid literal for int() with base 10: '309990000000.0'
+2025-05-10 21:21:09,459 - INFO - Último lote guardado: 930 registros
+2025-05-10 21:21:09,459 - INFO - Migración completada. Total registros: 123930. Tiempo: 79.94 segundos

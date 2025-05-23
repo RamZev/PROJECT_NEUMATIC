@@ -13,7 +13,7 @@ sys.path.append(BASE_DIR)
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'neumatic.settings')
 django.setup()
 
-from neumatic.apps.maestros.models.descuento_vendedor_models import DescuentoVendedor 
+from apps.maestros.models.descuento_vendedor_models import DescuentoVendedor 
 from apps.maestros.models.base_models import ProductoMarca, ProductoFamilia
 
 def reset_actividad():

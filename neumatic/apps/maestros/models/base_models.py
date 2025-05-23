@@ -46,15 +46,15 @@ class ProductoDeposito(ModeloBaseGenerico):
 class ProductoFamilia(ModeloBaseGenerico):
 	id_producto_familia = models.AutoField(primary_key=True)
 	estatus_producto_familia = models.BooleanField("Estatus", default=True,
-												   choices=ESTATUS_GEN)
+													 choices=ESTATUS_GEN)
 	nombre_producto_familia = models.CharField("Nombre", max_length=50)
 	comision_operario = models.DecimalField("Comisión Operario(%)",
 											max_digits=4, decimal_places=2,
 										 	default=0.00, null=True, blank=True)
 	info_michelin_auto = models.BooleanField("Info. Michelin auto", 
-										  	 default=False)
+												 default=False)
 	info_michelin_camion = models.BooleanField("Info. Michelin camión", 
-											   default=False)
+												 default=False)
 	
 	def __str__(self):
 		return self.nombre_producto_familia
@@ -88,7 +88,7 @@ class Moneda(ModeloBaseGenerico):
 	cotizacion_moneda = models.DecimalField("Cotización", max_digits=15,
 											decimal_places=4,
 											validators=[MinValueValidator(1),
-					   									MaxValueValidator(99999999999.9999)])
+						 									MaxValueValidator(99999999999.9999)])
 	simbolo_moneda = models.CharField("Símbolo", max_length=3)
 	ws_afip = models.CharField("WS AFIP", max_length=3)
 	predeterminada = models.BooleanField("Predeterminada", null=True,
@@ -111,11 +111,11 @@ class ProductoMarca(ModeloBaseGenerico):
 	nombre_producto_marca = models.CharField("Nombre", max_length=50)
 	principal = models.BooleanField("Principal", default=False)
 	info_michelin_auto = models.BooleanField("Info. Michelin auto", 
-										  	  default=False)
+													default=False)
 	info_michelin_camion = models.BooleanField("Info. Michelin camión", 
 												default=False)
 	id_moneda = models.ForeignKey(Moneda, on_delete=models.PROTECT,
-								  verbose_name="Moneda")
+									verbose_name="Moneda")
 	
 	def __str__(self):
 		return self.nombre_producto_marca
@@ -255,12 +255,13 @@ class ComprobanteVenta(ModeloBaseGenerico):
 	presupuesto = models.BooleanField("Presupuesto", default=False)
 	pendiente = models.BooleanField("Pendiente", default=False)
 	info_michelin_auto = models.BooleanField("Info. Michelin auto", 
-										  	default=False)
+												default=False)
 	info_michelin_camion = models.BooleanField("Info. Michelin camión", 
 												default=False)
 	codigo_afip_a = models.CharField("Código AFIP A", max_length=3)
 	codigo_afip_b = models.CharField("Código AFIP B", max_length=3)
 	remito = models.BooleanField("Remito", default=False, blank=True, null=True)
+	recibo = models.BooleanField("Recibo", default=False, blank=True, null=True)
 	
 	def __str__(self):
 		return self.nombre_comprobante_venta
@@ -390,8 +391,8 @@ class Localidad(ModeloBaseGenerico):
 class TipoDocumentoIdentidad(ModeloBaseGenerico):
 	id_tipo_documento_identidad = models.AutoField(primary_key=True)
 	estatus_tipo_documento_identidad = models.BooleanField("Estatus",
-														   default=True,
-														   choices=ESTATUS_GEN)
+															 default=True,
+															 choices=ESTATUS_GEN)
 	nombre_documento_identidad = models.CharField("Nombre", max_length=20)
 	tipo_documento_identidad = models.CharField("Tipo", max_length=4, 
 												unique=True)
@@ -411,7 +412,7 @@ class TipoDocumentoIdentidad(ModeloBaseGenerico):
 class TipoIva(ModeloBaseGenerico):
 	id_tipo_iva = models.AutoField(primary_key=True)
 	estatus_tipo_iva = models.BooleanField("Estatus", default=True,
-										   choices=ESTATUS_GEN)
+											 choices=ESTATUS_GEN)
 	codigo_iva = models.CharField("Código IVA", max_length=4, unique=True)
 	nombre_iva = models.CharField("Nombre", max_length=25)
 	discrimina_iva = models.BooleanField("Discrimina IVA", null=True,
@@ -444,7 +445,7 @@ class TipoPercepcionIb(ModeloBaseGenerico):
 	estatus_tipo_percepcion_ib = models.BooleanField("Estatus", default=True,
 													 choices=ESTATUS_GEN)
 	descripcion_tipo_percepcion_ib = models.CharField("Descripción",
-													  max_length=50)
+														max_length=50)
 	alicuota = models.DecimalField("Alícuota(%)", max_digits=4, decimal_places=2, 
 								null=True, blank=True, default=0.00)
 	monto = models.DecimalField("Monto", max_digits=15, decimal_places=2, 
@@ -540,7 +541,7 @@ class TipoRetencionIb(ModeloBaseGenerico):
 class Operario(ModeloBaseGenerico):
 	id_operario = models.AutoField(primary_key=True)
 	estatus_operario = models.BooleanField("Estatus", default=True,
-										   choices=ESTATUS_GEN)
+											 choices=ESTATUS_GEN)
 	nombre_operario = models.CharField("Nombre", max_length=50)
 	telefono_operario = models.CharField("Teléfono", max_length=15)
 	email_operario = models.CharField("Correo", max_length=50)
@@ -558,11 +559,11 @@ class Operario(ModeloBaseGenerico):
 class MedioPago(ModeloBaseGenerico):
 	id_medio_pago = models.AutoField(primary_key=True)
 	estatus_medio_pago = models.BooleanField("Estatus", default=True,
-										   choices=ESTATUS_GEN)
+											 choices=ESTATUS_GEN)
 	nombre_medio_pago = models.CharField(max_length=30)
 	condicion_medio_pago = models.IntegerField("Condición Pago", 
-										  default=True,
-										  choices=CONDICION_PAGO)
+											default=True,
+											choices=CONDICION_PAGO)
 	plazo_medio_pago = models.IntegerField("Plazo medio de Pago")
 	
 	def __str__(self):
@@ -585,12 +586,12 @@ class PuntoVenta(ModeloBaseGenerico):
 	estatus_punto_venta = models.BooleanField("Estatus", default=True,
 											choices=ESTATUS_GEN)
 	id_sucursal = models.ForeignKey('Sucursal', on_delete=models.PROTECT,
-                                 verbose_name="Sucursal",
-                                 null=True, blank=True)
+																 verbose_name="Sucursal",
+																 null=True, blank=True)
 	punto_venta = models.CharField("Punto de Venta", max_length=5)
 	descripcion_punto_venta = models.CharField("Descripción Pto. Venta",
-                                            max_length=50, 
-                                            null=True, blank=True)
+																						max_length=50, 
+																						null=True, blank=True)
 	
 	def __str__(self):
 		return f'{self.id_sucursal} {self.punto_venta}'
@@ -664,3 +665,78 @@ class AlicuotaIva(ModeloBaseGenerico):
 		verbose_name = 'Alícuota IVA'
 		verbose_name_plural = 'Alícuotas IVA'
 		ordering = ['alicuota_iva']
+
+
+# Modelos nuevos
+# Modelo Banco
+class Banco(ModeloBaseGenerico):
+		id_banco = models.AutoField(primary_key=True)
+		cuenta_banco = models.IntegerField(null=True, blank=True)
+		nombre_banco = models.CharField(max_length=30)
+		numero_cuenta = models.CharField(max_length=15)
+		cbu = models.CharField(max_length=22)
+		codbco = models.IntegerField()
+		sucursal = models.IntegerField()
+		localidad = models.IntegerField()
+		imputacion = models.IntegerField()
+		cut = models.IntegerField()
+		tope = models.DecimalField(max_digits=12, decimal_places=2)
+		reporte = models.CharField(max_length=20)
+		provedor = models.IntegerField()
+		moneda = models.IntegerField()
+
+		def __str__(self):
+				return f'{self.cuenta_banco} - {self.nombre_banco}'
+		
+		class Meta:
+				db_table = 'banco'
+				verbose_name = ('Banco')
+				verbose_name_plural = ('Bancos')
+				ordering = ['nombre_banco']    
+
+
+class Tarjeta(ModeloBaseGenerico):
+		id_tarjeta = models.AutoField(primary_key=True)
+		nombre_tarjeta = models.CharField(max_length=30)
+		imputation = models.IntegerField()
+		banco_acreditacion = models.IntegerField()
+		propia = models.BooleanField()
+		
+		def __str__(self):
+				return self.nombre_tarjeta
+
+		class Meta:
+				db_table = 'tarjeta'
+				verbose_name = ('Tarjeta')
+				verbose_name_plural = ('Tarjetas')
+				ordering = ['nombre_tarjeta']    
+
+
+class CodigoRetencion(ModeloBaseGenerico):
+		id_codigo_retencion = models.CharField(primary_key=True, max_length=2)
+		nombre_codigo_retencion = models.CharField(max_length=30)
+		imputacion = models.IntegerField()
+
+		def __str__(self):
+				return self.nombre_codigo_retencion
+
+		class Meta:
+				db_table = 'codigo_retencion'
+				verbose_name = ('Codigo Retención')
+				verbose_name_plural = ('Codigos Retención')
+				ordering = ['nombre_codigo_retencion']
+		
+
+class ConceptoBanco(ModeloBaseGenerico):
+    id_concepto_banco = models.AutoField(primary_key=True, verbose_name="ID")
+    nombre_concepto_banco = models.CharField(max_length=30, verbose_name="Descripción")
+    factor = models.IntegerField(verbose_name="Factor")
+
+    class Meta:
+        db_table = 'concepto_banco'
+        verbose_name = 'Concepto Bancario'
+        verbose_name_plural = 'Conceptos Bancarios'
+        ordering = ['nombre_concepto_banco']
+
+    def __str__(self):
+        return self.nombre_concepto_banco

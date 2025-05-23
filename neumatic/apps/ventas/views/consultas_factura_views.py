@@ -568,3 +568,55 @@ def verificar_remito(request):
             {'error': f'Error en el servidor: {str(e)}'},
             status=500
         )
+
+
+# validar_deudas_cliente
+@require_GET
+@login_required
+def validar_deudas_cliente(request, cliente_id):
+    if not Cliente.objects.filter(id_cliente=cliente_id).exists():
+        return JsonResponse({
+            'success': True,
+            'has_debts': False,
+            'facturas_pendientes': [],
+            'message': 'Cliente no encontrado o sin deudas pendientes'
+        }, status=200)
+
+    facturas_pendientes = Factura.objects.filter(
+        id_cliente_id=cliente_id,
+        id_comprobante_venta__mult_saldo__isnull=False,
+        total__gt=F('entrega')
+    ).exclude(
+        id_comprobante_venta__mult_saldo=0
+    ).select_related('id_comprobante_venta').values(
+        'id_factura',
+        'letra_comprobante',
+        'fecha_comprobante',
+        'total',
+        'entrega',
+        'id_comprobante_venta__nombre_comprobante_venta'
+    )
+
+    resultados = []
+    for factura in facturas_pendientes:
+        factura_dict = {
+            'id_factura': factura['id_factura'],
+            'tipo_comprobante': factura['id_comprobante_venta__nombre_comprobante_venta'],
+            'letra_comprobante': factura['letra_comprobante'] or 'N/A',
+            'fecha_comprobante': factura['fecha_comprobante'].strftime('%d/%m/%Y') if factura['fecha_comprobante'] else 'N/A',
+            'total': float(factura['total']),
+            'entrega': float(factura['entrega']),
+            'monto_pendiente': float(factura['total'] - factura['entrega']),
+        }
+        resultados.append(factura_dict)
+
+    has_debts = len(resultados) > 0
+
+    # print("resultados", resultados)
+
+    return JsonResponse({
+        'success': True,
+        'has_debts': has_debts,
+        'facturas_pendientes': resultados,
+        'message': 'No hay deudas pendientes' if not has_debts else 'Facturas pendientes encontradas'
+    }, status=200)

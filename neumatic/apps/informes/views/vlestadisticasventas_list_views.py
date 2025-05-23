@@ -174,7 +174,7 @@ class VLEstadisticasVentasInformeView(InformeFormView):
 		# **************************************************
 		#-- Convertir los datos agrupados a un formato serializable:
 		objetos_serializables = []
-		total_cantidad = Decimal('0')
+		total_cantidad = 0
 		total_porcentaje_cantidad = Decimal('0')
 		total_importe = Decimal('0')
 		total_porcentaje_total = Decimal('0')
@@ -187,7 +187,7 @@ class VLEstadisticasVentasInformeView(InformeFormView):
 			}
 			objetos_serializables.append(obj_dict)
 			
-			total_cantidad += Decimal(str(obj.cantidad))
+			total_cantidad += obj.cantidad
 			total_porcentaje_cantidad += Decimal(str(getattr(obj, 'porcentaje_cantidad', 0)))
 			total_importe += Decimal(str(obj.total))
 			total_porcentaje_total += Decimal(str(getattr(obj, 'porcentaje_total', 0)))

@@ -56,19 +56,37 @@
 				<tr>
 					<td>{{ obj.nombre_producto_marca }}</td>
 					<td class="numeric">{{ obj.cantidad_m|formato_es_ar }}</td>
-					<td class="numeric">{{ obj.importe_m|formato_es_ar }}</td>
-					<td class="numeric">{{ obj.costo_m|formato_es_ar }}</td>
-					<td class="numeric" style="padding-right: 10px;">{{ obj.ganancia_m|formato_es_ar }}</td>
+					{% if imprimir_importes %}
+						<td class="numeric">{{ obj.importe_m|formato_es_ar }}</td>
+						<td class="numeric">{{ obj.costo_m|formato_es_ar }}</td>
+						<td class="numeric" style="padding-right: 10px;">{{ obj.ganancia_m|formato_es_ar }}</td>
+					{% else %}
+						<td></td>
+						<td></td>
+						<td></td>
+					{% endif %}
 					
 					<td class="numeric">{{ obj.cantidad_r|formato_es_ar }}</td>
-					<td class="numeric">{{ obj.importe_r|formato_es_ar }}</td>
-					<td class="numeric">{{ obj.costo_r|formato_es_ar }}</td>
-					<td class="numeric" style="padding-right: 10px;">{{ obj.ganancia_r|formato_es_ar }}</td>
+					{% if imprimir_importes %}
+						<td class="numeric">{{ obj.importe_r|formato_es_ar }}</td>
+						<td class="numeric">{{ obj.costo_r|formato_es_ar }}</td>
+						<td class="numeric" style="padding-right: 10px;">{{ obj.ganancia_r|formato_es_ar }}</td>
+					{% else %}
+						<td></td>
+						<td></td>
+						<td></td>
+					{% endif %}
 					
 					<td class="numeric">{{ obj.cantidad_e|formato_es_ar }}</td>
-					<td class="numeric">{{ obj.importe_e|formato_es_ar }}</td>
-					<td class="numeric">{{ obj.costo_e|formato_es_ar }}</td>
-					<td class="numeric" style="padding-right: 10px;">{{ obj.ganancia_e|formato_es_ar }}</td>
+					{% if imprimir_importes %}
+						<td class="numeric">{{ obj.importe_e|formato_es_ar }}</td>
+						<td class="numeric">{{ obj.costo_e|formato_es_ar }}</td>
+						<td class="numeric" style="padding-right: 10px;">{{ obj.ganancia_e|formato_es_ar }}</td>
+					{% else %}
+						<td></td>
+						<td></td>
+						<td></td>
+					{% endif %}
 				</tr>
 			
 			{% endfor %}
@@ -83,19 +101,37 @@
 				<td class="numeric"><strong>Totales Generales:</strong></td>
 				
 				<td class="numeric"><strong>{{ tg_cantidad_m|formato_es_ar }}</strong></td>
-				<td class="numeric"><strong>{{ tg_importe_m|formato_es_ar }}</strong></td>
-				<td></td>
-				<td class="numeric"><strong>{{ tg_ganancia_m|formato_es_ar }}</strong></td>
+				{% if imprimir_importes %}
+					<td class="numeric"><strong>{{ tg_importe_m|formato_es_ar }}</strong></td>
+					<td></td>
+					<td class="numeric" style="padding-right: 10px;"><strong>{{ tg_ganancia_m|formato_es_ar }}</strong></td>
+				{% else %}
+					<td></td>
+					<td></td>
+					<td></td>
+				{% endif %}
 				
 				<td class="numeric"><strong>{{ tg_cantidad_r|formato_es_ar }}</strong></td>
-				<td class="numeric"><strong>{{ tg_importe_r|formato_es_ar }}</strong></td>
-				<td></td>
-				<td class="numeric"><strong>{{ tg_ganancia_r|formato_es_ar }}</strong></td>
+				{% if imprimir_importes %}
+					<td class="numeric"><strong>{{ tg_importe_r|formato_es_ar }}</strong></td>
+					<td></td>
+					<td class="numeric" style="padding-right: 10px;"><strong>{{ tg_ganancia_r|formato_es_ar }}</strong></td>
+				{% else %}
+					<td></td>
+					<td></td>
+					<td></td>
+				{% endif %}
 				
 				<td class="numeric"><strong>{{ tg_cantidad_e|formato_es_ar }}</strong></td>
-				<td class="numeric"><strong>{{ tg_importe_e|formato_es_ar }}</strong></td>
-				<td></td>
-				<td class="numeric"><strong>{{ tg_ganancia_e|formato_es_ar }}</strong></td>
+				{% if imprimir_importes %}
+					<td class="numeric"><strong>{{ tg_importe_e|formato_es_ar }}</strong></td>
+					<td></td>
+					<td class="numeric" style="padding-right: 10px;"><strong>{{ tg_ganancia_e|formato_es_ar }}</strong></td>
+				{% else %}
+					<td></td>
+					<td></td>
+					<td></td>
+				{% endif %}
 			</tr>
 			
 		</tbody>

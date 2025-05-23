@@ -66,9 +66,14 @@ class DataViewList():
 	
 	table_headers = {
 		'estatus_comprobante_venta': (1, 'Estatus'),
-		'nombre_comprobante_venta': (5, 'Nombre Comprobante'),
-		'codigo_comprobante_venta': (4, 'Código Comprobante'),
-		
+		'nombre_comprobante_venta': (3, 'Nombre Comprobante'),
+		'codigo_comprobante_venta': (1, 'Código'),
+		'libro_iva': (1, 'Lib. IVA'),
+		'electronica': (1, 'Elec.'),
+		'presupuesto': (1, 'Pres.'),
+  	'pendiente': (1, 'Pend.'),
+   	'remito': (1, 'Remito'),
+    'recibo': (1, 'Recibo'),
 		'acciones': (2, 'Acciones'),
 	}
 	
@@ -76,6 +81,12 @@ class DataViewList():
 		{'field_name': 'estatus_comprobante_venta', 'date_format': None},
 		{'field_name': 'nombre_comprobante_venta', 'date_format': None},
 		{'field_name': 'codigo_comprobante_venta', 'date_format': None},
+		{'field_name': 'libro_iva', 'date_format': None},
+		{'field_name': 'electronica', 'date_format': None},
+		{'field_name': 'presupuesto', 'date_format': None},
+		{'field_name': 'pendiente', 'date_format': None},
+		{'field_name': 'remito', 'date_format': None},	
+  	{'field_name': 'recibo', 'date_format': None},
 	]
 
 

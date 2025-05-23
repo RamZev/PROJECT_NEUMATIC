@@ -40,47 +40,52 @@ registros_creados = 0
 inicio = time.time()  # Registrar tiempo inicial
 
 ###
-# Procesar registros
+# Procesar registros en bloques
+batch_size = 500  # Tamaño del lote para inserciones en bloque
+bulk_data = []  # Lista para acumular los registros a insertar
+errores = 0  # Contador de errores
+registros_creados = 0  # Contador de registros creados
+
 for idx, record in enumerate(table):
     codigo = int(record.get('CODIGO', 0))  # Convertir CODIGO a entero
     deposito = int(record.get('DEPOSITO', 0))  # Convertir DEPOSITO a entero    
-    
+
+    # Validar claves foráneas
     id_producto_instancia = Producto.objects.filter(id_producto=codigo).first()
     id_deposito_instancia = ProductoDeposito.objects.filter(id_producto_deposito=deposito).first()
 
-    # Crear registro
+    if not id_producto_instancia or not id_deposito_instancia:
+        print(f"Registro {idx + 1}: Producto ({codigo}) o Depósito ({deposito}) no encontrados. Omitiendo registro.")
+        errores += 1
+        continue
+
+    # Preparar datos para bulk_create
     try:
-        modelo_dest.objects.create(
+        nuevo_registro = ProductoStock(
             id_producto=id_producto_instancia,
             id_deposito=id_deposito_instancia,
             stock=record.get('STOCK', 0) or 0,
-            #minimo=record.get('MINIMO', 0),  # Si MINIMO no existe, usar 0
-            fecha_producto_stock=record.get('FECHA', date.today()),  # Si FECHA no existe, usar la fecha actual
+            minimo=record.get('MINIMO', 0) or 0,  # Si MINIMO no existe, usar 0
+            fecha_producto_stock=record.get('FECHA', date.today()) or date.today(),
         )
+        bulk_data.append(nuevo_registro)
+        registros_creados += 1
 
-        # print(f"Registro de {tabla_origen} creado exitosamente.")
+        # Insertar en bloque cuando alcanzamos el tamaño del lote
+        if len(bulk_data) >= batch_size:
+            ProductoStock.objects.bulk_create(bulk_data)
+            bulk_data.clear()  # Vaciar la lista para el siguiente lote
+            print(f"Se insertaron {batch_size} registros en la base de datos.")
+
     except Exception as e:
-        print(f"Error al crear el Registro {tabla_origen}: {e}")
+        print(f"Registro {idx + 1}: Error al preparar datos para insertar - {e}")
+        errores += 1
         continue
-    
 
-###
+# Insertar los registros restantes
+if bulk_data:
+    ProductoStock.objects.bulk_create(bulk_data)
+    print(f"Se insertaron los últimos {len(bulk_data)} registros en la base de datos.")
 
-fin = time.time()  # Registrar tiempo final
-print(f"Total de registros procesados: {registros_creados}")
-print(f"Tiempo total: {fin - inicio:.2f} segundos")
-
-
-
-'''
-stock.DBF ---> ProductoStock
-
-id_producto_stock: automatico
-id_producto: instanciar CODIGO
-id_deposito: instanciar DEPOSITO
-stock: STOCK
-minimo: MINIMO
-fecha_producto_stock: FECHA
-
-SELECT * from stock order BY codigo, deposito
-'''
+print(f"Total de registros creados: {registros_creados}")
+print(f"Total de errores: {errores}")

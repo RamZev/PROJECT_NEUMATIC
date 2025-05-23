@@ -70,13 +70,11 @@ class DataViewList():
 		'ws_afip': (2, 'WS AFIP'),
 		'cotizacion_moneda': (2, 'Cotización'),
 		'predeterminada': (1, 'Predeterminada'),
-		
 		'acciones': (2, 'Acciones'),
 	}
 	
 	table_data = [
 		{'field_name': 'estatus_moneda', 'date_format': None},
-		# {'field_name': 'id_moneda', 'date_format': None},
 		{'field_name': 'nombre_moneda', 'date_format': None},
 		{'field_name': 'simbolo_moneda', 'date_format': None},
 		{'field_name': 'ws_afip', 'date_format': None},

@@ -255,6 +255,21 @@ class Factura(ModeloBaseGenerico):
 		null=True,
 		blank=True
 	)
+	recibo_manual_auto = models.SmallIntegerField(
+		verbose_name="Talonario",
+		null=True,
+		blank=True
+	)
+	suma_comision_vendedor = models.BooleanField(
+		verbose_name="Suma Comisión a Vendedor",
+		null=True,
+		blank=True
+	)
+	productos_camiones = models.BooleanField(
+		verbose_name="Productos de Camiones",
+		null=True,
+		blank=True
+	)
 	
 	def __str__(self):
 		numero = str(self.numero_comprobante).strip().zfill(12)

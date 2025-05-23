@@ -4,7 +4,7 @@ from django import forms
 from datetime import date
 
 from .informes_generics_forms import InformesGenericForm
-from diseno_base.diseno_bootstrap import formclasstext, formclassdate, formclassselect
+from diseno_base.diseno_bootstrap import formclasstext, formclassdate, formclassselect, formclasscheck
 from apps.maestros.models.sucursal_models import Sucursal
 from entorno.constantes_base import AGRUPAR
 
@@ -40,10 +40,16 @@ class BuscadorEstadisticasSegunCondicionForm(InformesGenericForm):
 		widget=forms.NumberInput(attrs={**formclasstext})
 	)
 	agrupar = forms.ChoiceField(
-		choices=AGRUPAR, 
-		label="Agrupar por", 
+		choices=AGRUPAR,
+		label="Agrupar por",
 		required=True,
 		widget=forms.Select(attrs={**formclassselect})
+	)
+	imprimir_importes = forms.BooleanField(
+		label="Imprimir Importes",
+		initial=True,
+		required=False,
+		widget=forms.CheckboxInput(attrs={**formclasscheck})
 	)
 	
 	def __init__(self, *args, **kwargs):

@@ -57,6 +57,7 @@ class FacturaListView(MaestroDetalleListView):
 		'fecha_comprobante': (1, 'fecha'),
 		'cuit': (1, 'CUIT'),
 		'id_cliente': (3, 'Cliente'),
+		'total': (2, 'Total'),
 		'opciones': (1, 'Opciones'),
 	}
 
@@ -66,9 +67,10 @@ class FacturaListView(MaestroDetalleListView):
 		{'field_name': 'compro', 'date_format': None},
 		{'field_name': 'letra_comprobante', 'date_format': None},
 		{'field_name': 'numero_comprobante', 'date_format': None},
-  		{'field_name': 'fecha_comprobante', 'date_format': 'd/m/Y'},
+  	{'field_name': 'fecha_comprobante', 'date_format': 'd/m/Y'},
 		{'field_name': 'cuit', 'date_format': None},
 		{'field_name': 'id_cliente', 'date_format': None},
+		{'field_name': 'total', 'date_format': None, 'decimal_places': 2},
 	]
 
 	#cadena_filtro = "Q(nombre_color__icontains=text)"
@@ -81,6 +83,7 @@ class FacturaListView(MaestroDetalleListView):
 		"delete_view_name": delete_view_name,
 		"table_headers": table_headers,
 		"table_data": table_data,
+		"model_string_for_pdf": "factura",  # ¡Solución clave aquí!
 	}
 
 	def get_queryset(self):

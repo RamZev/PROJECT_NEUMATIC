@@ -147,17 +147,21 @@ class VLEstadisticasVentasMarcaInformeView(InformeFormView):
 		}
 		
 		# **************************************************
+		
+		#-- Convertir QUERYSET a LISTA DE DICCIONARIOS al inicio (optimización clave).
+		queryset_list = [raw_to_dict(obj) for obj in queryset]
+		
 		grouped_data = {}
 		tg_cantidad = 0
 		tg_total = Decimal('0')
 		tg_compra = Decimal('0')
 		
-		for obj in queryset:
+		for obj in queryset_list:
 			#-- Agrupar los objetos por Familia.
-			id_familia = obj.id_familia_id
+			id_familia = obj['id_familia_id']
 			if id_familia not in grouped_data:
 				grouped_data[id_familia] = {
-					'familia': obj.nombre_producto_familia,
+					'familia': obj['nombre_producto_familia'],
 					'modelos': {},
 					'stf_cantidad': 0,
 					'stf_total': Decimal('0'),
@@ -165,10 +169,10 @@ class VLEstadisticasVentasMarcaInformeView(InformeFormView):
 				}
 			
 			#-- Agrupar los objetos por Modelos de la Familia.
-			id_modelo = obj.id_modelo_id
+			id_modelo = obj['id_modelo_id']
 			if id_modelo not in grouped_data[id_familia]['modelos']:
 				grouped_data[id_familia]['modelos'][id_modelo] = {
-					'modelo': obj.nombre_modelo,
+					'modelo': obj['nombre_modelo'],
 					'detalle': [],
 					'stm_cantidad': 0,
 					'stm_total': Decimal('0'),
@@ -179,30 +183,32 @@ class VLEstadisticasVentasMarcaInformeView(InformeFormView):
 			grouped_data[id_familia]["modelos"][id_modelo]["detalle"].append(obj)
 			
 			#-- Acumular totales por Familia.
-			grouped_data[id_familia]['stf_cantidad'] += obj.cantidad
-			grouped_data[id_familia]['stf_total'] += Decimal(str(obj.total))
-			grouped_data[id_familia]['stf_compra'] += Decimal(str(obj.compra))
+			#-- Conversión directa a Decimal (optimización).
+			cantidad = obj['cantidad']
+			total = Decimal(str(obj['total']))
+			compra = Decimal(str(obj['compra']))
+			
+			grouped_data[id_familia]['stf_cantidad'] += cantidad
+			grouped_data[id_familia]['stf_total'] += total
+			grouped_data[id_familia]['stf_compra'] += compra
 			
 			#-- Acumular totales por Modelo.
-			grouped_data[id_familia]['modelos'][id_modelo]['stm_cantidad'] += obj.cantidad
-			grouped_data[id_familia]['modelos'][id_modelo]['stm_total'] += Decimal(str(obj.total))
-			grouped_data[id_familia]['modelos'][id_modelo]['stm_compra'] += Decimal(str(obj.compra))
+			grouped_data[id_familia]['modelos'][id_modelo]['stm_cantidad'] += cantidad
+			grouped_data[id_familia]['modelos'][id_modelo]['stm_total'] += total
+			grouped_data[id_familia]['modelos'][id_modelo]['stm_compra'] += compra
 			
 			#-- Acumular totales generales.
-			tg_cantidad += obj.cantidad
-			tg_total += Decimal(str(obj.total))
-			tg_compra += Decimal(str(obj.compra))
+			tg_cantidad += cantidad
+			tg_total += total
+			tg_compra += compra
 		
 		#-- Convertir los datos agrupados a un formato serializable:
-		for familia_id, familia_data in grouped_data.items():
+		for familia_data in grouped_data.values():
 			#-- Convertir totales por Familia a float.
 			familia_data['stf_total'] = float(familia_data['stf_total'])
 			familia_data['stf_compra'] = float(familia_data['stf_compra'])
 			
-			for modelo_id, modelo_data in familia_data['modelos'].items():
-				#-- Se convierte cada detalle a diccionario usando raw_to_dict.
-				modelo_data['detalle'] = [raw_to_dict(detalle) for detalle in modelo_data['detalle']]
-				
+			for modelo_data in familia_data['modelos'].values():
 				#-- Convertir totales por Modelo a float.
 				modelo_data['stm_total'] = float(modelo_data['stm_total'])
 				modelo_data['stm_compra'] = float(modelo_data['stm_compra'])

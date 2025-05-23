@@ -175,26 +175,29 @@ class VLEstadisticasVentasVendedorClienteInformeView(InformeFormView):
 		}
 		
 		# **************************************************
+		#-- Convertir QUERYSET a LISTA DE DICCIONARIOS al inicio (optimización clave).
+		queryset_list = [raw_to_dict(obj) for obj in queryset]
+		
 		grouped_data = {}
-		total_cantidad = Decimal('0')
+		total_cantidad = 0
 		total_porcentaje_cantidad = Decimal('0')
 		total_importe = Decimal('0')
 		total_porcentaje_total = Decimal('0')
 		
-		for obj in queryset:
+		for obj in queryset_list:
 			#-- Agrupar los objetos por el Vendedor.
-			id_vendedor = obj.id_vendedor_id
+			id_vendedor = obj['id_vendedor_id']
 			if id_vendedor not in grouped_data:
 				grouped_data[id_vendedor] = {
-					'vendedor': obj.nombre_vendedor,
+					'vendedor': obj['nombre_vendedor'],
 					'clientes': {},
 				}
 			
 			#-- Agrupar los objetos por Clientes del Vendedor.
-			id_cliente = obj.id_cliente_id
+			id_cliente = obj['id_cliente_id']
 			if id_cliente not in grouped_data[id_vendedor]['clientes']:
 				grouped_data[id_vendedor]['clientes'][id_cliente] = {
-					'cliente': obj.nombre_cliente,
+					'cliente': obj['nombre_cliente'],
 					'detalle': [],
 				}
 			
@@ -202,16 +205,10 @@ class VLEstadisticasVentasVendedorClienteInformeView(InformeFormView):
 			grouped_data[id_vendedor]["clientes"][id_cliente]["detalle"].append(obj)
 			
 			#-- Acumular totales generales.
-			total_cantidad += Decimal(str(obj.cantidad))
-			total_porcentaje_cantidad += Decimal(str(getattr(obj, 'porcentaje_cantidad', 0)))
-			total_importe += Decimal(str(obj.total))
-			total_porcentaje_total += Decimal(str(getattr(obj, 'porcentaje_total', 0)))
-		
-		#-- Convertir los datos agrupados a un formato serializable:
-		#-- Se recorre cada grupo y se convierte cada detalle a diccionario usando raw_to_dict.
-		for vendedor_id, vendedor_data in grouped_data.items():
-			for cliente_id, cliente_data in vendedor_data['clientes'].items():
-				cliente_data['detalle'] = [raw_to_dict(detalle) for detalle in cliente_data['detalle']]
+			total_cantidad += obj['cantidad']
+			total_porcentaje_cantidad += Decimal(str(obj['porcentaje_cantidad']))
+			total_importe += Decimal(str(obj['total']))
+			total_porcentaje_total += Decimal(str(obj['porcentaje_total']))
 		
 		# **************************************************
 		

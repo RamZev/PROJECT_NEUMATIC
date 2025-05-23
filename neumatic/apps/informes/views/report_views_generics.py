@@ -85,14 +85,16 @@ class InformeFormView(FormView):
 		
 		token = f"reporte_{uuid.uuid4()}"  #-- Agregar prefijo para fácil identificación.
 		self.request.session[token] = serializar_datos(contexto_reporte)
+		# self.request.session[token] = contexto_reporte
+		self.request.session.save()
 		
 		#----------------------------------------
 		#-- Guarda en la cache el diccionario con los datos necesarios.
 		#-- Por ejemplo, puedes guardar el cleaned_data y el contexto sin necesidad de convertirlos a JSON.
 		# cache.set(token, {"cleaned_data": cleaned_data, "contexto_reporte": contexto_reporte}, timeout=600)  # timeout en segundos
 		cache.set(token, {"cleaned_data": cleaned_data}, timeout=600)  # timeout en segundos
-		#----------------------------------------
 		
+		#----------------------------------------
 		
 		if tipo_salida == "pantalla":
 			url = reverse(self.config.url_pantalla) + f"?token={token}"

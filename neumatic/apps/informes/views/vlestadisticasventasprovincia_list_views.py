@@ -175,46 +175,52 @@ class VLEstadisticasVentasProvinciaInformeView(InformeFormView):
 		}
 		
 		# **************************************************
+		#-- Convertir QUERYSET a LISTA DE DICCIONARIOS al inicio (optimización clave).
+		queryset_list = [raw_to_dict(obj) for obj in queryset]
+		
 		#-- Agrupar los objetos por el número de comprobante.
 		grouped_data = {}
-		total_cantidad = Decimal('0')
+		total_cantidad = 0
 		total_porcentaje_cantidad = Decimal('0')
 		total_importe = Decimal('0')
 		total_porcentaje_total = Decimal('0')
 		
-		for obj in queryset:
-			id_provincia = obj.id_provincia  #-- Campo que agrupa los datos.
+		for obj in queryset_list:
+			id_provincia = obj['id_provincia']  #-- Campo que agrupa los datos.
 			if id_provincia not in grouped_data:
 				grouped_data[id_provincia] = {
-					'provincia': obj.nombre_provincia,
+					'provincia': obj['nombre_provincia'],
 					'detalle': [],
-					'subtotal_cantidad': Decimal(0),
+					'subtotal_cantidad': 0,
 					'subtotal_porcentaje_cantidad': Decimal(0),
 					'subtotal_importe': Decimal(0),
 					'subtotal_porcentaje_importe': Decimal(0)
 				}
 			#-- Añadir el detalle al grupo.
 			grouped_data[id_provincia]['detalle'].append(obj)
+			
 			#-- Calcular el subtotal por provincia.
-			grouped_data[id_provincia]['subtotal_cantidad'] += Decimal(str(obj.cantidad))
-			grouped_data[id_provincia]['subtotal_porcentaje_cantidad'] += Decimal(str(getattr(obj, 'porcentaje_cantidad', 0)))
-			grouped_data[id_provincia]['subtotal_importe'] += Decimal(str(obj.total))
-			grouped_data[id_provincia]['subtotal_porcentaje_importe'] += Decimal(str(getattr(obj, 'porcentaje_total', 0)))
+			cantidad = obj['cantidad']
+			porcentaje_cantidad = Decimal(str(obj['porcentaje_cantidad']))
+			total = Decimal(str(obj['total']))
+			porcentaje_total = Decimal(str(obj['porcentaje_total']))
+			
+			grouped_data[id_provincia]['subtotal_cantidad'] += cantidad
+			grouped_data[id_provincia]['subtotal_porcentaje_cantidad'] += porcentaje_cantidad
+			grouped_data[id_provincia]['subtotal_importe'] += total
+			grouped_data[id_provincia]['subtotal_porcentaje_importe'] += porcentaje_total
+			
 			#-- Acumular totales generales.
-			total_cantidad += Decimal(str(obj.cantidad))
-			total_porcentaje_cantidad += Decimal(str(getattr(obj, 'porcentaje_cantidad', 0)))
-			total_importe += Decimal(str(obj.total))
-			total_porcentaje_total += Decimal(str(getattr(obj, 'porcentaje_total', 0)))
+			total_cantidad += cantidad
+			total_porcentaje_cantidad += porcentaje_cantidad
+			total_importe += total
+			total_porcentaje_total += porcentaje_total
 		
 		#-- Convertir los datos agrupados a un formato serializable:
-		#-- Se recorre cada grupo y se convierte cada detalle a diccionario usando raw_to_dict.
-		for vendedor, data in grouped_data.items():
-			data['detalle'] = [raw_to_dict(detalle) for detalle in data['detalle']]
-			data['subtotal_cantidad'] = float(data['subtotal_cantidad'])
+		for data in grouped_data.values():
 			data['subtotal_porcentaje_cantidad'] = float(data['subtotal_porcentaje_cantidad'])
 			data['subtotal_importe'] = float(data['subtotal_importe'])
 			data['subtotal_porcentaje_importe'] = float(data['subtotal_porcentaje_importe'])
-		
 		
 		# **************************************************
 		
