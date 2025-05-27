@@ -38,7 +38,7 @@ admin.site.register(TipoDocumentoIdentidad)
 admin.site.register(TipoIva)
 admin.site.register(TipoPercepcionIb)
 admin.site.register(TipoRetencionIb)
-
+admin.site.register(Banco)
 
 
 

@@ -641,4 +641,29 @@ estructura_campos = {
 		}
 	},
 	
+	'banco': {
+		'Información Banco': {
+			'fila_1': [
+				{'field_name': 'estatus_banco', 'columna': 2, 'design': None},
+				{'field_name': 'cuenta_banco', 'columna': 2, 'design': None},
+				{'field_name': 'nombre_banco', 'columna': 2, 'design': None},
+				{'field_name': 'numero_cuenta', 'columna': 2, 'design': None},
+			],
+			'fila_2': [
+				{'field_name': 'cuit', 'columna': 2, 'design': None},
+				{'field_name': 'sucursal', 'columna': 2, 'design': None},
+				{'field_name': 'codigo_postal', 'columna': 2, 'design': None},
+				{'field_name': 'id_proveedor', 'columna': 2, 'design': None},
+				{'field_name': 'id_moneda', 'columna': 2, 'design': None},
+			],
+			'fila_3': [
+				{'field_name': 'cbu', 'columna': 2, 'design': None},
+				{'field_name': 'cod_bco', 'columna': 2, 'design': None},
+				{'field_name': 'imputacion', 'columna': 2, 'design': None},
+				{'field_name': 'tope', 'columna': 2, 'design': None},
+				{'field_name': 'reporte', 'columna': 2, 'design': None},
+			],
+		}
+	},
+	
 }

@@ -24,6 +24,7 @@ from .views.tipo_retencion_ib_views import *
 from .views.operario_views import *
 from .views.medio_pago_views import *
 from .views.punto_venta_views import *
+from .views.banco_views import *
 
 #-- Catálogos
 from .views.cliente_views import *
@@ -230,6 +231,12 @@ urlpatterns = [
 	path('valida/nueva/', ValidaCreateView.as_view(), name='valida_create'),
 	path('valida/<int:pk>/editar/', ValidaUpdateView.as_view(), name='valida_update'),
 	path('valida/<int:pk>/eliminar/', ValidaDeleteView.as_view(), name='valida_delete'),
+ 
+	#-- Banco.
+	path('banco/', BancoListView.as_view(), name='banco_list'),
+	path('banco/nueva/', BancoCreateView.as_view(), name='banco_create'),
+	path('banco/<int:pk>/editar/', BancoUpdateView.as_view(), name='banco_update'),
+	path('banco/<int:pk>/eliminar/', BancoDeleteView.as_view(), name='banco_delete'),
  
 	#-- Otras rutas.
 	path('filtrar-localidad/', filtrar_localidad, name='filtrar_localidad'),

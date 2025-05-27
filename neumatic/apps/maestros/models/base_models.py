@@ -3,8 +3,10 @@ from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.core.exceptions import ValidationError
 import re
+
+from utils.validator.validaciones import validar_cuit
 from .base_gen_models import ModeloBaseGenerico
-# from .sucursal_models import Sucursal
+# from .proveedor_models import Proveedor
 from entorno.constantes_base import ESTATUS_GEN, CONDICION_PAGO
 
 
@@ -586,12 +588,12 @@ class PuntoVenta(ModeloBaseGenerico):
 	estatus_punto_venta = models.BooleanField("Estatus", default=True,
 											choices=ESTATUS_GEN)
 	id_sucursal = models.ForeignKey('Sucursal', on_delete=models.PROTECT,
-																 verbose_name="Sucursal",
-																 null=True, blank=True)
+									verbose_name="Sucursal",
+									null=True, blank=True)
 	punto_venta = models.CharField("Punto de Venta", max_length=5)
 	descripcion_punto_venta = models.CharField("Descripción Pto. Venta",
-																						max_length=50, 
-																						null=True, blank=True)
+												max_length=50, 
+												null=True, blank=True)
 	
 	def __str__(self):
 		return f'{self.id_sucursal} {self.punto_venta}'
@@ -670,73 +672,113 @@ class AlicuotaIva(ModeloBaseGenerico):
 # Modelos nuevos
 # Modelo Banco
 class Banco(ModeloBaseGenerico):
-		id_banco = models.AutoField(primary_key=True)
-		cuenta_banco = models.IntegerField(null=True, blank=True)
-		nombre_banco = models.CharField(max_length=30)
-		numero_cuenta = models.CharField(max_length=15)
-		cbu = models.CharField(max_length=22)
-		codbco = models.IntegerField()
-		sucursal = models.IntegerField()
-		localidad = models.IntegerField()
-		imputacion = models.IntegerField()
-		cut = models.IntegerField()
-		tope = models.DecimalField(max_digits=12, decimal_places=2)
-		reporte = models.CharField(max_length=20)
-		provedor = models.IntegerField()
-		moneda = models.IntegerField()
-
-		def __str__(self):
-				return f'{self.cuenta_banco} - {self.nombre_banco}'
+	id_banco = models.AutoField(primary_key=True)
+	estatus_banco = models.BooleanField("Estatus", default=True,
+										choices=ESTATUS_GEN)
+	cuenta_banco = models.IntegerField("Cuenta Banco", 
+										null=True, blank=True)
+	nombre_banco = models.CharField("Nombre Banco", max_length=30,
+									null=True, blank=True)
+	numero_cuenta = models.CharField("Número Cuenta", max_length=15,
+									null=True, blank=True)
+	cbu = models.CharField("CBU", max_length=22, null=True, blank=True)
+	cod_bco = models.IntegerField("Código Banco",
+									null=True, blank=True)
+	sucursal = models.IntegerField("Sucursal",
+									null=True, blank=True)
+	# localidad = models.IntegerField()
+	codigo_postal = models.IntegerField("Código Postal",
+										null=True, blank=True)
+	imputacion = models.IntegerField("Cód. Imputación",
+									null=True, blank=True)
+	cuit = models.IntegerField("CUIT",
+								null=True, blank=True)
+	tope = models.DecimalField("Tope", max_digits=12, decimal_places=2,
+								null=True, blank=True, default=0.00)
+	reporte = models.CharField("Reporte", max_length=20,
+								null=True, blank=True)
+	id_proveedor = models.ForeignKey("Proveedor", on_delete=models.PROTECT,
+									verbose_name="Proveedor", null=True, blank=True,)
+	id_moneda = models.ForeignKey(Moneda, on_delete=models.PROTECT,
+									verbose_name="Moneda", null=True, blank=True)
+	
+	def __str__(self):
+		return f'{self.cuenta_banco} - {self.nombre_banco}'
+	
+	def clean(self):
+		super().clean()
 		
-		class Meta:
-				db_table = 'banco'
-				verbose_name = ('Banco')
-				verbose_name_plural = ('Bancos')
-				ordering = ['nombre_banco']    
+		# Diccionario contenedor de errores
+		errors = {}
+		
+		try:
+			validar_cuit(self.cuit)
+		except ValidationError as e:
+			#-- Agrego el error al dicciobario errors.
+			errors['cuit'] = e.messages
+		
+		if errors:
+			#-- Lanza el conjunto de excepciones.
+			raise ValidationError(errors)
+	
+	class Meta:
+		db_table = 'banco'
+		verbose_name = ('Banco')
+		verbose_name_plural = ('Bancos')
+		ordering = ['nombre_banco']    
 
 
 class Tarjeta(ModeloBaseGenerico):
-		id_tarjeta = models.AutoField(primary_key=True)
-		nombre_tarjeta = models.CharField(max_length=30)
-		imputation = models.IntegerField()
-		banco_acreditacion = models.IntegerField()
-		propia = models.BooleanField()
-		
-		def __str__(self):
-				return self.nombre_tarjeta
-
-		class Meta:
-				db_table = 'tarjeta'
-				verbose_name = ('Tarjeta')
-				verbose_name_plural = ('Tarjetas')
-				ordering = ['nombre_tarjeta']    
+	id_tarjeta = models.AutoField(primary_key=True)
+	estatus_tarjeta = models.BooleanField("Estatus", default=True,
+										choices=ESTATUS_GEN)
+	nombre_tarjeta = models.CharField("Nombre Tarjeta", max_length=30,
+								   null=True, blank=True)
+	imputation = models.IntegerField("Cód. Imputación",
+									null=True, blank=True)
+	banco_acreditacion = models.IntegerField("Banco",
+									null=True, blank=True)
+	propia = models.BooleanField("Propia", default=False)
+	
+	def __str__(self):
+		return self.nombre_tarjeta
+	
+	class Meta:
+		db_table = 'tarjeta'
+		verbose_name = ('Tarjeta')
+		verbose_name_plural = ('Tarjetas')
+		ordering = ['nombre_tarjeta']    
 
 
 class CodigoRetencion(ModeloBaseGenerico):
-		id_codigo_retencion = models.CharField(primary_key=True, max_length=2)
-		nombre_codigo_retencion = models.CharField(max_length=30)
-		imputacion = models.IntegerField()
+	id_codigo_retencion = models.CharField(primary_key=True, max_length=2)
+	estatus_cod_retencion = models.BooleanField("Estatus", default=True,
+												choices=ESTATUS_GEN)
+	nombre_codigo_retencion = models.CharField("Nombre Cód. Ret.", max_length=30,
+												null=True, blank=True)
+	imputacion = models.IntegerField("Cód. Imputación",
+									null=True, blank=True)
+	
+	def __str__(self):
+		return self.nombre_codigo_retencion
+	
+	class Meta:
+		db_table = 'codigo_retencion'
+		verbose_name = ('Codigo Retención')
+		verbose_name_plural = ('Codigos Retención')
+		ordering = ['nombre_codigo_retencion']
 
-		def __str__(self):
-				return self.nombre_codigo_retencion
-
-		class Meta:
-				db_table = 'codigo_retencion'
-				verbose_name = ('Codigo Retención')
-				verbose_name_plural = ('Codigos Retención')
-				ordering = ['nombre_codigo_retencion']
-		
 
 class ConceptoBanco(ModeloBaseGenerico):
     id_concepto_banco = models.AutoField(primary_key=True, verbose_name="ID")
     nombre_concepto_banco = models.CharField(max_length=30, verbose_name="Descripción")
     factor = models.IntegerField(verbose_name="Factor")
-
+	
     class Meta:
         db_table = 'concepto_banco'
         verbose_name = 'Concepto Bancario'
         verbose_name_plural = 'Conceptos Bancarios'
         ordering = ['nombre_concepto_banco']
-
+	
     def __str__(self):
         return self.nombre_concepto_banco
