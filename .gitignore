@@ -8,7 +8,7 @@ data/
 back/
 datavfox/
 venv/
-# migrations/
+migrations/
 staticfiles/
 neumatic_bak/
 neumatic_bak2/
