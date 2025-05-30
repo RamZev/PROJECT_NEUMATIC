@@ -390,7 +390,7 @@ class ChequeReciboForm(forms.ModelForm):
                 'type': 'date',
                 'style': 'font-size: 0.8rem; padding: 0.25rem;'
             }),
-            'importe_cheque': forms.NumberInput(attrs={
+            'importe_cheque_recibo': forms.NumberInput(attrs={
                 'class': 'form-control form-control-sm border border-primary text-end', 
                 'step': '0.01',
                 'style': 'font-size: 0.8rem; padding: 0.25rem;'

@@ -402,22 +402,64 @@
                         </div>
 
                         <div class="container my-3">
-                            <div class="d-flex justify-content-end align-items-center">
-                                <!-- Nuevo botón para agregar serial -->
-                                <button type="button" class="btn btn-outline-primary btn-sm me-2" id="btnAgregarSerial" 
-                                        data-bs-toggle="modal" data-bs-target="#serialModal" disabled>
-                                    ...
-                                    <i class="bi bi-upc-scan"></i>
-                                </button>
-
-                                <button type="button" class="btn btn-outline-primary btn-sm me-2" id="btnAgregarDetalle" disabled>
-                                    ...
-                                    <i class="bi bi-file-earmark-plus"></i>
-                                </button>
+                            <div class="row my-1">
+                                <div class="col-md-2">
+                                    <label class="form-label mb-0 text-primary">
+                                        <strong>Retenciones</strong>
+                                    </label>
+                                    <div>
+                                        <input type="number" step="0.01" class="form-control" id="retenciones" name="retenciones" value="0.00">
+                                        <span class="formatted-number">0.00</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <label class="form-label mb-0 text-primary">
+                                        <strong>Efectivo</strong>
+                                    </label>
+                                    <div>
+                                        <input type="number" step="0.01" class="form-control" id="efectivo" name="efectivo" value="0.00">
+                                        <span class="formatted-number">0.00</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <label class="form-label mb-0 text-primary">
+                                        <strong>Dep/Transf.</strong>
+                                    </label>
+                                    <div>
+                                        <input type="number" step="0.01" class="form-control" id="depositos" name="depositos" value="0.00">
+                                        <span class="formatted-number">0.00</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <label class="form-label mb-0 text-primary">
+                                        <strong>Tarjetas</strong>
+                                    </label>
+                                    <div>
+                                        <input type="number" step="0.01" class="form-control" id="tarjetas" name="tarjetas" value="0.00">
+                                        <span class="formatted-number">0.00</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <label class="form-label mb-0 text-primary">
+                                        <strong>Cheques</strong>
+                                    </label>
+                                    <div>
+                                        <input type="number" step="0.01" class="form-control" id="cheques" name="cheques" value="0.00">
+                                        <span class="formatted-number">0.00</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <label class="form-label mb-0 text-primary">
+                                        <strong>Total Cobrado</strong>
+                                    </label>
+                                    <div>
+                                        <input type="number" step="0.01" class="form-control" id="total_cobrado" name="total_cobrado" value="0.00">
+                                        <span class="formatted-number">0.00</span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        
-                        
+
                         <!-- Item Detalle Recibo Two -->
                         <div class="accordion-item">
                             <h2 class="accordion-header">
@@ -666,116 +708,6 @@
 {% endblock maincomponent %}
     
 {% block modals %}
-    {% comment %} Ventana Modal Buscar Producto Start {% endcomment %}
-    <div class="modal fade" id="detalleModal" tabindex="-1" aria-labelledby="detalleModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl" style="max-width: 90%;">
-            <div class="modal-content">
-                <div class="modal-header text-dark bg-primary bg-opacity-25 py-2">
-                    <h5 class="modal-title fs-6" id="detalleModalLabel">Productos**</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <!-- Formulario modal -->
-                    <form method="post" id="detalleForm">
-                        {% csrf_token %}
-
-                        <!-- Opciones de filtro adicionales -->
-                        <div class="row mb-3">
-                            <div class="col-md-12 d-flex justify-content-start align-items-center flex-wrap">
-                                <label class="me-3 fw-bold">Filtrar por:</label>
-                                
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="filtro_marca" id="filtro_primeras" value="primeras" checked>
-                                    <label class="form-check-label" for="filtro_primeras">Primeras Marcas</label>
-                                </div>
-                                
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="filtro_marca" id="filtro_otras" value="otras">
-                                    <label class="form-check-label" for="filtro_otras">Otras Marcas</label>
-                                </div>
-
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="filtro_marca" id="filtro_stock" value="stock">
-                                    <label class="form-check-label" for="filtro_stock">Solo en Stock</label>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row mb-3">
-                            <div class="col-md-3">
-                                <input type="text" class="form-control form-control-sm border border-primary" id="medida_producto" placeholder="Medida Producto">
-                            </div>
-                            <div class="col-md-4">
-                                <input type="text" class="form-control form-control-sm border border-primary" id="nombre_producto" placeholder="Nombre Producto">
-                            </div>
-                            <div class="col-md-3">
-                                <input type="text" class="form-control form-control-sm border border-primary" id="cai_producto" placeholder="CAI Producto">
-                            </div>
-                            <div class="col-md-2">
-                                <button type="submit" class="btn btn-outline-primary btn-sm me-2">
-                                    Buscar
-                                    <i class="bi bi-search"></i>
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <div class="table-responsive tbl-fixed" style="max-height: 30vh; overflow-y: auto;">
-                            <table class="table table-striped small-text" id="tabla-resultados">
-                                <thead class="table-primary fs-7">
-                                    <th style="width: 12%;">Marca</th>
-                                    <th style="width: 12%;">Medida</th>
-                                    <th style="width: 10%;">CAI</th>
-                                    <th style="width: 25%;">Nombre</th>
-                                    <th style="width: 10%;">Precio</th>
-                                    <th style="width: 8%;">Stock</th>
-                                    <th style="width: 8%;">Mínimo</th>
-                                    <th style="width: 8%;">Detalle</th>
-                                    <th style="width: 8%;">...</th>
-                                </thead>
-
-                                <tbody>
-                                </tbody>
-                            </table>
-                        </div>
-
-                        <div class="d-flex align-items-center mt-3">
-                            <!-- Título -->
-                            <h6 id="titulo-producto" class="mb-0 me-auto" style="line-height: 1.5;">Título del Producto</h6>
-                        
-                            <!-- Botones -->
-                            <div class="d-flex gap-2">
-                                <button type="button" class="btn btn-outline-primary btn-sm" id="agregarDetalle">Insertar</button>
-                                <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal" id="cancelarDetalle">Cancelar</button>
-                            </div>
-                        </div>
-                        
-                        <!-- Sección de tablas de Stock y Mínimos -->
-                        <div id="detalles-container" class="row mt-1">
-                            <div class="col-md-6">
-                                <h6>Stock por Depósito</h6>
-                                <table id="tabla-stock" class="table table-striped small-text">
-                                    <thead class="table-primary fs-7">
-                                        <tr>
-                                            <th>Depósito</th>
-                                            <th>Stock</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="tabla-stock">
-                                    </tbody>
-                                </table>
-                            </div>
-                            
-                        </div>
-
-                        
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-    {% comment %} Ventana Modal Buscar Producto End {% endcomment %}
-
-
     <!-- Modal para Listar Agenda-->
     <div class="modal fade" id="agendaModal" tabindex="-1" aria-labelledby="agendaModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg" style="max-width: 90%;">
@@ -835,132 +767,6 @@
         </div>
     </div>
 
-    <!-- Modal para seriales -->
-    <div class="modal fade" id="serialModal" tabindex="-1" aria-labelledby="serialModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header text-dark bg-primary bg-opacity-25 py-2">
-                    <h5 class="modal-title fs-6" id="serialModalLabel">Ingresar Serial</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="serialForm">
-                        {% csrf_token %}
-                        <div class="mb-3">
-                            <label for="serialInput" class="form-label">Número de Serial</label>
-                            <input type="text" class="form-control" id="serialInput" required>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-primary btn-sm" id="btnGuardarSerial">Insertar</button>
-                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancelar</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal de Autorización -->
-    <div class="modal fade" id="autorizacionModal" tabindex="-1" aria-labelledby="autorizacionModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header text-white bg-danger py-2">
-                    <h5 class="modal-title fs-6" id="autorizacionModalLabel">
-                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
-                        <span id="modalTitulo">Autorización Requerida</span>
-                    </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="autorizacionForm">
-                        {% csrf_token %}
-                        <!-- CAMPO ESTANDAR NO SE UTILIZA -->
-                        <input type="text" name="username" autocomplete="username" style="display: none;">
-
-                        <!-- AGREGAR ESTOS CAMPOS OCULTOS -->
-                        <input type="hidden" id="validaClienteId" name="cliente_id">
-                        <input type="hidden" id="validaSucursalId" name="sucursal_id">
-                        <input type="hidden" id="validaFecha" name="fecha_comprobante">
-
-                        <div id="mensajePrincipal" class="mb-3 p-2 bg-light rounded">
-                            <!-- Mensaje dinámico se insertará aquí -->
-                        </div>
-                        
-                        <div class="alert alert-warning mb-3">
-                            <h6 class="alert-heading">
-                                <i class="bi bi-file-earmark-text-fill me-2"></i>Documento con vencimiento pendiente
-                            </h6>
-                            <div class="row small mt-2">
-                                <div class="col-md-6">
-                                    <ul class="list-unstyled">
-                                        <li class="mb-2 pb-2 border-bottom">
-                                            <strong><i class="bi bi-receipt me-2"></i>Comprobante:</strong> 
-                                            <span id="modalComprobante">-</span>
-                                        </li>
-                                        <li class="mb-2 pb-2 border-bottom">
-                                            <strong><i class="bi bi-hash me-2"></i>Número:</strong> 
-                                            <span id="modalNumero">-</span>
-                                        </li>
-                                        <li class="mb-2 pb-2 border-bottom">
-                                            <strong><i class="bi bi-calendar-event me-2"></i>Fecha Emisión:</strong> 
-                                            <span id="modalFecha">-</span>
-                                        </li>
-                                    </ul>
-                                </div>
-                                <div class="col-md-6">
-                                    <ul class="list-unstyled">
-                                        <li class="mb-2 pb-2 border-bottom">
-                                            <strong><i class="bi bi-clock-history me-2"></i>Días Crédito:</strong> 
-                                            <span id="modalDiasCredito">-</span>
-                                        </li>
-                                        <li class="mb-2 pb-2 border-bottom">
-                                            <strong><i class="bi bi-calendar-x me-2"></i>Fecha Vencimiento:</strong> 
-                                            <span id="modalVencimiento">-</span>
-                                        </li>
-                                        <li class="mb-2 pb-2 border-bottom">
-                                            <strong><i class="bi bi-exclamation-octagon me-2"></i>Días Vencidos:</strong> 
-                                            <span id="modalDiasVencidos" class="fw-bold text-danger">-</span>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                            <div class="row mt-2 small">
-                                <div class="col-md-6">
-                                    <p class="mb-1">
-                                        <strong><i class="bi bi-cash-stack me-2"></i>Monto Pendiente:</strong> 
-                                        <span id="modalMonto" class="fw-bold">$-</span>
-                                    </p>
-                                </div>
-                                <div class="col-md-6">
-                                    <p class="mb-1">
-                                        <strong><i class="bi bi-person-badge me-2"></i>Vendedor:</strong> 
-                                        <span id="modalVendedor">-</span>
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label for="codigoAutorizacion" class="form-label">
-                                <i class="bi bi-shield-lock me-2"></i>Código de Autorización:
-                            </label>
-                            <input type="password" class="form-control border border-danger" 
-                                id="codigoAutorizacion" name="codigo" autocomplete="new-password" required placeholder="Ingrese el código de autorización">
-                            <div id="mensajeErrorAutorizacion" class="invalid-feedback mt-2"></div>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer py-2">
-                    <button type="submit" class="btn btn-danger btn-sm" id="btnConfirmarAutorizacion">
-                        <i class="bi bi-check-circle-fill me-2"></i>Confirmar
-                    </button>
-                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">
-                        <i class="bi bi-x-circle-fill me-2"></i>Cancelar
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
 
 {% endblock modals %}
 
@@ -1169,10 +975,6 @@
                     .then(data => {
                         document.getElementById('id_compro').value = data.codigo || '';
 
-                        // Mapear los botones
-                        const addSerialBtn = document.getElementById('btnAgregarSerial');
-                        const addDetailBtn = document.getElementById('btnAgregarDetalle');
-
                         // Actualizar el checkbox es_remito basado en la respuesta
                         const esRemitoCheckbox = document.getElementById('id_es_remito');
                         if (esRemitoCheckbox) {
@@ -1194,8 +996,7 @@
                             // Si necesitas cambiar el estado visual (aunque esté disabled)
                             if (data.es_pendiente) {
                                 esPendienteCheckbox.parentElement.classList.add('checked');
-                                addSerialBtn.disabled = true;
-                                addDetailBtn.disabled = true;
+                                
                             } else {
                                 esPendienteCheckbox.parentElement.classList.remove('checked');
                             }
@@ -1725,45 +1526,7 @@
             });
         });
     </script>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            document.getElementById('btnAgregarDetalle').addEventListener('click', function (event) {
-                // Lista de IDs de los campos obligatorios
-                const requiredFields = [
-                    'id_id_deposito', 'id_id_comprobante_venta', 'id_id_cliente', 
-                    'id_fecha_comprobante', 'id_condicion_comprobante', 
-                    'id_movil_factura', 'id_email_factura'
-                ];
-        
-                let isValid = true;
-                let missingFields = [];
-        
-                // Validar cada campo obligatorio
-                requiredFields.forEach(fieldId => {
-                    const field = document.getElementById(fieldId);
-                    if (!field || !field.value.trim()) {
-                        isValid = false;
-                        missingFields.push(fieldId);
-                    }
-                });
-        
-                // Si hay campos faltantes, mostrar alerta y evitar abrir el modal
-                if (!isValid) {
-                    event.preventDefault();  // Evita cualquier acción por defecto
-                    event.stopPropagation(); // Detiene la propagación del evento
-        
-                    alert("⚠️ Debes completar todos los datos obligatorios antes de agregar un detalle.\n\nFaltan los siguientes campos:\n- " + missingFields.join("\n- "));
-                    return false; // Detiene la ejecución del código
-                }
-        
-                // Si pasa la validación, abrir el modal manualmente
-                const detalleModal = new bootstrap.Modal(document.getElementById('detalleModal'));
-                detalleModal.show();
-            });
-        });
-    </script>
-
+    
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const buscarClienteInput = document.getElementById('buscar_cliente');
@@ -1891,36 +1654,17 @@
             if (isEdit) {
                 // Deshabilitar solo los campos de entrada y el botón "Agregar Detalle"
                 const inputs = document.querySelectorAll('#factura-form input, #factura-form select, #factura-form textarea');
-                const btnAgregarDetalle = document.getElementById('btnAgregarDetalle');
 
                 inputs.forEach(input => {
                     input.disabled = true;  // Deshabilitar campos
                     input.classList.add('readonly-select');  // Aplicar estilo visual
                 });
 
-                if (btnAgregarDetalle) {
-                    btnAgregarDetalle.disabled = true;  // Deshabilitar el botón "Agregar Detalle"
-                }
-
                 //alert("El formulario está en modo de solo lectura");
             } else {
                 //alert("El formulario está en modo de creación");
             }
         });   
-    </script>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            /////
-            
-            /////
-
-        });
-    </script>
-
-    <script>
-        // ==================== SERIALES ====================
-        
     </script>
 
     <script>
