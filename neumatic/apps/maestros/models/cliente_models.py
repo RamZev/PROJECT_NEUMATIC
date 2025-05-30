@@ -92,6 +92,12 @@ class Cliente(ModeloBaseGenerico):
 	black_list_usuario = models.CharField("Usuario Black List", 
 										  max_length=20, null=True, blank=True)
 	fecha_baja = models.DateField("Fecha de Baja", null=True, blank=True)
+	
+	class Meta:
+		db_table = 'cliente'
+		verbose_name = ('Cliente')
+		verbose_name_plural = ('Clientes')
+		ordering = ['nombre_cliente']
 												
 	def __str__(self):
 		return self.nombre_cliente
@@ -99,10 +105,10 @@ class Cliente(ModeloBaseGenerico):
 	def clean(self):
 		super().clean()
 		
-		# Diccionario contenedor de errores
+		#-- Diccionario contenedor de errores.
 		errors = {}
 		
-		# Convertir a string los valores de los campos previo a la validación
+		#-- Convertir a string los valores de los campos previo a la validación.
 		telefono_str = str(self.telefono_cliente) if self.telefono_cliente else ''
 		movil_cliente_str = str(self.movil_cliente) if self.movil_cliente else ''
 		sub_cuenta_str = str(self.sub_cuenta) if self.sub_cuenta else ''
@@ -110,7 +116,7 @@ class Cliente(ModeloBaseGenerico):
 		try:
 			validar_cuit(self.cuit)
 		except ValidationError as e:
-			# Agrego el error al dicciobario errors
+			#-- Agrego el error al dicciobario errors.
 			errors['cuit'] = e.messages
 		
 		if not re.match(r'^\+?\d[\d ]{0,14}$', telefono_str):
@@ -126,12 +132,5 @@ class Cliente(ModeloBaseGenerico):
 			errors.update({'sub_cuenta': 'No existe un cliente con la Sub Cuenta indicada.'})
 		
 		if errors:
-			# Lanza el conjunto de excepciones
+			#-- Lanza el conjunto de excepciones.
 			raise ValidationError(errors)
-	
-	
-	class Meta:
-		db_table = 'cliente'
-		verbose_name = ('Cliente')
-		verbose_name_plural = ('Clientes')
-		ordering = ['nombre_cliente']

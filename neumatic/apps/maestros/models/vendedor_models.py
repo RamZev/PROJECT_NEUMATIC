@@ -31,6 +31,12 @@ class Vendedor(ModeloBaseGenerico):
 	info_saldo = models.BooleanField("Mostrar Saldo en Correos Electrónicos", default=False)
 	info_estadistica = models.BooleanField("Mostrar Saldos en Comp. Sin Estadísticas", default=False)
 	
+	class Meta:
+		db_table = 'vendedor'
+		verbose_name = ('Vendedor')
+		verbose_name_plural = ('Vendedores')
+		ordering = ['nombre_vendedor']
+	
 	def __str__(self):
 		return self.nombre_vendedor
 	
@@ -65,10 +71,3 @@ class Vendedor(ModeloBaseGenerico):
 		
 		if errors:
 			raise ValidationError(errors)
-	
-	
-	class Meta:
-		db_table = 'vendedor'
-		verbose_name = ('Vendedor')
-		verbose_name_plural = ('Vendedores')
-		ordering = ['nombre_vendedor']

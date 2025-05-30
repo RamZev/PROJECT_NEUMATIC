@@ -666,4 +666,38 @@ estructura_campos = {
 		}
 	},
 	
+	'tarjeta': {
+		'Información Tarjeta': {
+			'fila_1': [
+				{'field_name': 'estatus_tarjeta', 'columna': 2, 'design': None},
+				{'field_name': 'nombre_tarjeta', 'columna': 4, 'design': None},
+			],
+			'fila_2': [
+				{'field_name': 'imputacion', 'columna': 2, 'design': None},
+				{'field_name': 'banco_acreditacion', 'columna': 2, 'design': None},
+				{'field_name': 'propia', 'columna': 2, 'design': Design.checkbox},
+			],
+		}
+	},
+	
+	'codigo_retencion': {
+		'Información Código de Terención': {
+			'fila_1': [
+				{'field_name': 'estatus_cod_retencion', 'columna': 2, 'design': None},
+				{'field_name': 'nombre_codigo_retencion', 'columna': 3, 'design': None},
+				{'field_name': 'imputacion', 'columna': 2, 'design': None},
+			],
+		}
+	},
+	
+	'concepto_banco': {
+		'Información Concepto Banco': {
+			'fila_1': [
+				{'field_name': 'estatus_concepto_banco', 'columna': 2, 'design': None},
+				{'field_name': 'nombre_concepto_banco', 'columna': 3, 'design': None},
+				{'field_name': 'factor', 'columna': 2, 'design': None},
+			],
+		}
+	},
+	
 }

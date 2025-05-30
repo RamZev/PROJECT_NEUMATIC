@@ -38,6 +38,12 @@ class Proveedor(ModeloBaseGenerico):
 	observacion_proveedor = models.TextField("Observaciones", blank=True, 
 											null=True)
 	
+	class Meta:
+		db_table = 'proveedor'
+		verbose_name = 'Proveedor'
+		verbose_name_plural = 'Proveedores'
+		ordering = ['nombre_proveedor']
+	
 	def __str__(self):
 		return self.nombre_proveedor
 	
@@ -64,10 +70,3 @@ class Proveedor(ModeloBaseGenerico):
 		
 		if errors:
 			raise ValidationError(errors)
-	
-	
-	class Meta:
-		db_table = 'proveedor'
-		verbose_name = 'Proveedor'
-		verbose_name_plural = 'Proveedores'
-		ordering = ['nombre_proveedor']

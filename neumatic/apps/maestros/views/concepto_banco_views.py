@@ -1,25 +1,25 @@
-# neumatic\apps\maestros\views\banco_views.py
+# neumatic\apps\maestros\views\concepto_banco_views.py
 from django.urls import reverse_lazy
 from ..views.cruds_views_generics import *
-from ..models.base_models import Banco
-from ..forms.banco_forms import BancoForm
+from ..models.base_models import ConceptoBanco
+from ..forms.concepto_banco_forms import ConceptoBancoForm
 
 
 class ConfigViews():
 	# Modelo
-	model = Banco
+	model = ConceptoBanco
 	
 	# Formulario asociado al modelo
-	form_class = BancoForm
+	form_class = ConceptoBancoForm
 	
 	# Aplicación asociada al modelo
 	app_label = model._meta.app_label
 	
 	#-- Usar esta forma cuando el modelo esté compuesto de una sola palabra: Ej. Color.
-	model_string = model.__name__.lower()
+	# model_string = model.__name__.lower()  #-- Usar esta forma cuando el modelo esté compuesto de una sola palabra: Ej. Color.
 	
 	#-- Usar esta forma cuando el modelo esté compuesto por más de una palabra: Ej. TipoCambio colocar "tipo_cambio".
-	#model_string = "tipo_cambio"
+	model_string = "concepto_banco"
 	
 	# Permisos
 	permission_add = f"{app_label}.add_{model.__name__.lower()}"
@@ -53,39 +53,29 @@ class ConfigViews():
 
 class DataViewList():
 	search_fields = [
-		'cuenta_banco', 
-		'nombre_banco',
-		'numero_cuenta',
+		'nombre_concepto_banco', 
 	]
 	
-	ordering = ['nombre_banco']
+	ordering = ['nombre_concepto_banco']
 	
 	paginate_by = 8
-	  
+	
 	table_headers = {
-		'estatus_banco': (1, 'Estatus'),
-		'cuenta_banco': (1, 'Cuenta'),
-		'nombre_banco': (2, 'Nombre Banco'),
-		'numero_cuenta': (2, 'Número Cuenta'),
-		'cod_bco': (1, 'Código Banco'),
-		'codigo_postal': (1, 'Código Postal'),
-		'id_moneda': (2, 'Moneda'),
+		'estatus_concepto_banco': (1, 'Estatus'),
+		'nombre_concepto_banco': (7, 'Nombre Comprobante'),
+		'factor': (2, 'Código Comprobante'),
 		
 		'acciones': (2, 'Acciones'),
 	}
 	
 	table_data = [
-		{'field_name': 'estatus_banco', 'date_format': None},
-		{'field_name': 'cuenta_banco', 'date_format': None},
-		{'field_name': 'nombre_banco', 'date_format': None},
-		{'field_name': 'numero_cuenta', 'date_format': None},
-		{'field_name': 'cod_bco', 'date_format': None},
-		{'field_name': 'codigo_postal', 'date_format': None},
-		{'field_name': 'id_moneda', 'date_format': None},
+		{'field_name': 'estatus_concepto_banco', 'date_format': None},
+		{'field_name': 'nombre_concepto_banco', 'date_format': None},
+		{'field_name': 'factor', 'date_format': None},
 	]
 
 
-class BancoListView(MaestroListView):
+class ConceptoBancoListView(MaestroListView):
 	model = ConfigViews.model
 	template_name = ConfigViews.template_list
 	context_object_name = ConfigViews.context_object_name
@@ -105,7 +95,7 @@ class BancoListView(MaestroListView):
 	}
 
 
-class BancoCreateView(MaestroCreateView):
+class ConceptoBancoCreateView(MaestroCreateView):
 	model = ConfigViews.model
 	list_view_name = ConfigViews.list_view_name
 	form_class = ConfigViews.form_class
@@ -116,7 +106,7 @@ class BancoCreateView(MaestroCreateView):
 	permission_required = ConfigViews.permission_add
 
 
-class BancoUpdateView(MaestroUpdateView):
+class ConceptoBancoUpdateView(MaestroUpdateView):
 	model = ConfigViews.model
 	list_view_name = ConfigViews.list_view_name
 	form_class = ConfigViews.form_class
@@ -127,7 +117,7 @@ class BancoUpdateView(MaestroUpdateView):
 	permission_required = ConfigViews.permission_change
 
 
-class BancoDeleteView (MaestroDeleteView):
+class ConceptoBancoDeleteView (MaestroDeleteView):
 	model = ConfigViews.model
 	list_view_name = ConfigViews.list_view_name
 	template_name = ConfigViews.template_delete

@@ -27,6 +27,12 @@ class Parametro(ModeloBaseGenerico):
 										max_digits=5, decimal_places=2, 
 										default=0.00, blank=True)
 	
+	class Meta:
+		db_table = 'parametro'
+		verbose_name = 'Parámetro'
+		verbose_name_plural = 'Parámetros'
+		ordering = ['id_empresa']
+	
 	def clean(self):
 		super().clean()
 		
@@ -55,10 +61,3 @@ class Parametro(ModeloBaseGenerico):
 		
 		if errors:
 			raise ValidationError(errors)
-	
-	
-	class Meta:
-		db_table = 'parametro'
-		verbose_name = 'Parámetro'
-		verbose_name_plural = 'Parámetros'
-		ordering = ['id_empresa']

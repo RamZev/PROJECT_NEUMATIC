@@ -351,7 +351,7 @@ class ChequeReciboForm(forms.ModelForm):
         fields = ['id_cheque_recibo', 'id_factura', 'id_banco', 'sucursal',
                  'codigo_postal', 'numero_cheque_recibo', 'cuenta_cheque_recibo',
                  'cuit_cheque_recibo', 'fecha_cheque1', 'fecha_cheque2',
-                 'importe_cheque_recibo']
+                 'importe_cheque']
         
         widgets = {
             'id_cheque_recibo': forms.HiddenInput(),

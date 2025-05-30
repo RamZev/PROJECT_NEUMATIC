@@ -23,10 +23,15 @@ class Sucursal(ModeloBaseGenerico):
 	email_sucursal = models.EmailField("Correo", max_length=50)
 	inicio_actividad = models.DateField("Inicio actividad")
 	
+	class Meta:
+		db_table = 'sucursal'
+		verbose_name = ('Sucursal')
+		verbose_name_plural = ('Sucursales')
+		ordering = ['nombre_sucursal']
 	
 	def __str__(self):
 		return self.nombre_sucursal
-
+	
 	def clean(self):
 		super().clean()
 		
@@ -42,10 +47,3 @@ class Sucursal(ModeloBaseGenerico):
 		
 		if errors:
 			raise ValidationError(errors)
-	
-	
-	class Meta:
-		db_table = 'sucursal'
-		verbose_name = ('Sucursal')
-		verbose_name_plural = ('Sucursales')
-		ordering = ['nombre_sucursal']

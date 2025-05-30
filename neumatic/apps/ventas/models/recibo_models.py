@@ -259,14 +259,14 @@ class ChequeRecibo(ModeloBaseGenerico):
 		null=True,
 		blank=True
 	)
-	importe_cheque_recibo = models.DecimalField(
+	importe_cheque = models.DecimalField(
 		verbose_name="Importe Cheque",
 		max_digits=12,
 		decimal_places=2,
 		null=True,
 		blank=True
-	)	
- 
+	)
+	
 	def __str__(self):
 		return f"{self.id_factura} {self.id_cheque_recibo}"
 	

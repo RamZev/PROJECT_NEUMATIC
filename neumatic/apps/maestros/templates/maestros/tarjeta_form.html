@@ -1,4 +1,4 @@
-<!-- neumatic\apps\maestros\templates\maestros\banco_form.html -->
+<!-- neumatic\apps\maestros\templates\maestros\tarjeta_form.html -->
 {% extends 'maestro_form.html' %}
 {% load static %}
 <!-- -------------------------------------------------------------------- -->
@@ -39,96 +39,32 @@
 												class="accordion-button py-2 " 
 												type="button" 
 												data-bs-toggle="collapse" 
-												data-bs-target="#Información_Banco" 
+												data-bs-target="#Información_Tarjeta" 
 												aria-expanded="true" 
-												aria-controls="Información_Banco">
-												<strong>Información Banco</strong>
+												aria-controls="Información_Tarjeta">
+												<strong>Información Tarjeta</strong>
 											</button>
 										</h2>
 										<div class="accordion-collapse collapse show"
-											id="Información_Banco">
+											id="Información_Tarjeta">
 											<div class="accordion-body bg-secondary-subtle">
 												
 												<div class="row">
 													<div class="col-md-2">
 														<label class="form-label text-primary mb-0">
-															{{ form.estatus_banco.label }}
+															{{ form.estatus_tarjeta.label }}
 														</label>
-														{{ form.estatus_banco }}
+														{{ form.estatus_tarjeta }}
 													</div>
 													
-													<div class="col-md-2">
+													<div class="col-md-4">
 														<label class="form-label text-primary mb-0">
-															{{ form.cuenta_banco.label }}
+															{{ form.nombre_tarjeta.label }}
 														</label>
-														{{ form.cuenta_banco }}
-													</div>
-													
-													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
-															{{ form.nombre_banco.label }}
-														</label>
-														{{ form.nombre_banco }}
-													</div>
-													
-													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
-															{{ form.numero_cuenta.label }}
-														</label>
-														{{ form.numero_cuenta }}
+														{{ form.nombre_tarjeta }}
 													</div>
 												</div>
 												<div class="row">
-													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
-															{{ form.cuit.label }}
-														</label>
-														{{ form.cuit }}
-													</div>
-													
-													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
-															{{ form.sucursal.label }}
-														</label>
-														{{ form.sucursal }}
-													</div>
-													
-													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
-															{{ form.codigo_postal.label }}
-														</label>
-														{{ form.codigo_postal }}
-													</div>
-													
-													<div class="col-md-3">
-														<label class="form-label text-primary mb-0">
-															{{ form.id_proveedor.label }}
-														</label>
-														{{ form.id_proveedor }}
-													</div>
-													
-													<div class="col-md-3">
-														<label class="form-label text-primary mb-0">
-															{{ form.id_moneda.label }}
-														</label>
-														{{ form.id_moneda }}
-													</div>
-												</div>
-												<div class="row">
-													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
-															{{ form.cbu.label }}
-														</label>
-														{{ form.cbu }}
-													</div>
-													
-													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
-															{{ form.cod_bco.label }}
-														</label>
-														{{ form.cod_bco }}
-													</div>
-													
 													<div class="col-md-2">
 														<label class="form-label text-primary mb-0">
 															{{ form.imputacion.label }}
@@ -138,16 +74,18 @@
 													
 													<div class="col-md-2">
 														<label class="form-label text-primary mb-0">
-															{{ form.tope.label }}
+															{{ form.banco_acreditacion.label }}
 														</label>
-														{{ form.tope }}
+														{{ form.banco_acreditacion }}
 													</div>
 													
-													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
-															{{ form.reporte.label }}
-														</label>
-														{{ form.reporte }}
+													<div class="col-md-2 d-flex align-items-center">
+														<div class="form-check mt-lg-3">
+															<label class="form-check-label form-label text-primary">
+																{{ form.propia }}
+																{{ form.propia.label }}
+															</label>
+														</div>
 													</div>
 												</div>
 											</div>

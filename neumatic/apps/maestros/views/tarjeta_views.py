@@ -1,16 +1,16 @@
-# neumatic\apps\maestros\views\banco_views.py
+# neumatic\apps\maestros\views\tarjeta_views.py
 from django.urls import reverse_lazy
 from ..views.cruds_views_generics import *
-from ..models.base_models import Banco
-from ..forms.banco_forms import BancoForm
+from ..models.base_models import Tarjeta
+from ..forms.tarjeta_forms import TarjetaForm
 
 
 class ConfigViews():
 	# Modelo
-	model = Banco
+	model = Tarjeta
 	
 	# Formulario asociado al modelo
-	form_class = BancoForm
+	form_class = TarjetaForm
 	
 	# Aplicación asociada al modelo
 	app_label = model._meta.app_label
@@ -53,39 +53,33 @@ class ConfigViews():
 
 class DataViewList():
 	search_fields = [
-		'cuenta_banco', 
-		'nombre_banco',
-		'numero_cuenta',
+		'nombre_tarjeta', 
 	]
 	
-	ordering = ['nombre_banco']
+	ordering = ['nombre_tarjeta']
 	
 	paginate_by = 8
 	  
 	table_headers = {
-		'estatus_banco': (1, 'Estatus'),
-		'cuenta_banco': (1, 'Cuenta'),
-		'nombre_banco': (2, 'Nombre Banco'),
-		'numero_cuenta': (2, 'Número Cuenta'),
-		'cod_bco': (1, 'Código Banco'),
-		'codigo_postal': (1, 'Código Postal'),
-		'id_moneda': (2, 'Moneda'),
+		'estatus_tarjeta': (1, 'Estatus'),
+		'nombre_tarjeta': (4, 'Nombre Tarjeta'),
+		'imputacion': (2, 'Imputación'),
+		'banco_acreditacion': (2, 'Bco. Acreditación'),
+		'propia': (1, 'Propia'),
 		
 		'acciones': (2, 'Acciones'),
 	}
 	
 	table_data = [
-		{'field_name': 'estatus_banco', 'date_format': None},
-		{'field_name': 'cuenta_banco', 'date_format': None},
-		{'field_name': 'nombre_banco', 'date_format': None},
-		{'field_name': 'numero_cuenta', 'date_format': None},
-		{'field_name': 'cod_bco', 'date_format': None},
-		{'field_name': 'codigo_postal', 'date_format': None},
-		{'field_name': 'id_moneda', 'date_format': None},
+		{'field_name': 'estatus_tarjeta', 'date_format': None},
+		{'field_name': 'nombre_tarjeta', 'date_format': None},
+		{'field_name': 'imputacion', 'date_format': None},
+		{'field_name': 'banco_acreditacion', 'date_format': None},
+		{'field_name': 'propia', 'date_format': None},
 	]
 
 
-class BancoListView(MaestroListView):
+class TarjetaListView(MaestroListView):
 	model = ConfigViews.model
 	template_name = ConfigViews.template_list
 	context_object_name = ConfigViews.context_object_name
@@ -105,7 +99,7 @@ class BancoListView(MaestroListView):
 	}
 
 
-class BancoCreateView(MaestroCreateView):
+class TarjetaCreateView(MaestroCreateView):
 	model = ConfigViews.model
 	list_view_name = ConfigViews.list_view_name
 	form_class = ConfigViews.form_class
@@ -116,7 +110,7 @@ class BancoCreateView(MaestroCreateView):
 	permission_required = ConfigViews.permission_add
 
 
-class BancoUpdateView(MaestroUpdateView):
+class TarjetaUpdateView(MaestroUpdateView):
 	model = ConfigViews.model
 	list_view_name = ConfigViews.list_view_name
 	form_class = ConfigViews.form_class
@@ -127,7 +121,7 @@ class BancoUpdateView(MaestroUpdateView):
 	permission_required = ConfigViews.permission_change
 
 
-class BancoDeleteView (MaestroDeleteView):
+class TarjetaDeleteView (MaestroDeleteView):
 	model = ConfigViews.model
 	list_view_name = ConfigViews.list_view_name
 	template_name = ConfigViews.template_delete

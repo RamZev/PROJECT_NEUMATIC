@@ -21,7 +21,6 @@ class Producto(ModeloBaseGenerico):
 								 verbose_name="Marca")
 	id_modelo = models.ForeignKey(ProductoModelo, on_delete=models.PROTECT, 
 								  verbose_name="Modelo")
-	# cai = models.CharField("CAI", max_length=20, null=True, blank=True)  # CAI del producto
 	id_cai = models.ForeignKey(ProductoCai, on_delete=models.PROTECT,
 								null=True, blank=True, verbose_name="CAI")  # CAI del producto
 	cai = models.CharField("Medida", max_length=21, null=True, blank=True)  # CAI del producto
@@ -36,9 +35,7 @@ class Producto(ModeloBaseGenerico):
 	alicuota_iva = models.DecimalField("Alícuota IVA", max_digits=4, 
 									   decimal_places=2, default=0.00,
 									   null=True, blank=True)  # Alicuota IVA
-	
 	id_alicuota_iva = models.ForeignKey(AlicuotaIva, on_delete=models.PROTECT, verbose_name="Alíc. IVA", default=1)
-	
 	precio = models.DecimalField("Precio", max_digits=15, decimal_places=2,
 							default=0.00, null=True, blank=True)  # Precio del producto
 	stock = models.IntegerField("Stock", null=True, blank=True)  # Stock disponible
@@ -53,11 +50,16 @@ class Producto(ModeloBaseGenerico):
 	descripcion_producto = models.CharField("Descripción", max_length=50)  # Descripción del producto
 	carrito = models.BooleanField("Carrito")  # Indica si el producto está en el carrito
 	
+	class Meta:
+		db_table = 'producto'
+		verbose_name = 'Producto'
+		verbose_name_plural = 'Productos'
+		ordering = ['nombre_producto']
+	
 	def __str__(self):
 		return self.nombre_producto
 	
 	def save(self, *args, **kwargs):
-		
 		#-- Identificar si el registro es nuevo antes de llamar a super().
 		es_nuevo = self.pk is None
 		
@@ -107,10 +109,6 @@ class Producto(ModeloBaseGenerico):
 		unidad_str = str(self.unidad) if self.unidad else ""
 		costo_str = str(self.costo) if self.costo else ""
 		descuento_str = str(self.descuento) if self.descuento else ""
-		# dalicuota_iva_str = str(self.alicuota_iva) if self.alicuota_iva else ""
-		
-		# if not re.match(r'^\d{1,5}$', str(self.codigo_producto)):
-		# 	errors.update({'codigo_producto': 'Debe indicar sólo dígitos numéricos positivos, mínimo 1 y máximo 5.'})
 		
 		if not re.match(r'^$|^20\d{2}(0[1-9]|1[0-2])$', fecha_fabricacion_str):
 			errors.update({'fecha_fabricacion': 'Debe indicar el dato en el formato AAAAMM (AAAA para el año, MM para el mes). Indicar año y mes válidos. El año debe iniciar en 20'})
@@ -124,19 +122,5 @@ class Producto(ModeloBaseGenerico):
 		if not re.match(r'^(0|[1-9]\d{0,13})(\.\d{1,2})?$|^$', descuento_str):
 			errors.update({'descuento': 'El valor debe ser positivo, con hasta 13 dígitos enteros y hasta 2 decimales, o estar en blanco o cero.'})
 		
-		# if not re.match(r'^(0|[1-9]\d{0,1})(\.\d{1,2})?$|^$', dalicuota_iva_str):
-		# 	errors.update({'alicuota_iva': 'El valor debe ser positivo, con hasta 2 dígitos enteros y hasta 2 decimales, o estar en blanco o cero.'})
-		
-		#-- Valida que mínimo sea: 0.01 y hasta 99.99
-		# if not re.match(r'^(0?[1-9]\.\d{2}|[1-9]\d\.\d{2}|0?0\.[1-9]\d|0?0\.0[1-9])$', str(self.alicuota_iva)):
-		# 	errors.update({'alicuota_iva': 'El valor debe ser positivo, con hasta 2 dígitos enteros y hasta 2 decimales.'})
-		
 		if errors:
 			raise ValidationError(errors)
-	
-	
-	class Meta:
-		db_table = 'producto'
-		verbose_name = 'Producto'
-		verbose_name_plural = 'Productos'
-		ordering = ['nombre_producto']

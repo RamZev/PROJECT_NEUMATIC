@@ -144,11 +144,11 @@ class DescuentoVendedor(ModeloBaseGenerico):
                              validators=[MinValueValidator(0.00), 
                                          MaxValueValidator(99.99)])
 	
-	def __str__(self):
-		return f'{self.id_marca} - {self.id_familia}'
-	
 	class Meta:
 		db_table = 'descuento_vendedor'
 		verbose_name = ('Descuento Vendedor')
 		verbose_name_plural = ('Descuentos Vendedor')
 		ordering = ['id_marca', 'id_familia']
+	
+	def __str__(self):
+		return f'{self.id_marca} - {self.id_familia}'

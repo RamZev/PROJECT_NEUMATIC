@@ -59,6 +59,12 @@ class Empresa(ModeloBaseGenerico):
 										max_digits=5, decimal_places=2, 
 										default=0.00, blank=True)
 	
+	class Meta:
+		db_table = 'empresa'
+		verbose_name = ('Empresa')
+		verbose_name_plural = ('Empresas')
+		ordering = ['nombre_fiscal']
+	
 	def __str__(self):
 		return self.nombre_fiscal
 	
@@ -101,10 +107,3 @@ class Empresa(ModeloBaseGenerico):
 		
 		if errors:
 			raise ValidationError(errors)
-	
-	
-	class Meta:
-		db_table = 'empresa'
-		verbose_name = ('Empresa')
-		verbose_name_plural = ('Empresas')
-		ordering = ['nombre_fiscal']

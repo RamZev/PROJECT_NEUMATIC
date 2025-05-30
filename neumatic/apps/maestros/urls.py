@@ -25,6 +25,9 @@ from .views.operario_views import *
 from .views.medio_pago_views import *
 from .views.punto_venta_views import *
 from .views.banco_views import *
+from .views.tarjeta_views import *
+from .views.codigo_retencion_views import *
+from .views.concepto_banco_views import *
 
 #-- Catálogos
 from .views.cliente_views import *
@@ -213,31 +216,49 @@ urlpatterns = [
 	path('numero/nueva/', NumeroCreateView.as_view(), name='numero_create'),
 	path('numero/<int:pk>/editar/', NumeroUpdateView.as_view(), name='numero_update'),
 	path('numero/<int:pk>/eliminar/', NumeroDeleteView.as_view(), name='numero_delete'),
- 
+	
 	#-- MedioPago.
 	path('medio_pago/', MedioPagoListView.as_view(), name='medio_pago_list'),
 	path('medio_pago/nueva/', MedioPagoCreateView.as_view(), name='medio_pago_create'),
 	path('medio_pago/<int:pk>/editar/', MedioPagoUpdateView.as_view(), name='medio_pago_update'),
 	path('medio_pago/<int:pk>/eliminar/', MedioPagoDeleteView.as_view(), name='medio_pago_delete'),
- 
+	
 	#-- PuntoVenta.
 	path('punto_venta/', PuntoVentaListView.as_view(), name='punto_venta_list'),
 	path('punto_venta/nueva/', PuntoVentaCreateView.as_view(), name='punto_venta_create'),
 	path('punto_venta/<int:pk>/editar/', PuntoVentaUpdateView.as_view(), name='punto_venta_update'),
 	path('punto_venta/<int:pk>/eliminar/', PuntoVentaDeleteView.as_view(), name='punto_venta_delete'),
- 
+	
 	#-- Valida.
 	path('valida/', ValidaListView.as_view(), name='valida_list'),
 	path('valida/nueva/', ValidaCreateView.as_view(), name='valida_create'),
 	path('valida/<int:pk>/editar/', ValidaUpdateView.as_view(), name='valida_update'),
 	path('valida/<int:pk>/eliminar/', ValidaDeleteView.as_view(), name='valida_delete'),
- 
+	
 	#-- Banco.
 	path('banco/', BancoListView.as_view(), name='banco_list'),
 	path('banco/nueva/', BancoCreateView.as_view(), name='banco_create'),
 	path('banco/<int:pk>/editar/', BancoUpdateView.as_view(), name='banco_update'),
 	path('banco/<int:pk>/eliminar/', BancoDeleteView.as_view(), name='banco_delete'),
- 
+	
+	#-- Tarjeta.
+	path('tarjeta/', TarjetaListView.as_view(), name='tarjeta_list'),
+	path('tarjeta/nueva/', TarjetaCreateView.as_view(), name='tarjeta_create'),
+	path('tarjeta/<int:pk>/editar/', TarjetaUpdateView.as_view(), name='tarjeta_update'),
+	path('tarjeta/<int:pk>/eliminar/', TarjetaDeleteView.as_view(), name='tarjeta_delete'),
+	
+	#-- Código de Retención.
+	path('codigo_retencion/', CodigoRetencionListView.as_view(), name='codigo_retencion_list'),
+	path('codigo_retencion/nueva/', CodigoRetencionCreateView.as_view(), name='codigo_retencion_create'),
+	path('codigo_retencion/<int:pk>/editar/', CodigoRetencionUpdateView.as_view(), name='codigo_retencion_update'),
+	path('codigo_retencion/<int:pk>/eliminar/', CodigoRetencionDeleteView.as_view(), name='codigo_retencion_delete'),
+	
+	#-- Concepto Banco.
+	path('concepto_banco/', ConceptoBancoListView.as_view(), name='concepto_banco_list'),
+	path('concepto_banco/nueva/', ConceptoBancoCreateView.as_view(), name='concepto_banco_create'),
+	path('concepto_banco/<int:pk>/editar/', ConceptoBancoUpdateView.as_view(), name='concepto_banco_update'),
+	path('concepto_banco/<int:pk>/eliminar/', ConceptoBancoDeleteView.as_view(), name='concepto_banco_delete'),
+	
 	#-- Otras rutas.
 	path('filtrar-localidad/', filtrar_localidad, name='filtrar_localidad'),
 	path('verificar-codigo-postal/', verificar_codigo_postal, name='verificar_codigo_postal'),

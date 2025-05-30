@@ -35,7 +35,6 @@ class Factura(ModeloBaseGenerico):
 		null=True,
 		blank=True
 	)
- 
 	id_punto_venta = models.ForeignKey(
 		PuntoVenta,
 		on_delete=models.PROTECT,
@@ -43,12 +42,12 @@ class Factura(ModeloBaseGenerico):
 		null=True,
 		blank=True
 	)
- 
 	jerarquia = models.CharField(
      	verbose_name="Jerarquía", 
       	max_length=1,
-     	null=True, blank=True)
- 
+     	null=True, 
+		blank=True
+	)
 	id_comprobante_venta = models.ForeignKey(
 		ComprobanteVenta,
 		on_delete=models.PROTECT,
@@ -98,41 +97,46 @@ class Factura(ModeloBaseGenerico):
 		null=True,
 		blank=True
 	)
- 
 	cuit = models.IntegerField(
 		verbose_name="CUIT",
 		null=True,
 		blank=True
 	)
- 
 	nombre_factura = models.CharField(
 		verbose_name="Nombre",
 		max_length=50,
 		null=True,
 		blank=True
 	)
- 
 	domicilio_factura = models.CharField(
 		verbose_name="Domicilio",
 		max_length=50,
 		null=True,
 		blank=True
 	)
- 
-	movil_factura = models.CharField("Móvil", max_length=15, null=True, blank=True)
-	email_factura = models.EmailField("Email*", max_length=50, null=True, blank=True)
- 
+	movil_factura = models.CharField(
+		verbose_name="Móvil", 
+		max_length=15, 
+		null=True, 
+		blank=True
+	)
+	email_factura = models.EmailField(
+		verbose_name="Email*", 
+		max_length=50, 
+		null=True, 
+		blank=True
+	)
 	condicion_comprobante = models.IntegerField(
 		verbose_name="Condición de Venta",
 		default=1,
 		choices=CONDICION_VENTA
 	)
- 
-	id_vendedor = models.ForeignKey(Vendedor, 
-									on_delete=models.PROTECT,
-									null=True, blank=True,
-									verbose_name="Vendedor")
- 
+	id_vendedor = models.ForeignKey(
+		Vendedor, 
+		on_delete=models.PROTECT,
+		null=True, blank=True,
+		verbose_name="Vendedor"
+	)
 	gravado = models.DecimalField(
 		verbose_name="Gravado",
 		max_digits=14,
@@ -270,17 +274,24 @@ class Factura(ModeloBaseGenerico):
 		null=True,
 		blank=True
 	)
-	
-	def __str__(self):
-		numero = str(self.numero_comprobante).strip().zfill(12)
-		return f"{self.id_comprobante_venta.codigo_comprobante_venta} {self.letra_comprobante} {numero[:4]}-{numero[4:]}"
-	
+	efectivo_recibo = models.DecimalField(
+		verbose_name="Efectivo",
+		max_digits=14,
+		decimal_places=2,
+		null=True,
+		blank=True,
+		default=0.0
+	)
 	
 	class Meta:
 		db_table = "factura"
 		verbose_name = ('Factura')
 		verbose_name_plural = ('Facturas')
 		# ordering = ['id_factura']
+	
+	def __str__(self):
+		numero = str(self.numero_comprobante).strip().zfill(12)
+		return f"{self.id_comprobante_venta.codigo_comprobante_venta} {self.letra_comprobante} {numero[:4]}-{numero[4:]}"
 
 
 class DetalleFactura(ModeloBaseGenerico):
@@ -306,14 +317,12 @@ class DetalleFactura(ModeloBaseGenerico):
 		null=True,
 		blank=True
 	)
- 
 	producto_venta = models.CharField(
      	"Nombre producto", 
       	max_length=50,
 		null=True,
 		blank=True
     )
- 
 	cantidad = models.DecimalField(
 		verbose_name="Cantidad",
 		max_digits=7,
@@ -409,15 +418,14 @@ class DetalleFactura(ModeloBaseGenerico):
 		blank=True
 	)
 	
-	def __str__(self):
-		return self.id_detalle_factura
-	
-	
 	class Meta:
 		db_table = "detalle_factura"
 		verbose_name = ('Detalle Factura')
 		verbose_name_plural = ('Detalles Factura')
 		# ordering = ['id_detalle_factura']
+	
+	def __str__(self):
+		return self.id_detalle_factura
 
 
 class SerialFactura(ModeloBaseGenerico):
@@ -437,13 +445,11 @@ class SerialFactura(ModeloBaseGenerico):
 		null=True,
 		blank=True
     )
-
-	
-	def __str__(self):
-		return self.producto_serial
-	
 	
 	class Meta:
 		db_table = "serial_factura"
 		verbose_name = ('Detalle Serial')
 		verbose_name_plural = ('Detalles Serial')
+	
+	def __str__(self):
+		return self.producto_serial

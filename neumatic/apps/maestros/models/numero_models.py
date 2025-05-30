@@ -23,6 +23,12 @@ class Numero(ModeloBaseGenerico):
 	lineas = models.IntegerField("Líneas")
 	copias = models.IntegerField("Copias")
 	
+	class Meta:
+		db_table = 'numero'
+		verbose_name = 'Número de Comprobante'
+		verbose_name_plural = 'Números de Comprobante'
+		ordering = ['id_punto_venta__punto_venta', 'comprobante']
+	
 	def __str__(self):
 		return self.comprobante
 	
@@ -42,10 +48,3 @@ class Numero(ModeloBaseGenerico):
 		
 		if errors:
 			raise ValidationError(errors)
-	
-	
-	class Meta:
-		db_table = 'numero'
-		verbose_name = 'Número de Comprobante'
-		verbose_name_plural = 'Números de Comprobante'
-		ordering = ['id_punto_venta__punto_venta', 'comprobante']

@@ -11,7 +11,7 @@ from bs4.formatter import HTMLFormatter
 from estructuras_maestros import estructura_campos
 
 # Agregar la ruta del directorio principal del proyecto al sys.path
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..\..')))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..\\..')))
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "neumatic.settings")
 
@@ -64,7 +64,7 @@ primera_iteracion = True
 
 #-- Insertar elementos del acordeón.
 for seccion, filas in estructura_campos.items():
-		html_code += f"""
+		html_code += f"""									
 									<div class="accordion-item">
 										<h2 class="accordion-header">
 											<button 
@@ -84,8 +84,9 @@ for seccion, filas in estructura_campos.items():
 		
 		#-- Insertar elementos fila.
 		for fila, campos in filas.items():
-				html_code += '''
-												<div class="row">'''
+				html_code += '''										
+												<div class="row">
+								'''
 				
 				#-- Insertar inputs.
 				for campo in campos:
@@ -94,7 +95,7 @@ for seccion, filas in estructura_campos.items():
 						
 						match campo.get('design'):
 							case "checkbox":
-								html_code += f"""
+								html_code += f"""					
 													<div class="col-md-{columna} d-flex align-items-center">
 														<div class="form-check mt-lg-3">
 															<label class="form-check-label form-label text-primary">
@@ -105,7 +106,7 @@ for seccion, filas in estructura_campos.items():
 													</div>
 								"""
 							case _:
-								html_code += f"""
+								html_code += f"""					
 													<div class="col-md-{columna}">
 														<label class="form-label text-primary mb-0">
 															{{{{ form.{field_name}.label }}}}
@@ -125,7 +126,7 @@ for seccion, filas in estructura_campos.items():
 		primera_iteracion = False
 
 # Continuación del código HTML
-html_code += """
+html_code += """						
 								</div>
 								
 								<div class="container mt-3">

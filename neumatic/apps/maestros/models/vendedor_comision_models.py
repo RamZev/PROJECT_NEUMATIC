@@ -1,6 +1,5 @@
 # neumatic\apps\maestros\models\vendedor_comision_models.py
 from django.db import models
-from django.core.exceptions import ValidationError
 
 from datetime import date
 
@@ -25,14 +24,13 @@ class VendedorComision(ModeloBaseGenerico):
 		"Fecha Registro", default=date.today
 	)
 	
-	def __str__(self):
-		return f'{self.id_vendedor}'
-	
-	
 	class Meta:
 		db_table = "vendedor_comision"
 		verbose_name = ('Vendedor Comisión')
 		verbose_name_plural = ('Vendedor Comisiones')
+	
+	def __str__(self):
+		return f'{self.id_vendedor}'
 
 
 class DetalleVendedorComision(ModeloBaseGenerico):
@@ -57,13 +55,13 @@ class DetalleVendedorComision(ModeloBaseGenerico):
 		decimal_places=2,
 		null=True,
 		blank=True,
-		default=0.0)
-	
-	def __str__(self):
-		return f'{self.id_detalle_vendedor_comision}'
-	
+		default=0.0
+	)
 	
 	class Meta:
 		db_table = "detalle_vendedor_comision"
 		verbose_name = ('Detalle Vendedor Comisión')
 		verbose_name_plural = ('Detalles Vendedor Comisiones')
+	
+	def __str__(self):
+		return f'{self.id_detalle_vendedor_comision}'

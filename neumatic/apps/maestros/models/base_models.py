@@ -17,14 +17,14 @@ class Actividad(ModeloBaseGenerico):
 	descripcion_actividad = models.CharField("Descripción actividad",
 											 max_length=30)
 	
-	def __str__(self):
-		return self.descripcion_actividad
-	
 	class Meta:
 		db_table = 'actividad'
 		verbose_name = ('Actividad')
 		verbose_name_plural = ('Actividades')
 		ordering = ['descripcion_actividad']
+	
+	def __str__(self):
+		return self.descripcion_actividad
 
 
 class ProductoDeposito(ModeloBaseGenerico):
@@ -35,14 +35,14 @@ class ProductoDeposito(ModeloBaseGenerico):
 									verbose_name="Sucursal")
 	nombre_producto_deposito = models.CharField("Nombre", max_length=50)
 	
-	def __str__(self):
-		return self.nombre_producto_deposito
-	
 	class Meta:
 		db_table = 'producto_deposito'
 		verbose_name = 'Producto Depósito'
 		verbose_name_plural = 'Producto Depósitos'
 		ordering = ['nombre_producto_deposito']
+	
+	def __str__(self):
+		return self.nombre_producto_deposito
 
 
 class ProductoFamilia(ModeloBaseGenerico):
@@ -57,6 +57,12 @@ class ProductoFamilia(ModeloBaseGenerico):
 												 default=False)
 	info_michelin_camion = models.BooleanField("Info. Michelin camión", 
 												 default=False)
+	
+	class Meta:
+		db_table = 'producto_familia'
+		verbose_name = ('Familia de Producto')
+		verbose_name_plural = ('Familias de Producto')
+		ordering = ['nombre_producto_familia']
 	
 	def __str__(self):
 		return self.nombre_producto_familia
@@ -73,13 +79,6 @@ class ProductoFamilia(ModeloBaseGenerico):
 		
 		if errors:
 			raise ValidationError(errors)
-	
-	
-	class Meta:
-		db_table = 'producto_familia'
-		verbose_name = ('Familia de Producto')
-		verbose_name_plural = ('Familias de Producto')
-		ordering = ['nombre_producto_familia']
 
 
 class Moneda(ModeloBaseGenerico):
@@ -90,20 +89,20 @@ class Moneda(ModeloBaseGenerico):
 	cotizacion_moneda = models.DecimalField("Cotización", max_digits=15,
 											decimal_places=4,
 											validators=[MinValueValidator(1),
-						 									MaxValueValidator(99999999999.9999)])
+						 								MaxValueValidator(99999999999.9999)])
 	simbolo_moneda = models.CharField("Símbolo", max_length=3)
 	ws_afip = models.CharField("WS AFIP", max_length=3)
 	predeterminada = models.BooleanField("Predeterminada", null=True,
 										 blank=True, default=False)
-
-	def __str__(self):
-		return self.nombre_moneda
-
+	
 	class Meta:
 		db_table = 'moneda'
 		verbose_name = ('Moneda')
 		verbose_name_plural = ('Monedas')
 		ordering = ['nombre_moneda']
+	
+	def __str__(self):
+		return self.nombre_moneda
 
 
 class ProductoMarca(ModeloBaseGenerico):
@@ -119,14 +118,14 @@ class ProductoMarca(ModeloBaseGenerico):
 	id_moneda = models.ForeignKey(Moneda, on_delete=models.PROTECT,
 									verbose_name="Moneda")
 	
-	def __str__(self):
-		return self.nombre_producto_marca
-	
 	class Meta:
 		db_table = 'producto_marca'
 		verbose_name = ('Marca de Producto')
 		verbose_name_plural = ('Marcas de Producto')
 		ordering = ['nombre_producto_marca']
+	
+	def __str__(self):
+		return self.nombre_producto_marca
 
 
 class ProductoModelo(ModeloBaseGenerico):
@@ -134,15 +133,15 @@ class ProductoModelo(ModeloBaseGenerico):
 	estatus_modelo = models.BooleanField("Estatus", default=True,
 										 choices=ESTATUS_GEN)  # Estatus del modelo
 	nombre_modelo = models.CharField("Nombre", max_length=50)
-
-	def __str__(self):
-		return self.nombre_modelo
-
+	
 	class Meta:
 		db_table = 'producto_modelo'
 		verbose_name = 'Modelo de Producto'
 		verbose_name_plural = 'Modelos de Producto'
 		ordering = ['nombre_modelo']
+	
+	def __str__(self):
+		return self.nombre_modelo
 
 
 class ProductoCai(ModeloBaseGenerico):
@@ -153,35 +152,33 @@ class ProductoCai(ModeloBaseGenerico):
 	descripcion_cai = models.CharField("Descripción CAI", max_length=50, 
 										null=True, blank=True)
 	
-	def __str__(self):
-		return self.cai
-	
-	
 	class Meta:
 		db_table = 'producto_cai'
 		verbose_name = 'CAI'
 		verbose_name_plural = 'CAIs de Productos'
 		ordering = ['cai']
-
 	
+	def __str__(self):
+		return self.cai
+
+
 class ProductoMinimo(ModeloBaseGenerico):
 	id_producto_minimo = models.AutoField(primary_key=True)
-	# cai = models.CharField("CAI", max_length=20)
 	id_cai = models.ForeignKey(ProductoCai, on_delete=models.PROTECT, 
 								verbose_name="CAI")
 	minimo = models.IntegerField("Mínimo", default=0)
 	id_deposito = models.ForeignKey('ProductoDeposito',
 									on_delete=models.CASCADE,
 									verbose_name="Depósito")
-
-	def __str__(self):
-		return f'{self.id_cai} - Min: {self.minimo}'
-
+	
 	class Meta:
 		db_table = 'producto_minimo'
 		verbose_name = 'Producto Mínimo'
 		verbose_name_plural = 'Productos Mínimos'
 		ordering = ['id_producto_minimo']
+	
+	def __str__(self):
+		return f'{self.id_cai} - Min: {self.minimo}'
 
 
 class ProductoStock(ModeloBaseGenerico):
@@ -193,16 +190,16 @@ class ProductoStock(ModeloBaseGenerico):
 	stock = models.IntegerField("Stock", default=0)
 	minimo = models.IntegerField("Mínimo",default=0)
 	fecha_producto_stock = models.DateField("Fecha Stock")
-
-	def __str__(self):
-		return f'Producto {self.id_producto} - Stock: {self.stock} - \
-			Depósito: {self.id_deposito}'
-
+	
 	class Meta:
 		db_table = 'producto_stock'
 		verbose_name = 'Producto Stock'
 		verbose_name_plural = 'Productos Stock'
 		ordering = ['id_producto_stock']
+	
+	def __str__(self):
+		return f'Producto {self.id_producto} - Stock: {self.stock} - \
+			Depósito: {self.id_deposito}'
 
 
 class ProductoEstado(ModeloBaseGenerico):
@@ -212,6 +209,12 @@ class ProductoEstado(ModeloBaseGenerico):
 	estado_producto = models.CharField("Estado Producto", max_length=1, 
 										unique=True)
 	nombre_producto_estado = models.CharField("Nombre", max_length=15)
+	
+	class Meta:
+		db_table = 'producto_estado'
+		verbose_name = 'Estado de Producto'
+		verbose_name_plural = 'Estados de Productos'
+		ordering = ['nombre_producto_estado']
 	
 	def __str__(self):
 		return self.nombre_producto_estado
@@ -226,13 +229,6 @@ class ProductoEstado(ModeloBaseGenerico):
 			raise ValidationError(errors)
 		
 		return super().clean()
-	
-	
-	class Meta:
-		db_table = 'producto_estado'
-		verbose_name = 'Estado de Producto'
-		verbose_name_plural = 'Estados de Productos'
-		ordering = ['nombre_producto_estado']
 
 
 class ComprobanteVenta(ModeloBaseGenerico):
@@ -265,6 +261,12 @@ class ComprobanteVenta(ModeloBaseGenerico):
 	remito = models.BooleanField("Remito", default=False, blank=True, null=True)
 	recibo = models.BooleanField("Recibo", default=False, blank=True, null=True)
 	
+	class Meta:
+		db_table = 'comprobante_venta'
+		verbose_name = 'Comprobante de Venta'
+		verbose_name_plural = 'Comprobantes de Venta'
+		ordering = ['nombre_comprobante_venta']
+	
 	def __str__(self):
 		return self.nombre_comprobante_venta
 	
@@ -296,12 +298,6 @@ class ComprobanteVenta(ModeloBaseGenerico):
 			raise ValidationError(errors)
 		
 		return super().clean()
-	
-	class Meta:
-		db_table = 'comprobante_venta'
-		verbose_name = 'Comprobante de Venta'
-		verbose_name_plural = 'Comprobantes de Venta'
-		ordering = ['nombre_comprobante_venta']
 
 
 class ComprobanteCompra(ModeloBaseGenerico):
@@ -320,6 +316,12 @@ class ComprobanteCompra(ModeloBaseGenerico):
 	codigo_afip_b = models.CharField("Código AFIP B", max_length=3)
 	codigo_afip_c = models.CharField("Código AFIP C", max_length=3)
 	codigo_afip_m = models.CharField("Código AFIP M", max_length=3)
+	
+	class Meta:
+		db_table = 'comprobante_compra'
+		verbose_name = 'Comprobante de Compra'
+		verbose_name_plural = 'Comprobantes de Compra'
+		ordering = ['nombre_comprobante_compra']
 	
 	def __str__(self):
 		return self.nombre_comprobante_compra
@@ -346,12 +348,6 @@ class ComprobanteCompra(ModeloBaseGenerico):
 			raise ValidationError(errors)
 		
 		return super().clean()
-	
-	class Meta:
-		db_table = 'comprobante_compra'
-		verbose_name = 'Comprobante de Compra'
-		verbose_name_plural = 'Comprobantes de Compra'
-		ordering = ['nombre_comprobante_compra']
 
 
 class Provincia(ModeloBaseGenerico):
@@ -360,15 +356,15 @@ class Provincia(ModeloBaseGenerico):
 											choices=ESTATUS_GEN)
 	codigo_provincia = models.CharField("Código", max_length=2, unique=True)
 	nombre_provincia = models.CharField("Nombre", max_length=30)
-
-	def __str__(self):
-		return self.nombre_provincia
-
+	
 	class Meta:
 		db_table = 'provincia'
 		verbose_name = ('Provincia')
 		verbose_name_plural = ('Provincias')
 		ordering = ['nombre_provincia']
+	
+	def __str__(self):
+		return self.nombre_provincia
 
 
 class Localidad(ModeloBaseGenerico):
@@ -380,14 +376,14 @@ class Localidad(ModeloBaseGenerico):
 	id_provincia = models.ForeignKey('Provincia', on_delete=models.CASCADE,
 									 verbose_name="Provincia")
 	
-	def __str__(self):
-		return self.nombre_localidad
-	
 	class Meta:
 		db_table = 'localidad'
 		verbose_name = ('Localidad')
 		verbose_name_plural = ('Localidades')
 		ordering = ['codigo_postal']
+	
+	def __str__(self):
+		return self.nombre_localidad
 
 
 class TipoDocumentoIdentidad(ModeloBaseGenerico):
@@ -400,15 +396,15 @@ class TipoDocumentoIdentidad(ModeloBaseGenerico):
 												unique=True)
 	codigo_afip = models.CharField("Código AFIP", max_length=2)
 	ws_afip = models.CharField("WS AFIP", max_length=2)
-
-	def __str__(self):
-		return self.nombre_documento_identidad
-
+	
 	class Meta:
 		db_table = 'tipo_documento_identidad'
 		verbose_name = ('Tipo de Documento de Identidad')
 		verbose_name_plural = ('Tipos de Documentos de Identidad')
 		ordering = ['tipo_documento_identidad']
+	
+	def __str__(self):
+		return self.nombre_documento_identidad
 
 
 class TipoIva(ModeloBaseGenerico):
@@ -419,10 +415,16 @@ class TipoIva(ModeloBaseGenerico):
 	nombre_iva = models.CharField("Nombre", max_length=25)
 	discrimina_iva = models.BooleanField("Discrimina IVA", null=True,
 										 blank=True)
-
+	
+	class Meta:
+		db_table = 'tipo_iva'
+		verbose_name = ('Tipo de IVA')
+		verbose_name_plural = ('Tipos de IVA')
+		ordering = ['nombre_iva']
+	
 	def __str__(self):
 		return self.nombre_iva
-
+	
 	def clean(self):
 		errors = {}
 		
@@ -433,13 +435,6 @@ class TipoIva(ModeloBaseGenerico):
 			raise ValidationError(errors)
 		
 		return super().clean()
-	
-	
-	class Meta:
-		db_table = 'tipo_iva'
-		verbose_name = ('Tipo de IVA')
-		verbose_name_plural = ('Tipos de IVA')
-		ordering = ['nombre_iva']
 
 
 class TipoPercepcionIb(ModeloBaseGenerico):
@@ -455,16 +450,16 @@ class TipoPercepcionIb(ModeloBaseGenerico):
 	minimo = models.DecimalField("Mínimo", max_digits=15, decimal_places=2, 
 								null=True, blank=True, default=0.00)
 	neto_total = models.BooleanField("Neto total", null=True, blank=True)
-
-	def __str__(self):
-		return self.descripcion_tipo_percepcion_ib
-
+	
 	class Meta:
 		db_table = 'tipo_percepcion_ib'
 		verbose_name = ('Tipo de Percepción IB')
 		verbose_name_plural = ('Tipos de Percepción IB')
 		ordering = ['descripcion_tipo_percepcion_ib']
-
+	
+	def __str__(self):
+		return self.descripcion_tipo_percepcion_ib
+	
 	def clean(self):
 		super().clean()
 		
@@ -503,7 +498,13 @@ class TipoRetencionIb(ModeloBaseGenerico):
 								null=True, blank=True, default=0.00)
 	minimo = models.DecimalField("Mínimo", max_digits=15, decimal_places=2, 
 								null=True, blank=True, default=0.00)
-
+	
+	class Meta:
+		db_table = 'tipo_retencion_ib'
+		verbose_name = ('Tipo de Retención IB')
+		verbose_name_plural = ('Tipos de Retención IB')
+		ordering = ['descripcion_tipo_retencion_ib']
+	
 	def __str__(self):
 		return self.descripcion_tipo_retencion_ib
 	
@@ -533,13 +534,6 @@ class TipoRetencionIb(ModeloBaseGenerico):
 			raise ValidationError(errors)
 
 
-	class Meta:
-		db_table = 'tipo_retencion_ib'
-		verbose_name = ('Tipo de Retención IB')
-		verbose_name_plural = ('Tipos de Retención IB')
-		ordering = ['descripcion_tipo_retencion_ib']
-
-
 class Operario(ModeloBaseGenerico):
 	id_operario = models.AutoField(primary_key=True)
 	estatus_operario = models.BooleanField("Estatus", default=True,
@@ -548,14 +542,14 @@ class Operario(ModeloBaseGenerico):
 	telefono_operario = models.CharField("Teléfono", max_length=15)
 	email_operario = models.CharField("Correo", max_length=50)
 	
-	def __str__(self):
-		return self.nombre_operario
-	
 	class Meta:
 		db_table = 'operario'
 		verbose_name = ('Operario')
 		verbose_name_plural = ('Operarios')
 		ordering = ['nombre_operario']
+	
+	def __str__(self):
+		return self.nombre_operario
 
 
 class MedioPago(ModeloBaseGenerico):
@@ -568,19 +562,18 @@ class MedioPago(ModeloBaseGenerico):
 											choices=CONDICION_PAGO)
 	plazo_medio_pago = models.IntegerField("Plazo medio de Pago")
 	
+	class Meta:
+		db_table = 'medio_pago'
+		verbose_name = 'Medio de Pago'
+		verbose_name_plural = 'Medios de Pago'
+		ordering = ['nombre_medio_pago']
+	
 	def __str__(self):
 		return self.nombre_medio_pago
 	
 	@property
 	def condicion_medio_pago_display(self):
 		return self.get_condicion_medio_pago_display()
-	
-	
-	class Meta:
-		db_table = 'medio_pago'
-		verbose_name = 'Medio de Pago'
-		verbose_name_plural = 'Medios de Pago'
-		ordering = ['nombre_medio_pago']
 
 
 class PuntoVenta(ModeloBaseGenerico):
@@ -594,6 +587,12 @@ class PuntoVenta(ModeloBaseGenerico):
 	descripcion_punto_venta = models.CharField("Descripción Pto. Venta",
 												max_length=50, 
 												null=True, blank=True)
+	
+	class Meta:
+		db_table = 'punto_venta'
+		verbose_name = 'Punto de Venta'
+		verbose_name_plural = 'Puntos de Venta'
+		ordering = ['punto_venta']
 	
 	def __str__(self):
 		return f'{self.id_sucursal} {self.punto_venta}'
@@ -617,13 +616,6 @@ class PuntoVenta(ModeloBaseGenerico):
 			raise ValidationError(errors)
 		
 		return super().clean()
-	
-	
-	class Meta:
-		db_table = 'punto_venta'
-		verbose_name = 'Punto de Venta'
-		verbose_name_plural = 'Puntos de Venta'
-		ordering = ['punto_venta']
 
 
 class AlicuotaIva(ModeloBaseGenerico):
@@ -638,12 +630,18 @@ class AlicuotaIva(ModeloBaseGenerico):
 											max_length=50, null=True, 
 											blank=True)
 	
+	class Meta:
+		db_table = 'codigo_alicuota'
+		verbose_name = 'Alícuota IVA'
+		verbose_name_plural = 'Alícuotas IVA'
+		ordering = ['alicuota_iva']
+	
 	def __str__(self):
 		return f"{self.alicuota_iva:3.2f}%"
 	
 	def clean(self):
 		errors = {}
-
+		
 		#-- Limpiar y formatear el valor de `codigo_alicuota` con ceros a la izquierda.
 		if self.codigo_alicuota:
 			try:
@@ -658,19 +656,10 @@ class AlicuotaIva(ModeloBaseGenerico):
 		
 		if errors:
 			raise ValidationError(errors)
-
+		
 		return super().clean()
-	
-	
-	class Meta:
-		db_table = 'codigo_alicuota'
-		verbose_name = 'Alícuota IVA'
-		verbose_name_plural = 'Alícuotas IVA'
-		ordering = ['alicuota_iva']
 
 
-# Modelos nuevos
-# Modelo Banco
 class Banco(ModeloBaseGenerico):
 	id_banco = models.AutoField(primary_key=True)
 	estatus_banco = models.BooleanField("Estatus", default=True,
@@ -702,6 +691,12 @@ class Banco(ModeloBaseGenerico):
 	id_moneda = models.ForeignKey(Moneda, on_delete=models.PROTECT,
 									verbose_name="Moneda", null=True, blank=True)
 	
+	class Meta:
+		db_table = 'banco'
+		verbose_name = ('Banco')
+		verbose_name_plural = ('Bancos')
+		ordering = ['nombre_banco']    
+	
 	def __str__(self):
 		return f'{self.cuenta_banco} - {self.nombre_banco}'
 	
@@ -717,15 +712,12 @@ class Banco(ModeloBaseGenerico):
 			#-- Agrego el error al dicciobario errors.
 			errors['cuit'] = e.messages
 		
+		if not self.nombre_banco:
+			errors.update({'nombre_banco': "Debe indicar un nombre."})
+		
 		if errors:
 			#-- Lanza el conjunto de excepciones.
 			raise ValidationError(errors)
-	
-	class Meta:
-		db_table = 'banco'
-		verbose_name = ('Banco')
-		verbose_name_plural = ('Bancos')
-		ordering = ['nombre_banco']    
 
 
 class Tarjeta(ModeloBaseGenerico):
@@ -734,51 +726,91 @@ class Tarjeta(ModeloBaseGenerico):
 										choices=ESTATUS_GEN)
 	nombre_tarjeta = models.CharField("Nombre Tarjeta", max_length=30,
 								   null=True, blank=True)
-	imputation = models.IntegerField("Cód. Imputación",
+	imputacion = models.IntegerField("Cód. Imputación",
 									null=True, blank=True)
 	banco_acreditacion = models.IntegerField("Banco",
 									null=True, blank=True)
 	propia = models.BooleanField("Propia", default=False)
-	
-	def __str__(self):
-		return self.nombre_tarjeta
 	
 	class Meta:
 		db_table = 'tarjeta'
 		verbose_name = ('Tarjeta')
 		verbose_name_plural = ('Tarjetas')
 		ordering = ['nombre_tarjeta']    
+	
+	def __str__(self):
+		return self.nombre_tarjeta
+	
+	def clean(self):
+		errors = {}
+		
+		if not self.nombre_tarjeta:
+			errors.update({'nombre_tarjeta': "Debe indicar un nombre."})
+		
+		if errors:
+			raise ValidationError(errors)
+		
+		return super().clean()
 
 
 class CodigoRetencion(ModeloBaseGenerico):
-	id_codigo_retencion = models.CharField(primary_key=True, max_length=2)
+	# id_codigo_retencion = models.CharField(primary_key=True, max_length=2)
+	id_codigo_retencion = models.AutoField(primary_key=True)
 	estatus_cod_retencion = models.BooleanField("Estatus", default=True,
 												choices=ESTATUS_GEN)
 	nombre_codigo_retencion = models.CharField("Nombre Cód. Ret.", max_length=30,
 												null=True, blank=True)
-	imputacion = models.IntegerField("Cód. Imputación",
+	imputacion = models.IntegerField("Cód. Imputación", default=0,
 									null=True, blank=True)
-	
-	def __str__(self):
-		return self.nombre_codigo_retencion
 	
 	class Meta:
 		db_table = 'codigo_retencion'
 		verbose_name = ('Codigo Retención')
 		verbose_name_plural = ('Codigos Retención')
 		ordering = ['nombre_codigo_retencion']
+	
+	def __str__(self):
+		return self.nombre_codigo_retencion
+	
+	def clean(self):
+		errors = {}
+		
+		if not self.nombre_codigo_retencion:
+			errors.update({'nombre_codigo_retencion': "Debe indicar un nombre."})
+		
+		if errors:
+			raise ValidationError(errors)
+		
+		return super().clean()
 
 
 class ConceptoBanco(ModeloBaseGenerico):
-    id_concepto_banco = models.AutoField(primary_key=True, verbose_name="ID")
-    nombre_concepto_banco = models.CharField(max_length=30, verbose_name="Descripción")
-    factor = models.IntegerField(verbose_name="Factor")
+	id_concepto_banco = models.AutoField(primary_key=True)
+	estatus_concepto_banco = models.BooleanField("Estatus", default=True,
+												choices=ESTATUS_GEN)
+	nombre_concepto_banco = models.CharField("Descripción", max_length=30,
+										  	null=True, blank=True)
+	factor = models.IntegerField("Factor")
 	
-    class Meta:
-        db_table = 'concepto_banco'
-        verbose_name = 'Concepto Bancario'
-        verbose_name_plural = 'Conceptos Bancarios'
-        ordering = ['nombre_concepto_banco']
+	class Meta:
+		db_table = 'concepto_banco'
+		verbose_name = 'Concepto Bancario'
+		verbose_name_plural = 'Conceptos Bancarios'
+		ordering = ['nombre_concepto_banco']
 	
-    def __str__(self):
-        return self.nombre_concepto_banco
+	def __str__(self):
+		return self.nombre_concepto_banco
+	
+	def clean(self):
+		errors = {}
+		
+		if not self.nombre_concepto_banco:
+			errors.update({'nombre_concepto_banco': "Debe indicar un nombre."})
+		
+		if self.factor != -1 and self.factor != 0 and self.factor != 1:
+			errors.update({'factor': "Los valores permitidos son: -1, 0 y 1"})
+		
+		if errors:
+			raise ValidationError(errors)
+		
+		return super().clean()

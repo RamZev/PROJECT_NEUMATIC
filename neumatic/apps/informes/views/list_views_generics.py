@@ -22,8 +22,6 @@ class InformeListView(ListView):
 	table_data = []
 	pagination_options = [8, 20, 30, 40, 50]
 	
-	# context_object_name = 'objetos'  # Cambia object_list por objetos
-	
 	def get_queryset(self):
 		#-- Acá ya determina el Modelo con el que se trabaja.
 		#-- Obtiene todos los registros sin filtro.
@@ -41,22 +39,10 @@ class InformeListView(ListView):
 			except ValueError:
 				pass
 		
-		# #-- Obtener la cadena de filtro (Propuesto y recomendado por ChatGPT).
-		# query = self.request.GET.get('busqueda', None)
-		# 
-		# if query:
-		# 	#-- Generar filtros dinámicamente.
-		# 	search_conditions = Q()
-		# 	for field in self.search_fields:
-		# 		search_conditions |= Q(**{f"{field}__icontains": query})
-		# 	
-		# 	queryset = queryset.filter(search_conditions)
-		
 		return queryset.order_by(*self.ordering)
 		
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
-		# context["busqueda"] = self.request.GET.get('busqueda', '')
 		
 		#-- Agregar valores de paginación y valor seleccionado.
 		context['pagination_options'] = self.pagination_options

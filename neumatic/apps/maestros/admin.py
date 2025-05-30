@@ -1,3 +1,4 @@
+# neumatic\apps\maestros\admin.py
 from django.contrib import admin
 
 from .models.cliente_models import Cliente
@@ -39,6 +40,6 @@ admin.site.register(TipoIva)
 admin.site.register(TipoPercepcionIb)
 admin.site.register(TipoRetencionIb)
 admin.site.register(Banco)
-
-
-
+admin.site.register(Tarjeta)
+admin.site.register(CodigoRetencion)
+admin.site.register(ConceptoBanco)

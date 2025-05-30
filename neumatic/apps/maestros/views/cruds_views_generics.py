@@ -61,28 +61,8 @@ class MaestroListView(ListView):
 		
 		return queryset.order_by(*self.ordering)
 		
-		''' Método original de Ricardo y Leoncio. (No seguro)
-		#-- Crear la cadena de filtro en base a la lista search_fields-
-		cadena_filtro = ""
-		for field in self.search_fields:
-			expression = f"Q({field}__icontains='{query}')"
-			cadena_filtro += expression + " | "
-		
-		#-- Eliminar el último " | " en la cadena de filtro.
-		cadena_filtro = "(" + cadena_filtro[:-3] + ")"
-		
-		#-- Ejecutar la consulta.
-		if query and cadena_filtro:
-			queryset = queryset.filter(eval(cadena_filtro))
-		
-		# Ordenar el queryset según la lista ordering
-		queryset = queryset.order_by(*self.ordering)
-		
-		return queryset'''
-	
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
-		# context["busqueda"] = self.request.GET.get('busqueda', '') #-- No hace falta porque ya está en query_params.
 		
 		#-- Agregar valores de paginación y valor seleccionado.
 		context['pagination_options'] = self.pagination_options
@@ -253,22 +233,6 @@ class MaestroUpdateView(PermissionRequiredMixin, UpdateView):
 @method_decorator(login_required, name='dispatch')
 class MaestroDeleteView(PermissionRequiredMixin, DeleteView):
 	list_view_name = None
-	
-	# def get_context_data(self, **kwargs):
-	# 	#-- Llamar al contexto base.
-	# 	context = super().get_context_data(**kwargs)
-	# 	
-	# 	#-- Obtener el objeto que se está eliminando.
-	# 	registro = self.get_object()
-	# 	
-	# 	#-- Agregar datos comunes al contexto.
-	# 	context.update({
-	# 		"accion": f"Eliminar {self.model._meta.verbose_name} - {registro.pk}",
-	# 		"list_view_name": self.list_view_name,
-	# 		"mensaje": "Estás seguro de eliminar el Registro"
-	# 	})
-	# 	
-	# 	return context	
 	
 	#-- Método que agrega mensaje cuando no tiene permiso de eliminar.
 	def handle_no_permission(self):
