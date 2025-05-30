@@ -62,8 +62,8 @@ class DataViewList():
 	
 	table_headers = {
 		'estatus_concepto_banco': (1, 'Estatus'),
-		'nombre_concepto_banco': (7, 'Nombre Comprobante'),
-		'factor': (2, 'Código Comprobante'),
+		'nombre_concepto_banco': (7, 'Nombre Concepto'),
+		'factor': (2, 'Factor'),
 		
 		'acciones': (2, 'Acciones'),
 	}
