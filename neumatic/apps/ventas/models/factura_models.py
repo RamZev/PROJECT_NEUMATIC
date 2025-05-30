@@ -4,9 +4,9 @@ from django.db import models
 from apps.maestros.models.base_gen_models import ModeloBaseGenerico
 from entorno.constantes_base import ESTATUS_GEN, CONDICION_VENTA
 from apps.maestros.models.base_models import (ComprobanteVenta, 
-                                              ProductoDeposito, 
-                                              Operario, 
-                                              PuntoVenta)
+											  ProductoDeposito, 
+											  Operario, 
+											  PuntoVenta)
 from apps.maestros.models.sucursal_models import Sucursal
 from apps.maestros.models.cliente_models import Cliente
 from apps.maestros.models.producto_models import Producto
@@ -22,7 +22,7 @@ class Factura(ModeloBaseGenerico):
 		verbose_name="ID_ORIG",
 		null=True,
 		blank=True
-	)	
+	)
 	estatus_comprobante = models.BooleanField(
 		verbose_name="Estatus",
 		default=True,
@@ -43,9 +43,9 @@ class Factura(ModeloBaseGenerico):
 		blank=True
 	)
 	jerarquia = models.CharField(
-     	verbose_name="Jerarquía", 
-      	max_length=1,
-     	null=True, 
+		verbose_name="Jerarquía", 
+		max_length=1,
+		null=True, 
 		blank=True
 	)
 	id_comprobante_venta = models.ForeignKey(
@@ -318,11 +318,11 @@ class DetalleFactura(ModeloBaseGenerico):
 		blank=True
 	)
 	producto_venta = models.CharField(
-     	"Nombre producto", 
-      	max_length=50,
+	 	"Nombre producto", 
+	  	max_length=50,
 		null=True,
 		blank=True
-    )
+	)
 	cantidad = models.DecimalField(
 		verbose_name="Cantidad",
 		max_digits=7,
@@ -440,11 +440,11 @@ class SerialFactura(ModeloBaseGenerico):
 		blank=True
 	)
 	producto_serial = models.CharField(
-     	"Serial producto", 
-      	max_length=50,
+		"Serial producto", 
+		max_length=50,
 		null=True,
 		blank=True
-    )
+	)
 	
 	class Meta:
 		db_table = "serial_factura"

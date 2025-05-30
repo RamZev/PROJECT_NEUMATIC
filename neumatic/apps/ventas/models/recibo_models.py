@@ -28,7 +28,7 @@ class DetalleRecibo(ModeloBaseGenerico):
 		related_name='cobranza',
 		null=True,
 		blank=True
-  )
+	)
 	monto_cobrado = models.DecimalField(
 		verbose_name="Costo",
 		max_digits=12,
@@ -42,15 +42,16 @@ class DetalleRecibo(ModeloBaseGenerico):
 		null=True,
 		blank=True
  	)
-
-	def __str__(self):
-		return f"{self.id_factura} {self.id_detalle_recibo}"
 	
 	class Meta:
 		db_table = "detalle_recibo"
 		verbose_name = 'Recibo'
 		verbose_name_plural = 'Recibo'
 		# ordering = ['id_detalle_recibo']
+	
+	def __str__(self):
+		return f"{self.id_factura} {self.id_detalle_recibo}"
+
    
 # Detalle de las Retenciones (II)
 class RetencionRecibo(ModeloBaseGenerico):
@@ -89,15 +90,16 @@ class RetencionRecibo(ModeloBaseGenerico):
 		null=True,
 		blank=True
 	)
- 
-	def __str__(self):
-		return f"{self.id_factura} {self.id_retencion_recibo}"
 	
 	class Meta:
 		db_table = "retencion_recibo"
 		verbose_name = 'Retención Recibo'
 		verbose_name_plural = 'Retenciones Recibo'
 		# ordering = ['id_retencion_recibo']
+	
+	def __str__(self):
+		return f"{self.id_factura} {self.id_retencion_recibo}"
+
 
 # Detalle del depósito o transferencia  (III)
 class DepositoRecibo(ModeloBaseGenerico):
@@ -142,16 +144,17 @@ class DepositoRecibo(ModeloBaseGenerico):
 		max_length=20,
 		null=True,
 		blank=True
- 	)
-
-	def __str__(self):
-		return f"{self.id_factura} {self.id_deposito_recibo}"
+	)
 	
 	class Meta:
 		db_table = "deposito_recibo"
 		verbose_name = 'Depósito Recibo'
 		verbose_name_plural = 'Dépositos Recibo'
 		# ordering = ['id_deposito_recibo']
+	
+	def __str__(self):
+		return f"{self.id_factura} {self.id_deposito_recibo}"
+
 
 # Detalle de Tarjeta  (IV)
 class TarjetaRecibo(ModeloBaseGenerico):
@@ -194,15 +197,15 @@ class TarjetaRecibo(ModeloBaseGenerico):
 		null=True,
 		blank=True
 	)
- 
-	def __str__(self):
-		return f"{self.id_factura} {self.id_tarjeta_recibo}"
 	
 	class Meta:
 		db_table = "tarjeta_recibo"
 		verbose_name = 'Tarjeta Recibo'
 		verbose_name_plural = 'Tarjetas Recibo'
 		# ordering = ['id_tarjeta_recibo']
+	
+	def __str__(self):
+		return f"{self.id_factura} {self.id_tarjeta_recibo}"
 
 
 # Detalle del cheque  (V)
@@ -267,12 +270,12 @@ class ChequeRecibo(ModeloBaseGenerico):
 		blank=True
 	)
 	
-	def __str__(self):
-		return f"{self.id_factura} {self.id_cheque_recibo}"
-	
 	class Meta:
 		db_table = "cheque_recibo"
 		verbose_name = 'Cheque Recibo'
 		verbose_name_plural = 'Cheques Recibo'
 		# ordering = ['id_cheque_recibo']
+	
+	def __str__(self):
+		return f"{self.id_factura} {self.id_cheque_recibo}"
 
