@@ -4,6 +4,7 @@ from django.http import HttpResponse, JsonResponse
 from django.views import View
 from zipfile import ZipFile
 from io import BytesIO
+from reportlab.lib.pagesizes import A4, landscape
 
 from django.core.mail import EmailMessage
 
@@ -112,22 +113,21 @@ class ComprobanteCompraInformeListView(InformeListView):
 	}
 	
 	def get_queryset(self):
-		queryset = super().get_queryset()
+		queryset = self.model.objects.none()
 		form = self.form_class(self.request.GET)
 		
 		if form.is_valid():
 			
-			estatus = form.cleaned_data.get('estatus')
-			
-			if estatus not in ['activos', 'inactivos', 'todos']:
-				estatus = 'activos'
+			estatus = form.cleaned_data.get('estatus', 'activos')
 			
 			if estatus:
 				match estatus:
 					case "activos":
-						queryset = queryset.filter(estatus_comprobante_compra=True)
+						queryset = self.model.objects.filter(estatus_comprobante_compra=True)
 					case "inactivos":
-						queryset = queryset.filter(estatus_comprobante_compra=False)
+						queryset = self.model.objects.filter(estatus_comprobante_compra=False)
+					case "todos":
+						queryset = self.model.objects.all()
 			
 			queryset = queryset.order_by("nombre_comprobante_compra")
 			
@@ -256,10 +256,10 @@ class ComprobanteCompraInformePDFView(View):
 		
 		#-- Generar el pdf.
 		helper = ExportHelper(queryset, DataViewList.table_headers, DataViewList.report_title)
-		buffer = helper.export_to_pdf()
+		buffer = helper.export_to_pdf(pagesize=landscape(A4))
 		
 		#-- Preparar la respuesta HTTP.
 		response = HttpResponse(buffer, content_type='application/pdf')
-		response['Content-Disposition'] = f'inline; filename="informe_{ConfigViews.model_string}.pdf"'
+		response['Content-Disposition'] = f'inline; filename="{ConfigViews.model_string}.pdf"'
 		
 		return response

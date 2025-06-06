@@ -110,25 +110,24 @@ class ProveedorInformeListView(InformeListView):
 	}
 	
 	def get_queryset(self):
-		queryset = super().get_queryset()
+		queryset = self.model.objects.none()
 		form = self.form_class(self.request.GET)
 		
 		if form.is_valid():
 			
-			estatus = form.cleaned_data.get('estatus')
+			estatus = form.cleaned_data.get('estatus', 'activos')
 			orden = form.cleaned_data.get('orden', 'nombre')
 			desde = form.cleaned_data.get('desde', '').lower()
 			hasta = form.cleaned_data.get('hasta', '').lower()
 			
-			if estatus not in ['activos', 'inactivos', 'todos']:
-				estatus = 'activos'
-			
 			if estatus:
 				match estatus:
 					case "activos":
-						queryset = queryset.filter(estatus_proveedor=True)
+						queryset = self.model.objects.filter(estatus_proveedor=True)
 					case "inactivos":
-						queryset = queryset.filter(estatus_proveedor=False)
+						queryset = self.model.objects.filter(estatus_proveedor=False)
+					case "todos":
+						queryset = self.model.objects.all()
 			
 			if orden not in ['nombre', 'codigo']:
 				orden = 'nombre'
@@ -224,17 +223,13 @@ class ProveedorInformesView(View):
 				pdf_content = helper.export_to_pdf()
 				zip_file.writestr(f"informe_{ConfigViews.model_string}.pdf", pdf_content)
 			
-			if "csv" in formatos:
-				csv_content = helper.export_to_csv()
-				zip_file.writestr(f"informe_{ConfigViews.model_string}.csv", csv_content)
-			
-			if "word" in formatos:
-				word_content = helper.export_to_word()
-				zip_file.writestr(f"informe_{ConfigViews.model_string}.docx", word_content)
-			
 			if "excel" in formatos:
 				excel_content = helper.export_to_excel()
 				zip_file.writestr(f"informe_{ConfigViews.model_string}.xlsx", excel_content)
+			
+			if "csv" in formatos:
+				csv_content = helper.export_to_csv()
+				zip_file.writestr(f"informe_{ConfigViews.model_string}.csv", csv_content)
 		
 		#-- Preparar respuesta para descargar el archivo ZIP.
 		buffer.seek(0)
@@ -253,17 +248,13 @@ class ProveedorInformesView(View):
 			attachments.append((f"informe_{ConfigViews.model_string}.pdf", helper.generar_pdf(), 
 					   "application/pdf"))
 		
-		if "csv" in formatos:
-			attachments.append((f"informe_{ConfigViews.model_string}.csv", helper.generar_csv(), 
-					   "text/csv"))
-		
-		if "word" in formatos:
-			attachments.append((f"informe_{ConfigViews.model_string}.docx", helper.generar_word(), 
-					   "application/vnd.openxmlformats-officedocument.wordprocessingml.document"))
-		 
 		if "excel" in formatos:
 			attachments.append((f"informe_{ConfigViews.model_string}.xlsx", helper.generar_excel(), 
 					   "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+		
+		if "csv" in formatos:
+			attachments.append((f"informe_{ConfigViews.model_string}.csv", helper.generar_csv(), 
+					   "text/csv"))
 		
 		#-- Crear y enviar el correo.
 		subject = DataViewList.report_title
@@ -292,6 +283,6 @@ class ProveedorInformePDFView(View):
 		
 		#-- Preparar la respuesta HTTP.
 		response = HttpResponse(buffer, content_type='application/pdf')
-		response['Content-Disposition'] = f'inline; filename="informe_{ConfigViews.model_string}.pdf"'
+		response['Content-Disposition'] = f'inline; filename="{ConfigViews.model_string}.pdf"'
 		
 		return response

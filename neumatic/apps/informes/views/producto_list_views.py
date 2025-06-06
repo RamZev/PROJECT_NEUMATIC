@@ -1,25 +1,26 @@
-# neumatic\apps\informes\views\provincia_list_views.py
+# neumatic\apps\informes\views\producto_list_views.py
 from django.urls import reverse_lazy
 from django.http import HttpResponse, JsonResponse
 from django.views import View
 from zipfile import ZipFile
 from io import BytesIO
-
+from reportlab.lib.pagesizes import A4, portrait, landscape
 from django.core.mail import EmailMessage
-
+from django.db.models.functions import Lower
+from django.db.models import Q
 from utils.helpers.export_helpers import ExportHelper
 
 from ..views.list_views_generics import *
-from apps.maestros.models.base_models import Provincia
-from ..forms.buscador_provincia_forms import BuscadorProvinciaForm
+from apps.maestros.models.producto_models import Producto
+from ..forms.buscador_producto_forms import BuscadorProductoForm
 
 
 class ConfigViews:
 	# Modelo
-	model = Provincia
+	model = Producto
 	
 	# Formulario asociado al modelo
-	form_class = BuscadorProvinciaForm
+	form_class = BuscadorProductoForm
 	
 	# Aplicación asociada al modelo
 	app_label = "informes"
@@ -31,10 +32,10 @@ class ConfigViews:
 	list_view_name = f"{model_string}_list"
 	
 	# Plantilla de la lista del CRUD
-	template_list = f"{app_label}/maestro_informe_list.html"
+	template_list = f'{app_label}/maestro_informe_list.html'
 	
 	# Contexto de los datos de la lista
-	context_object_name = "objetos"
+	context_object_name = 'objetos'
 	
 	# Vista del home del proyecto
 	home_view_name = "home"
@@ -54,25 +55,29 @@ class ConfigViews:
 
 class DataViewList:
 	search_fields = []
-	
-	ordering = ['nombre_provincia']
-	
+	ordering = []
 	paginate_by = 8
 	
-	report_title = "Reporte de Provincias"
+	report_title = "Lista de Precios"
 	
 	table_headers = {
-		'estatus_provincia': (1, 'Estatus'),
-		'nombre_provincia': (7, 'Nombre Provincia'),
+		'id_producto': (1, 'Código'),
+		'medida': (1, 'Medida'),
+		'nombre_producto': (4, 'Descripción'),
+		'id_marca': (4, 'Marca'),
+		'precio': (2, 'Precio'),
 	}
 	
 	table_data = [
-		{'field_name': 'estatus_provincia', 'date_format': None},
-		{'field_name': 'nombre_provincia', 'date_format': None},
+		{'field_name': 'id_producto', 'date_format': None},
+		{'field_name': 'medida', 'date_format': None},
+		{'field_name': 'nombre_producto', 'date_format': None},
+		{'field_name': 'id_marca', 'date_format': None},
+		{'field_name': 'precio', 'date_format': None},
 	]
 
 
-class ProvinciaInformeListView(InformeListView):
+class ProductoInformeListView(InformeListView):
 	model = ConfigViews.model
 	form_class = ConfigViews.form_class
 	template_name = ConfigViews.template_list
@@ -98,31 +103,49 @@ class ProvinciaInformeListView(InformeListView):
 		form = self.form_class(self.request.GET)
 		
 		if form.is_valid():
-			
 			estatus = form.cleaned_data.get('estatus', 'activos')
+			id_familia_desde = form.cleaned_data.get('id_familia_desde') or 0
+			id_familia_hasta = form.cleaned_data.get('id_familia_hasta') or 0
+			id_marca_desde = form.cleaned_data.get('id_marca_desde') or 0
+			id_marca_hasta = form.cleaned_data.get('id_marca_hasta') or 0
+			id_modelo_desde = form.cleaned_data.get('id_modelo_desde') or 0
+			id_modelo_hasta = form.cleaned_data.get('id_modelo_hasta') or 0
 			
 			if estatus:
 				match estatus:
 					case "activos":
-						queryset = self.model.objects.filter(estatus_provincia=True)
+						queryset = self.model.objects.filter(estatus_producto=True)
 					case "inactivos":
-						queryset = self.model.objects.filter(estatus_provincia=False)
+						queryset = self.model.objects.filter(estatus_producto=False)
 					case "todos":
 						queryset = self.model.objects.all()
 			
-			queryset = queryset.order_by("nombre_provincia")
+			if id_familia_desde or id_familia_hasta:
+				#-- Filtrar por rango de familias.
+				familias_ids = range=(id_familia_desde, id_familia_hasta+1)
+				queryset = queryset.filter(id_familia_id__in=familias_ids)
+				
+			if id_marca_desde or id_marca_hasta:
+				#-- Filtrar por rango de marcas.
+				marcas_ids = range=(id_marca_desde, id_marca_hasta+1)
+				queryset = queryset.filter(id_marca_id__in=marcas_ids)
+				
+			if id_modelo_desde or id_modelo_hasta:
+				#-- Filtrar por rango de modelos.
+				modelos_ids = range=(id_modelo_desde, id_modelo_hasta+1)
+				queryset = queryset.filter(id_modelo_id__in=modelos_ids)
 			
 		else:
 			#-- Agregar clases css a los campos con errores.
 			print("El form no es válido (desde la vista)")
 			print(f"{form.errors = }")
 			form.add_error_classes()
-						
+		
 		return queryset
 	
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
-		form = BuscadorProvinciaForm(self.request.GET or None)
+		form = BuscadorProductoForm(self.request.GET or None)
 		
 		context["form"] = form
 		
@@ -133,7 +156,7 @@ class ProvinciaInformeListView(InformeListView):
 		return context
 
 
-class ProvinciaInformesView(View):
+class ProductoInformesView(View):
 	"""Vista para gestionar informes de clientes, exportaciones y envíos por correo."""
 	
 	def get(self, request, *args, **kwargs):
@@ -149,7 +172,7 @@ class ProvinciaInformesView(View):
 		email = request.GET.get("email", "")
 		
 		#-- Obtener el queryset filtrado.
-		queryset_filtrado = ProvinciaInformeListView()
+		queryset_filtrado = ProductoInformeListView()
 		queryset_filtrado.request = request
 		queryset = queryset_filtrado.get_queryset()
 		
@@ -164,9 +187,29 @@ class ProvinciaInformesView(View):
 	def generar_archivos_zip(self, queryset, formatos):
 		"""Generar un archivo ZIP con los formatos seleccionados."""
 		
+		table_headers = DataViewList.table_headers.copy()
+		
+		table_headers.update({
+			"tipo_producto": (1, "Tipo Producto"),
+			"id_familia.nombre_producto_familia": (4, "Familia"),
+			"segmento": (1, "Segmento"),
+			"id_modelo.nombre_modelo": (4, "Modelo"),
+			"fecha_fabricacion": (1, "Fecha Fabricación"),
+			"costo": (2, "Costo"),
+			"id_alicuota_iva.alicuota_iva": (1, "Alícuota IVA"),
+			"cai": (1, "CAI"),
+			"stock": (1, "Stock"),
+			"minimo": (1, "Mínimo"),
+			"descuento": (1, "Descuento"),
+			"despacho_1": (4, "Despacho 1"),
+			"despacho_2": (4, "Despacho 2"),
+			"carrito": (1, "Carrito"),
+		})
+		
 		buffer = BytesIO()
 		with ZipFile(buffer, "w") as zip_file:
-			helper = ExportHelper(queryset, DataViewList.table_headers, DataViewList.report_title)
+			# helper = ExportHelper(queryset, DataViewList.table_headers, DataViewList.report_title)
+			helper = ExportHelper(queryset, table_headers, DataViewList.report_title)
 			
 			#-- Generar los formatos seleccionados.
 			if "pdf" in formatos:
@@ -190,6 +233,7 @@ class ProvinciaInformesView(View):
 	
 	def enviar_por_email(self, queryset, formatos, email):
 		"""Enviar los informes seleccionados por correo electrónico."""
+		
 		helper = ExportHelper(queryset, DataViewList.table_headers, DataViewList.report_title)
 		attachments = []
 		
@@ -219,17 +263,17 @@ class ProvinciaInformesView(View):
 		return JsonResponse({"success": True, "message": "Informe enviado correctamente al correo."})
 
 
-class ProvinciaInformePDFView(View):
+class ProductoInformePDFView(View):
 	
 	def get(self, request, *args, **kwargs):
 		#-- Obtener el queryset (el listado de clientes) ya filtrado.
-		queryset_filtrado = ProvinciaInformeListView()
+		queryset_filtrado = ProductoInformeListView()
 		queryset_filtrado.request = request
 		queryset = queryset_filtrado.get_queryset()
 		
 		#-- Generar el pdf.
 		helper = ExportHelper(queryset, DataViewList.table_headers, DataViewList.report_title)
-		buffer = helper.export_to_pdf()
+		buffer = helper.export_to_pdf(pagesize=portrait(A4))
 		
 		#-- Preparar la respuesta HTTP.
 		response = HttpResponse(buffer, content_type='application/pdf')

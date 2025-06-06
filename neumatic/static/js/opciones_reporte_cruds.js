@@ -1,5 +1,5 @@
-// neumatic\static\js\opciones_reporte.js
-	
+// neumatic\static\js\opciones_reporte_cruds.js
+
 // ---------------------------------------------------------------------------
 // Función para llenar localidades basadas en la provincia seleccionada.
 // ---------------------------------------------------------------------------
@@ -54,7 +54,7 @@ if (provinciaSelect) {
 const selectAllFormats = () => {
 	const formatCheckboxes = document.querySelectorAll('[name="formato_envio"]');
 	
-	// Variable especifica para marcar por defecto el formato PDF
+	// Variable específica para marcar por defecto el formato PDF
 	const pdfCheckbox = document.querySelector('[name="formato_envio"][value="pdf"]');
 	const emailField = document.getElementById("email");
 	const celularField = document.getElementById("celular");
@@ -109,6 +109,7 @@ if (vistaTabla) {
 	vistaTabla.checked = true; // Seleccionar Vista Preliminar en Tabla por defecto
 }
 initializeDefaults();
+
 
 // Script adicional para el botón "Generar".
 const generar = document.getElementById("generar");
@@ -208,123 +209,131 @@ modalElement.addEventListener('hidden.bs.modal', function () {
 // Funcionalidad para buscar un Cliente por su Id.
 // ---------------------------------------------------------------------------
 const idClienteInput = document.getElementById("id_id_cliente");
-const nombreClienteInput = document.getElementById("id_nombre_cliente");
 
-idClienteInput.addEventListener("change", function() {
-	const idCliente = idClienteInput.value.trim();
+if (idClienteInput){
+	const nombreClienteInput = document.getElementById("id_nombre_cliente");
 	
-	if (idCliente) {
-		fetch(`/informes/buscar/cliente/id/?id_cliente=${idCliente}`)
-			.then(response => response.json())
-			.then(data => {
-				if (data.error) {
+	idClienteInput.addEventListener("change", function() {
+		const idCliente = idClienteInput.value.trim();
+		
+		if (idCliente) {
+			fetch(`/informes/buscar/cliente/id/?id_cliente=${idCliente}`)
+				.then(response => {
+					if (!response.ok) {
+						throw new Error("Cliente no encontrado");
+					}
+					return response.json();
+				})
+				.then(data => {
+					nombreClienteInput.value = data.nombre_cliente || "Cliente sin nombre";
+				})
+				.catch(error => {
+					console.error("Error al obtener el cliente:", error);
 					nombreClienteInput.value = "Cliente no encontrado";
-				} else {
-					nombreClienteInput.value = data.nombre_cliente;
-				}
-			})
-			.catch(error => console.error("Error al obtener cliente:", error));
-	} else {
-		nombreClienteInput.value = "";
-	}
-});
+				});
+		} else {
+			nombreClienteInput.value = "";
+		}
+	});
+}
 
 // ---------------------------------------------------------------------------
 // Funcionalidad que muestra el Modal para buscar un Cliente por filtrado.
 // ---------------------------------------------------------------------------
 const buscarAgendaForm = document.getElementById('buscarAgendaForm');
-const tablaResultadosAgenda = document.getElementById('tablaResultadosAgenda').querySelector('tbody');
 
-buscarAgendaForm.addEventListener('submit', function (event) {
-	event.preventDefault();
+if (buscarAgendaForm){
+	const tablaResultadosAgenda = document.getElementById('tablaResultadosAgenda').querySelector('tbody');
 	
-	const busquedaGeneral = document.getElementById('busquedaGeneral').value;
-	
-	// Validar que la búsqueda tenga al menos 4 caracteres
-	if (busquedaGeneral.length < 4) {
-		alert('Por favor, ingrese al menos 4 caracteres para realizar la búsqueda.');
-		return;
-	}
-	
-	const url = `/informes/buscar/cliente/?busqueda_general=${busquedaGeneral}`;
-	
-	fetch(url, {
-		method: 'GET',
-		headers: {
-			'Content-Type': 'application/json',
-		},
-	})
-	.then(response => response.json())
-	.then(data => {
-		tablaResultadosAgenda.innerHTML = ''; // Limpiar tabla de resultados
+	buscarAgendaForm.addEventListener('submit', function (event) {
+		event.preventDefault();
 		
-		data.forEach(agenda => {
+		const busquedaGeneral = document.getElementById('busquedaGeneral').value;
+		
+		// Validar que la búsqueda tenga al menos 4 caracteres
+		if (busquedaGeneral.length < 4) {
+			alert('Por favor, ingrese al menos 4 caracteres para realizar la búsqueda.');
+			return;
+		}
+		
+		const url = `/informes/buscar/cliente/?busqueda_general=${busquedaGeneral}`;
+		
+		fetch(url, {
+			method: 'GET',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+		})
+		.then(response => response.json())
+		.then(data => {
+			tablaResultadosAgenda.innerHTML = ''; // Limpiar tabla de resultados
 			
-			const fila = `
-				<tr>
-					<td>${agenda.id_cliente}</td>
-					<td>${agenda.cuit}</td>
-					<td>${agenda.nombre_cliente}</td>
-					<td>${agenda.movil_cliente || 'N/A'}</td>  <!-- Muestra Móvil -->
-					<td>${agenda.email_cliente || 'N/A'}</td>  <!-- Muestra Email -->
-					<td>${agenda.domicilio_cliente}</td>
-					<td>${agenda.codigo_postal}</td>
-					<td>
-						<input type="radio" name="seleccionar-agenda" 
-							class="seleccionar-agenda" 
-							data-id="${agenda.id_cliente}" 
-							data-cuit="${agenda.cuit}" 
-							data-nombre="${agenda.nombre_cliente}" 
-							data-direccion="${agenda.domicilio_cliente}" 
-							data-movil="${agenda.movil_cliente}"  
-							data-email="${agenda.email_cliente}"
-							data-cp="${agenda.codigo_postal}">
-					</td>
-				</tr>
-			`;
+			data.forEach(agenda => {
+				
+				const fila = `
+					<tr>
+						<td>${agenda.id_cliente}</td>
+						<td>${agenda.cuit}</td>
+						<td>${agenda.nombre_cliente}</td>
+						<td>${agenda.movil_cliente || 'N/A'}</td>  <!-- Muestra Móvil -->
+						<td>${agenda.email_cliente || 'N/A'}</td>  <!-- Muestra Email -->
+						<td>${agenda.domicilio_cliente}</td>
+						<td>${agenda.codigo_postal}</td>
+						<td>
+							<input type="radio" name="seleccionar-agenda" 
+								class="seleccionar-agenda" 
+								data-id="${agenda.id_cliente}" 
+								data-cuit="${agenda.cuit}" 
+								data-nombre="${agenda.nombre_cliente}" 
+								data-direccion="${agenda.domicilio_cliente}" 
+								data-movil="${agenda.movil_cliente}"  
+								data-email="${agenda.email_cliente}"
+								data-cp="${agenda.codigo_postal}">
+						</td>
+					</tr>
+				`;
+				
+				tablaResultadosAgenda.insertAdjacentHTML('beforeend', fila);
+			});
 			
-			tablaResultadosAgenda.insertAdjacentHTML('beforeend', fila);
+		})
+		.catch(error => {
+			console.error('Error al buscar en agenda:', error);
 		});
-		
-	})
-	.catch(error => {
-		console.error('Error al buscar en agenda:', error);
 	});
-});
-
-// Botón seleccionar de Lista de Clientes
-document.getElementById('seleccionarAgenda').addEventListener('click', function () {
-	const seleccion = document.querySelector('input[name="seleccionar-agenda"]:checked');
 	
-	if (seleccion) {
-		const id_cliente = seleccion.getAttribute('data-id');
-		const nombre = seleccion.getAttribute('data-nombre');
-		// const cuit = seleccion.getAttribute('data-cuit');
-		// const direccion = seleccion.getAttribute('data-direccion');
-		// const movil = seleccion.getAttribute('data-movil');
-		// const email = seleccion.getAttribute('data-email');
-		// const cp = seleccion.getAttribute('data-cp');
+	// Botón seleccionar de Lista de Clientes
+	document.getElementById('seleccionarAgenda').addEventListener('click', function () {
+		const seleccion = document.querySelector('input[name="seleccionar-agenda"]:checked');
 		
-		
-		document.getElementById('id_id_cliente').value = id_cliente || '';
-		document.getElementById('id_nombre_cliente').value = nombre || '';
-		// document.getElementById('id_domicilio_factura').value = direccion || '';
-		// document.getElementById('id_cuit').value = cuit || '';
-		// document.getElementById('id_movil_factura').value = movil || '';
-		// document.getElementById('id_email_factura').value = email || '';
-		// document.getElementById('id_id_vendedor').value = id_vendedor || '';
-		// document.getElementById('id_vendedor_factura').value = nombre_vendedor || '';
-		
-		// Cerrar el modal
-		const modal = bootstrap.Modal.getInstance(document.getElementById('agendaModal'));
-		modal.hide();
-	}
-});
-
-// Limpiar filtros y resultados cuando se cierra la ventana modal
-agendaModal.addEventListener('hidden.bs.modal', function () {
-	buscarAgendaForm.reset(); // Restablecer el formulario
-	tablaResultadosAgenda.innerHTML = ''; // Limpiar la tabla de resultados
-});
-
+		if (seleccion) {
+			const id_cliente = seleccion.getAttribute('data-id');
+			const nombre = seleccion.getAttribute('data-nombre');
+			// const cuit = seleccion.getAttribute('data-cuit');
+			// const direccion = seleccion.getAttribute('data-direccion');
+			// const movil = seleccion.getAttribute('data-movil');
+			// const email = seleccion.getAttribute('data-email');
+			// const cp = seleccion.getAttribute('data-cp');
+			
+			document.getElementById('id_id_cliente').value = id_cliente || '';
+			document.getElementById('id_nombre_cliente').value = nombre || '';
+			// document.getElementById('id_domicilio_factura').value = direccion || '';
+			// document.getElementById('id_cuit').value = cuit || '';
+			// document.getElementById('id_movil_factura').value = movil || '';
+			// document.getElementById('id_email_factura').value = email || '';
+			// document.getElementById('id_id_vendedor').value = id_vendedor || '';
+			// document.getElementById('id_vendedor_factura').value = nombre_vendedor || '';
+			
+			// Cerrar el modal
+			const modal = bootstrap.Modal.getInstance(document.getElementById('agendaModal'));
+			modal.hide();
+		}
+	});
+	
+	// Limpiar filtros y resultados cuando se cierra la ventana modal
+	agendaModal.addEventListener('hidden.bs.modal', function () {
+		buscarAgendaForm.reset(); // Restablecer el formulario
+		tablaResultadosAgenda.innerHTML = ''; // Limpiar la tabla de resultados
+	});
+}
 // -------------------------------------------------------------------------------

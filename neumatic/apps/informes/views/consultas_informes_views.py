@@ -9,7 +9,6 @@ from apps.maestros.models.cliente_models import Cliente
 #-- Buscar un cliente por su id.
 def buscar_cliente_id(request):
 	id_cliente = request.GET.get('id_cliente', '')
-	print("Entra a buscar el cliente por su id", id_cliente)
 	
 	if id_cliente:
 		try:

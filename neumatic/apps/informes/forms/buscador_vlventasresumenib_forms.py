@@ -52,6 +52,9 @@ class BuscadorVLVentasResumenIBForm(InformesGenericForm):
 			anno = date.today().year
 			self.fields["anno"].initial = anno
 			self.fields["anno"].widget.attrs["value"] = anno
+		if "mes" not in self.initial:
+			mes_actual = date.today().strftime('%m')
+			self.fields["mes"].initial = mes_actual
 		if "importe_max" not in self.initial:
 			self.fields["importe_max"].initial = 1500.0
 			self.fields["importe_max"].widget.attrs["value"] = 1500.0

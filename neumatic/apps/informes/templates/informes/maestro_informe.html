@@ -115,10 +115,10 @@
 			const scriptOpciones = document.createElement('script');
 			scriptOpciones.src = "{% static 'js/opciones_reporte.js' %}";
 			scriptOpciones.onload = function() {
-				console.log("*---opciones_reporte.js cargado y ejecutado.---*");
+				console.log("opciones_reporte.js cargado y ejecutado.");
 			};
 			scriptOpciones.onerror = function() {
-				console.error("*---Error al cargar opciones_reporte.js.---*");
+				console.error("Error al cargar opciones_reporte.js.");
 			};
 			document.head.appendChild(scriptOpciones);
 			
@@ -127,10 +127,10 @@
 				const scriptEspecifico = document.createElement('script');
 				scriptEspecifico.src = "{% static js_file %}";
 				scriptEspecifico.onload = function() {
-					console.log("*---JS específico cargado y ejecutado.---*");
+					console.log("JS específico {{ js_file }} cargado y ejecutado.");
 				};
 				scriptEspecifico.onerror = function() {
-					console.error("*---Error al cargar el JS específico.---*");
+					console.error("Error al cargar el JS específico {{ js_file }}.");
 				};
 				document.head.appendChild(scriptEspecifico);
 			{% endif %}

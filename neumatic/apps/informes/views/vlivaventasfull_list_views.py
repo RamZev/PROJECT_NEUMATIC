@@ -190,7 +190,7 @@ class VLIVAVentasFULLInformeView(InformeFormView):
 			'titulo': ConfigViews.report_title,
 			'logo_url': "",
 			'css_url': f"{dominio}{static('css/reportes.css')}",
-			'css_url_new': f"{dominio}{static('css/reportes_new.css')}",
+			# 'css_url_new': f"{dominio}{static('css/reportes_new.css')}",
 		}
 	
 	def get_context_data(self, **kwargs):

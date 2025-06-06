@@ -36,6 +36,9 @@ class BuscadorVLIVAVentasSitribForm(InformesGenericForm):
 			anno = date.today().year
 			self.fields["anno"].initial = anno
 			self.fields["anno"].widget.attrs["value"] = anno
+		if "mes" not in self.initial:
+			mes_actual = date.today().strftime('%m')
+			self.fields["mes"].initial = mes_actual
 		
 	def clean(self):
 		cleaned_data = super().clean()

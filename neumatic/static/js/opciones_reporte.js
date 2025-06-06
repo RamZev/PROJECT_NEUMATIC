@@ -1,5 +1,5 @@
 // neumatic\static\js\opciones_reporte.js
-	
+
 // ---------------------------------------------------------------------------
 // Función para llenar localidades basadas en la provincia seleccionada.
 // ---------------------------------------------------------------------------
@@ -106,7 +106,6 @@ radios.forEach(radio => {
 });
 
 // cargar la página
-// const vistaTabla = document.querySelector('input[name="tipo_salida"][value="tabla"]');
 const vistaPantalla = document.querySelector('input[name="tipo_salida"][value="pantalla"]');
 if (vistaPantalla) {
 	vistaPantalla.checked = true; // Seleccionar Vista Preliminar en Tabla por defecto
@@ -116,22 +115,25 @@ initializeDefaults();
 
 // Script adicional para el botón "Generar".
 const btnGenerar = document.getElementById("generar");
-btnGenerar.addEventListener("click", function (e) {
+
+btnGenerar.addEventListener("click", async function (e) {
 	e.preventDefault();  // Prevenir el envío normal del formulario
-	const form = document.getElementById("formulario");
-	// Se construye la URL con los parámetros del formulario
-	const formData = new FormData(form);
-	const params = new URLSearchParams(formData).toString();
-	const url = form.action + "?" + params;
 	
-	// Se hace la petición AJAX, enviando el header que indica petición AJAX
-	fetch(url, {
-		headers: { "X-Requested-With": "XMLHttpRequest" }
-	})
-	.then(response => response.json())
-	.then(data => {
+	try {
+		const form = document.getElementById("formulario");
+		const formData = new FormData(form);
+		const params = new URLSearchParams(formData).toString();
+		const url = form.action + "?" + params;
+		
+		// Se hace la petición AJAX, enviando el header que indica petición AJAX
+		const response = await fetch(url, {
+			headers: { "X-Requested-With": "XMLHttpRequest" }
+		});
+		if (!response.ok) {
+			throw new Error("Error en la respuesta del servidor: " + response.statusText);
+		}
+		const data = await response.json();
 		if (data.success) {
-			// Abre la URL en una nueva pestaña
 			window.open(data.url, "_blank");
 		} else {
 			// Remover el modal existente
@@ -145,10 +147,12 @@ btnGenerar.addEventListener("click", function (e) {
 			const newErrorModal = new bootstrap.Modal(document.getElementById('errorModal'));
 			newErrorModal.show();
 		}
-	})
-	.catch(error => console.error("Error en la petición:", error));
+	} catch (error) {
+		console.error("Error en la petición:", error);
+		// Opcional: Mostrar mensaje al usuario
+		alert("Ocurrió un error al procesar la solicitud");
+	}
 });
-
 
 // ---------------------------------------------------------------------------
 // Funcionalidad para mostrar modal con los errores de validación
@@ -207,18 +211,22 @@ if (idClienteInput){
 	
 	idClienteInput.addEventListener("change", function() {
 		const idCliente = idClienteInput.value.trim();
-	
+		
 		if (idCliente) {
 			fetch(`/informes/buscar/cliente/id/?id_cliente=${idCliente}`)
-				.then(response => response.json())
-				.then(data => {
-					if (data.error) {
-						nombreClienteInput.value = "Cliente no encontrado";
-					} else {
-						nombreClienteInput.value = data.nombre_cliente;
+				.then(response => {
+					if (!response.ok) {
+						throw new Error("Cliente no encontrado");
 					}
+					return response.json();
 				})
-				.catch(error => console.error("Error al obtener cliente:", error));
+				.then(data => {
+					nombreClienteInput.value = data.nombre_cliente || "Cliente sin nombre";
+				})
+				.catch(error => {
+					console.error("Error al obtener el cliente:", error);
+					nombreClienteInput.value = "Cliente no encontrado";
+				});
 		} else {
 			nombreClienteInput.value = "";
 		}
@@ -229,98 +237,99 @@ if (idClienteInput){
 // Funcionalidad que muestra el Modal para buscar un Cliente por filtrado.
 // ---------------------------------------------------------------------------
 const buscarAgendaForm = document.getElementById('buscarAgendaForm');
-const tablaResultadosAgenda = document.getElementById('tablaResultadosAgenda').querySelector('tbody');
 
-buscarAgendaForm.addEventListener('submit', function (event) {
-	event.preventDefault();
-	
-	const busquedaGeneral = document.getElementById('busquedaGeneral').value;
-	
-	// Validar que la búsqueda tenga al menos 4 caracteres
-	if (busquedaGeneral.length < 4) {
-		alert('Por favor, ingrese al menos 4 caracteres para realizar la búsqueda.');
-		return;
-	}
-	
-	const url = `/informes/buscar/cliente/?busqueda_general=${busquedaGeneral}`;
-	
-	fetch(url, {
-		method: 'GET',
-		headers: {
-			'Content-Type': 'application/json',
-		},
-	})
-	.then(response => response.json())
-	.then(data => {
-		tablaResultadosAgenda.innerHTML = ''; // Limpiar tabla de resultados
+if (buscarAgendaForm) {
+	const tablaResultadosAgenda = document.getElementById('tablaResultadosAgenda').querySelector('tbody');
+
+	buscarAgendaForm.addEventListener('submit', function (event) {
+		event.preventDefault();
 		
-		data.forEach(agenda => {
+		const busquedaGeneral = document.getElementById('busquedaGeneral').value;
+		
+		// Validar que la búsqueda tenga al menos 4 caracteres
+		if (busquedaGeneral.length < 4) {
+			alert('Por favor, ingrese al menos 4 caracteres para realizar la búsqueda.');
+			return;
+		}
+		
+		const url = `/informes/buscar/cliente/?busqueda_general=${busquedaGeneral}`;
+		
+		fetch(url, {
+			method: 'GET',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+		})
+		.then(response => response.json())
+		.then(data => {
+			tablaResultadosAgenda.innerHTML = ''; // Limpiar tabla de resultados
 			
-			const fila = `
-				<tr>
-					<td>${agenda.id_cliente}</td>
-					<td>${agenda.cuit}</td>
-					<td>${agenda.nombre_cliente}</td>
-					<td>${agenda.movil_cliente || 'N/A'}</td>  <!-- Muestra Móvil -->
-					<td>${agenda.email_cliente || 'N/A'}</td>  <!-- Muestra Email -->
-					<td>${agenda.domicilio_cliente}</td>
-					<td>${agenda.codigo_postal}</td>
-					<td>
-						<input type="radio" name="seleccionar-agenda" 
-							class="seleccionar-agenda" 
-							data-id="${agenda.id_cliente}" 
-							data-cuit="${agenda.cuit}" 
-							data-nombre="${agenda.nombre_cliente}" 
-							data-direccion="${agenda.domicilio_cliente}" 
-							data-movil="${agenda.movil_cliente}"  
-							data-email="${agenda.email_cliente}"
-							data-cp="${agenda.codigo_postal}">
-					</td>
-				</tr>
-			`;
+			data.forEach(agenda => {
+				
+				const fila = `
+					<tr>
+						<td>${agenda.id_cliente}</td>
+						<td>${agenda.cuit}</td>
+						<td>${agenda.nombre_cliente}</td>
+						<td>${agenda.movil_cliente || 'N/A'}</td>  <!-- Muestra Móvil -->
+						<td>${agenda.email_cliente || 'N/A'}</td>  <!-- Muestra Email -->
+						<td>${agenda.domicilio_cliente}</td>
+						<td>${agenda.codigo_postal}</td>
+						<td>
+							<input type="radio" name="seleccionar-agenda" 
+								class="seleccionar-agenda" 
+								data-id="${agenda.id_cliente}" 
+								data-cuit="${agenda.cuit}" 
+								data-nombre="${agenda.nombre_cliente}" 
+								data-direccion="${agenda.domicilio_cliente}" 
+								data-movil="${agenda.movil_cliente}"  
+								data-email="${agenda.email_cliente}"
+								data-cp="${agenda.codigo_postal}">
+						</td>
+					</tr>
+				`;
+				
+				tablaResultadosAgenda.insertAdjacentHTML('beforeend', fila);
+			});
 			
-			tablaResultadosAgenda.insertAdjacentHTML('beforeend', fila);
+		})
+		.catch(error => {
+			console.error('Error al buscar en agenda:', error);
 		});
-		
-	})
-	.catch(error => {
-		console.error('Error al buscar en agenda:', error);
 	});
-});
-
-// Botón seleccionar de Lista de Clientes
-document.getElementById('seleccionarAgenda').addEventListener('click', function () {
-	const seleccion = document.querySelector('input[name="seleccionar-agenda"]:checked');
 	
-	if (seleccion) {
-		const id_cliente = seleccion.getAttribute('data-id');
-		const nombre = seleccion.getAttribute('data-nombre');
-		// const cuit = seleccion.getAttribute('data-cuit');
-		// const direccion = seleccion.getAttribute('data-direccion');
-		// const movil = seleccion.getAttribute('data-movil');
-		// const email = seleccion.getAttribute('data-email');
-		// const cp = seleccion.getAttribute('data-cp');
+	// Botón seleccionar de Lista de Clientes
+	document.getElementById('seleccionarAgenda').addEventListener('click', function () {
+		const seleccion = document.querySelector('input[name="seleccionar-agenda"]:checked');
 		
-		
-		document.getElementById('id_id_cliente').value = id_cliente || '';
-		document.getElementById('id_nombre_cliente').value = nombre || '';
-		// document.getElementById('id_domicilio_factura').value = direccion || '';
-		// document.getElementById('id_cuit').value = cuit || '';
-		// document.getElementById('id_movil_factura').value = movil || '';
-		// document.getElementById('id_email_factura').value = email || '';
-		// document.getElementById('id_id_vendedor').value = id_vendedor || '';
-		// document.getElementById('id_vendedor_factura').value = nombre_vendedor || '';
-		
-		// Cerrar el modal
-		const modal = bootstrap.Modal.getInstance(document.getElementById('agendaModal'));
-		modal.hide();
-	}
-});
+		if (seleccion) {
+			const id_cliente = seleccion.getAttribute('data-id');
+			const nombre = seleccion.getAttribute('data-nombre');
+			// const cuit = seleccion.getAttribute('data-cuit');
+			// const direccion = seleccion.getAttribute('data-direccion');
+			// const movil = seleccion.getAttribute('data-movil');
+			// const email = seleccion.getAttribute('data-email');
+			// const cp = seleccion.getAttribute('data-cp');
+			
+			document.getElementById('id_id_cliente').value = id_cliente || '';
+			document.getElementById('id_nombre_cliente').value = nombre || '';
+			// document.getElementById('id_domicilio_factura').value = direccion || '';
+			// document.getElementById('id_cuit').value = cuit || '';
+			// document.getElementById('id_movil_factura').value = movil || '';
+			// document.getElementById('id_email_factura').value = email || '';
+			// document.getElementById('id_id_vendedor').value = id_vendedor || '';
+			// document.getElementById('id_vendedor_factura').value = nombre_vendedor || '';
+			
+			// Cerrar el modal
+			const modal = bootstrap.Modal.getInstance(document.getElementById('agendaModal'));
+			modal.hide();
+		}
+	});
 
-// Limpiar filtros y resultados cuando se cierra la ventana modal
-agendaModal.addEventListener('hidden.bs.modal', function () {
-	buscarAgendaForm.reset(); // Restablecer el formulario
-	tablaResultadosAgenda.innerHTML = ''; // Limpiar la tabla de resultados
-});
-
+	// Limpiar filtros y resultados cuando se cierra la ventana modal
+	agendaModal.addEventListener('hidden.bs.modal', function () {
+		buscarAgendaForm.reset(); // Restablecer el formulario
+		tablaResultadosAgenda.innerHTML = ''; // Limpiar la tabla de resultados
+	});
+}
 // -------------------------------------------------------------------------------

@@ -4,6 +4,7 @@ from django.http import HttpResponse, JsonResponse
 from django.views import View
 from zipfile import ZipFile
 from io import BytesIO
+from reportlab.lib.pagesizes import A4, landscape
 from django.core.mail import EmailMessage
 from django.db.models.functions import Lower
 from django.db.models import Q
@@ -53,10 +54,8 @@ class ConfigViews:
 
 
 class DataViewList:
-	search_fields = ['nombre_cliente', 'cuit']
-	
-	ordering = ['nombre_cliente']
-	
+	search_fields = []
+	ordering = []
 	paginate_by = 8
 	
 	report_title = "Reporte de Clientes"
@@ -106,11 +105,11 @@ class ClienteInformeListView(InformeListView):
 	}
 	
 	def get_queryset(self):
-		queryset = super().get_queryset()
+		queryset = self.model.objects.none()
 		form = self.form_class(self.request.GET)
 		
 		if form.is_valid():
-			estatus = form.cleaned_data.get('estatus')
+			estatus = form.cleaned_data.get('estatus', 'activos')
 			orden = form.cleaned_data.get('orden', 'nombre')
 			desde = form.cleaned_data.get('desde', '').lower()
 			hasta = form.cleaned_data.get('hasta', '').lower()
@@ -118,17 +117,14 @@ class ClienteInformeListView(InformeListView):
 			provincia = form.cleaned_data.get('provincia')
 			localidad = form.cleaned_data.get('localidad')
 			
-			if estatus not in ['activos', 'inactivos', 'todos']:
-				estatus = 'activos'
-			
 			if estatus:
 				match estatus:
 					case "activos":
-						queryset = queryset.filter(estatus_cliente=True)
+						queryset = self.model.objects.filter(estatus_cliente=True)
 					case "inactivos":
-						queryset = queryset.filter(estatus_cliente=False)
+						queryset = self.model.objects.filter(estatus_cliente=False)
 					case "todos":
-						queryset = queryset.all()
+						queryset = self.model.objects.all()
 			
 			if orden not in ['nombre', 'codigo']:
 				orden = 'nombre'
@@ -233,17 +229,13 @@ class ClienteInformesView(View):
 				pdf_content = helper.export_to_pdf()
 				zip_file.writestr(f"informe_{ConfigViews.model_string}.pdf", pdf_content)
 			
-			if "csv" in formatos:
-				csv_content = helper.export_to_csv()
-				zip_file.writestr(f"informe_{ConfigViews.model_string}.csv", csv_content)
-			
-			if "word" in formatos:
-				word_content = helper.export_to_word()
-				zip_file.writestr(f"informe_{ConfigViews.model_string}.docx", word_content)
-			
 			if "excel" in formatos:
 				excel_content = helper.export_to_excel()
 				zip_file.writestr(f"informe_{ConfigViews.model_string}.xlsx", excel_content)
+			
+			if "csv" in formatos:
+				csv_content = helper.export_to_csv()
+				zip_file.writestr(f"informe_{ConfigViews.model_string}.csv", csv_content)
 		
 		#-- Preparar respuesta para descargar el archivo ZIP.
 		buffer.seek(0)
@@ -262,17 +254,13 @@ class ClienteInformesView(View):
 			attachments.append((f"informe_{ConfigViews.model_string}.pdf", helper.generar_pdf(), 
 					   "application/pdf"))
 		
-		if "csv" in formatos:
-			attachments.append((f"informe_{ConfigViews.model_string}.csv", helper.generar_csv(), 
-					   "text/csv"))
-		
-		if "word" in formatos:
-			attachments.append((f"informe_{ConfigViews.model_string}.docx", helper.generar_word(), 
-					   "application/vnd.openxmlformats-officedocument.wordprocessingml.document"))
-		
 		if "excel" in formatos:
 			attachments.append((f"informe_{ConfigViews.model_string}.xlsx", helper.generar_excel(), 
 					   "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+		
+		if "csv" in formatos:
+			attachments.append((f"informe_{ConfigViews.model_string}.csv", helper.generar_csv(), 
+					   "text/csv"))
 		
 		#-- Crear y enviar el correo.
 		subject = DataViewList.report_title
@@ -297,10 +285,10 @@ class ClienteInformePDFView(View):
 		
 		#-- Generar el pdf.
 		helper = ExportHelper(queryset, DataViewList.table_headers, DataViewList.report_title)
-		buffer = helper.export_to_pdf()
+		buffer = helper.export_to_pdf(pagesize=landscape(A4))
 		
 		#-- Preparar la respuesta HTTP.
 		response = HttpResponse(buffer, content_type='application/pdf')
-		response['Content-Disposition'] = f'inline; filename="informe_{ConfigViews.model_string}.pdf"'
+		response['Content-Disposition'] = f'inline; filename="{ConfigViews.model_string}.pdf"'
 		
 		return response

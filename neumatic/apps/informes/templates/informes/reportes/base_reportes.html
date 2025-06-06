@@ -1,13 +1,12 @@
-<!-- neumatic/apps/informes/templates/informes/reportes/base_reportes.html -->
-{% comment %}{% endcomment %}
-
+<!-- neumatic\apps\informes\templates\informes\reportes\base_reportes.html -->
+<!-- Plantilla base para mostrar los reportes en pantalla -->
 <!DOCTYPE html>
 <html lang="es">
 	<head>
 		<meta charset="UTF-8">
 		{% load static %}
 		{% load custom_tags %}
-		<title>{% block title %}Reporte{% endblock %}</title>
+		<title>{% block title %}{{ titulo }}{% endblock %}</title>
 		<link rel="stylesheet" href="{{ css_url }}">
 	</head>
 	<body class="{{ orientation }}">

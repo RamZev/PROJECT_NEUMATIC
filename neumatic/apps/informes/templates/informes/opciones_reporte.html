@@ -1,8 +1,9 @@
 <!-- neumatic\apps\informes\templates\informes\opciones_reporte.html -->
+
 <div class="row mb-2">
 	<!-- Tipo de Salida -->
 	<div class="col-md-4">
-		<label>Tipo de Salida:</label>
+		Tipo de Salida:
 		<div class="form-check">
 			<input class="form-check-input" type="radio" name="tipo_salida" id="tabla" value="tabla">
 			<label class="form-check-label" for="tabla">Vista Preliminar en Tabla</label>
@@ -23,22 +24,18 @@
 	
 	<!-- Formato de Envío -->
 	<div class="col-md-4">
-		<label>Formato de Envío:</label>
+		Formato de Envío:
 		<div class="form-check">
 			<input class="form-check-input" type="checkbox" name="formato_envio" id="formato_pdf" value="pdf">
 			<label class="form-check-label" for="formato_pdf">PDF</label>
 		</div>
 		<div class="form-check">
-			<input class="form-check-input" type="checkbox" name="formato_envio" id="formato_csv" value="csv">
-			<label class="form-check-label" for="formato_csv">CSV</label>
-		</div>
-		<div class="form-check">
-			<input class="form-check-input" type="checkbox" name="formato_envio" id="formato_word" value="word">
-			<label class="form-check-label" for="formato_word">Word</label>
-		</div>
-		<div class="form-check">
 			<input class="form-check-input" type="checkbox" name="formato_envio" id="formato_excel" value="excel">
 			<label class="form-check-label" for="formato_excel">Excel</label>
+		</div>
+		<div class="form-check">
+			<input class="form-check-input" type="checkbox" name="formato_envio" id="formato_csv" value="csv">
+			<label class="form-check-label" for="formato_csv">CSV</label>
 		</div>
 		
 		<!-- Botón para seleccionar todos los formatos -->

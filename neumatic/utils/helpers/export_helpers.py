@@ -4,14 +4,14 @@ from io import BytesIO, TextIOWrapper
 from reportlab.platypus import BaseDocTemplate, SimpleDocTemplate, Frame, PageTemplate, Table, TableStyle, Paragraph, Spacer
 from reportlab.lib.pagesizes import A4, portrait
 from reportlab.lib.enums import TA_LEFT, TA_RIGHT
-from reportlab.pdfgen import canvas
+from reportlab.pdfgen.canvas import Canvas
 from reportlab.lib import colors
-from docx import Document
 from openpyxl import Workbook
 import csv
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from datetime import datetime
 from decimal import Decimal
+from functools import partial
 from apps.maestros.templatetags.custom_tags import formato_es_ar
 
 
@@ -58,6 +58,10 @@ class ExportHelper:
 					
 			if value is None:
 				return ""
+					
+			#-- Si es una instancia de un modelo.
+			if hasattr(value, '_meta') and frmto == 'excel':
+				return str(value)  # Usa la representación en string del objeto (definida en __str__).			
 			
 			#-- Si es booleano.
 			if isinstance(value, bool):
@@ -119,11 +123,20 @@ class ExportHelper:
 		
 		return totals
 	
-	def export_to_pdf(self):
+	def export_to_pdf(self, pagesize=portrait(A4), margins=(20, 20, 20, 40), body_font_size=8):
 		"""Exporta los datos del queryset a un archivo PDF."""
 		
+		left_margin, right_margin, top_margin, bottom_margin = margins
 		buffer = BytesIO()
-		doc = SimpleDocTemplate(buffer, pagesize=A4)
+		
+		doc = SimpleDocTemplate(
+			buffer,
+			pagesize=pagesize,
+			leftMargin=left_margin,
+			rightMargin=right_margin,
+			topMargin=top_margin,
+			bottomMargin=bottom_margin
+		)
 		elements = []
 		
 		#-- Encabezado del reporte.
@@ -147,22 +160,28 @@ class ExportHelper:
 		
 		table = Table(table_data)
 		table_style = TableStyle([
-			('FONTNAME', (0, 0), (-1, -1), 'Helvetica'),
-			('FONTSIZE', (0, 0), (-1, -1), 8),
-			# ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
-			('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+			#-- Estilos comunes toda la tabla.
+			('FONTNAME', (0,0), (-1,-1), 'Helvetica'),
+			('FONTSIZE', (0,0), (-1,-1), body_font_size),
+			('LEADING', (0,0), (-1,-1), 8),
+			('VALIGN', (0,0), (-1,-1), 'TOP'),
+			
+			#-- Padding de la tabla exceptuando la primera fila (headers).
+			('TOPPADDING', (0,1), (-1,-1), 0),
+			('BOTTOMPADDING', (0,1), (-1,-1), 0),
+			
+			#-- Estilos para la primera fila (headers).
+			('BACKGROUND', (0,0), (-1,0), colors.gray),
+			('FONTNAME', (0,0), (-1,0), 'Helvetica-Bold'),
+			('TEXTCOLOR', (0,0), (-1,0), colors.white),
+			('TOPPADDING', (0,0), (-1,0), 2),
+			('BOTTOMPADDING', (0,0), (-1,0), 2),
+			
 			# Línea horizontal por encima de los títulos
-			('LINEABOVE', (0, 0), (-1, 0), 1, colors.black),
+			# ('LINEABOVE', (0,0), (-1,0), 0.5, colors.black),
 			# Línea horizontal por debajo de los títulos
-			('LINEBELOW', (0, 0), (-1, 0), 1, colors.black),
-			('TEXTCOLOR', (0, 0), (-1, 0), colors.black),
-			
-			# ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-			# ('ALIGN', (0, 0), (-1, 0), 'CENTER'),
-			# ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
-			# ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
-			# ('GRID', (0, 0), (-1, -1), 1, colors.black),
-			
+			# ('LINEBELOW', (0,0), (-1,0), 0.5, colors.black),
+			# ('TEXTCOLOR', (0,0), (-1,0), colors.black),
 		])
 			
 		#-- Identificar las columnas que contienen números para alinear a la derecha.
@@ -194,7 +213,63 @@ class ExportHelper:
 		
 		elements.append(table)
 		
-		doc.build(elements, canvasmaker=CustomCanvas)
+		# Pasar los márgenes a CustomCanvas usando partial
+		canvas_with_margins = partial(
+			CustomCanvas, 
+			margins=(left_margin, right_margin, top_margin, bottom_margin)
+		)
+		
+		# doc.build(elements, canvasmaker=CustomCanvas)
+		doc.build(elements, canvasmaker=canvas_with_margins)
+		buffer.seek(0)
+		
+		return buffer.getvalue()
+	
+	def export_to_excel(self):
+		"""Exporta los datos del queryset a un archivo Excel."""
+		
+		wb = Workbook()
+		ws = wb.active
+		ws.title = self.report_title[:31]  # Limitar a 31 caracteres (restricción de Excel)
+		
+		#-- Obtener encabezados y campos dinámicos.
+		headers, fields = self._get_headers_and_fields()
+		
+		#-- Encabezados.
+		ws.append(headers)
+		
+		#-- Procesar datos según el tipo de queryset.
+		if isinstance(self.queryset, dict):
+			#-- Caso cuando el queryset es un diccionario.
+			for key, data in self.queryset.items():
+				if isinstance(data, dict):
+					#-- Para diccionarios anidados.
+					row = []
+					for field in fields:
+						#-- Manejar campos anidados.
+						value = data
+						for part in field.split('.'):
+							if isinstance(value, dict) and part in value:
+								value = value[part]
+							elif hasattr(value, part):
+								value = getattr(value, part)
+							else:
+								value = None
+								break
+						row.append(self._resolve_field(value, '', frmto='excel'))
+					ws.append(row)
+				else:
+					#-- Para otros tipos de valores en el diccionario.
+					row = [self._resolve_field(data, field, frmto='excel') for field in fields]
+					ws.append(row)
+		else:
+			#-- Caso normal (RawQuerySet, QuerySet, lista).
+			for obj in self.queryset:
+				row = [self._resolve_field(obj, field, frmto='excel') for field in fields]
+				ws.append(row)
+		
+		buffer = BytesIO()
+		wb.save(buffer)
 		buffer.seek(0)
 		
 		return buffer.getvalue()
@@ -258,135 +333,50 @@ class ExportHelper:
 		buffer.close()
 		
 		return csv_bytes
-	
-	def export_to_word(self):
-		"""Exporta el queryset a un documento de Word."""
-		
-		#-- Crear el documento.
-		doc = Document()
-		
-		#-- Agregar un título.
-		doc.add_heading(self.report_title, level=1)
-		
-		#-- Obtener encabezados y campos.
-		headers, fields = self._get_headers_and_fields()
-		
-		#-- Crear tabla con encabezados dinámicos.
-		table = doc.add_table(rows=1, cols=len(headers))
-		hdr_cells = table.rows[0].cells
-		
-		#-- Agregar encabezados a la tabla.
-		for i, header in enumerate(headers):
-			hdr_cells[i].text = header
-		
-		#-- Agregar las filas de datos.
-		for obj in self.queryset:
-			row_cells = table.add_row().cells
-			for i, field in enumerate(fields):
-				value = self._resolve_field(obj, field)
-				row_cells[i].text = value
-		
-		buffer = BytesIO()
-		doc.save(buffer)
-		buffer.seek(0)
-		
-		return buffer.getvalue()
-	
-	def export_to_excel(self):
-		"""Exporta los datos del queryset a un archivo Excel."""
-		
-		wb = Workbook()
-		ws = wb.active
-		ws.title = self.report_title[:31]  # Limitar a 31 caracteres (restricción de Excel)
-		
-		#-- Obtener encabezados y campos dinámicos.
-		headers, fields = self._get_headers_and_fields()
-		
-		#-- Encabezados.
-		ws.append(headers)
-		
-		#-- Procesar datos según el tipo de queryset.
-		if isinstance(self.queryset, dict):
-			#-- Caso cuando el queryset es un diccionario.
-			for key, data in self.queryset.items():
-				if isinstance(data, dict):
-					#-- Para diccionarios anidados.
-					row = []
-					for field in fields:
-						#-- Manejar campos anidados.
-						value = data
-						for part in field.split('.'):
-							if isinstance(value, dict) and part in value:
-								value = value[part]
-							elif hasattr(value, part):
-								value = getattr(value, part)
-							else:
-								value = None
-								break
-						row.append(self._resolve_field(value, '', frmto='excel'))
-					ws.append(row)
-				else:
-					#-- Para otros tipos de valores en el diccionario.
-					row = [self._resolve_field(data, field, frmto='excel') for field in fields]
-					ws.append(row)
-		else:
-			#-- Caso normal (RawQuerySet, QuerySet, lista).
-			for obj in self.queryset:
-				row = [self._resolve_field(obj, field, frmto='excel') for field in fields]
-				ws.append(row)		
-		
-		buffer = BytesIO()
-		wb.save(buffer)
-		buffer.seek(0)
-		
-		return buffer.getvalue()
 
 
-class CustomCanvas(canvas.Canvas):
-	def __init__(self, *args, **kwargs):
+class CustomCanvas(Canvas):
+	# def __init__(self, *args, margins=(20, 20, 20, 40), **kwargs):
+	def __init__(self, *args, margins, **kwargs):
 		super().__init__(*args, **kwargs)
-		
-		#-- Contador para el número de la página actual.
-		self.page_number = 0
-		
-		#-- Contador para el total de páginas.
-		self.total_pages = 0
-		
-		#-- Fecha del reporte y su formato.
-		# self.report_date = datetime.now().strftime("Fecha: %d/%m/%Y")
+		self.left_margin, self.right_margin, self.top_margin, self.bottom_margin = margins
 		self.report_date = datetime.now().strftime("%d/%m/%Y %I:%M %p")
 	
 	def draw_footer(self):
-		# Dibujar el pie de página con tres secciones
-
-		# Margen inferior
+		"""Dibujar el pie de página con tres secciones."""
+		
+		#-- Calcular dimensiones.
+		page_width, page_height = self._pagesize
+		available_width = page_width - self.left_margin - self.right_margin
+		
+		#-- Margen inferior.
 		y_position = 20
 		
-		# Extremo izquierdo: texto fijo
+		#-- Establecer la fuente, tamaño y color del pie de página.
+		self.footer_font = ("Helvetica", 8)
+		self.footer_color = colors.black
+		
+		#-- Estilos de fuente.
 		self.setFont("Helvetica", 8)
 		self.setFillColor(colors.black)
 		
-		self.drawString(30, y_position, "M.A.A.Soft")
+		#-- Extremo izquierdo: texto fijo.
+		self.setFont("Helvetica-Oblique", 8)  # Fuente itálica
+		self.drawString(self.left_margin, y_position, "M.A.A.Soft")
+		self.setFont("Helvetica", 8)
 		
-		#-- Incrementar el número total de páginas.
-		self.page_number += 1
+		#-- Centro: numeración de páginas.
+		page_text = f"- {self._pageNumber} -"
+		self.drawCentredString(self.left_margin + available_width/2, y_position, page_text)
 		
-		# Centro: numeración de páginas
-		# page_text = f"Página {self.page_number}/{self.total_pages}"
-		page_text = f"- {self.page_number} -"
-		self.drawCentredString(300, y_position, page_text)
+		#-- Extremo derecho: fecha del reporte.
+		self.drawRightString(self.left_margin + available_width, y_position, self.report_date)
 		
-		# Extremo derecho: fecha del reporte
-		self.drawRightString(570, y_position, self.report_date)
-		
-		# Línea horizontal por encima del pie de página
-		self.line(30, y_position + 10, 570, y_position + 10)
+		#-- Línea horizontal por encima del pie de página.
+		self.line(self.left_margin, y_position + 10, self.left_margin + available_width, y_position + 10)
 	
 	def showPage(self):
 		"""Llama a la función que dibuja elementos comunes en cada página."""
-		
-		#-- Incrementar el número total de páginas cuando se muestra una nueva página.
-		self.total_pages += 1
 		
 		#-- Dibujar el pie de página antes de pasar a la siguiente página.
 		self.draw_footer()
@@ -524,7 +514,7 @@ class PDFGenerator:
 		
 		#-- Calcular dimensiones (usando un canvas temporal).
 		#-- doc.width ya incluye el descuento de márgenes (ver __init__).
-		temp_canvas = canvas.Canvas(self.buffer)
+		temp_canvas = Canvas(self.buffer)
 		available_width = self.doc.width / 2.0
 		
 		left_para.wrapOn(temp_canvas, available_width, self.doc.height)
@@ -614,8 +604,8 @@ class PDFGenerator:
 	def _render_footer(self, canvas_obj, doc, width):
 		# --- Footer -----------------------------------------------------------------------
 		
-		# Guardar el número de página actual para usarlo en los headers
-		self._pageNumber = canvas_obj._pageNumber
+		# # Guardar el número de página actual para usarlo en los headers
+		# self._pageNumber = canvas_obj._pageNumber
 		
 		footer_y = 15
 		
@@ -660,10 +650,8 @@ class PDFGenerator:
 		line_y = content_bottom - 2
 		canvas_obj.line(doc.leftMargin, line_y, doc.width + doc.rightMargin, line_y)
 	
-	# def _create_table(self, data, col_widths, style_config):
 	def _create_table(self, data, col_widths, style_config, repeat_rows=1):
 		"""Crea una tabla con los datos y estilos proporcionados"""
-		# table = Table(data, colWidths=col_widths, repeatRows=1)
 		table = Table(data, colWidths=col_widths, repeatRows=repeat_rows)
 		
 		#-- Estilo base.
@@ -692,7 +680,6 @@ class PDFGenerator:
 		table.setStyle(table_style)
 		return table
 	
-	# def generate(self, table_data, col_widths, table_style_config):
 	def generate(self, table_data, col_widths, table_style_config, repeat_rows=1):
 		"""Genera el PDF con los datos proporcionados"""
 		
@@ -706,7 +693,6 @@ class PDFGenerator:
 		content = []
 		
 		#-- Crear tabla.
-		# table = self._create_table(table_data, col_widths, table_style_config)
 		table = self._create_table(table_data, col_widths, table_style_config, repeat_rows)
 		content.append(table)
 		
