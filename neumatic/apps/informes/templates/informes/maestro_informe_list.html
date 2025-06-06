@@ -1,4 +1,5 @@
 <!-- neumatic\apps\informes\templates\informes\maestro_informe_list.html -->
+ 
 {% extends 'base.html' %}
 {% load static %}
 {% load custom_tags %}
@@ -39,8 +40,6 @@
 	}
 {% endblock style %}
 
-{% debug %}
-
 <!-- Block Header -->
 {% block header %}
 	{% include 'top_nav.html' %}
@@ -64,6 +63,7 @@
 					<div class="container-fluid tbl-container">
 						
 						<div class="card border-secondary mb-3 mt-2">
+							
 							<div class="card-header bg-primary bg-opacity-25 text-dark d-flex justify-content-between p-1">
 								<h4>{{ master_title }}</h4>
 								<!-- Botón cerrar lista -->
@@ -72,6 +72,7 @@
 									onclick="window.location.href='{% url home_view_name %}'">
 								</button>
 							</div>
+							
 							<div class="card-body">
 								
 								<div class="accordion" id="accordionPanelsStayOpenExample">
@@ -106,7 +107,7 @@
 									</div>
 									
 									<!-- ************************************** -->
-									 
+									
 									<div class="accordion-item">
 										
 										<h2 class="accordion-header">
@@ -187,7 +188,6 @@
 									
 								</div>
 								
-								
 							</div>
 						</div>
 						
@@ -217,12 +217,12 @@
 		document.addEventListener("DOMContentLoaded", function () {
 			//-- Cargar y ejecutar el JS común.
 			const scriptOpciones = document.createElement('script');
-			scriptOpciones.src = "{% static 'js/opciones_reporte_original.js' %}";
+			scriptOpciones.src = "{% static 'js/opciones_reporte_cruds.js' %}";
 			scriptOpciones.onload = function() {
-				console.log("*---opciones_reporte.js cargado y ejecutado.---*");
+				console.log("js/opciones_reporte_cruds.js cargado y ejecutado.");
 			};
 			scriptOpciones.onerror = function() {
-				console.error("*---Error al cargar opciones_reporte.js.---*");
+				console.error("Error al cargar js/opciones_reporte_cruds.js.");
 			};
 			document.head.appendChild(scriptOpciones);
 			
@@ -231,10 +231,10 @@
 				const scriptEspecifico = document.createElement('script');
 				scriptEspecifico.src = "{% static js_file %}";
 				scriptEspecifico.onload = function() {
-					console.log("*---JS específico cargado y ejecutado.---*");
+					console.log("JS específico {{ js_file }} cargado y ejecutado.");
 				};
 				scriptEspecifico.onerror = function() {
-					console.error("*---Error al cargar el JS específico.---*");
+					console.error("Error al cargar el JS específico {{ js_file }}.");
 				};
 				document.head.appendChild(scriptEspecifico);
 			{% endif %}

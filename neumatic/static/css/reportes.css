@@ -1,10 +1,15 @@
+/* neumatic\static\css\reportes.css */
+/*-- Estilos para reportes en pantalla --*/
+
 body {
 	font-family: Arial, sans-serif;
-	font-size: 8pt;
+	font-size: 12pt;
 	margin: 0;
 	padding: 0;
 	display: block;
 	height: 100%;
+	max-width: 90%;
+	margin: auto;
 }
 header {
 	/* height: 100px; */
@@ -63,6 +68,8 @@ header {
 main {
 	margin-bottom: 80px; /* Ajuste para el footer */
 	line-height: 1.1;
+	margin-left: 1cm;
+	margin-right: 1cm;
 }
 main p {
 	line-height: 1.1;
@@ -88,7 +95,7 @@ td {
 }
 table th, table td {
 	text-align: left;
-	font-size: 9px;
+	font-size: 12px;
 	/* line-height: 1.0; */
 }
 table th.numeric, table td.numeric {

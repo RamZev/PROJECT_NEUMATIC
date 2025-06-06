@@ -4,6 +4,7 @@ from django.urls import path
 #-- Catálogos.
 from .views.cliente_list_views import *
 from .views.proveedor_list_views import *
+from .views.producto_list_views import *
 from .views.vendedor_list_views import *
 
 #-- Tablas.
@@ -30,7 +31,6 @@ from .views.puntoventa_list_views import *
 
 #-- Procesos.
 #- Lote 1:
-from apps.informes.views.vlsaldosclientes_list_views import *
 from apps.informes.views.vlsaldosclientes_list_views import *
 from apps.informes.views.vlresumenctacte_list_views import *
 from apps.informes.views.vlmercaderiaporcliente_list_views import *
@@ -91,6 +91,14 @@ urlpatterns = [
 		 name='proveedor_informe_generado'),
 	path('proveedor_vista_pdf/', ProveedorInformePDFView.as_view(),
 		 name='proveedor_informe_pdf'),
+	
+	#-- Productos.
+	path('producto_informe/', ProductoInformeListView.as_view(),
+		 name='producto_informe_list'),
+	path('producto_generado/', ProductoInformesView.as_view(),
+		 name='producto_informe_generado'),
+	path('producto_vista_pdf/', ProductoInformePDFView.as_view(),
+		 name='producto_informe_pdf'),
 	
 	#-- Vendedores.
 	path('vendedor_informe/', VendedorInformeListView.as_view(),

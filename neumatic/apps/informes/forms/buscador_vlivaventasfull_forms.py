@@ -43,6 +43,9 @@ class BuscadorVLIVAVentasFULLForm(InformesGenericForm):
 			anno = date.today().year
 			self.fields["anno"].initial = anno
 			self.fields["anno"].widget.attrs["value"] = anno
+		if "mes" not in self.initial:
+			mes_actual = date.today().strftime('%m')
+			self.fields["mes"].initial = mes_actual
 		if "folio" not in self.initial:
 			self.fields["folio"].initial = 0
 			self.fields["folio"].widget.attrs["value"] = 0	
