@@ -408,8 +408,8 @@
                                         <strong>Retenciones</strong>
                                     </label>
                                     <div>
-                                        <input type="number" step="0.01" class="form-control" id="retenciones" name="retenciones" value="0.00">
-                                        <span class="formatted-number">0.00</span>
+                                        {{ form.total_retenciones }}
+                                        <span>{{ form.total_retenciones.value|default:"0.00" }}</span>
                                     </div>
                                 </div>
                                 <div class="col-md-2">
@@ -417,8 +417,8 @@
                                         <strong>Efectivo</strong>
                                     </label>
                                     <div>
-                                        <input type="number" step="0.01" class="form-control" id="efectivo" name="efectivo" value="0.00">
-                                        <span class="formatted-number">0.00</span>
+                                        {{ form.efectivo_recibo }}
+                                        <span>{{ form.efectivo_recibo.value|default:"0.00" }}</span>
                                     </div>
                                 </div>
                                 <div class="col-md-2">
@@ -426,8 +426,8 @@
                                         <strong>Dep/Transf.</strong>
                                     </label>
                                     <div>
-                                        <input type="number" step="0.01" class="form-control" id="depositos" name="depositos" value="0.00">
-                                        <span class="formatted-number">0.00</span>
+                                        {{ form.total_depositos }}
+                                        <span>{{ form.total_depositos.value|default:"0.00" }}</span>
                                     </div>
                                 </div>
                                 <div class="col-md-2">
@@ -435,8 +435,8 @@
                                         <strong>Tarjetas</strong>
                                     </label>
                                     <div>
-                                        <input type="number" step="0.01" class="form-control" id="tarjetas" name="tarjetas" value="0.00">
-                                        <span class="formatted-number">0.00</span>
+                                        {{ form.total_tarjetas }}
+                                        <span>{{ form.total_tarjetas.value|default:"0.00" }}</span>
                                     </div>
                                 </div>
                                 <div class="col-md-2">
@@ -444,20 +444,53 @@
                                         <strong>Cheques</strong>
                                     </label>
                                     <div>
-                                        <input type="number" step="0.01" class="form-control" id="cheques" name="cheques" value="0.00">
-                                        <span class="formatted-number">0.00</span>
+                                        {{ form.total_cheques }}
+                                        <span>{{ form.total_cheques.value|default:"0.00" }}</span>
                                     </div>
                                 </div>
                                 <div class="col-md-2">
                                     <label class="form-label mb-0 text-primary">
-                                        <strong>Total Cobrado</strong>
+                                        <strong>Total Formas Pago</strong>
                                     </label>
                                     <div>
-                                        <input type="number" step="0.01" class="form-control" id="total_cobrado" name="total_cobrado" value="0.00">
-                                        <span class="formatted-number">0.00</span>
+                                        {{ form.total_formas_pago }}
+                                        <span>{{ form.total_formas_pago.value|default:"0.00" }}</span>
                                     </div>
                                 </div>
                             </div>
+                            
+                            <div class="row my-1">
+                                <div class="col-md-2">
+                                    <label class="form-label mb-0 text-primary">
+                                        <strong>Importe</strong>
+                                    </label>
+                                    <div>
+                                        {{ form.total }}
+                                        <span>{{ form.total.value|default:"0.00" }}</span>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-2">
+                                    <label class="form-label mb-0 text-primary">
+                                        <strong>Total Recibo</strong>
+                                    </label>
+                                    <div>
+                                        {{ form.total_cobrado }}
+                                        <span>{{ form.total_cobrado.value|default:"0.00" }}</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-2">
+                                    <label class="form-label mb-0 text-primary">
+                                        <strong>Resto a Cobrar</strong>
+                                    </label>
+                                    <div>
+                                        {{ form.resto_cobrar }}
+                                        <span>{{ form.resto_cobrar.value|default:"0.00" }}</span>
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
 
                         <!-- Item Detalle Recibo Two -->
@@ -529,18 +562,7 @@
                                                                     </a>
                                                                 </div>
                                                             </div>
-                                                            <div class="col-md-8"></div>
-                                                            <div class="col-md-2">
-                                                                <div class="text-center">
-                                                                    <label class="form-label mb-0 text-primary">
-                                                                        <strong>Total Cobrado</strong>
-                                                                    </label>
-                                                                    <div>
-                                                                        {{ form.total_cobrado }}
-                                                                        <span class="formatted-number">{{ form.total_cobrado.value|default:"0.00" }}</span>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
+                                                            
                                                         </div>
                                                     </td>
                                                 </tr>
@@ -803,11 +825,11 @@
             }
             
             // Actualizar visualización del total cobrado
-            function actualizarVisualizacionTotal() {
-                const input = document.getElementById('id_total_cobrado');
-                const span = input.nextElementSibling;
+            function actualizarVisualizacion(campoId) {
+                const input = document.getElementById(campoId);
+                const span = input?.nextElementSibling;
                 if (input && span && span.classList.contains('formatted-number')) {
-                    span.textContent = formatNumber(input.value);
+                    span.textContent = input.value || "0.00"; // Sin formato por ahora
                 }
             }
             
@@ -818,14 +840,98 @@
                     const montoCobrado = parseNumber(row.querySelector('[name*="-monto_cobrado"]').value);
                     totalCobrado += montoCobrado;
                 });
+                
                 document.getElementById('id_total_cobrado').value = totalCobrado.toFixed(2);
-                actualizarVisualizacionTotal();
+                actualizarVisualizacion('id_total_cobrado');
+            }
+
+            // Calcular totales de los formsets
+            function calcularTotalesFormsets() {
+                // Total Retenciones
+                
+                let totalRetenciones = 0;
+                const container3 = document.getElementById('formset-container3');
+                if (container3) {
+                    const rows = container3.querySelectorAll('tbody tr:not([style*="display: none"])');
+                    rows.forEach(row => {
+                        const importeRetencion = parseNumber(row.querySelector('[name*="-importe_retencion"]')?.value);
+                        if (importeRetencion !== undefined) totalRetenciones += importeRetencion;
+                    });
+                }
+                document.getElementById('id_total_retenciones').value = totalRetenciones.toFixed(2);
+                actualizarVisualizacion('id_total_retenciones');
+
+                // Total Depósitos
+                // alert("Entró a Depósitos");
+                let totalDepositos = 0;
+                const container4 = document.getElementById('formset-container4');
+                if (container4) {
+                    const rows = container4.querySelectorAll('tbody tr:not([style*="display: none"])');
+                    rows.forEach(row => {
+                        const importeDeposito = parseNumber(row.querySelector('[name*="-importe_deposito"]')?.value);
+                        if (importeDeposito !== undefined) totalDepositos += importeDeposito;
+                    });
+                }
+                document.getElementById('id_total_depositos').value = totalDepositos.toFixed(2);
+                actualizarVisualizacion('id_total_depositos');
+
+                // Total Tarjetas
+                let totalTarjetas = 0;
+                const container5 = document.getElementById('formset-container5');
+                if (container5) {
+                    const rows = container5.querySelectorAll('tbody tr:not([style*="display: none"])');
+                    rows.forEach(row => {
+                        const importeTarjeta = parseNumber(row.querySelector('[name*="-importe_tarjeta"]')?.value);
+                        if (importeTarjeta !== undefined) totalTarjetas += importeTarjeta;
+                    });
+                }
+                document.getElementById('id_total_tarjetas').value = totalTarjetas.toFixed(2);
+                actualizarVisualizacion('id_total_tarjetas');
+
+                // Total Cheques
+                let totalCheques = 0;
+                const container6 = document.getElementById('formset-container6');
+                if (container6) {
+                    const rows = container6.querySelectorAll('tbody tr:not([style*="display: none"])');
+                    rows.forEach(row => {
+                        const importeCheque = parseNumber(row.querySelector('[name*="-importe_cheque"]')?.value);
+                        if (importeCheque !== undefined) totalCheques += importeCheque;
+                    });
+                }
+                document.getElementById('id_total_cheques').value = totalCheques.toFixed(2);
+                actualizarVisualizacion('id_total_cheques');
+            }
+
+            // Calcular total formas de pago y resto a cobrar
+            function actualizarResumenPagos() {
+                // Total Efectivo (manual)
+                const totalEfectivo = parseNumber(document.getElementById('id_efectivo_recibo').value);
+
+                // Total Formas de Pago
+                const totalFormasPago = totalEfectivo + parseNumber(document.getElementById('id_total_retenciones').value) +
+                    parseNumber(document.getElementById('id_total_depositos').value) +
+                    parseNumber(document.getElementById('id_total_tarjetas').value) +
+                    parseNumber(document.getElementById('id_total_cheques').value);
+                document.getElementById('id_total_formas_pago').value = totalFormasPago.toFixed(2);
+                actualizarVisualizacion('id_total_formas_pago');
+
+                // Resto a Cobrar
+                const totalCobrado = parseNumber(document.getElementById('id_total_cobrado').value);
+                const restoCobrar = totalCobrado - totalFormasPago;
+                document.getElementById('id_resto_cobrar').value = restoCobrar.toFixed(2);
+                actualizarVisualizacion('id_resto_cobrar');
+            }
+
+            // Función principal para actualizar todo
+            function actualizarTodo() {
+                // alert("Entró a actualizarTodo1");
+                calcularTotalesFormsets();
+                actualizarTotalCobrado();
+                actualizarResumenPagos();
             }
             
             // Actualizar facturas pendientes
             window.updateFacturasPendientes = function(facturas) {
-                alert("updateFacturasPendientes");
-                
                 if (isEdit) return; // No agregar filas en modo edición
                 const tbody = formsetContainer.querySelector('.detalle-form tbody');
                 tbody.innerHTML = ''; // Limpiar tabla
@@ -873,7 +979,7 @@
                 });
 
                 document.getElementById('id_detallerecibo_set-TOTAL_FORMS').value = facturas.length;
-                actualizarTotalCobrado();
+                actualizarTodo();
 
                 // Mostrar modal de autorización si hay deudas
                 if (facturas.length > 0) {
@@ -884,7 +990,8 @@
 
             // Manejar cambios en monto_cobrado
             formsetContainer.addEventListener('input', function (event) {
-                if (event.target.name.includes('monto_cobrado')) {
+                if (event.target.matches('[name*="-monto_cobrado"]')) {
+                    
                     const row = event.target.closest('tr');
                     const montoCobrado = parseNumber(event.target.value);
                     const saldo = parseNumber(row.querySelector('[name*="-saldo"]').value);
@@ -892,9 +999,23 @@
                         alert('El monto cobrado no puede ser mayor al saldo.');
                         event.target.value = saldo.toFixed(2);
                     }
-                    actualizarTotalCobrado();
+                    actualizarTodo();
                 }
             });
+
+            // Manejar cambios en efectivo_recibo
+            document.getElementById('id_efectivo_recibo').addEventListener('input', function () {
+                actualizarResumenPagos();
+            });
+
+            // Manejar cambios en los formsets de retenciones, depósitos, tarjetas y cheques
+            ['#formset-container3', '#formset-container4', '#formset-container5', '#formset-container6'].forEach(containerId => {
+                const container = document.querySelector(containerId);
+                if (container) {
+                    container.addEventListener('input', actualizarTodo);
+                }
+            });
+
 
             // Manejo de eliminación (adaptado de factura_form.html)
             formsetContainer.addEventListener('click', function (event) {
@@ -905,7 +1026,7 @@
                         if (deleteInput) {
                             deleteInput.checked = true;
                             row.style.display = 'none';
-                            actualizarTotalCobrado();
+                            actualizarTodo();
                             actualizarContadorFormsets();
                         }
                     }
@@ -920,19 +1041,16 @@
 
             // Recalcular total al cargar la página si hay filas
             if (formsetContainer.querySelectorAll('.detalle-form tbody tr').length > 0) {
-                actualizarTotalCobrado();
+                actualizarTodo();
             }
 
-            // resto_recibo.html
+            // Lógica del comprobante (reutilizada)
             const comprobanteSelect = document.getElementById('id_id_comprobante_venta');
             
             if (comprobanteSelect) {
-                // Asignar el event listener
                 comprobanteSelect.addEventListener('change', function() {
                     actualizarDatosComprobante(this);
                 });
-                
-                // Ejecutar al cargar si ya hay un valor seleccionado
                 if (comprobanteSelect.value) {
                     actualizarDatosComprobante(comprobanteSelect);
                 }

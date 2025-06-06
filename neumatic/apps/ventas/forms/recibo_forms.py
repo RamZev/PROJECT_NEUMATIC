@@ -31,7 +31,7 @@ class FacturaReciboForm(forms.ModelForm):
             **formclasstext, 'id': 'buscar_cliente', 
             'readonly': 'readonly'
             }
-                               )
+            )
         )
     
     nombre_sucursal = forms.CharField(
@@ -77,22 +77,64 @@ class FacturaReciboForm(forms.ModelForm):
         widget=forms.CheckboxInput(attrs={'class': 'form-check-input', 'disabled': 'disabled'})
     )
         
-    
-    saldo_pendiente = forms.DecimalField(
-        required=False,
-        widget=forms.NumberInput(attrs={
-            **formclassnumb, 
-            'readonly': 'readonly'
-        })
-    )
-    
+    # Campos calculados (no ligados al modelo)
     total_cobrado = forms.DecimalField(
-        required=False,
+        max_digits=15, decimal_places=2, required=False, initial=0.00,
         widget=forms.NumberInput(attrs={
-            **formclassnumb, 
-            'readonly': 'readonly'
+            **formclassnumb,
+            'readonly': 'readonly',
+            'style': 'font-size: 0.8rem; padding: 0.25rem;'
         })
     )
+    total_retenciones = forms.DecimalField(
+        max_digits=15, decimal_places=2, required=False, initial=0.00,
+        widget=forms.NumberInput(attrs={
+            **formclassnumb,
+            'readonly': 'readonly',
+            'style': 'font-size: 0.8rem; padding: 0.25rem;'
+        })
+    )
+    total_depositos = forms.DecimalField(
+        max_digits=15, decimal_places=2, required=False, initial=0.00,
+        widget=forms.NumberInput(attrs={
+            **formclassnumb,
+            'readonly': 'readonly',
+            'style': 'font-size: 0.8rem; padding: 0.25rem;'
+        })
+    )
+    total_tarjetas = forms.DecimalField(
+        max_digits=15, decimal_places=2, required=False, initial=0.00,
+        widget=forms.NumberInput(attrs={
+            **formclassnumb,
+            'readonly': 'readonly',
+            'style': 'font-size: 0.8rem; padding: 0.25rem;'
+        })
+    )
+    total_cheques = forms.DecimalField(
+        max_digits=15, decimal_places=2, required=False, initial=0.00,
+        widget=forms.NumberInput(attrs={
+            **formclassnumb,
+            'readonly': 'readonly',
+            'style': 'font-size: 0.8rem; padding: 0.25rem;'
+        })
+    )
+    total_formas_pago = forms.DecimalField(
+        max_digits=15, decimal_places=2, required=False, initial=0.00,
+        widget=forms.NumberInput(attrs={
+            **formclassnumb,
+            'readonly': 'readonly',
+            'style': 'font-size: 0.8rem; padding: 0.25rem;'
+        })
+    )
+    resto_cobrar = forms.DecimalField(
+        max_digits=15, decimal_places=2, required=False, initial=0.00,
+        widget=forms.NumberInput(attrs={
+            **formclassnumb,
+            'readonly': 'readonly',
+            'style': 'font-size: 0.8rem; padding: 0.25rem;'
+        })
+    )
+    
 
     class Meta:
         model = Factura
@@ -124,8 +166,8 @@ class FacturaReciboForm(forms.ModelForm):
                   'movil_factura',
                   'email_factura',
                   'stock_clie',
-
-                  'total']
+                  'total',
+                  'efectivo_recibo']
         
         widgets = {
             'id_factura': forms.HiddenInput(),
@@ -159,11 +201,12 @@ class FacturaReciboForm(forms.ModelForm):
             "movil_factura": forms.TextInput(attrs={**formclasstext}),
             "stock_clie": forms.CheckboxInput(attrs={**formclasscheck}),
             "email_factura": forms.TextInput(attrs={**formclasstext}),
-            
 
             'total': forms.NumberInput(attrs={
                 **formclassnumb, 
-                'readonly': 'readonly'
+            }),
+            'efectivo_recibo': forms.NumberInput(attrs={
+                **formclassnumb, 
             }),
         }
 
@@ -202,6 +245,14 @@ class FacturaReciboForm(forms.ModelForm):
             Q(recibo=True)
         )
 
+        # Inicializar valores calculados
+        self.fields['total_cobrado'].initial = 0.00
+        self.fields['total_retenciones'].initial = 0.00
+        self.fields['total_depositos'].initial = 0.00
+        self.fields['total_tarjetas'].initial = 0.00
+        self.fields['total_cheques'].initial = 0.00
+        self.fields['total_formas_pago'].initial = 0.00
+        self.fields['resto_cobrar'].initial = 0.00
 
 # Detalle de Recibo
 class DetalleReciboForm(forms.ModelForm):
