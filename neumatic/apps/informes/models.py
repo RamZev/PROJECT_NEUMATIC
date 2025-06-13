@@ -1171,7 +1171,8 @@ class ComisionVendedorIBManager(models.Manager):
 		#-- Se crea la primera consulta (Recibos).
 		query1 = """
 			SELECT 
-				*
+				*,
+				ROUND(gravado*pje_comision/100, 2) AS monto_comision
 			FROM 
 				VLComisionVendedor
 			WHERE 
@@ -1182,7 +1183,8 @@ class ComisionVendedorIBManager(models.Manager):
 		#-- Se crea la segunda consulta (Detalle).
 		query2 = """
 			SELECT 
-				*
+				*,
+				ROUND(gravado*pje_comision/100, 2) AS monto_comision
 			FROM 
 				VLComisionVendedorDetalle
 			WHERE 

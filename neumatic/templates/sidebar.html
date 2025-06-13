@@ -131,7 +131,7 @@
 								<a class="nav-link" href="{% url 'producto_informe_list' %}">Productos</a>
 								<a class="nav-link" href="{% url 'vendedor_informe_list' %}">Vendedores</a>
 								<a class="nav-link" href="#">Empresa</a>
-								<a class="nav-link" href="#">Sucursales</a>
+								<a class="nav-link" href={% url 'sucursal_informe_list' %}>Sucursales</a>
 								<a class="nav-link" href="#">Parámetros</a>
 								<a class="nav-link" href="#">Números</a>
 							</nav>
@@ -143,7 +143,7 @@
 						</a>
 						<div class="collapse" id="reportsCollapseTablas" aria-labelledby="headingReportsTablas" data-bs-parent="#sidenavAccordionReports">
 							<nav class="sb-sidenav-menu-nested nav">
-								<a class="nav-link" href="{% url 'actividad_informe_list' %}">Actividad</a>
+								<a class="nav-link" href="{% url 'actividad_informe_list' %}">Actividades</a>
 								<a class="nav-link" href="{% url 'productodeposito_informe_list' %}">Prod. Depósito</a>
 								<a class="nav-link" href="{% url 'productofamilia_informe_list' %}">Prod. Familia</a>
 								<a class="nav-link" href="{% url 'productomarca_informe_list' %}">Prod. Marca</a>
@@ -152,17 +152,21 @@
 								<a class="nav-link" href="{% url 'productoestado_informe_list' %}">Prod. Estado</a>
 								<a class="nav-link" href="{% url 'comprobanteventa_informe_list' %}">Comp. Venta</a>
 								<a class="nav-link" href="{% url 'comprobantecompra_informe_list' %}">Comp. Compra</a>
-								<a class="nav-link" href="{% url 'moneda_informe_list' %}">Moneda</a>
-								<a class="nav-link" href="{% url 'provincia_informe_list' %}">Provincia</a>
-								<a class="nav-link" href="{% url 'localidad_informe_list' %}">Localidad</a>
-								<a class="nav-link" href="{% url 'tipodocumentoidentidad_informe_list' %}">Tipo Documento</a>
-								<a class="nav-link" href="{% url 'tipoiva_informe_list' %}">Tipo Iva</a>
+								<a class="nav-link" href="{% url 'moneda_informe_list' %}">Monedas</a>
+								<a class="nav-link" href="{% url 'provincia_informe_list' %}">Provincias</a>
+								<a class="nav-link" href="{% url 'localidad_informe_list' %}">Localidades</a>
+								<a class="nav-link" href="{% url 'tipodocumentoidentidad_informe_list' %}">Tipos Documento</a>
+								<a class="nav-link" href="{% url 'tipoiva_informe_list' %}">Tipos Iva</a>
 								<a class="nav-link" href="{% url 'alicuotaiva_informe_list' %}">Alícuotas Iva</a>
-								<a class="nav-link" href="{% url 'tipopercepcionib_informe_list' %}">Tipo Percepción</a>
-								<a class="nav-link" href="{% url 'tiporetencionib_informe_list' %}">Tipo Retención</a>
-								<a class="nav-link" href="{% url 'operario_informe_list' %}">Operario</a>
-								<a class="nav-link" href="{% url 'mediopago_informe_list' %}">Medio de Pago</a>
+								<a class="nav-link" href="{% url 'tipopercepcionib_informe_list' %}">Tipos Percepción</a>
+								<a class="nav-link" href="{% url 'tiporetencionib_informe_list' %}">Tipos Retención</a>
+								<a class="nav-link" href="{% url 'operario_informe_list' %}">Operarios</a>
+								<a class="nav-link" href="{% url 'mediopago_informe_list' %}">Medios de Pago</a>
 								<a class="nav-link" href="{% url 'puntoventa_informe_list' %}">Puntos de Venta</a>
+								<a class="nav-link" href="{% url 'banco_informe_list' %}">Bancos</a>
+								<a class="nav-link" href="{% url 'tarjeta_informe_list' %}">Tarjetas</a>
+								<a class="nav-link" href="{% url 'codigoretencion_informe_list' %}">Códigos de Retención</a>
+								<a class="nav-link" href="{% url 'conceptobanco_informe_list' %}">Conceptos de Banco</a>
 							</nav>
 						</div>
 						

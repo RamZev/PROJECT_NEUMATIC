@@ -486,7 +486,7 @@ def vlestadisticasventasprovincia_vista_excel(request):
 	
 	helper = ExportHelper(
 		queryset=queryset,
-		table_headers=headers,
+		table_info=headers,
 		report_title=ConfigViews.report_title
 	)
 	excel_data = helper.export_to_excel()
@@ -525,7 +525,7 @@ def vlestadisticasventasprovincia_vista_csv(request):
 	
 	helper = ExportHelper(
 		queryset=queryset,
-		table_headers=headers,
+		table_info=headers,
 		report_title=ConfigViews.report_title
 	)
 	csv_data = helper.export_to_csv()

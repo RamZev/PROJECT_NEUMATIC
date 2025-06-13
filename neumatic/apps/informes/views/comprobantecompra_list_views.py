@@ -32,7 +32,8 @@ class ConfigViews:
 	list_view_name = f"{model_string}_list"
 	
 	# Plantilla de la lista del CRUD
-	template_list = f"{app_label}/maestro_informe_list.html"
+	# template_list = f"{app_label}/maestro_informe_list.html"
+	template_list = f"{app_label}/maestro_informe_list_prop.html"
 	
 	# Contexto de los datos de la lista
 	context_object_name = "objetos"
@@ -56,39 +57,146 @@ class ConfigViews:
 class DataViewList:
 	search_fields = []
 	
-	ordering = ['nombre_comprobante_compra']
+	ordering = []
 	
 	paginate_by = 8
 	
 	report_title = "Reporte de Comprobantes de Compra"
 	
-	table_headers = {
-		'estatus_comprobante_compra': (1, 'Estatus'),
-		'nombre_comprobante_compra': (4, 'Nombre Comprobante'),
-		'mult_compra': (1, 'Mult. Compra'),
-		'mult_saldo': (1, 'Mult. Saldo'),
-		'mult_stock': (1, 'Mult. Stock'),
-		'mult_caja': (1, 'Mult. Caja'),
-		'libro_iva': (1, 'Libro IVA'),
-		'codigo_afip_a': (1, 'Cód. AFIP A'),
-		'codigo_afip_b': (1, 'Cód. AFIP B'),
-		'codigo_afip_c': (1, 'Cód. AFIP C'),
-		'codigo_afip_m': (1, 'Cód. AFIP M'),
+	table_info = {
+		"estatus_comprobante_compra": {
+			"label": "Estatus",
+			"col_width_table": 1,
+			"col_width_pdf": 40,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"table": True,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
+		"nombre_comprobante_compra": {
+			"label": "Nombre Comprobante",
+			"col_width_table": 2,
+			"col_width_pdf": 130,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"table": True,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
+		"mult_compra": {
+			"label": "M. Compra",
+			"col_width_table": 1,
+			"col_width_pdf": 50,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"table": True,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
+		"mult_saldo": {
+			"label": "M. Saldo",
+			"col_width_table": 1,
+			"col_width_pdf": 55,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"table": True,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
+		"mult_saldo": {
+			"label": "M. Saldo",
+			"col_width_table": 1,
+			"col_width_pdf": 45,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"table": True,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
+		"mult_stock": {
+			"label": "M. Stock",
+			"col_width_table": 1,
+			"col_width_pdf": 45,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"table": True,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
+		"mult_caja": {
+			"label": "M. Caja",
+			"col_width_table": 1,
+			"col_width_pdf": 40,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"table": True,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
+		"libro_iva": {
+			"label": "Libro IVA",
+			"col_width_table": 1,
+			"col_width_pdf": 45,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"table": True,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
+		"codigo_afip_a": {
+			"label": "Cód. AFIP A",
+			"col_width_table": 1,
+			"col_width_pdf": 55,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"table": True,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
+		"codigo_afip_b": {
+			"label": "Cód. AFIP B",
+			"col_width_table": 1,
+			"col_width_pdf": 55,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"table": True,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
+		"codigo_afip_c": {
+			"label": "Cód. AFIP C",
+			"col_width_table": 1,
+			"col_width_pdf": 55,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"table": True,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
+		"codigo_afip_m": {
+			"label": "Cód. AFIP M",
+			"col_width_table": 1,
+			"col_width_pdf": 55,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"table": True,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
 	}
-	
-	table_data = [
-		{'field_name': 'estatus_comprobante_compra', 'date_format': None},
-		{'field_name': 'nombre_comprobante_compra', 'date_format': None},
-		{'field_name': 'mult_compra', 'date_format': None},
-		{'field_name': 'mult_saldo', 'date_format': None},
-		{'field_name': 'mult_stock', 'date_format': None},
-		{'field_name': 'mult_caja', 'date_format': None},
-		{'field_name': 'libro_iva', 'date_format': None},
-		{'field_name': 'codigo_afip_a', 'date_format': None},
-		{'field_name': 'codigo_afip_b', 'date_format': None},
-		{'field_name': 'codigo_afip_c', 'date_format': None},
-		{'field_name': 'codigo_afip_m', 'date_format': None},
-	]
 
 
 class ComprobanteCompraInformeListView(InformeListView):
@@ -104,8 +212,7 @@ class ComprobanteCompraInformeListView(InformeListView):
 		"master_title": f'Informes - {ConfigViews.model._meta.verbose_name_plural}',
 		"home_view_name": ConfigViews.home_view_name,
 		"list_view_name": ConfigViews.list_view_name,
-		"table_headers": DataViewList.table_headers,
-		"table_data": DataViewList.table_data,
+		"table_info": DataViewList.table_info,
 		"buscador_template": f"{ConfigViews.app_label}/buscador_{ConfigViews.model_string}.html",
 		"js_file": ConfigViews.js_file,
 		"url_zip": ConfigViews.url_zip,
@@ -133,8 +240,6 @@ class ComprobanteCompraInformeListView(InformeListView):
 			
 		else:
 			#-- Agregar clases css a los campos con errores.
-			print("El form no es válido (desde la vista)")
-			print(f"{form.errors = }")
 			form.add_error_classes()
 						
 		return queryset
@@ -185,24 +290,38 @@ class ComprobanteCompraInformesView(View):
 		
 		buffer = BytesIO()
 		with ZipFile(buffer, "w") as zip_file:
-			helper = ExportHelper(queryset, DataViewList.table_headers, DataViewList.report_title)
+			table = DataViewList.table_info.copy()
 			
 			#-- Generar los formatos seleccionados.
 			if "pdf" in formatos:
-				pdf_content = helper.export_to_pdf()
+				#-- Filtrar los campos que se van a exportar a PDF.
+				table_info = { field: table[field] for field in table if table[field]['pdf'] }
+				
+				#-- Generar el PDF.
+				helper = ExportHelper(queryset, table_info, DataViewList.report_title)
+				
+				pdf_content = helper.export_to_pdf(pagesize=landscape(A4))
 				zip_file.writestr(f"informe_{ConfigViews.model_string}.pdf", pdf_content)
 			
-			if "csv" in formatos:
-				csv_content = helper.export_to_csv()
-				zip_file.writestr(f"informe_{ConfigViews.model_string}.csv", csv_content)
-			
-			if "word" in formatos:
-				word_content = helper.export_to_word()
-				zip_file.writestr(f"informe_{ConfigViews.model_string}.docx", word_content)
-			
 			if "excel" in formatos:
+				#-- Filtrar los campos que se van a exportar a Excel.
+				table_info = { field: table[field] for field in table if table[field]['excel'] }
+				
+				#-- Generar el Excel.
+				helper = ExportHelper(queryset, table_info, DataViewList.report_title)
+				
 				excel_content = helper.export_to_excel()
 				zip_file.writestr(f"informe_{ConfigViews.model_string}.xlsx", excel_content)
+			
+			if "csv" in formatos:
+				#-- Filtrar los campos que se van a exportar a CSV.
+				table_info = { field: table[field] for field in table if table[field]['csv'] }
+				
+				#-- Generar el CSV.
+				helper = ExportHelper(queryset, table_info, DataViewList.report_title)
+				
+				csv_content = helper.export_to_csv()
+				zip_file.writestr(f"informe_{ConfigViews.model_string}.csv", csv_content)
 		
 		#-- Preparar respuesta para descargar el archivo ZIP.
 		buffer.seek(0)
@@ -254,8 +373,12 @@ class ComprobanteCompraInformePDFView(View):
 		queryset_filtrado.request = request
 		queryset = queryset_filtrado.get_queryset()
 		
-		#-- Generar el pdf.
-		helper = ExportHelper(queryset, DataViewList.table_headers, DataViewList.report_title)
+		#-- Filtrar los campos que se van a exportar a PDF.
+		table = DataViewList.table_info.copy()
+		table_info = { field: table[field] for field in table if table[field]['pdf'] }
+		
+		#-- Generar el PDF.
+		helper = ExportHelper(queryset, table_info, DataViewList.report_title)
 		buffer = helper.export_to_pdf(pagesize=landscape(A4))
 		
 		#-- Preparar la respuesta HTTP.

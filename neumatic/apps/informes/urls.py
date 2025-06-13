@@ -6,6 +6,7 @@ from .views.cliente_list_views import *
 from .views.proveedor_list_views import *
 from .views.producto_list_views import *
 from .views.vendedor_list_views import *
+from .views.sucursal_list_views import *
 
 #-- Tablas.
 from .views.actividad_list_views import *
@@ -28,6 +29,10 @@ from .views.tiporetencionib_list_views import *
 from .views.operario_list_views import *
 from .views.mediopago_list_views import *
 from .views.puntoventa_list_views import *
+from .views.banco_list_views import *
+from .views.tarjeta_list_views import *
+from .views.codigoretencion_list_views import *
+from .views.conceptobanco_list_views import *
 
 #-- Procesos.
 #- Lote 1:
@@ -107,6 +112,14 @@ urlpatterns = [
 		 name='vendedor_informe_generado'),
 	path('vendedor_vista_pdf/', VendedorInformePDFView.as_view(),
 		 name='vendedor_informe_pdf'),
+	
+	#-- Sucursales.
+	path('sucursal_informe/', SucursalInformeListView.as_view(),
+		 name='sucursal_informe_list'),
+	path('sucursal_generado/', SucursalInformesView.as_view(),
+		 name='sucursal_informe_generado'),
+	path('sucursal_vista_pdf/', SucursalInformePDFView.as_view(),
+		 name='sucursal_informe_pdf'),
 	
 	#-- Tablas.
 	#-- Actividades.
@@ -268,6 +281,38 @@ urlpatterns = [
 		 name='puntoventa_informe_generado'),
 	path('punto_venta_vista_pdf/', PuntoVentaInformePDFView.as_view(),
 		 name='puntoventa_informe_pdf'),
+	
+	#-- Banco.
+	path('banco_informe/', BancoInformeListView.as_view(),
+		 name='banco_informe_list'),
+	path('banco_generado/', BancoInformesView.as_view(),
+		 name='banco_informe_generado'),
+	path('banco_vista_pdf/', BancoInformePDFView.as_view(),
+		 name='banco_informe_pdf'),
+	
+	#-- Tarjeta.
+	path('tarjeta_informe/', TarjetaInformeListView.as_view(),
+		 name='tarjeta_informe_list'),
+	path('tarjeta_generado/', TarjetaInformesView.as_view(),
+		 name='tarjeta_informe_generado'),
+	path('tarjeta_vista_pdf/', TarjetaInformePDFView.as_view(),
+		 name='tarjeta_informe_pdf'),
+	
+	#-- Códigos de Retención.
+	path('codigoretencion_informe/', CodigoRetencionInformeListView.as_view(),
+		 name='codigoretencion_informe_list'),
+	path('codigoretencion_generado/', CodigoRetencionInformesView.as_view(),
+		 name='codigoretencion_informe_generado'),
+	path('codigoretencion_vista_pdf/', CodigoRetencionInformePDFView.as_view(),
+		 name='codigoretencion_informe_pdf'),
+	
+	#-- Conceptos de Banco.
+	path('conceptobanco_informe/', ConceptoBancoInformeListView.as_view(),
+		 name='conceptobanco_informe_list'),
+	path('conceptobanco_generado/', ConceptoBancoInformesView.as_view(),
+		 name='conceptobanco_informe_generado'),
+	path('conceptobanco_vista_pdf/', ConceptoBancoInformePDFView.as_view(),
+		 name='conceptobanco_informe_pdf'),
 	
 	#-- Informes-Procesos. --------------------------------------------------------
 	

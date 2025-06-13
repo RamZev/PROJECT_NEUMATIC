@@ -83,6 +83,86 @@ class ConfigViews:
 		"iva": (65, "I.V.A."),
 		"total": (65, "TOTAL"),
 	}
+	#-- Establecer las columnas del reporte y sus atributos.
+	table_info = {
+		"provincia": {
+			"label": "Provincia",
+			# "col_width_table": 0,
+			"col_width_pdf": 180,
+			# "pdf_paragraph": False,
+			# "date_format": None,
+			# "table": False,
+			# "pdf": True,
+			# "excel": True,
+			# "csv": True
+		},
+		"por_menor": {
+			"label": "Por Menor",
+			# "col_width_table": 0,
+			"col_width_pdf": 65,
+			# "pdf_paragraph": False,
+			# "date_format": None,
+			# "table": False,
+			# "pdf": True,
+			# "excel": True,
+			# "csv": True
+		},
+		"reparacion": {
+			"label": "Reparación",
+			# "col_width_table": 0,
+			"col_width_pdf": 65,
+			# "pdf_paragraph": False,
+			# "date_format": None,
+			# "table": False,
+			# "pdf": True,
+			# "excel": True,
+			# "csv": True
+		},
+		"por_mayor": {
+			"label": "Por Mayor",
+			# "col_width_table": 0,
+			"col_width_pdf": 65,
+			# "pdf_paragraph": False,
+			# "date_format": None,
+			# "table": False,
+			# "pdf": True,
+			# "excel": True,
+			# "csv": True
+		},
+		"total_gravado": {
+			"label": "Total Gravado",
+			# "col_width_table": 0,
+			"col_width_pdf": 65,
+			# "pdf_paragraph": False,
+			# "date_format": None,
+			# "table": False,
+			# "pdf": True,
+			# "excel": True,
+			# "csv": True
+		},
+		"iva": {
+			"label": "I.V.A.",
+			# "col_width_table": 0,
+			"col_width_pdf": 65,
+			# "pdf_paragraph": False,
+			# "date_format": None,
+			# "table": False,
+			# "pdf": True,
+			# "excel": True,
+			# "csv": True
+		},
+		"total": {
+			"label": "TOTAL",
+			# "col_width_table": 0,
+			"col_width_pdf": 65,
+			# "pdf_paragraph": False,
+			# "date_format": None,
+			# "table": False,
+			# "pdf": True,
+			# "excel": True,
+			# "csv": True
+		},
+	}
 
 
 class VLVentasResumenIBInformeView(InformeFormView):
@@ -538,7 +618,7 @@ def generar_pdf(contexto_reporte):
 	#-- Construir datos de la tabla:
 	
 	#-- Obtener los títulos de las columnas (headers).
-	header_data = [value[1] for value in ConfigViews.header_data.values()]
+	header_data = [value['label'] for value in ConfigViews.table_info.values()]
 	table_data = [header_data]
 	
 	for obj in contexto_reporte.get("objetos", []):
@@ -575,7 +655,7 @@ def generar_pdf(contexto_reporte):
 	#-- Configuración específica de la tabla de datos:
 	
 	#-- Extrae los anchos de las columnas de la estructura ConfigViews.header_data.
-	col_widths = [value[0] for value in ConfigViews.header_data.values()]
+	col_widths = [value['col_width_pdf'] for value in ConfigViews.table_info.values()]
 	
 	#-- Estilos específicos adicionales de la tabla.
 	table_style_config = [
@@ -611,7 +691,7 @@ def vlventasresumenib_vista_excel(request):
 	
 	helper = ExportHelper(
 		queryset=data_list,
-		table_headers=ConfigViews.header_data,
+		table_info=ConfigViews.table_info,
 		report_title=ConfigViews.report_title
 	)
 	excel_data = helper.export_to_excel()
@@ -650,7 +730,7 @@ def vlventasresumenib_vista_csv(request):
 	#-- Usar el helper para exportar a CSV.
 	helper = ExportHelper(
 		queryset=data_list,
-		table_headers=ConfigViews.header_data,
+		table_info=ConfigViews.table_info,
 		report_title=ConfigViews.report_title
 	)
 	csv_data = helper.export_to_csv()

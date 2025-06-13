@@ -71,19 +71,162 @@ class ConfigViews:
 	#-- Plantilla Vista Preliminar Pantalla.
 	reporte_pantalla = f"informes/reportes/{model_string}_list.html"
 	
-	#-- Establecer las columnas del reporte y sus anchos(en punto).
-	header_data = {
-		"comprobante": (80, "Comprobante"),
-		"fecha_comprobante": (50, "Fecha"),
-		"id_cliente_id": (40, "Cliente"),
-		"id_producto_id": (40, "Código"),
-		"nombre_producto": (200, "Descripción"),
-		"medida": (50, "Medida"),
-		"cantidad": (50, "Cantidad"),
-		"precio": (75, "Precio"),
-		"descuento": (50, "Desc."),
-		"total": (75, "Total"),
-		"comision": (75, "Comisión"),
+	#-- Establecer las columnas del reporte y sus atributos.
+	table_info = {
+		"nombre_producto_marca": {
+			"label": "Marca",
+			# "col_width_table": 0,
+			"col_width_pdf": 75,
+			# "pdf_paragraph": False,
+			# "date_format": None,
+			# "table": False,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+		"nombre_producto_familia": {
+			"label": "Familia",
+			# "col_width_table": 0,
+			"col_width_pdf": 75,
+			# "pdf_paragraph": False,
+			# "date_format": None,
+			# "table": False,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+		"nombre_modelo": {
+			"label": "Modelo",
+			# "col_width_table": 0,
+			"col_width_pdf": 75,
+			# "pdf_paragraph": False,
+			# "date_format": None,
+			# "table": False,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+		"comprobante": {
+			"label": "Comprobante",
+			# "col_width_table": 0,
+			"col_width_pdf": 80,
+			# "pdf_paragraph": False,
+			# "date_format": None,
+			# "table": False,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
+		"fecha_comprobante": {
+			"label": "Fecha",
+			# "col_width_table": 0,
+			"col_width_pdf": 50,
+			# "pdf_paragraph": False,
+			# "date_format": None,
+			# "table": False,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
+		"id_cliente_id": {
+			"label": "Cliente",
+			# "col_width_table": 0,
+			"col_width_pdf": 40,
+			# "pdf_paragraph": False,
+			# "date_format": None,
+			# "table": False,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
+		"id_producto_id": {
+			"label": "Código",
+			# "col_width_table": 0,
+			"col_width_pdf": 40,
+			# "pdf_paragraph": False,
+			# "date_format": None,
+			# "table": False,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
+		"nombre_producto": {
+			"label": "Descripción",
+			# "col_width_table": 0,
+			"col_width_pdf": 200,
+			# "pdf_paragraph": False,
+			# "date_format": None,
+			# "table": False,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
+		"medida": {
+			"label": "Medida",
+			# "col_width_table": 0,
+			"col_width_pdf": 50,
+			# "pdf_paragraph": False,
+			# "date_format": None,
+			# "table": False,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
+		"cantidad": {
+			"label": "Cantidad",
+			# "col_width_table": 0,
+			"col_width_pdf": 50,
+			# "pdf_paragraph": False,
+			# "date_format": None,
+			# "table": False,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
+		"precio": {
+			"label": "Precio",
+			# "col_width_table": 0,
+			"col_width_pdf": 75,
+			# "pdf_paragraph": False,
+			# "date_format": None,
+			# "table": False,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
+		"descuento": {
+			"label": "Desc.",
+			# "col_width_table": 0,
+			"col_width_pdf": 50,
+			# "pdf_paragraph": False,
+			# "date_format": None,
+			# "table": False,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
+		"total": {
+			"label": "Total",
+			# "col_width_table": 0,
+			"col_width_pdf": 75,
+			# "pdf_paragraph": False,
+			# "date_format": None,
+			# "table": False,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
+		"comision": {
+			"label": "Comisión",
+			# "col_width_table": 0,
+			"col_width_pdf": 75,
+			# "pdf_paragraph": False,
+			# "date_format": None,
+			# "table": False,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
 	}
 
 
@@ -321,11 +464,11 @@ def generar_pdf(contexto_reporte):
 	#-- Construir datos de la tabla:
 	
 	#-- Títulos de las columnas de la tabla (headers).
-	headers_titles = [value[1] for value in ConfigViews.header_data.values()]
+	headers_titles = [value['label'] for value in ConfigViews.table_info.values() if value['pdf']]
 	headers_titles.insert(0, "")
 	
 	#-- Extraer Ancho de las columnas de la tabla.
-	col_widths = [value[0] for value in ConfigViews.header_data.values()]
+	col_widths = [value['col_width_pdf'] for value in ConfigViews.table_info.values() if value['pdf']]
 	col_widths.insert(0, 10)
 	blank_cols = [""] * 10
 	
@@ -470,16 +613,12 @@ def vlestadisticasventasmarcavendedor_vista_excel(request):
 	view_instance.request = request
 	queryset = view_instance.obtener_queryset(cleaned_data)
 	
-	headers = {
-		"nombre_producto_marca": (0, "Marca"),
-		"nombre_producto_familia": (0, "Familia"),
-		"nombre_modelo": (0, "Modelo"),
-	}
-	headers.update(ConfigViews.header_data)
+	#-- Filtrar los headers de las columnas.
+	headers_titles = {field: ConfigViews.table_info[field] for field in ConfigViews.table_info if ConfigViews.table_info[field]['excel']}
 	
 	helper = ExportHelper(
 		queryset=queryset,
-		table_headers=headers,
+		table_info=headers_titles,
 		report_title=ConfigViews.report_title
 	)
 	excel_data = helper.export_to_excel()
@@ -511,17 +650,13 @@ def vlestadisticasventasmarcavendedor_vista_csv(request):
 	view_instance.request = request
 	queryset = view_instance.obtener_queryset(cleaned_data)
 	
-	headers = {
-		"nombre_producto_marca": (0, "Marca"),
-		"nombre_producto_familia": (0, "Familia"),
-		"nombre_modelo": (0, "Modelo"),
-	}
-	headers.update(ConfigViews.header_data)
+	#-- Filtrar los headers de las columnas.
+	headers_titles = {field: ConfigViews.table_info[field] for field in ConfigViews.table_info if ConfigViews.table_info[field]['csv']}
 	
 	#-- Usar el helper para exportar a CSV.
 	helper = ExportHelper(
 		queryset=queryset,
-		table_headers=headers,
+		table_info=headers_titles,
 		report_title=ConfigViews.report_title
 	)
 	csv_data = helper.export_to_csv()

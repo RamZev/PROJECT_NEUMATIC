@@ -32,7 +32,8 @@ class ConfigViews:
 	list_view_name = f"{model_string}_list"
 	
 	# Plantilla de la lista del CRUD
-	template_list = f"{app_label}/maestro_informe_list.html"
+	# template_list = f"{app_label}/maestro_informe_list.html"
+	template_list = f"{app_label}/maestro_informe_list_prop.html"
 	
 	# Contexto de los datos de la lista
 	context_object_name = "objetos"
@@ -56,51 +57,201 @@ class ConfigViews:
 class DataViewList:
 	search_fields = []
 	
-	ordering = ['nombre_comprobante_venta']
+	ordering = []
 	
 	paginate_by = 8
 	
 	report_title = "Reporte de Comprobantes de Venta"
 	
-	table_headers = {
-		'estatus_comprobante_venta': (1, 'Estatus'),
-		'nombre_comprobante_venta': (4, 'Nombre Comprobante'),
-		'mult_venta': (1, 'Mult. Venta'),
-		'mult_saldo': (1, 'Mult. Saldo'),
-		'mult_stock': (1, 'Mult. Stock'),
-		'mult_comision': (1, 'Mult. Comisión'),
-		'mult_caja': (1, 'Mult. Caja'),
-		'mult_estadistica': (1, 'Mult. Estadísticas'),
-		'libro_iva': (1, 'Libro IVA'),
-		'estadistica': (1, 'Estadísticas'),
-		'electronica': (1, 'Electrónica'),
-		'presupuesto': (1, 'Presupuesto'),
-		'pendiente': (1, 'Pendiente'),
-		'codigo_afip_a': (1, 'Cód. AFIP A'),
-		'codigo_afip_b': (1, 'Cód. AFIP B'),
-		'info_michelin_auto': (1, 'I/M auto'),
-		'info_michelin_camion': (1, 'I/M camión'),
+	table_info = {
+		"estatus_comprobante_venta": {
+			"label": "Estatus",
+			"col_width_table": 1,
+			"col_width_pdf": 30,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"table": True,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
+		"nombre_comprobante_venta": {
+			"label": "Nombre Comprobante",
+			"col_width_table": 4,
+			"col_width_pdf": 120,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"table": True,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
+		"mult_venta": {
+			"label": "M. Venta",
+			"col_width_table": 1,
+			"col_width_pdf": 40,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"table": True,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
+		"mult_saldo": {
+			"label": "M. Saldo",
+			"col_width_table": 1,
+			"col_width_pdf": 40,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"table": True,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
+		"mult_stock": {
+			"label": "M. Stock",
+			"col_width_table": 1,
+			"col_width_pdf": 40,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"table": True,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
+		"mult_comision": {
+			"label": "M. Comisión",
+			"col_width_table": 1,
+			"col_width_pdf": 50,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"table": True,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
+		"mult_caja": {
+			"label": "M. Caja",
+			"col_width_table": 1,
+			"col_width_pdf": 35,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"table": True,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
+		"mult_estadistica": {
+			"label": "M. Estadísticas",
+			"col_width_table": 1,
+			"col_width_pdf": 60,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"table": True,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
+		"libro_iva": {
+			"label": "Libro IVA",
+			"col_width_table": 1,
+			"col_width_pdf": 45,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"table": True,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
+		"estadistica": {
+			"label": "Estadísticas",
+			"col_width_table": 1,
+			"col_width_pdf": 50,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"table": True,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
+		"electronica": {
+			"label": "Electrónica",
+			"col_width_table": 1,
+			"col_width_pdf": 45,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"table": True,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
+		"presupuesto": {
+			"label": "Presupuesto",
+			"col_width_table": 1,
+			"col_width_pdf": 50,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"table": True,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
+		"pendiente": {
+			"label": "Pendiente",
+			"col_width_table": 1,
+			"col_width_pdf": 40,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"table": True,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
+		"codigo_afip_a": {
+			"label": "Cód. AFIP A",
+			"col_width_table": 1,
+			"col_width_pdf": 45,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"table": True,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
+		"codigo_afip_b": {
+			"label": "Cód. AFIP B",
+			"col_width_table": 1,
+			"col_width_pdf": 45,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"table": True,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
+		"info_michelin_auto": {
+			"label": "I/M auto",
+			"col_width_table": 1,
+			"col_width_pdf": 40,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"table": True,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
+		"info_michelin_camion": {
+			"label": "I/M camión",
+			"col_width_table": 1,
+			"col_width_pdf": 45,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"table": True,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
 	}
-	
-	table_data = [
-		{'field_name': 'estatus_comprobante_venta', 'date_format': None},
-		{'field_name': 'nombre_comprobante_venta', 'date_format': None},
-		{'field_name': 'mult_venta', 'date_format': None},
-		{'field_name': 'mult_saldo', 'date_format': None},
-		{'field_name': 'mult_stock', 'date_format': None},
-		{'field_name': 'mult_comision', 'date_format': None},
-		{'field_name': 'mult_caja', 'date_format': None},
-		{'field_name': 'mult_estadistica', 'date_format': None},
-		{'field_name': 'libro_iva', 'date_format': None},
-		{'field_name': 'estadistica', 'date_format': None},
-		{'field_name': 'electronica', 'date_format': None},
-		{'field_name': 'presupuesto', 'date_format': None},
-		{'field_name': 'pendiente', 'date_format': None},
-		{'field_name': 'codigo_afip_a', 'date_format': None},
-		{'field_name': 'codigo_afip_b', 'date_format': None},
-		{'field_name': 'info_michelin_auto', 'date_format': None},
-		{'field_name': 'info_michelin_camion', 'date_format': None},
-	]
 
 
 class ComprobanteVentaInformeListView(InformeListView):
@@ -116,8 +267,7 @@ class ComprobanteVentaInformeListView(InformeListView):
 		"master_title": f'Informes - {ConfigViews.model._meta.verbose_name_plural}',
 		"home_view_name": ConfigViews.home_view_name,
 		"list_view_name": ConfigViews.list_view_name,
-		"table_headers": DataViewList.table_headers,
-		"table_data": DataViewList.table_data,
+		"table_info": DataViewList.table_info,
 		"buscador_template": f"{ConfigViews.app_label}/buscador_{ConfigViews.model_string}.html",
 		"js_file": ConfigViews.js_file,
 		"url_zip": ConfigViews.url_zip,
@@ -145,8 +295,6 @@ class ComprobanteVentaInformeListView(InformeListView):
 			
 		else:
 			#-- Agregar clases css a los campos con errores.
-			print("El form no es válido (desde la vista)")
-			print(f"{form.errors = }")
 			form.add_error_classes()
 						
 		return queryset
@@ -197,18 +345,36 @@ class ComprobanteVentaInformesView(View):
 		
 		buffer = BytesIO()
 		with ZipFile(buffer, "w") as zip_file:
-			helper = ExportHelper(queryset, DataViewList.table_headers, DataViewList.report_title)
+			table = DataViewList.table_info.copy()
 			
 			#-- Generar los formatos seleccionados.
 			if "pdf" in formatos:
-				pdf_content = helper.export_to_pdf()
-			
-			if "excel" in formatos:
-				excel_content = helper.export_to_excel()
-				zip_file.writestr(f"informe_{ConfigViews.model_string}.xlsx", excel_content)
+				#-- Filtrar los campos que se van a exportar a PDF.
+				table_info = { field: table[field] for field in table if table[field]['pdf'] }
+				
+				#-- Generar el PDF.
+				helper = ExportHelper(queryset, table_info, DataViewList.report_title)
+				
+				pdf_content = helper.export_to_pdf(pagesize=landscape(A4), body_font_size=7)
 				zip_file.writestr(f"informe_{ConfigViews.model_string}.pdf", pdf_content)
 			
+			if "excel" in formatos:
+				#-- Filtrar los campos que se van a exportar a Excel.
+				table_info = { field: table[field] for field in table if table[field]['excel'] }
+				
+				#-- Generar el Excel.
+				helper = ExportHelper(queryset, table_info, DataViewList.report_title)
+				
+				excel_content = helper.export_to_excel()
+				zip_file.writestr(f"informe_{ConfigViews.model_string}.xlsx", excel_content)
+			
 			if "csv" in formatos:
+				#-- Filtrar los campos que se van a exportar a CSV.
+				table_info = { field: table[field] for field in table if table[field]['csv'] }
+				
+				#-- Generar el CSV.
+				helper = ExportHelper(queryset, table_info, DataViewList.report_title)
+				
 				csv_content = helper.export_to_csv()
 				zip_file.writestr(f"informe_{ConfigViews.model_string}.csv", csv_content)
 		
@@ -258,9 +424,13 @@ class ComprobanteVentaInformePDFView(View):
 		queryset_filtrado.request = request
 		queryset = queryset_filtrado.get_queryset()
 		
-		#-- Generar el pdf.
-		helper = ExportHelper(queryset, DataViewList.table_headers, DataViewList.report_title)
-		buffer = helper.export_to_pdf(pagesize=landscape(A4), body_font_size=6)
+		#-- Filtrar los campos que se van a exportar a PDF.
+		table = DataViewList.table_info.copy()
+		table_info = { field: table[field] for field in table if table[field]['pdf'] }
+		
+		#-- Generar el PDF.
+		helper = ExportHelper(queryset, table_info, DataViewList.report_title)
+		buffer = helper.export_to_pdf(pagesize=landscape(A4), body_font_size=7)
 		
 		#-- Preparar la respuesta HTTP.
 		response = HttpResponse(buffer, content_type='application/pdf')

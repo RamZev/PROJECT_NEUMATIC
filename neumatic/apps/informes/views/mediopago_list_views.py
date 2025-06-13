@@ -31,7 +31,8 @@ class ConfigViews:
 	list_view_name = f"{model_string}_list"
 	
 	# Plantilla de la lista del CRUD
-	template_list = f"{app_label}/maestro_informe_list.html"
+	# template_list = f"{app_label}/maestro_informe_list.html"
+	template_list = f"{app_label}/maestro_informe_list_prop.html"
 	
 	# Contexto de los datos de la lista
 	context_object_name = "objetos"
@@ -55,25 +56,58 @@ class ConfigViews:
 class DataViewList:
 	search_fields = []
 	
-	ordering = ['nombre_medio_pago']
+	ordering = []
 	
 	paginate_by = 8
 	
 	report_title = "Reporte de Medios de Pago"
 	
-	table_headers = {
-		'estatus_medio_pago': (1, 'Estatus'),
-		'nombre_medio_pago': (5, 'Nombre medio pago'),
-		'condicion_medio_pago_display': (3, 'Condición Pago'),
-		'plazo_medio_pago': (3, 'Plazo medio de Pago'),
+	table_info = {
+		"estatus_medio_pago": {
+			"label": "Estatus",
+			"col_width_table": 1,
+			"col_width_pdf": 40,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"table": True,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
+		"nombre_medio_pago": {
+			"label": "Nombre medio pago",
+			"col_width_table": 5,
+			"col_width_pdf": 190,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"table": True,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
+		"condicion_medio_pago_display": {
+			"label": "Condición Pago",
+			"col_width_table": 3,
+			"col_width_pdf": 100,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"table": True,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
+		"plazo_medio_pago": {
+			"label": "Plazo medio de Pago",
+			"col_width_table": 3,
+			"col_width_pdf": 80,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"table": True,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
 	}
-	
-	table_data = [
-		{'field_name': 'estatus_medio_pago', 'date_format': None},
-		{'field_name': 'nombre_medio_pago', 'date_format': None},
-		{'field_name': 'condicion_medio_pago_display', 'date_format': None},
-		{'field_name': 'plazo_medio_pago', 'date_format': None},
-	]
 
 
 class MedioPagoInformeListView(InformeListView):
@@ -89,8 +123,7 @@ class MedioPagoInformeListView(InformeListView):
 		"master_title": f'Informes - {ConfigViews.model._meta.verbose_name_plural}',
 		"home_view_name": ConfigViews.home_view_name,
 		"list_view_name": ConfigViews.list_view_name,
-		"table_headers": DataViewList.table_headers,
-		"table_data": DataViewList.table_data,
+		"table_info": DataViewList.table_info,
 		"buscador_template": f"{ConfigViews.app_label}/buscador_{ConfigViews.model_string}.html",
 		"js_file": ConfigViews.js_file,
 		"url_zip": ConfigViews.url_zip,
@@ -170,20 +203,28 @@ class MedioPagoInformesView(View):
 		
 		buffer = BytesIO()
 		with ZipFile(buffer, "w") as zip_file:
-			helper = ExportHelper(queryset, DataViewList.table_headers, DataViewList.report_title)
+			table = DataViewList.table_info.copy()
 			
 			#-- Generar los formatos seleccionados.
 			if "pdf" in formatos:
+				#-- Filtrar los campos que se van a exportar a PDF.
+				table_info = { field: table[field] for field in table if table[field]['pdf'] }
+				
+				#-- Generar el PDF.
+				helper = ExportHelper(queryset, table_info, DataViewList.report_title)
+				
 				pdf_content = helper.export_to_pdf()
 				zip_file.writestr(f"informe_{ConfigViews.model_string}.pdf", pdf_content)
 			
 			if "excel" in formatos:
+				#-- Filtrar los campos que se van a exportar a Excel.
+				table_info = { field: table[field] for field in table if table[field]['excel'] }
+				
+				#-- Generar el Excel.
+				helper = ExportHelper(queryset, table_info, DataViewList.report_title)
+				
 				excel_content = helper.export_to_excel()
 				zip_file.writestr(f"informe_{ConfigViews.model_string}.xlsx", excel_content)
-			
-			if "csv" in formatos:
-				csv_content = helper.export_to_csv()
-				zip_file.writestr(f"informe_{ConfigViews.model_string}.csv", csv_content)
 		
 		#-- Preparar respuesta para descargar el archivo ZIP.
 		buffer.seek(0)
@@ -231,8 +272,12 @@ class MedioPagoInformePDFView(View):
 		queryset_filtrado.request = request
 		queryset = queryset_filtrado.get_queryset()
 		
-		#-- Generar el pdf.
-		helper = ExportHelper(queryset, DataViewList.table_headers, DataViewList.report_title)
+		#-- Filtrar los campos que se van a exportar a PDF.
+		table = DataViewList.table_info.copy()
+		table_info = { field: table[field] for field in table if table[field]['pdf'] }
+		
+		#-- Generar el PDF.
+		helper = ExportHelper(queryset, table_info, DataViewList.report_title)
 		buffer = helper.export_to_pdf()
 		
 		#-- Preparar la respuesta HTTP.

@@ -69,20 +69,140 @@ class ConfigViews:
 	#-- Plantilla Vista Preliminar Pantalla.
 	reporte_pantalla = f"informes/reportes/{model_string}_list.html"
 	
-	#-- Establecer las columnas del reporte y sus anchos(en punto).
-	header_data = {
-		"nombre_vendedor": (40, "Vendedor"),
-		"comprobante": (40, "Comprobante"),
-		"fecha_comprobante": (40, "Fecha"),
-		"nombre_cliente": (40, "Nombre"),
-		"reventa": (40, "Reventa"),
-		"id_producto_id": (40, "Código"),
-		"medida": (40, "Producto"),
-		"nombre_producto_marca": (180, "Marca"),
-		"cantidadnombre_producto_familia": (40, "Artículo"),
-		"gravado": (40, "Gravado"),
-		"pje_comision": (40, "%"),
-		"comision": (40, "Comisión"),
+	#-- Establecer las columnas del reporte y sus atributos.
+	table_info = {
+		"nombre_vendedor": {
+			"label": "Vendedor",
+			# "col_width_table": 0,
+			"col_width_pdf": 40,
+			# "pdf_paragraph": False,
+			# "date_format": None,
+			# "table": False,
+			# "pdf": True,
+			# "excel": True,
+			# "csv": True
+		},
+		"comprobante": {
+			"label": "Comprobante",
+			# "col_width_table": 0,
+			"col_width_pdf": 80,
+			# "pdf_paragraph": False,
+			# "date_format": None,
+			# "table": False,
+			# "pdf": True,
+			# "excel": True,
+			# "csv": True
+		},
+		"fecha_comprobante": {
+			"label": "Fecha",
+			# "col_width_table": 0,
+			"col_width_pdf": 40,
+			# "pdf_paragraph": False,
+			# "date_format": None,
+			# "table": False,
+			# "pdf": True,
+			# "excel": True,
+			# "csv": True
+		},
+		"nombre_cliente": {
+			"label": "Cliente",
+			# "col_width_table": 0,
+			"col_width_pdf": 160,
+			# "pdf_paragraph": False,
+			# "date_format": None,
+			# "table": False,
+			# "pdf": True,
+			# "excel": True,
+			# "csv": True
+		},
+		"reventa": {
+			"label": "Rvta.",
+			# "col_width_table": 0,
+			"col_width_pdf": 20,
+			# "pdf_paragraph": False,
+			# "date_format": None,
+			# "table": False,
+			# "pdf": True,
+			# "excel": True,
+			# "csv": True
+		},
+		"id_producto_id": {
+			"label": "Producto",
+			# "col_width_table": 0,
+			"col_width_pdf": 30,
+			# "pdf_paragraph": False,
+			# "date_format": None,
+			# "table": False,
+			# "pdf": True,
+			# "excel": True,
+			# "csv": True
+		},
+		"medida": {
+			"label": "Medida",
+			# "col_width_table": 0,
+			"col_width_pdf": 60,
+			# "pdf_paragraph": False,
+			# "date_format": None,
+			# "table": False,
+			# "pdf": True,
+			# "excel": True,
+			# "csv": True
+		},
+		"nombre_producto_marca": {
+			"label": "Marca",
+			# "col_width_table": 0,
+			"col_width_pdf": 120,
+			# "pdf_paragraph": False,
+			# "date_format": None,
+			# "table": False,
+			# "pdf": True,
+			# "excel": True,
+			# "csv": True
+		},
+		"nombre_producto_familia": {
+			"label": "Artículo",
+			# "col_width_table": 0,
+			"col_width_pdf": 120,
+			# "pdf_paragraph": False,
+			# "date_format": None,
+			# "table": False,
+			# "pdf": True,
+			# "excel": True,
+			# "csv": True
+		},
+		"gravado": {
+			"label": "Gravado",
+			# "col_width_table": 0,
+			"col_width_pdf": 60,
+			# "pdf_paragraph": False,
+			# "date_format": None,
+			# "table": False,
+			# "pdf": True,
+			# "excel": True,
+			# "csv": True
+		},
+		"pje_comision": {
+			"label": "%",
+			# "col_width_table": 0,
+			"col_width_pdf": 30,
+			# "pdf_paragraph": False,
+			# "date_format": None,
+			# "table": False,
+			# "pdf": True,
+			# "excel": True,
+			# "csv": True
+		},
+		"monto_comi": {
+			"label": "Comisión",
+			# "col_width_table": 0,
+			"col_width_pdf": 60,
+			# "pdf_paragraph": False,
+			# "date_format": None,
+			# "table": False,
+			# "pdf": True,
+			# "excel": True,
+			# "csv": True
+		},
 	}
 
 
@@ -162,7 +282,8 @@ class VLComisionVendedorInformeView(InformeFormView):
 				"articulo": obj.nombre_producto_familia,
 				"gravado": obj.gravado if obj.gravado else Decimal(0),
 				"pje_comision": obj.pje_comision if obj.pje_comision else Decimal(0),
-				"monto_comision": Decimal(0) if not obj.pje_comision or not obj.gravado or obj.pje_comision == 0 else round((obj.gravado * obj.pje_comision)/100, 2)
+				# "monto_comision": Decimal(0) if not obj.pje_comision or not obj.gravado or obj.pje_comision == 0 else round((obj.gravado * obj.pje_comision)/100, 2)
+				"monto_comision": obj.monto_comision if obj.monto_comision else Decimal(0)
 			}
 			
 			#-- Agregar el detalle a la lista de detalles y acumular el total.
@@ -385,7 +506,7 @@ def vlcomisionvendedor_vista_excel(request):
 	
 	helper = ExportHelper(
 		queryset=queryset,
-		table_headers=ConfigViews.header_data,
+		table_info=ConfigViews.table_info,
 		report_title=ConfigViews.report_title
 	)
 	excel_data = helper.export_to_excel()
@@ -420,7 +541,7 @@ def vlcomisionvendedor_vista_csv(request):
 	#-- Usar el helper para exportar a CSV.
 	helper = ExportHelper(
 		queryset=queryset,
-		table_headers=ConfigViews.header_data,
+		table_info=ConfigViews.table_info,
 		report_title=ConfigViews.report_title
 	)
 	csv_data = helper.export_to_csv()
