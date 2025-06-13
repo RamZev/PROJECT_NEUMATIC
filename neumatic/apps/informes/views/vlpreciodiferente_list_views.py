@@ -68,20 +68,140 @@ class ConfigViews:
 	#-- Plantilla Vista Preliminar Pantalla.
 	reporte_pantalla = f"informes/reportes/{model_string}_list.html"
 	
-	#-- Establecer las columnas del reporte y sus anchos(en punto).
-	header_data = {
-		"nombre_vendedor": (40, "Vendedor"),
-		"comprobante": (40, "Comprobante"),
-		"fecha_comprobante": (40, "Fecha"),
-		"id_cliente_id": (40, "Cliente"),
-		"nombre_cliente": (40, "Nombre"),
-		"id_producto_id": (180, "Código"),
-		"nombre_producto_familia": (40, "Detalle"),
-		"cantidad": (40, "Cantidad"),
-		"precio": (40, "Facturado"),
-		"precio_lista": (40, "Lista"),
-		"diferencia": (40, "Diferencia"),
-		"descuento": (40, "Bonif."),
+	#-- Establecer las columnas del reporte y sus atributos.
+	table_info = {
+		"nombre_vendedor": {
+			"label": "Vendedor",
+			# "col_width_table": 0,
+			"col_width_pdf": 80,
+			# "pdf_paragraph": False,
+			# "date_format": None,
+			# "table": False,
+			# "pdf": True,
+			# "excel": True,
+			# "csv": True
+		},
+		"comprobante": {
+			"label": "Comprobante",
+			# "col_width_table": 0,
+			"col_width_pdf": 80,
+			# "pdf_paragraph": False,
+			# "date_format": None,
+			# "table": False,
+			# "pdf": True,
+			# "excel": True,
+			# "csv": True
+		},
+		"fecha_comprobante": {
+			"label": "Fecha",
+			# "col_width_table": 0,
+			"col_width_pdf": 40,
+			# "pdf_paragraph": False,
+			# "date_format": None,
+			# "table": False,
+			# "pdf": True,
+			# "excel": True,
+			# "csv": True
+		},
+		"id_cliente_id": {
+			"label": "Cliente",
+			# "col_width_table": 0,
+			"col_width_pdf": 30,
+			# "pdf_paragraph": False,
+			# "date_format": None,
+			# "table": False,
+			# "pdf": True,
+			# "excel": True,
+			# "csv": True
+		},
+		"nombre_cliente": {
+			"label": "Nombre",
+			# "col_width_table": 0,
+			"col_width_pdf": 180,
+			# "pdf_paragraph": False,
+			# "date_format": None,
+			# "table": False,
+			# "pdf": True,
+			# "excel": True,
+			# "csv": True
+		},
+		"id_producto_id": {
+			"label": "Código",
+			# "col_width_table": 0,
+			"col_width_pdf": 40,
+			# "pdf_paragraph": False,
+			# "date_format": None,
+			# "table": False,
+			# "pdf": True,
+			# "excel": True,
+			# "csv": True
+		},
+		"nombre_producto": {
+			"label": "Detalle",
+			# "col_width_table": 0,
+			"col_width_pdf": 180,
+			# "pdf_paragraph": False,
+			# "date_format": None,
+			# "table": False,
+			# "pdf": True,
+			# "excel": True,
+			# "csv": True
+		},
+		"cantidad": {
+			"label": "Cantidad",
+			# "col_width_table": 0,
+			"col_width_pdf": 40,
+			# "pdf_paragraph": False,
+			# "date_format": None,
+			# "table": False,
+			# "pdf": True,
+			# "excel": True,
+			# "csv": True
+		},
+		"precio": {
+			"label": "Facturado",
+			# "col_width_table": 0,
+			"col_width_pdf": 60,
+			# "pdf_paragraph": False,
+			# "date_format": None,
+			# "table": False,
+			# "pdf": True,
+			# "excel": True,
+			# "csv": True
+		},
+		"precio_lista": {
+			"label": "Lista",
+			# "col_width_table": 0,
+			"col_width_pdf": 60,
+			# "pdf_paragraph": False,
+			# "date_format": None,
+			# "table": False,
+			# "pdf": True,
+			# "excel": True,
+			# "csv": True
+		},
+		"diferencia": {
+			"label": "Diferencia",
+			# "col_width_table": 0,
+			"col_width_pdf": 60,
+			# "pdf_paragraph": False,
+			# "date_format": None,
+			# "table": False,
+			# "pdf": True,
+			# "excel": True,
+			# "csv": True
+		},
+		"descuento": {
+			"label": "Bonif.",
+			# "col_width_table": 0,
+			"col_width_pdf": 40,
+			# "pdf_paragraph": False,
+			# "date_format": None,
+			# "table": False,
+			# "pdf": True,
+			# "excel": True,
+			# "csv": True
+		},
 	}
 
 
@@ -368,7 +488,7 @@ def vlpreciodiferente_vista_excel(request):
 	
 	helper = ExportHelper(
 		queryset=queryset,
-		table_headers=ConfigViews.header_data,
+		table_info=ConfigViews.table_info,
 		report_title=ConfigViews.report_title
 	)
 	excel_data = helper.export_to_excel()
@@ -403,7 +523,7 @@ def vlpreciodiferente_vista_csv(request):
 	#-- Usar el helper para exportar a CSV.
 	helper = ExportHelper(
 		queryset=queryset,
-		table_headers=ConfigViews.header_data,
+		table_info=ConfigViews.table_info,
 		report_title=ConfigViews.report_title
 	)
 	csv_data = helper.export_to_csv()

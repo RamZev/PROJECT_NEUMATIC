@@ -69,17 +69,107 @@ class ConfigViews:
 	#-- Plantilla Vista Preliminar Pantalla.
 	reporte_pantalla = f"informes/reportes/{model_string}_list.html"
 	
-	#-- Establecer las columnas del reporte y sus anchos(en punto).
-	header_data = {
-		"id_cliente_id": (40, "Cliente"),
-		"nombre_cliente": (40, "Nombre"),
-		"fecha_comprobante": (40, "Fecha"),
-		"comprobante": (40, "Comprobante"),
-		"nombre_producto": (40, "Descripción"),
-		"medida": (180, "Medida"),
-		"cantidad": (40, "Cantidad"),
-		"precio": (40, "Precio"),
-		"total": (40, "Total"),
+	#-- Establecer las columnas del reporte y sus atributos.
+	table_info = {
+		"id_cliente_id": {
+			"label": "Cliente",
+			# "col_width_table": 0,
+			"col_width_pdf": 30,
+			# "pdf_paragraph": False,
+			# "date_format": None,
+			# "table": False,
+			# "pdf": True,
+			# "excel": True,
+			# "csv": True
+		},
+		"nombre_cliente": {
+			"label": "Nombre",
+			# "col_width_table": 0,
+			"col_width_pdf": 180,
+			# "pdf_paragraph": False,
+			# "date_format": None,
+			# "table": False,
+			# "pdf": True,
+			# "excel": True,
+			# "csv": True
+		},
+		"fecha_comprobante": {
+			"label": "Fecha",
+			# "col_width_table": 0,
+			"col_width_pdf": 40,
+			# "pdf_paragraph": False,
+			# "date_format": None,
+			# "table": False,
+			# "pdf": True,
+			# "excel": True,
+			# "csv": True
+		},
+		"comprobante": {
+			"label": "Comprobante",
+			# "col_width_table": 0,
+			"col_width_pdf": 70,
+			# "pdf_paragraph": False,
+			# "date_format": None,
+			# "table": False,
+			# "pdf": True,
+			# "excel": True,
+			# "csv": True
+		},
+		"nombre_producto": {
+			"label": "Descripción",
+			# "col_width_table": 0,
+			"col_width_pdf": 200,
+			# "pdf_paragraph": False,
+			# "date_format": None,
+			# "table": False,
+			# "pdf": True,
+			# "excel": True,
+			# "csv": True
+		},
+		"medida": {
+			"label": "Medida",
+			# "col_width_table": 0,
+			"col_width_pdf": 50,
+			# "pdf_paragraph": False,
+			# "date_format": None,
+			# "table": False,
+			# "pdf": True,
+			# "excel": True,
+			# "csv": True
+		},
+		"cantidad": {
+			"label": "Cantidad",
+			# "col_width_table": 0,
+			"col_width_pdf": 60,
+			# "pdf_paragraph": False,
+			# "date_format": None,
+			# "table": False,
+			# "pdf": True,
+			# "excel": True,
+			# "csv": True
+		},
+		"precio": {
+			"label": "Precio",
+			# "col_width_table": 0,
+			"col_width_pdf": 70,
+			# "pdf_paragraph": False,
+			# "date_format": None,
+			# "table": False,
+			# "pdf": True,
+			# "excel": True,
+			# "csv": True
+		},
+		"total": {
+			"label": "Total",
+			# "col_width_table": 0,
+			"col_width_pdf": 70,
+			# "pdf_paragraph": False,
+			# "date_format": None,
+			# "table": False,
+			# "pdf": True,
+			# "excel": True,
+			# "csv": True
+		},
 	}
 
 
@@ -409,7 +499,7 @@ def vlremitosvendedor_vista_excel(request):
 	
 	helper = ExportHelper(
 		queryset=queryset,
-		table_headers=ConfigViews.header_data,
+		table_info=ConfigViews.table_info,
 		report_title=ConfigViews.report_title
 	)
 	excel_data = helper.export_to_excel()
@@ -444,7 +534,7 @@ def vlremitosvendedor_vista_csv(request):
 	#-- Usar el helper para exportar a CSV.
 	helper = ExportHelper(
 		queryset=queryset,
-		table_headers=ConfigViews.header_data,
+		table_info=ConfigViews.table_info,
 		report_title=ConfigViews.report_title
 	)
 	csv_data = helper.export_to_csv()

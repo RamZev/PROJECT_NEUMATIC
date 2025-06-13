@@ -68,12 +68,52 @@ class ConfigViews:
 	#-- Plantilla Vista Preliminar Pantalla.
 	reporte_pantalla = f"informes/reportes/{model_string}_list.html"
 	
-	#-- Establecer las columnas del reporte y sus anchos(en punto).
-	header_data = {
-		"id_vendedor_id": (40, "Código"),
-		"nombre_vendedor": (200, "Vendedor"),
-		"neto": (80, "Neto"),
-		"percep_ib": (80, "Percepción"),
+	#-- Establecer las columnas del reporte y sus atributos.
+	table_info = {
+		"id_vendedor_id": {
+			"label": "Código",
+			# "col_width_table": 0,
+			"col_width_pdf": 40,
+			# "pdf_paragraph": False,
+			# "date_format": None,
+			# "table": False,
+			# "pdf": True,
+			# "excel": True,
+			# "csv": True
+		},
+		"nombre_vendedor": {
+			"label": "Vendedor",
+			# "col_width_table": 0,
+			"col_width_pdf": 200,
+			# "pdf_paragraph": False,
+			# "date_format": None,
+			# "table": False,
+			# "pdf": True,
+			# "excel": True,
+			# "csv": True
+		},
+		"neto": {
+			"label": "Neto",
+			# "col_width_table": 0,
+			"col_width_pdf": 80,
+			# "pdf_paragraph": False,
+			# "date_format": None,
+			# "table": False,
+			# "pdf": True,
+			# "excel": True,
+			# "csv": True
+		},
+		"percep_ib": {
+			"label": "Percepción",
+			# "col_width_table": 0,
+			"col_width_pdf": 80,
+			# "pdf_paragraph": False,
+			# "date_format": None,
+			# "table": False,
+			# "pdf": True,
+			# "excel": True,
+			# "csv": True
+		},
 	}
 
 
@@ -215,10 +255,10 @@ def generar_pdf(contexto_reporte):
 	#-- Construir datos de la tabla:
 	
 	#-- Extraer Títulos de las columnas de la tabla (headers).
-	headers_titles = [value[1] for value in ConfigViews.header_data.values()]
+	headers_titles = [value['label'] for value in ConfigViews.table_info.values()]
 	
 	#-- Extraer Ancho de las columnas de la tabla.
-	col_widths = [value[0] for value in ConfigViews.header_data.values()]
+	col_widths = [value['col_width_pdf'] for value in ConfigViews.table_info.values()]
 	
 	table_data = [headers_titles]
 	
@@ -261,7 +301,7 @@ def vlpercepibvendedortotales_vista_excel(request):
 	
 	helper = ExportHelper(
 		queryset=queryset,
-		table_headers=ConfigViews.header_data,
+		table_info=ConfigViews.table_info,
 		report_title=ConfigViews.report_title
 	)
 	excel_data = helper.export_to_excel()
@@ -296,7 +336,7 @@ def vlpercepibvendedortotales_vista_csv(request):
 	#-- Usar el helper para exportar a CSV.
 	helper = ExportHelper(
 		queryset=queryset,
-		table_headers=ConfigViews.header_data,
+		table_info=ConfigViews.table_info,
 		report_title=ConfigViews.report_title
 	)
 	csv_data = helper.export_to_csv()

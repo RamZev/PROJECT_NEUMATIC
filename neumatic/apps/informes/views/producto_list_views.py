@@ -75,6 +75,22 @@ class DataViewList:
 		{'field_name': 'id_marca', 'date_format': None},
 		{'field_name': 'precio', 'date_format': None},
 	]
+	# table_headers.update({
+	# 	"tipo_producto": (1, "Tipo Producto"),
+	# 	"id_familia.nombre_producto_familia": (4, "Familia"),
+	# 	"segmento": (1, "Segmento"),
+	# 	"id_modelo.nombre_modelo": (4, "Modelo"),
+	# 	"fecha_fabricacion": (1, "Fecha Fabricación"),
+	# 	"costo": (2, "Costo"),
+	# 	"id_alicuota_iva.alicuota_iva": (1, "Alícuota IVA"),
+	# 	"cai": (1, "CAI"),
+	# 	"stock": (1, "Stock"),
+	# 	"minimo": (1, "Mínimo"),
+	# 	"descuento": (1, "Descuento"),
+	# 	"despacho_1": (4, "Despacho 1"),
+	# 	"despacho_2": (4, "Despacho 2"),
+	# 	"carrito": (1, "Carrito"),
+	# })
 
 
 class ProductoInformeListView(InformeListView):

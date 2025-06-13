@@ -67,8 +67,8 @@ class DataViewList():
 		'id_valida': (1, 'ID'),
 		'id_cliente': (3, 'Cliente'),
 		'solicitado': (2, 'Solicitante'),
-    'fecha_valida': (2, 'Fecha'),
-    'hora_valida': (1, 'Hora'),
+		'fecha_valida': (2, 'Fecha'),
+		'hora_valida': (1, 'Hora'),
 		'acciones': (2, 'Acciones'),
 	}
 	
@@ -77,8 +77,8 @@ class DataViewList():
 		{'field_name': 'id_valida', 'date_format': None},
 		{'field_name': 'id_cliente', 'date_format': None},
 		{'field_name': 'solicitado', 'date_format': None},
-    {'field_name': 'fecha_valida', 'date_format': 'd/m/Y'},
-    {'field_name': 'hora_valida', 'date_format': None},
+		{'field_name': 'fecha_valida', 'date_format': 'd/m/Y'},
+		{'field_name': 'hora_valida', 'date_format': None},
 	]
 
 

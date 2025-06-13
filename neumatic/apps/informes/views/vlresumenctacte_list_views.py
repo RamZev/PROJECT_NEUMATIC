@@ -81,7 +81,97 @@ class ConfigViews:
 		"haber": (80, "Haber"),
 		"saldo_acumulado": (80, "Saldo"),
 	}
-
+	#-- Establecer las columnas del reporte y sus atributos.
+	table_info = {
+		"nombre_comprobante_venta": {
+			"label": "Comprobante",
+			# "col_width_table": 0,
+			"col_width_pdf": 100,
+			# "pdf_paragraph": False,
+			# "date_format": None,
+			# "table": False,
+			# "pdf": True,
+			# "excel": True,
+			# "csv": True
+		},
+		"numero": {
+			"label": "Número",
+			# "col_width_table": 0,
+			"col_width_pdf": 80,
+			# "pdf_paragraph": False,
+			# "date_format": None,
+			# "table": False,
+			# "pdf": True,
+			# "excel": True,
+			# "csv": True
+		},
+		"fecha_comprobante": {
+			"label": "Fecha",
+			# "col_width_table": 0,
+			"col_width_pdf": 50,
+			# "pdf_paragraph": False,
+			# "date_format": None,
+			# "table": False,
+			# "pdf": True,
+			# "excel": True,
+			# "csv": True
+		},
+		"remito": {
+			"label": "Remito",
+			# "col_width_table": 0,
+			"col_width_pdf": 50,
+			# "pdf_paragraph": False,
+			# "date_format": None,
+			# "table": False,
+			# "pdf": True,
+			# "excel": True,
+			# "csv": True
+		},
+		"condicion": {
+			"label": "Cond. Venta",
+			# "col_width_table": 0,
+			"col_width_pdf": 40,
+			# "pdf_paragraph": False,
+			# "date_format": None,
+			# "table": False,
+			# "pdf": True,
+			# "excel": True,
+			# "csv": True
+		},
+		"debe": {
+			"label": "Debe",
+			# "col_width_table": 0,
+			"col_width_pdf": 80,
+			# "pdf_paragraph": False,
+			# "date_format": None,
+			# "table": False,
+			# "pdf": True,
+			# "excel": True,
+			# "csv": True
+		},
+		"haber": {
+			"label": "Haber",
+			# "col_width_table": 0,
+			"col_width_pdf": 80,
+			# "pdf_paragraph": False,
+			# "date_format": None,
+			# "table": False,
+			# "pdf": True,
+			# "excel": True,
+			# "csv": True
+		},
+		"saldo_acumulado": {
+			"label": "Saldo",
+			# "col_width_table": 0,
+			"col_width_pdf": 80,
+			# "pdf_paragraph": False,
+			# "date_format": None,
+			# "table": False,
+			# "pdf": True,
+			# "excel": True,
+			# "csv": True
+		},
+	}
 
 class VLResumenCtaCteInformeView(InformeFormView):
 	config = ConfigViews  #-- Ahora la configuración estará disponible en self.config.
@@ -485,7 +575,7 @@ def vlresumenctacte_vista_excel(request):
 	
 	helper = ExportHelper(
 		queryset=queryset,
-		table_headers=ConfigViews.header_data,
+		table_info=ConfigViews.table_info,
 		report_title=ConfigViews.report_title
 	)
 	excel_data = helper.export_to_excel()
@@ -519,7 +609,7 @@ def vlresumenctacte_vista_csv(request):
 	#-- Usar el helper para exportar a CSV.
 	helper = ExportHelper(
 		queryset=queryset,
-		table_headers=ConfigViews.header_data,
+		table_info=ConfigViews.table_info,
 		report_title=ConfigViews.report_title
 	)
 	csv_data = helper.export_to_csv()

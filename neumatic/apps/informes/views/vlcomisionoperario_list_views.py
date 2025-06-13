@@ -68,16 +68,96 @@ class ConfigViews:
 	#-- Plantilla Vista Preliminar Pantalla.
 	reporte_pantalla = f"informes/reportes/{model_string}_list.html"
 	
-	#-- Establecer las columnas del reporte y sus anchos(en punto).
-	header_data = {
-		"nombre_operario": (40, "Operario"),
-		"comprobante": (40, "Comprobante"),
-		"fecha_comprobante": (40, "Fecha"),
-		"id_producto_id": (180, "Código"),
-		"nombre_producto_familia": (40, "Servicio"),
-		"total": (40, "Total"),
-		"comision_operario": (40, "%"),
-		"monto_comision": (40, "Comisión"),
+	#-- Establecer las columnas del reporte y sus atributos.
+	table_info = {
+		"nombre_operario": {
+			"label": "Operario",
+			# "col_width_table": 0,
+			"col_width_pdf": 80,
+			# "pdf_paragraph": False,
+			# "date_format": None,
+			# "table": False,
+			# "pdf": True,
+			# "excel": True,
+			# "csv": True
+		},
+		"comprobante": {
+			"label": "Comprobante",
+			# "col_width_table": 0,
+			"col_width_pdf": 80,
+			# "pdf_paragraph": False,
+			# "date_format": None,
+			# "table": False,
+			# "pdf": True,
+			# "excel": True,
+			# "csv": True
+		},
+		"fecha_comprobante": {
+			"label": "Fecha",
+			# "col_width_table": 0,
+			"col_width_pdf": 40,
+			# "pdf_paragraph": False,
+			# "date_format": None,
+			# "table": False,
+			# "pdf": True,
+			# "excel": True,
+			# "csv": True
+		},
+		"id_producto_id": {
+			"label": "Código",
+			# "col_width_table": 0,
+			"col_width_pdf": 40,
+			# "pdf_paragraph": False,
+			# "date_format": None,
+			# "table": False,
+			# "pdf": True,
+			# "excel": True,
+			# "csv": True
+		},
+		"nombre_producto_familia": {
+			"label": "Servicio",
+			# "col_width_table": 0,
+			"col_width_pdf": 180,
+			# "pdf_paragraph": False,
+			# "date_format": None,
+			# "table": False,
+			# "pdf": True,
+			# "excel": True,
+			# "csv": True
+		},
+		"total": {
+			"label": "Total",
+			# "col_width_table": 0,
+			"col_width_pdf": 60,
+			# "pdf_paragraph": False,
+			# "date_format": None,
+			# "table": False,
+			# "pdf": True,
+			# "excel": True,
+			# "csv": True
+		},
+		"comision_operario": {
+			"label": "%",
+			# "col_width_table": 0,
+			"col_width_pdf": 40,
+			# "pdf_paragraph": False,
+			# "date_format": None,
+			# "table": False,
+			# "pdf": True,
+			# "excel": True,
+			# "csv": True
+		},
+		"monto_comision": {
+			"label": "Comisión",
+			# "col_width_table": 0,
+			"col_width_pdf": 60,
+			# "pdf_paragraph": False,
+			# "date_format": None,
+			# "table": False,
+			# "pdf": True,
+			# "excel": True,
+			# "csv": True
+		},
 	}
 
 
@@ -360,7 +440,7 @@ def vlcomisionoperario_vista_excel(request):
 	
 	helper = ExportHelper(
 		queryset=queryset,
-		table_headers=ConfigViews.header_data,
+		table_info=ConfigViews.table_info,
 		report_title=ConfigViews.report_title
 	)
 	excel_data = helper.export_to_excel()
@@ -395,7 +475,7 @@ def vlcomisionoperario_vista_csv(request):
 	#-- Usar el helper para exportar a CSV.
 	helper = ExportHelper(
 		queryset=queryset,
-		table_headers=ConfigViews.header_data,
+		table_info=ConfigViews.table_info,
 		report_title=ConfigViews.report_title
 	)
 	csv_data = helper.export_to_csv()

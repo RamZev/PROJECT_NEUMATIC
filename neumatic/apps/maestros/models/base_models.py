@@ -660,9 +660,9 @@ class AlicuotaIva(ModeloBaseGenerico):
 		return super().clean()
 
 
-class Banco(ModeloBaseGenerico):
-	id_banco = models.AutoField(primary_key=True)
-	estatus_banco = models.BooleanField("Estatus", default=True,
+class CuentaBanco(ModeloBaseGenerico):
+	id_cuenta_banco = models.AutoField(primary_key=True)
+	estatus_cuenta_banco = models.BooleanField("Estatus", default=True,
 										choices=ESTATUS_GEN)
 	cuenta_banco = models.IntegerField("Cuenta Banco", 
 										null=True, blank=True)
@@ -692,13 +692,13 @@ class Banco(ModeloBaseGenerico):
 									verbose_name="Moneda", null=True, blank=True)
 	
 	class Meta:
-		db_table = 'banco'
-		verbose_name = ('Banco')
-		verbose_name_plural = ('Bancos')
-		ordering = ['nombre_banco']    
+		db_table = 'cuenta_banco'
+		verbose_name = ('Cuentas Banco')
+		verbose_name_plural = ('Cuentas de Bancos')
+		ordering = ['numero_banco']
 	
 	def __str__(self):
-		return f'{self.cuenta_banco} - {self.nombre_banco}'
+		return self.numero_cuenta
 	
 	def clean(self):
 		super().clean()
@@ -712,8 +712,8 @@ class Banco(ModeloBaseGenerico):
 			#-- Agrego el error al dicciobario errors.
 			errors['cuit'] = e.messages
 		
-		if not self.nombre_banco:
-			errors.update({'nombre_banco': "Debe indicar un nombre."})
+		if not self.numero_cuenta:
+			errors.update({'numero_cuenta': "Debe indicar un Número de Cuenta."})
 		
 		if errors:
 			#-- Lanza el conjunto de excepciones.
@@ -814,3 +814,23 @@ class ConceptoBanco(ModeloBaseGenerico):
 			raise ValidationError(errors)
 		
 		return super().clean()
+
+
+class Banco(ModeloBaseGenerico):
+	id_banco = models.AutoField(primary_key=True)
+	estatus_banco = models.BooleanField("Estatus", default=True,
+										choices=ESTATUS_GEN)
+	codigo_banco = models.SmallIntegerField("Código Banco")
+	nombre_banco = models.CharField("Nombre Banco", max_length=50,
+										  	null=True, blank=True)
+	cuit_banco = models.IntegerField("CUIT")
+	
+	class Meta:
+		db_table = 'banco'
+		verbose_name = 'Banco'
+		verbose_name_plural = 'Bancos'
+		ordering = ['nombre_banco']
+	
+	def __str__(self):
+		return self.nombre_banco
+	

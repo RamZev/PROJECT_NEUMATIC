@@ -70,18 +70,118 @@ class ConfigViews:
 	#-- Plantilla Vista Preliminar Pantalla.
 	reporte_pantalla = f"informes/reportes/{model_string}_list.html"
 	
-	#-- Establecer las columnas del reporte y sus anchos(en punto).
-	header_data = {
-		"comprobante": (85, "Comprobante"),
-		"fecha_comprobante": (50, "Fecha"),
-		"nombre_cliente": (220, "Nombre"),
-		"codigo_iva": (40, "Sit. IVA"),
-		"cuit": (50, "CUIT"),
-		"gravado": (75, "Gravado"),
-		"exento": (75, "Exento"),
-		"iva": (75, "I.V.A."),
-		"percep_ib": (75, "Percep. IB"),
-		"total": (75, "Total"),
+	#-- Establecer las columnas del reporte y sus atributos.
+	table_info = {
+		"comprobante": {
+			"label": "Comprobante",
+			# "col_width_table": 0,
+			"col_width_pdf": 85,
+			# "pdf_paragraph": False,
+			# "date_format": None,
+			# "table": False,
+			# "pdf": True,
+			# "excel": True,
+			# "csv": True
+		},
+		"fecha_comprobante": {
+			"label": "Fecha",
+			# "col_width_table": 0,
+			"col_width_pdf": 50,
+			# "pdf_paragraph": False,
+			# "date_format": None,
+			# "table": False,
+			# "pdf": True,
+			# "excel": True,
+			# "csv": True
+		},
+		"nombre_cliente": {
+			"label": "Cliente",
+			# "col_width_table": 0,
+			"col_width_pdf": 220,
+			# "pdf_paragraph": False,
+			# "date_format": None,
+			# "table": False,
+			# "pdf": True,
+			# "excel": True,
+			# "csv": True
+		},
+		"codigo_iva": {
+			"label": "Sit. IVA",
+			# "col_width_table": 0,
+			"col_width_pdf": 40,
+			# "pdf_paragraph": False,
+			# "date_format": None,
+			# "table": False,
+			# "pdf": True,
+			# "excel": True,
+			# "csv": True
+		},
+		"cuit": {
+			"label": "CUIT",
+			# "col_width_table": 0,
+			"col_width_pdf": 50,
+			# "pdf_paragraph": False,
+			# "date_format": None,
+			# "table": False,
+			# "pdf": True,
+			# "excel": True,
+			# "csv": True
+		},
+		"gravado": {
+			"label": "Gravado",
+			# "col_width_table": 0,
+			"col_width_pdf": 75,
+			# "pdf_paragraph": False,
+			# "date_format": None,
+			# "table": False,
+			# "pdf": True,
+			# "excel": True,
+			# "csv": True
+		},
+		"exento": {
+			"label": "Exento",
+			# "col_width_table": 0,
+			"col_width_pdf": 75,
+			# "pdf_paragraph": False,
+			# "date_format": None,
+			# "table": False,
+			# "pdf": True,
+			# "excel": True,
+			# "csv": True
+		},
+		"iva": {
+			"label": "I.V.A.",
+			# "col_width_table": 0,
+			"col_width_pdf": 75,
+			# "pdf_paragraph": False,
+			# "date_format": None,
+			# "table": False,
+			# "pdf": True,
+			# "excel": True,
+			# "csv": True
+		},
+		"percep_ib": {
+			"label": "Percep. IB",
+			# "col_width_table": 0,
+			"col_width_pdf": 75,
+			# "pdf_paragraph": False,
+			# "date_format": None,
+			# "table": False,
+			# "pdf": True,
+			# "excel": True,
+			# "csv": True
+		},
+		"total": {
+			"label": "Total",
+			# "col_width_table": 0,
+			"col_width_pdf": 75,
+			# "pdf_paragraph": False,
+			# "date_format": None,
+			# "table": False,
+			# "pdf": True,
+			# "excel": True,
+			# "csv": True
+		},
 	}
 
 
@@ -300,10 +400,10 @@ def generar_pdf(contexto_reporte):
 	#-- Construir datos de la tabla:
 	
 	#-- Extraer Títulos de las columnas de la tabla (headers).
-	headers_titles = [value[1] for value in ConfigViews.header_data.values()]
+	headers_titles = [value['label'] for value in ConfigViews.table_info.values()]
 	
 	#-- Extraer Ancho de las columnas de la tabla.
-	col_widths = [value[0] for value in ConfigViews.header_data.values()]
+	col_widths = [value['col_width_pdf'] for value in ConfigViews.table_info.values()]
 	
 	table_data = [headers_titles]
 	
@@ -374,7 +474,7 @@ def vlivaventasfull_vista_excel(request):
 	
 	helper = ExportHelper(
 		queryset=queryset,
-		table_headers=ConfigViews.header_data,
+		table_info=ConfigViews.table_info,
 		report_title=ConfigViews.report_title
 	)
 	excel_data = helper.export_to_excel()
@@ -409,7 +509,7 @@ def vlivaventasfull_vista_csv(request):
 	#-- Usar el helper para exportar a CSV.
 	helper = ExportHelper(
 		queryset=queryset,
-		table_headers=ConfigViews.header_data,
+		table_info=ConfigViews.table_info,
 		report_title=ConfigViews.report_title
 	)
 	csv_data = helper.export_to_csv()

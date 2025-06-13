@@ -70,15 +70,85 @@ class ConfigViews:
 	#-- Plantilla Vista Preliminar Pantalla.
 	reporte_pantalla = f"informes/reportes/{model_string}_list.html"
 	
-	#-- Establecer las columnas del reporte y sus anchos(en punto).
-	header_data = {
-		"fecha_comprobante": (40, "Fecha"),
-		"numero": (70, "Número"),
-		"nombre_producto": (200, "Descripción"),
-		"medida": (50, "Medida"),
-		"cantidad": (50, "Cantidad"),
-		"precio": (75, "Precio"),
-		"total": (75, "Total"),
+	#-- Establecer las columnas del reporte y sus atributos.
+	table_info = {
+		"fecha_comprobante": {
+			"label": "Fecha",
+			# "col_width_table": 0,
+			"col_width_pdf": 40,
+			# "pdf_paragraph": False,
+			# "date_format": None,
+			# "table": False,
+			# "pdf": True,
+			# "excel": True,
+			# "csv": True
+		},
+		"numero": {
+			"label": "Número",
+			# "col_width_table": 0,
+			"col_width_pdf": 70,
+			# "pdf_paragraph": False,
+			# "date_format": None,
+			# "table": False,
+			# "pdf": True,
+			# "excel": True,
+			# "csv": True
+		},
+		"nombre_producto": {
+			"label": "Descripción",
+			# "col_width_table": 0,
+			"col_width_pdf": 200,
+			# "pdf_paragraph": False,
+			# "date_format": None,
+			# "table": False,
+			# "pdf": True,
+			# "excel": True,
+			# "csv": True
+		},
+		"medida": {
+			"label": "Medida",
+			# "col_width_table": 0,
+			"col_width_pdf": 50,
+			# "pdf_paragraph": False,
+			# "date_format": None,
+			# "table": False,
+			# "pdf": True,
+			# "excel": True,
+			# "csv": True
+		},
+		"cantidad": {
+			"label": "Cantidad",
+			# "col_width_table": 0,
+			"col_width_pdf": 50,
+			# "pdf_paragraph": False,
+			# "date_format": None,
+			# "table": False,
+			# "pdf": True,
+			# "excel": True,
+			# "csv": True
+		},
+		"precio": {
+			"label": "Precio",
+			# "col_width_table": 0,
+			"col_width_pdf": 75,
+			# "pdf_paragraph": False,
+			# "date_format": None,
+			# "table": False,
+			# "pdf": True,
+			# "excel": True,
+			# "csv": True
+		},
+		"total": {
+			"label": "Total",
+			# "col_width_table": 0,
+			"col_width_pdf": 80,
+			# "pdf_paragraph": False,
+			# "date_format": None,
+			# "table": False,
+			# "pdf": True,
+			# "excel": True,
+			# "csv": True
+		},
 	}
 
 
@@ -266,10 +336,10 @@ def generar_pdf(contexto_reporte):
 	#-- Construir datos de la tabla:
 	
 	#-- Extraer Títulos de las columnas de la tabla (headers).
-	headers_titles = [value[1] for value in ConfigViews.header_data.values()]
+	headers_titles = [value['label'] for value in ConfigViews.table_info.values()]
 	
 	#-- Extraer Ancho de las columnas de la tabla.
-	col_widths = [value[0] for value in ConfigViews.header_data.values()]
+	col_widths = [value['col_width_pdf'] for value in ConfigViews.table_info.values()]
 	
 	table_data = [headers_titles]
 	
@@ -347,7 +417,7 @@ def vlremitosclientes_vista_excel(request):
 	
 	helper = ExportHelper(
 		queryset=queryset,
-		table_headers=ConfigViews.header_data,
+		table_info=ConfigViews.table_info,
 		report_title=ConfigViews.report_title
 	)
 	excel_data = helper.export_to_excel()
@@ -382,7 +452,7 @@ def vlremitosclientes_vista_csv(request):
 	#-- Usar el helper para exportar a CSV.
 	helper = ExportHelper(
 		queryset=queryset,
-		table_headers=ConfigViews.header_data,
+		table_info=ConfigViews.table_info,
 		report_title=ConfigViews.report_title
 	)
 	csv_data = helper.export_to_csv()

@@ -4,7 +4,7 @@ from django.http import HttpResponse, JsonResponse
 from django.views import View
 from zipfile import ZipFile
 from io import BytesIO
-
+from reportlab.lib.pagesizes import A4, landscape
 from django.core.mail import EmailMessage
 
 from django.db.models.functions import Lower
@@ -34,7 +34,8 @@ class ConfigViews:
 	list_view_name = f"{model_string}_list"
 	
 	# Plantilla de la lista del CRUD
-	template_list = f"{app_label}/maestro_informe_list.html"
+	# template_list = f"{app_label}/maestro_informe_list.html"
+	template_list = f"{app_label}/maestro_informe_list_prop.html"
 	
 	# Contexto de los datos de la lista
 	context_object_name = "objetos"
@@ -58,33 +59,102 @@ class ConfigViews:
 class DataViewList:
 	search_fields = []
 	
-	ordering = ['nombre_vendedor']
+	ordering = []
 	
 	paginate_by = 8
 	
 	report_title = "Reporte de Vendedores"
 	
-	table_headers = {
-		'id_vendedor': (1, 'Código'),
-		'nombre_vendedor': (3, 'Nombre Proveedor'),
-		'domicilio_vendedor': (3, 'Domicilio'),
-		'telefono_vendedor': (1, 'Teléfono'),
-		'pje_auto': (1, '% auto'),
-		'pje_camion': (1, '% camión'),
-		'vence_factura': (1, 'Vcto. Fact.'),
-		'vence_remito': (1, 'Vcto. Remito'),
+	table_info = {
+		"id_vendedor": {
+			"label": "Código",
+			"col_width_table": 1,
+			"col_width_pdf": 40,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"table": True,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
+		"nombre_vendedor":{
+			"label": "Nombre Vendedor",
+			"col_width_table": 3,
+			"col_width_pdf": 190,
+			"pdf_paragraph": True,
+			"date_format": None,
+			"table": True,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
+		"domicilio_vendedor": {
+			"label": "Domicilio",
+			"col_width_table": 3,
+			"col_width_pdf": 160,
+			"pdf_paragraph": True,
+			"date_format": None,
+			"table": True,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
+		"telefono_vendedor": {
+			"label": "Teléfono",
+			"col_width_table": 1,
+			"col_width_pdf": 80,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"table": True,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
+		"pje_auto": {
+			"label": "% auto",
+			"col_width_table": 1,
+			"col_width_pdf": 60,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"table": True,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
+		"pje_camion": {
+			"label": "% camión",
+			"col_width_table": 1,
+			"col_width_pdf": 60,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"table": False,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
+		"vence_factura": {
+			"label": "Vcto. Fact.",
+			"col_width_table": 1,
+			"col_width_pdf": 60,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"table": True,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
+		"vence_remito": {
+			"label": "Vcto. Remito",
+			"col_width_table": 1,
+			"col_width_pdf": 60,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"table": True,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
 	}
-	
-	table_data = [
-		{'field_name': 'id_vendedor', 'date_format': None},
-		{'field_name': 'nombre_vendedor', 'date_format': None},
-		{'field_name': 'domicilio_vendedor', 'date_format': None},
-		{'field_name': 'telefono_vendedor', 'date_format': None},
-		{'field_name': 'pje_auto', 'date_format': None},
-		{'field_name': 'pje_camion', 'date_format': None},
-		{'field_name': 'vence_factura', 'date_format': None},
-		{'field_name': 'vence_remito', 'date_format': None},
-	]
 
 
 class VendedorInformeListView(InformeListView):
@@ -100,8 +170,7 @@ class VendedorInformeListView(InformeListView):
 		"master_title": f'Informes - {ConfigViews.model._meta.verbose_name_plural}',
 		"home_view_name": ConfigViews.home_view_name,
 		"list_view_name": ConfigViews.list_view_name,
-		"table_headers": DataViewList.table_headers,
-		"table_data": DataViewList.table_data,
+		"table_info": DataViewList.table_info,
 		"buscador_template": f"{ConfigViews.app_label}/buscador_{ConfigViews.model_string}.html",
 		"js_file": ConfigViews.js_file,
 		"url_zip": ConfigViews.url_zip,
@@ -163,8 +232,6 @@ class VendedorInformeListView(InformeListView):
 			
 		else:
 			#-- Agregar clases css a los campos con errores.
-			print("El form no es válido (desde la vista)")
-			print(f"{form.errors = }")
 			form.add_error_classes()
 						
 		return queryset
@@ -215,18 +282,36 @@ class VendedorInformesView(View):
 		
 		buffer = BytesIO()
 		with ZipFile(buffer, "w") as zip_file:
-			helper = ExportHelper(queryset, DataViewList.table_headers, DataViewList.report_title)
+			table = DataViewList.table_info.copy()
 			
 			#-- Generar los formatos seleccionados.
 			if "pdf" in formatos:
-				pdf_content = helper.export_to_pdf()
+				#-- Filtrar los campos que se van a exportar a PDF.
+				table_info = { field: table[field] for field in table if table[field]['pdf'] }
+				
+				#-- Generar el PDF.
+				helper = ExportHelper(queryset, table_info, DataViewList.report_title)
+				
+				pdf_content = helper.export_to_pdf(pagesize=landscape(A4))
 				zip_file.writestr(f"informe_{ConfigViews.model_string}.pdf", pdf_content)
 			
 			if "excel" in formatos:
+				#-- Filtrar los campos que se van a exportar a Excel.
+				table_info = { field: table[field] for field in table if table[field]['excel'] }
+				
+				#-- Generar el Excel.
+				helper = ExportHelper(queryset, table_info, DataViewList.report_title)
+				
 				excel_content = helper.export_to_excel()
 				zip_file.writestr(f"informe_{ConfigViews.model_string}.xlsx", excel_content)
 			
 			if "csv" in formatos:
+				#-- Filtrar los campos que se van a exportar a CSV.
+				table_info = { field: table[field] for field in table if table[field]['csv'] }
+				
+				#-- Generar el CSV.
+				helper = ExportHelper(queryset, table_info, DataViewList.report_title)
+				
 				csv_content = helper.export_to_csv()
 				zip_file.writestr(f"informe_{ConfigViews.model_string}.csv", csv_content)
 		
@@ -276,9 +361,13 @@ class VendedorInformePDFView(View):
 		queryset_filtrado.request = request
 		queryset = queryset_filtrado.get_queryset()
 		
-		#-- Generar el pdf.
-		helper = ExportHelper(queryset, DataViewList.table_headers, DataViewList.report_title)
-		buffer = helper.export_to_pdf()
+		#-- Filtrar los campos que se van a exportar a PDF.
+		table = DataViewList.table_info.copy()
+		table_info = { field: table[field] for field in table if table[field]['pdf'] }
+		
+		#-- Generar el PDF.
+		helper = ExportHelper(queryset, table_info, DataViewList.report_title)
+		buffer = helper.export_to_pdf(pagesize=landscape(A4))
 		
 		#-- Preparar la respuesta HTTP.
 		response = HttpResponse(buffer, content_type='application/pdf')

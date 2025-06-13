@@ -68,11 +68,41 @@ class ConfigViews:
 	#-- Plantilla Vista Preliminar Pantalla.
 	reporte_pantalla = f"informes/reportes/{model_string}_list.html"
 	
-	#-- Establecer las columnas del reporte y sus anchos(en punto).
-	header_data = {
-		"id_cliente_id": (40, "Código"),
-		"nombre_cliente": (200, "Cliente"),
-		"fecha_ultimo_comprobante": (50, "Última Venta"),
+	#-- Establecer las columnas del reporte y sus atributos.
+	table_info = {
+		"id_cliente_id": {
+			"label": "Código",
+			# "col_width_table": 0,
+			"col_width_pdf": 40,
+			# "pdf_paragraph": False,
+			# "date_format": None,
+			# "table": False,
+			# "pdf": True,
+			# "excel": True,
+			# "csv": True
+		},
+		"nombre_cliente": {
+			"label": "Cliente",
+			# "col_width_table": 0,
+			"col_width_pdf": 200,
+			# "pdf_paragraph": False,
+			# "date_format": None,
+			# "table": False,
+			# "pdf": True,
+			# "excel": True,
+			# "csv": True
+		},
+		"fecha_ultimo_comprobante": {
+			"label": "Última Venta",
+			# "col_width_table": 0,
+			"col_width_pdf": 50,
+			# "pdf_paragraph": False,
+			# "date_format": None,
+			# "table": False,
+			# "pdf": True,
+			# "excel": True,
+			# "csv": True
+		},
 	}
 
 
@@ -237,10 +267,10 @@ def generar_pdf(contexto_reporte):
 	#-- Datos de las columnas de la tabla (headers).
 	
 	#-- Extraer Títulos de las columnas de la tabla (headers).
-	headers_titles = [value[1] for value in ConfigViews.header_data.values()]
+	headers_titles = [value['label'] for value in ConfigViews.table_info.values()]
 	
 	#-- Extraer Ancho de las columnas de la tabla.
-	col_widths = [value[0] for value in ConfigViews.header_data.values()]
+	col_widths = [value['col_width_pdf'] for value in ConfigViews.table_info.values()]
 	
 	table_data = [headers_titles]
 	
@@ -281,7 +311,7 @@ def vlclienteultimaventa_vista_excel(request):
 	
 	helper = ExportHelper(
 		queryset=queryset,
-		table_headers=ConfigViews.header_data,
+		table_info=ConfigViews.table_info,
 		report_title=ConfigViews.report_title
 	)
 	excel_data = helper.export_to_excel()
@@ -316,7 +346,7 @@ def vlclienteultimaventa_vista_csv(request):
 	#-- Usar el helper para exportar a CSV.
 	helper = ExportHelper(
 		queryset=queryset,
-		table_headers=ConfigViews.header_data,
+		table_info=ConfigViews.table_info,
 		report_title=ConfigViews.report_title
 	)
 	csv_data = helper.export_to_csv()
