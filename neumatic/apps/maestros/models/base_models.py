@@ -695,7 +695,7 @@ class CuentaBanco(ModeloBaseGenerico):
 		db_table = 'cuenta_banco'
 		verbose_name = ('Cuentas Banco')
 		verbose_name_plural = ('Cuentas de Bancos')
-		ordering = ['numero_banco']
+		ordering = ['numero_cuenta']
 	
 	def __str__(self):
 		return self.numero_cuenta
