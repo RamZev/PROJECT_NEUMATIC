@@ -591,6 +591,7 @@ def validar_deudas_cliente(request, cliente_id):
     ).select_related('id_comprobante_venta').values(
         'id_factura',
         'letra_comprobante',
+        'numero_comprobante',
         'fecha_comprobante',
         'total',
         'entrega',
@@ -603,6 +604,7 @@ def validar_deudas_cliente(request, cliente_id):
             'id_factura': factura['id_factura'],
             'tipo_comprobante': factura['id_comprobante_venta__nombre_comprobante_venta'],
             'letra_comprobante': factura['letra_comprobante'] or 'N/A',
+            'numero_comprobante': factura['numero_comprobante'] or 'N/A',
             'fecha_comprobante': factura['fecha_comprobante'].strftime('%d/%m/%Y') if factura['fecha_comprobante'] else 'N/A',
             'total': float(factura['total']),
             'entrega': float(factura['entrega']),

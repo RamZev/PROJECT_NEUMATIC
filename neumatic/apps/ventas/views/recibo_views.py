@@ -1,3 +1,4 @@
+# neumatic\apps\ventas\views\recibo_views.py
 from django.urls import reverse_lazy, reverse
 from django.shortcuts import redirect
 from django.db import transaction
@@ -22,7 +23,12 @@ from ..forms.recibo_forms import (
 	RetencionReciboFormSet,
 	DepositoReciboFormSet,
 	TarjetaReciboFormSet,
-	ChequeReciboFormSet
+	ChequeReciboFormSet,
+	RetencionReciboForm,
+	RetencionReciboInputForm,
+	DepositoReciboInputForm,
+	TarjetaReciboInputForm,
+	ChequeReciboInputForm
 )
 
 modelo = Factura
@@ -133,6 +139,10 @@ class ReciboCreateView(MaestroDetalleCreateView):
 			data['formset_tarjeta'] = TarjetaReciboFormSet(queryset=TarjetaRecibo.objects.none())
 			data['formset_cheque'] = ChequeReciboFormSet(queryset=ChequeRecibo.objects.none())
 
+		data['form_retencion_input'] = RetencionReciboForm()
+		data['form_deposito_input'] = DepositoReciboInputForm()  # Nuevo
+		data['form_tarjeta_input'] = TarjetaReciboInputForm()
+		data['form_cheque_input'] = ChequeReciboInputForm()
 		data['is_edit'] = False
 		return data
 
@@ -270,6 +280,7 @@ class ReciboUpdateView(MaestroDetalleUpdateView):
 						'monto_cobrado': detalle.monto_cobrado,
 						'comprobante': detalle.id_factura_cobrada.id_comprobante_venta.nombre_comprobante_venta,
 						'letra_comprobante': detalle.id_factura_cobrada.letra_comprobante,
+						'numero_comprobante': detalle.id_factura_cobrada.numero_comprobante,
 						'fecha_comprobante': detalle.id_factura_cobrada.fecha_comprobante.strftime('%d/%m/%Y'),
 						'total': detalle.id_factura_cobrada.total,
 						'entrega': detalle.id_factura_cobrada.entrega,
@@ -282,6 +293,11 @@ class ReciboUpdateView(MaestroDetalleUpdateView):
 			data['formset_tarjeta'] = TarjetaReciboFormSet(instance=self.object)
 			data['formset_cheque'] = ChequeReciboFormSet(instance=self.object)
 
+		# Usar RetencionReciboInputForm para la fila de inserción
+		data['form_retencion_input'] = RetencionReciboInputForm()
+		data['form_deposito_input'] = DepositoReciboInputForm()
+		data['form_tarjeta_input'] = TarjetaReciboInputForm()
+		data['form_cheque_input'] = ChequeReciboInputForm()
 		data['is_edit'] = True
 		return data
 
