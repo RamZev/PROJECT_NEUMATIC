@@ -87,7 +87,7 @@ class FacturaReciboForm(forms.ModelForm):
         widget=forms.NumberInput(attrs={
             **formclassnumb,
             'readonly': 'readonly',
-            'style': 'font-size: 0.8rem; padding: 0.25rem; background-color: #E6F6FF;'
+            'style': 'font-size: 0.8rem; padding: 0.25rem;'
         })
     )
     total_retenciones = forms.DecimalField(
@@ -95,7 +95,7 @@ class FacturaReciboForm(forms.ModelForm):
         widget=forms.NumberInput(attrs={
             **formclassnumb,
             'readonly': 'readonly',
-            'style': 'font-size: 0.8rem; padding: 0.25rem; background-color: #E6F6FF;'
+            'style': 'font-size: 0.8rem; padding: 0.25rem;'
         })
     )
     total_depositos = forms.DecimalField(
@@ -103,7 +103,7 @@ class FacturaReciboForm(forms.ModelForm):
         widget=forms.NumberInput(attrs={
             **formclassnumb,
             'readonly': 'readonly',
-            'style': 'font-size: 0.8rem; padding: 0.25rem; background-color: #E6F6FF;'
+            'style': 'font-size: 0.8rem; padding: 0.25rem;'
         })
     )
     total_tarjetas = forms.DecimalField(
@@ -111,7 +111,7 @@ class FacturaReciboForm(forms.ModelForm):
         widget=forms.NumberInput(attrs={
             **formclassnumb,
             'readonly': 'readonly',
-            'style': 'font-size: 0.8rem; padding: 0.25rem; background-color: #E6F6FF;'
+            'style': 'font-size: 0.8rem; padding: 0.25rem;'
         })
     )
     total_cheques = forms.DecimalField(
@@ -119,7 +119,7 @@ class FacturaReciboForm(forms.ModelForm):
         widget=forms.NumberInput(attrs={
             **formclassnumb,
             'readonly': 'readonly',
-            'style': 'font-size: 0.8rem; padding: 0.25rem; background-color: #E6F6FF;'
+            'style': 'font-size: 0.8rem; padding: 0.25rem;'
         })
     )
     total_formas_pago = forms.DecimalField(
@@ -127,7 +127,7 @@ class FacturaReciboForm(forms.ModelForm):
         widget=forms.NumberInput(attrs={
             **formclassnumb,
             'readonly': 'readonly',
-            'style': 'font-size: 0.8rem; padding: 0.25rem; background-color: #E6F6FF;'
+            'style': 'font-size: 0.8rem; padding: 0.25rem;'
         })
     )
     resto_cobrar = forms.DecimalField(
@@ -135,7 +135,7 @@ class FacturaReciboForm(forms.ModelForm):
         widget=forms.NumberInput(attrs={
             **formclassnumb,
             'readonly': 'readonly',
-            'style': 'font-size: 0.8rem; padding: 0.25rem; background-color: #E6F6FF;'
+            'style': 'font-size: 0.8rem; padding: 0.25rem;'
         })
     )
     
@@ -225,24 +225,12 @@ class FacturaReciboForm(forms.ModelForm):
             self.fields['punto_venta'].initial = usuario.id_punto_venta
 
         # Filtrar id_deposito según la sucursal del usuario
-        # if usuario and usuario.id_sucursal:
-        #      self.fields['id_deposito'].queryset = ProductoDeposito.objects.filter(
-        #          id_sucursal=usuario.id_sucursal
-        #      )
-        # else:
-        #      self.fields['id_deposito'].queryset = ProductoDeposito.objects.none()  # Sin opciones
-        
         if usuario and usuario.id_sucursal:
-            deposito_queryset = ProductoDeposito.objects.filter(
+            self.fields['id_deposito'].queryset = ProductoDeposito.objects.filter(
                 id_sucursal=usuario.id_sucursal
-            ).order_by('id_producto_deposito')
-            self.fields['id_deposito'].queryset = deposito_queryset
-            # Establecer el primer depósito como valor inicial
-            if deposito_queryset.exists() and not self.initial.get('id_deposito'):
-                self.initial['id_deposito'] = deposito_queryset.first().id_producto_deposito
+            )
         else:
-            self.fields['id_deposito'].queryset = ProductoDeposito.objects.none()
-
+            self.fields['id_deposito'].queryset = ProductoDeposito.objects.none()  # Sin opciones
         
         # Establecer la fecha actual si no se proporciona un valor inicial
         if not self.initial.get("fecha_comprobante"):
@@ -334,7 +322,7 @@ class RetencionReciboInputForm(forms.ModelForm):
             'class': 'form-control form-control-sm border border-primary',
             'style': 'font-size: 0.8rem; padding: 0.25rem;'
         }),
-        required=False
+        required=True
     )
     certificado_input = forms.CharField(
         max_length=20,
@@ -342,7 +330,7 @@ class RetencionReciboInputForm(forms.ModelForm):
             'class': 'form-control form-control-sm border border-primary',
             'style': 'font-size: 0.8rem; padding: 0.25rem;'
         }),
-        required=False
+        required=True
     )
     importe_retencion_input = forms.DecimalField(
         max_digits=10, decimal_places=2,
@@ -351,7 +339,7 @@ class RetencionReciboInputForm(forms.ModelForm):
             'step': '0.01',
             'style': 'font-size: 0.8rem; padding: 0.25rem;'
         }),
-        required=False
+        required=True
     )
     fecha_retencion_input = forms.DateField(
         widget=forms.DateInput(attrs={
@@ -359,7 +347,7 @@ class RetencionReciboInputForm(forms.ModelForm):
             'type': 'date',
             'style': 'font-size: 0.8rem; padding: 0.25rem;'
         }),
-        required=False
+        required=True
     )
 
 
@@ -372,7 +360,7 @@ class RetencionReciboForm(RetencionReciboInputForm):
             'class': 'form-control form-control-sm border border-primary',
             'style': 'font-size: 0.8rem; padding: 0.25rem;'
         }),
-        required=False
+        required=True
     )
     certificado = forms.CharField(
         max_length=20,
@@ -380,7 +368,7 @@ class RetencionReciboForm(RetencionReciboInputForm):
             'class': 'form-control form-control-sm border border-primary',
             'style': 'font-size: 0.8rem; padding: 0.25rem;'
         }),
-        required=False
+        required=True
     )
     importe_retencion = forms.DecimalField(
         max_digits=10, decimal_places=2,
@@ -389,7 +377,7 @@ class RetencionReciboForm(RetencionReciboInputForm):
             'step': '0.01',
             'style': 'font-size: 0.8rem; padding: 0.25rem;'
         }),
-        required=False
+        required=True
     )
     fecha_retencion = forms.DateField(
         widget=forms.DateInput(attrs={
@@ -397,7 +385,7 @@ class RetencionReciboForm(RetencionReciboInputForm):
             'type': 'date',
             'style': 'font-size: 0.8rem; padding: 0.25rem;'
         }),
-        required=False
+        required=True
     )
 
     class Meta:
@@ -432,7 +420,7 @@ class DepositoReciboInputForm(forms.ModelForm):
             'class': 'form-control form-control-sm border border-primary',
             'style': 'font-size: 0.8rem; padding: 0.25rem;'
         }),
-        required=False
+        required=True
     )
     id_concepto_banco_input = forms.ModelChoiceField(
         queryset=ConceptoBanco.objects.all().order_by('nombre_concepto_banco'),
@@ -442,7 +430,7 @@ class DepositoReciboInputForm(forms.ModelForm):
             'class': 'form-control form-control-sm border border-primary',
             'style': 'font-size: 0.8rem; padding: 0.25rem;'
         }),
-        required=False
+        required=True
     )
     fecha_deposito_input = forms.DateField(
         label="Fecha",
@@ -451,7 +439,7 @@ class DepositoReciboInputForm(forms.ModelForm):
             'type': 'date',
             'style': 'font-size: 0.8rem; padding: 0.25rem;'
         }),
-        required=False
+        required=True
     )
     importe_deposito_input = forms.DecimalField(
         label="Importe",
@@ -461,7 +449,7 @@ class DepositoReciboInputForm(forms.ModelForm):
             'step': '0.01',
             'style': 'font-size: 0.8rem; padding: 0.25rem;'
         }),
-        required=False
+        required=True
     )
     detalle_deposito_input = forms.CharField(
         label="Detalle",
@@ -470,7 +458,7 @@ class DepositoReciboInputForm(forms.ModelForm):
             'class': 'form-control form-control-sm border border-primary',
             'style': 'font-size: 0.8rem; padding: 0.25rem;'
         }),
-        required=False
+        required=True
     )
 
     class Meta:
@@ -535,7 +523,7 @@ class TarjetaReciboInputForm(forms.ModelForm):
             'class': 'form-control form-control-sm border border-primary',
             'style': 'font-size: 0.8rem; padding: 0.25rem;'
         }),
-        required=False
+        required=True
     )
     cupon_input = forms.IntegerField(
         label="Cupón",
@@ -543,7 +531,7 @@ class TarjetaReciboInputForm(forms.ModelForm):
             'class': 'form-control form-control-sm border border-primary',
             'style': 'font-size: 0.8rem; padding: 0.25rem;'
         }),
-        required=False
+        required=True
     )
     lote_input = forms.IntegerField(
         label="Lote",
@@ -551,7 +539,7 @@ class TarjetaReciboInputForm(forms.ModelForm):
             'class': 'form-control form-control-sm border border-primary',
             'style': 'font-size: 0.8rem; padding: 0.25rem;'
         }),
-        required=False
+        required=True
     )
     cuotas_input = forms.IntegerField(
         label="Cuotas",
@@ -559,7 +547,7 @@ class TarjetaReciboInputForm(forms.ModelForm):
             'class': 'form-control form-control-sm border border-primary',
             'style': 'font-size: 0.8rem; padding: 0.25rem;'
         }),
-        required=False
+        required=True
     )
     importe_tarjeta_input = forms.DecimalField(
         label="Importe",
@@ -569,7 +557,7 @@ class TarjetaReciboInputForm(forms.ModelForm):
             'step': '0.01',
             'style': 'font-size: 0.8rem; padding: 0.25rem;'
         }),
-        required=False
+        required=True
     )
 
     class Meta:
@@ -632,7 +620,7 @@ class ChequeReciboInputForm(forms.ModelForm):
             'class': 'form-control form-control-sm border border-primary',
             'style': 'font-size: 0.8rem; padding: 0.25rem;'
         }),
-        required=False
+        required=True
     )
     sucursal_input = forms.IntegerField(
         label="Sucursal",
@@ -640,7 +628,7 @@ class ChequeReciboInputForm(forms.ModelForm):
             'class': 'form-control form-control-sm border border-primary',
             'style': 'font-size: 0.8rem; padding: 0.25rem;'
         }),
-        required=False
+        required=True
     )
     codigo_postal_input = forms.IntegerField(
         label="Código Postal",
@@ -648,7 +636,7 @@ class ChequeReciboInputForm(forms.ModelForm):
             'class': 'form-control form-control-sm border border-primary',
             'style': 'font-size: 0.8rem; padding: 0.25rem;'
         }),
-        required=False
+        required=True
     )
     numero_cheque_recibo_input = forms.IntegerField(
         label="Número",
@@ -656,7 +644,7 @@ class ChequeReciboInputForm(forms.ModelForm):
             'class': 'form-control form-control-sm border border-primary',
             'style': 'font-size: 0.8rem; padding: 0.25rem;'
         }),
-        required=False
+        required=True
     )
     cuenta_cheque_recibo_input = forms.IntegerField(
         label="Cuenta",
@@ -664,7 +652,7 @@ class ChequeReciboInputForm(forms.ModelForm):
             'class': 'form-control form-control-sm border border-primary',
             'style': 'font-size: 0.8rem; padding: 0.25rem;'
         }),
-        required=False
+        required=True
     )
     cuit_cheque_recibo_input = forms.IntegerField(
         label="CUIT",
@@ -672,7 +660,7 @@ class ChequeReciboInputForm(forms.ModelForm):
             'class': 'form-control form-control-sm border border-primary',
             'style': 'font-size: 0.8rem; padding: 0.25rem;'
         }),
-        required=False
+        required=True
     )
     fecha_cheque1_input = forms.DateField(
         label="Fecha 1",
@@ -681,7 +669,7 @@ class ChequeReciboInputForm(forms.ModelForm):
             'style': 'font-size: 0.8rem; padding: 0.25rem;',
             'type': 'date'
         }),
-        required=False
+        required=True
     )
     fecha_cheque2_input = forms.DateField(
         label="Fecha 2",
@@ -690,7 +678,7 @@ class ChequeReciboInputForm(forms.ModelForm):
             'style': 'font-size: 0.8rem; padding: 0.25rem;',
             'type': 'date'
         }),
-        required=False
+        required=True
     )
     importe_cheque_input = forms.DecimalField(
         label="Importe",
@@ -700,7 +688,7 @@ class ChequeReciboInputForm(forms.ModelForm):
             'step': '0.01',
             'style': 'font-size: 0.8rem; padding: 0.25rem;'
         }),
-        required=False
+        required=True
     )
 
     class Meta:
@@ -782,7 +770,7 @@ DetalleReciboFormSet = inlineformset_factory(
     DetalleRecibo, 
     form=DetalleReciboForm, 
     extra=0,
-    fk_name='id_factura',
+    fk_name='id_factura'
 )
 formset_recibo = DetalleReciboFormSet(queryset=DetalleRecibo.objects.none())
 

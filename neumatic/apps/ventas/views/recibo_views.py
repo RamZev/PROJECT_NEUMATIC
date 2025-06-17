@@ -127,13 +127,15 @@ class ReciboCreateView(MaestroDetalleCreateView):
 		usuario = self.request.user
 
 		if self.request.POST:
-			data['formset_recibo'] = DetalleReciboFormSet(self.request.POST)
+			data['formset_recibo'] = DetalleReciboFormSet(self.request.POST, prefix='detallerecibo_set')
+			print(f"Prefijo de formset_recibo (POST): {data['formset_recibo'].prefix}")
 			data['formset_retencion'] = RetencionReciboFormSet(self.request.POST)
 			data['formset_deposito'] = DepositoReciboFormSet(self.request.POST)
 			data['formset_tarjeta'] = TarjetaReciboFormSet(self.request.POST)
 			data['formset_cheque'] = ChequeReciboFormSet(self.request.POST)
 		else:
-			data['formset_recibo'] = DetalleReciboFormSet(queryset=DetalleRecibo.objects.none())
+			data['formset_recibo'] = DetalleReciboFormSet(queryset=DetalleRecibo.objects.none(), prefix='detallerecibo_set')
+			print(f"Prefijo de formset_recibo (GET): {data['formset_recibo'].prefix}")
 			data['formset_retencion'] = RetencionReciboFormSet(queryset=RetencionRecibo.objects.none())
 			data['formset_deposito'] = DepositoReciboFormSet(queryset=DepositoRecibo.objects.none())
 			data['formset_tarjeta'] = TarjetaReciboFormSet(queryset=TarjetaRecibo.objects.none())

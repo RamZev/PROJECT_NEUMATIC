@@ -1,0 +1,324 @@
+[
+    {
+      "codigo_banco": "7",
+      "nombre_banco": "BANCO DE GALICIA Y BUENOS AIRES S.A.U.",
+      "cuit_banco": "30500001735"
+    },
+    {
+      "codigo_banco": "11",
+      "nombre_banco": "BANCO DE LA NACION ARGENTINA",
+      "cuit_banco": "30500010912"
+    },
+    {
+      "codigo_banco": "14",
+      "nombre_banco": "BANCO DE LA PROVINCIA DE BUENOS AIRES",
+      "cuit_banco": "33999242109"
+    },
+    {
+      "codigo_banco": "15",
+      "nombre_banco": "INDUSTRIAL AND COMMERCIAL BANK OF CHINA",
+      "cuit_banco": "30709447846"
+    },
+    {
+      "codigo_banco": "16",
+      "nombre_banco": "CITIBANK N.A.",
+      "cuit_banco": "30500005625"
+    },
+    {
+      "codigo_banco": "17",
+      "nombre_banco": "BANCO BBVA FRANCES S.A.",
+      "cuit_banco": "30500003193"
+    },
+    {
+      "codigo_banco": "20",
+      "nombre_banco": "BANCO DE LA PROVINCIA DE CORDOBA S.A.",
+      "cuit_banco": "30999228565"
+    },
+    {
+      "codigo_banco": "27",
+      "nombre_banco": "BANCO SUPERVIELLE S.A.",
+      "cuit_banco": "33500005179"
+    },
+    {
+      "codigo_banco": "29",
+      "nombre_banco": "BANCO DE LA CIUDAD DE BUENOS AIRES",
+      "cuit_banco": "30999032083"
+    },
+    {
+      "codigo_banco": "34",
+      "nombre_banco": "BANCO PATAGONIA S.A.",
+      "cuit_banco": "30500006613"
+    },
+    {
+      "codigo_banco": "44",
+      "nombre_banco": "BANCO HIPOTECARIO S.A.",
+      "cuit_banco": "30500011072"
+    },
+    {
+      "codigo_banco": "45",
+      "nombre_banco": "BANCO DE SAN JUAN S.A.",
+      "cuit_banco": "30500009442"
+    },
+    {
+      "codigo_banco": "65",
+      "nombre_banco": "BANCO MUNICIPAL DE ROSARIO",
+      "cuit_banco": "33999181819"
+    },
+    {
+      "codigo_banco": "72",
+      "nombre_banco": "BANCO SANTANDER RIO S.A.",
+      "cuit_banco": "30500008454"
+    },
+    {
+      "codigo_banco": "83",
+      "nombre_banco": "BANCO DEL CHUBUT S.A.",
+      "cuit_banco": "30500012990"
+    },
+    {
+      "codigo_banco": "86",
+      "nombre_banco": "BANCO DE SANTA CRUZ S.A.",
+      "cuit_banco": "30500098801"
+    },
+    {
+      "codigo_banco": "93",
+      "nombre_banco": "BANCO DE LA PAMPA SOCIENDAD DE ECONOMIA MIXTA",
+      "cuit_banco": "30500012516"
+    },
+    {
+      "codigo_banco": "94",
+      "nombre_banco": "BANCO DE CORRIENTES S.A.",
+      "cuit_banco": "30500010602"
+    },
+    {
+      "codigo_banco": "97",
+      "nombre_banco": "BANCO PROVINCIA DEL NEUQUEN S.A.",
+      "cuit_banco": "30500014047"
+    },
+    {
+      "codigo_banco": "143",
+      "nombre_banco": "BRUBANK S.A.U.",
+      "cuit_banco": "30715899716"
+    },
+    {
+      "codigo_banco": "147",
+      "nombre_banco": "BANCO INTERFINANZAS S.A.",
+      "cuit_banco": "30522714417"
+    },
+    {
+      "codigo_banco": "150",
+      "nombre_banco": "HSBC BANK ARGENTINA S.A.",
+      "cuit_banco": "33537186009"
+    },
+    {
+      "codigo_banco": "165",
+      "nombre_banco": "JP MORGAN CHASE BANK NATIONAL ASSOCIATION (SUC BS AS)",
+      "cuit_banco": "30583137943"
+    },
+    {
+      "codigo_banco": "191",
+      "nombre_banco": "BANCO CREDICOOP COOPERATIVO LIMITADO",
+      "cuit_banco": "30571421352"
+    },
+    {
+      "codigo_banco": "198",
+      "nombre_banco": "BANCO DE VALORES S.A.",
+      "cuit_banco": "30576124275"
+    },
+    {
+      "codigo_banco": "247",
+      "nombre_banco": "BANCO ROELA S.A.",
+      "cuit_banco": "30535610440"
+    },
+    {
+      "codigo_banco": "254",
+      "nombre_banco": "BANCO MARIVA S.A.",
+      "cuit_banco": "30516420444"
+    },
+    {
+      "codigo_banco": "259",
+      "nombre_banco": "BANCO ITAU ARGENTINA S.A.",
+      "cuit_banco": "30580189411"
+    },
+    {
+      "codigo_banco": "262",
+      "nombre_banco": "BANK OF AMERICA NATIONAL ASSOCIATION",
+      "cuit_banco": "30500050558"
+    },
+    {
+      "codigo_banco": "266",
+      "nombre_banco": "BNP PARIBAS",
+      "cuit_banco": "30584727566"
+    },
+    {
+      "codigo_banco": "268",
+      "nombre_banco": "BANCO PROVINCIA DE TIERRA DEL FUEGO",
+      "cuit_banco": "30575655781"
+    },
+    {
+      "codigo_banco": "269",
+      "nombre_banco": "BANCO DE LA REP. ORIENTAL DEL URUGUAY",
+      "cuit_banco": "30588337843"
+    },
+    {
+      "codigo_banco": "277",
+      "nombre_banco": "BANCO SAENZ S.A.",
+      "cuit_banco": "30534672434"
+    },
+    {
+      "codigo_banco": "281",
+      "nombre_banco": "BANCO MERIDIAN S.A.",
+      "cuit_banco": "30534487491"
+    },
+    {
+      "codigo_banco": "285",
+      "nombre_banco": "BANCO MACRO S.A.",
+      "cuit_banco": "30500010084"
+    },
+    {
+      "codigo_banco": "299",
+      "nombre_banco": "BANCO COMAFI S. A.",
+      "cuit_banco": "30604731018"
+    },
+    {
+      "codigo_banco": "300",
+      "nombre_banco": "BANCO DE INVERSION Y COMERCIO EXTERIOR S.A.",
+      "cuit_banco": "30651129083"
+    },
+    {
+      "codigo_banco": "301",
+      "nombre_banco": "BANCO PIANO S.A.",
+      "cuit_banco": "30569151763"
+    },
+    {
+      "codigo_banco": "305",
+      "nombre_banco": "BANCO JULIO S. A.",
+      "cuit_banco": "30657441216"
+    },
+    {
+      "codigo_banco": "309",
+      "nombre_banco": "BANCO RIOJA SOCIEDAD ANÓNIMA UNIPERSONAL",
+      "cuit_banco": "30671859339"
+    },
+    {
+      "codigo_banco": "310",
+      "nombre_banco": "BANCO DEL SOL S.A.",
+      "cuit_banco": "30677937560"
+    },
+    {
+      "codigo_banco": "311",
+      "nombre_banco": "NUEVO BANCO DEL CHACO S. A.",
+      "cuit_banco": "30670157799"
+    },
+    {
+      "codigo_banco": "312",
+      "nombre_banco": "BANCO VOII S.A.",
+      "cuit_banco": "30546741636"
+    },
+    {
+      "codigo_banco": "315",
+      "nombre_banco": "BANCO DE FORMOSA S.A.",
+      "cuit_banco": "30671375900"
+    },
+    {
+      "codigo_banco": "319",
+      "nombre_banco": "BANCO CMF S.A.",
+      "cuit_banco": "30576614299"
+    },
+    {
+      "codigo_banco": "321",
+      "nombre_banco": "BANCO DE SANTIAGO DEL ESTERO S.A.",
+      "cuit_banco": "33686664649"
+    },
+    {
+      "codigo_banco": "322",
+      "nombre_banco": "BANCO INDUSTRIAL S.A.",
+      "cuit_banco": "30685029959"
+    },
+    {
+      "codigo_banco": "330",
+      "nombre_banco": "NUEVO BANCO DE SANTA FE S. A.",
+      "cuit_banco": "30692432661"
+    },
+    {
+      "codigo_banco": "331",
+      "nombre_banco": "BANCO CETELEM ARGENTINA S.A.",
+      "cuit_banco": "30697306362"
+    },
+    {
+      "codigo_banco": "332",
+      "nombre_banco": "BANCO DE SERVICIOS FINANCIEROS S.A.",
+      "cuit_banco": "30697265895"
+    },
+    {
+      "codigo_banco": "336",
+      "nombre_banco": "BANCO BRADESCO ARGENTINA S.A.U.",
+      "cuit_banco": "30701255557"
+    },
+    {
+      "codigo_banco": "338",
+      "nombre_banco": "BANCO DE SERVICIOS Y TRANSACCIONES S.A.",
+      "cuit_banco": "30704960995"
+    },
+    {
+      "codigo_banco": "339",
+      "nombre_banco": "RCI BANQUE S.A.",
+      "cuit_banco": "30707108343"
+    },
+    {
+      "codigo_banco": "340",
+      "nombre_banco": "BACS BANCO DE CREDITO Y SECURITIZACION S.A.",
+      "cuit_banco": "30707227415"
+    },
+    {
+      "codigo_banco": "341",
+      "nombre_banco": "BANCO MASVENTAS S.A.",
+      "cuit_banco": "30540618263"
+    },
+    {
+      "codigo_banco": "384",
+      "nombre_banco": "WILOBANK S.A.",
+      "cuit_banco": "30715654632"
+    },
+    {
+      "codigo_banco": "386",
+      "nombre_banco": "NUEVO BANCO DE ENTRE RÍOS S.A.",
+      "cuit_banco": "33707995519"
+    },
+    {
+      "codigo_banco": "389",
+      "nombre_banco": "BANCO COLUMBIA S.A.",
+      "cuit_banco": "30517637498"
+    },
+    {
+      "codigo_banco": "426",
+      "nombre_banco": "BANCO BICA S.A.",
+      "cuit_banco": "30712331239"
+    },
+    {
+      "codigo_banco": "431",
+      "nombre_banco": "BANCO COINAG S.A.",
+      "cuit_banco": "30714195960"
+    },
+    {
+      "codigo_banco": "432",
+      "nombre_banco": "BANCO DE COMERCIO S.A.",
+      "cuit_banco": "30542033637"
+    },
+    {
+      "codigo_banco": "435",
+      "nombre_banco": "BANCO SUCRÉDITO REGIONAL S.A.U",
+      "cuit_banco": "30716090333"
+    },
+    {
+      "codigo_banco": "448",
+      "nombre_banco": "BANCO DINO S.A.",
+      "cuit_banco": "30712592407"
+    },
+    {
+      "codigo_banco": "515",
+      "nombre_banco": "BANK OF CHINA LIMITED",
+      "cuit_banco": "30716395452"
+    }
+]
+  
+  
