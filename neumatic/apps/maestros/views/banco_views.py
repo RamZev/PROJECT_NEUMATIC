@@ -73,8 +73,8 @@ class DataViewList():
 	
 	table_data = [
 		{'field_name': 'estatus_banco', 'date_format': None},
-		{'field_name': 'codigo_banco', 'date_format': None},
 		{'field_name': 'nombre_banco', 'date_format': None},
+		{'field_name': 'codigo_banco', 'date_format': None},
 		{'field_name': 'cuit_banco', 'date_format': None},
 	]
 

@@ -53,9 +53,9 @@ class ConfigViews():
 
 class DataViewList():
 	search_fields = [
-		'cuenta_banco', 
-		'nombre_banco',
-		'numero_cuenta',
+		'numero_cuenta', 
+		'cbu',
+		'codigo_postal',
 	]
 	
 	ordering = ['numero_cuenta']
@@ -64,10 +64,9 @@ class DataViewList():
 	  
 	table_headers = {
 		'estatus_cuenta_banco': (1, 'Estatus'),
-		'cuenta_banco': (1, 'Cuenta'),
-		'nombre_banco': (2, 'Nombre Banco'),
 		'numero_cuenta': (2, 'Número Cuenta'),
-		'cod_bco': (1, 'Código Banco'),
+		'id_banco': (3, 'Banco'),
+		'cbu': (1, 'CBU'),
 		'codigo_postal': (1, 'Código Postal'),
 		'id_moneda': (2, 'Moneda'),
 		
@@ -76,10 +75,9 @@ class DataViewList():
 	
 	table_data = [
 		{'field_name': 'estatus_cuenta_banco', 'date_format': None},
-		{'field_name': 'cuenta_banco', 'date_format': None},
-		{'field_name': 'nombre_banco', 'date_format': None},
 		{'field_name': 'numero_cuenta', 'date_format': None},
-		{'field_name': 'cod_bco', 'date_format': None},
+		{'field_name': 'id_banco', 'date_format': None},
+		{'field_name': 'cbu', 'date_format': None},
 		{'field_name': 'codigo_postal', 'date_format': None},
 		{'field_name': 'id_moneda', 'date_format': None},
 	]

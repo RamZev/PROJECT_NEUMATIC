@@ -681,7 +681,7 @@ class Banco(ModeloBaseGenerico):
 	def clean(self):
 		super().clean()
 		
-		# Diccionario contenedor de errores
+		#-- Diccionario contenedor de errores.
 		errors = {}
 		
 		try:
@@ -690,8 +690,8 @@ class Banco(ModeloBaseGenerico):
 			#-- Agrego el error al dicciobario errors.
 			errors['cuit_banco'] = e.messages
 		
-		# if not self.numero_cuenta:
-		# 	errors.update({'numero_cuenta': "Debe indicar un Número de Cuenta."})
+		if not self.nombre_banco:
+			errors.update({'nombre_banco': "Debe indicar un Nombre de Banco."})
 		
 		if errors:
 			#-- Lanza el conjunto de excepciones.
@@ -741,6 +741,9 @@ class CuentaBanco(ModeloBaseGenerico):
 		
 		if not self.id_banco:
 			errors.update({'id_banco': "Debe indicar un Banco."})
+		
+		if not self.id_moneda:
+			errors.update({'id_moneda': "Debe indicar una Moneda."})
 		
 		if errors:
 			#-- Lanza el conjunto de excepciones.
