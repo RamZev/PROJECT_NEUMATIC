@@ -31,8 +31,7 @@ class ConfigViews:
 	list_view_name = f"{model_string}_list"
 	
 	# Plantilla de la lista del CRUD
-	# template_list = f"{app_label}/maestro_informe_list.html"
-	template_list = f"{app_label}/maestro_informe_list_prop.html"
+	template_list = f"{app_label}/maestro_informe_list.html"
 	
 	# Contexto de los datos de la lista
 	context_object_name = "objetos"
@@ -74,21 +73,10 @@ class DataViewList:
 			"excel": True,
 			"csv": True
 		},
-		"cuenta_banco": {
-			"label": "Cuenta",
-			"col_width_table": 1,
-			"col_width_pdf": 40,
-			"pdf_paragraph": False,
-			"date_format": None,
-			"table": True,
-			"pdf": True,
-			"excel": True,
-			"csv": True
-		},
 		"nombre_banco": {
 			"label": "Nombre Banco",
 			"col_width_table": 4,
-			"col_width_pdf": 180,
+			"col_width_pdf": 220,
 			"pdf_paragraph": False,
 			"date_format": None,
 			"table": True,
@@ -96,43 +84,10 @@ class DataViewList:
 			"excel": True,
 			"csv": True
 		},
-		"numero_cuenta": {
-			"label": "Número Cuenta",
-			"col_width_table": 2,
-			"col_width_pdf": 80,
-			"pdf_paragraph": False,
-			"date_format": None,
-			"table": True,
-			"pdf": True,
-			"excel": True,
-			"csv": True
-		},
-		"cod_bco": {
+		"codigo_banco": {
 			"label": "Código Banco",
 			"col_width_table": 1,
 			"col_width_pdf": 80,
-			"pdf_paragraph": False,
-			"date_format": None,
-			"table": True,
-			"pdf": True,
-			"excel": True,
-			"csv": True
-		},
-		"codigo_postal": {
-			"label": "Código Postal",
-			"col_width_table": 1,
-			"col_width_pdf": 80,
-			"pdf_paragraph": False,
-			"date_format": None,
-			"table": True,
-			"pdf": True,
-			"excel": True,
-			"csv": True
-		},
-		"id_moneda": {
-			"label": "Moneda",
-			"col_width_table": 2,
-			"col_width_pdf": 120,
 			"pdf_paragraph": False,
 			"date_format": None,
 			"table": True,

@@ -656,12 +656,10 @@ estructura_campos = {
 		'Información Cuentas de Banco': {
 			'fila_1': [
 				{'field_name': 'estatus_cuenta_banco', 'columna': 2, 'design': None},
-				{'field_name': 'cuenta_banco', 'columna': 2, 'design': None},
-				{'field_name': 'nombre_banco', 'columna': 2, 'design': None},
+				{'field_name': 'id_banco', 'columna': 4, 'design': None},
 				{'field_name': 'numero_cuenta', 'columna': 2, 'design': None},
 			],
 			'fila_2': [
-				{'field_name': 'cuit', 'columna': 2, 'design': None},
 				{'field_name': 'sucursal', 'columna': 2, 'design': None},
 				{'field_name': 'codigo_postal', 'columna': 2, 'design': None},
 				{'field_name': 'id_proveedor', 'columna': 2, 'design': None},
@@ -669,10 +667,9 @@ estructura_campos = {
 			],
 			'fila_3': [
 				{'field_name': 'cbu', 'columna': 2, 'design': None},
-				{'field_name': 'cod_bco', 'columna': 2, 'design': None},
-				{'field_name': 'imputacion', 'columna': 2, 'design': None},
-				{'field_name': 'tope', 'columna': 2, 'design': None},
-				{'field_name': 'reporte', 'columna': 2, 'design': None},
+				{'field_name': 'codigo_imputacion', 'columna': 2, 'design': None},
+				{'field_name': 'tope_negociacion', 'columna': 2, 'design': None},
+				{'field_name': 'reporte_reques', 'columna': 2, 'design': None},
 			],
 		}
 	},
@@ -707,6 +704,15 @@ estructura_campos = {
 				{'field_name': 'estatus_concepto_banco', 'columna': 2, 'design': None},
 				{'field_name': 'nombre_concepto_banco', 'columna': 3, 'design': None},
 				{'field_name': 'factor', 'columna': 2, 'design': None},
+			],
+		}
+	},
+	
+	'marketing_origen': {
+		'Información Marketing Origen': {
+			'fila_1': [
+				{'field_name': 'estatus_marketing_origen', 'columna': 2, 'design': None},
+				{'field_name': 'nombre_marketing_origen', 'columna': 3, 'design': None},
 			],
 		}
 	},

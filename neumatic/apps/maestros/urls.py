@@ -29,6 +29,7 @@ from .views.cuenta_banco_views import *
 from .views.tarjeta_views import *
 from .views.codigo_retencion_views import *
 from .views.concepto_banco_views import *
+from .views.marketing_origen_views import *
 
 #-- Catálogos
 from .views.cliente_views import *
@@ -265,6 +266,12 @@ urlpatterns = [
 	path('concepto_banco/nueva/', ConceptoBancoCreateView.as_view(), name='concepto_banco_create'),
 	path('concepto_banco/<int:pk>/editar/', ConceptoBancoUpdateView.as_view(), name='concepto_banco_update'),
 	path('concepto_banco/<int:pk>/eliminar/', ConceptoBancoDeleteView.as_view(), name='concepto_banco_delete'),
+	
+	#-- Marketing Origen.
+	path('marketing_origen/', MarketingOrigenListView.as_view(), name='marketing_origen_list'),
+	path('marketing_origen/nueva/', MarketingOrigenCreateView.as_view(), name='marketing_origen_create'),
+	path('marketing_origen/<int:pk>/editar/', MarketingOrigenUpdateView.as_view(), name='marketing_origen_update'),
+	path('marketing_origen/<int:pk>/eliminar/', MarketingOrigenDeleteView.as_view(), name='marketing_origen_delete'),
 	
 	
 	

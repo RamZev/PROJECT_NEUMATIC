@@ -1,0 +1,36 @@
+<!-- neumatic\apps\informes\templates\informes\buscador_cuentabanco.html -->
+<div class="card">
+	<div class="card-body">
+		<form method="GET" novalidate>
+			<!-- Opciones generales de reporte -->
+			{% include 'informes/opciones_reporte.html' %}
+			
+			<div class="row">
+				
+				<div class="col-md-2">
+					{{ form.estatus.label }}
+					{{ form.estatus }}
+				</div>
+				
+			</div>
+			
+			<!-- Botones de acción -->
+			<div class="row mt-3">
+				<div class="col-md-12">
+					<button type="submit" class="btn btn-primary">Buscar</button>
+					<button type="reset" class="btn btn-secondary">Limpiar Filtros</button>
+				</div>
+			</div>
+			
+			<button 
+					class="btn btn-outline-success me-2 mt-3" 
+					id="generar"
+					data-zip-url="{% url url_zip %}?{{ request.GET.urlencode }}"
+					data-pdf-url="{% url url_pdf %}?{{ request.GET.urlencode }}"
+				>
+				Generar
+			</button>
+			
+		</form>
+	</div>
+</div>

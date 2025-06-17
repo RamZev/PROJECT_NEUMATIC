@@ -664,9 +664,9 @@ class Banco(ModeloBaseGenerico):
 	id_banco = models.AutoField(primary_key=True)
 	estatus_banco = models.BooleanField("Estatus", default=True,
 										choices=ESTATUS_GEN)
-	codigo_banco = models.SmallIntegerField("Código Banco")
 	nombre_banco = models.CharField("Nombre Banco", max_length=50,
 										  	null=True, blank=True)
+	codigo_banco = models.SmallIntegerField("Código Banco")
 	cuit_banco = models.IntegerField("CUIT")
 	
 	class Meta:
@@ -681,7 +681,7 @@ class Banco(ModeloBaseGenerico):
 	def clean(self):
 		super().clean()
 		
-		# Diccionario contenedor de errores
+		#-- Diccionario contenedor de errores.
 		errors = {}
 		
 		try:
@@ -690,8 +690,8 @@ class Banco(ModeloBaseGenerico):
 			#-- Agrego el error al dicciobario errors.
 			errors['cuit_banco'] = e.messages
 		
-		# if not self.numero_cuenta:
-		# 	errors.update({'numero_cuenta': "Debe indicar un Número de Cuenta."})
+		if not self.nombre_banco:
+			errors.update({'nombre_banco': "Debe indicar un Nombre de Banco."})
 		
 		if errors:
 			#-- Lanza el conjunto de excepciones.
@@ -741,6 +741,9 @@ class CuentaBanco(ModeloBaseGenerico):
 		
 		if not self.id_banco:
 			errors.update({'id_banco': "Debe indicar un Banco."})
+		
+		if not self.id_moneda:
+			errors.update({'id_moneda': "Debe indicar una Moneda."})
 		
 		if errors:
 			#-- Lanza el conjunto de excepciones.
@@ -836,6 +839,34 @@ class ConceptoBanco(ModeloBaseGenerico):
 		
 		if self.factor != -1 and self.factor != 0 and self.factor != 1:
 			errors.update({'factor': "Los valores permitidos son: -1, 0 y 1"})
+		
+		if errors:
+			raise ValidationError(errors)
+		
+		return super().clean()
+
+
+class MarketingOrigen(ModeloBaseGenerico):
+	id_marketing_origen = models.AutoField(primary_key=True)
+	estatus_marketing_origen = models.BooleanField("Estatus", default=True,
+												choices=ESTATUS_GEN)
+	nombre_marketing_origen = models.CharField("Descripción", max_length=30,
+										  	null=True, blank=True)
+	
+	class Meta:
+		db_table = 'marketing_origen'
+		verbose_name = 'Marketing Origen'
+		verbose_name_plural = 'Marketing Origen'
+		ordering = ['nombre_marketing_origen']
+	
+	def __str__(self):
+		return self.nombre_marketing_origen
+	
+	def clean(self):
+		errors = {}
+		
+		if not self.nombre_marketing_origen:
+			errors.update({'nombre_marketing_origen': "Debe indicar una Descripción."})
 		
 		if errors:
 			raise ValidationError(errors)

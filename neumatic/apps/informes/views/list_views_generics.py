@@ -13,13 +13,10 @@ from django.utils import timezone
 class InformeListView(ListView):
 	cadena_filtro = ""
 	paginate_by = 8
-	
 	search_fields = []
 	ordering = []
-	
 	report_title = ""
-	table_headers = {}
-	table_data = []
+	table_info = {}
 	pagination_options = [8, 20, 30, 40, 50]
 	
 	def get_queryset(self):

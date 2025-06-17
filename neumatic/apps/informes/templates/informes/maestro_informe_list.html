@@ -1,4 +1,6 @@
 <!-- neumatic\apps\informes\templates\informes\maestro_informe_list.html -->
+<!-- Plantilla base para renderizar las plantillas para reporte de los CRUDs -->
+ 
  
 {% extends 'base.html' %}
 {% load static %}
@@ -128,45 +130,51 @@
 													<!-- Inicio Tabla de Maestro -->
 													<table class="table table-bordered table-striped table-hover">
 														<thead class="table-primary">
-															{% for key, value in table_headers.items %}
-																<th class="col-{{ value.0 }}">
-																	{% comment %} <a href="{% url list_view_name %}?order_by={{ key }}"> {% endcomment %}
-																	<a href="#">
-																		{{ value.1 }}
-																		{% if key == order_by %}
-																			▲
-																		{% endif %}
-																	</a>
-																</th>
+															{% for field, field_info in table_info.items %}
+																{% if field_info.table %}
+																	<th class="col-{{ field_info.col_width_table }}">
+																		<a href="#">
+																			{{ field_info.label }}
+																			{% if field == order_by %}
+																				▲
+																			{% endif %}
+																		</a>
+																	</th>
+																{% endif %}
 															{% endfor %}
 														</thead>
 														
 														<tbody>
 															{% for objeto in objetos %}
 																<tr>
-																	{% for data_info in table_data %}
-																		{% with objeto|get_attribute:data_info.field_name as field_value %}
-																			{% if field_value|get_type == 'bool' %}
-																				<td>
-																					{% if field_value %}
-																						<i class="fa fa-check text-success"></i> <!-- Ícono de check verde -->
-																					{% else %}
-																						<i class="fa fa-times text-danger"></i> <!-- Ícono de "X" roja -->
-																					{% endif %}
-																				</td>
-																			{% elif field_value|get_type == 'float' or field_value|get_type == 'Decimal' %}
-																				<td class="decimal">{{ objeto|get_attribute:data_info.field_name|formato_es_ar }}</td>
-																			{% elif field_value|get_type == 'int' %}
-																				<td>{{ objeto|get_attribute:data_info.field_name }}</td>
-																			{% else %}
-																				{% if data_info.date_format %}
-																					<td>{{ field_value|default:"" |date:data_info.date_format }}</td>
+																	{% for field_name, field_info in table_info.items %}
+																		{% if field_info.table %}
+																			{% with objeto|get_attribute:field_name as field_value %}
+																				{% if field_value|get_type == 'bool' %}
+																					<td>
+																						{% if field_value %}
+																							<!-- Ícono de check verde -->
+																							<i class="fa fa-check text-success"></i>
+																						{% else %}
+																							<!-- Ícono de "X" roja -->
+																							<i class="fa fa-times text-danger"></i>
+																						{% endif %}
+																					</td>
+																				{% elif field_value|get_type == 'float' or field_value|get_type == 'Decimal' %}
+																					<td class="decimal">{{ objeto|get_attribute:field_name|formato_es_ar }}</td>
+																				{% elif field_value|get_type == 'int' %}
+																					<td>{{ objeto|get_attribute:field_name }}</td>
 																				{% else %}
-																					<td>{{ field_value|default:"" }}</td>
+																					{% if field_info.date_format %}
+																						<td>{{ field_value|default:"" |date:field_info.date_format }}</td>
+																					{% else %}
+																						<td>{{ field_value|default:"" }}</td>
+																					{% endif %}
 																				{% endif %}
-																			{% endif %}
-																		{% endwith %}
+																			{% endwith %}
+																		{% endif %}
 																	{% endfor %}
+																	
 																</tr>
 															{% empty %}
             													<tr><td colspan="100%" class="text-center">No se encontraron resultados.</td></tr>

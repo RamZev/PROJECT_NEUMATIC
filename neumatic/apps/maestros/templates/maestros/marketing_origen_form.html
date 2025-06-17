@@ -1,4 +1,4 @@
-<!-- neumatic\apps\maestros\templates\maestros\cuenta_banco_form.html -->
+<!-- neumatic\apps\maestros\templates\maestros\marketing_origen_form.html -->
 {% extends 'maestro_form.html' %}
 {% load static %}
 <!-- -------------------------------------------------------------------- -->
@@ -39,97 +39,30 @@
 												class="accordion-button py-2 " 
 												type="button" 
 												data-bs-toggle="collapse" 
-												data-bs-target="#Información_Cuentas_de_Banco" 
+												data-bs-target="#Información_Marketing_Origen" 
 												aria-expanded="true" 
-												aria-controls="Información_Cuentas_de_Banco">
-												<strong>Información Cuentas de Banco</strong>
+												aria-controls="Información_Marketing_Origen">
+												<strong>Información Marketing Origen</strong>
 											</button>
 										</h2>
 										<div class="accordion-collapse collapse show"
-											id="Información_Cuentas_de_Banco">
+											id="Información_Marketing_Origen">
 											<div class="accordion-body bg-secondary-subtle">
 												
 												<div class="row">
 													
 													<div class="col-md-2">
 														<label class="form-label text-primary mb-0">
-															{{ form.estatus_cuenta_banco.label }}
+															{{ form.estatus_marketing_origen.label }}
 														</label>
-														{{ form.estatus_cuenta_banco }}
+														{{ form.estatus_marketing_origen }}
 													</div>
 													
-													<div class="col-md-4">
+													<div class="col-md-3">
 														<label class="form-label text-primary mb-0">
-															{{ form.id_banco.label }}
+															{{ form.nombre_marketing_origen.label }}
 														</label>
-														{{ form.id_banco }}
-													</div>
-													
-													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
-															{{ form.numero_cuenta.label }}
-														</label>
-														{{ form.numero_cuenta }}
-													</div>
-												</div>										
-												<div class="row">
-													
-													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
-															{{ form.sucursal.label }}
-														</label>
-														{{ form.sucursal }}
-													</div>
-													
-													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
-															{{ form.codigo_postal.label }}
-														</label>
-														{{ form.codigo_postal }}
-													</div>
-													
-													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
-															{{ form.id_proveedor.label }}
-														</label>
-														{{ form.id_proveedor }}
-													</div>
-													
-													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
-															{{ form.id_moneda.label }}
-														</label>
-														{{ form.id_moneda }}
-													</div>
-												</div>										
-												<div class="row">
-													
-													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
-															{{ form.cbu.label }}
-														</label>
-														{{ form.cbu }}
-													</div>
-													
-													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
-															{{ form.codigo_imputacion.label }}
-														</label>
-														{{ form.codigo_imputacion }}
-													</div>
-													
-													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
-															{{ form.tope_negociacion.label }}
-														</label>
-														{{ form.tope_negociacion }}
-													</div>
-													
-													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
-															{{ form.reporte_reques.label }}
-														</label>
-														{{ form.reporte_reques }}
+														{{ form.nombre_marketing_origen }}
 													</div>
 												</div>
 											</div>

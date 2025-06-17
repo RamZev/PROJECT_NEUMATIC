@@ -15,28 +15,22 @@ class CuentaBancoForm(CrudGenericForm):
 		widgets = {
 			'estatus_cuenta_banco': 
 				forms.Select(attrs={**formclassselect}), 
-			'cuenta_banco': 
-				forms.NumberInput(attrs={**formclasstext, 'min': 0}),
-			'nombre_banco': 
-				forms.TextInput(attrs={**formclasstext}),
+			'id_banco': 
+				forms.Select(attrs={**formclassselect}),
 			'numero_cuenta': 
 				forms.TextInput(attrs={**formclasstext}),
 			'cbu': 
 				forms.TextInput(attrs={**formclasstext}),
-			'cod_bco': 
-				forms.NumberInput(attrs={**formclasstext, 'min': 0}),
 			'sucursal': 
 				forms.NumberInput(attrs={**formclasstext, 'min': 0}),
 			'codigo_postal': 
 				forms.NumberInput(attrs={**formclasstext, 'min': 0}),
-			'imputacion': 
+			'codigo_imputacion': 
 				forms.NumberInput(attrs={**formclasstext, 'min': 0}),
-			'cuit': 
-				forms.TextInput(attrs={**formclasstext}),
-			'tope': 
+			'tope_negociacion': 
 				forms.NumberInput(attrs={**formclasstext, 
 							 	  'min': 0, 'max': 9999999999.99}),
-			'reporte': 
+			'reporte_reques': 
 				forms.TextInput(attrs={**formclasstext}),
 			'id_proveedor': 
 				forms.Select(attrs={**formclassselect}),

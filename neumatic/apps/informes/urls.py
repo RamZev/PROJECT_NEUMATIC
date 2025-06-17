@@ -30,9 +30,11 @@ from .views.operario_list_views import *
 from .views.mediopago_list_views import *
 from .views.puntoventa_list_views import *
 from .views.banco_list_views import *
+from .views.cuentabanco_list_views import *
 from .views.tarjeta_list_views import *
 from .views.codigoretencion_list_views import *
 from .views.conceptobanco_list_views import *
+from .views.marketingorigen_list_views import *
 
 #-- Procesos.
 #- Lote 1:
@@ -267,19 +269,19 @@ urlpatterns = [
 		 name='operario_informe_pdf'),
 	
 	#-- Medio Pago.
-	path('medio_pago_informe/', MedioPagoInformeListView.as_view(),
+	path('mediopago_informe/', MedioPagoInformeListView.as_view(),
 		 name='mediopago_informe_list'),
-	path('medio_pago_generado/', MedioPagoInformesView.as_view(),
+	path('mediopago_generado/', MedioPagoInformesView.as_view(),
 		 name='mediopago_informe_generado'),
-	path('medio_pago_vista_pdf/', MedioPagoInformePDFView.as_view(),
+	path('mediopago_vista_pdf/', MedioPagoInformePDFView.as_view(),
 		 name='mediopago_informe_pdf'),
 	
 	#-- Punto Venta.
-	path('punto_venta_informe/', PuntoVentaInformeListView.as_view(),
+	path('puntoventa_informe/', PuntoVentaInformeListView.as_view(),
 		 name='puntoventa_informe_list'),
-	path('punto_venta_generado/', PuntoVentaInformesView.as_view(),
+	path('puntoventa_generado/', PuntoVentaInformesView.as_view(),
 		 name='puntoventa_informe_generado'),
-	path('punto_venta_vista_pdf/', PuntoVentaInformePDFView.as_view(),
+	path('puntoventa_vista_pdf/', PuntoVentaInformePDFView.as_view(),
 		 name='puntoventa_informe_pdf'),
 	
 	#-- Banco.
@@ -289,6 +291,14 @@ urlpatterns = [
 		 name='banco_informe_generado'),
 	path('banco_vista_pdf/', BancoInformePDFView.as_view(),
 		 name='banco_informe_pdf'),
+	
+	#-- Cuenta Banco.
+	path('cuentabanco_informe/', CuentaBancoInformeListView.as_view(),
+		 name='cuentabanco_informe_list'),
+	path('cuentabanco_generado/', CuentaBancoInformesView.as_view(),
+		 name='cuentabanco_informe_generado'),
+	path('cuentabanco_vista_pdf/', CuentaBancoInformePDFView.as_view(),
+		 name='cuentabanco_informe_pdf'),
 	
 	#-- Tarjeta.
 	path('tarjeta_informe/', TarjetaInformeListView.as_view(),
@@ -313,6 +323,14 @@ urlpatterns = [
 		 name='conceptobanco_informe_generado'),
 	path('conceptobanco_vista_pdf/', ConceptoBancoInformePDFView.as_view(),
 		 name='conceptobanco_informe_pdf'),
+	
+	#-- Marketing Origen.
+	path('marketingorigen_informe/', MarketingOrigenInformeListView.as_view(),
+		 name='marketingorigen_informe_list'),
+	path('marketingorigen_generado/', MarketingOrigenInformesView.as_view(),
+		 name='marketingorigen_informe_generado'),
+	path('marketingorigen_vista_pdf/', MarketingOrigenInformePDFView.as_view(),
+		 name='marketingorigen_informe_pdf'),
 	
 	#-- Informes-Procesos. --------------------------------------------------------
 	
