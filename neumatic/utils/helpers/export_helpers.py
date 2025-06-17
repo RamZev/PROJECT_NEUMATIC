@@ -438,8 +438,8 @@ class CustomCanvas(Canvas):
 class PDFGenerator:
 	def __init__(self, context, pagesize=portrait(A4), margins=(10, 10, 0, 40), body_font_size=6, header_font_size=9):
 		#-- Dimensiones formato A4:
-		#-- portrait:	595 pts. (210x297mm) vertical
-		#-- landscape:	842 pts. (297x210mm) horizontal
+		#-- portrait:	595.27x841.88 pts. (210x297mm) vertical
+		#-- landscape:	841.88x595.27 pts. (297x210mm) horizontal
 		
 		self.buffer = BytesIO()
 		self.context = context

@@ -664,9 +664,9 @@ class Banco(ModeloBaseGenerico):
 	id_banco = models.AutoField(primary_key=True)
 	estatus_banco = models.BooleanField("Estatus", default=True,
 										choices=ESTATUS_GEN)
-	codigo_banco = models.SmallIntegerField("Código Banco")
 	nombre_banco = models.CharField("Nombre Banco", max_length=50,
 										  	null=True, blank=True)
+	codigo_banco = models.SmallIntegerField("Código Banco")
 	cuit_banco = models.IntegerField("CUIT")
 	
 	class Meta:

@@ -1,25 +1,25 @@
-# neumatic\apps\informes\views\productofamilia_list_views.py
+# neumatic\apps\informes\views\cuentabanco_list_views.py
 from django.urls import reverse_lazy
 from django.http import HttpResponse, JsonResponse
 from django.views import View
 from zipfile import ZipFile
 from io import BytesIO
-
+from reportlab.lib.pagesizes import A4, portrait, landscape
 from django.core.mail import EmailMessage
 
 from utils.helpers.export_helpers import ExportHelper
 
-from ..views.list_views_generics import *
-from apps.maestros.models.base_models import TipoPercepcionIb
-from ..forms.buscador_tipopercepcionib_forms import BuscadorTipoPercepcionIbForm
+from .list_views_generics import *
+from apps.maestros.models.base_models import CuentaBanco
+from ..forms.buscador_cuenta_banco_forms import BuscadorCuentaBancoForm
 
 
 class ConfigViews:
 	# Modelo
-	model = TipoPercepcionIb
+	model = CuentaBanco
 	
 	# Formulario asociado al modelo
-	form_class = BuscadorTipoPercepcionIbForm
+	form_class = BuscadorCuentaBancoForm
 	
 	# Aplicación asociada al modelo
 	app_label = "informes"
@@ -59,10 +59,10 @@ class DataViewList:
 	
 	paginate_by = 8
 	
-	report_title = "Reporte de Tipos de Percepción IB"
+	report_title = "Reporte Cuentas de Bancos"
 	
 	table_info = {
-		"estatus_tipo_percepcion_ib": {
+		"estatus_cuenta_banco": {
 			"label": "Estatus",
 			"col_width_table": 1,
 			"col_width_pdf": 40,
@@ -73,54 +73,54 @@ class DataViewList:
 			"excel": True,
 			"csv": True
 		},
-		"descripcion_tipo_percepcion_ib": {
-			"label": "Descripción",
-			"col_width_table": 3,
+		"numero_cuenta": {
+			"label": "Número Cuenta",
+			"col_width_table": 2,
+			"col_width_pdf": 80,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"table": True,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
+		"id_banco": {
+			"label": "Banco",
+			"col_width_table": 4,
+			"col_width_pdf": 180,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"table": True,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
+		"cbu": {
+			"label": "CBU",
+			"col_width_table": 1,
+			"col_width_pdf": 80,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"table": True,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
+		"codigo_postal": {
+			"label": "Código Postal",
+			"col_width_table": 1,
+			"col_width_pdf": 80,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"table": True,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
+		"id_moneda": {
+			"label": "Moneda",
+			"col_width_table": 2,
 			"col_width_pdf": 120,
-			"pdf_paragraph": False,
-			"date_format": None,
-			"table": True,
-			"pdf": True,
-			"excel": True,
-			"csv": True
-		},
-		"alicuota": {
-			"label": "Alícuota(%)",
-			"col_width_table": 2,
-			"col_width_pdf": 55,
-			"pdf_paragraph": False,
-			"date_format": None,
-			"table": True,
-			"pdf": True,
-			"excel": True,
-			"csv": True
-		},
-		"monto": {
-			"label": "Monto",
-			"col_width_table": 2,
-			"col_width_pdf": 50,
-			"pdf_paragraph": False,
-			"date_format": None,
-			"table": True,
-			"pdf": True,
-			"excel": True,
-			"csv": True
-		},
-		"minimo": {
-			"label": "Mínimo",
-			"col_width_table": 2,
-			"col_width_pdf": 50,
-			"pdf_paragraph": False,
-			"date_format": None,
-			"table": True,
-			"pdf": True,
-			"excel": True,
-			"csv": True
-		},
-		"neto_total": {
-			"label": "Neto total",
-			"col_width_table": 2,
-			"col_width_pdf": 50,
 			"pdf_paragraph": False,
 			"date_format": None,
 			"table": True,
@@ -131,7 +131,7 @@ class DataViewList:
 	}
 
 
-class TipoPercepcionIbInformeListView(InformeListView):
+class CuentaBancoInformeListView(InformeListView):
 	model = ConfigViews.model
 	form_class = ConfigViews.form_class
 	template_name = ConfigViews.template_list
@@ -162,13 +162,13 @@ class TipoPercepcionIbInformeListView(InformeListView):
 			if estatus:
 				match estatus:
 					case "activos":
-						queryset = self.model.objects.filter(estatus_tipo_percepcion_ib=True)
+						queryset = self.model.objects.filter(estatus_cuenta_banco=True)
 					case "inactivos":
-						queryset = self.model.objects.filter(estatus_tipo_percepcion_ib=False)
+						queryset = self.model.objects.filter(estatus_cuenta_banco=False)
 					case "todos":
 						queryset = self.model.objects.all()
 			
-			queryset = queryset.order_by('descripcion_tipo_percepcion_ib')
+			queryset = queryset.order_by("numero_cuenta")
 			
 		else:
 			#-- Agregar clases css a los campos con errores.
@@ -178,7 +178,7 @@ class TipoPercepcionIbInformeListView(InformeListView):
 	
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
-		form = BuscadorTipoPercepcionIbForm(self.request.GET or None)
+		form = BuscadorCuentaBancoForm(self.request.GET or None)
 		
 		context["form"] = form
 		
@@ -189,7 +189,7 @@ class TipoPercepcionIbInformeListView(InformeListView):
 		return context
 
 
-class TipoPercepcionIbInformesView(View):
+class CuentaBancoInformesView(View):
 	"""Vista para gestionar informes de clientes, exportaciones y envíos por correo."""
 	
 	def get(self, request, *args, **kwargs):
@@ -205,7 +205,7 @@ class TipoPercepcionIbInformesView(View):
 		email = request.GET.get("email", "")
 		
 		#-- Obtener el queryset filtrado.
-		queryset_filtrado = TipoPercepcionIbInformeListView()
+		queryset_filtrado = CuentaBancoInformeListView()
 		queryset_filtrado.request = request
 		queryset = queryset_filtrado.get_queryset()
 		
@@ -232,7 +232,7 @@ class TipoPercepcionIbInformesView(View):
 				#-- Generar el PDF.
 				helper = ExportHelper(queryset, table_info, DataViewList.report_title)
 				
-				pdf_content = helper.export_to_pdf()
+				pdf_content = helper.export_to_pdf(pagesize=landscape(A4))
 				zip_file.writestr(f"informe_{ConfigViews.model_string}.pdf", pdf_content)
 			
 			if "excel" in formatos:
@@ -244,6 +244,16 @@ class TipoPercepcionIbInformesView(View):
 				
 				excel_content = helper.export_to_excel()
 				zip_file.writestr(f"informe_{ConfigViews.model_string}.xlsx", excel_content)
+			
+			if "csv" in formatos:
+				#-- Filtrar los campos que se van a exportar a CSV.
+				table_info = { field: table[field] for field in table if table[field]['csv'] }
+				
+				#-- Generar el CSV.
+				helper = ExportHelper(queryset, table_info, DataViewList.report_title)
+				
+				csv_content = helper.export_to_csv()
+				zip_file.writestr(f"informe_{ConfigViews.model_string}.csv", csv_content)
 		
 		#-- Preparar respuesta para descargar el archivo ZIP.
 		buffer.seek(0)
@@ -283,11 +293,11 @@ class TipoPercepcionIbInformesView(View):
 		return JsonResponse({"success": True, "message": "Informe enviado correctamente al correo."})
 
 
-class TipoPercepcionIbInformePDFView(View):
+class CuentaBancoInformePDFView(View):
 	
 	def get(self, request, *args, **kwargs):
 		#-- Obtener el queryset (el listado de clientes) ya filtrado.
-		queryset_filtrado = TipoPercepcionIbInformeListView()
+		queryset_filtrado = CuentaBancoInformeListView()
 		queryset_filtrado.request = request
 		queryset = queryset_filtrado.get_queryset()
 		
@@ -297,7 +307,7 @@ class TipoPercepcionIbInformePDFView(View):
 		
 		#-- Generar el PDF.
 		helper = ExportHelper(queryset, table_info, DataViewList.report_title)
-		buffer = helper.export_to_pdf()
+		buffer = helper.export_to_pdf(pagesize=landscape(A4))
 		
 		#-- Preparar la respuesta HTTP.
 		response = HttpResponse(buffer, content_type='application/pdf')

@@ -60,37 +60,218 @@ class DataViewList:
 	
 	report_title = "Lista de Precios"
 	
-	table_headers = {
-		'id_producto': (1, 'Código'),
-		'medida': (1, 'Medida'),
-		'nombre_producto': (4, 'Descripción'),
-		'id_marca': (4, 'Marca'),
-		'precio': (2, 'Precio'),
+	table_info = {
+		'id_producto': {
+			"label": "Código",
+			"col_width_table": 1,
+			"col_width_pdf": 45,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"table": True,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
+		'medida': {
+			"label": "Medida",
+			"col_width_table": 1,
+			"col_width_pdf": 50,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"table": True,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
+		'nombre_producto': {
+			"label": "Descripción",
+			"col_width_table": 4,
+			"col_width_pdf": 220,
+			"pdf_paragraph": True,
+			"date_format": None,
+			"table": True,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
+		'id_marca': {
+			"label": "Marca",
+			"col_width_table": 4,
+			"col_width_pdf": 140,
+			"pdf_paragraph": True,
+			"date_format": None,
+			"table": True,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
+		'precio': {
+			"label": "Precio",
+			"col_width_table": 2,
+			"col_width_pdf": 70,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"table": True,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
+		
+		"tipo_producto": {
+			"label": "Tipo Producto",
+			"col_width_table": 0,
+			"col_width_pdf": 0,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"table": False,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+		"id_familia.nombre_producto_familia": {
+			"label": "Familia",
+			"col_width_table": 0,
+			"col_width_pdf": 0,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"table": False,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+		"segmento": {
+			"label": "Segmento",
+			"col_width_table": 0,
+			"col_width_pdf": 0,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"table": False,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+		"id_modelo.nombre_modelo": {
+			"label": "Modelo",
+			"col_width_table": 0,
+			"col_width_pdf": 0,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"table": False,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+		"fecha_fabricacion": {
+			"label": "Fecha Fabricación",
+			"col_width_table": 0,
+			"col_width_pdf": 0,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"table": False,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+		"costo": {
+			"label": "Costo",
+			"col_width_table": 0,
+			"col_width_pdf": 0,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"table": False,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+		"id_alicuota_iva.alicuota_iva": {
+			"label": "Alícuota IVA",
+			"col_width_table": 0,
+			"col_width_pdf": 0,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"table": False,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+		"cai": {
+			"label": "CAI",
+			"col_width_table": 0,
+			"col_width_pdf": 0,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"table": False,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+		"stock": {
+			"label": "Stock",
+			"col_width_table": 0,
+			"col_width_pdf": 0,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"table": False,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+		"minimo": {
+			"label": "Mínimo",
+			"col_width_table": 0,
+			"col_width_pdf": 0,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"table": False,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+		"descuento": {
+			"label": "Descuento",
+			"col_width_table": 0,
+			"col_width_pdf": 0,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"table": False,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+		"despacho_1": {
+			"label": "Despacho 1",
+			"col_width_table": 0,
+			"col_width_pdf": 0,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"table": False,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+		"despacho_2": {
+			"label": "Despacho 2",
+			"col_width_table": 0,
+			"col_width_pdf": 0,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"table": False,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+		"carrito": {
+			"label": "Carrito",
+			"col_width_table": 0,
+			"col_width_pdf": 0,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"table": False,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
 	}
-	
-	table_data = [
-		{'field_name': 'id_producto', 'date_format': None},
-		{'field_name': 'medida', 'date_format': None},
-		{'field_name': 'nombre_producto', 'date_format': None},
-		{'field_name': 'id_marca', 'date_format': None},
-		{'field_name': 'precio', 'date_format': None},
-	]
-	# table_headers.update({
-	# 	"tipo_producto": (1, "Tipo Producto"),
-	# 	"id_familia.nombre_producto_familia": (4, "Familia"),
-	# 	"segmento": (1, "Segmento"),
-	# 	"id_modelo.nombre_modelo": (4, "Modelo"),
-	# 	"fecha_fabricacion": (1, "Fecha Fabricación"),
-	# 	"costo": (2, "Costo"),
-	# 	"id_alicuota_iva.alicuota_iva": (1, "Alícuota IVA"),
-	# 	"cai": (1, "CAI"),
-	# 	"stock": (1, "Stock"),
-	# 	"minimo": (1, "Mínimo"),
-	# 	"descuento": (1, "Descuento"),
-	# 	"despacho_1": (4, "Despacho 1"),
-	# 	"despacho_2": (4, "Despacho 2"),
-	# 	"carrito": (1, "Carrito"),
-	# })
 
 
 class ProductoInformeListView(InformeListView):
@@ -106,8 +287,7 @@ class ProductoInformeListView(InformeListView):
 		"master_title": f'Informes - {ConfigViews.model._meta.verbose_name_plural}',
 		"home_view_name": ConfigViews.home_view_name,
 		"list_view_name": ConfigViews.list_view_name,
-		"table_headers": DataViewList.table_headers,
-		"table_data": DataViewList.table_data,
+		"table_info": DataViewList.table_info,
 		"buscador_template": f"{ConfigViews.app_label}/buscador_{ConfigViews.model_string}.html",
 		"js_file": ConfigViews.js_file,
 		"url_zip": ConfigViews.url_zip,
@@ -153,8 +333,6 @@ class ProductoInformeListView(InformeListView):
 			
 		else:
 			#-- Agregar clases css a los campos con errores.
-			print("El form no es válido (desde la vista)")
-			print(f"{form.errors = }")
 			form.add_error_classes()
 		
 		return queryset
@@ -203,40 +381,38 @@ class ProductoInformesView(View):
 	def generar_archivos_zip(self, queryset, formatos):
 		"""Generar un archivo ZIP con los formatos seleccionados."""
 		
-		table_headers = DataViewList.table_headers.copy()
-		
-		table_headers.update({
-			"tipo_producto": (1, "Tipo Producto"),
-			"id_familia.nombre_producto_familia": (4, "Familia"),
-			"segmento": (1, "Segmento"),
-			"id_modelo.nombre_modelo": (4, "Modelo"),
-			"fecha_fabricacion": (1, "Fecha Fabricación"),
-			"costo": (2, "Costo"),
-			"id_alicuota_iva.alicuota_iva": (1, "Alícuota IVA"),
-			"cai": (1, "CAI"),
-			"stock": (1, "Stock"),
-			"minimo": (1, "Mínimo"),
-			"descuento": (1, "Descuento"),
-			"despacho_1": (4, "Despacho 1"),
-			"despacho_2": (4, "Despacho 2"),
-			"carrito": (1, "Carrito"),
-		})
-		
 		buffer = BytesIO()
 		with ZipFile(buffer, "w") as zip_file:
-			# helper = ExportHelper(queryset, DataViewList.table_headers, DataViewList.report_title)
-			helper = ExportHelper(queryset, table_headers, DataViewList.report_title)
+			table = DataViewList.table_info.copy()
 			
 			#-- Generar los formatos seleccionados.
 			if "pdf" in formatos:
+				#-- Filtrar los campos que se van a exportar a PDF.
+				table_info = { field: table[field] for field in table if table[field]['pdf'] }
+				
+				#-- Generar el PDF.
+				helper = ExportHelper(queryset, table_info, DataViewList.report_title)
+				
 				pdf_content = helper.export_to_pdf()
 				zip_file.writestr(f"informe_{ConfigViews.model_string}.pdf", pdf_content)
 			
 			if "excel" in formatos:
+				#-- Filtrar los campos que se van a exportar a Excel.
+				table_info = { field: table[field] for field in table if table[field]['excel'] }
+				
+				#-- Generar el Excel.
+				helper = ExportHelper(queryset, table_info, DataViewList.report_title)
+				
 				excel_content = helper.export_to_excel()
 				zip_file.writestr(f"informe_{ConfigViews.model_string}.xlsx", excel_content)
 			
 			if "csv" in formatos:
+				#-- Filtrar los campos que se van a exportar a CSV.
+				table_info = { field: table[field] for field in table if table[field]['csv'] }
+				
+				#-- Generar el CSV.
+				helper = ExportHelper(queryset, table_info, DataViewList.report_title)
+				
 				csv_content = helper.export_to_csv()
 				zip_file.writestr(f"informe_{ConfigViews.model_string}.csv", csv_content)
 		
@@ -250,7 +426,7 @@ class ProductoInformesView(View):
 	def enviar_por_email(self, queryset, formatos, email):
 		"""Enviar los informes seleccionados por correo electrónico."""
 		
-		helper = ExportHelper(queryset, DataViewList.table_headers, DataViewList.report_title)
+		helper = ExportHelper(queryset, DataViewList.table_info, DataViewList.report_title)
 		attachments = []
 		
 		#-- Generar los formatos seleccionados y añadirlos como adjuntos.
@@ -287,9 +463,13 @@ class ProductoInformePDFView(View):
 		queryset_filtrado.request = request
 		queryset = queryset_filtrado.get_queryset()
 		
-		#-- Generar el pdf.
-		helper = ExportHelper(queryset, DataViewList.table_headers, DataViewList.report_title)
-		buffer = helper.export_to_pdf(pagesize=portrait(A4))
+		#-- Filtrar los campos que se van a exportar a PDF.
+		table = DataViewList.table_info.copy()
+		table_info = { field: table[field] for field in table if table[field]['pdf'] }
+		
+		#-- Generar el PDF.
+		helper = ExportHelper(queryset, table_info, DataViewList.report_title)
+		buffer = helper.export_to_pdf(body_font_size=7)
 		
 		#-- Preparar la respuesta HTTP.
 		response = HttpResponse(buffer, content_type='application/pdf')

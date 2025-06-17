@@ -32,8 +32,7 @@ class ConfigViews:
 	list_view_name = f"{model_string}_list"
 	
 	# Plantilla de la lista del CRUD
-	# template_list = f'{app_label}/maestro_informe_list.html'
-	template_list = f'{app_label}/maestro_informe_list_prop.html'
+	template_list = f'{app_label}/maestro_informe_list.html'
 	
 	# Contexto de los datos de la lista
 	context_object_name = 'objetos'
