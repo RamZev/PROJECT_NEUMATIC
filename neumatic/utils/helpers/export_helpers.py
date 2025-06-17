@@ -31,7 +31,8 @@ class ExportHelper:
 		"""Obtener nombres de encabezados y los campos correspondientes del diccionario table_info."""
 		
 		headers = [field['label'] for field in self.table_info.values()]
-		fields = [ field for field in self.table_info.keys()]
+		# fields = [ field for field in self.table_info.keys()]   #-- Menos ficiente que el siguiente método.
+		fields = list(self.table_info.keys())   #-- Más eficiente por ser más directo.
 		
 		return headers, fields
 	
