@@ -834,3 +834,21 @@ class Banco(ModeloBaseGenerico):
 	def __str__(self):
 		return self.nombre_banco
 	
+	def clean(self):
+		super().clean()
+		
+		# Diccionario contenedor de errores
+		errors = {}
+		
+		try:
+			validar_cuit(self.cuit_banco)
+		except ValidationError as e:
+			#-- Agrego el error al dicciobario errors.
+			errors['cuit_banco'] = e.messages
+		
+		# if not self.numero_cuenta:
+		# 	errors.update({'numero_cuenta': "Debe indicar un Número de Cuenta."})
+		
+		if errors:
+			#-- Lanza el conjunto de excepciones.
+			raise ValidationError(errors)

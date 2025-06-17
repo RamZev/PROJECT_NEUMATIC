@@ -25,6 +25,7 @@ from .views.operario_views import *
 from .views.medio_pago_views import *
 from .views.punto_venta_views import *
 from .views.banco_views import *
+from .views.cuenta_banco_views import *
 from .views.tarjeta_views import *
 from .views.codigo_retencion_views import *
 from .views.concepto_banco_views import *
@@ -241,6 +242,12 @@ urlpatterns = [
 	path('banco/<int:pk>/editar/', BancoUpdateView.as_view(), name='banco_update'),
 	path('banco/<int:pk>/eliminar/', BancoDeleteView.as_view(), name='banco_delete'),
 	
+	#-- Cuenta Banco.
+	path('cuenta_banco/', CuentaBancoListView.as_view(), name='cuenta_banco_list'),
+	path('cuenta_banco/nueva/', CuentaBancoCreateView.as_view(), name='cuenta_banco_create'),
+	path('cuenta_banco/<int:pk>/editar/', CuentaBancoUpdateView.as_view(), name='cuenta_banco_update'),
+	path('cuenta_banco/<int:pk>/eliminar/', CuentaBancoDeleteView.as_view(), name='cuenta_banco_delete'),
+	
 	#-- Tarjeta.
 	path('tarjeta/', TarjetaListView.as_view(), name='tarjeta_list'),
 	path('tarjeta/nueva/', TarjetaCreateView.as_view(), name='tarjeta_create'),
@@ -258,6 +265,8 @@ urlpatterns = [
 	path('concepto_banco/nueva/', ConceptoBancoCreateView.as_view(), name='concepto_banco_create'),
 	path('concepto_banco/<int:pk>/editar/', ConceptoBancoUpdateView.as_view(), name='concepto_banco_update'),
 	path('concepto_banco/<int:pk>/eliminar/', ConceptoBancoDeleteView.as_view(), name='concepto_banco_delete'),
+	
+	
 	
 	#-- Otras rutas.
 	path('filtrar-localidad/', filtrar_localidad, name='filtrar_localidad'),

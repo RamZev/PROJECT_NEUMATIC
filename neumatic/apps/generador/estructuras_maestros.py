@@ -645,6 +645,17 @@ estructura_campos = {
 		'Información Banco': {
 			'fila_1': [
 				{'field_name': 'estatus_banco', 'columna': 2, 'design': None},
+				{'field_name': 'nombre_banco', 'columna': 4, 'design': None},
+				{'field_name': 'codigo_banco', 'columna': 2, 'design': None},
+				{'field_name': 'cuit_banco', 'columna': 2, 'design': None},
+			],
+		}
+	},
+	
+	'cuenta_banco': {
+		'Información Cuentas de Banco': {
+			'fila_1': [
+				{'field_name': 'estatus_cuenta_banco', 'columna': 2, 'design': None},
 				{'field_name': 'cuenta_banco', 'columna': 2, 'design': None},
 				{'field_name': 'nombre_banco', 'columna': 2, 'design': None},
 				{'field_name': 'numero_cuenta', 'columna': 2, 'design': None},

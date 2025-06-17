@@ -70,19 +70,19 @@ class ConfigViews:
 	#-- Plantilla Vista Preliminar Pantalla.
 	reporte_pantalla = f"informes/reportes/{model_string}_producto_list.html"
 	
-	#-- Establecer las columnas del reporte y sus anchos(en punto).
-	header_data = {
-		"id_producto_id": (40, "Código"),
-		"cai": (70, "CAI"),
-		"nombre_producto": (200, "Descripción"),
-		"nombre_producto_familia": (50, "Familia"),
-		"nombre_modelo": (50, "Modelo"),
-		"nombre_producto_marca": (50, "Marca"),
-		"cantidad": (50, "Cantidad"),
-		"porcentaje_cantidad": (50, "% Cant"),
-		"total": (75, "Total"),
-		"porcentaje_total": (50, "% Total")
-	}
+	# #-- Establecer las columnas del reporte y sus anchos(en punto).
+	# header_data = {
+	# 	"id_producto_id": (40, "Código"),
+	# 	"cai": (70, "CAI"),
+	# 	"nombre_producto": (200, "Descripción"),
+	# 	"nombre_producto_familia": (50, "Familia"),
+	# 	"nombre_modelo": (50, "Modelo"),
+	# 	"nombre_producto_marca": (50, "Marca"),
+	# 	"cantidad": (50, "Cantidad"),
+	# 	"porcentaje_cantidad": (50, "% Cant"),
+	# 	"total": (75, "Total"),
+	# 	"porcentaje_total": (50, "% Total")
+	# }
 
 
 class VLEstadisticasVentasProvinciaInformeView(InformeFormView):
@@ -340,10 +340,10 @@ def generar_pdf(contexto_reporte):
 	#-- Títulos de las columnas de la tabla (headers).
 	headers, blank_cols = headers_titles(agrupar, mostrar, "pdf")
 	
-	headers_tit = [value[1] for value in headers.values()]
+	headers_tit = [value['label'] for value in headers.values()]
 	
 	#-- Extraer Ancho de las columnas de la tabla.
-	col_widths = [value[0] for value in headers.values()]
+	col_widths = [value['col_width_pdf'] for value in headers.values()]
 	
 	table_data = [headers_tit]
 	
@@ -542,43 +542,165 @@ def headers_titles(agrupar, mostrar, destino):
 	
 	if destino != "pdf":
 		headers.update({
-			"nombre_provincia": (0, "Provincia"),
+			"nombre_provincia": {
+				"label": "Provincia",
+				# "col_width_table": 0,
+				"col_width_pdf": 0,
+				# "pdf_paragraph": False,
+				# "date_format": None,
+				# "table": False,
+				"pdf": True,
+				"excel": True,
+				"csv": True
+			},
 		})
 	
 	if agrupar == "Producto":
 		headers.update({
-			"id_producto_id": (50, "Código"),
-			"nombre_producto": (240, "Descripción"),
-			"nombre_producto_familia": (150, "Familia"),
-			"nombre_modelo": (150, "Modelo")
+			"id_producto_id": {
+				"label": "Código",
+				# "col_width_table": 0,
+				"col_width_pdf": 50,
+				# "pdf_paragraph": False,
+				# "date_format": None,
+				# "table": False,
+				"pdf": True,
+				"excel": True,
+				"csv": True
+			},
+			"nombre_producto": {
+				"label": "Descripción",
+				# "col_width_table": 0,
+				"col_width_pdf": 240,
+				# "pdf_paragraph": False,
+				# "date_format": None,
+				# "table": False,
+				"pdf": True,
+				"excel": True,
+				"csv": True
+			},
+			"nombre_producto_familia": {
+				"label": "Familia",
+				# "col_width_table": 0,
+				"col_width_pdf": 150,
+				# "pdf_paragraph": False,
+				# "date_format": None,
+				# "table": False,
+				"pdf": True,
+				"excel": True,
+				"csv": True
+			},
+			"nombre_modelo": {
+				"label": "Modelo",
+				# "col_width_table": 0,
+				"col_width_pdf": 150,
+				# "pdf_paragraph": False,
+				# "date_format": None,
+				# "table": False,
+				"pdf": True,
+				"excel": True,
+				"csv": True
+			},
 		})
 		blank_cols = ["", "", "", ""]
 	elif agrupar == "Familia":
 		headers.update({
-			"nombre_producto_familia": (200, "Familia")
+			"nombre_producto_familia": {
+				"label": "Familia",
+				# "col_width_table": 0,
+				"col_width_pdf": 200,
+				# "pdf_paragraph": False,
+				# "date_format": None,
+				# "table": False,
+				"pdf": True,
+				"excel": True,
+				"csv": True
+			}
 		})
 		blank_cols = [""]
+		
 	elif agrupar == "Modelo":
 		headers.update({
-			"nombre_modelo": (200, "Modelo")
+			"nombre_modelo": {
+				"label": "Modelo",
+				# "col_width_table": 0,
+				"col_width_pdf": 200,
+				# "pdf_paragraph": False,
+				# "date_format": None,
+				# "table": False,
+				"pdf": True,
+				"excel": True,
+				"csv": True
+			}
 		})
 		blank_cols = [""]
+		
 	elif agrupar == "Marca":
 		blank_cols = []
 	
 	headers.update({
-		"nombre_producto_marca": (110, "Marca"),
+		"nombre_producto_marca": {
+			"label": "Marca",
+			# "col_width_table": 0,
+			"col_width_pdf": 110,
+			# "pdf_paragraph": False,
+			# "date_format": None,
+			# "table": False,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
 	})
 	
 	if mostrar == "Cantidad":
 		headers.update({
-			"cantidad": (60, "Cantidad"),
-			"porcentaje_cantidad": (50, "Porcentaje")
+			"cantidad": {
+				"label": "Cantidad",
+				# "col_width_table": 0,
+				"col_width_pdf": 60,
+				# "pdf_paragraph": False,
+				# "date_format": None,
+				# "table": False,
+				"pdf": True,
+				"excel": True,
+				"csv": True
+			},
+			"porcentaje_cantidad": {
+				"label": "Porcentaje",
+				# "col_width_table": 0,
+				"col_width_pdf": 50,
+				# "pdf_paragraph": False,
+				# "date_format": None,
+				# "table": False,
+				"pdf": True,
+				"excel": True,
+				"csv": True
+			},
 		})
 	else:
 		headers.update({
-			"total": (60, "Total"),
-			"porcentaje_total": (50, "Porcentaje")
+			"total": {
+				"label": "Total",
+				# "col_width_table": 0,
+				"col_width_pdf": 60,
+				# "pdf_paragraph": False,
+				# "date_format": None,
+				# "table": False,
+				"pdf": True,
+				"excel": True,
+				"csv": True
+			},
+			"porcentaje_total": {
+				"label": "Porcentaje",
+				# "col_width_table": 0,
+				"col_width_pdf": 50,
+				# "pdf_paragraph": False,
+				# "date_format": None,
+				# "table": False,
+				"pdf": True,
+				"excel": True,
+				"csv": True
+			}
 		})
 	
 	return headers, blank_cols
