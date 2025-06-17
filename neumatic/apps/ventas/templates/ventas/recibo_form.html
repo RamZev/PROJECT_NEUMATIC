@@ -2352,15 +2352,18 @@
             ///
             buscarClienteInput.addEventListener('blur', function () {
                 let busqueda = buscarClienteInput.value.trim();
+                
                 if (!busqueda) return;
-                if (!/^\d+$/.test(busqueda)) {
+                 if (!/^\d+$/.test(busqueda)) {
                     alert("Solo se permiten valores numéricos enteros.");
                     buscarClienteInput.value = '';
                     buscarClienteInput.focus();
                     return;
                 }
+                
                 const url = new URL('/ventas/buscar/cliente/', window.location.origin);
                 url.searchParams.append('busqueda', busqueda);
+                
                 fetch(url, {
                     method: 'GET',
                     headers: {
@@ -2369,7 +2372,9 @@
                     }
                 })
                 .then(response => {
-                    if (!response.ok) throw new Error(`Error HTTP: ${response.status}`);
+                    if (!response.ok) {
+                        throw new Error(`Error HTTP: ${response.status} - ${response.statusText}`);
+                    }
                     return response.json();
                 })
                 .then(data => {
@@ -2379,16 +2384,6 @@
                         buscarClienteInput.focus();
                         return;
                     }
-                    
-                    /*
-                    if (data.black_list) {
-                        alert(`Cliente en lista negra: ${data.black_list_motivo}`);
-                        buscarClienteInput.value = '';
-                        buscarClienteInput.focus();
-                        return;
-                    }
-                    */
-                    
                     // Llenado de campos del formulario
                     document.getElementById('id_id_cliente').value = data.id_cliente;
                     document.getElementById('id_cuit').value = data.cuit;
@@ -2400,76 +2395,53 @@
                     document.getElementById('id_nombre_vendedor').value = data.nombre_vendedor;
                     document.getElementById('id_id_sucursal').value = data.id_sucursal;
                     document.getElementById('id_cliente_vip').value = data.vip ? 'True' : 'False';
-                    // Deshabilitar botones
+                    
+                    // Deshabilitar botones y campo
                     buscarClienteInput.disabled = true;
                     document.getElementById('validarBtn').disabled = true;
                     document.getElementById('listar_agenda').disabled = true;
                     
-                    /*
-                    // Validar vencimientos
-                    fetch(`/ventas/clientes/${data.id_cliente}/validar-vencimientos-cliente/`, {
+                    // Validar deudas
+                    fetch(`/ventas/clientes/${data.id_cliente}/validar-deudas-cliente/`, {
                         method: 'GET',
                         headers: {
                             'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
                             'Content-Type': 'application/json'
                         }
                     })
-                    .then(response => response.json())
-                    .then(vencimientos => {
-                        if (vencimientos.requiere_autorizacion) {
-                            const mensaje = `Comprobante: ${vencimientos.datos_comprobante.tipo_comprobante} ` +
-                                `${vencimientos.datos_comprobante.letra_comprobante} ` +
-                                `${vencimientos.datos_comprobante.numero_comprobante}\n` +
-                                `Fecha: ${vencimientos.datos_comprobante.fecha_comprobante}\n` +
-                                `Vencimiento: ${vencimientos.datos_comprobante.fecha_vencimiento} ` +
-                                `(${vencimientos.datos_comprobante.dias_vencidos} días vencidos)\n` +
-                                `Monto Pendiente: $${vencimientos.datos_comprobante.monto_pendiente}\n` +
-                                `Vendedor: ${vencimientos.datos_comprobante.vendedor}\n\n` +
-                                `Requiere autorización. Ingrese el código:`;
-                            const codigoAutorizacion = prompt(mensaje);
-                            if (!codigoAutorizacion) {
-                                resetearFormulario();
-                                return;
-                            }
-                            fetch('/ventas/valida-autorizacion/', {
-                                method: 'POST',
-                                headers: {
-                                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
-                                    'Content-Type': 'application/json'
-                                },
-                                body: JSON.stringify({
-                                    codigo: codigoAutorizacion,
-                                    cliente_id: data.id_cliente,
-                                    sucursal_id: document.getElementById('id_id_sucursal').value,
-                                    fecha_comprobante: vencimientos.datos_comprobante.fecha_comprobante
-                                })
-                            })
-                            .then(response => response.json())
-                            .then(auth => {
-                                if (!auth.valido) {
-                                    alert(`Autorización inválida: ${auth.mensaje}`);
-                                    resetearFormulario();
-                                    return;
-                                }
-                                alert('Autorización válida');
-                                // Validar deudas después de la autorización
-                                validarDeudasCliente(data.id_cliente);
-                            });
-                        } else {
-                            // Validar deudas si no requiere autorización
-                            validarDeudasCliente(data.id_cliente);
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`Error HTTP en deudas: ${response.status} - ${response.statusText}`);
                         }
+                        return response.json();
+                    })
+                    .then(deudas => {
+                        if (deudas.has_debts) {
+                            // Actualizar formset con facturas pendientes
+                            updateFacturasPendientes(deudas.facturas_pendientes);
+                        } else {
+                            // Limpiar formset si no hay deudas
+                            const tbody = document.querySelector('#formset-container2 .detalle-form tbody');
+                            if (tbody) {
+                                tbody.innerHTML = '';
+                                document.getElementById('id_detallerecibo_set-TOTAL_FORMS').value = 0;
+                                actualizarTodo();
+                            }
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error al validar deudas:', error);
+                        alert(`Error al verificar las deudas del cliente: ${error.message}`);
                     });
-                    */
                 })
                 .catch(error => {
-                    //console.error('Error:', error);
-                    alert('Error:', error);   
-                    //alert('Error al buscar el cliente');
+                    console.error('Error al buscar cliente:', error);
+                    alert(`Error al buscar el cliente: ${error.message}`);
                     buscarClienteInput.value = '';
                     buscarClienteInput.focus();
                 });
             });
+            ///
 
             // Nueva función para validar deudas
             function validarDeudasCliente(clienteId) {
