@@ -660,31 +660,61 @@ class AlicuotaIva(ModeloBaseGenerico):
 		return super().clean()
 
 
+class Banco(ModeloBaseGenerico):
+	id_banco = models.AutoField(primary_key=True)
+	estatus_banco = models.BooleanField("Estatus", default=True,
+										choices=ESTATUS_GEN)
+	codigo_banco = models.SmallIntegerField("Código Banco")
+	nombre_banco = models.CharField("Nombre Banco", max_length=50,
+										  	null=True, blank=True)
+	cuit_banco = models.IntegerField("CUIT")
+	
+	class Meta:
+		db_table = 'banco'
+		verbose_name = 'Banco'
+		verbose_name_plural = 'Bancos'
+		ordering = ['nombre_banco']
+	
+	def __str__(self):
+		return self.nombre_banco
+	
+	def clean(self):
+		super().clean()
+		
+		# Diccionario contenedor de errores
+		errors = {}
+		
+		try:
+			validar_cuit(self.cuit_banco)
+		except ValidationError as e:
+			#-- Agrego el error al dicciobario errors.
+			errors['cuit_banco'] = e.messages
+		
+		# if not self.numero_cuenta:
+		# 	errors.update({'numero_cuenta': "Debe indicar un Número de Cuenta."})
+		
+		if errors:
+			#-- Lanza el conjunto de excepciones.
+			raise ValidationError(errors)
+
 class CuentaBanco(ModeloBaseGenerico):
 	id_cuenta_banco = models.AutoField(primary_key=True)
 	estatus_cuenta_banco = models.BooleanField("Estatus", default=True,
 										choices=ESTATUS_GEN)
-	cuenta_banco = models.IntegerField("Cuenta Banco", 
-										null=True, blank=True)
-	nombre_banco = models.CharField("Nombre Banco", max_length=30,
-									null=True, blank=True)
+	id_banco = models.ForeignKey(Banco, on_delete=models.PROTECT,
+							  	verbose_name="Banco", null=True, blank=True)
 	numero_cuenta = models.CharField("Número Cuenta", max_length=15,
 									null=True, blank=True)
 	cbu = models.CharField("CBU", max_length=22, null=True, blank=True)
-	cod_bco = models.IntegerField("Código Banco",
-									null=True, blank=True)
 	sucursal = models.IntegerField("Sucursal",
 									null=True, blank=True)
-	# localidad = models.IntegerField()
 	codigo_postal = models.IntegerField("Código Postal",
 										null=True, blank=True)
-	imputacion = models.IntegerField("Cód. Imputación",
+	codigo_imputacion = models.IntegerField("Cód. Imputación",
 									null=True, blank=True)
-	cuit = models.IntegerField("CUIT",
-								null=True, blank=True)
-	tope = models.DecimalField("Tope", max_digits=12, decimal_places=2,
+	tope_negociacion = models.DecimalField("Tope Negociación", max_digits=12, decimal_places=2,
 								null=True, blank=True, default=0.00)
-	reporte = models.CharField("Reporte", max_length=20,
+	reporte_reques = models.CharField("Reporte Cheques", max_length=20,
 								null=True, blank=True)
 	id_proveedor = models.ForeignKey("Proveedor", on_delete=models.PROTECT,
 									verbose_name="Proveedor", null=True, blank=True,)
@@ -706,14 +736,11 @@ class CuentaBanco(ModeloBaseGenerico):
 		# Diccionario contenedor de errores
 		errors = {}
 		
-		try:
-			validar_cuit(self.cuit)
-		except ValidationError as e:
-			#-- Agrego el error al dicciobario errors.
-			errors['cuit'] = e.messages
-		
 		if not self.numero_cuenta:
 			errors.update({'numero_cuenta': "Debe indicar un Número de Cuenta."})
+		
+		if not self.id_banco:
+			errors.update({'id_banco': "Debe indicar un Banco."})
 		
 		if errors:
 			#-- Lanza el conjunto de excepciones.
@@ -814,41 +841,3 @@ class ConceptoBanco(ModeloBaseGenerico):
 			raise ValidationError(errors)
 		
 		return super().clean()
-
-
-class Banco(ModeloBaseGenerico):
-	id_banco = models.AutoField(primary_key=True)
-	estatus_banco = models.BooleanField("Estatus", default=True,
-										choices=ESTATUS_GEN)
-	codigo_banco = models.SmallIntegerField("Código Banco")
-	nombre_banco = models.CharField("Nombre Banco", max_length=50,
-										  	null=True, blank=True)
-	cuit_banco = models.IntegerField("CUIT")
-	
-	class Meta:
-		db_table = 'banco'
-		verbose_name = 'Banco'
-		verbose_name_plural = 'Bancos'
-		ordering = ['nombre_banco']
-	
-	def __str__(self):
-		return self.nombre_banco
-	
-	def clean(self):
-		super().clean()
-		
-		# Diccionario contenedor de errores
-		errors = {}
-		
-		try:
-			validar_cuit(self.cuit_banco)
-		except ValidationError as e:
-			#-- Agrego el error al dicciobario errors.
-			errors['cuit_banco'] = e.messages
-		
-		# if not self.numero_cuenta:
-		# 	errors.update({'numero_cuenta': "Debe indicar un Número de Cuenta."})
-		
-		if errors:
-			#-- Lanza el conjunto de excepciones.
-			raise ValidationError(errors)
