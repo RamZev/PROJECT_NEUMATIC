@@ -708,4 +708,13 @@ estructura_campos = {
 		}
 	},
 	
+	'marketing_origen': {
+		'Información Marketing Origen': {
+			'fila_1': [
+				{'field_name': 'estatus_marketing_origen', 'columna': 2, 'design': None},
+				{'field_name': 'nombre_marketing_origen', 'columna': 3, 'design': None},
+			],
+		}
+	},
+	
 }

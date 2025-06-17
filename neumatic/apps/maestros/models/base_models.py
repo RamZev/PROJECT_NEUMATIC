@@ -844,3 +844,31 @@ class ConceptoBanco(ModeloBaseGenerico):
 			raise ValidationError(errors)
 		
 		return super().clean()
+
+
+class MarketingOrigen(ModeloBaseGenerico):
+	id_marketing_origen = models.AutoField(primary_key=True)
+	estatus_marketing_origen = models.BooleanField("Estatus", default=True,
+												choices=ESTATUS_GEN)
+	nombre_marketing_origen = models.CharField("Descripción", max_length=30,
+										  	null=True, blank=True)
+	
+	class Meta:
+		db_table = 'marketing_origen'
+		verbose_name = 'Marketing Origen'
+		verbose_name_plural = 'Marketing Origen'
+		ordering = ['nombre_marketing_origen']
+	
+	def __str__(self):
+		return self.nombre_marketing_origen
+	
+	def clean(self):
+		errors = {}
+		
+		if not self.nombre_marketing_origen:
+			errors.update({'nombre_marketing_origen': "Debe indicar una Descripción."})
+		
+		if errors:
+			raise ValidationError(errors)
+		
+		return super().clean()
