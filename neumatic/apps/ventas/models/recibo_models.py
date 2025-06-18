@@ -227,15 +227,15 @@ class ChequeRecibo(ModeloBaseGenerico):
 		null=True,
 		blank=True
 	)
+	codigo_banco = models.SmallIntegerField(
+		verbose_name="Código Banco", 
+		null=True, blank=True)
 	sucursal = models.SmallIntegerField(
-		verbose_name="Sucursal",
-		null=True,
-		blank=True
-	)
+		verbose_name="Sucursal", 
+		null=True, blank=True)
 	codigo_postal = models.SmallIntegerField(
 		verbose_name="Código Postal",
-		null=True,
-		blank=True
+		null=True, blank=True
 	)
 	numero_cheque_recibo = models.SmallIntegerField(
 		verbose_name="Número",
