@@ -334,7 +334,8 @@ class RetencionReciboInputForm(forms.ModelForm):
             'class': 'form-control form-control-sm border border-primary',
             'style': 'font-size: 0.8rem; padding: 0.25rem;'
         }),
-        required=False
+        required=False,
+        label="Código de Retención"
     )
     certificado_input = forms.CharField(
         max_length=20,
@@ -342,7 +343,8 @@ class RetencionReciboInputForm(forms.ModelForm):
             'class': 'form-control form-control-sm border border-primary',
             'style': 'font-size: 0.8rem; padding: 0.25rem;'
         }),
-        required=False
+        required=False,
+        label="Certificado"
     )
     importe_retencion_input = forms.DecimalField(
         max_digits=10, decimal_places=2,
@@ -351,7 +353,8 @@ class RetencionReciboInputForm(forms.ModelForm):
             'step': '0.01',
             'style': 'font-size: 0.8rem; padding: 0.25rem;'
         }),
-        required=False
+        required=False,
+        label="Importe"
     )
     fecha_retencion_input = forms.DateField(
         widget=forms.DateInput(attrs={
@@ -359,7 +362,8 @@ class RetencionReciboInputForm(forms.ModelForm):
             'type': 'date',
             'style': 'font-size: 0.8rem; padding: 0.25rem;'
         }),
-        required=False
+        required=False,
+        label="Fecha"
     )
 
 
@@ -372,7 +376,7 @@ class RetencionReciboForm(RetencionReciboInputForm):
             'class': 'form-control form-control-sm border border-primary',
             'style': 'font-size: 0.8rem; padding: 0.25rem;'
         }),
-        required=False
+        required=False,
     )
     certificado = forms.CharField(
         max_length=20,
@@ -432,7 +436,7 @@ class DepositoReciboInputForm(forms.ModelForm):
             'class': 'form-control form-control-sm border border-primary',
             'style': 'font-size: 0.8rem; padding: 0.25rem;'
         }),
-        required=False
+        required=False,
     )
     id_concepto_banco_input = forms.ModelChoiceField(
         queryset=ConceptoBanco.objects.all().order_by('nombre_concepto_banco'),
@@ -675,7 +679,7 @@ class ChequeReciboInputForm(forms.ModelForm):
         required=False
     )
     fecha_cheque1_input = forms.DateField(
-        label="Fecha 1",
+        label="Fecha Ingreso",
         widget=forms.DateInput(attrs={
             'class': 'form-control form-control-sm border border-primary',
             'style': 'font-size: 0.8rem; padding: 0.25rem;',
@@ -684,7 +688,7 @@ class ChequeReciboInputForm(forms.ModelForm):
         required=False
     )
     fecha_cheque2_input = forms.DateField(
-        label="Fecha 2",
+        label="Fecha",
         widget=forms.DateInput(attrs={
             'class': 'form-control form-control-sm border border-primary',
             'style': 'font-size: 0.8rem; padding: 0.25rem;',
