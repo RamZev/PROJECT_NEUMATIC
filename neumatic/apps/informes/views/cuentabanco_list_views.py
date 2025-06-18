@@ -55,7 +55,7 @@ class ConfigViews:
 class DataViewList:
 	search_fields = []
 	
-	ordering = []
+	ordering = ['id_banco__nombre_banco', 'numero_cuenta']
 	
 	paginate_by = 8
 	
@@ -84,10 +84,10 @@ class DataViewList:
 			"excel": True,
 			"csv": True
 		},
-		"id_banco": {
-			"label": "Banco",
-			"col_width_table": 4,
-			"col_width_pdf": 180,
+		"tipo_cuenta_display": {
+			"label": "Tipo de Cta.",
+			"col_width_table": 2,
+			"col_width_pdf": 120,
 			"pdf_paragraph": False,
 			"date_format": None,
 			"table": True,
@@ -95,10 +95,10 @@ class DataViewList:
 			"excel": True,
 			"csv": True
 		},
-		"cbu": {
-			"label": "CBU",
-			"col_width_table": 1,
-			"col_width_pdf": 80,
+		"id_banco": {
+			"label": "Banco",
+			"col_width_table": 4,
+			"col_width_pdf": 180,
 			"pdf_paragraph": False,
 			"date_format": None,
 			"table": True,
@@ -162,18 +162,22 @@ class CuentaBancoInformeListView(InformeListView):
 			if estatus:
 				match estatus:
 					case "activos":
-						queryset = self.model.objects.filter(estatus_cuenta_banco=True)
+						queryset = self.model.objects.filter(estatus_cuenta_banco=True).select_related("id_banco", "id_moneda")
 					case "inactivos":
-						queryset = self.model.objects.filter(estatus_cuenta_banco=False)
+						queryset = self.model.objects.filter(estatus_cuenta_banco=False).select_related("id_banco", "id_moneda")
 					case "todos":
-						queryset = self.model.objects.all()
+						queryset = self.model.objects.all().select_related("id_banco", "id_moneda")
 			
-			queryset = queryset.order_by("numero_cuenta")
+			# queryset = queryset.order_by("id_banco__nombre_banco","numero_cuenta")
+			#-- Aplicar ordenamiento (RESPETANDO self.ordering).
+			ordering = self.get_ordering()  # Obtiene el ordering de la clase
+			if ordering:
+				queryset = queryset.order_by(*ordering)
 			
 		else:
 			#-- Agregar clases css a los campos con errores.
 			form.add_error_classes()
-						
+			
 		return queryset
 	
 	def get_context_data(self, **kwargs):

@@ -7,7 +7,7 @@ from datetime import date
 from utils.validator.validaciones import validar_cuit, buscar_cliente_id
 from .base_gen_models import ModeloBaseGenerico
 from .base_models import (Actividad, Localidad, Provincia, TipoIva, 
-						  TipoDocumentoIdentidad, TipoPercepcionIb)
+						  TipoDocumentoIdentidad, TipoPercepcionIb, MarketingOrigen)
 from .vendedor_models import Vendedor
 from .sucursal_models import Sucursal
 from entorno.constantes_base import (

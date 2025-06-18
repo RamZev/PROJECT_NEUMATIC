@@ -6,6 +6,7 @@ from ..models.cliente_models import Cliente
 from diseno_base.diseno_bootstrap import (
 	formclasstext, formclassselect, formclassdate)
 
+
 class ClienteForm(CrudGenericForm):
 		
 	class Meta:

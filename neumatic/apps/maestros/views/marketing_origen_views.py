@@ -54,7 +54,7 @@ class ConfigViews():
 class DataViewList():
 	search_fields = ['nombre_marketing_origen']
 	
-	ordering = ['nombre_marketing_origen']
+	ordering = ['id_marketing_origen']
 	
 	paginate_by = 8
 	  

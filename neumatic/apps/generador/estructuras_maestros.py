@@ -656,8 +656,9 @@ estructura_campos = {
 		'Información Cuentas de Banco': {
 			'fila_1': [
 				{'field_name': 'estatus_cuenta_banco', 'columna': 2, 'design': None},
-				{'field_name': 'id_banco', 'columna': 4, 'design': None},
 				{'field_name': 'numero_cuenta', 'columna': 2, 'design': None},
+				{'field_name': 'tipo_cuenta', 'columna': 2, 'design': None},
+				{'field_name': 'id_banco', 'columna': 4, 'design': None},
 			],
 			'fila_2': [
 				{'field_name': 'sucursal', 'columna': 2, 'design': None},

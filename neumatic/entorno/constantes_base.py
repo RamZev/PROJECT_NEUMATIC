@@ -144,3 +144,9 @@ ORDEN = [
 	("Asc", 'Fecha Ascendente'),
 	("Des", 'Fecha Descendente'),
 ]
+
+TIPO_CUENTA = [
+	(1, 'Caja de Ahorros'),
+	(2, 'Cuenta Corriente'),
+	(3, 'Mcdo/Pago Transferencia'),
+]

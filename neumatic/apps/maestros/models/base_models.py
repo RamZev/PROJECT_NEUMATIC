@@ -6,8 +6,7 @@ import re
 
 from utils.validator.validaciones import validar_cuit
 from .base_gen_models import ModeloBaseGenerico
-# from .proveedor_models import Proveedor
-from entorno.constantes_base import ESTATUS_GEN, CONDICION_PAGO
+from entorno.constantes_base import ESTATUS_GEN, CONDICION_PAGO, TIPO_CUENTA
 
 
 class Actividad(ModeloBaseGenerico):
@@ -697,6 +696,7 @@ class Banco(ModeloBaseGenerico):
 			#-- Lanza el conjunto de excepciones.
 			raise ValidationError(errors)
 
+
 class CuentaBanco(ModeloBaseGenerico):
 	id_cuenta_banco = models.AutoField(primary_key=True)
 	estatus_cuenta_banco = models.BooleanField("Estatus", default=True,
@@ -705,6 +705,8 @@ class CuentaBanco(ModeloBaseGenerico):
 							  	verbose_name="Banco", null=True, blank=True)
 	numero_cuenta = models.CharField("Número Cuenta", max_length=15,
 									null=True, blank=True)
+	tipo_cuenta = models.SmallIntegerField("Tipo de Cta.", choices=TIPO_CUENTA,
+										null=True, blank=True)
 	cbu = models.CharField("CBU", max_length=22, null=True, blank=True)
 	sucursal = models.IntegerField("Sucursal",
 									null=True, blank=True)
@@ -745,9 +747,16 @@ class CuentaBanco(ModeloBaseGenerico):
 		if not self.id_moneda:
 			errors.update({'id_moneda': "Debe indicar una Moneda."})
 		
+		if not self.tipo_cuenta:
+			errors.update({'tipo_cuenta': "Debe indicar un Tipo de Cuenta."})
+		
 		if errors:
 			#-- Lanza el conjunto de excepciones.
 			raise ValidationError(errors)
+	
+	@property
+	def tipo_cuenta_display(self):
+		return self.get_tipo_cuenta_display()
 
 
 class Tarjeta(ModeloBaseGenerico):
@@ -857,7 +866,7 @@ class MarketingOrigen(ModeloBaseGenerico):
 		db_table = 'marketing_origen'
 		verbose_name = 'Marketing Origen'
 		verbose_name_plural = 'Marketing Origen'
-		ordering = ['nombre_marketing_origen']
+		ordering = ['id_marketing_origen']
 	
 	def __str__(self):
 		return self.nombre_marketing_origen

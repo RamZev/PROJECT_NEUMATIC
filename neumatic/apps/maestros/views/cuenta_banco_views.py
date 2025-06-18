@@ -54,30 +54,30 @@ class ConfigViews():
 class DataViewList():
 	search_fields = [
 		'numero_cuenta', 
-		'cbu',
+		'id_banco__nombre_banco',
 		'codigo_postal',
 	]
 	
-	ordering = ['numero_cuenta']
+	ordering = ['id_banco__nombre_banco', 'numero_cuenta']
 	
 	paginate_by = 8
 	  
 	table_headers = {
 		'estatus_cuenta_banco': (1, 'Estatus'),
 		'numero_cuenta': (2, 'Número Cuenta'),
+		'tipo_cuenta': (2, 'Tipo de Cta.'),
 		'id_banco': (3, 'Banco'),
-		'cbu': (1, 'CBU'),
 		'codigo_postal': (1, 'Código Postal'),
 		'id_moneda': (2, 'Moneda'),
 		
-		'acciones': (2, 'Acciones'),
+		'acciones': (1, 'Acciones'),
 	}
 	
 	table_data = [
 		{'field_name': 'estatus_cuenta_banco', 'date_format': None},
 		{'field_name': 'numero_cuenta', 'date_format': None},
+		{'field_name': 'tipo_cuenta_display', 'date_format': None},
 		{'field_name': 'id_banco', 'date_format': None},
-		{'field_name': 'cbu', 'date_format': None},
 		{'field_name': 'codigo_postal', 'date_format': None},
 		{'field_name': 'id_moneda', 'date_format': None},
 	]
@@ -101,6 +101,10 @@ class CuentaBancoListView(MaestroListView):
 		"table_headers": DataViewList.table_headers,
 		"table_data": DataViewList.table_data,
 	}
+	
+	def get_queryset(self):
+		queryset = super().get_queryset()
+		return queryset.select_related('id_banco', 'id_moneda')  # Optimiza relaciones
 
 
 class CuentaBancoCreateView(MaestroCreateView):
