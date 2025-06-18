@@ -19,6 +19,8 @@ class CuentaBancoForm(CrudGenericForm):
 				forms.Select(attrs={**formclassselect}),
 			'numero_cuenta': 
 				forms.TextInput(attrs={**formclasstext}),
+			'tipo_cuenta': 
+				forms.Select(attrs={**formclassselect}), 
 			'cbu': 
 				forms.TextInput(attrs={**formclasstext}),
 			'sucursal': 
