@@ -73,110 +73,70 @@ class ConfigViews:
 	table_info = {
 		"id_cliente_id": {
 			"label": "Cliente",
-			# "col_width_table": 0,
 			"col_width_pdf": 40,
-			# "pdf_paragraph": False,
-			# "date_format": None,
-			# "table": False,
-			# "pdf": True,
-			# "excel": True,
-			# "csv": True
+			"pdf": True,
+			"excel": True,
+			"csv": True
 		},
 		"nombre_cliente": {
 			"label": "Nombre",
-			"col_width_table": 0,
 			"col_width_pdf": 180,
-			"pdf_paragraph": True,
-			"date_format": None,
-			"table": True,
 			"pdf": True,
 			"excel": True,
 			"csv": True
 		},
 		"domicilio_cliente": {
 			"label": "Domicilio",
-			"col_width_table": 0,
 			"col_width_pdf": 180,
-			"pdf_paragraph": True,
-			"date_format": None,
-			"table": False,
 			"pdf": True,
 			"excel": True,
 			"csv": True
 		},
 		"codigo_postal": {
 			"label": "C.P.",
-			"col_width_table": 0,
 			"col_width_pdf": 30,
-			"pdf_paragraph": False,
-			"date_format": None,
-			"table": False,
 			"pdf": True,
 			"excel": True,
 			"csv": True
 		},
 		"nombre_localidad": {
 			"label": "Localidad",
-			"col_width_table": 0,
 			"col_width_pdf": 100,
-			"pdf_paragraph": True,
-			"date_format": None,
-			"table": False,
 			"pdf": True,
 			"excel": True,
 			"csv": True
 		},
 		"telefono_cliente": {
 			"label": "Teléfono",
-			"col_width_table": 0,
 			"col_width_pdf": 60,
-			"pdf_paragraph": False,
-			"date_format": None,
-			"table": False,
 			"pdf": True,
 			"excel": True,
 			"csv": True
 		},
 		"saldo": {
 			"label": "Saldo",
-			"col_width_table": 0,
 			"col_width_pdf": 60,
-			"pdf_paragraph": False,
-			"date_format": None,
-			"table": False,
 			"pdf": True,
 			"excel": True,
 			"csv": True
 		},
 		"primer_fact_impaga": {
 			"label": "1er. Comp. Pend.",
-			"col_width_table": 0,
 			"col_width_pdf": 60,
-			"pdf_paragraph": False,
-			"date_format": 'd/m/Y',
-			"table": False,
 			"pdf": True,
 			"excel": True,
 			"csv": True
 		},
 		"ultimo_pago": {
 			"label": "Último Pago",
-			"col_width_table": 0,
 			"col_width_pdf": 50,
-			"pdf_paragraph": False,
-			"date_format": 'd/m/Y',
-			"table": False,
 			"pdf": True,
 			"excel": True,
 			"csv": True
 		},
 		"sub_cuenta": {
 			"label": "Sub Cuenta",
-			"col_width_table": 0,
 			"col_width_pdf": 50,
-			"pdf_paragraph": False,
-			"date_format": None,
-			"table": False,
 			"pdf": True,
 			"excel": True,
 			"csv": True
@@ -247,7 +207,6 @@ class VLSaldosClientesInformeView(InformeFormView):
 			'titulo': ConfigViews.report_title,
 			'logo_url': f"{dominio}{static('img/logo_01.png')}",
 			'css_url': f"{dominio}{static('css/reportes.css')}",
-			# 'css_url_new': f"{dominio}{static('css/reportes_new.css')}",
 		}
 	
 	def get_context_data(self, **kwargs):
@@ -348,8 +307,11 @@ def generar_pdf(contexto_reporte):
 	#-- Construir datos de la tabla:
 	
 	#-- Obtener los títulos de las columnas (headers).
-	header_data = [value['label'] for value in ConfigViews.table_info.values()]
+	header_data = [value['label'] for value in ConfigViews.table_info.values() if value['pdf']]
 	table_data = [header_data]
+	
+	#-- Extrae los anchos de las columnas de la estructura ConfigViews.table_info.
+	col_widths = [value['col_width_pdf'] for value in ConfigViews.table_info.values() if value['pdf']]
 	
 	for obj in contexto_reporte.get("objetos", []):
 		
@@ -374,9 +336,6 @@ def generar_pdf(contexto_reporte):
 	table_data.append(total_row)
 	
 	#-- Configuración específica de la tabla de datos:
-	
-	#-- Extrae los anchos de las columnas de la estructura ConfigViews.table_info.
-	col_widths = [value['col_width_pdf'] for value in ConfigViews.table_info.values()]
 	
 	#-- Estilos específicos adicionales de la tabla.
 	table_style_config = [
@@ -407,10 +366,12 @@ def vlsaldosclientes_vista_excel(request):
 	view_instance.request = request
 	queryset = view_instance.obtener_queryset(cleaned_data)
 	
+	#-- Extraer Títulos de las columnas (headers).
+	headers = {field: ConfigViews.table_info[field] for field in ConfigViews.table_info if ConfigViews.table_info[field]['excel'] }
+	
 	helper = ExportHelper(
 		queryset=queryset,
-		# table_info=ConfigViews.header_data,
-		table_info=ConfigViews.table_info,
+		table_info=headers,
 		report_title=ConfigViews.report_title
 	)
 	excel_data = helper.export_to_excel()
@@ -442,11 +403,13 @@ def vlsaldosclientes_vista_csv(request):
 	view_instance.request = request
 	queryset = view_instance.obtener_queryset(cleaned_data)
 	
+	#-- Extraer Títulos de las columnas (headers).
+	headers = {field: ConfigViews.table_info[field] for field in ConfigViews.table_info if ConfigViews.table_info[field]['csv'] }
+	
 	#-- Usar el helper para exportar a CSV.
 	helper = ExportHelper(
 		queryset=queryset,
-		# table_info=ConfigViews.header_data,
-		table_info=ConfigViews.table_info,
+		table_info=headers,
 		report_title=ConfigViews.report_title
 	)
 	csv_data = helper.export_to_csv()

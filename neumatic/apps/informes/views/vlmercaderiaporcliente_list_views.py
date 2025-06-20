@@ -74,135 +74,80 @@ class ConfigViews:
 	table_info = {
 		"nombre_comprobante_venta": {
 			"label": "Comprobante",
-			# "col_width_table": 0,
 			"col_width_pdf": 40,
-			# "pdf_paragraph": False,
-			# "date_format": None,
-			# "table": False,
-			# "pdf": True,
-			# "excel": True,
-			# "csv": True
+			"pdf": False,
+			"excel": True,
+			"csv": True
 		},
 		"numero": {
 			"label": "Número",
-			# "col_width_table": 0,
 			"col_width_pdf": 40,
-			# "pdf_paragraph": False,
-			# "date_format": None,
-			# "table": False,
-			# "pdf": True,
-			# "excel": True,
-			# "csv": True
+			"pdf": False,
+			"excel": True,
+			"csv": True
 		},
 		"fecha_comprobante": {
 			"label": "Fecha",
-			# "col_width_table": 0,
 			"col_width_pdf": 40,
-			# "pdf_paragraph": False,
-			# "date_format": None,
-			# "table": False,
-			# "pdf": True,
-			# "excel": True,
-			# "csv": True
+			"pdf": False,
+			"excel": True,
+			"csv": True
 		},
 		"nombre_producto_marca": {
 			"label": "Marca",
-			# "col_width_table": 0,
 			"col_width_pdf": 140,
-			# "pdf_paragraph": False,
-			# "date_format": None,
-			# "table": False,
-			# "pdf": True,
-			# "excel": True,
-			# "csv": True
+			"pdf": True,
+			"excel": True,
+			"csv": True
 		},
 		"medida": {
 			"label": "Medida",
-			# "col_width_table": 0,
 			"col_width_pdf": 60,
-			# "pdf_paragraph": False,
-			# "date_format": None,
-			# "table": False,
-			# "pdf": True,
-			# "excel": True,
-			# "csv": True
+			"pdf": True,
+			"excel": True,
+			"csv": True
 		},
 		"id_producto_id": {
 			"label": "Código",
-			# "col_width_table": 0,
 			"col_width_pdf": 40,
-			# "pdf_paragraph": False,
-			# "date_format": None,
-			# "table": False,
-			# "pdf": True,
-			# "excel": True,
-			# "csv": True
+			"pdf": True,
+			"excel": True,
+			"csv": True
 		},
 		"nombre_producto": {
 			"label": "Descripción",
-			# "col_width_table": 0,
 			"col_width_pdf": 200,
-			# "pdf_paragraph": False,
-			# "date_format": None,
-			# "table": False,
-			# "pdf": True,
-			# "excel": True,
-			# "csv": True
+			"pdf": True,
+			"excel": True,
+			"csv": True
 		},
 		"cantidad": {
 			"label": "Cantidad",
-			# "col_width_table": 0,
 			"col_width_pdf": 60,
-			# "pdf_paragraph": False,
-			# "date_format": None,
-			# "table": False,
-			# "pdf": True,
-			# "excel": True,
-			# "csv": True
+			"pdf": True,
+			"excel": True,
+			"csv": True
 		},
 		"precio": {
 			"label": "Precio",
-			# "col_width_table": 0,
-			"col_width_pdf": 40,
-			# "pdf_paragraph": False,
-			# "date_format": None,
-			# "table": False,
-			# "pdf": True,
-			# "excel": True,
-			# "csv": True
+			"col_width_pdf": 80,
+			"pdf": True,
+			"excel": True,
+			"csv": True
 		},
 		"descuento": {
 			"label": "Desc.",
-			# "col_width_table": 0,
-			"col_width_pdf": 40,
-			# "pdf_paragraph": False,
-			# "date_format": None,
-			# "table": False,
-			# "pdf": True,
-			# "excel": True,
-			# "csv": True
+			"col_width_pdf": 80,
+			"pdf": True,
+			"excel": True,
+			"csv": True
 		},
 		"total": {
 			"label": "Total",
-			# "col_width_table": 0,
 			"col_width_pdf": 80,
-			# "pdf_paragraph": False,
-			# "date_format": None,
-			# "table": False,
-			# "pdf": True,
-			# "excel": True,
-			# "csv": True
-		},
-		"cantidad": {
-			"label": "Cantidad",
-			# "col_width_table": 0,
-			"col_width_pdf": 60,
-			# "pdf_paragraph": False,
-			# "date_format": None,
-			# "table": False,
-			# "pdf": True,
-			# "excel": True,
-			# "csv": True
+			"pdf": True,
+			"excel": True,
+			"csv": True
 		},
 	}
 
@@ -286,7 +231,6 @@ class VLMercaderiaPorClienteInformeView(InformeFormView):
 			'titulo': ConfigViews.report_title,
 			'logo_url': f"{dominio}{static('img/logo_01.png')}",
 			'css_url': f"{dominio}{static('css/reportes.css')}",
-			# 'css_url_new': f"{dominio}{static('css/reportes_new.css')}",
 		}
 	
 	def get_context_data(self, **kwargs):
@@ -366,23 +310,11 @@ def generar_pdf(contexto_reporte):
 	
 	#-- Construir datos de la tabla:
 	
-	#-- Datos de las columnas de la tabla (headers).
-	headers = [
-		("Marca", 140),
-		("Medida", 60),
-		("Código", 40),
-		("Descripción", 200),
-		("Cantidad", 60),
-		("Precio", 80),
-		("Desc.", 80),
-		("Total", 80)
-	]
-	
 	#-- Extraer Títulos de las columnas de la tabla (headers).
-	headers_titles = [value[0] for value in headers]
+	headers_titles = [value['label'] for value in ConfigViews.table_info.values() if value['pdf']]
 	
 	#-- Extraer Ancho de las columnas de la tabla.
-	col_widths = [value[1] for value in headers]
+	col_widths = [value['col_width_pdf'] for value in ConfigViews.table_info.values() if value['pdf']]
 	
 	table_data = [headers_titles]
 	
@@ -454,9 +386,12 @@ def vlmercaderiaporcliente_vista_excel(request):
 	view_instance.request = request
 	queryset = view_instance.obtener_queryset(cleaned_data)
 	
+	#-- Extraer Títulos de las columnas (headers).
+	headers = {field: ConfigViews.table_info[field] for field in ConfigViews.table_info if ConfigViews.table_info[field]['excel'] }
+	
 	helper = ExportHelper(
 		queryset=queryset,
-		table_info=ConfigViews.table_info,
+		table_info=headers,
 		report_title=ConfigViews.report_title
 	)
 	excel_data = helper.export_to_excel()
@@ -488,10 +423,13 @@ def vlmercaderiaporcliente_vista_csv(request):
 	view_instance.request = request
 	queryset = view_instance.obtener_queryset(cleaned_data)
 	
+	#-- Extraer Títulos de las columnas (headers).
+	headers = {field: ConfigViews.table_info[field] for field in ConfigViews.table_info if ConfigViews.table_info[field]['csv'] }
+	
 	#-- Usar el helper para exportar a CSV.
 	helper = ExportHelper(
 		queryset=queryset,
-		table_info=ConfigViews.table_info,
+		table_info=headers,
 		report_title=ConfigViews.report_title
 	)
 	csv_data = helper.export_to_csv()

@@ -74,6 +74,9 @@ from apps.informes.views.vlestadisticasventasmarca_list_views import *
 from apps.informes.views.vlestadisticasventasmarcavendedor_list_views import *
 from apps.informes.views.vlclienteultimaventa_list_views import *
 from apps.informes.views.vlestadisticasventasvendedorcliente_list_views import *
+from apps.informes.views.vlventasinestadistica_list_views import *
+from apps.informes.views.vltabladinamicaventas_list_views import *
+from apps.informes.views.vltabladinamicadetalleventas_list_views import *
 
 
 
@@ -690,8 +693,6 @@ urlpatterns = [
 	path("vlclienteultimaventa/vista-csv/", vlclienteultimaventa_vista_csv, 
 		 name="vlclienteultimaventa_vista_csv"),
 	
-	
-	
 	#-- VL Estadísticas de Ventas Provincia.
 	path('vlestadisticasventasprovincia_informe/', VLEstadisticasVentasProvinciaInformeView.as_view(), 
 		 name='vlestadisticasventasprovincia_informe_list'),
@@ -703,6 +704,42 @@ urlpatterns = [
 		 name="vlestadisticasventasprovincia_vista_excel"),
 	path("vlestadisticasventasprovincia/vista-csv/", vlestadisticasventasprovincia_vista_csv, 
 		 name="vlestadisticasventasprovincia_vista_csv"),
+	
+	#-- VL Venta sin Estadística.
+	path('vlventasinestadistica_informe/', VLVentaSinEstadisticaInformeView.as_view(), 
+		 name='vlventasinestadistica_informe_list'),
+	path('vlventasinestadistica/vista-preliminar/', vlventasinestadistica_vista_pantalla, 
+		 name="vlventasinestadistica_vista_pantalla"),
+	path("vlventasinestadistica/vista-pdf/", vlventasinestadistica_vista_pdf, 
+		 name="vlventasinestadistica_vista_pdf"),
+	path("vlventasinestadistica/vista-excel/", vlventasinestadistica_vista_excel, 
+		 name="vlventasinestadistica_vista_excel"),
+	path("vlventasinestadistica/vista-csv/", vlventasinestadistica_vista_csv, 
+		 name="vlventasinestadistica_vista_csv"),
+	
+	#-- VL Tablas Dinámicas de Ventas - Ventas por Comprobantes.
+	path('vltabladinamicaventas_informe/', VLTablaDinamicaVentasInformeView.as_view(), 
+		 name='vltabladinamicaventas_informe_list'),
+	path('vltabladinamicaventas/vista-preliminar/', vltabladinamicaventas_vista_pantalla, 
+		 name="vltabladinamicaventas_vista_pantalla"),
+	path("vltabladinamicaventas/vista-pdf/", vltabladinamicaventas_vista_pdf, 
+		 name="vltabladinamicaventas_vista_pdf"),
+	path("vltabladinamicaventas/vista-excel/", vltabladinamicaventas_vista_excel, 
+		 name="vltabladinamicaventas_vista_excel"),
+	path("vltabladinamicaventas/vista-csv/", vltabladinamicaventas_vista_csv, 
+		 name="vltabladinamicaventas_vista_csv"),
+	
+	#-- VL Tablas Dinámicas de Ventas - Detalle de Ventas por Productos.
+	path('vltabladinamicadetalleventas_informe/', VLTablaDinamicaDetalleVentasInformeView.as_view(), 
+		 name='vltabladinamicadetalleventas_informe_list'),
+	path('vltabladinamicadetalleventas/vista-preliminar/', vltabladinamicadetalleventas_vista_pantalla, 
+		 name="vltabladinamicadetalleventas_vista_pantalla"),
+	path("vltabladinamicadetalleventas/vista-pdf/", vltabladinamicadetalleventas_vista_pdf, 
+		 name="vltabladinamicadetalleventas_vista_pdf"),
+	path("vltabladinamicadetalleventas/vista-excel/", vltabladinamicadetalleventas_vista_excel, 
+		 name="vltabladinamicadetalleventas_vista_excel"),
+	path("vltabladinamicadetalleventas/vista-csv/", vltabladinamicadetalleventas_vista_csv, 
+		 name="vltabladinamicadetalleventas_vista_csv"),
 	
 	
 	

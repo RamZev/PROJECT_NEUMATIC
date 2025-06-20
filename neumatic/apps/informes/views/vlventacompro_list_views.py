@@ -71,105 +71,92 @@ class ConfigViews:
 	reporte_pantalla = f"informes/reportes/{model_string}_list.html"
 	
 	#-- Establecer las columnas del reporte y sus atributos.
+	headers = [
+		("Comprobante", 80),
+		("Fecha", 50),
+		("Condición", 40),
+		("Cliente", 40),
+		("Nombre", 200),
+		("Contado", 70),
+		("Cta. Cte.", 70)
+	]	
 	table_info = {
 		"comprobante": {
 			"label": "Comprobante",
-			# "col_width_table": 0,
 			"col_width_pdf": 80,
-			# "pdf_paragraph": False,
-			# "date_format": None,
-			# "table": False,
-			# "pdf": True,
-			# "excel": True,
-			# "csv": True
+			"pdf": True,
+			"excel": True,
+			"csv": True
 		},
 		"fecha_comprobante": {
 			"label": "Fecha",
-			# "col_width_table": 0,
 			"col_width_pdf": 50,
-			# "pdf_paragraph": False,
-			# "date_format": None,
-			# "table": False,
-			# "pdf": True,
-			# "excel": True,
-			# "csv": True
+			"pdf": True,
+			"excel": True,
+			"csv": True
 		},
 		"condicion": {
 			"label": "Condición",
-			# "col_width_table": 0,
 			"col_width_pdf": 40,
-			# "pdf_paragraph": False,
-			# "date_format": None,
-			# "table": False,
-			# "pdf": True,
-			# "excel": True,
-			# "csv": True
+			"pdf": True,
+			"excel": True,
+			"csv": True
 		},
 		"id_cliente_id": {
 			"label": "Cliente",
-			# "col_width_table": 0,
 			"col_width_pdf": 40,
-			# "pdf_paragraph": False,
-			# "date_format": None,
-			# "table": False,
-			# "pdf": True,
-			# "excel": True,
-			# "csv": True
+			"pdf": True,
+			"excel": True,
+			"csv": True
 		},
 		"nombre_cliente": {
 			"label": "Nombre",
-			# "col_width_table": 0,
 			"col_width_pdf": 180,
-			# "pdf_paragraph": False,
-			# "date_format": None,
-			# "table": False,
-			# "pdf": True,
-			# "excel": True,
-			# "csv": True
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
+		"contado": {
+			"label": "Contado",
+			"col_width_pdf": 70,
+			"pdf": True,
+			"excel": False,
+			"csv": False
+		},
+		"cta_cte": {
+			"label": "Cta. Cte.",
+			"col_width_pdf": 70,
+			"pdf": True,
+			"excel": False,
+			"csv": False
 		},
 		"gravado": {
 			"label": "Gravado",
-			# "col_width_table": 0,
 			"col_width_pdf": 40,
-			# "pdf_paragraph": False,
-			# "date_format": None,
-			# "table": False,
-			# "pdf": True,
-			# "excel": True,
-			# "csv": True
+			"pdf": False,
+			"excel": True,
+			"csv": True
 		},
 		"iva": {
 			"label": "IVA",
-			# "col_width_table": 0,
 			"col_width_pdf": 40,
-			# "pdf_paragraph": False,
-			# "date_format": None,
-			# "table": False,
-			# "pdf": True,
-			# "excel": True,
-			# "csv": True
+			"pdf": False,
+			"excel": True,
+			"csv": True
 		},
 		"percep_ib": {
 			"label": "Percep. IB",
-			# "col_width_table": 0,
 			"col_width_pdf": 40,
-			# "pdf_paragraph": False,
-			# "date_format": None,
-			# "table": False,
-			# "pdf": True,
-			# "excel": True,
-			# "csv": True
+			"pdf": False,
+			"excel": True,
+			"csv": True
 		},
 		"total": {
 			"label": "Total",
-			# "col_width_table": 0,
 			"col_width_pdf": 70,
-			# "pdf_paragraph": False,
-			# "date_format": None,
-			# "table": False,
-			# "pdf": True,
-			# "excel": True,
-			# "csv": True
+			"pdf": False,
+			"excel": True,
+			"csv": True
 		},
 	}
 
@@ -265,7 +252,6 @@ class VLVentaComproInformeView(InformeFormView):
 			'titulo': ConfigViews.report_title,
 			'logo_url': f"{dominio}{static('img/logo_01.png')}",
 			'css_url': f"{dominio}{static('css/reportes.css')}",
-			# 'css_url_new': f"{dominio}{static('css/reportes_new.css')}",
 		}
 	
 	def get_context_data(self, **kwargs):
@@ -356,22 +342,11 @@ def generar_pdf(contexto_reporte):
 	
 	#-- Construir datos de la tabla:
 	
-	#-- Datos de las columnas de la tabla (headers).
-	headers = [
-		("Comprobante", 80),
-		("Fecha", 50),
-		("Condición", 40),
-		("Cliente", 40),
-		("Nombre", 200),
-		("Contado", 70),
-		("Cta. Cte.", 70)
-	]
-	
 	#-- Extraer Títulos de las columnas de la tabla (headers).
-	headers_titles = [value[0] for value in headers]
+	headers_titles = [value['label'] for value in ConfigViews.table_info.values() if value['pdf']]
 	
 	#-- Extraer Ancho de las columnas de la tabla.
-	col_widths = [value[1] for value in headers]
+	col_widths = [value['col_width_pdf'] for value in ConfigViews.table_info.values() if value['pdf']]
 	
 	table_data = [headers_titles]
 	
@@ -528,9 +503,12 @@ def vlventacompro_vista_excel(request):
 	view_instance.request = request
 	queryset = view_instance.obtener_queryset(cleaned_data)
 	
+	#-- Extraer Títulos de las columnas (headers).
+	headers = {field: ConfigViews.table_info[field] for field in ConfigViews.table_info if ConfigViews.table_info[field]['excel'] }
+	
 	helper = ExportHelper(
 		queryset=queryset,
-		table_info=ConfigViews.table_info,
+		table_info=headers,
 		report_title=ConfigViews.report_title
 	)
 	excel_data = helper.export_to_excel()
@@ -562,10 +540,13 @@ def vlventacompro_vista_csv(request):
 	view_instance.request = request
 	queryset = view_instance.obtener_queryset(cleaned_data)
 	
+	#-- Extraer Títulos de las columnas (headers).
+	headers = {field: ConfigViews.table_info[field] for field in ConfigViews.table_info if ConfigViews.table_info[field]['csv'] }
+	
 	#-- Usar el helper para exportar a CSV.
 	helper = ExportHelper(
 		queryset=queryset,
-		table_info=ConfigViews.table_info,
+		table_info=headers,
 		report_title=ConfigViews.report_title
 	)
 	csv_data = helper.export_to_csv()

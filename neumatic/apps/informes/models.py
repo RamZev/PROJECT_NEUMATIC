@@ -787,6 +787,7 @@ class VLRemitosVendedor(models.Model):
 		verbose_name_plural = ('Remitos por Vendedor')
 		ordering = ['nombre_cliente', 'fecha_comprobante', 'numero_comprobante']
 
+
 #-----------------------------------------------------------------------------
 # Libro I.V.A. Ventas - Detalle.
 #-----------------------------------------------------------------------------
@@ -816,6 +817,7 @@ class IVAVentasFULLManager(models.Manager):
 		#-- Ejecutar la consulta y devolver los resultados.
 		return self.raw(query, params)
 
+
 class VLIVAVentasFULL(models.Model):
 	id_factura = models.IntegerField(primary_key=True)
 	# id_cliente_id = models.IntegerField()
@@ -843,6 +845,7 @@ class VLIVAVentasFULL(models.Model):
 		verbose_name = ('Libro de I.V.A. Ventas - Detalle')
 		verbose_name_plural = ('Libro de I.V.A. Ventas - Detalle')
 		ordering = ['fecha_comprobante', 'numero_comprobante']
+
 
 #-----------------------------------------------------------------------------
 # Libro I.V.A. Ventas - Totales por Provincias.
@@ -881,6 +884,7 @@ class VLIVAVentasProvinciasManager(models.Manager):
 		
 		#-- Ejecutar la consulta y devolver los resultados.
 		return self.raw(query, params)
+
 
 class VLIVAVentasProvincias(models.Model):
 	id_factura = models.IntegerField(primary_key=True)
@@ -943,6 +947,7 @@ class VLIVAVentasSitribManager(models.Manager):
 		#-- Ejecutar la consulta y devolver los resultados.
 		return self.raw(query, params)
 
+
 class VLIVAVentasSitrib(models.Model):
 	id_factura = models.IntegerField(primary_key=True)
 	fecha_comprobante = models.DateField()
@@ -996,6 +1001,7 @@ class VLPercepIBVendedorTotalesManager(models.Manager):
 		#-- Ejecutar la consulta y devolver los resultados.
 		return self.raw(query, params)
 
+
 class VLPercepIBVendedorTotales(models.Model):
 	id_factura = models.IntegerField(primary_key=True)
 	fecha_comprobante = models.DateField()
@@ -1036,6 +1042,7 @@ class VLPercepIBVendedorDetalladoManager(models.Manager):
 		
 		#-- Ejecutar la consulta y devolver los resultados.
 		return self.raw(query, params)
+
 
 class VLPercepIBVendedorDetallado(models.Model):
 	id_factura = models.IntegerField(primary_key=True)
@@ -1093,6 +1100,7 @@ class VLPercepIBSubcuentaTotalesManager(models.Manager):
 		#-- Ejecutar la consulta y devolver los resultados.
 		return self.raw(query, params)
 
+
 class VLPercepIBSubcuentaTotales(models.Model):
 	id_factura = models.IntegerField(primary_key=True)
 	fecha_comprobante = models.DateField()
@@ -1135,6 +1143,7 @@ class VLPercepIBSubcuentaDetalladoManager(models.Manager):
 		
 		#-- Ejecutar la consulta y devolver los resultados.
 		return self.raw(query, params)
+
 
 class VLPercepIBSubcuentaDetallado(models.Model):
 	id_factura = models.IntegerField(primary_key=True)
@@ -1225,7 +1234,7 @@ class VLComisionVendedor(models.Model):
 	pje_comision = models.DecimalField(max_digits=4, decimal_places=2)
 	monto_comision = models.DecimalField(max_digits=14, decimal_places=2)
 	id_vendedor_id = models.IntegerField()
-	nombre_vendedor = models.CharField(max_length=30)	
+	nombre_vendedor = models.CharField(max_length=30)
 	
 	objects = ComisionVendedorIBManager()
 	
@@ -1480,7 +1489,7 @@ class VLEstadisticasVentas(models.Model):
 		db_table = 'VLEstadisticasVentas'
 		verbose_name = ('Estadísticas de Ventas')
 		verbose_name_plural = ('Estadísticas de Ventas')
-		# ordering = ['fecha_comprobante']
+
 
 #-----------------------------------------------------------------------------
 # Estadísticas de Ventas por Vendedor.
@@ -1559,7 +1568,6 @@ class VLEstadisticasVentasVendedor(models.Model):
 		db_table = 'VLEstadisticasVentasVendedor'
 		verbose_name = ('Estadísticas de Ventas por Vendedor')
 		verbose_name_plural = ('Estadísticas de Ventas por Vendedor')
-		# ordering = ['fecha_comprobante']
 
 
 #-----------------------------------------------------------------------------
@@ -1663,26 +1671,6 @@ class VLEstadisticasVentasVendedorCliente(models.Model):
 class EstadisticasSegunCondicionManager(models.Manager):
 	
 	def obtener_datos(self, fecha_desde, fecha_hasta, id_marca_desede, id_marca_hasta, agrupar, id_sucursal=None):
-		'''
-		query = """
-			SELECT
-				id,
-				nombre_producto_familia,
-				nombre_producto_marca,
-				nombre_modelo,
-				id_producto_id,
-				nombre_producto,
-				reventa,
-				SUM(cantidad) AS cantidad, 
-				SUM(importe) AS importe,
-				SUM(costo) AS costo
-			FROM
-				VLEstadisticasSegunCondicion
-			WHERE
-				fecha_comprobante BETWEEN %s AND %s
-				AND id_marca_id BETWEEN %s AND %s
-		"""
-		'''
 		query = """
 			SELECT
 				id,
@@ -1816,7 +1804,6 @@ class VLEstadisticasVentasMarca(models.Model):
 		db_table = 'VLEstadisticasVentasMarca'
 		verbose_name = ('Estadísticas de Ventas por Marca y Artículo')
 		verbose_name_plural = ('Estadísticas de Ventas por Marca y Artículo')
-		# ordering = ['fecha_comprobante']
 
 
 #-----------------------------------------------------------------------------
@@ -1878,7 +1865,6 @@ class VLEstadisticasVentasMarcaVendedor(models.Model):
 		db_table = 'VLEstadisticasVentasMarcaVendedor'
 		verbose_name = ('Estadísticas de Ventas por Marca y Familia por Vendedor')
 		verbose_name_plural = ('Estadísticas de Ventas por Marca y Familia por Vendedor')
-		# ordering = ['fecha_comprobante']
 
 
 #-----------------------------------------------------------------------------
@@ -2013,6 +1999,268 @@ class VLEstadisticasVentasProvincia(models.Model):
 		db_table = 'VLEstadisticasVentasProvincia'
 		verbose_name = ('Estadísticas de Ventas por Provincia')
 		verbose_name_plural = ('Estadísticas de Ventas por Provincia')
-		# ordering = ['fecha_comprobante']
 
 
+#-----------------------------------------------------------------------------
+# Comprobantes sin Estadísticas.
+#-----------------------------------------------------------------------------
+class VLVentaSinEstadisticaManager(models.Manager):
+	
+	def obtener_datos(self, fecha_desde, fecha_hasta, id_sucursal=None):
+		
+		#-- La consulta SQL.
+		query = """
+			SELECT
+				*
+			FROM
+				vlVentaSinEstadistica
+			WHERE
+				fecha_comprobante BETWEEN %s AND %s
+		"""
+		
+		#-- Se añaden parámetros.
+		params = [fecha_desde, fecha_hasta]
+		
+		#-- Filtros adicionales.
+		if id_sucursal:
+			query += " AND id_sucursal_id = %s"
+			params.append(id_sucursal)
+		
+		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
+		return self.raw(query, params)
+
+
+class VLVentaSinEstadistica(models.Model):
+	id = models.AutoField(primary_key=True)
+	fecha_comprobante = models.DateField()
+	comprobante = models.CharField(max_length=19)
+	id_cliente_id = models.IntegerField()
+	nombre_cliente = models.CharField(max_length=50)
+	total = models.DecimalField(max_digits=14, decimal_places=2)
+	id_vendedor_id = models.IntegerField()
+	nombre_vendedor = models.CharField(max_length=30)
+	sub_cuenta = models.IntegerField()
+	id_sucursal_id = models.IntegerField()
+	nombre_sucursal = models.CharField(max_length=50)
+	
+	objects = VLVentaSinEstadisticaManager()
+	
+	class Meta:
+		managed = False
+		db_table = 'vlVentaSinEstadistica'
+		verbose_name = ('Comprobantes sin Estadísticas')
+		verbose_name_plural = ('Comprobantes sin Estadísticas')
+
+
+#-----------------------------------------------------------------------------
+# Tablas Dinámicas de Ventas - Ventas por Comprobantes.
+#-----------------------------------------------------------------------------
+class VLTablaDinamicaVentasManager(models.Manager):
+	
+	def obtener_datos(self, fecha_desde, fecha_hasta, comprobantes_impositivos=True):
+		
+		#-- La consulta SQL.
+		query = """
+			SELECT
+				*
+			FROM
+				VLTablaDinamicaVentas
+			WHERE
+				fecha_comprobante BETWEEN %s AND %s
+		"""
+		
+		#-- Se añaden parámetros.
+		params = [fecha_desde, fecha_hasta]
+		
+		#-- Filtros adicionales.
+		if comprobantes_impositivos:
+			query += " AND libro_iva = %s"
+			params.append(comprobantes_impositivos)
+		
+		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
+		return self.raw(query, params)
+
+
+class VLTablaDinamicaVentas(models.Model):
+	id = models.AutoField(primary_key=True)
+	nombre_sucursal = models.CharField(max_length=50)
+	nombre_comprobante_venta = models.CharField(max_length=50)
+	fecha_comprobante = models.DateField()
+	letra_comprobante = models.CharField(max_length=1)
+	numero_comprobante = models.IntegerField()
+	condicion_comprobante = models.IntegerField()
+	id_cliente_id = models.IntegerField()
+	nombre_cliente = models.CharField(max_length=50)
+	mayorista = models.BooleanField()
+	gravado = models.DecimalField(max_digits=14, decimal_places=2)
+	iva = models.DecimalField(max_digits=12, decimal_places=2)
+	percepcion = models.DecimalField(max_digits=14, decimal_places=2)
+	total = models.DecimalField(max_digits=14, decimal_places=2)
+	no_estadist = models.BooleanField()
+	id_user_id = models.IntegerField()
+	codigo_postal = models.CharField(max_length=5)
+	nombre_localidad = models.CharField(max_length=30)
+	nombre_provincia = models.CharField(max_length=30)
+	nombre_vendedor = models.CharField(max_length=30)
+	comision = models.CharField(max_length=1)
+	promo = models.BooleanField()
+	libro_iva = models.BooleanField()
+	
+	objects = VLTablaDinamicaVentasManager()
+	
+	class Meta:
+		managed = False
+		db_table = 'VLTablaDinamicaVentas'
+		verbose_name = ('Tablas Dinámicas de Ventas - Ventas por Comprobantes')
+		verbose_name_plural = ('Tablas Dinámicas de Ventas - Ventas por Comprobantes')
+
+
+#-----------------------------------------------------------------------------
+# Tablas Dinámicas de Ventas - Detalle de Ventas por Productos.
+#-----------------------------------------------------------------------------
+class VLTablaDinamicaDetalleVentasManager(models.Manager):
+	
+	def obtener_datos(self, fecha_desde, fecha_hasta, comprobantes_impositivos=True):
+		
+		#-- La consulta SQL.
+		query = """
+			SELECT
+				*
+			FROM
+				VLTablaDinamicaDetalleVentas
+			WHERE
+				fecha_comprobante BETWEEN %s AND %s
+		"""
+		
+		#-- Se añaden parámetros.
+		params = [fecha_desde, fecha_hasta]
+		
+		#-- Filtros adicionales.
+		if comprobantes_impositivos:
+			query += " AND libro_iva = %s"
+			params.append(comprobantes_impositivos)
+		
+		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
+		return self.raw(query, params)
+
+
+class VLTablaDinamicaDetalleVentas(models.Model):
+	id = models.AutoField(primary_key=True)
+	id_factura_id = models.IntegerField()
+	nombre_sucursal = models.CharField(max_length=50)
+	nombre_comprobante_venta = models.CharField(max_length=50)
+	fecha_comprobante = models.DateField()
+	letra_comprobante = models.CharField(max_length=1)
+	numero_comprobante = models.IntegerField()
+	condicion_comprobante = models.IntegerField()
+	id_cliente_id = models.IntegerField()
+	nombre_cliente = models.CharField(max_length=50)
+	mayorista = models.BooleanField()
+	reventa = models.CharField(max_length=1)
+	id_producto_id = models.IntegerField()
+	cai = models.CharField(max_length=20)	
+	nombre_producto = models.CharField(max_length=50)
+	nombre_producto_marca = models.CharField(max_length=50)
+	nombre_producto_familia = models.CharField(max_length=50)
+	segmento = models.CharField(max_length=3)
+	cantidad = models.DecimalField(max_digits=7, decimal_places=2)
+	costo = models.DecimalField(max_digits=12, decimal_places=2)
+	precio = models.DecimalField(max_digits=12, decimal_places=2)
+	descuento = models.DecimalField(max_digits=6, decimal_places=2)
+	gravado = models.DecimalField(max_digits=14, decimal_places=2)
+	total = models.DecimalField(max_digits=14, decimal_places=2)
+	no_estadist = models.BooleanField()
+	id_user_id = models.IntegerField()
+	codigo_postal = models.CharField(max_length=5)
+	nombre_localidad = models.CharField(max_length=30)
+	nombre_provincia = models.CharField(max_length=30)
+	nombre_vendedor = models.CharField(max_length=30)
+	comision = models.CharField(max_length=1)
+	id_operario_id = models.IntegerField()
+	nombre_operario = models.CharField(max_length=50)
+	promo = models.BooleanField()
+	libro_iva = models.BooleanField()
+	
+	objects = VLTablaDinamicaDetalleVentasManager()
+	
+	class Meta:
+		managed = False
+		db_table = 'VLTablaDinamicaDetalleVentas'
+		verbose_name = ('Tablas Dinámicas de Ventas - Detalle de Ventas por Productos')
+		verbose_name_plural = ('Tablas Dinámicas de Ventas - Detalle de Ventas por Productos')
+
+
+'''
+#-----------------------------------------------------------------------------
+# Tablas Dinámicas de Ventas - Tablas para Estadísticas.
+#-----------------------------------------------------------------------------
+class VLTablaDinamicaEstadisticaManager(models.Manager):
+	
+	def obtener_datos(self, fecha_desde, fecha_hasta, comprobantes_impositivos):
+		
+		#-- La consulta SQL.
+		query = """
+			SELECT
+				*
+			FROM
+				VLTablaDinamicaEstadistica
+			WHERE
+				fecha_comprobante BETWEEN %s AND %s
+		"""
+		
+		#-- Se añaden parámetros.
+		params = [fecha_desde, fecha_hasta]
+		
+		#-- Filtros adicionales.
+		if id_sucursal:
+			query += " AND id_sucursal_id = %s"
+			params.append(id_sucursal)
+		
+		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
+		return self.raw(query, params)
+
+
+class VLTablaDinamicaEstadistica(models.Model):
+	id = models.AutoField(primary_key=True)
+	id_factura_id = models.IntegerField()
+	nombre_comprobante_venta = models.CharField(max_length=50)
+	fecha_comprobante = models.DateField()
+	letra_comprobante = models.CharField(max_length=1)
+	numero_comprobante = models.IntegerField()
+	condicion_comprobante = models.IntegerField()
+	id_cliente_id = models.IntegerField()
+	nombre_cliente = models.CharField(max_length=50)
+	mayorista = models.BooleanField()
+	reventa = models.CharField(max_length=1)
+	id_producto_id = models.IntegerField()
+	cai = models.CharField(max_length=20)
+	nombre_producto = models.CharField(max_length=50)
+	nombre_producto_marca = models.CharField(max_length=50)
+	nombre_producto_familia = models.CharField(max_length=50)
+	segmento = models.CharField(max_length=3)
+	cantidad = models.DecimalField(max_digits=7, decimal_places=2)
+	costo = models.DecimalField(max_digits=12, decimal_places=2)
+	precio = models.DecimalField(max_digits=12, decimal_places=2)
+	descuento = models.DecimalField(max_digits=6, decimal_places=2)
+	gravado = models.DecimalField(max_digits=14, decimal_places=2)
+	total = models.DecimalField(max_digits=14, decimal_places=2)
+	no_estadist = models.BooleanField()
+	id_user_id = models.IntegerField()
+	codigo_postal = models.CharField(max_length=5)
+	nombre_localidad = models.CharField(max_length=30)
+	nombre_provincia = models.CharField(max_length=30)
+	nombre_vendedor = models.CharField(max_length=30)
+	comision = models.CharField(max_length=1)
+	id_operario_id = models.IntegerField()
+	nombre_operario = models.CharField(max_length=50)
+	promo = models.BooleanField()
+	
+	objects = VLTablaDinamicaEstadisticaManager()
+	
+	class Meta:
+		managed = False
+		db_table = 'VLTablaDinamicaEstadistica'
+		verbose_name = ('Tablas Dinámicas de Ventas - Tablas para Estadísticas')
+		verbose_name_plural = ('Tablas Dinámicas de Ventas - Tablas para Estadísticas')
+
+'''

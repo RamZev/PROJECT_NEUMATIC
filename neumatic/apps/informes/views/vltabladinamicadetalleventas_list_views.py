@@ -1,34 +1,33 @@
-# neumatic\apps\informes\views\vlcomisionvendedor_list_views.py
+# neumatic\apps\informes\views\vltabladinamicadetalleventas_list_views.py
 
 from django.urls import reverse_lazy
 from django.shortcuts import render
 from django.http import HttpResponse
 from datetime import datetime
 from django.templatetags.static import static
-from decimal import Decimal
 
 #-- ReportLab:
 from reportlab.lib import colors
-from reportlab.lib.pagesizes import A4, portrait, landscape
+from reportlab.lib.pagesizes import A4, landscape, portrait
 from reportlab.platypus import Paragraph
 
 from .report_views_generics import *
-from apps.informes.models import VLComisionVendedor
-from ..forms.buscador_vlcomisionvendedor_forms import BuscadorComisionVendedorForm
-from utils.utils import deserializar_datos, formato_argentino, normalizar
+from apps.informes.models import VLTablaDinamicaDetalleVentas
+from ..forms.buscador_vltabladinamicadetalleventas_forms import BuscadorTablaDinamicaDetalleVentasForm
+from utils.utils import deserializar_datos, formato_argentino, normalizar, format_date
 from utils.helpers.export_helpers import ExportHelper, PDFGenerator
 
 
 class ConfigViews:
 	
 	#-- Título del reporte.
-	report_title = "Comisión Según Facturación"
+	report_title = "Tablas Dinámicas de Ventas - Detalle de Ventas por Productos"
 	
 	#-- Modelo.
-	model = VLComisionVendedor
+	model = VLTablaDinamicaDetalleVentas
 	
 	#-- Formulario asociado al modelo.
-	form_class = BuscadorComisionVendedorForm
+	form_class = BuscadorTablaDinamicaDetalleVentasForm
 	
 	#-- Aplicación asociada al modelo.
 	app_label = "informes"
@@ -36,8 +35,8 @@ class ConfigViews:
 	#-- Nombre del modelo en minúsculas.
 	model_string = model.__name__.lower()
 	
-	# Vistas del CRUD del modelo
-	list_view_name = f"{model_string}_list"  # <== vlventacompro_list
+	#-- Vistas del CRUD del modelo.
+	list_view_name = f"{model_string}_list"
 	
 	#-- Plantilla base.
 	template_list = f'{app_label}/maestro_informe.html'
@@ -71,101 +70,248 @@ class ConfigViews:
 	
 	#-- Establecer las columnas del reporte y sus atributos.
 	table_info = {
-		"id_vendedor_id": {
-			"label": "Cód. Vendedor",
+		"id_factura_id": {
+			"label": "ID Factura",
 			"col_width_pdf": 40,
 			"pdf": False,
 			"excel": True,
 			"csv": True
 		},
-		"nombre_vendedor": {
-			"label": "Vendedor",
+		"nombre_sucursal": {
+			"label": "Sucursal",
 			"col_width_pdf": 40,
 			"pdf": False,
 			"excel": True,
 			"csv": True
 		},
-		"comprobante": {
+		"nombre_comprobante_venta": {
 			"label": "Comprobante",
-			"col_width_pdf": 80,
-			"pdf": True,
+			"col_width_pdf": 75,
+			"pdf": False,
 			"excel": True,
 			"csv": True
 		},
 		"fecha_comprobante": {
 			"label": "Fecha",
 			"col_width_pdf": 40,
-			"pdf": True,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+		"letra_comprobante": {
+			"label": "Letra",
+			"col_width_pdf": 40,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+		"numero_comprobante": {
+			"label": "Núnero",
+			"col_width_pdf": 40,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+		"condicion_comprobante": {
+			"label": "Condición",
+			"col_width_pdf": 40,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+		"id_cliente_id": {
+			"label": "Cliente",
+			"col_width_pdf": 30,
+			"pdf": False,
 			"excel": True,
 			"csv": True
 		},
 		"nombre_cliente": {
-			"label": "Cliente",
-			"col_width_pdf": 160,
-			"pdf": True,
+			"label": "Nombre Cliente",
+			"col_width_pdf": 190,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+		"mayorista": {
+			"label": "Mayorista",
+			"col_width_pdf": 190,
+			"pdf": False,
 			"excel": True,
 			"csv": True
 		},
 		"reventa": {
-			"label": "Rvta.",
-			"col_width_pdf": 20,
-			"pdf": True,
+			"label": "Reventa",
+			"col_width_pdf": 190,
+			"pdf": False,
 			"excel": True,
 			"csv": True
 		},
 		"id_producto_id": {
-			"label": "Producto",
+			"label": "C{od. Producto}",
 			"col_width_pdf": 30,
-			"pdf": True,
+			"pdf": False,
 			"excel": True,
 			"csv": True
 		},
-		"medida": {
-			"label": "Medida",
-			"col_width_pdf": 60,
-			"pdf": True,
+		"cai": {
+			"label": "CAI",
+			"col_width_pdf": 30,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+		"nombre_producto": {
+			"label": "Producto",
+			"col_width_pdf": 30,
+			"pdf": False,
 			"excel": True,
 			"csv": True
 		},
 		"nombre_producto_marca": {
 			"label": "Marca",
-			"col_width_pdf": 120,
-			"pdf": True,
+			"col_width_pdf": 30,
+			"pdf": False,
 			"excel": True,
 			"csv": True
 		},
 		"nombre_producto_familia": {
-			"label": "Artículo",
-			"col_width_pdf": 120,
-			"pdf": True,
+			"label": "Familia",
+			"col_width_pdf": 30,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+		"segmento": {
+			"label": "Segmento",
+			"col_width_pdf": 30,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+		"cantidad": {
+			"label": "Cantidad",
+			"col_width_pdf": 65,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+		"costo": {
+			"label": "Costo",
+			"col_width_pdf": 65,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+		"precio": {
+			"label": "Precio",
+			"col_width_pdf": 65,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+		"descuento": {
+			"label": "Descuento",
+			"col_width_pdf": 65,
+			"pdf": False,
 			"excel": True,
 			"csv": True
 		},
 		"gravado": {
 			"label": "Gravado",
-			"col_width_pdf": 60,
-			"pdf": True,
+			"col_width_pdf": 65,
+			"pdf": False,
 			"excel": True,
 			"csv": True
 		},
-		"pje_comision": {
-			"label": "%",
+		"total": {
+			"label": "Total",
+			"col_width_pdf": 65,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+		"no_estadist": {
+			"label": "No_Estadist",
 			"col_width_pdf": 30,
-			"pdf": True,
+			"pdf": False,
 			"excel": True,
 			"csv": True
 		},
-		"monto_comision": {
+		"id_user_id": {
+			"label": "Operador",
+			"col_width_pdf": 130,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+		"codigo_postal": {
+			"label": "Cód. Postal",
+			"col_width_pdf": 40,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+		"nombre_localidadid_sucursal_id": {
+			"label": "Localidad",
+			"col_width_pdf": 100,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+		"nombre_provincia": {
+			"label": "Provincia",
+			"col_width_pdf": 100,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+		"nombre_vendedor": {
+			"label": "Vendedor",
+			"col_width_pdf": 100,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+		"comision": {
 			"label": "Comisión",
-			"col_width_pdf": 60,
-			"pdf": True,
+			"col_width_pdf": 30,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+		"id_operario_id": {
+			"label": "Cód. Operario",
+			"col_width_pdf": 30,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+		"nombre_operario": {
+			"label": "Operario",
+			"col_width_pdf": 30,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+		"promo": {
+			"label": "Promo",
+			"col_width_pdf": 30,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+		"libro_iva": {
+			"label": "libro_iva",
+			"col_width_pdf": 30,
+			"pdf": False,
 			"excel": True,
 			"csv": True
 		},
 	}
 
 
-class VLComisionVendedorInformeView(InformeFormView):
+class VLTablaDinamicaDetalleVentasInformeView(InformeFormView):
 	config = ConfigViews  #-- Ahora la configuración estará disponible en self.config.
 	form_class = ConfigViews.form_class
 	template_name = ConfigViews.template_list
@@ -181,83 +327,71 @@ class VLComisionVendedorInformeView(InformeFormView):
 	}
 	
 	def obtener_queryset(self, cleaned_data):
-		vendedor = cleaned_data.get("vendedor", None)
-		fecha_desde = cleaned_data.get("fecha_desde")
-		fecha_hasta = cleaned_data.get("fecha_hasta")
+		fecha_desde = cleaned_data.get('fecha_desde')
+		fecha_hasta = cleaned_data.get('fecha_hasta')
+		comprobantes_impositivos = cleaned_data.get('comprobantes_impositivos', True)
 		
-		id_vendedor = vendedor.id_vendedor if vendedor else None
+		queryset = VLTablaDinamicaDetalleVentas.objects.obtener_datos(
+			fecha_desde, 
+			fecha_hasta, 
+			comprobantes_impositivos=comprobantes_impositivos,
+		)
 		
-		return VLComisionVendedor.objects.obtener_datos(id_vendedor, fecha_desde, fecha_hasta)
+		return queryset
 	
 	def obtener_contexto_reporte(self, queryset, cleaned_data):
 		"""
-		Aquí se estructura el contexto para el reporte, agrupando, calculando subtotales y totales generales, etc,
-		tal como se requiere para el listado.
+		Aquí se estructura el contexto para el reporte, agrupando los comprobantes,
+		calculando subtotales y totales generales, tal como se requiere para el listado.
 		"""
 		
 		#-- Parámetros del listado.
-		vendedor = cleaned_data.get("vendedor")
 		fecha_desde = cleaned_data.get('fecha_desde')
 		fecha_hasta = cleaned_data.get('fecha_hasta')
-		
-		param = {
-			"Vendedor": vendedor.nombre_vendedor if vendedor else "Todos",
-			"Desde": fecha_desde.strftime("%d/%m/%Y"),
-			"Hasta": fecha_hasta.strftime("%d/%m/%Y"),
-		}
+		comprobantes_impositivos = cleaned_data.get('comprobantes_impositivos', True)
 		
 		fecha_hora_reporte = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
 		
 		dominio = f"http://{self.request.get_host()}"
 		
-		# **************************************************
-		#-- Estructura para agrupar datos por Vendedor.
-		datos_por_vendedor = {}
-		
-		for obj in queryset:
-			#-- Identificar al Vendedor.
-			vendedor_id = obj.id_vendedor_id
-			nombre_vendedor = obj.nombre_vendedor.strip()  #-- Limpieza en caso de espacios extras.
-			
-			#-- Si el Vendedor aún no está en el diccionario, se inicializa.
-			if vendedor_id not in datos_por_vendedor:
-				datos_por_vendedor[vendedor_id] = {
-					"id_vendedor": vendedor_id,
-					"vendedor": nombre_vendedor,
-					"detalle": [],
-					"total_gravado_vendedor": Decimal(0),
-					"total_comision_vendedor": Decimal(0),
-				}
-			
-			#-- Crear el diccionario con los datos del detalle del Vendedor.
-			detalle_data = {
-				"comprobante": obj.comprobante,
-				"fecha": obj.fecha_comprobante.strftime("%d/%m/%Y"),
-				"cliente": obj.nombre_cliente,
-				"reventa": obj.reventa,
-				"id_producto": obj.id_producto_id,
-				"producto": obj.medida,
-				"marca": obj.nombre_producto_marca,
-				"articulo": obj.nombre_producto_familia,
-				"gravado": obj.gravado if obj.gravado else Decimal(0),
-				"pje_comision": obj.pje_comision if obj.pje_comision else Decimal(0),
-				# "monto_comision": Decimal(0) if not obj.pje_comision or not obj.gravado or obj.pje_comision == 0 else round((obj.gravado * obj.pje_comision)/100, 2)
-				"monto_comision": obj.monto_comision if obj.monto_comision else Decimal(0)
-			}
-			
-			#-- Agregar el detalle a la lista de detalles y acumular el total.
-			datos_por_vendedor[vendedor_id]["detalle"].append(detalle_data)
-			datos_por_vendedor[vendedor_id]["total_gravado_vendedor"] += Decimal(0) if not obj.gravado else obj.gravado
-			datos_por_vendedor[vendedor_id]["total_comision_vendedor"] += Decimal(0) if not obj.pje_comision or not obj.gravado or obj.pje_comision == 0 else round((obj.gravado * obj.pje_comision)/100, 2)
-		
-		#-- Convertir a lista los datos para iterar con más facilidad en la plantilla.
-		datos_por_vendedor = list(datos_por_vendedor.values())
+		param = {
+			"Desde": fecha_desde.strftime("%d/%m/%Y"),
+			"Hasta": fecha_hasta.strftime("%d/%m/%Y"),
+			"Solo Comprobantes Impositivos": "Si" if comprobantes_impositivos else "No",
+		}
 		
 		# **************************************************
+		# #-- Estructura para agrupar datos por cliente.
+		# datos_por_cliente = {}
+		# total_general = float(0)
+		# 
+		# for obj in queryset:
+		# 	#-- Identificar al cliente.
+		# 	cliente_id = obj.id_cliente_id
+		# 	
+		# 	#-- Si el cliente aún no está en el diccionario, se inicializa.
+		# 	if cliente_id not in datos_por_cliente:
+		# 		datos_por_cliente[cliente_id] = {
+		# 			"comprobantes": [],
+		# 			"total_cliente": float(0),
+		# 		}
+		# 	
+		# 	#-- Añadir el detalle al grupo.
+		# 	datos_por_cliente[cliente_id]["comprobantes"].append(raw_to_dict(obj))
+		# 	
+		# 	#-- Acumular totales.
+		# 	datos_por_cliente[cliente_id]["total_cliente"] += float(obj.total)
+		# 	total_general += float(obj.total)
+		
+		# **************************************************
+		
+		#-- Convertir cada objeto del queryset a un diccionario.
+		objetos_serializables = [raw_to_dict(item) for item in queryset]
+		
 		
 		#-- Se retorna un contexto que será consumido tanto para la vista en pantalla como para la generación del PDF.
 		return {
-			"objetos": datos_por_vendedor,
+			"objetos": objetos_serializables,
 			"parametros": param,
 			'fecha_hora_reporte': fecha_hora_reporte,
 			'titulo': ConfigViews.report_title,
@@ -275,7 +409,14 @@ class VLComisionVendedorInformeView(InformeFormView):
 		return context
 
 
-def vlcomisionvendedor_vista_pantalla(request):
+def raw_to_dict(instance):
+	"""Convierte una instancia de una consulta raw a un diccionario, eliminando claves internas."""
+	data = instance.__dict__.copy()
+	data.pop('_state', None)
+	return data
+
+
+def vltabladinamicadetalleventas_vista_pantalla(request):
 	#-- Obtener el token de la querystring.
 	token = request.GET.get("token")
 	
@@ -292,7 +433,7 @@ def vlcomisionvendedor_vista_pantalla(request):
 	return render(request, ConfigViews.reporte_pantalla, contexto_reporte)
 
 
-def vlcomisionvendedor_vista_pdf(request):
+def vltabladinamicadetalleventas_vista_pdf(request):
 	#-- Obtener el token de la querystring.
 	token = request.GET.get("token")
 	
@@ -315,42 +456,28 @@ def vlcomisionvendedor_vista_pdf(request):
 	
 	return response
 
+
 class CustomPDFGenerator(PDFGenerator):
 	#-- Método que se puede sobreescribir/extender según requerimientos.
 	# def _get_header_bottom_left(self, context):
 	# 	"""Personalización del Header-bottom-left"""
 	# 	
-	# 	# custom_text = context.get("texto_personalizado", "")
-	# 	# 
-	# 	# if custom_text:
-	# 	# 	return f"<b>NOTA:</b> {custom_text}"
-	# 	
-	# 	id_cliente = 10025
-	# 	cliente = "Leoncio R. Barrios H."
-	# 	domicilio = "Jr. San Pedro 1256. Surquillo, Lima."
-	# 	Telefono = "971025647"
-	# 	
-	# 	# return f"Cliente: [{id_cliente}] {cliente} <br/> {domicilio}"
-	# 	# return f"Cliente: [{id_cliente}] {cliente} <br/> {domicilio} <br/> Tel. {Telefono} <br/>"
-	# 	return f"Cliente: [{id_cliente}] {cliente} <br/> {domicilio} <br/> Tel. {Telefono} <br/> Tel. {Telefono} "
-	# 	# return f"Cliente: [{id_cliente}] {cliente} <br/> {domicilio} <br/> Tel. {Telefono} <br/> Tel. {Telefono} <br/> Tel. {Telefono}"
-	# 	
-	# 	# return super()._get_header_bottom_left(context)
+	# 	params = context.get("parametros_i", {})
+	# 	return "<br/>".join([f"<b>{k}:</b> {v}" for k, v in params.items()])
 	
 	#-- Método que se puede sobreescribir/extender según requerimientos.
 	# def _get_header_bottom_right(self, context):
 	# 	"""Añadir información adicional específica para este reporte"""
-	# 	base_content = super()._get_header_bottom_right(context)
-	# 	saldo_total = context.get("saldo_total", 0)
-	# 	return f"""
-	# 		{base_content}<br/>
-	# 		<b>Total General:</b> {formato_es_ar(saldo_total)}
-	# 	"""
+	# 	
+	# 	params = context.get("parametros_d", {})
+	# 	return "<br/>".join([f"<b>{k}:</b> {v}" for k, v in params.items()])
 	pass
+
 
 def generar_pdf(contexto_reporte):
 	#-- Crear instancia del generador personalizado.
-	generator = CustomPDFGenerator(contexto_reporte, pagesize=landscape(A4))
+	return
+	generator = CustomPDFGenerator(contexto_reporte, pagesize=portrait(A4), body_font_size=7)
 	
 	#-- Construir datos de la tabla:
 	
@@ -364,57 +491,37 @@ def generar_pdf(contexto_reporte):
 	
 	#-- Estilos específicos adicionales iniciales de la tabla.
 	table_style_config = [
-		('ALIGN', (8,0), (-1,-1), 'RIGHT'),
+		('ALIGN', (4,0), (4,-1), 'RIGHT'),
 	]
 	
 	#-- Contador de filas (empezamos en 1 porque la 0 es el header).
 	current_row = 1
 	
 	#-- Agregar los datos a la tabla.
-	for vendedor in contexto_reporte.get("objetos", []):
-		#-- Datos agrupado por.
-		table_data.append([
-			f"Vendedor: [{vendedor['id_vendedor']}] {vendedor['vendedor']}",
-			"", "", "", "", "", "", "", "", "", ""
-		])
-		
-		#-- Aplicar estilos a la fila de agrupación (fila actual).
-		table_style_config.extend([
-			('SPAN', (0,current_row), (-1,current_row)),
-			('FONTNAME', (0,current_row), (-1,current_row), 'Helvetica-Bold')
-		])
-		
-		current_row += 1
-		
+	
+	for obj in contexto_reporte.get("objetos", {}).values():
 		#-- Agregar filas del detalle.
-		for det in vendedor['detalle']:
+		for comprobante in obj['comprobantes']:
+			print("comprobante:", comprobante)
 			table_data.append([
-				det['comprobante'],
-				det['fecha'],
-				Paragraph(str(det['cliente']), generator.styles['CellStyle']),
-				det['reventa'],
-				det['id_producto'],
-				det['producto'],
-				Paragraph(str(det['marca']), generator.styles['CellStyle']),
-				Paragraph(str(det['articulo']), generator.styles['CellStyle']),
-				formato_argentino(det['gravado']),
-				f"{formato_argentino(det['pje_comision'])}%",
-				formato_argentino(det['monto_comision'])
+				format_date(comprobante['fecha_comprobante']),
+				comprobante['comprobante'],
+				comprobante['id_cliente_id'],
+				Paragraph(str(comprobante['nombre_cliente']), generator.styles['CellStyle']),
+				formato_argentino(comprobante['total']),
+				Paragraph(str(comprobante['nombre_vendedor']), generator.styles['CellStyle']),
+				comprobante['sub_cuenta']
 			])
 			current_row += 1
-		
-		#-- Fila Total agrupación.
-		total_gravado = vendedor['total_gravado_vendedor']
-		total_comision = vendedor['total_comision_vendedor']
-		
-		table_data.append(["", "", "", "", "", "", "", 
-					 "Totales:", formato_argentino(total_gravado), "", formato_argentino(total_comision)])
+			
+		#-- Fila Total por Cliente.
+		table_data.append(["", "", "", "Total Cliente:", formato_argentino(obj['total_cliente'])])
 		
 		#-- Aplicar estilos a la fila de total (fila actual).
 		table_style_config.extend([
-			('ALIGN', (7,current_row), (-1,current_row), 'RIGHT'),
 			('FONTNAME', (0,current_row), (-1,current_row), 'Helvetica-Bold'),
-			('LINEABOVE', (8,current_row), (-1,current_row), 0.5, colors.black),
+			('ALIGN', (3,current_row), (4,current_row), 'RIGHT'),
+			# ('LINEABOVE', (0,current_row), (-1,current_row), 0.5, colors.black),
 		])
 		
 		current_row += 1
@@ -426,11 +533,21 @@ def generar_pdf(contexto_reporte):
 		)
 		current_row += 1
 	
+	#-- Fila Total General.
+	table_data.append(["", "", "", "Total General:", formato_argentino(contexto_reporte.get('total_general'))])
+	
+	#-- Aplicar estilos a la fila de total (fila actual).
+	table_style_config.extend([
+		('FONTNAME', (0,current_row), (-1,current_row), 'Helvetica-Bold'),
+		('ALIGN', (3,current_row), (4,current_row), 'RIGHT'),
+		# ('LINEABOVE', (0,current_row), (-1,current_row), 0.5, colors.black),
+	])
+	
 	return generator.generate(table_data, col_widths, table_style_config)		
 
-
-def vlcomisionvendedor_vista_excel(request):
+def vltabladinamicadetalleventas_vista_excel(request):
 	token = request.GET.get("token")
+	
 	if not token:
 		return HttpResponse("Token no proporcionado", status=400)
 	
@@ -443,13 +560,14 @@ def vlcomisionvendedor_vista_excel(request):
 	# ---------------------------------------------
 	
 	#-- Instanciar la vista y obtener el queryset.
-	view_instance = VLComisionVendedorInformeView()
+	view_instance = VLTablaDinamicaDetalleVentasInformeView()
 	view_instance.request = request
 	queryset = view_instance.obtener_queryset(cleaned_data)
 	
 	#-- Extraer Títulos de las columnas (headers).
 	headers = {field: ConfigViews.table_info[field] for field in ConfigViews.table_info if ConfigViews.table_info[field]['excel'] }
 	
+	#-- Usar el helper para exportar a Excel.
 	helper = ExportHelper(
 		queryset=queryset,
 		table_info=headers,
@@ -467,7 +585,7 @@ def vlcomisionvendedor_vista_excel(request):
 	return response
 
 
-def vlcomisionvendedor_vista_csv(request):
+def vltabladinamicadetalleventas_vista_csv(request):
 	token = request.GET.get("token")
 	if not token:
 		return HttpResponse("Token no proporcionado", status=400)
@@ -480,7 +598,7 @@ def vlcomisionvendedor_vista_csv(request):
 	cleaned_data = data["cleaned_data"]
 	
 	#-- Instanciar la vista para reejecutar la consulta y obtener el queryset.
-	view_instance = VLComisionVendedorInformeView()
+	view_instance = VLTablaDinamicaDetalleVentasInformeView()
 	view_instance.request = request
 	queryset = view_instance.obtener_queryset(cleaned_data)
 	

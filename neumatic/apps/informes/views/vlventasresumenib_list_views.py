@@ -73,94 +73,56 @@ class ConfigViews:
 	#-- Plantilla Vista Preliminar Pantalla.
 	reporte_pantalla = f"informes/reportes/{model_string}_list.html"
 	
-	#-- Establecer las columnas del reporte y sus anchos(en punto).
-	header_data = {
-		"provincia": (180, "Provincia"),
-		"por_menor": (65, "Por Menor"),
-		"reparacion": (65, "Reparación"),
-		"por_mayor": (65, "Por Mayor"),
-		"total_gravado": (65, "Total Gravado"),
-		"iva": (65, "I.V.A."),
-		"total": (65, "TOTAL"),
-	}
 	#-- Establecer las columnas del reporte y sus atributos.
 	table_info = {
 		"provincia": {
 			"label": "Provincia",
-			# "col_width_table": 0,
 			"col_width_pdf": 180,
-			# "pdf_paragraph": False,
-			# "date_format": None,
-			# "table": False,
-			# "pdf": True,
-			# "excel": True,
-			# "csv": True
+			"pdf": True,
+			"excel": True,
+			"csv": True
 		},
 		"por_menor": {
 			"label": "Por Menor",
-			# "col_width_table": 0,
 			"col_width_pdf": 65,
-			# "pdf_paragraph": False,
-			# "date_format": None,
-			# "table": False,
-			# "pdf": True,
-			# "excel": True,
-			# "csv": True
+			"pdf": True,
+			"excel": True,
+			"csv": True
 		},
 		"reparacion": {
 			"label": "Reparación",
-			# "col_width_table": 0,
 			"col_width_pdf": 65,
-			# "pdf_paragraph": False,
-			# "date_format": None,
-			# "table": False,
-			# "pdf": True,
-			# "excel": True,
-			# "csv": True
+			"pdf": True,
+			"excel": True,
+			"csv": True
 		},
 		"por_mayor": {
 			"label": "Por Mayor",
-			# "col_width_table": 0,
 			"col_width_pdf": 65,
-			# "pdf_paragraph": False,
-			# "date_format": None,
-			# "table": False,
-			# "pdf": True,
-			# "excel": True,
-			# "csv": True
+			"pdf": True,
+			"excel": True,
+			"csv": True
 		},
 		"total_gravado": {
 			"label": "Total Gravado",
-			# "col_width_table": 0,
 			"col_width_pdf": 65,
-			# "pdf_paragraph": False,
-			# "date_format": None,
-			# "table": False,
-			# "pdf": True,
-			# "excel": True,
-			# "csv": True
+			"pdf": True,
+			"excel": True,
+			"csv": True
 		},
 		"iva": {
 			"label": "I.V.A.",
-			# "col_width_table": 0,
 			"col_width_pdf": 65,
-			# "pdf_paragraph": False,
-			# "date_format": None,
-			# "table": False,
-			# "pdf": True,
-			# "excel": True,
-			# "csv": True
+			"pdf": True,
+			"excel": True,
+			"csv": True
 		},
 		"total": {
 			"label": "TOTAL",
-			# "col_width_table": 0,
 			"col_width_pdf": 65,
-			# "pdf_paragraph": False,
-			# "date_format": None,
-			# "table": False,
-			# "pdf": True,
-			# "excel": True,
-			# "csv": True
+			"pdf": True,
+			"excel": True,
+			"csv": True
 		},
 	}
 
@@ -374,10 +336,6 @@ class VLVentasResumenIBInformeView(InformeFormView):
 		dominio = f"http://{self.request.get_host()}"
 		
 		# **************************************************
-		# totales = {}
-		# id_santa_fe = 13
-		# sucursal_santa_fe = "Santa Fe"
-		
 		#-- Inicializar los totales como Decimals.
 		tg_pmenor = Decimal(0)
 		tg_reparacion = Decimal(0)
@@ -385,114 +343,6 @@ class VLVentasResumenIBInformeView(InformeFormView):
 		tg_gravado = Decimal(0)
 		tg_iva = Decimal(0)
 		tg_total = Decimal(0)
-		
-		# #-- Crear el diccionario con las provincias seleccionadas para las totalizaciones.
-		# for id, provincia in ids_provincias_dict.items():
-		# 	totales[id] = {
-		# 		"provincia": provincia,
-		# 		"por_menor": Decimal(0),
-		# 		"reparacion": Decimal(0),
-		# 		"por_mayor": Decimal(0),
-		# 		"total_gravado": Decimal(0),
-		# 		"iva": Decimal(0),
-		# 		"total": Decimal(0),
-		# 		"gravado_bruto": Decimal(0),  # Nuevo campo para acumular
-		# 		"iva_bruto": Decimal(0)       # Nuevo campo para acumular
-		# 	}
-		# 
-		# #-- Se agrega la provincia de Santa Fe al final.
-		# totales[id_santa_fe] = {
-		# 	"provincia": sucursal_santa_fe,
-		# 	"por_menor": Decimal(0),
-		# 	"reparacion": Decimal(0),
-		# 	"por_mayor": Decimal(0),
-		# 	"total_gravado": Decimal(0),
-		# 	"iva": Decimal(0),
-		# 	"total": Decimal(0),
-		# 	"gravado_bruto": Decimal(0),  # Para acumular todo el gravado de SF
-		# 	"iva_bruto": Decimal(0)       # Para acumular todo el IVA de SF
-		# }
-		# 
-		# #-- Obtener IDs de facturas distintas a Santa Fe.
-		# facturas_santa_fe = [obj.id_factura for obj in queryset 
-		# 					if obj.id_provincia_id not in ids_provincias_dict]
-		# 
-		# #-- Calcular servicios totales (para Santa Fe).
-		# servicios_totales = DetalleFactura.objects.filter(
-		# 	id_factura__in=facturas_santa_fe,
-		# 	id_producto__tipo_producto='S'
-		# ).annotate(
-		# 	base=ExpressionWrapper(
-		# 		F('total') / (F('alic_iva')/100 + 1) * F('id_factura__id_comprobante_venta__mult_venta'),
-		# 		output_field=FloatField()
-		# 	)
-		# ).aggregate(total_servicios=Sum('base'))['total_servicios'] or Decimal('0')
-		# 
-		# #-- Calcular servicios con importe mayor al máximo (para Santa Fe).
-		# facturas_mayores_santa_fe = [
-		# 	obj.id_factura for obj in queryset 
-		# 	if obj.id_provincia_id not in ids_provincias_dict 
-		# 	and abs(float(obj.gravado)) > float(importe_max)
-		# ]
-		# 
-		# servicios_mayores = DetalleFactura.objects.filter(
-		# 	id_factura__in=facturas_mayores_santa_fe,
-		# 	id_producto__tipo_producto='S'
-		# ).annotate(
-		# 	base=ExpressionWrapper(
-		# 		F('total') / (F('alic_iva')/100 + 1) * F('id_factura__id_comprobante_venta__mult_venta'),
-		# 		output_field=FloatField()
-		# 	)
-		# ).aggregate(total_servicios=Sum('base'))['total_servicios'] or Decimal('0')
-		# 
-		# #-- Se procesa el queryset.
-		# for obj in queryset:
-		# 	if obj.id_provincia_id in ids_provincias_dict:
-		# 		id_prov = obj.id_provincia_id
-		# 		
-		# 		totales[id_prov]["por_mayor"] += Decimal(str(obj.gravado)).quantize(Decimal('0.00'))
-		# 		totales[id_prov]["iva"] += Decimal(str(obj.iva)).quantize(Decimal('0.00'))
-		# 		totales[id_prov]["total_gravado"] = totales[id_prov]["por_mayor"].quantize(Decimal('0.00'))  # Solo por_mayor
-		# 		totales[id_prov]["total"] = (totales[id_prov]["total_gravado"] + totales[id_prov]["iva"]).quantize(Decimal('0.00'))
-		# 		
-		# 	else:
-		# 		id_prov = id_santa_fe
-		# 		
-		# 		#-- Acumular valores brutos.
-		# 		totales[id_prov]["gravado_bruto"] += Decimal(str(obj.gravado)).quantize(Decimal('0.00'))
-		# 		totales[id_prov]["iva_bruto"] += Decimal(str(obj.iva)).quantize(Decimal('0.00'))
-		# 		
-		# 		if abs(float(obj.gravado)) > float(importe_max):
-		# 			totales[id_prov]["por_mayor"] += Decimal(str(obj.gravado)).quantize(Decimal('0.00'))
-		# 		
-		# 		totales[id_prov]["total_gravado"] += obj.gravado
-		# 		totales[id_prov]["iva"] += obj.iva
-		# 		totales[id_prov]["total_gravado"] = (totales[id_prov]["por_menor"] + totales[id_prov]["reparacion"] + totales[id_prov]["por_mayor"]).quantize(Decimal('0.00'))
-		# 		totales[id_prov]["total"] = (totales[id_prov]["total_gravado"] + totales[id_prov]["iva"]).quantize(Decimal('0.00'))
-		# 
-		# #-------------------------------------
-		# #-- CÁLCULOS ESPECIALES PARA SANTA FE (provincia 13).
-		# if id_santa_fe in totales:
-		# 	#-- 1. Reparación (servicios).
-		# 	totales[id_santa_fe]["reparacion"] = Decimal(str(servicios_totales)).quantize(Decimal('0.00'))
-		# 	
-		# 	#-- 2. Ajustar por_mayor restando servicios mayores.
-		# 	totales[id_santa_fe]["por_mayor"] = (totales[id_santa_fe]["por_mayor"] - Decimal(str(servicios_mayores))).quantize(Decimal('0.00'))
-		# 	
-		# 	#-- 3. Calcular por_menor (gravado total - por_mayor - reparacion).
-		# 	totales[id_santa_fe]["por_menor"] = (totales[id_santa_fe]["gravado_bruto"] - totales[id_santa_fe]["por_mayor"] - totales[id_santa_fe]["reparacion"]).quantize(Decimal('0.00'))
-		# 	
-		# 	#-- 4. Calcular total_gravado (suma de los tres conceptos).
-		# 	totales[id_santa_fe]["total_gravado"] = (
-		# 		totales[id_santa_fe]["por_menor"] + 
-		# 		totales[id_santa_fe]["reparacion"] + 
-		# 		totales[id_santa_fe]["por_mayor"]
-		# 	).quantize(Decimal('0.00'))
-		# 	
-		# 	#-- 5. Total general (total_gravado + iva).
-		# 	totales[id_santa_fe]["iva"] = totales[id_santa_fe]["iva_bruto"].quantize(Decimal('0.00'))
-		# 	totales[id_santa_fe]["total"] = (totales[id_santa_fe]["total_gravado"] + totales[id_santa_fe]["iva"]).quantize(Decimal('0.00'))
-		# #-------------------------------------
 		
 		for p, v in queryset.items():
 			tg_pmenor += v["por_menor"]
@@ -524,7 +374,6 @@ class VLVentasResumenIBInformeView(InformeFormView):
 			'titulo': ConfigViews.report_title,
 			'logo_url': f"{dominio}{static('img/logo_01.png')}",
 			'css_url': f"{dominio}{static('css/reportes.css')}",
-			# 'css_url_new': f"{dominio}{static('css/reportes_new.css')}",
 		}
 	
 	def get_context_data(self, **kwargs):
@@ -618,8 +467,11 @@ def generar_pdf(contexto_reporte):
 	#-- Construir datos de la tabla:
 	
 	#-- Obtener los títulos de las columnas (headers).
-	header_data = [value['label'] for value in ConfigViews.table_info.values()]
+	header_data = [value['label'] for value in ConfigViews.table_info.values() if value['pdf']]
 	table_data = [header_data]
+	
+	#-- Extrae los anchos de las columnas de la estructura ConfigViews.header_info.
+	col_widths = [value['col_width_pdf'] for value in ConfigViews.table_info.values() if value['pdf']]
 	
 	for obj in contexto_reporte.get("objetos", []):
 		
@@ -654,9 +506,6 @@ def generar_pdf(contexto_reporte):
 	
 	#-- Configuración específica de la tabla de datos:
 	
-	#-- Extrae los anchos de las columnas de la estructura ConfigViews.header_data.
-	col_widths = [value['col_width_pdf'] for value in ConfigViews.table_info.values()]
-	
 	#-- Estilos específicos adicionales de la tabla.
 	table_style_config = [
 		('ALIGN', (1,0), (-1,-1), 'RIGHT'),
@@ -689,9 +538,12 @@ def vlventasresumenib_vista_excel(request):
 	#-- Esto es necesario porque el diccionario tiene estructura {id: {datos}}.
 	data_list = list(queryset.values()) if isinstance(queryset, dict) else queryset	
 	
+	#-- Extraer Títulos de las columnas (headers).
+	headers = {field: ConfigViews.table_info[field] for field in ConfigViews.table_info if ConfigViews.table_info[field]['excel'] }
+	
 	helper = ExportHelper(
 		queryset=data_list,
-		table_info=ConfigViews.table_info,
+		table_info=headers,
 		report_title=ConfigViews.report_title
 	)
 	excel_data = helper.export_to_excel()
@@ -727,10 +579,13 @@ def vlventasresumenib_vista_csv(request):
 	#-- Esto es necesario porque el diccionario tiene estructura {id: {datos}}.
 	data_list = list(queryset.values()) if isinstance(queryset, dict) else queryset
 	
+	#-- Extraer Títulos de las columnas (headers).
+	headers = {field: ConfigViews.table_info[field] for field in ConfigViews.table_info if ConfigViews.table_info[field]['csv'] }
+	
 	#-- Usar el helper para exportar a CSV.
 	helper = ExportHelper(
 		queryset=data_list,
-		table_info=ConfigViews.table_info,
+		table_info=headers,
 		report_title=ConfigViews.report_title
 	)
 	csv_data = helper.export_to_csv()

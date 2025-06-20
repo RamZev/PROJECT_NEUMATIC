@@ -1,14 +1,13 @@
-# neumatic\apps\informes\forms\buscador_vlmercaderiaporcliente_forms.py
+# neumatic\apps\informes\forms\buscador_vltabladinamicaventas_forms.py
 
 from django import forms
 from datetime import date
 
 from .informes_generics_forms import InformesGenericForm
-from apps.maestros.models.cliente_models import Cliente
-from diseno_base.diseno_bootstrap import formclasstext, formclassdate
+from diseno_base.diseno_bootstrap import formclassdate, formclasscheck
 
 
-class BuscadorMercaderiaPorClienteForm(InformesGenericForm):
+class BuscadorTablaDinamicaVentasForm(InformesGenericForm):
 	
 	fecha_desde = forms.DateField(
 		required=False, 
@@ -20,24 +19,14 @@ class BuscadorMercaderiaPorClienteForm(InformesGenericForm):
 		label="Hasta Fecha",
 		widget=forms.TextInput(attrs={'type':'date', **formclassdate})
 	)
-	id_cliente = forms.IntegerField(
-		label="Cód. Cliente",
-		required=True,
-		widget=forms.NumberInput(attrs={**formclasstext})
-	)
-	nombre_cliente = forms.CharField(
-		label="Cliente",
+	comprobantes_impositivos = forms.BooleanField(
+		label="Solo Comprobantes Impotitivos",
+		initial=True,
 		required=False,
-		widget=forms.TextInput(attrs={**formclasstext, 'readonly': 'readonly'})
+		widget=forms.CheckboxInput(attrs={**formclasscheck})
 	)
 	
 	def __init__(self, *args, **kwargs):
-		"""
-		Inicializa el formulario con valores predeterminados:
-		- `fecha_desde` se establece en el 1 del mes y año actual.
-		- `fecha_hasta` se establece en la fecha actual.
-		"""
-		
 		super().__init__(*args, **kwargs)
 		
 		if "fecha_desde" not in self.initial:
@@ -52,20 +41,10 @@ class BuscadorMercaderiaPorClienteForm(InformesGenericForm):
 	def clean(self):
 		cleaned_data = super().clean()
 		
-		id_cliente = cleaned_data.get("id_cliente")
 		fecha_desde = cleaned_data.get("fecha_desde")
 		fecha_hasta = cleaned_data.get("fecha_hasta")
 		
 		#-- Validaciones.
-		if not id_cliente:
-			self.add_error("id_cliente", "Debe indicar un Código de Cliente.")
-		
-		if id_cliente:
-			try:
-				cliente = Cliente.objects.get(id_cliente=id_cliente)
-			except Cliente.DoesNotExist:
-				self.add_error("id_cliente", "El cliente no existe. Por favor, verifique el código.")
-		
 		if not fecha_desde:
 			self.add_error("fecha_desde", "Debe indicar una fecha válida.")
 		
@@ -76,4 +55,3 @@ class BuscadorMercaderiaPorClienteForm(InformesGenericForm):
 			self.add_error("fecha_hasta", "La fecha hasta no puede ser anterior a la fecha desde.")
 		
 		return cleaned_data
-	
