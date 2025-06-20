@@ -67,7 +67,7 @@ class FacturaListView(MaestroDetalleListView):
 		{'field_name': 'compro', 'date_format': None},
 		{'field_name': 'letra_comprobante', 'date_format': None},
 		{'field_name': 'numero_comprobante', 'date_format': None},
-  	{'field_name': 'fecha_comprobante', 'date_format': 'd/m/Y'},
+  		{'field_name': 'fecha_comprobante', 'date_format': 'd/m/Y'},
 		{'field_name': 'cuit', 'date_format': None},
 		{'field_name': 'id_cliente', 'date_format': None},
 		{'field_name': 'total', 'date_format': None, 'decimal_places': 2},
@@ -166,112 +166,112 @@ class FacturaCreateView(MaestroDetalleCreateView):
 				return self.form_invalid(form)
 
 			try:
-					with transaction.atomic():
-							# 1. Validación mínima necesaria
-							deposito = form.cleaned_data.get('id_deposito')
-							if not deposito:
-									form.add_error('id_deposito', 'Debe seleccionar un depósito')
-									return self.form_invalid(form)
+				with transaction.atomic():
+						# 1. Validación mínima necesaria
+						deposito = form.cleaned_data.get('id_deposito')
+						if not deposito:
+								form.add_error('id_deposito', 'Debe seleccionar un depósito')
+								return self.form_invalid(form)
 
-							# 2. Validación para documentos pendientes
-							comprobante_venta = form.cleaned_data['id_comprobante_venta']
-							if comprobante_venta.pendiente:
-									comprobante_remito = form.cleaned_data.get('comprobante_remito')
-									remito = form.cleaned_data.get('remito')
-									
-									if not all([comprobante_remito, remito]):
-											form.add_error(None, 'Para este tipo de comprobante debe especificar el documento asociado')
-											return self.form_invalid(form)
-       
-       				# 3. Numeración
-							sucursal = form.cleaned_data['id_sucursal']
-							punto_venta = form.cleaned_data['id_punto_venta']
-							comprobante = form.cleaned_data['compro']
-							letra = form.cleaned_data['letra_comprobante']
-							fecha_comprobante = form.cleaned_data['fecha_comprobante']
+						# 2. Validación para documentos pendientes
+						comprobante_venta = form.cleaned_data['id_comprobante_venta']
+						if comprobante_venta.pendiente:
+								comprobante_remito = form.cleaned_data.get('comprobante_remito')
+								remito = form.cleaned_data.get('remito')
+								
+								if not all([comprobante_remito, remito]):
+										form.add_error(None, 'Para este tipo de comprobante debe especificar el documento asociado')
+										return self.form_invalid(form)
+	
+						# 3. Numeración
+						sucursal = form.cleaned_data['id_sucursal']
+						punto_venta = form.cleaned_data['id_punto_venta']
+						comprobante = form.cleaned_data['compro']
+						letra = form.cleaned_data['letra_comprobante']
+						fecha_comprobante = form.cleaned_data['fecha_comprobante']
 
-							numero_obj, created = Numero.objects.select_for_update(
-									nowait=True
-							).get_or_create(
-									id_sucursal=sucursal,
-									id_punto_venta=punto_venta,
-									comprobante=comprobante,
-									letra=letra,
-									defaults={'numero': 0}
-							)
+						numero_obj, created = Numero.objects.select_for_update(
+								nowait=True
+						).get_or_create(
+								id_sucursal=sucursal,
+								id_punto_venta=punto_venta,
+								comprobante=comprobante,
+								letra=letra,
+								defaults={'numero': 0}
+						)
 
-							nuevo_numero = numero_obj.numero + 1
-							Numero.objects.filter(pk=numero_obj.pk).update(numero=F('numero') + 1)
-							
-							form.instance.numero_comprobante = nuevo_numero
-							form.instance.full_clean()
+						nuevo_numero = numero_obj.numero + 1
+						Numero.objects.filter(pk=numero_obj.pk).update(numero=F('numero') + 1)
+						
+						form.instance.numero_comprobante = nuevo_numero
+						form.instance.full_clean()
 
-							# 4. Guardado en el modelo Factura
-							self.object = form.save()
-       
-							# 5. ACTUALIZACIÓN DEL DOCUMENTO ASOCIADO (PARTE CLAVE)
-							if comprobante_venta.pendiente:
-									try:
-											# Buscar el documento asociado (remito) con estado NULL o vacío
-											documento_asociado = Factura.objects.filter(
-													Q(compro=form.cleaned_data['comprobante_remito']) &
-													Q(numero_comprobante=form.cleaned_data['remito']) &
-													(Q(estado="") | Q(estado__isnull=True))
-											).select_for_update().first()
-											
-											if documento_asociado:
-													# Actualización directa y eficiente
-													Factura.objects.filter(pk=documento_asociado.pk).update(
-															estado="F"
-													)
-													print(f"Documento {documento_asociado.compro}-{documento_asociado.numero_comprobante} actualizado a estado 'F'")
-											else:
-													print("Advertencia: No se encontró el documento asociado para actualizar")
-									except Exception as e:
-											print(f"Error al actualizar documento asociado: {str(e)}")
-											# No hacemos return para no impedir la creación de la factura principal
-       
-							# 6. ACTUALIZACIÓN DE LA AUTORIZACIÓN (NUEVO)
-							if form.cleaned_data.get('id_valida'):  # Si tiene autorización asociada
-									autorizacion = form.cleaned_data['id_valida']
-									Valida.objects.filter(pk=autorizacion.pk).update(
-											hs=timezone.now().time(),
-											estatus_valida=False,
-											# fecha_uso=timezone.now().date()  # Campo adicional para auditoría
-									)
-									print(f"Autorización {autorizacion.id_valida} marcada como utilizada")
-       
-							# 7. Guardado en el modelo Detallefactura y DetalleSerial
-							formset_detalle.instance = self.object
-							detalles = formset_detalle.save()
-							
-							formset_serial.instance = self.object 
-							formset_serial.save() 						
-       
-							# 8. Actualización de inventario
-							for detalle in detalles:
-								# Solo actualizamos si es producto físico (tipo_producto = "P")
-								# print("entró al bucle detalles!!!")
-				
-								if (hasattr(detalle.id_producto, 'tipo_producto') and 
-										detalle.id_producto.tipo_producto == "P" and 
-										detalle.cantidad):
+						# 4. Guardado en el modelo Factura
+						self.object = form.save()
+	
+						# 5. ACTUALIZACIÓN DEL DOCUMENTO ASOCIADO (PARTE CLAVE)
+						if comprobante_venta.pendiente:
+								try:
+										# Buscar el documento asociado (remito) con estado NULL o vacío
+										documento_asociado = Factura.objects.filter(
+												Q(compro=form.cleaned_data['comprobante_remito']) &
+												Q(numero_comprobante=form.cleaned_data['remito']) &
+												(Q(estado="") | Q(estado__isnull=True))
+										).select_for_update().first()
 										
-										# Actualización segura con bloqueo
-										# print("mult_stock", self.object.id_comprobante_venta.mult_stock)
-					
-										ProductoStock.objects.select_for_update().filter(
-												id_producto=detalle.id_producto,
-												id_deposito=deposito
-										).update(
-												#stock=F('stock') - detalle.cantidad,
-												stock=F('stock') + (detalle.cantidad * self.object.id_comprobante_venta.mult_stock),
-												fecha_producto_stock=fecha_comprobante
-										)
-							
-							# Mensaje de confirmación de la creación de la factura y redirección
-							messages.success(self.request, f"Factura {nuevo_numero} creada correctamente")
-							return redirect(self.get_success_url())
+										if documento_asociado:
+												# Actualización directa y eficiente
+												Factura.objects.filter(pk=documento_asociado.pk).update(
+														estado="F"
+												)
+												print(f"Documento {documento_asociado.compro}-{documento_asociado.numero_comprobante} actualizado a estado 'F'")
+										else:
+												print("Advertencia: No se encontró el documento asociado para actualizar")
+								except Exception as e:
+										print(f"Error al actualizar documento asociado: {str(e)}")
+										# No hacemos return para no impedir la creación de la factura principal
+	
+						# 6. ACTUALIZACIÓN DE LA AUTORIZACIÓN (NUEVO)
+						if form.cleaned_data.get('id_valida'):  # Si tiene autorización asociada
+								autorizacion = form.cleaned_data['id_valida']
+								Valida.objects.filter(pk=autorizacion.pk).update(
+										hs=timezone.now().time(),
+										estatus_valida=False,
+										# fecha_uso=timezone.now().date()  # Campo adicional para auditoría
+								)
+								print(f"Autorización {autorizacion.id_valida} marcada como utilizada")
+	
+						# 7. Guardado en el modelo Detallefactura y DetalleSerial
+						formset_detalle.instance = self.object
+						detalles = formset_detalle.save()
+						
+						formset_serial.instance = self.object 
+						formset_serial.save() 						
+	
+						# 8. Actualización de inventario
+						for detalle in detalles:
+							# Solo actualizamos si es producto físico (tipo_producto = "P")
+							# print("entró al bucle detalles!!!")
+			
+							if (hasattr(detalle.id_producto, 'tipo_producto') and 
+									detalle.id_producto.tipo_producto == "P" and 
+									detalle.cantidad):
+									
+									# Actualización segura con bloqueo
+									# print("mult_stock", self.object.id_comprobante_venta.mult_stock)
+				
+									ProductoStock.objects.select_for_update().filter(
+											id_producto=detalle.id_producto,
+											id_deposito=deposito
+									).update(
+											#stock=F('stock') - detalle.cantidad,
+											stock=F('stock') + (detalle.cantidad * self.object.id_comprobante_venta.mult_stock),
+											fecha_producto_stock=fecha_comprobante
+									)
+						
+						# Mensaje de confirmación de la creación de la factura y redirección
+						messages.success(self.request, f"Factura {nuevo_numero} creada correctamente")
+						return redirect(self.get_success_url())
 
 							
 			except DatabaseError as e:

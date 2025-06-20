@@ -9,6 +9,8 @@ from django.contrib import messages
 from django.db.models import Q
 
 from .msdt_views_generics import *
+
+from ...maestros.models.numero_models import Numero
 from ..models.factura_models import Factura
 from ..models.recibo_models import (
 	DetalleRecibo,
@@ -198,8 +200,33 @@ class ReciboCreateView(MaestroDetalleCreateView):
 
 		try:
 			with transaction.atomic():
+				# 1. Obtener datos para la numeración
+				sucursal = form.cleaned_data['id_sucursal']
+				punto_venta = form.cleaned_data['id_punto_venta']
+				comprobante = form.cleaned_data['compro']
+				letra = form.cleaned_data['letra_comprobante']
+
+				# 2. Obtener o crear el número en el modelo Numero
+				numero_obj, created = Numero.objects.select_for_update(
+					nowait=True
+				).get_or_create(
+					id_sucursal=sucursal,
+					id_punto_venta=punto_venta,
+					comprobante=comprobante,
+					letra=letra,
+					defaults={'numero': 0}
+				)
+
+				# 3. Calcular el nuevo número y actualizar el modelo Numero
+				nuevo_numero = numero_obj.numero + 1
+				Numero.objects.filter(pk=numero_obj.pk).update(numero=F('numero') + 1)
+				form.instance.numero_comprobante = nuevo_numero
+				form.instance.full_clean()  # Validar el formulario con el nuevo número
+				
+				# 4. Guardar el formulario principal (Factura/Recibo)
 				self.object = form.save()
 				
+				# 5. Guardar los formsets
 				for formset in formsets:
 					formset.instance = self.object
 					formset.save()

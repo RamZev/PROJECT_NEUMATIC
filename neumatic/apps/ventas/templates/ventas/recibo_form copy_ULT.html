@@ -933,7 +933,6 @@
                                         <table class="detalle-form table table-striped table-hover table-responsive" style="width: 100%;">
                                             <thead class="table-primary small-font">
                                                 <tr>
-                                                    <th style="width: 10%;">Código</th>
                                                     <th style="width: 15%;">Banco</th>
                                                     <th style="width: 10%;">Sucursal</th>
                                                     <th style="width: 10%;">Cód. Postal</th>
@@ -950,13 +949,9 @@
                                                 {% for form in formset_cheque %}
                                                 <tr data-form-index="{{ forloop.counter0 }}">
                                                     <td>
-                                                        {{ form.codigo_banco }}
-                                                    </td>
-                                                    <td>
                                                         {{ form.id_cheque_recibo }}
                                                         {{ form.id_factura }}
                                                         {{ form.id_banco }}
-                                                        {{ form.id_banco.value|default_if_none:"" }}
                                                     </td>
                                                     <td>{{ form.sucursal }}</td>
                                                     <td>{{ form.codigo_postal }}</td>
@@ -1720,9 +1715,7 @@
 
             insertarBtn6.addEventListener('click', function () {
                 const codigoBanco = formsetContainer6.querySelector('#id_codigo_banco_input').value;
-                const bancoSelect = formsetContainer6.querySelector('#id_id_banco_input2');
-                const bancoId = bancoSelect.value;
-                const nombreBanco = bancoSelect.options[bancoSelect.selectedIndex]?.text || '';
+                const banco = formsetContainer6.querySelector('#id_id_banco_input').value;
                 const sucursal = formsetContainer6.querySelector('#id_sucursal_input').value;
                 const codigoPostal = formsetContainer6.querySelector('#id_codigo_postal_input').value;
                 const numero = formsetContainer6.querySelector('#id_numero_cheque_recibo_input').value;
@@ -1735,7 +1728,7 @@
                 // Validar que todos los campos estén completos
                 const camposFaltantes = [];
                 if (!codigoBanco) camposFaltantes.push('Código Banco');
-                if (!bancoId) camposFaltantes.push('Banco (seleccione un banco válido)');
+                //if (!banco) camposFaltantes.push('ID Banco (seleccione un banco válido)');
                 if (!sucursal) camposFaltantes.push('Sucursal');
                 if (!codigoPostal) camposFaltantes.push('Código Postal');
                 if (!numero) camposFaltantes.push('Número de Cheque');
@@ -1757,65 +1750,43 @@
                 }
 
                 const formIdx = parseInt(totalForms6.value);
+                const nombreBanco = formsetContainer6.querySelector('#nombre-banco').textContent;
 
                 const newFormHTML = `
                     <tr data-form-index="${formIdx}">
                         <td>
-                            <input type="text" class="form-control form-control-sm border border-primary" 
-                                style="font-size: 0.8rem; padding: 0.25rem;" value="${codigoBanco}" readonly>
-                        </td>
-                        <td>
                             <input type="hidden" name="chequerecibo_set-${formIdx}-id_cheque_recibo">
                             <input type="hidden" name="chequerecibo_set-${formIdx}-id_factura" value="">
-                            <input type="hidden" name="chequerecibo_set-${formIdx}-id_banco" value="${bancoId}">
+                            <input type="hidden" name="chequerecibo_set-${formIdx}-id_banco" value="${banco}">
                             <input type="hidden" name="chequerecibo_set-${formIdx}-codigo_banco" value="${codigoBanco}">
-                            <input type="text" class="form-control form-control-sm border border-primary" 
-                                style="font-size: 0.8rem; padding: 0.25rem;" value="${nombreBanco}" readonly title="${nombreBanco}">
+                            <input type="text" class="form-control form-control-sm border border-primary" style="font-size: 0.8rem; padding: 0.25rem;" value="${codigoBanco}" readonly title="${nombreBanco}">
                         </td>
                         <td>
-                            <input type="number" name="chequerecibo_set-${formIdx}-sucursal" 
-                                class="form-control form-control-sm border border-primary" 
-                                style="font-size: 0.8rem; padding: 0.25rem;" value="${sucursal}">
+                            <input type="number" name="chequerecibo_set-${formIdx}-sucursal" class="form-control form-control-sm border border-primary" style="font-size: 0.8rem; padding: 0.25rem;" value="${sucursal}">
                         </td>
                         <td>
-                            <input type="number" name="chequerecibo_set-${formIdx}-codigo_postal" 
-                                class="form-control form-control-sm border border-primary" 
-                                style="font-size: 0.8rem; padding: 0.25rem;" value="${codigoPostal}">
+                            <input type="number" name="chequerecibo_set-${formIdx}-codigo_postal" class="form-control form-control-sm border border-primary" style="font-size: 0.8rem; padding: 0.25rem;" value="${codigoPostal}">
                         </td>
                         <td>
-                            <input type="number" name="chequerecibo_set-${formIdx}-numero_cheque_recibo" 
-                                class="form-control form-control-sm border border-primary" 
-                                style="font-size: 0.8rem; padding: 0.25rem;" value="${numero}">
+                            <input type="number" name="chequerecibo_set-${formIdx}-numero_cheque_recibo" class="form-control form-control-sm border border-primary" style="font-size: 0.8rem; padding: 0.25rem;" value="${numero}">
                         </td>
                         <td>
-                            <input type="number" name="chequerecibo_set-${formIdx}-cuenta_cheque_recibo" 
-                                class="form-control form-control-sm border border-primary" 
-                                style="font-size: 0.8rem; padding: 0.25rem;" value="${cuenta}">
+                            <input type="number" name="chequerecibo_set-${formIdx}-cuenta_cheque_recibo" class="form-control form-control-sm border border-primary" style="font-size: 0.8rem; padding: 0.25rem;" value="${cuenta}">
                         </td>
                         <td>
-                            <input type="number" name="chequerecibo_set-${formIdx}-cuit_cheque_recibo" 
-                                class="form-control form-control-sm border border-primary" 
-                                style="font-size: 0.8rem; padding: 0.25rem;" value="${cuit}">
+                            <input type="number" name="chequerecibo_set-${formIdx}-cuit_cheque_recibo" class="form-control form-control-sm border border-primary" style="font-size: 0.8rem; padding: 0.25rem;" value="${cuit}">
                         </td>
                         <td>
-                            <input type="date" name="chequerecibo_set-${formIdx}-fecha_cheque1" 
-                                class="form-control form-control-sm border border-primary" 
-                                style="font-size: 0.8rem; padding: 0.25rem;" value="${fecha1}">
+                            <input type="date" name="chequerecibo_set-${formIdx}-fecha_cheque1" class="form-control form-control-sm border border-primary" style="font-size: 0.8rem; padding: 0.25rem;" value="${fecha1}">
                         </td>
                         <td>
-                            <input type="date" name="chequerecibo_set-${formIdx}-fecha_cheque2" 
-                                class="form-control form-control-sm border border-primary" 
-                                style="font-size: 0.8rem; padding: 0.25rem;" value="${fecha2}">
+                            <input type="date" name="chequerecibo_set-${formIdx}-fecha_cheque2" class="form-control form-control-sm border border-primary" style="font-size: 0.8rem; padding: 0.25rem;" value="${fecha2}">
                         </td>
                         <td>
-                            <input type="number" name="chequerecibo_set-${formIdx}-importe_cheque" 
-                                class="form-control form-control-sm border border-primary text-end" 
-                                style="font-size: 0.8rem; padding: 0.25rem;" value="${importe}" step="0.01">
+                            <input type="number" name="chequerecibo_set-${formIdx}-importe_cheque" class="form-control form-control-sm border border-primary text-end" style="font-size: 0.8rem; padding: 0.25rem;" value="${importe}" step="0.01">
                         </td>
                         <td>
-                            <button type="button" class="btn btn-danger btn-sm btn-delete" 
-                                    data-form-index="${formIdx}" data-toggle="tooltip" title="Eliminar" 
-                                    ${isEdit6 ? 'disabled' : ''}>
+                            <button type="button" class="btn btn-danger btn-sm btn-delete" data-form-index="${formIdx}" data-toggle="tooltip" title="Eliminar" ${isEdit6 ? 'disabled' : ''}>
                                 <i class="bi bi-trash"></i>
                             </button>
                             <input type="checkbox" name="chequerecibo_set-${formIdx}-DELETE" style="display: none;">
@@ -1828,7 +1799,9 @@
 
                 // Limpiar los campos del formulario
                 formsetContainer6.querySelector('#id_codigo_banco_input').value = '';
-                formsetContainer6.querySelector('#id_id_banco_input2').value = '';
+                formsetContainer6.querySelector('#id_id_banco_input').value = '';
+                formsetContainer6.querySelector('#nombre-banco').textContent = '';
+                formsetContainer6.querySelector('#nombre-banco').classList.remove('text-success', 'text-danger');
                 formsetContainer6.querySelector('#id_sucursal_input').value = '';
                 formsetContainer6.querySelector('#id_codigo_postal_input').value = '';
                 formsetContainer6.querySelector('#id_numero_cheque_recibo_input').value = '';

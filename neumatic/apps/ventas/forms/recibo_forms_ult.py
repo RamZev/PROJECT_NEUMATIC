@@ -214,48 +214,62 @@ class FacturaReciboForm(forms.ModelForm):
             }),
         }
 
+    
     def __init__(self, *args, **kwargs):
-        usuario = kwargs.pop('usuario', None)  # Pasar el usuario desde la vista
-        
+        usuario = kwargs.pop('usuario', None)
         super().__init__(*args, **kwargs)
-        
-        # Asignar valores iniciales para los campos personalizados
-        if usuario:
-            self.fields['nombre_sucursal'].initial = usuario.id_sucursal
-            self.fields['punto_venta'].initial = usuario.id_punto_venta
 
-        # Filtrar id_deposito según la sucursal del usuario
-        # if usuario and usuario.id_sucursal:
-        #      self.fields['id_deposito'].queryset = ProductoDeposito.objects.filter(
-        #          id_sucursal=usuario.id_sucursal
-        #      )
-        # else:
-        #      self.fields['id_deposito'].queryset = ProductoDeposito.objects.none()  # Sin opciones
-        
+        # Priorizar valores de la instancia en modo edición
+        if self.instance and self.instance.pk:
+            if self.instance.id_sucursal:
+                self.fields['nombre_sucursal'].initial = self.instance.id_sucursal.nombre_sucursal
+            if self.instance.id_punto_venta:
+                self.fields['punto_venta'].initial = self.instance.id_punto_venta.punto_venta
+            if self.instance.id_cliente and self.instance.id_cliente.id_vendedor:
+                self.fields['vendedor_factura'].initial = self.instance.id_cliente.id_vendedor.nombre_vendedor
+                self.fields['tipo_venta'].initial = self.instance.id_cliente.id_vendedor.tipo_venta
+            if hasattr(self.instance, 'discrimina_iva'):
+                self.fields['discrimina_iva'].initial = self.instance.discrimina_iva
+            if hasattr(self.instance, 'es_remito'):
+                self.fields['es_remito'].initial = self.instance.es_remito
+            if hasattr(self.instance, 'es_pendiente'):
+                self.fields['es_pendiente'].initial = self.instance.es_pendiente
+            if hasattr(self.instance, 'es_presupuesto'):
+                self.fields['es_presupuesto'].initial = self.instance.es_presupuesto
+            # Asegurar que id_deposito use el valor de la instancia
+            if self.instance.id_deposito:
+                self.fields['id_deposito'].initial = self.instance.id_deposito.id_producto_deposito
+
+        else:
+            # Modo creación: usar valores del usuario
+            if usuario:
+                self.fields['nombre_sucursal'].initial = usuario.id_sucursal.nombre_sucursal if usuario.id_sucursal else ''
+                self.fields['punto_venta'].initial = usuario.id_punto_venta.punto_venta if usuario.id_punto_venta else ''
+
+        # Filtrar id_deposito según la sucursal, pero incluir el valor de la instancia si existe
         if usuario and usuario.id_sucursal:
             deposito_queryset = ProductoDeposito.objects.filter(
                 id_sucursal=usuario.id_sucursal
             ).order_by('id_producto_deposito')
+            if self.instance and self.instance.id_deposito and self.instance.id_deposito.id_sucursal != usuario.id_sucursal:
+                # Incluir el depósito de la instancia si no está en el queryset
+                deposito_queryset = deposito_queryset | ProductoDeposito.objects.filter(
+                    id_producto_deposito=self.instance.id_deposito.id_producto_deposito
+                )
             self.fields['id_deposito'].queryset = deposito_queryset
-            # Establecer el primer depósito como valor inicial
-            if deposito_queryset.exists() and not self.initial.get('id_deposito'):
+            if self.instance and self.instance.id_deposito:
+                # Asegurar que el valor de la instancia se mantenga
+                self.fields['id_deposito'].initial = self.instance.id_deposito.id_producto_deposito
+            elif deposito_queryset.exists() and not self.initial.get('id_deposito'):
+                # Solo asignar un valor por defecto en modo creación
                 self.initial['id_deposito'] = deposito_queryset.first().id_producto_deposito
         else:
             self.fields['id_deposito'].queryset = ProductoDeposito.objects.none()
 
-        
-        # Establecer la fecha actual si no se proporciona un valor inicial
-        if not self.initial.get("fecha_comprobante"):
-            self.initial["fecha_comprobante"] = date.today().isoformat()
-        
-        # ← Agregar aquí la lógica para modo edición:
-        if self.instance and self.instance.id_cliente and self.instance.id_cliente.id_vendedor:
-            self.fields['vendedor_factura'].initial = self.instance.id_cliente.id_vendedor.nombre_vendedor
+        # Establecer la fecha actual si no hay valor inicial
+        if not self.initial.get('fecha_comprobante'):
+            self.initial['fecha_comprobante'] = date.today().isoformat()
 
-        if self.instance and self.instance.id_cliente and self.instance.id_cliente.id_vendedor:
-            self.fields['vendedor_factura'].initial = self.instance.id_cliente.id_vendedor.nombre_vendedor
-            self.fields['tipo_venta'].initial = self.instance.id_cliente.id_vendedor.tipo_venta
-        
         # Filtrar los comprobantes electrónicos y de remito
         self.fields['id_comprobante_venta'].queryset = ComprobanteVenta.objects.filter(
             Q(recibo=True)
@@ -630,6 +644,7 @@ class TarjetaReciboForm(forms.ModelForm):
         
 
 # Formularios de Cheques
+# Formularios de Cheques
 class ChequeReciboInputForm(forms.ModelForm):
     codigo_banco_input = forms.CharField(
         max_length=3,
@@ -642,15 +657,9 @@ class ChequeReciboInputForm(forms.ModelForm):
         required=False,
         label="Código Banco"
     )
-    id_banco_input2 = forms.ModelChoiceField(
-        queryset=Banco.objects.all().order_by('nombre_banco'),
-        label="Banco",
-        empty_label="Seleccione Banco",
-        widget=forms.Select(attrs={
-            'class': 'form-control form-control-sm border border-primary',
-            'style': 'font-size: 0.8rem; padding: 0.25rem;'
-        }),
-        required=False,
+    id_banco_input = forms.IntegerField(
+        widget=forms.HiddenInput(),
+        required=False
     )
     sucursal_input = forms.IntegerField(
         label="Sucursal",

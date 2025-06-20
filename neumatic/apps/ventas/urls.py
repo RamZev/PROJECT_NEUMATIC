@@ -16,7 +16,9 @@ from .views.consultas_factura_views import (buscar_agenda,
                                             validar_vencimientos_cliente,
                                             validar_deudas_cliente,
                                             valida_autorizacion,
-                                            verificar_remito)
+                                            verificar_remito,
+                                            buscar_banco,
+                                            buscar_codigo_banco)
 
 from .views.crear_agenda import crear_agenda
 from .views.genera_pdf import GeneraPDFView
@@ -46,4 +48,6 @@ urlpatterns = [
    path('clientes/<int:cliente_id>/validar-deudas-cliente/', validar_deudas_cliente, name='validar_deudas_cliente'),
    path('clientes/validar-autorizacion/', valida_autorizacion, name='validar_autorizacion'),
    path('verificar/remito/', verificar_remito, name='verificar_remito'),
+   path('buscar/banco/', buscar_banco, name='buscar_banco'),
+   path('buscar/codigo_banco/', buscar_codigo_banco, name='buscar_codigo_banco'),
 ]

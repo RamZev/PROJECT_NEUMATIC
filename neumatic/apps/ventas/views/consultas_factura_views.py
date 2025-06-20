@@ -13,7 +13,8 @@ from datetime import date, timedelta
 from apps.maestros.models.base_models import (ProductoStock, 
                                               ProductoMinimo,
                                               AlicuotaIva,
-                                              ComprobanteVenta)
+                                              ComprobanteVenta,
+                                              Banco)
 from apps.ventas.models.factura_models import Factura, DetalleFactura
 from apps.maestros.models.producto_models import Producto
 from apps.maestros.models.cliente_models import Cliente
@@ -22,7 +23,7 @@ from apps.maestros.models.base_models import ComprobanteVenta
 from apps.maestros.models.descuento_vendedor_models import DescuentoVendedor
 from apps.maestros.models.numero_models import Numero
 from apps.maestros.models.valida_models import Valida
-
+import traceback
 
 import json
 
@@ -622,3 +623,61 @@ def validar_deudas_cliente(request, cliente_id):
         'facturas_pendientes': resultados,
         'message': 'No hay deudas pendientes' if not has_debts else 'Facturas pendientes encontradas'
     }, status=200)
+
+
+@require_GET
+def buscar_banco(request):
+    codigo_banco = request.GET.get('codigo_banco', '').strip()
+
+    print("Código banco recibido:", codigo_banco)
+
+    if not codigo_banco:
+        return JsonResponse({'error': 'No se proporcionó un código de banco'}, status=400)
+
+    try:
+        codigo_banco = int(codigo_banco)
+        banco = Banco.objects.filter(codigo_banco=codigo_banco, estatus_banco=True).first()
+        
+        if banco:
+            print("Banco encontrado:", banco.nombre_banco, banco.id_banco)
+            return JsonResponse({
+                'id_banco': banco.id_banco,
+                'nombre_banco': banco.nombre_banco,
+                'success': True
+            })
+        else:
+            print("Banco no encontrado para código:", codigo_banco)
+            return JsonResponse({
+                'error': 'Banco no encontrado',
+                'success': False
+            }, status=404)
+
+    except ValueError:
+        print("Error: Código de banco no numérico:", codigo_banco)
+        return JsonResponse({
+            'error': 'El código de banco debe ser numérico',
+            'success': False
+        }, status=400)
+    except Exception as e:
+        print("Error en buscar_banco:", str(e))
+        print("Traceback:", traceback.format_exc())
+        return JsonResponse({
+            'error': f'Error en el servidor: {str(e)}',
+            'traceback': traceback.format_exc(),
+            'success': False
+        }, status=500)
+
+
+@require_GET
+def buscar_codigo_banco(request):
+    id_banco = request.GET.get('id_banco')
+    try:
+        if not id_banco:
+            return JsonResponse({'success': False, 'error': 'Parámetro id_banco requerido'})
+        banco = Banco.objects.get(id_banco=id_banco, estatus_banco=True)
+        return JsonResponse({
+            'success': True,
+            'codigo_banco': banco.codigo_banco
+        })
+    except Banco.DoesNotExist:
+        return JsonResponse({'success': False, 'error': 'Banco no encontrado'})
