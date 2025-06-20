@@ -74,154 +74,98 @@ class ConfigViews:
 	table_info = {
 		"nombre_producto_marca": {
 			"label": "Marca",
-			# "col_width_table": 0,
 			"col_width_pdf": 75,
-			# "pdf_paragraph": False,
-			# "date_format": None,
-			# "table": False,
 			"pdf": False,
 			"excel": True,
 			"csv": True
 		},
 		"nombre_producto_familia": {
 			"label": "Familia",
-			# "col_width_table": 0,
 			"col_width_pdf": 75,
-			# "pdf_paragraph": False,
-			# "date_format": None,
-			# "table": False,
 			"pdf": False,
 			"excel": True,
 			"csv": True
 		},
 		"nombre_modelo": {
 			"label": "Modelo",
-			# "col_width_table": 0,
 			"col_width_pdf": 75,
-			# "pdf_paragraph": False,
-			# "date_format": None,
-			# "table": False,
 			"pdf": False,
 			"excel": True,
 			"csv": True
 		},
 		"comprobante": {
 			"label": "Comprobante",
-			# "col_width_table": 0,
 			"col_width_pdf": 80,
-			# "pdf_paragraph": False,
-			# "date_format": None,
-			# "table": False,
 			"pdf": True,
 			"excel": True,
 			"csv": True
 		},
 		"fecha_comprobante": {
 			"label": "Fecha",
-			# "col_width_table": 0,
 			"col_width_pdf": 50,
-			# "pdf_paragraph": False,
-			# "date_format": None,
-			# "table": False,
 			"pdf": True,
 			"excel": True,
 			"csv": True
 		},
 		"id_cliente_id": {
 			"label": "Cliente",
-			# "col_width_table": 0,
 			"col_width_pdf": 40,
-			# "pdf_paragraph": False,
-			# "date_format": None,
-			# "table": False,
 			"pdf": True,
 			"excel": True,
 			"csv": True
 		},
 		"id_producto_id": {
 			"label": "Código",
-			# "col_width_table": 0,
 			"col_width_pdf": 40,
-			# "pdf_paragraph": False,
-			# "date_format": None,
-			# "table": False,
 			"pdf": True,
 			"excel": True,
 			"csv": True
 		},
 		"nombre_producto": {
 			"label": "Descripción",
-			# "col_width_table": 0,
 			"col_width_pdf": 200,
-			# "pdf_paragraph": False,
-			# "date_format": None,
-			# "table": False,
 			"pdf": True,
 			"excel": True,
 			"csv": True
 		},
 		"medida": {
 			"label": "Medida",
-			# "col_width_table": 0,
 			"col_width_pdf": 50,
-			# "pdf_paragraph": False,
-			# "date_format": None,
-			# "table": False,
 			"pdf": True,
 			"excel": True,
 			"csv": True
 		},
 		"cantidad": {
 			"label": "Cantidad",
-			# "col_width_table": 0,
 			"col_width_pdf": 50,
-			# "pdf_paragraph": False,
-			# "date_format": None,
-			# "table": False,
 			"pdf": True,
 			"excel": True,
 			"csv": True
 		},
 		"precio": {
 			"label": "Precio",
-			# "col_width_table": 0,
 			"col_width_pdf": 75,
-			# "pdf_paragraph": False,
-			# "date_format": None,
-			# "table": False,
 			"pdf": True,
 			"excel": True,
 			"csv": True
 		},
 		"descuento": {
 			"label": "Desc.",
-			# "col_width_table": 0,
 			"col_width_pdf": 50,
-			# "pdf_paragraph": False,
-			# "date_format": None,
-			# "table": False,
 			"pdf": True,
 			"excel": True,
 			"csv": True
 		},
 		"total": {
 			"label": "Total",
-			# "col_width_table": 0,
 			"col_width_pdf": 75,
-			# "pdf_paragraph": False,
-			# "date_format": None,
-			# "table": False,
 			"pdf": True,
 			"excel": True,
 			"csv": True
 		},
 		"compra": {
 			"label": "Compra",
-			# "col_width_table": 0,
 			"col_width_pdf": 75,
-			# "pdf_paragraph": False,
-			# "date_format": None,
-			# "table": False,
 			"pdf": True,
 			"excel": True,
 			"csv": True
@@ -370,7 +314,6 @@ class VLEstadisticasVentasMarcaInformeView(InformeFormView):
 			'titulo': ConfigViews.report_title,
 			'logo_url': f"{dominio}{static('img/logo_01.png')}",
 			'css_url': f"{dominio}{static('css/reportes.css')}",
-			# 'css_url_new': f"{dominio}{static('css/reportes_new.css')}",
 		}
 	
 	def get_context_data(self, **kwargs):

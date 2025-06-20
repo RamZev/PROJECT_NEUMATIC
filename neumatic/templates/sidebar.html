@@ -249,6 +249,20 @@
 						<a class="nav-link" href="{% url 'vlestadisticasventasmarcavendedor_informe_list' %}">Estadísticas de Ventas por Marca-Vendedor</a>
 						<a class="nav-link" href="{% url 'vlclienteultimaventa_informe_list' %}">Estadísticas de Clientes sin Movimiento</a>
 						<a class="nav-link" href="{% url 'vlestadisticasventasprovincia_informe_list' %}">Estadísticas de Ventas por Provincia</a>
+						<a class="nav-link" href="{% url 'vlventasinestadistica_informe_list' %}">Comprobantes sin Estadísticas</a>
+						
+						<a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseTablaDinamica" aria-expanded="false" aria-controls="collapseTablaDinamica">
+							Tablas Dinámicas de Ventas
+							<div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+						</a>
+						<div class="collapse" id="collapseTablaDinamica" data-bs-parent="#reportsCollapseTablas">
+							<nav class="sb-sidenav-menu-nested nav">
+								<a class="nav-link" href="{% url 'vltabladinamicaventas_informe_list' %}">Ventas por Comprobantes</a>
+								<a class="nav-link" href="{% url 'vltabladinamicadetalleventas_informe_list' %}">Detalle de Ventas por Productos</a>
+								<a class="nav-link" href="#">Tablas para Estadísticas</a>
+							</nav>
+						</div>
+						
 					</nav>
 				</div>
 				

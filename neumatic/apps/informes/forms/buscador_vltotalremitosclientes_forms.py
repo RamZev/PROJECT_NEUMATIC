@@ -34,14 +34,14 @@ class BuscadorTotalRemitosClientesForm(InformesGenericForm):
 	def __init__(self, *args, **kwargs):
 		"""
 		Inicializa el formulario con valores predeterminados:
-		- `fecha_desde` se establece en el 1 de enero del año actual.
+		- `fecha_desde` se establece en el 1 del mes y año actual.
 		- `fecha_hasta` se establece en la fecha actual.
 		"""
 		
 		super().__init__(*args, **kwargs)
 		
 		if "fecha_desde" not in self.initial:
-			fecha_inicial = date(date.today().year, 1, 1)
+			fecha_inicial = date(date.today().year, date.today().month, 1)
 			self.fields["fecha_desde"].initial = fecha_inicial
 			self.fields["fecha_desde"].widget.attrs["value"] = fecha_inicial
 		if "fecha_hasta" not in self.initial:

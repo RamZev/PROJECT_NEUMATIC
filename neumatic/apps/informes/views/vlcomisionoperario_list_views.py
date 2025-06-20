@@ -70,93 +70,68 @@ class ConfigViews:
 	
 	#-- Establecer las columnas del reporte y sus atributos.
 	table_info = {
+		"id_operario_id": {
+			"label": "Cód. Operario",
+			"col_width_pdf": 30,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
 		"nombre_operario": {
 			"label": "Operario",
-			# "col_width_table": 0,
 			"col_width_pdf": 80,
-			# "pdf_paragraph": False,
-			# "date_format": None,
-			# "table": False,
-			# "pdf": True,
-			# "excel": True,
-			# "csv": True
+			"pdf": False,
+			"excel": True,
+			"csv": True
 		},
 		"comprobante": {
 			"label": "Comprobante",
-			# "col_width_table": 0,
 			"col_width_pdf": 80,
-			# "pdf_paragraph": False,
-			# "date_format": None,
-			# "table": False,
-			# "pdf": True,
-			# "excel": True,
-			# "csv": True
+			"pdf": True,
+			"excel": True,
+			"csv": True
 		},
 		"fecha_comprobante": {
 			"label": "Fecha",
-			# "col_width_table": 0,
 			"col_width_pdf": 40,
-			# "pdf_paragraph": False,
-			# "date_format": None,
-			# "table": False,
-			# "pdf": True,
-			# "excel": True,
-			# "csv": True
+			"pdf": True,
+			"excel": True,
+			"csv": True
 		},
 		"id_producto_id": {
 			"label": "Código",
-			# "col_width_table": 0,
 			"col_width_pdf": 40,
-			# "pdf_paragraph": False,
-			# "date_format": None,
-			# "table": False,
-			# "pdf": True,
-			# "excel": True,
-			# "csv": True
+			"pdf": True,
+			"excel": True,
+			"csv": True
 		},
 		"nombre_producto_familia": {
 			"label": "Servicio",
-			# "col_width_table": 0,
 			"col_width_pdf": 180,
-			# "pdf_paragraph": False,
-			# "date_format": None,
-			# "table": False,
-			# "pdf": True,
-			# "excel": True,
-			# "csv": True
+			"pdf": True,
+			"excel": True,
+			"csv": True
 		},
 		"total": {
 			"label": "Total",
-			# "col_width_table": 0,
 			"col_width_pdf": 60,
-			# "pdf_paragraph": False,
-			# "date_format": None,
-			# "table": False,
-			# "pdf": True,
-			# "excel": True,
-			# "csv": True
+			"pdf": True,
+			"excel": True,
+			"csv": True
 		},
 		"comision_operario": {
 			"label": "%",
-			# "col_width_table": 0,
 			"col_width_pdf": 40,
-			# "pdf_paragraph": False,
-			# "date_format": None,
-			# "table": False,
-			# "pdf": True,
-			# "excel": True,
-			# "csv": True
+			"pdf": True,
+			"excel": True,
+			"csv": True
 		},
 		"monto_comision": {
 			"label": "Comisión",
-			# "col_width_table": 0,
 			"col_width_pdf": 60,
-			# "pdf_paragraph": False,
-			# "date_format": None,
-			# "table": False,
-			# "pdf": True,
-			# "excel": True,
-			# "csv": True
+			"pdf": True,
+			"excel": True,
+			"csv": True
 		},
 	}
 
@@ -250,7 +225,6 @@ class VLComisionOperarioInformeView(InformeFormView):
 			'titulo': ConfigViews.report_title,
 			'logo_url': f"{dominio}{static('img/logo_01.png')}",
 			'css_url': f"{dominio}{static('css/reportes.css')}",
-			# 'css_url_new': f"{dominio}{static('css/reportes_new.css')}",
 		}
 	
 	def get_context_data(self, **kwargs):
@@ -342,22 +316,11 @@ def generar_pdf(contexto_reporte):
 	
 	#-- Construir datos de la tabla:
 	
-	#-- Datos de las columnas de la tabla (headers).
-	headers = [
-		("Comprobante", 80),
-		("Fecha", 40),
-		("Código", 40),
-		("Servicio", 180),
-		("Total", 60),
-		("%", 40),
-		("Comisión", 60)
-	]
-	
 	#-- Extraer Títulos de las columnas de la tabla (headers).
-	headers_titles = [value[0] for value in headers]
+	headers_titles = [value['label'] for value in ConfigViews.table_info.values() if value['pdf']]
 	
 	#-- Extraer Ancho de las columnas de la tabla.
-	col_widths = [value[1] for value in headers]
+	col_widths = [value['col_width_pdf'] for value in ConfigViews.table_info.values() if value['pdf']]
 	
 	table_data = [headers_titles]
 	
@@ -438,9 +401,12 @@ def vlcomisionoperario_vista_excel(request):
 	view_instance.request = request
 	queryset = view_instance.obtener_queryset(cleaned_data)
 	
+	#-- Extraer Títulos de las columnas (headers).
+	headers = {field: ConfigViews.table_info[field] for field in ConfigViews.table_info if ConfigViews.table_info[field]['excel'] }
+	
 	helper = ExportHelper(
 		queryset=queryset,
-		table_info=ConfigViews.table_info,
+		table_info=headers,
 		report_title=ConfigViews.report_title
 	)
 	excel_data = helper.export_to_excel()
@@ -472,10 +438,13 @@ def vlcomisionoperario_vista_csv(request):
 	view_instance.request = request
 	queryset = view_instance.obtener_queryset(cleaned_data)
 	
+	#-- Extraer Títulos de las columnas (headers).
+	headers = {field: ConfigViews.table_info[field] for field in ConfigViews.table_info if ConfigViews.table_info[field]['csv'] }
+	
 	#-- Usar el helper para exportar a CSV.
 	helper = ExportHelper(
 		queryset=queryset,
-		table_info=ConfigViews.table_info,
+		table_info=headers,
 		report_title=ConfigViews.report_title
 	)
 	csv_data = helper.export_to_csv()

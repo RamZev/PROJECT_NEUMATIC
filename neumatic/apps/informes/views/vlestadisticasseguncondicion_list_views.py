@@ -431,7 +431,6 @@ class VLEstadisticasSegunCondicionInformeView(InformeFormView):
 			'titulo': ConfigViews.report_title,
 			'logo_url': f"{dominio}{static('img/logo_01.png')}",
 			'css_url': f"{dominio}{static('css/reportes.css')}",
-			# 'css_url_new': f"{dominio}{static('css/reportes_new.css')}",
 		}
 	
 	def get_context_data(self, **kwargs):
@@ -1075,22 +1074,14 @@ def headers_titles(agrupar, destino):
 			headers.update({
 				"nombre_producto_familia": {
 					"label": "Familia",
-					# "col_width_table": 0,
 					"col_width_pdf": 0,
-					# "pdf_paragraph": False,
-					# "date_format": None,
-					# "table": False,
 					"pdf": True,
 					"excel": True,
 					"csv": True
 				},
 				"nombre_modelo": {
 					"label": "Modelo",
-					# "col_width_table": 0,
 					"col_width_pdf": 0,
-					# "pdf_paragraph": False,
-					# "date_format": None,
-					# "table": False,
 					"pdf": True,
 					"excel": True,
 					"csv": True
@@ -1100,22 +1091,14 @@ def headers_titles(agrupar, destino):
 		headers.update({
 			"id_producto_id": {
 				"label": "Código",
-				# "col_width_table": 0,
 				"col_width_pdf": 30,
-				# "pdf_paragraph": False,
-				# "date_format": None,
-				# "table": False,
 				"pdf": True,
 				"excel": True,
 				"csv": True
 			},
 			"nombre_producto": {
 				"label": "Descripción",
-				# "col_width_table": 0,
 				"col_width_pdf": 185,
-				# "pdf_paragraph": False,
-				# "date_format": None,
-				# "table": False,
 				"pdf": True,
 				"excel": True,
 				"csv": True
@@ -1128,11 +1111,7 @@ def headers_titles(agrupar, destino):
 			headers.update({
 				"nombre_producto_familia": {
 					"label": "Familia",
-					# "col_width_table": 0,
 					"col_width_pdf": 110,
-					# "pdf_paragraph": False,
-					# "date_format": None,
-					# "table": False,
 					"pdf": True,
 					"excel": True,
 					"csv": True
@@ -1142,11 +1121,7 @@ def headers_titles(agrupar, destino):
 		headers.update({
 			"nombre_producto_marca": {
 				"label": "Marca",
-				# "col_width_table": 0,
 				"col_width_pdf": 180,
-				# "pdf_paragraph": False,
-				# "date_format": None,
-				# "table": False,
 				"pdf": True,
 				"excel": True,
 				"csv": True
@@ -1160,11 +1135,7 @@ def headers_titles(agrupar, destino):
 				"nombre_producto_marca": (110, "Marca"),
 				"nombre_producto_marca": {
 					"label": "Marca",
-					# "col_width_table": 0,
 					"col_width_pdf": 110,
-					# "pdf_paragraph": False,
-					# "date_format": None,
-					# "table": False,
 					"pdf": True,
 					"excel": True,
 					"csv": True
@@ -1174,11 +1145,7 @@ def headers_titles(agrupar, destino):
 		headers.update({
 			"nombre_modelo": {
 				"label": "Modelo",
-				# "col_width_table": 0,
 				"col_width_pdf": 180,
-				# "pdf_paragraph": False,
-				# "date_format": None,
-				# "table": False,
 				"pdf": True,
 				"excel": True,
 				"csv": True
@@ -1190,11 +1157,7 @@ def headers_titles(agrupar, destino):
 		headers.update({
 			"nombre_producto_marca": {
 				"label": "Marca",
-				# "col_width_table": 0,
 				"col_width_pdf": 110,
-				# "pdf_paragraph": False,
-				# "date_format": None,
-				# "table": False,
 				"pdf": True,
 				"excel": True,
 				"csv": True
@@ -1203,150 +1166,90 @@ def headers_titles(agrupar, destino):
 		blank_cols = []
 	
 	headers.update({
-		# "cantidad_m": (35, "Cantidad" if destino=="pdf" else "cantidad_mostrador"),
 		"cantidad_m": {
 			"label": "Cantidad" if destino=="pdf" else "cantidad_mostrador",
-			# "col_width_table": 0,
 			"col_width_pdf": 35,
-			# "pdf_paragraph": False,
-			# "date_format": None,
-			# "table": False,
 			"pdf": True,
 			"excel": True,
 			"csv": True
 		},
-		# "importe_m": (55, "Venta" if destino=="pdf" else "venta_mostrador"),
 		"importe_m": {
 			"label": "Venta" if destino=="pdf" else "venta_mostrador",
-			# "col_width_table": 0,
 			"col_width_pdf": 55,
-			# "pdf_paragraph": False,
-			# "date_format": None,
-			# "table": False,
 			"pdf": True,
 			"excel": True,
 			"csv": True
 		},
-		# "costo_m": (55, "Costo" if destino=="pdf" else "costo_mostrador"),
 		"costo_m": {
 			"label": "Costo" if destino=="pdf" else "costo_mostrador",
-			# "col_width_table": 0,
 			"col_width_pdf": 55,
-			# "pdf_paragraph": False,
-			# "date_format": None,
-			# "table": False,
 			"pdf": True,
 			"excel": True,
 			"csv": True
 		},
-		# "ganancia_m": (55, "Ganancia" if destino=="pdf" else "ganancia_mostrador"),
 		"ganancia_m": {
 			"label": "Ganancia" if destino=="pdf" else "ganancia_mostrador",
-			# "col_width_table": 0,
 			"col_width_pdf": 55,
-			# "pdf_paragraph": False,
-			# "date_format": None,
-			# "table": False,
 			"pdf": True,
 			"excel": True,
 			"csv": True
 		},
 		
-		# "cantidad_r": (35, "Cantidad" if destino=="pdf" else "cantidad_reventa"),
 		"cantidad_r": {
 			"label": "Cantidad" if destino=="pdf" else "cantidad_reventa",
-			# "col_width_table": 0,
 			"col_width_pdf": 35,
-			# "pdf_paragraph": False,
-			# "date_format": None,
-			# "table": False,
 			"pdf": True,
 			"excel": True,
 			"csv": True
 		},
-		# "importe_r": (55, "Venta" if destino=="pdf" else "venta_reventa"),
 		"importe_r": {
 			"label": "Venta" if destino=="pdf" else "venta_reventa",
-			# "col_width_table": 0,
 			"col_width_pdf": 55,
-			# "pdf_paragraph": False,
-			# "date_format": None,
-			# "table": False,
 			"pdf": True,
 			"excel": True,
 			"csv": True
 		},
-		# "costo_r": (55, "Costo" if destino=="pdf" else "costo_reventa"),
 		"costo_r": {
 			"label": "Costo" if destino=="pdf" else "costo_reventa",
-			# "col_width_table": 0,
 			"col_width_pdf": 55,
-			# "pdf_paragraph": False,
-			# "date_format": None,
-			# "table": False,
 			"pdf": True,
 			"excel": True,
 			"csv": True
 		},
-		# "ganancia_r": (55, "Ganancia" if destino=="pdf" else "ganancia_reventa"),
 		"ganancia_r": {
 			"label": "Ganancia" if destino=="pdf" else "ganancia_reventa",
-			# "col_width_table": 0,
 			"col_width_pdf": 55,
-			# "pdf_paragraph": False,
-			# "date_format": None,
-			# "table": False,
 			"pdf": True,
 			"excel": True,
 			"csv": True
 		},
 		
-		# "cantidad_e": (35, "Cantidad" if destino=="pdf" else "cantidad_e-comerce"),
 		"cantidad_e": {
 			"label": "Cantidad" if destino=="pdf" else "cantidad_e-comerce",
-			# "col_width_table": 0,
 			"col_width_pdf": 35,
-			# "pdf_paragraph": False,
-			# "date_format": None,
-			# "table": False,
 			"pdf": True,
 			"excel": True,
 			"csv": True
 		},
-		# "importe_e": (55, "Venta" if destino=="pdf" else "venta_e-comerce"),
 		"importe_e": {
 			"label": "Venta" if destino=="pdf" else "venta_e-comerce",
-			# "col_width_table": 0,
 			"col_width_pdf": 55,
-			# "pdf_paragraph": False,
-			# "date_format": None,
-			# "table": False,
 			"pdf": True,
 			"excel": True,
 			"csv": True
 
 		},
-		# "costo_e": (55, "Costo" if destino=="pdf" else "costo_e-comerce"),
 		"costo_e": {
 			"label": "Costo" if destino=="pdf" else "costo_e-comerce",
-			# "col_width_table": 0,
 			"col_width_pdf": 55,
-			# "pdf_paragraph": False,
-			# "date_format": None,
-			# "table": False,
 			"pdf": True,
 			"excel": True,
 			"csv": True
 
 		},
-		# "ganancia_e": (55, "Ganancia" if destino=="pdf" else "ganancia_e-comerce"),
 		"ganancia_e": {
 			"label": "Ganancia" if destino=="pdf" else "ganancia_e-comerce",
-			# "col_width_table": 0,
 			"col_width_pdf": 55,
-			# "pdf_paragraph": False,
-			# "date_format": None,
-			# "table": False,
 			"pdf": True,
 			"excel": True,
 			"csv": True

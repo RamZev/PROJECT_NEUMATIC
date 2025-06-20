@@ -210,7 +210,6 @@ class VLEstadisticasVentasVendedorInformeView(InformeFormView):
 			'titulo': ConfigViews.report_title,
 			'logo_url': f"{dominio}{static('img/logo_01.png')}",
 			'css_url': f"{dominio}{static('css/reportes.css')}",
-			# 'css_url_new': f"{dominio}{static('css/reportes_new.css')}",
 		}
 	
 	def get_context_data(self, **kwargs):
@@ -468,44 +467,28 @@ def headers_titles(agrupar, mostrar):
 		headers = {
 			"id_producto_id": {
 				"label": "Código",
-				# "col_width_table": 0,
 				"col_width_pdf": 50,
-				# "pdf_paragraph": False,
-				# "date_format": None,
-				# "table": False,
 				"pdf": True,
 				"excel": True,
 				"csv": True
 			},
 			"nombre_producto": {
 				"label": "Descripción",
-				# "col_width_table": 0,
 				"col_width_pdf": 240,
-				# "pdf_paragraph": False,
-				# "date_format": None,
-				# "table": False,
 				"pdf": True,
 				"excel": True,
 				"csv": True
 			},
 			"nombre_producto_familia": {
 				"label": "Familia",
-				# "col_width_table": 0,
 				"col_width_pdf": 150,
-				# "pdf_paragraph": False,
-				# "date_format": None,
-				# "table": False,
 				"pdf": True,
 				"excel": True,
 				"csv": True
 			},
 			"nombre_modelo": {
 				"label": "Modelo",
-				# "col_width_table": 0,
 				"col_width_pdf": 150,
-				# "pdf_paragraph": False,
-				# "date_format": None,
-				# "table": False,
 				"pdf": True,
 				"excel": True,
 				"csv": True
@@ -516,11 +499,7 @@ def headers_titles(agrupar, mostrar):
 		headers = {
 			"nombre_producto_familia": {
 				"label": "Familia",
-				# "col_width_table": 0,
 				"col_width_pdf": 200,
-				# "pdf_paragraph": False,
-				# "date_format": None,
-				# "table": False,
 				"pdf": True,
 				"excel": True,
 				"csv": True
@@ -531,11 +510,7 @@ def headers_titles(agrupar, mostrar):
 		headers = {
 			"nombre_modelo": {
 				"label": "Modelo",
-				# "col_width_table": 0,
 				"col_width_pdf": 200,
-				# "pdf_paragraph": False,
-				# "date_format": None,
-				# "table": False,
 				"pdf": True,
 				"excel": True,
 				"csv": True
@@ -549,11 +524,7 @@ def headers_titles(agrupar, mostrar):
 	headers.update({
 		"nombre_producto_marca": {
 			"label": "Marca",
-			# "col_width_table": 0,
 			"col_width_pdf": 110,
-			# "pdf_paragraph": False,
-			# "date_format": None,
-			# "table": False,
 			"pdf": True,
 			"excel": True,
 			"csv": True
@@ -564,22 +535,14 @@ def headers_titles(agrupar, mostrar):
 		headers.update({
 			"cantidad": {
 				"label": "Cantidad",
-				# "col_width_table": 0,
 				"col_width_pdf": 60,
-				# "pdf_paragraph": False,
-				# "date_format": None,
-				# "table": False,
 				"pdf": True,
 				"excel": True,
 				"csv": True
 			},
 			"porcentaje_cantidad": {
 				"label": "Porcentaje",
-				# "col_width_table": 0,
 				"col_width_pdf": 50,
-				# "pdf_paragraph": False,
-				# "date_format": None,
-				# "table": False,
 				"pdf": True,
 				"excel": True,
 				"csv": True
@@ -590,22 +553,14 @@ def headers_titles(agrupar, mostrar):
 			"total": (60, "Total"),
 			"total": {
 				"label": "Total",
-				# "col_width_table": 0,
 				"col_width_pdf": 60,
-				# "pdf_paragraph": False,
-				# "date_format": None,
-				# "table": False,
 				"pdf": True,
 				"excel": True,
 				"csv": True
 			},
 			"porcentaje_total": {
 				"label": "Porcentaje",
-				# "col_width_table": 0,
 				"col_width_pdf": 50,
-				# "pdf_paragraph": False,
-				# "date_format": None,
-				# "table": False,
 				"pdf": True,
 				"excel": True,
 				"csv": True

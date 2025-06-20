@@ -995,4 +995,127 @@ CREATE VIEW "VLEstadisticasVentasProvincia" AS
 		df.id_producto_id <> 0 AND cv.mult_estadistica <> 0 AND f.no_estadist = False;
 
 
+-- ---------------------------------------------------------------------------
+-- Comprobantes sin Estadísticas.
+-- Modelo: vlVentaSinEstadistica
+-- ---------------------------------------------------------------------------
+DROP VIEW IF EXISTS "main"."VLVentaSinEstadistica";
+CREATE VIEW "VLVentaSinEstadistica" AS 
+	SELECT
+		ROW_NUMBER() OVER() AS id,
+		f.fecha_comprobante, 
+		(f.compro || ' ' || f.letra_comprobante || ' ' || SUBSTR(printf('%012d', f.numero_comprobante), 1, 4) || '-' || SUBSTR(printf('%012d', f.numero_comprobante), 5)) AS comprobante, 
+		f.id_cliente_id,
+		c.nombre_cliente,
+		f.total,
+		c.id_vendedor_id,
+		v.nombre_vendedor,
+		c.sub_cuenta,
+		f.id_sucursal_id,
+		s.nombre_sucursal
+	FROM
+		factura f
+		JOIN cliente c ON f.id_cliente_id = c.id_cliente
+		JOIN sucursal s ON f.id_sucursal_id = s.id_sucursal
+		JOIN vendedor v ON c.id_vendedor_id = v.id_vendedor
+	WHERE
+		f.no_estadist = True
+	ORDER by
+		c.nombre_cliente, f.fecha_comprobante, f.numero_comprobante;
 
+
+-- ---------------------------------------------------------------------------
+-- Tablas Dinámicas de Ventas - Ventas por Comprobantes.
+-- Modelo: VLTablaDinamicaVentas
+-- ---------------------------------------------------------------------------
+DROP VIEW IF EXISTS "main"."VLTablaDinamicaVentas";
+CREATE VIEW "VLTablaDinamicaVentas" AS 
+	SELECT
+		ROW_NUMBER() OVER() AS id,
+		s.nombre_sucursal,
+		cv.nombre_comprobante_venta,
+		f.fecha_comprobante,
+		f.letra_comprobante,
+		f.numero_comprobante,
+		f.condicion_comprobante,
+		f.id_cliente_id,
+		c.nombre_cliente,
+		c.mayorista,
+		f.gravado*cv.mult_venta AS gravado,
+		f.iva*cv.mult_venta AS iva,
+		f.percep_ib*cv.mult_venta AS percepcion,
+		f.total*cv.mult_venta AS total,
+		f.no_estadist,
+		f.id_user_id,
+		c.codigo_postal,
+		l.nombre_localidad,
+		p.nombre_provincia,
+		v.nombre_vendedor,
+		f.comision,
+		f.promo,
+		cv.libro_iva
+	FROM
+		factura f
+		JOIN cliente c ON f.id_cliente_id = c.id_cliente
+		JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
+		JOIN vendedor v ON c.id_vendedor_id = v.id_vendedor
+		JOIN sucursal s ON f.id_sucursal_id = s.id_sucursal
+		JOIN localidad l ON c.id_localidad_id = l.id_localidad
+		JOIN provincia p ON l.id_provincia_id = p.id_provincia;
+
+
+-- ---------------------------------------------------------------------------
+-- Tablas Dinámicas de Ventas - Detalle de Ventas por Productos.
+-- Modelo: VLTablaDinamicaDetalleVentas
+-- ---------------------------------------------------------------------------
+DROP VIEW IF EXISTS "main"."VLTablaDinamicaDetalleVentas";
+CREATE VIEW "VLTablaDinamicaDetalleVentas" AS 
+	SELECT
+		ROW_NUMBER() OVER() AS id,
+		df.id_factura_id,
+		s.nombre_sucursal,
+		cv.nombre_comprobante_venta,
+		f.fecha_comprobante,
+		f.letra_comprobante,
+		f.numero_comprobante,
+		f.condicion_comprobante,
+		f.id_cliente_id,
+		c.nombre_cliente,
+		c.mayorista,
+		df.reventa,
+		df.id_producto_id,
+		p.cai,
+		p.nombre_producto,
+		pm.nombre_producto_marca,
+		pf.nombre_producto_familia,
+		p.segmento,
+		df.cantidad*cv.mult_venta AS cantidad,
+		df.costo,
+		df.precio,
+		df.descuento,
+		df.gravado*cv.mult_venta AS gravado,
+		df.total*cv.mult_venta AS total,
+		f.no_estadist,
+		f.id_user_id,
+		c.codigo_postal,
+		l.nombre_localidad,
+		pr.nombre_provincia,
+		v.nombre_vendedor,
+		f.comision,
+		df.id_operario_id,
+		o.nombre_operario,
+		f.promo,
+		cv.libro_iva
+	FROM
+		detalle_factura df
+		JOIN factura f ON df.id_factura_id = f.id_factura
+		JOIN producto p ON df.id_producto_id = p.id_producto
+		JOIN producto_familia pf ON p.id_familia_id = pf.id_producto_familia
+		JOIN producto_marca pm ON p.id_marca_id = pm.id_producto_marca
+		JOIN operario o ON df.id_operario_id = o.id_operario
+		JOIN cliente c ON f.id_cliente_id = c.id_cliente
+		JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
+		JOIN vendedor v ON c.id_vendedor_id = v.id_vendedor
+		JOIN sucursal s ON f.id_sucursal_id = s.id_sucursal
+		JOIN localidad l ON c.id_localidad_id = l.id_localidad
+		JOIN provincia pr ON l.id_provincia_id = pr.id_provincia;

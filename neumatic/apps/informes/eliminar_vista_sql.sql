@@ -30,3 +30,6 @@ DROP VIEW IF EXISTS "main"."VLEstadisticasVentasMarca";
 DROP VIEW IF EXISTS "main"."VLEstadisticasVentasMarcaVendedor";
 DROP VIEW IF EXISTS "main"."VLClienteUltimaVenta";
 DROP VIEW IF EXISTS "main"."VLEstadisticasVentasProvincia";
+DROP VIEW IF EXISTS "main"."vlVentaSinEstadistica";
+DROP VIEW IF EXISTS "main"."VLTablaDinamicaVentas";
+DROP VIEW IF EXISTS "main"."VLTablaDinamicaDetalleVentas";

@@ -268,7 +268,7 @@ class CuentaBancoInformesView(View):
 	
 	def enviar_por_email(self, queryset, formatos, email):
 		"""Enviar los informes seleccionados por correo electrónico."""
-		helper = ExportHelper(queryset, DataViewList.table_headers, DataViewList.report_title)
+		helper = ExportHelper(queryset, DataViewList.table_info, DataViewList.report_title)
 		attachments = []
 		
 		#-- Generar los formatos seleccionados y añadirlos como adjuntos.

@@ -1,15 +1,21 @@
-# neumatic\apps\informes\forms\buscador_vlmercaderiaporcliente_forms.py
+# neumatic\apps\informes\forms\buscador_vlventasinestadistica_forms.py
 
 from django import forms
 from datetime import date
 
 from .informes_generics_forms import InformesGenericForm
-from apps.maestros.models.cliente_models import Cliente
-from diseno_base.diseno_bootstrap import formclasstext, formclassdate
+from diseno_base.diseno_bootstrap import formclassselect, formclassdate
+from apps.maestros.models.sucursal_models import Sucursal
 
 
-class BuscadorMercaderiaPorClienteForm(InformesGenericForm):
+class BuscadorVentaSinEstadisticaForm(InformesGenericForm):
 	
+	sucursal = forms.ModelChoiceField(
+		queryset=Sucursal.objects.filter(estatus_sucursal=True), 
+		required=False,
+		label="Sucursal",
+		widget=forms.Select(attrs={**formclassselect})
+	)
 	fecha_desde = forms.DateField(
 		required=False, 
 		label="Desde Fecha",
@@ -19,16 +25,6 @@ class BuscadorMercaderiaPorClienteForm(InformesGenericForm):
 		required=False, 
 		label="Hasta Fecha",
 		widget=forms.TextInput(attrs={'type':'date', **formclassdate})
-	)
-	id_cliente = forms.IntegerField(
-		label="Cód. Cliente",
-		required=True,
-		widget=forms.NumberInput(attrs={**formclasstext})
-	)
-	nombre_cliente = forms.CharField(
-		label="Cliente",
-		required=False,
-		widget=forms.TextInput(attrs={**formclasstext, 'readonly': 'readonly'})
 	)
 	
 	def __init__(self, *args, **kwargs):
@@ -52,20 +48,10 @@ class BuscadorMercaderiaPorClienteForm(InformesGenericForm):
 	def clean(self):
 		cleaned_data = super().clean()
 		
-		id_cliente = cleaned_data.get("id_cliente")
 		fecha_desde = cleaned_data.get("fecha_desde")
 		fecha_hasta = cleaned_data.get("fecha_hasta")
 		
-		#-- Validaciones.
-		if not id_cliente:
-			self.add_error("id_cliente", "Debe indicar un Código de Cliente.")
-		
-		if id_cliente:
-			try:
-				cliente = Cliente.objects.get(id_cliente=id_cliente)
-			except Cliente.DoesNotExist:
-				self.add_error("id_cliente", "El cliente no existe. Por favor, verifique el código.")
-		
+		#-- Validar fechas.
 		if not fecha_desde:
 			self.add_error("fecha_desde", "Debe indicar una fecha válida.")
 		

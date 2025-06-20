@@ -1,0 +1,76 @@
+<!-- neumatic\apps\informes\templates\informes\reportes\vltabladinamicadetalleventas_list.html -->
+
+{% extends 'informes/reportes/base_reportes.html' %}
+{% load static %}
+{% load custom_tags %}
+
+<!-- Blque Header -------------------------------------------------------------------------- -->
+ 
+<!-- Contenido Inferior Izquierdo -->
+{% block header_bottom_left %}
+	<!-- <p><strong>Cliente:</strong></p>
+	<p>[{{ cliente.id_cliente }}] {{ cliente.nombre_cliente }}</p>
+	<p>{{ cliente.domicilio_cliente }}  Tel. {{ cliente.telefono_cliente }}</p>
+	<p>[{{ cliente.codigo_postal }}] {{ cliente.localidad }} - {{ cliente.provincia }}</p> -->
+{% endblock %}
+
+<!-- Contenido Inferior Derecho -->
+{% block header_bottom_right %}
+	{% for param, valor in parametros.items %}
+		<p class="compact-line-spacing"><strong>{{ param }}:</strong> {{ valor }}</p>
+	{% endfor %}
+{% endblock %}
+
+<!-- Bloque Content ------------------------------------------------------------------------ -->
+
+{% block content %}
+	En desarrollo...
+	{% comment %}
+	<table>
+		
+		<thead>
+			<tr>
+				<th>Fecha</th>
+				<th>Comprobante</th>
+				<th>Cliente</th>
+				<th>Nombre</th>
+				<th class="numeric" style="padding-right: 15px;">Importe</th>
+				<th>Vendedor</th>
+				<th>Sub-Cta.</th>
+			</tr>
+		</thead>
+		
+		<tbody>
+			
+			{% for obj in objetos.values %}
+				
+				{% for comprobante in obj.comprobantes %}
+					<tr>
+						<td>{{ comprobante.fecha_comprobante|date:'d/m/Y' }}</td>
+						<td>{{ comprobante.comprobante }}</td>
+						<td>{{ comprobante.id_cliente_id }}</td>
+						<td>{{ comprobante.nombre_cliente }}</td>
+						<td class="numeric" style="padding-right: 15px;">{{ comprobante.total|formato_es_ar }}</td>
+						<td>{{ comprobante.nombre_vendedor }}</td>
+						<td>{{ comprobante.sub_cuenta|default:"" }}</td>
+					</tr>
+				{% endfor %}
+				<!-- Total por cliente -->
+				<tr>
+					<td colspan="4" style="text-align: right;"><strong>Sub-total:</strong></td>
+					<td class="numeric" style="padding-right: 15px;"><strong>{{ obj.total_cliente|formato_es_ar }}</strong></td>
+				</tr>
+				<tr>
+					<td colspan="7"><hr></td>
+				</tr>
+			{% endfor %}
+			<!-- Total General -->
+			<tr>
+				<td colspan="4" style="text-align: right;"><strong>Total General:</strong></td>
+				<td class="numeric" style="padding-right: 15px;"><strong>{{ total_general|formato_es_ar }}</strong></td>
+			</tr>			
+			
+		</tbody>
+	</table>
+	{% endcomment %}
+{% endblock content %}
