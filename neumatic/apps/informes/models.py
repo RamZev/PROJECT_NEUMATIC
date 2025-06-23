@@ -2058,7 +2058,7 @@ class VLVentaSinEstadistica(models.Model):
 class VLTablaDinamicaVentasManager(models.Manager):
 	
 	def obtener_datos(self, fecha_desde, fecha_hasta, comprobantes_impositivos=True):
-		
+		print(f"{comprobantes_impositivos = }")
 		#-- La consulta SQL.
 		query = """
 			SELECT
@@ -2190,7 +2190,7 @@ class VLTablaDinamicaDetalleVentas(models.Model):
 		verbose_name_plural = ('Tablas Dinámicas de Ventas - Detalle de Ventas por Productos')
 
 
-'''
+
 #-----------------------------------------------------------------------------
 # Tablas Dinámicas de Ventas - Tablas para Estadísticas.
 #-----------------------------------------------------------------------------
@@ -2212,9 +2212,9 @@ class VLTablaDinamicaEstadisticaManager(models.Manager):
 		params = [fecha_desde, fecha_hasta]
 		
 		#-- Filtros adicionales.
-		if id_sucursal:
-			query += " AND id_sucursal_id = %s"
-			params.append(id_sucursal)
+		if comprobantes_impositivos:
+			query += " AND libro_iva = %s"
+			params.append(comprobantes_impositivos)
 		
 		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
 		return self.raw(query, params)
@@ -2223,6 +2223,7 @@ class VLTablaDinamicaEstadisticaManager(models.Manager):
 class VLTablaDinamicaEstadistica(models.Model):
 	id = models.AutoField(primary_key=True)
 	id_factura_id = models.IntegerField()
+	nombre_sucursal = models.CharField(max_length=50)
 	nombre_comprobante_venta = models.CharField(max_length=50)
 	fecha_comprobante = models.DateField()
 	letra_comprobante = models.CharField(max_length=1)
@@ -2254,6 +2255,8 @@ class VLTablaDinamicaEstadistica(models.Model):
 	id_operario_id = models.IntegerField()
 	nombre_operario = models.CharField(max_length=50)
 	promo = models.BooleanField()
+	libro_iva = models.BooleanField()
+	
 	
 	objects = VLTablaDinamicaEstadisticaManager()
 	
@@ -2263,4 +2266,4 @@ class VLTablaDinamicaEstadistica(models.Model):
 		verbose_name = ('Tablas Dinámicas de Ventas - Tablas para Estadísticas')
 		verbose_name_plural = ('Tablas Dinámicas de Ventas - Tablas para Estadísticas')
 
-'''
+

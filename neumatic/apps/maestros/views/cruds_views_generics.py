@@ -156,6 +156,9 @@ class MaestroCreateView(PermissionRequiredMixin, CreateView):
 		context['form'] = self.get_form()
 		context['requerimientos'] = obtener_requerimientos_modelo(self.model)
 		
+		#-- Para pasar la fecha a la lista del maestro.
+		context['fecha'] = timezone.now()
+		
 		return context
 	
 	#-- Método que agrega mensaje cuando no tiene permiso de crear.
@@ -221,6 +224,9 @@ class MaestroUpdateView(PermissionRequiredMixin, UpdateView):
 		#-- Asegurarse de que el formulario en el contexto sea el mismo que se validó
 		context['form'] = self.get_form()
 		context['requerimientos'] = obtener_requerimientos_modelo(self.model)
+		
+		#-- Para pasar la fecha a la lista del maestro.
+		context['fecha'] = timezone.now()
 		
 		return context
 	
