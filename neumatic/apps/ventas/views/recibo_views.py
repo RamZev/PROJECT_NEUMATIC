@@ -230,7 +230,15 @@ class ReciboCreateView(MaestroDetalleCreateView):
 				for formset in formsets:
 					formset.instance = self.object
 					formset.save()
-
+				
+				# 6. Actualizar el campo entrega en Factura para los detalles con monto_cobrado > 0
+				for detalle in self.object.detalles_recibo.filter(monto_cobrado__gt=0):
+					factura = detalle.id_factura_cobrada
+					if factura:
+						print("actualizando monto de enterega en Factura")
+						factura.entrega += detalle.monto_cobrado
+						factura.save()
+				
 				messages.success(self.request, "Recibo creado correctamente")
 				return redirect(self.get_success_url())
 
