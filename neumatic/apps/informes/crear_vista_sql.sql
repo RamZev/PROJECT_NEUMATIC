@@ -1119,3 +1119,63 @@ CREATE VIEW "VLTablaDinamicaDetalleVentas" AS
 		JOIN sucursal s ON f.id_sucursal_id = s.id_sucursal
 		JOIN localidad l ON c.id_localidad_id = l.id_localidad
 		JOIN provincia pr ON l.id_provincia_id = pr.id_provincia;
+
+
+-- ---------------------------------------------------------------------------
+-- Tablas Dinámicas de Ventas - Tablas para Estadísticas.
+-- Modelo: VLTablaDinamicaEstadistica
+-- ---------------------------------------------------------------------------
+DROP VIEW IF EXISTS "main"."VLTablaDinamicaEstadistica";
+CREATE VIEW "VLTablaDinamicaEstadistica" AS 
+	SELECT
+		ROW_NUMBER() OVER() AS id,
+		df.id_factura_id,
+		s.nombre_sucursal,
+		cv.nombre_comprobante_venta,
+		f.fecha_comprobante,
+		f.letra_comprobante,
+		f.numero_comprobante,
+		f.condicion_comprobante,
+		f.id_cliente_id,
+		c.nombre_cliente,
+		c.mayorista,
+		df.reventa,
+		df.id_producto_id,
+		p.cai,
+		p.nombre_producto,
+		pm.nombre_producto_marca,
+		pf.nombre_producto_familia,
+		p.segmento,
+		df.cantidad*cv.mult_estadistica AS cantidad,
+		df.costo,
+		df.precio,
+		df.descuento,
+		df.gravado*cv.mult_estadistica AS gravado,
+		df.total*cv.mult_estadistica AS total,
+		f.no_estadist,
+		f.id_user_id,
+		c.codigo_postal,
+		l.nombre_localidad,
+		pr.nombre_provincia,
+		v.nombre_vendedor,
+		f.comision,
+		df.id_operario_id,
+		o.nombre_operario,
+		f.promo,
+		cv.libro_iva
+	FROM
+		detalle_factura df
+		JOIN factura f ON df.id_factura_id = f.id_factura
+		JOIN producto p ON df.id_producto_id = p.id_producto
+		JOIN producto_familia pf ON p.id_familia_id = pf.id_producto_familia
+		JOIN producto_marca pm ON p.id_marca_id = pm.id_producto_marca
+		JOIN operario o ON df.id_operario_id = o.id_operario
+		JOIN cliente c ON f.id_cliente_id = c.id_cliente
+		JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
+		JOIN vendedor v ON c.id_vendedor_id = v.id_vendedor
+		JOIN sucursal s ON f.id_sucursal_id = s.id_sucursal
+		JOIN localidad l ON c.id_localidad_id = l.id_localidad
+		JOIN provincia pr ON l.id_provincia_id = pr.id_provincia
+	WHERE
+		cv.mult_estadistica<>0 AND
+		f.no_estadist=False;

@@ -252,7 +252,7 @@ class ConfigViews:
 			"excel": True,
 			"csv": True
 		},
-		"nombre_localidadid_sucursal_id": {
+		"nombre_localidad": {
 			"label": "Localidad",
 			"col_width_pdf": 100,
 			"pdf": False,

@@ -33,3 +33,4 @@ DROP VIEW IF EXISTS "main"."VLEstadisticasVentasProvincia";
 DROP VIEW IF EXISTS "main"."vlVentaSinEstadistica";
 DROP VIEW IF EXISTS "main"."VLTablaDinamicaVentas";
 DROP VIEW IF EXISTS "main"."VLTablaDinamicaDetalleVentas";
+DROP VIEW IF EXISTS "main"."VLTablaDinamicaEstadistica";

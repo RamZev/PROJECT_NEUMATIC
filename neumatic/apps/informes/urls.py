@@ -77,6 +77,7 @@ from apps.informes.views.vlestadisticasventasvendedorcliente_list_views import *
 from apps.informes.views.vlventasinestadistica_list_views import *
 from apps.informes.views.vltabladinamicaventas_list_views import *
 from apps.informes.views.vltabladinamicadetalleventas_list_views import *
+from apps.informes.views.vltabladinamicaestadistica_list_views import *
 
 
 
@@ -740,6 +741,18 @@ urlpatterns = [
 		 name="vltabladinamicadetalleventas_vista_excel"),
 	path("vltabladinamicadetalleventas/vista-csv/", vltabladinamicadetalleventas_vista_csv, 
 		 name="vltabladinamicadetalleventas_vista_csv"),
+	
+	#-- VL Tablas Dinámicas de Ventas - Tablas para Estadísticas.
+	path('vltabladinamicaestadistica_informe/', VLTablaDinamicaEstadisticaInformeView.as_view(), 
+		 name='vltabladinamicaestadistica_informe_list'),
+	path('vltabladinamicaestadistica/vista-preliminar/', vltabladinamicaestadistica_vista_pantalla, 
+		 name="vltabladinamicaestadistica_vista_pantalla"),
+	path("vltabladinamicaestadistica/vista-pdf/", vltabladinamicaestadistica_vista_pdf, 
+		 name="vltabladinamicaestadistica_vista_pdf"),
+	path("vltabladinamicaestadistica/vista-excel/", vltabladinamicaestadistica_vista_excel, 
+		 name="vltabladinamicaestadistica_vista_excel"),
+	path("vltabladinamicaestadistica/vista-csv/", vltabladinamicaestadistica_vista_csv, 
+		 name="vltabladinamicaestadistica_vista_csv"),
 	
 	
 	

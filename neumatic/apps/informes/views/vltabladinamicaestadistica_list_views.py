@@ -1,4 +1,4 @@
-# neumatic\apps\informes\views\vltabladinamicaventas_list_views.py
+# neumatic\apps\informes\views\vltabladinamicaestadistica_list_views.py
 
 from django.urls import reverse_lazy
 from django.shortcuts import render
@@ -12,8 +12,8 @@ from reportlab.lib.pagesizes import A4, landscape, portrait
 from reportlab.platypus import Paragraph
 
 from .report_views_generics import *
-from apps.informes.models import VLTablaDinamicaVentas
-from ..forms.buscador_vltabladinamicaventas_forms import BuscadorTablaDinamicaVentasForm
+from apps.informes.models import VLTablaDinamicaEstadistica
+from ..forms.buscador_vltabladinamicaestadistica_forms import BuscadorTablaDinamicaEstadisticaForm
 from utils.utils import deserializar_datos, formato_argentino, normalizar, format_date
 from utils.helpers.export_helpers import ExportHelper, PDFGenerator
 
@@ -21,13 +21,13 @@ from utils.helpers.export_helpers import ExportHelper, PDFGenerator
 class ConfigViews:
 	
 	#-- Título del reporte.
-	report_title = "Tablas Dinámicas de Ventas - Ventas por Comprobantes"
+	report_title = "Tablas Dinámicas de Ventas - Tablas para Estadísticas"
 	
 	#-- Modelo.
-	model = VLTablaDinamicaVentas
+	model = VLTablaDinamicaEstadistica
 	
 	#-- Formulario asociado al modelo.
-	form_class = BuscadorTablaDinamicaVentasForm
+	form_class = BuscadorTablaDinamicaEstadisticaForm
 	
 	#-- Aplicación asociada al modelo.
 	app_label = "informes"
@@ -70,6 +70,13 @@ class ConfigViews:
 	
 	#-- Establecer las columnas del reporte y sus atributos.
 	table_info = {
+		"id_factura_id": {
+			"label": "ID Factura",
+			"col_width_pdf": 40,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
 		"nombre_sucursal": {
 			"label": "Sucursal",
 			"col_width_pdf": 40,
@@ -133,6 +140,83 @@ class ConfigViews:
 			"excel": True,
 			"csv": True
 		},
+		"reventa": {
+			"label": "Reventa",
+			"col_width_pdf": 190,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+		"id_producto_id": {
+			"label": "C{od. Producto}",
+			"col_width_pdf": 30,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+		"cai": {
+			"label": "CAI",
+			"col_width_pdf": 30,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+		"nombre_producto": {
+			"label": "Producto",
+			"col_width_pdf": 30,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+		"nombre_producto_marca": {
+			"label": "Marca",
+			"col_width_pdf": 30,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+		"nombre_producto_familia": {
+			"label": "Familia",
+			"col_width_pdf": 30,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+		"segmento": {
+			"label": "Segmento",
+			"col_width_pdf": 30,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+		"cantidad": {
+			"label": "Cantidad",
+			"col_width_pdf": 65,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+		"costo": {
+			"label": "Costo",
+			"col_width_pdf": 65,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+		"precio": {
+			"label": "Precio",
+			"col_width_pdf": 65,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+		"descuento": {
+			"label": "Descuento",
+			"col_width_pdf": 65,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
 		"gravado": {
 			"label": "Gravado",
 			"col_width_pdf": 65,
@@ -140,22 +224,8 @@ class ConfigViews:
 			"excel": True,
 			"csv": True
 		},
-		"iva": {
-			"label": "IVA",
-			"col_width_pdf": 65,
-			"pdf": False,
-			"excel": True,
-			"csv": True
-		},
-		"percepcion": {
-			"label": "Percepción",
-			"col_width_pdf": 65,
-			"pdf": False,
-			"excel": True,
-			"csv": True
-		},
 		"total": {
-			"label": "Importe",
+			"label": "Total",
 			"col_width_pdf": 65,
 			"pdf": False,
 			"excel": True,
@@ -210,6 +280,20 @@ class ConfigViews:
 			"excel": True,
 			"csv": True
 		},
+		"id_operario_id": {
+			"label": "Cód. Operario",
+			"col_width_pdf": 30,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+		"nombre_operario": {
+			"label": "Operario",
+			"col_width_pdf": 30,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
 		"promo": {
 			"label": "Promo",
 			"col_width_pdf": 30,
@@ -226,8 +310,7 @@ class ConfigViews:
 		},
 	}
 
-
-class VLTablaDinamicaVentasInformeView(InformeFormView):
+class VLTablaDinamicaEstadisticaInformeView(InformeFormView):
 	config = ConfigViews  #-- Ahora la configuración estará disponible en self.config.
 	form_class = ConfigViews.form_class
 	template_name = ConfigViews.template_list
@@ -247,7 +330,7 @@ class VLTablaDinamicaVentasInformeView(InformeFormView):
 		fecha_hasta = cleaned_data.get('fecha_hasta')
 		comprobantes_impositivos = cleaned_data.get('comprobantes_impositivos', True)
 		
-		queryset = VLTablaDinamicaVentas.objects.obtener_datos(
+		queryset = VLTablaDinamicaEstadistica.objects.obtener_datos(
 			fecha_desde, 
 			fecha_hasta, 
 			comprobantes_impositivos=comprobantes_impositivos,
@@ -332,7 +415,7 @@ def raw_to_dict(instance):
 	return data
 
 
-def vltabladinamicaventas_vista_pantalla(request):
+def vltabladinamicaestadistica_vista_pantalla(request):
 	#-- Obtener el token de la querystring.
 	token = request.GET.get("token")
 	
@@ -349,7 +432,7 @@ def vltabladinamicaventas_vista_pantalla(request):
 	return render(request, ConfigViews.reporte_pantalla, contexto_reporte)
 
 
-def vltabladinamicaventas_vista_pdf(request):
+def vltabladinamicaestadistica_vista_pdf(request):
 	#-- Obtener el token de la querystring.
 	token = request.GET.get("token")
 	
@@ -461,7 +544,7 @@ def generar_pdf(contexto_reporte):
 	
 	return generator.generate(table_data, col_widths, table_style_config)		
 
-def vltabladinamicaventas_vista_excel(request):
+def vltabladinamicaestadistica_vista_excel(request):
 	token = request.GET.get("token")
 	
 	if not token:
@@ -476,7 +559,7 @@ def vltabladinamicaventas_vista_excel(request):
 	# ---------------------------------------------
 	
 	#-- Instanciar la vista y obtener el queryset.
-	view_instance = VLTablaDinamicaVentasInformeView()
+	view_instance = VLTablaDinamicaEstadisticaInformeView()
 	view_instance.request = request
 	queryset = view_instance.obtener_queryset(cleaned_data)
 	
@@ -501,7 +584,7 @@ def vltabladinamicaventas_vista_excel(request):
 	return response
 
 
-def vltabladinamicaventas_vista_csv(request):
+def vltabladinamicaestadistica_vista_csv(request):
 	token = request.GET.get("token")
 	if not token:
 		return HttpResponse("Token no proporcionado", status=400)
@@ -514,7 +597,7 @@ def vltabladinamicaventas_vista_csv(request):
 	cleaned_data = data["cleaned_data"]
 	
 	#-- Instanciar la vista para reejecutar la consulta y obtener el queryset.
-	view_instance = VLTablaDinamicaVentasInformeView()
+	view_instance = VLTablaDinamicaEstadisticaInformeView()
 	view_instance.request = request
 	queryset = view_instance.obtener_queryset(cleaned_data)
 	

@@ -2257,7 +2257,6 @@ class VLTablaDinamicaEstadistica(models.Model):
 	promo = models.BooleanField()
 	libro_iva = models.BooleanField()
 	
-	
 	objects = VLTablaDinamicaEstadisticaManager()
 	
 	class Meta:
