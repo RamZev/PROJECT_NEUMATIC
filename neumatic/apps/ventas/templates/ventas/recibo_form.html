@@ -2229,6 +2229,14 @@
                             bancoSelect.value = data.id_banco;
                             bancoSelect.classList.remove('is-invalid');
                             bancoSelect.classList.add('is-valid');
+
+                            // Verificar si id_fecha_cheque1_input está vacío y asignar la fecha actual
+                            const fechaCheque1Input = document.getElementById('id_fecha_cheque1_input');
+                            if (fechaCheque1Input && !fechaCheque1Input.value) {
+                                const hoy = new Date();
+                                const fechaHoyStr = hoy.toISOString().split('T')[0]; // Formato YYYY-MM-DD
+                                fechaCheque1Input.value = fechaHoyStr;
+                            }
                         } else {
                             bancoSelect.classList.remove('is-valid');
                             bancoSelect.classList.add('is-invalid');

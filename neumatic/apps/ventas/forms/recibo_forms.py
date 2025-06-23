@@ -102,7 +102,9 @@ class FacturaReciboForm(forms.ModelForm):
         widget=forms.NumberInput(attrs={
             **formclassnumb,
             'readonly': 'readonly',
-            'style': 'font-size: 0.8rem; padding: 0.25rem; background-color: #E6F6FF;'
+            'style': 'font-size: 0.8rem; padding: 0.25rem; background-color: #E6F6FF;',
+            'step': '0.01',
+            'value': '0.00'  
         })
     )
     total_retenciones = forms.DecimalField(
@@ -717,7 +719,7 @@ class ChequeReciboInputForm(forms.ModelForm):
         required=False
     )
     fecha_cheque2_input = forms.DateField(
-        label="Fecha",
+        label="Fecha Cheque",
         widget=forms.DateInput(attrs={
             'class': 'form-control form-control-sm border border-primary',
             'style': 'font-size: 0.8rem; padding: 0.25rem;',
