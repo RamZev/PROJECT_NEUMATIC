@@ -625,6 +625,45 @@ def validar_deudas_cliente(request, cliente_id):
     }, status=200)
 
 
+# Obtener número de comprobante: caso si letra de comprobante previo
+def obtener_numero_comprobante2(request):
+    # Obtener parámetros de la solicitud
+    id_sucursal = request.GET.get('id_sucursal')
+    id_punto_venta = request.GET.get('id_punto_venta')
+    comprobante = request.GET.get('comprobante')
+    #letra = request.GET.get('letra')
+
+    if not all([id_sucursal, id_punto_venta, comprobante]):
+        return JsonResponse({'error': 'Faltan parámetros requeridos'}, status=400)
+
+    try:
+        # Obtener número referencial (último número + 1)
+        ultimo_numero = Numero.objects.filter(
+            id_sucursal=id_sucursal,
+            id_punto_venta=id_punto_venta,
+            comprobante=comprobante
+        ).order_by('-numero').first()
+
+        numero_referencial = (ultimo_numero.numero + 1) if ultimo_numero else 1
+        letra = ultimo_numero.letra if ultimo_numero else "Z"
+        print("letra:", letra)
+
+        # Obtener número definitivo (podría incluir lógica adicional aquí)
+        numero_definitivo = numero_referencial  # Por defecto son iguales
+
+        return JsonResponse({
+            'numero_referencial': numero_referencial,
+            'numero_definitivo': numero_definitivo,
+            'letra': letra,
+            'success': True
+        })
+
+    except Exception as e:
+        return JsonResponse({
+            'error': str(e),
+            'success': False
+        }, status=500)
+
 @require_GET
 def buscar_banco(request):
     codigo_banco = request.GET.get('codigo_banco', '').strip()

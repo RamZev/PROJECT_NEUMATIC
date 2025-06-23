@@ -3,6 +3,7 @@ from django import forms
 from django.forms import inlineformset_factory
 from datetime import date
 from django.db.models import Q
+from django.forms import DecimalField, NumberInput
 
 from ..models.factura_models import *
 from ..models.recibo_models import (
@@ -25,6 +26,20 @@ from diseno_base.diseno_bootstrap import (
     formclassdate, 
     formclasscheck
 )
+
+# Clase para normalizar valores a dos decimales
+class FixedDecimalField(DecimalField):
+    def to_python(self, value):
+        value = super().to_python(value)
+        if value is None:
+            return value
+        # Normalizar a dos decimales
+        return round(value, 2)
+
+    def widget_attrs(self, widget):
+        attrs = super().widget_attrs(widget)
+        attrs.update({'step': '0.01'})  # Añadir step para compatibilidad
+        return attrs
 
 
 # Encabezado de Recibo
@@ -270,7 +285,7 @@ class FacturaReciboForm(forms.ModelForm):
         self.fields['total_formas_pago'].initial = 0.00
         self.fields['resto_cobrar'].initial = 0.00
 
-# Detalle de Recibo
+# Detalle del Recibo
 class DetalleReciboForm(forms.ModelForm):
     # Campos no guardados en el modelo
     comprobante = forms.CharField(max_length=100, required=False, disabled=True,

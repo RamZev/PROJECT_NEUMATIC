@@ -2255,7 +2255,6 @@ class VLTablaDinamicaEstadistica(models.Model):
 	id_operario_id = models.IntegerField()
 	nombre_operario = models.CharField(max_length=50)
 	promo = models.BooleanField()
-	libro_iva = models.BooleanField()
 	
 	objects = VLTablaDinamicaEstadisticaManager()
 	
