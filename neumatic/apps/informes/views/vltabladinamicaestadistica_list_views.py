@@ -5,6 +5,7 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from datetime import datetime
 from django.templatetags.static import static
+from decimal import Decimal
 
 #-- ReportLab:
 from reportlab.lib import colors
@@ -72,21 +73,36 @@ class ConfigViews:
 	table_info = {
 		"id_factura_id": {
 			"label": "ID Factura",
-			"col_width_pdf": 40,
+			"col_width_pdf": 0,
+			"pdf_paragraph": False,
+			"date_format": False,
 			"pdf": False,
 			"excel": True,
 			"csv": True
 		},
 		"nombre_sucursal": {
 			"label": "Sucursal",
-			"col_width_pdf": 40,
+			"col_width_pdf": 0,
+			"pdf_paragraph": False,
+			"date_format": False,
 			"pdf": False,
 			"excel": True,
 			"csv": True
 		},
+		"comprobante": {
+			"label": "Comprobante",
+			"col_width_pdf": 65,
+			"pdf_paragraph": False,
+			"date_format": False,
+			"pdf": True,
+			"excel": False,
+			"csv": False
+		},
 		"nombre_comprobante_venta": {
 			"label": "Comprobante",
-			"col_width_pdf": 75,
+			"col_width_pdf": 0,
+			"pdf_paragraph": False,
+			"date_format": False,
 			"pdf": False,
 			"excel": True,
 			"csv": True
@@ -94,20 +110,26 @@ class ConfigViews:
 		"fecha_comprobante": {
 			"label": "Fecha",
 			"col_width_pdf": 40,
-			"pdf": False,
+			"pdf_paragraph": False,
+			"date_format": True,
+			"pdf": True,
 			"excel": True,
 			"csv": True
 		},
 		"letra_comprobante": {
 			"label": "Letra",
-			"col_width_pdf": 40,
+			"col_width_pdf": 0,
+			"pdf_paragraph": False,
+			"date_format": False,
 			"pdf": False,
 			"excel": True,
 			"csv": True
 		},
 		"numero_comprobante": {
 			"label": "Núnero",
-			"col_width_pdf": 40,
+			"col_width_pdf": 0,
+			"pdf_paragraph": False,
+			"date_format": False,
 			"pdf": False,
 			"excel": True,
 			"csv": True
@@ -115,195 +137,251 @@ class ConfigViews:
 		"condicion_comprobante": {
 			"label": "Condición",
 			"col_width_pdf": 40,
+			"pdf_paragraph": False,
+			"date_format": False,
 			"pdf": False,
 			"excel": True,
 			"csv": True
 		},
 		"id_cliente_id": {
 			"label": "Cliente",
-			"col_width_pdf": 30,
+			"col_width_pdf": 0,
+			"pdf_paragraph": False,
+			"date_format": False,
 			"pdf": False,
 			"excel": True,
 			"csv": True
 		},
 		"nombre_cliente": {
 			"label": "Nombre Cliente",
-			"col_width_pdf": 190,
-			"pdf": False,
+			"col_width_pdf": 140,
+			"pdf_paragraph": True,
+			"date_format": False,
+			"pdf": True,
 			"excel": True,
 			"csv": True
 		},
 		"mayorista": {
 			"label": "Mayorista",
-			"col_width_pdf": 190,
+			"col_width_pdf": 0,
+			"pdf_paragraph": False,
+			"date_format": False,
 			"pdf": False,
 			"excel": True,
 			"csv": True
 		},
 		"reventa": {
-			"label": "Reventa",
-			"col_width_pdf": 190,
-			"pdf": False,
+			"label": "Rvta.",
+			"col_width_pdf": 25,
+			"pdf_paragraph": False,
+			"date_format": False,
+			"pdf": True,
 			"excel": True,
 			"csv": True
 		},
 		"id_producto_id": {
-			"label": "C{od. Producto}",
+			"label": "Producto",
 			"col_width_pdf": 30,
-			"pdf": False,
+			"pdf_paragraph": False,
+			"date_format": False,
+			"pdf": True,
 			"excel": True,
 			"csv": True
 		},
 		"cai": {
 			"label": "CAI",
-			"col_width_pdf": 30,
-			"pdf": False,
+			"col_width_pdf": 35,
+			"pdf_paragraph": False,
+			"date_format": False,
+			"pdf": True,
 			"excel": True,
 			"csv": True
 		},
 		"nombre_producto": {
-			"label": "Producto",
-			"col_width_pdf": 30,
-			"pdf": False,
+			"label": "Descripción",
+			"col_width_pdf": 170,
+			"pdf_paragraph": True,
+			"date_format": False,
+			"pdf": True,
 			"excel": True,
 			"csv": True
 		},
 		"nombre_producto_marca": {
 			"label": "Marca",
-			"col_width_pdf": 30,
+			"col_width_pdf": 0,
+			"pdf_paragraph": False,
+			"date_format": False,
 			"pdf": False,
 			"excel": True,
 			"csv": True
 		},
 		"nombre_producto_familia": {
 			"label": "Familia",
-			"col_width_pdf": 30,
+			"col_width_pdf": 0,
+			"pdf_paragraph": False,
+			"date_format": False,
 			"pdf": False,
 			"excel": True,
 			"csv": True
 		},
 		"segmento": {
 			"label": "Segmento",
-			"col_width_pdf": 30,
+			"col_width_pdf": 0,
+			"pdf_paragraph": False,
+			"date_format": False,
 			"pdf": False,
 			"excel": True,
 			"csv": True
 		},
 		"cantidad": {
 			"label": "Cantidad",
-			"col_width_pdf": 65,
-			"pdf": False,
+			"col_width_pdf": 45,
+			"pdf_paragraph": False,
+			"date_format": False,
+			"pdf": True,
 			"excel": True,
 			"csv": True
 		},
 		"costo": {
 			"label": "Costo",
-			"col_width_pdf": 65,
-			"pdf": False,
+			"col_width_pdf": 55,
+			"pdf_paragraph": False,
+			"date_format": False,
+			"pdf": True,
 			"excel": True,
 			"csv": True
 		},
 		"precio": {
 			"label": "Precio",
-			"col_width_pdf": 65,
-			"pdf": False,
+			"col_width_pdf": 55,
+			"pdf_paragraph": False,
+			"date_format": False,
+			"pdf": True,
 			"excel": True,
 			"csv": True
 		},
 		"descuento": {
 			"label": "Descuento",
-			"col_width_pdf": 65,
-			"pdf": False,
+			"col_width_pdf": 40,
+			"pdf_paragraph": False,
+			"date_format": False,
+			"pdf": True,
 			"excel": True,
 			"csv": True
 		},
 		"gravado": {
 			"label": "Gravado",
-			"col_width_pdf": 65,
-			"pdf": False,
+			"col_width_pdf": 60,
+			"pdf_paragraph": False,
+			"date_format": False,
+			"pdf": True,
 			"excel": True,
 			"csv": True
 		},
 		"total": {
 			"label": "Total",
-			"col_width_pdf": 65,
-			"pdf": False,
+			"col_width_pdf": 60,
+			"pdf_paragraph": False,
+			"date_format": False,
+			"pdf": True,
 			"excel": True,
 			"csv": True
 		},
 		"no_estadist": {
 			"label": "No_Estadist",
-			"col_width_pdf": 30,
+			"col_width_pdf": 0,
+			"pdf_paragraph": False,
+			"date_format": False,
 			"pdf": False,
 			"excel": True,
 			"csv": True
 		},
 		"id_user_id": {
 			"label": "Operador",
-			"col_width_pdf": 130,
+			"col_width_pdf": 0,
+			"pdf_paragraph": False,
+			"date_format": False,
 			"pdf": False,
 			"excel": True,
 			"csv": True
 		},
 		"codigo_postal": {
 			"label": "Cód. Postal",
-			"col_width_pdf": 40,
+			"col_width_pdf": 0,
+			"pdf_paragraph": False,
+			"date_format": False,
 			"pdf": False,
 			"excel": True,
 			"csv": True
 		},
 		"nombre_localidad": {
 			"label": "Localidad",
-			"col_width_pdf": 100,
+			"col_width_pdf": 0,
+			"pdf_paragraph": False,
+			"date_format": False,
 			"pdf": False,
 			"excel": True,
 			"csv": True
 		},
 		"nombre_provincia": {
 			"label": "Provincia",
-			"col_width_pdf": 100,
+			"col_width_pdf": 0,
+			"pdf_paragraph": False,
+			"date_format": False,
 			"pdf": False,
 			"excel": True,
 			"csv": True
 		},
 		"nombre_vendedor": {
 			"label": "Vendedor",
-			"col_width_pdf": 100,
+			"col_width_pdf": 0,
+			"pdf_paragraph": False,
+			"date_format": False,
 			"pdf": False,
 			"excel": True,
 			"csv": True
 		},
 		"comision": {
 			"label": "Comisión",
-			"col_width_pdf": 30,
+			"col_width_pdf": 0,
+			"pdf_paragraph": False,
+			"date_format": False,
 			"pdf": False,
 			"excel": True,
 			"csv": True
 		},
 		"id_operario_id": {
 			"label": "Cód. Operario",
-			"col_width_pdf": 30,
+			"col_width_pdf": 0,
+			"pdf_paragraph": False,
+			"date_format": False,
 			"pdf": False,
 			"excel": True,
 			"csv": True
 		},
 		"nombre_operario": {
 			"label": "Operario",
-			"col_width_pdf": 30,
+			"col_width_pdf": 0,
+			"pdf_paragraph": False,
+			"date_format": False,
 			"pdf": False,
 			"excel": True,
 			"csv": True
 		},
 		"promo": {
 			"label": "Promo",
-			"col_width_pdf": 30,
+			"col_width_pdf": 0,
+			"pdf_paragraph": False,
+			"date_format": False,
 			"pdf": False,
 			"excel": True,
 			"csv": True
 		},
 		"libro_iva": {
 			"label": "libro_iva",
-			"col_width_pdf": 30,
+			"col_width_pdf": 0,
+			"pdf_paragraph": False,
+			"date_format": False,
 			"pdf": False,
 			"excel": True,
 			"csv": True
@@ -475,10 +553,12 @@ class CustomPDFGenerator(PDFGenerator):
 
 def generar_pdf(contexto_reporte):
 	#-- Crear instancia del generador personalizado.
-	return
-	generator = CustomPDFGenerator(contexto_reporte, pagesize=portrait(A4), body_font_size=7)
+	generator = CustomPDFGenerator(contexto_reporte, pagesize=landscape(A4))
 	
 	#-- Construir datos de la tabla:
+	
+	#-- Extraer los campos de las columnas de la tabla (headers).
+	fields = [ field for field in ConfigViews.table_info if ConfigViews.table_info[field]['pdf']]
 	
 	#-- Extraer Títulos de las columnas de la tabla (headers).
 	headers_titles = [value['label'] for value in ConfigViews.table_info.values() if value['pdf']]
@@ -490,57 +570,27 @@ def generar_pdf(contexto_reporte):
 	
 	#-- Estilos específicos adicionales iniciales de la tabla.
 	table_style_config = [
-		('ALIGN', (4,0), (4,-1), 'RIGHT'),
+		('ALIGN', (7,0), (-1,-1), 'RIGHT'),
 	]
 	
-	#-- Contador de filas (empezamos en 1 porque la 0 es el header).
-	current_row = 1
-	
 	#-- Agregar los datos a la tabla.
-	
-	for obj in contexto_reporte.get("objetos", {}).values():
-		#-- Agregar filas del detalle.
-		for comprobante in obj['comprobantes']:
-			print("comprobante:", comprobante)
-			table_data.append([
-				format_date(comprobante['fecha_comprobante']),
-				comprobante['comprobante'],
-				comprobante['id_cliente_id'],
-				Paragraph(str(comprobante['nombre_cliente']), generator.styles['CellStyle']),
-				formato_argentino(comprobante['total']),
-				Paragraph(str(comprobante['nombre_vendedor']), generator.styles['CellStyle']),
-				comprobante['sub_cuenta']
-			])
-			current_row += 1
+	for obj in contexto_reporte.get("objetos", []):
+		row = []
+		
+		for field in fields:
+			value = obj[field]
 			
-		#-- Fila Total por Cliente.
-		table_data.append(["", "", "", "Total Cliente:", formato_argentino(obj['total_cliente'])])
+			if ConfigViews.table_info[field]['pdf_paragraph']:
+				row.append(Paragraph(str(value) if value else "", generator.styles['CellStyle']))
+			else:
+				if ConfigViews.table_info[field]['date_format']:
+					row.append(format_date(value) if value else "")
+				elif isinstance(obj[field], (float, Decimal)):
+					row.append(formato_argentino(value))
+				else:
+					row.append(value if value else "")
 		
-		#-- Aplicar estilos a la fila de total (fila actual).
-		table_style_config.extend([
-			('FONTNAME', (0,current_row), (-1,current_row), 'Helvetica-Bold'),
-			('ALIGN', (3,current_row), (4,current_row), 'RIGHT'),
-			# ('LINEABOVE', (0,current_row), (-1,current_row), 0.5, colors.black),
-		])
-		
-		current_row += 1
-		
-		#-- Fila divisoria.
-		table_data.append(["", "", "", "", "", "", ""])
-		table_style_config.append(
-			('LINEBELOW', (0,current_row), (-1,current_row), 0.5, colors.gray),
-		)
-		current_row += 1
-	
-	#-- Fila Total General.
-	table_data.append(["", "", "", "Total General:", formato_argentino(contexto_reporte.get('total_general'))])
-	
-	#-- Aplicar estilos a la fila de total (fila actual).
-	table_style_config.extend([
-		('FONTNAME', (0,current_row), (-1,current_row), 'Helvetica-Bold'),
-		('ALIGN', (3,current_row), (4,current_row), 'RIGHT'),
-		# ('LINEABOVE', (0,current_row), (-1,current_row), 0.5, colors.black),
-	])
+		table_data.append(row)
 	
 	return generator.generate(table_data, col_widths, table_style_config)		
 

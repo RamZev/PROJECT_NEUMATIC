@@ -1037,7 +1037,13 @@ CREATE VIEW "VLTablaDinamicaVentas" AS
 		f.fecha_comprobante,
 		f.letra_comprobante,
 		f.numero_comprobante,
-		f.condicion_comprobante,
+		(f.compro || ' ' || f.letra_comprobante || ' ' || SUBSTR(printf('%012d', f.numero_comprobante), 1, 4) || '-' || SUBSTR(printf('%012d', f.numero_comprobante), 5)) AS comprobante, 
+		--f.condicion_comprobante,
+		CASE f.condicion_comprobante
+			WHEN 1 THEN 'Contado'
+			WHEN 2 THEN 'Cta. Cte.'
+			ELSE 'Desconocido'
+		END AS condicion_comprobante,
 		f.id_cliente_id,
 		c.nombre_cliente,
 		c.mayorista,
@@ -1061,7 +1067,9 @@ CREATE VIEW "VLTablaDinamicaVentas" AS
 		JOIN vendedor v ON c.id_vendedor_id = v.id_vendedor
 		JOIN sucursal s ON f.id_sucursal_id = s.id_sucursal
 		JOIN localidad l ON c.id_localidad_id = l.id_localidad
-		JOIN provincia p ON l.id_provincia_id = p.id_provincia;
+		JOIN provincia p ON l.id_provincia_id = p.id_provincia
+	ORDER by
+		f.fecha_comprobante, f.numero_comprobante;
 
 
 -- ---------------------------------------------------------------------------
@@ -1078,7 +1086,13 @@ CREATE VIEW "VLTablaDinamicaDetalleVentas" AS
 		f.fecha_comprobante,
 		f.letra_comprobante,
 		f.numero_comprobante,
-		f.condicion_comprobante,
+		(f.compro || ' ' || f.letra_comprobante || ' ' || SUBSTR(printf('%012d', f.numero_comprobante), 1, 4) || '-' || SUBSTR(printf('%012d', f.numero_comprobante), 5)) AS comprobante, 
+		--f.condicion_comprobante,
+		CASE f.condicion_comprobante
+			WHEN 1 THEN 'Contado'
+			WHEN 2 THEN 'Cta. Cte.'
+			ELSE 'Desconocido'
+		END AS condicion_comprobante,
 		f.id_cliente_id,
 		c.nombre_cliente,
 		c.mayorista,
@@ -1135,7 +1149,13 @@ CREATE VIEW "VLTablaDinamicaEstadistica" AS
 		f.fecha_comprobante,
 		f.letra_comprobante,
 		f.numero_comprobante,
-		f.condicion_comprobante,
+		(f.compro || ' ' || f.letra_comprobante || ' ' || SUBSTR(printf('%012d', f.numero_comprobante), 1, 4) || '-' || SUBSTR(printf('%012d', f.numero_comprobante), 5)) AS comprobante, 
+		--f.condicion_comprobante,
+		CASE f.condicion_comprobante
+			WHEN 1 THEN 'Contado'
+			WHEN 2 THEN 'Cta. Cte.'
+			ELSE 'Desconocido'
+		END AS condicion_comprobante,
 		f.id_cliente_id,
 		c.nombre_cliente,
 		c.mayorista,
