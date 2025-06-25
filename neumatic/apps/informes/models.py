@@ -2058,7 +2058,7 @@ class VLVentaSinEstadistica(models.Model):
 class VLTablaDinamicaVentasManager(models.Manager):
 	
 	def obtener_datos(self, fecha_desde, fecha_hasta, comprobantes_impositivos=True):
-		print(f"{comprobantes_impositivos = }")
+		
 		#-- La consulta SQL.
 		query = """
 			SELECT

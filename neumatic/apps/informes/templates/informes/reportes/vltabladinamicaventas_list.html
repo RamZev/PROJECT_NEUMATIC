@@ -24,53 +24,40 @@
 <!-- Bloque Content ------------------------------------------------------------------------ -->
 
 {% block content %}
-	En desarrollo...
-	{% comment %}
+	
 	<table>
 		
 		<thead>
 			<tr>
-				<th>Fecha</th>
 				<th>Comprobante</th>
+				<th>Fecha</th>
+				<th>Condición</th>
 				<th>Cliente</th>
 				<th>Nombre</th>
-				<th class="numeric" style="padding-right: 15px;">Importe</th>
-				<th>Vendedor</th>
-				<th>Sub-Cta.</th>
+				<th class="numeric" style="padding-right: 15px;">Gravado</th>
+				<th class="numeric" style="padding-right: 15px;">IVA</th>
+				<th class="numeric" style="padding-right: 15px;">Percepción</th>
+				<th class="numeric" style="padding-right: 15px;">Total</th>
 			</tr>
 		</thead>
 		
 		<tbody>
 			
-			{% for obj in objetos.values %}
+			{% for obj in objetos %}
 				
-				{% for comprobante in obj.comprobantes %}
-					<tr>
-						<td>{{ comprobante.fecha_comprobante|date:'d/m/Y' }}</td>
-						<td>{{ comprobante.comprobante }}</td>
-						<td>{{ comprobante.id_cliente_id }}</td>
-						<td>{{ comprobante.nombre_cliente }}</td>
-						<td class="numeric" style="padding-right: 15px;">{{ comprobante.total|formato_es_ar }}</td>
-						<td>{{ comprobante.nombre_vendedor }}</td>
-						<td>{{ comprobante.sub_cuenta|default:"" }}</td>
-					</tr>
-				{% endfor %}
-				<!-- Total por cliente -->
 				<tr>
-					<td colspan="4" style="text-align: right;"><strong>Sub-total:</strong></td>
-					<td class="numeric" style="padding-right: 15px;"><strong>{{ obj.total_cliente|formato_es_ar }}</strong></td>
-				</tr>
-				<tr>
-					<td colspan="7"><hr></td>
+					<td>{{ obj.comprobante }}</td>
+					<td>{{ obj.fecha_comprobante|date:'d/m/Y' }}</td>
+					<td>{{ obj.condicion_comprobante }}</td>
+					<td>{{ obj.id_cliente_id }}</td>
+					<td>{{ obj.nombre_cliente }}</td>
+					<td class="numeric" style="padding-right: 15px;">{{ obj.gravado|formato_es_ar }}</td>
+					<td class="numeric" style="padding-right: 15px;">{{ obj.iva|formato_es_ar }}</td>
+					<td class="numeric" style="padding-right: 15px;">{{ obj.percepcion|formato_es_ar }}</td>
+					<td class="numeric" style="padding-right: 15px;">{{ obj.total|formato_es_ar }}</td>
 				</tr>
 			{% endfor %}
-			<!-- Total General -->
-			<tr>
-				<td colspan="4" style="text-align: right;"><strong>Total General:</strong></td>
-				<td class="numeric" style="padding-right: 15px;"><strong>{{ total_general|formato_es_ar }}</strong></td>
-			</tr>			
 			
 		</tbody>
 	</table>
-	{% endcomment %}
 {% endblock content %}
