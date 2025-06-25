@@ -1,15 +1,15 @@
 <div id="layoutSidenav_content">
     <main>
         <div class="container-fluid px-4">
-            <h4 class="mt-4">Panel: Módulos e Indicadores de Gestión</h4>
+            <h4 class="mt-2">Panel: Módulos e Indicadores de Gestión</h4>
             {% comment %} <ol class="breadcrumb mb-4">
                 <li class="breadcrumb-item active">Módulos</li>
             </ol> {% endcomment %}
             
             {% comment %} Módulos Start{% endcomment %}
-            <div class="row">
+            <div class="row mt-0 mb-1">  <!-- Cambiado my-1 a mt-0 mb-1 -->
                 <div class="col-xl-2 col-md-3">
-                    <div class="card bg-primary bg-opacity-25 text-dark mb-4">
+                    <div class="card bg-primary bg-opacity-25 text-dark mb-3">  <!-- Reducido mb-4 a mb-3 -->
                         <div class="card-body">Archivo</div>
                         <div class="card-footer d-flex align-items-center justify-content-between">
                             <a class="small text-blue stretched-link" href="#">Ver Detalles</a>
@@ -19,7 +19,7 @@
                 </div>
 
                 <div class="col-xl-2 col-md-3">
-                    <div class="card bg-success bg-opacity-25 text-dark mb-4">
+                    <div class="card bg-success bg-opacity-25 text-dark mb-3">  <!-- Reducido mb-4 a mb-3 -->
                         <div class="card-body">Ventas</div>
                         <div class="card-footer d-flex align-items-center justify-content-between">
                             <a class="small text-blue stretched-link" href="#">Ver Detalles</a>
@@ -29,7 +29,7 @@
                 </div>
 
                 <div class="col-xl-2 col-md-3">
-                    <div class="card bg-primary bg-opacity-25 text-dark mb-4">
+                    <div class="card bg-primary bg-opacity-25 text-dark mb-3">  <!-- Reducido mb-4 a mb-3 -->
                         <div class="card-body">Compras</div>
                         <div class="card-footer d-flex align-items-center justify-content-between">
                             <a class="small text-blue stretched-link" href="#">Ver Detalles</a>
@@ -39,7 +39,7 @@
                 </div>
 
                 <div class="col-xl-2 col-md-3">
-                    <div class="card bg-success bg-opacity-25 text-dark mb-4">
+                    <div class="card bg-success bg-opacity-25 text-dark mb-3">  <!-- Reducido mb-4 a mb-3 -->
                         <div class="card-body">Caja</div>
                         <div class="card-footer d-flex align-items-center justify-content-between">
                             <a class="small text-blue stretched-link" href="#">Ver Detalles</a>
@@ -48,7 +48,7 @@
                     </div>
                 </div>
                 <div class="col-xl-2 col-md-3">
-                    <div class="card bg-primary bg-opacity-25 text-dark mb-4">
+                    <div class="card bg-primary bg-opacity-25 text-dark mb-3">  <!-- Reducido mb-4 a mb-3 -->
                         <div class="card-body">Inventario</div>
                         <div class="card-footer d-flex align-items-center justify-content-between">
                             <a class="small text-blue stretched-link" href="#">Ver Detalles</a>
@@ -57,7 +57,7 @@
                     </div>
                 </div>
                 <div class="col-xl-2 col-md-3">
-                    <div class="card bg-success bg-opacity-25 text-dark mb-4">
+                    <div class="card bg-success bg-opacity-25 text-dark mb-3">  <!-- Reducido mb-4 a mb-3 -->
                         <div class="card-body">Informes</div>
                         <div class="card-footer d-flex align-items-center justify-content-between">
                             <a class="small text-blue stretched-link" href="#">Ver Detalles</a>
@@ -66,8 +66,65 @@
                     </div>
                 </div>
             </div>
-
             {% comment %} Módulos End{% endcomment %}
+
+            {% comment %} Accesos Directos Start {% endcomment %}
+            <div class="row mt-1 mb-1">  <!-- Cambiado my-1 a mt-1 mb-0 -->
+                <!-- Facturación Electrónica -->
+                <div class="col-xl-1 col-md-3 text-center">
+                    <a href="{% url 'factura_list' %}" class="text-decoration-none" title="Facturación Electrónica">
+                        <div class="p-2 rounded-3 border border-primary hover-shadow" style="--bs-border-opacity: 0.5; height: 60px; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-file-invoice-dollar fs-4 text-info"></i>
+                        </div>
+                    </a>
+                </div>
+
+                <!-- Facturación Manual -->
+                <div class="col-xl-1 col-md-3 text-center">
+                    <a href="#" class="text-decoration-none" title="Facturación Manual">
+                        <div class="p-2 rounded-3 border border-primary hover-shadow" style="--bs-border-opacity: 0.5; height: 60px; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-file-signature fs-4 text-warning"></i>
+                        </div>
+                    </a>
+                </div>
+
+                <!-- Clientes -->
+                <div class="col-xl-1 col-md-3 text-center">
+                    <a href="{% url 'cliente_list' %}" class="text-decoration-none" title="Clientes">
+                        <div class="p-2 rounded-3 border border-primary hover-shadow" style="--bs-border-opacity: 0.5; height: 60px; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-users fs-4 text-purple"></i>
+                        </div>
+                    </a>
+                </div>
+
+                <!-- Productos -->
+                <div class="col-xl-1 col-md-3 text-center">
+                    <a href="{% url 'producto_list' %}" class="text-decoration-none" title="Productos">
+                        <div class="p-2 rounded-3 border border-primary hover-shadow" style="--bs-border-opacity: 0.5; height: 60px; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-boxes fs-4 text-primary"></i>
+                        </div>
+                    </a>
+                </div>
+
+                <!-- Recibos -->
+                <div class="col-xl-1 col-md-3 text-center">
+                    <a href="{% url 'recibo_list' %}" class="text-decoration-none" title="Recibos">
+                        <div class="p-2 rounded-3 border border-primary hover-shadow" style="--bs-border-opacity: 0.5; height: 60px; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-hand-holding-usd fs-4 text-success"></i>
+                        </div>
+                    </a>
+                </div>
+
+                <!-- Resumen de Cuenta Corriente -->
+                <div class="col-xl-1 col-md-3 text-center">
+                    <a href="{% url 'vlresumenctacte_informe_list' %}" class="text-decoration-none" title="Resumen de Cuenta Corriente">
+                        <div class="p-2 rounded-3 border border-primary hover-shadow" style="--bs-border-opacity: 0.5; height: 60px; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-chart-pie fs-4 text-danger"></i>
+                        </div>
+                    </a>
+                </div>
+            </div>
+            {% comment %} Accesos Directos End {% endcomment %}
 
             {% comment %} Gráficos Start{% endcomment %}
             <div class="row">

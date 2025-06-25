@@ -222,6 +222,11 @@ class ReciboCreateView(MaestroDetalleCreateView):
 				Numero.objects.filter(pk=numero_obj.pk).update(numero=F('numero') + 1)
 				form.instance.numero_comprobante = nuevo_numero
 				form.instance.full_clean()  # Validar el formulario con el nuevo número
+
+				# Asignar total_cobrado a entrega
+				total_cobrado = form.cleaned_data.get('total_cobrado', 0.0)
+				print('total_cobrado:', total_cobrado)
+				form.instance.entrega = total_cobrado
 				
 				# 4. Guardar el formulario principal (Factura/Recibo)
 				self.object = form.save()

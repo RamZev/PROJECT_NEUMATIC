@@ -407,16 +407,6 @@
                                     <label class="form-label mb-0 text-primary">
                                         <strong>Retenciones</strong>
                                     </label>
-                                    {% comment %} <div>
-                                        <input type="number" 
-                                            name="{{ form.total_retenciones.name }}" 
-                                            id="id_total_retenciones" 
-                                            value="{{ form.total_retenciones.value|default:'0.00'|floatformat:2 }}" 
-                                            readonly 
-                                            step="0.01" 
-                                            class="form-control form-control-sm border border-primary my-0 text-end fw-bold" 
-                                            style="font-size: 0.8rem; padding: 0.25rem; background-color: #E6F6FF;">
-                                    </div> {% endcomment %}
                                     
                                     <div>
                                         {{ form.total_retenciones }}

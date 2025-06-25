@@ -31,6 +31,11 @@
 		position: sticky;
 		top: 0px;
 	}
+
+	.decimal {
+		text-align: right;
+		font-familily: monospace;
+	}
 {% endblock style %}
 
 {% debug %}
@@ -101,13 +106,37 @@
 									<tbody>
 										{% for objeto in objetos %}
 											<tr>
-												{% for data_info in table_data %}
+												{% comment %} {% for data_info in table_data %}
 													{% if data_info.date_format %}
 														<td>{{ objeto|get_attribute:data_info.field_name|default:"" |date:data_info.date_format }}</td>
 													{% else %}
 														<td>{{ objeto|get_attribute:data_info.field_name|default:"" }}</td>
 													{% endif %}
-												{% endfor %}
+												{% endfor %} {% endcomment %}
+												{% for data_info in table_data %}
+													{% with objeto|get_attribute:data_info.field_name as field_value %}
+														{% if field_value|get_type == 'bool' %}
+															<td>
+																{% if field_value %}
+																	<i class="fa fa-check text-success"></i> <!-- Ícono de check verde -->
+																{% else %}
+																	<i class="fa fa-times text-danger"></i> <!-- Ícono de "X" roja -->
+																{% endif %}
+															</td>
+														{% elif field_value|get_type == 'float' or field_value|get_type == 'Decimal' %}
+															<td class="decimal">{{ objeto|get_attribute:data_info.field_name|formato_es_ar }}</td>
+														{% elif field_value|get_type == 'int' %}
+															<td>{{ objeto|get_attribute:data_info.field_name }}</td>
+														{% else %}
+															{% if data_info.date_format %}
+																<td>{{ objeto|get_attribute:data_info.field_name|default:"" |date:data_info.date_format }}</td>
+															{% else %}
+																<td>{{ objeto|get_attribute:data_info.field_name|default:"" }}</td>
+															{% endif %}
+														{% endif %}
+													{% endwith %}
+												{% endfor %}												
+												
 												<td>
 													<!-- Botón Actualizar -->
 													<button type="button" class="btn btn-outline-primary btn-sm btn-edit boton-oculto" data-form-index="{{ forloop.counter0 }}"
