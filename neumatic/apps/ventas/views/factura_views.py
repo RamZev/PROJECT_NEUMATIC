@@ -84,6 +84,7 @@ class FacturaListView(MaestroDetalleListView):
 		"table_headers": table_headers,
 		"table_data": table_data,
 		"model_string_for_pdf": "factura",  # ¡Solución clave aquí!
+		"model_string": model_string,
 	}
 
 	def get_queryset(self):
