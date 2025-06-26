@@ -3,6 +3,7 @@ from django.views import View
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.conf import settings
+from datetime import date
 
 from pathlib import Path
 from os import path
@@ -16,12 +17,14 @@ from reportlab.lib.enums import TA_LEFT
 from reportlab.lib.units import mm, cm
 
 from ..models.factura_models import Factura, DetalleFactura, SerialFactura
+from ..models.recibo_models import DetalleRecibo, RetencionRecibo, DepositoRecibo, TarjetaRecibo, ChequeRecibo
 from apps.maestros.models.empresa_models import Empresa
 from apps.maestros.models.cliente_models import Cliente
 from apps.maestros.models.sucursal_models import Sucursal
 from apps.maestros.models.producto_models import Producto
 from apps.maestros.models.vendedor_models import Vendedor
 from apps.maestros.models.base_models import Provincia, Localidad, TipoIva
+from utils.utils import formato_argentino
 
 class GeneraPDFView(View):
 	# def get(self, request, model_name, pk):
@@ -353,10 +356,15 @@ class GeneraPDFView(View):
 	
 	def generar_pdf_recibo(self, pk):
 		# Obtener datos principales
-		factura = get_object_or_404(Factura, pk=pk)
-		detalles = DetalleFactura.objects.filter(id_factura=factura)
+		recibo = get_object_or_404(Factura, pk=pk)
+		detalle_recibo = DetalleRecibo.objects.filter(id_factura=recibo)
+		retenciones = RetencionRecibo.objects.filter(id_factura=recibo)
+		depositos = DepositoRecibo.objects.filter(id_factura=recibo)
+		tarjetas = TarjetaRecibo.objects.filter(id_factura=recibo)
+		cheques = ChequeRecibo.objects.filter(id_factura=recibo)
+		
 		empresa = Empresa.objects.first()
-		cliente = factura.id_cliente  # No necesitas consulta adicional
+		cliente = recibo.id_cliente  # No necesitas consulta adicional
 		
 		#------------------------------------------------
 		print(f"--------------------------------")
@@ -379,6 +387,13 @@ class GeneraPDFView(View):
 		print(f"{cliente.cuit = }")
 		print(f"{cliente.telefono_cliente = }")
 		
+		print(f"--------------------------------")
+		print("Detalle", list(detalle_recibo))
+		print("Retenciones", list(retenciones))
+		print("Depósitos", list(depositos))
+		print("Tarjetas", list(tarjetas))
+		print("Cheques", list(cheques))
+		print("Efectivo", recibo.efectivo_recibo)
 		#------------------------------------------------
 		if not empresa:
 			return HttpResponse("No se encontraron datos de empresa configurados", status=400)
@@ -416,37 +431,164 @@ class GeneraPDFView(View):
 		
 		# 1. Encabezado dividido
 		available_width = (width - 2*margin)/2
-		header_top_height = 50*mm  # Aumentamos para acomodar múltiples líneas
+		header_top_height = 35*mm  # Aumentamos para acomodar múltiples líneas
 		
-		# Dibujar recuadro principal
+		#-- Dibujar recuadro header top left.
 		c.setLineWidth(0.5)
-		c.rect(margin, y_position - header_top_height, width - 2*margin, header_top_height)
+		y_header_top = y_position - header_top_height
+		c.rect(margin, y_header_top, width - 2*margin, header_top_height)
 		
-		# Línea vertical divisoria
+		#-- Línea vertical divisoria.
 		c.line(width/2, y_position, width/2, y_position - header_top_height)
 		
-		# 1. Configuración inicial del logo
+		#-- Configuración inicial del logo.
 		logo_path = path.join(settings.BASE_DIR, 'static', 'img', 'logo_01.png')
-		# logo_width = 40*mm
-		# logo_height = 16*mm
-		logo_width = 30*mm  # 25% menos
-		logo_height = 12*mm  # 25% menos
+		logo_width = 30*mm
+		logo_height = 12*mm
 		
-		# 2. Posicionamiento inicial (sin recuadro principal)
+		#-- Posicionamiento inicial.
 		y_position = height - margin
 		y_position -= 10*mm  # Margen superior adicional
 
-		# 3. Posicionar el logo
+		#-- Posicionar el logo.
 		try:
 			c.drawImage(logo_path, 
 						x=margin + 5*mm,
-						y=y_position - 10*mm,
+						y=y_position -5*mm,
 						width=logo_width,
 						height=logo_height,
 						preserveAspectRatio=True)
 		except:
 			print("Logo no cargado - espacio reservado se mantiene")
 		
+		#-- Mostrar los datos de la empresa en el header-top-left.
+		c.setFont("Helvetica", 8)
+		x_text_left = margin + 5*mm
+		y_text_left = y_position - logo_height
+		c.drawString(x_text_left, y_text_left, empresa.nombre_fiscal)
+		
+		y_text_left -= 3*mm
+		c.drawString(x_text_left, y_text_left, empresa.domicilio_empresa)
+		
+		y_text_left -= 3*mm
+		c.drawString(x_text_left, y_text_left, f"C.P.: ({empresa.codigo_postal})  {empresa.id_localidad} - {empresa.id_provincia}")
+		
+		y_text_left -= 3*mm
+		c.drawString(x_text_left, y_text_left, f"I.V.A.: {empresa.id_iva}    C.U.I.T.: {empresa.cuit}")
+		
+		#-- Mostrar datos del recibo en el header-top-right.
+		y_text_right = y_position
+		x_text_right = width/2 + 5*mm
+		
+		c.setFont("Helvetica-Bold", 10)
+		c.drawString(x_text_right, y_text_right, "RECIBO OFICIAL")
+		
+		y_text_right -= 4*mm
+		c.drawString(x_text_right, y_text_right, f"Nº: {recibo.letra_comprobante} {recibo.numero_comprobante_formateado}")
+		
+		c.setFont("Helvetica", 8)
+		y_text_right -= 4*mm
+		c.drawString(x_text_right, y_text_right, f"Fecha: {recibo.fecha_comprobante}")
+		
+		
+		#-- Dibujar recuadro header bottom.
+		header_bottom_heigth = 15*mm
+		y_header_bottom = y_header_top - header_bottom_heigth - 1*mm
+		c.rect(margin, y_header_bottom, width - 2*margin, header_bottom_heigth)
+		
+		y_text = y_header_bottom + header_bottom_heigth - 4*mm
+		c.drawString(x_text_left, y_text, "Se ha recibido de:")
+		
+		c.drawString(x_text_right, y_text, "La suma de:")
+		
+		y_text -= 3*mm
+		c.drawString(x_text_left, y_text, f"{cliente.nombre_cliente}  [{cliente.id_cliente}]")
+		
+		c.setFont("Helvetica-Bold", 8)
+		c.drawString(x_text_right, y_text, f"${formato_argentino(recibo.total)}")
+		c.setFont("Helvetica", 8)
+		
+		y_text -= 3*mm
+		c.drawString(x_text_left, y_text, f"{cliente.domicilio_cliente}    C.P.: {cliente.codigo_postal}")
+		
+		y_text -= 3*mm
+		c.drawString(x_text_left, y_text, f"I.V.A.: {cliente.id_tipo_iva}    C.U.I.T.: {cliente.cuit}")
+		
+		
+		#-- Mostrar detalle del recibo.
+		
+		y_detail = y_header_bottom - 4*mm
+		c.drawString(x_text_left, y_detail, "Detalle del Recibo")
+		
+		
+		#-- Medios de Pago.
+		table_cols = ["Banco/Tarjeta", "Número", "Fecha", "Cuotas", "Importe"]
+		cols_width = [30*mm, 20*mm, 20*mm, 20*mm, 20*mm]
+		
+		table_data = [table_cols]
+		
+		if detalle_recibo:
+			y_detail -= 3*mm
+			c.drawString(x_text_left, y_detail, "Detalle del Recibo")
+		
+		if retenciones:
+			y_detail -= 3*mm
+			c.drawString(x_text_left, y_detail, "Detalle Retenciones")
+		
+		if depositos:
+			for deposito in depositos:
+				row = [
+					deposito.id_banco,
+					"",
+					deposito.fecha_deposito.strftime("%d/%m/%Y"),
+					"",
+					f"${formato_argentino(deposito.importe_deposito)}"
+				]
+				table_data.append(row)
+		
+		if tarjetas:
+			for tarjeta in tarjetas:
+				row = [
+					tarjeta.id_tarjeta,
+					tarjeta.cupon,
+					date.today().strftime("%d/%m/%Y"),
+					tarjeta.cuotas or "",
+					f"${formato_argentino(tarjeta.importe_tarjeta)}"
+				]
+				table_data.append(row)
+		
+		if cheques:
+			y_detail -= 3*mm
+			c.drawString(x_text_left, y_detail, "Detalle Cheques")
+		
+		# table = Table(table_data, colWidths=cols_width, repeatRows=repeat_rows)
+		table = Table(table_data, colWidths=cols_width)
+		
+		# Aplica estilo a la tabla
+		table.setStyle(TableStyle([
+			# ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor("#F0F0F0")),  # Encabezado gris claro
+			# ('TEXTCOLOR', (0, 0), (-1, 0), colors.black),
+			# ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+			('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+			('FONTSIZE', (0, 0), (-1, -1), 8),
+			('TOPPADDING', (0,0), (-1,-1), 0),
+			('BOTTOMPADDING', (0, 0), (-1, -1), 0),
+			('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+			('ALIGN', (1, 0), (1, -1), 'LEFT'),
+			# ('LINEABOVE', (0,0), (-1,0), 0.5, colors.black),
+			('LINEBELOW', (0,0), (-1,0), 0.5, colors.black),
+			('ALIGN', (1, 0), (1, -1), 'RIGHT'),
+			('ALIGN', (3, 0), (-1, -1), 'RIGHT'),
+		]))
+		
+		# Calcula la posición Y para la tabla (ajusta según tu layout)
+		y_table = y_detail - 10*mm
+		
+		# Dibuja la tabla en el canvas
+		table.wrapOn(c, width - 2*margin, 200*mm)
+		table.drawOn(c, margin, y_table - (len(table_data) * 8))  # Ajusta el 8 si la tabla se ve muy arriba/abajo
+		
+		'''
 # 		# 1.1 Sección izquierda (Datos del cliente)
 # 		x_left = margin + 5*mm
 # 		label_width = 40*mm
@@ -500,12 +642,6 @@ class GeneraPDFView(View):
 # 		# current_y = y_position - logo_height - 20*mm
 # 		current_y = y_position - logo_height - 1*mm
 # 
-# 		# 5. Dibujar línea divisoria vertical (sin recuadro)
-# 		#div_line_top = y_position - 10*mm
-# 		#div_line_bottom = current_y - (6 * 12*mm)  # Aprox altura de los campos
-# 		#p.line(width/2, div_line_top, width/2, div_line_bottom)
-# 		######
-# 		
 # 		# Dibujar campos con el nuevo posicionamiento
 # 		draw_field("Razon Social:", empresa.nombre_fiscal or '')
 # 		draw_field("Sucursal:", factura.id_sucursal.nombre_sucursal if factura.id_sucursal else '')
@@ -638,7 +774,7 @@ class GeneraPDFView(View):
 # 		y_position -= (8 * len(detalle_data)*mm) + 20*mm
 # 		
 # 		# 3. Totales
-# 		'''
+# 		"""
 # 		p.setFont("Helvetica-Bold", 10)
 # 		p.drawString(width - 250, y_position, "Subtotal:")
 # 		p.drawString(width - 150, y_position, f"${factura.gravado + factura.exento:,.2f}".replace(",", "."))
@@ -656,7 +792,7 @@ class GeneraPDFView(View):
 # 		p.drawString(width - 250, y_position, "TOTAL:")
 # 		p.drawString(width - 150, y_position, f"${factura.total:,.2f}".replace(",", "."))
 # 		y_position -= 25
-# 		'''
+# 		"""
 # 		
 # 		c.setFont("Helvetica-Bold", 10)
 # 		c.drawString(width - 250, y_position, "Subtotal:")
@@ -694,13 +830,14 @@ class GeneraPDFView(View):
 # 		y_position -= 15
 # 		
 # 		c.drawCentredString(width/2, y_position, "ORIGINAL / DUPLICADO")
+		'''
 		
 		c.showPage()
 		c.save()
 		
 		buffer.seek(0)
 		response = HttpResponse(buffer, content_type='application/pdf')
-		response['Content-Disposition'] = f'inline; filename="factura_{factura.numero_comprobante}.pdf"'
+		response['Content-Disposition'] = f'inline; filename="factura_{recibo.numero_comprobante}.pdf"'
 		return response
 		
 	def generar_pdf_default(self, model_string, pk):

@@ -292,6 +292,11 @@ class Factura(ModeloBaseGenerico):
 	def __str__(self):
 		numero = str(self.numero_comprobante).strip().zfill(12)
 		return f"{self.id_comprobante_venta.codigo_comprobante_venta} {self.letra_comprobante} {numero[:4]}-{numero[4:]}"
+	
+	@property
+	def numero_comprobante_formateado(self):
+		numero = str(self.numero_comprobante).strip().zfill(12)
+		return f"{numero[:4]}-{numero[4:]}"
 
 
 class DetalleFactura(ModeloBaseGenerico):
