@@ -818,17 +818,31 @@
                                         <table class="detalle-form table table-striped table-hover table-responsive" style="width: 100%;">
                                             <thead class="table-primary small-font">
                                                 <tr>
-                                                    
+                                                    <th>Tarjeta</th>
+                                                    <th>Cupón</th>
+                                                    <th>Lote</th>
+                                                    <th>Cuotas</th>
+                                                    <th>Importe</th>
+                                                    <th>Acción</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                
+                                                {% for form in formset_tarjeta %}
+                                                    <tr class="formset-row-tarjeta">
+                                                        <td>{{ form.id_tarjeta }}</td>
+                                                        <td>{{ form.cupon }}</td>
+                                                        <td>{{ form.lote }}</td>
+                                                        <td>{{ form.cuotas }}</td>
+                                                        <td>{{ form.importe_tarjeta }}</td>
+                                                        <td>
+                                                            {{ form.id_tarjeta_recibo }}
+                                                            {{ form.id_factura }}
+                                                            {{ form.DELETE }}
+                                                            <button type="button" class="btn btn-danger btn-sm delete-row-tarjeta">Eliminar</button>
+                                                        </td>
+                                                    </tr>
+                                                {% endfor %}
                                             </tbody>
-                                            <tfoot>
-                                                <tr>
-                                                    
-                                                </tr>
-                                            </tfoot>
                                         </table>
                                     </div>
                                 </div>
@@ -951,14 +965,11 @@
                                                 {% for form in formset_cheque %}
                                                 <tr data-form-index="{{ forloop.counter0 }}">
                                                     <td>
-                                                        {{ form.codigo_banco }}
-                                                    </td>
-                                                    <td>
                                                         {{ form.id_cheque_recibo }}
                                                         {{ form.id_factura }}
-                                                        {{ form.id_banco }}
-                                                        {{ form.id_banco.value|default_if_none:"" }}
+                                                        {{ form.codigo_banco }}
                                                     </td>
+                                                    <td>{{ form.id_banco }}</td>
                                                     <td>{{ form.sucursal }}</td>
                                                     <td>{{ form.codigo_postal }}</td>
                                                     <td>{{ form.numero_cheque_recibo }}</td>

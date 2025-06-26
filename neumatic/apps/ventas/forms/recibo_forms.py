@@ -305,8 +305,8 @@ class DetalleReciboForm(forms.ModelForm):
                                             'class': 'form-control form-control-sm border border-primary small-font readonly-select',
                                             'readonly': 'readonly'
                                         }))
-    fecha_comprobante = forms.CharField(max_length=10, required=False, disabled=True,
-                                       widget=forms.TextInput(attrs={
+    fecha_comprobante = forms.DateField(required=False, disabled=True,
+                                       widget=forms.DateInput(attrs={
                                            'class': 'form-control form-control-sm border border-primary small-font readonly-select',
                                            'readonly': 'readonly'
                                        }))
@@ -340,6 +340,18 @@ class DetalleReciboForm(forms.ModelForm):
             }),
         }
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Inicializar campos derivados desde id_factura_cobrada
+        if self.instance and self.instance.id_factura_cobrada:
+            factura_cobrada = self.instance.id_factura_cobrada
+            self.initial['comprobante'] = factura_cobrada.id_comprobante_venta.nombre_comprobante_venta
+            self.initial['letra_comprobante'] = factura_cobrada.letra_comprobante
+            self.initial['numero_comprobante'] = factura_cobrada.numero_comprobante
+            self.initial['fecha_comprobante'] = factura_cobrada.fecha_comprobante  # Fecha como objeto date
+            self.initial['total'] = factura_cobrada.total
+            self.initial['entrega'] = factura_cobrada.entrega
+            self.initial['saldo'] = factura_cobrada.total - factura_cobrada.entrega
 
 # Formularios de Retenciones
 class RetencionReciboInputForm(forms.ModelForm):
@@ -388,7 +400,8 @@ class RetencionReciboInputForm(forms.ModelForm):
         fields = ['id_codigo_retencion', 'certificado', 'importe_retencion', 'fecha_retencion']
 
 
-class RetencionReciboForm(RetencionReciboInputForm):
+#class RetencionReciboForm(RetencionReciboInputForm):
+class RetencionReciboForm(forms.ModelForm):
     # Esta clase se usa para el formset, usando los nombres originales
     id_codigo_retencion = forms.ModelChoiceField(
         queryset=CodigoRetencion.objects.filter(estatus_cod_retencion=True).order_by('nombre_codigo_retencion'),
@@ -417,8 +430,8 @@ class RetencionReciboForm(RetencionReciboInputForm):
         required=False
     )
     fecha_retencion = forms.DateField(
-        widget=forms.DateInput(attrs={
-            'class': 'form-control form-control-sm border border-primary',
+        widget=forms.TextInput(attrs={
+            'class': 'form-control form-control-sm border border-primary datetimepicker mb-2',
             'type': 'date',
             'style': 'font-size: 0.8rem; padding: 0.25rem;'
         }),
@@ -435,7 +448,7 @@ class RetencionReciboForm(RetencionReciboInputForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        print("Aquí es!")
+        # print("Aquí es!")
         queryset = CodigoRetencion.objects.filter(estatus_cod_retencion=True).order_by('nombre_codigo_retencion')
         #for obj in queryset:
         #    print(f"Objeto CodigoRetencion: {obj}, tipo: {type(obj)}, attrs: {dir(obj)}")
@@ -445,6 +458,12 @@ class RetencionReciboForm(RetencionReciboInputForm):
         self.fields['certificado'].required = True
         self.fields['importe_retencion'].required = True
         self.fields['fecha_retencion'].required = True
+        
+        # Asegurar que fecha_retencion se inicialice correctamente
+        # if self.instance and self.instance.fecha_retencion:
+        #     self.initial['fecha_retencion'] = self.instance.fecha_retencion
+        # else:
+        #     self.initial['fecha_retencion'] = None  # O date.today() si deseas un valor predeterminado
 
 
 # Formularios de Depósitos
@@ -521,7 +540,7 @@ class DepositoReciboForm(forms.ModelForm):
                 'class': 'form-control form-control-sm border border-primary',
                 'style': 'font-size: 0.8rem; padding: 0.25rem;'
             }),
-            'fecha_deposito': forms.DateInput(attrs={
+            'fecha_deposito': forms.TextInput(attrs={
                 'class': 'form-control form-control-sm border border-primary',
                 'type': 'date',
                 'style': 'font-size: 0.8rem; padding: 0.25rem;'
@@ -711,7 +730,7 @@ class ChequeReciboInputForm(forms.ModelForm):
     )
     fecha_cheque1_input = forms.DateField(
         label="Fecha Ingreso",
-        widget=forms.DateInput(attrs={
+        widget=forms.TextInput(attrs={
             'class': 'form-control form-control-sm border border-primary',
             'style': 'font-size: 0.8rem; padding: 0.25rem;',
             'type': 'date'
@@ -720,7 +739,7 @@ class ChequeReciboInputForm(forms.ModelForm):
     )
     fecha_cheque2_input = forms.DateField(
         label="Fecha Cheque",
-        widget=forms.DateInput(attrs={
+        widget=forms.TextInput(attrs={
             'class': 'form-control form-control-sm border border-primary',
             'style': 'font-size: 0.8rem; padding: 0.25rem;',
             'type': 'date'
@@ -748,7 +767,7 @@ class ChequeReciboForm(forms.ModelForm):
     class Meta:
         model = ChequeRecibo
         fields = [
-            'id_cheque_recibo', 'id_factura', 'id_banco', 'sucursal',
+            'id_cheque_recibo', 'id_factura', 'codigo_banco', 'id_banco', 'sucursal',
             'codigo_postal', 'numero_cheque_recibo', 'cuenta_cheque_recibo',
             'cuit_cheque_recibo', 'fecha_cheque1', 'fecha_cheque2', 'importe_cheque'
         ]
@@ -756,6 +775,10 @@ class ChequeReciboForm(forms.ModelForm):
             'id_cheque_recibo': forms.HiddenInput(),
             'id_factura': forms.HiddenInput(),
             'DELETE': forms.CheckboxInput(attrs={'style': 'display: none;'}),
+            'codigo_banco': forms.TextInput(attrs={
+                'class': 'form-control form-control-sm border border-primary',
+                'style': 'font-size: 0.8rem; padding: 0.25rem;'
+            }),
             'id_banco': forms.Select(attrs={
                 'class': 'form-control form-control-sm border border-primary',
                 'style': 'font-size: 0.8rem; padding: 0.25rem;'
@@ -780,12 +803,12 @@ class ChequeReciboForm(forms.ModelForm):
                 'class': 'form-control form-control-sm border border-primary',
                 'style': 'font-size: 0.8rem; padding: 0.25rem;'
             }),
-            'fecha_cheque1': forms.DateInput(attrs={
+            'fecha_cheque1': forms.TextInput(attrs={
                 'class': 'form-control form-control-sm border border-primary',
                 'style': 'font-size: 0.8rem; padding: 0.25rem;',
                 'type': 'date'
             }),
-            'fecha_cheque2': forms.DateInput(attrs={
+            'fecha_cheque2': forms.TextInput(attrs={
                 'class': 'form-control form-control-sm border border-primary',
                 'style': 'font-size: 0.8rem; padding: 0.25rem;',
                 'type': 'date'

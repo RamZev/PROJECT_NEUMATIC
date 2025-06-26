@@ -156,7 +156,7 @@ class DepositoRecibo(ModeloBaseGenerico):
 		return f"{self.id_factura} {self.id_deposito_recibo}"
 
 
-# Detalle de Tarjeta  (IV)
+# Detalle del Pago con Tarjeta  (IV)
 class TarjetaRecibo(ModeloBaseGenerico):
 	id_tarjeta_recibo = models.AutoField(
 		primary_key=True
