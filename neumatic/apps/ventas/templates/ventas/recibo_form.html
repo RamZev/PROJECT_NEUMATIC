@@ -829,16 +829,23 @@
                                             <tbody>
                                                 {% for form in formset_tarjeta %}
                                                     <tr class="formset-row-tarjeta">
-                                                        <td>{{ form.id_tarjeta }}</td>
+                                                        <td>
+                                                            {{ form.id_tarjeta_recibo }}
+                                                            {{ form.id_factura }}
+                                                            {{ form.id_tarjeta }}
+                                                        </td>
                                                         <td>{{ form.cupon }}</td>
                                                         <td>{{ form.lote }}</td>
                                                         <td>{{ form.cuotas }}</td>
                                                         <td>{{ form.importe_tarjeta }}</td>
                                                         <td>
-                                                            {{ form.id_tarjeta_recibo }}
-                                                            {{ form.id_factura }}
+                                                            <button type="button" class="btn btn-danger btn-sm btn-delete" 
+                                                                    data-form-index="{{ forloop.counter0 }}" data-toggle="tooltip" title="Eliminar" 
+                                                                    {% if is_edit %}disabled{% endif %}>
+                                                                <i class="bi bi-trash"></i>
+                                                            </button>
+                                                            {% comment %} <button type="button" class="btn btn-danger btn-sm delete-row-tarjeta">Eliminar</button> {% endcomment %}
                                                             {{ form.DELETE }}
-                                                            <button type="button" class="btn btn-danger btn-sm delete-row-tarjeta">Eliminar</button>
                                                         </td>
                                                     </tr>
                                                 {% endfor %}
@@ -1609,120 +1616,6 @@
             /* #endregion */
             ////////// Fin de Sección Tarjetas
 
-            
-            
-            ////////// Inicio de Sección Cheques
-            /* #region Helpers */
-            /*
-            const insertarBtn6 = document.getElementById('insertar-cheque');
-            const formsetContainer6 = document.getElementById('formset-container6');
-            const totalForms6 = document.getElementById('id_chequerecibo_set-TOTAL_FORMS');
-            const isEdit6 = formsetContainer6.getAttribute('data-is-edit') === 'true';
-
-            insertarBtn6.addEventListener('click', function () {
-                const banco = formsetContainer6.querySelector('#id_id_banco_input').value;
-                const sucursal = formsetContainer6.querySelector('#id_sucursal_input').value;
-                const codigoPostal = formsetContainer6.querySelector('#id_codigo_postal_input').value;
-                const numero = formsetContainer6.querySelector('#id_numero_cheque_recibo_input').value;
-                const cuenta = formsetContainer6.querySelector('#id_cuenta_cheque_recibo_input').value;
-                const cuit = formsetContainer6.querySelector('#id_cuit_cheque_recibo_input').value;
-                const fecha1 = formsetContainer6.querySelector('#id_fecha_cheque1_input').value;
-                const fecha2 = formsetContainer6.querySelector('#id_fecha_cheque2_input').value;
-                const importe = formsetContainer6.querySelector('#id_importe_cheque_input').value;
-
-                if (!banco || !sucursal || !codigoPostal || !numero || !cuenta || !cuit || !fecha1 || !fecha2 || !importe) {
-                    alert('Por favor, complete todos los campos!!');
-                    return;
-                }
-
-                const formIdx = parseInt(totalForms6.value);
-                const bancoText = formsetContainer6.querySelector('#id_id_banco_input option:checked').text;
-
-                const newFormHTML = `
-                    <tr data-form-index="${formIdx}">
-                        <td>
-                            <input type="hidden" name="chequerecibo_set-${formIdx}-id_cheque_recibo">
-                            <input type="hidden" name="chequerecibo_set-${formIdx}-id_factura" value="">
-                            <input type="hidden" name="chequerecibo_set-${formIdx}-id_banco" value="${banco}">
-                            <select name="chequerecibo_set-${formIdx}-id_banco" class="form-control form-control-sm border border-primary" style="font-size: 0.8rem; padding: 0.25rem;">
-                                <option value="${banco}">${bancoText}</option>
-                            </select>
-                        </td>
-                        <td>
-                            <input type="number" name="chequerecibo_set-${formIdx}-sucursal" class="form-control form-control-sm border border-primary" style="font-size: 0.8rem; padding: 0.25rem;" value="${sucursal}">
-                        </td>
-                        <td>
-                            <input type="number" name="chequerecibo_set-${formIdx}-codigo_postal" class="form-control form-control-sm border border-primary" style="font-size: 0.8rem; padding: 0.25rem;" value="${codigoPostal}">
-                        </td>
-                        <td>
-                            <input type="number" name="chequerecibo_set-${formIdx}-numero_cheque_recibo" class="form-control form-control-sm border border-primary" style="font-size: 0.8rem; padding: 0.25rem;" value="${numero}">
-                        </td>
-                        <td>
-                            <input type="number" name="chequerecibo_set-${formIdx}-cuenta_cheque_recibo" class="form-control form-control-sm border border-primary" style="font-size: 0.8rem; padding: 0.25rem;" value="${cuenta}">
-                        </td>
-                        <td>
-                            <input type="number" name="chequerecibo_set-${formIdx}-cuit_cheque_recibo" class="form-control form-control-sm border border-primary" style="font-size: 0.8rem; padding: 0.25rem;" value="${cuit}">
-                        </td>
-                        <td>
-                            <input type="date" name="chequerecibo_set-${formIdx}-fecha_cheque1" class="form-control form-control-sm border border-primary" style="font-size: 0.8rem; padding: 0.25rem;" value="${fecha1}">
-                        </td>
-                        <td>
-                            <input type="date" name="chequerecibo_set-${formIdx}-fecha_cheque2" class="form-control form-control-sm border border-primary" style="font-size: 0.8rem; padding: 0.25rem;" value="${fecha2}">
-                        </td>
-                        <td>
-                            <input type="number" name="chequerecibo_set-${formIdx}-importe_cheque" class="form-control form-control-sm border border-primary text-end" style="font-size: 0.8rem; padding: 0.25rem;" value="${importe}" step="0.01">
-                        </td>
-                        <td>
-                            <button type="button" class="btn btn-danger btn-sm btn-delete" data-form-index="${formIdx}" data-toggle="tooltip" title="Eliminar" ${isEdit6 ? 'disabled' : ''}>
-                                <i class="bi bi-trash"></i>
-                            </button>
-                            <input type="checkbox" name="chequerecibo_set-${formIdx}-DELETE" style="display: none;">
-                        </td>
-                    </tr>
-                `;
-
-                formsetContainer6.querySelector('tbody').insertAdjacentHTML('beforeend', newFormHTML);
-                totalForms6.value = formIdx + 1;
-
-                formsetContainer6.querySelector('#id_id_banco_input').value = '';
-                formsetContainer6.querySelector('#id_sucursal_input').value = '';
-                formsetContainer6.querySelector('#id_codigo_postal_input').value = '';
-                formsetContainer6.querySelector('#id_numero_cheque_recibo_input').value = '';
-                formsetContainer6.querySelector('#id_cuenta_cheque_recibo_input').value = '';
-                formsetContainer6.querySelector('#id_cuit_cheque_recibo_input').value = '';
-                formsetContainer6.querySelector('#id_fecha_cheque1_input').value = '';
-                formsetContainer6.querySelector('#id_fecha_cheque2_input').value = '';
-                formsetContainer6.querySelector('#id_importe_cheque_input').value = '';
-
-                actualizarTodo();
-            });
-
-            formsetContainer6.addEventListener('click', function (event) {
-                if (event.target.closest('.btn-delete') && !isEdit6) {
-                    const row = event.target.closest('tr');
-                    const deleteInput = row.querySelector('input[name$="-DELETE"]');
-                    if (confirm('¿Está seguro de eliminar este cheque?')) {
-                        deleteInput.checked = true;
-                        row.style.display = 'none';
-                        if (typeof actualizarContadorFormsets6 === 'function') {
-                            actualizarContadorFormsets6();
-                        }
-                        if (typeof actualizarTodo === 'function') {
-                            actualizarTodo();
-                        }
-                    }
-                }
-            });
-
-            function actualizarContadorFormsets6() {
-                const visibleRows = formsetContainer6.querySelectorAll('tbody tr:not([style*="display: none"])').length;
-                totalForms6.value = visibleRows;
-            }
-            */
-
-            /* #endregion */
-            ////////// Fin de Sección Cheques
-
             /// Nueva sección cheques
             // Funcionalidad del botón Insertar Cheque
             const insertarBtn6 = document.getElementById('insertar-cheque');
@@ -1901,16 +1794,6 @@
             }
             ///
             
-
-            /*
-            // Manejar cambios en los formsets de retenciones, depósitos, tarjetas y cheques
-            ['#formset-container3', '#formset-container4', '#formset-container5', '#formset-container6'].forEach(containerId => {
-                const container = document.querySelector(containerId);
-                if (container) {
-                    container.addEventListener('input', actualizarTodo);
-                }
-            });
-            */
 
             // Manejo de eliminación (adaptado de factura_form.html)
             formsetContainer.addEventListener('click', function (event) {
@@ -2160,37 +2043,6 @@
                             // alert(data.compro_asociado);
                         }
 
-                        /*
-                        ////
-                        // ---- Nuevo: Llenar el select comprobante_remito ----
-                        const selectRemito = document.getElementById('id_comprobante_remito');
-                        const selectIdRemito = document.getElementById('id_remito');
-                        if (selectRemito && data.compro_asociado) {
-                            selectIdRemito.removeAttribute('readonly');
-                            
-                            // Limpiar opciones existentes
-                            selectRemito.innerHTML = '';
-                            
-                            // Agregar opción vacía (opcional)
-                            const defaultOption = document.createElement('option');
-                            defaultOption.value = '';
-                            defaultOption.textContent = 'Seleccione...';
-                            selectRemito.appendChild(defaultOption);
-
-                            // Procesar el string (ej: "FA, FX, TY" -> ["FA", "FX", "TY"])
-                            const opciones = data.compro_asociado.split(',').map(item => item.trim());
-                            
-                            // Agregar cada opción al select
-                            opciones.forEach(opcion => {
-                                const option = document.createElement('option');
-                                option.value = opcion;  // Ej: "FA"
-                                option.textContent = opcion; // Mismo valor que el texto
-                                selectRemito.appendChild(option);
-                            });
-                        }    
-                        ////
-                        */
-
                     })
                     .catch(error => {
                         console.error('Error al obtener código:', error);
@@ -2290,6 +2142,44 @@
             }
             ///
 
+            ///
+            // Control de botones en modo actualización
+            const modoEdicionElement = document.getElementById('modo-edicion');
+            const isEdit_b = modoEdicionElement.getAttribute('data-is-edit') === 'true';
+
+            const validarBtn = document.getElementById('validarBtn');
+            const listarAgendaBtn = document.getElementById('listar_agenda');
+
+            const insertarRetencion = document.getElementById('insertar-retencion');
+            const insertarDeposito = document.getElementById('insertar-deposito');
+            const insertarTarjeta = document.getElementById('insertar-tarjeta');
+            const insertarCheque = document.getElementById('insertar-cheque');
+
+            if (isEdit_b) {
+                if (validarBtn) {
+                    validarBtn.disabled = true;
+                }
+                if (listarAgendaBtn) {
+                    listarAgendaBtn.disabled = true;
+                }
+                
+                if (insertarRetencion) {
+                    insertarRetencion.disabled = true;
+                }
+                if (insertarDeposito) {
+                    insertarDeposito.disabled = true;
+                }
+                if (insertarTarjeta) {
+                    insertarTarjeta.disabled = true;
+                }
+                if (insertarCheque) {
+                    insertarCheque.disabled = true;
+                }
+
+            } else {
+                console.log('DEBUG: Modo creación - botones habilitados');
+            }
+            ///
 
         });
     </script>
