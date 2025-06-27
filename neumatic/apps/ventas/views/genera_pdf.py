@@ -522,8 +522,9 @@ class GeneraPDFView(View):
 		
 		
 		#-- Medios de Pago.
-		table_cols = ["Banco/Tarjeta", "Número", "Fecha", "Cuotas", "Importe"]
-		cols_width = [30*mm, 20*mm, 20*mm, 20*mm, 20*mm]
+		# table_cols = ["Banco/Tarjeta", "Número", "Fecha", "Cuotas", "Importe"]
+		table_cols = ["Medio de Pago", "Número", "Fecha", "Cuotas", "Importe"]
+		cols_width = [40*mm, 30*mm, 20*mm, 20*mm, 30*mm]
 		
 		table_data = [table_cols]
 		
@@ -532,10 +533,19 @@ class GeneraPDFView(View):
 			c.drawString(x_text_left, y_detail, "Detalle del Recibo")
 		
 		if retenciones:
-			y_detail -= 3*mm
-			c.drawString(x_text_left, y_detail, "Detalle Retenciones")
+			table_data.append(["Retenciones:"] + 4*[""])
+			for retencion in retenciones:
+				row = [
+					retencion.id_codigo_retencion,
+					retencion.certificado,
+					retencion.fecha_retencion.strftime("%d/%m/%Y"),
+					"",
+					f"${formato_argentino(retencion.importe_retencion)}"
+				]
+				table_data.append(row)
 		
 		if depositos:
+			table_data.append(["Depósitos:"] + 4*[""])
 			for deposito in depositos:
 				row = [
 					deposito.id_banco,
@@ -547,6 +557,7 @@ class GeneraPDFView(View):
 				table_data.append(row)
 		
 		if tarjetas:
+			table_data.append(["Tarjetas:"] + 4*[""])
 			for tarjeta in tarjetas:
 				row = [
 					tarjeta.id_tarjeta,
@@ -558,8 +569,16 @@ class GeneraPDFView(View):
 				table_data.append(row)
 		
 		if cheques:
-			y_detail -= 3*mm
-			c.drawString(x_text_left, y_detail, "Detalle Cheques")
+			table_data.append(["Cheques:"] + 4*[""])
+			for cheque in cheques:
+				row = [
+					cheque.id_banco,
+					cheque.numero_cheque_recibo,
+					cheque.fecha_cheque1.strftime("%d/%m/%Y"),
+					"",
+					f"${formato_argentino(cheque.importe_cheque)}"
+				]
+				table_data.append(row)
 		
 		# table = Table(table_data, colWidths=cols_width, repeatRows=repeat_rows)
 		table = Table(table_data, colWidths=cols_width)
