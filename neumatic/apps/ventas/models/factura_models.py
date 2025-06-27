@@ -298,6 +298,14 @@ class Factura(ModeloBaseGenerico):
 		numero = str(self.numero_comprobante).strip().zfill(12)
 		return f"{numero[:4]}-{numero[4:]}"
 
+	@property
+	def letra_numero_comprobante_formateado(self):
+		return f"{self.letra_comprobante}-{self.numero_comprobante_formateado}"
+
+	@property
+	def compro_letra_numero_comprobante_formateado(self):
+		return f"{self.compro} {self.letra_comprobante} {self.numero_comprobante_formateado}"
+
 
 class DetalleFactura(ModeloBaseGenerico):
 	id_detalle_factura = models.AutoField(

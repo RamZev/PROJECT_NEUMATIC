@@ -27,10 +27,6 @@ from apps.maestros.models.base_models import Provincia, Localidad, TipoIva
 from utils.utils import formato_argentino, numero_a_letras
 
 class GeneraPDFView(View):
-	# def get(self, request, model_name, pk):
-	# 	if model_name == 'factura':
-	# 		return self.generar_pdf_factura(pk)
-	# 	return self.generar_pdf_default(model_name, pk)
 	def get(self, request, model_string, pk):
 		method_name = f"generar_pdf_{model_string.lower()}"
 		if hasattr(self, method_name):
@@ -355,7 +351,7 @@ class GeneraPDFView(View):
 		return response
 	
 	def generar_pdf_recibo(self, pk):
-		# Obtener datos principales
+		#-- Obtener datos principales.
 		recibo = get_object_or_404(Factura, pk=pk)
 		detalle_recibo = DetalleRecibo.objects.filter(id_factura=recibo)
 		retenciones = RetencionRecibo.objects.filter(id_factura=recibo)
@@ -494,12 +490,9 @@ class GeneraPDFView(View):
 				c.drawString(x_fecha, y_detail, detalle.id_factura_cobrada.fecha_comprobante.strftime("%d/%m/%Y"))
 				c.drawRightString(x_importe, y_detail, f"${formato_argentino(detalle.id_factura_cobrada.total)}")
 				saldo = detalle.id_factura_cobrada.total - (detalle.id_factura_cobrada.entrega - detalle.monto_cobrado)
-				# c.drawRightString(x_saldo, y_detail, f"${formato_argentino(detalle.id_factura_cobrada.total - (detalle.id_factura_cobrada.entrega - detalle.monto_cobrado))}")
 				c.drawRightString(x_saldo, y_detail, f"${formato_argentino(saldo)}")
 				c.drawRightString(x_pago, y_detail, f"${formato_argentino(detalle.monto_cobrado)}")
-				
 				c.drawString(x_pago + 1*mm, y_detail, "CANCELADA" if saldo == detalle.monto_cobrado else "A CUENTA")
-				
 				
 				y_detail -= 4*mm
 			
@@ -627,7 +620,7 @@ class GeneraPDFView(View):
 		
 		buffer.seek(0)
 		response = HttpResponse(buffer, content_type='application/pdf')
-		response['Content-Disposition'] = f'inline; filename="factura_{recibo.numero_comprobante}.pdf"'
+		response['Content-Disposition'] = f'inline; filename="recibo_{recibo.compro_letra_numero_comprobante_formateado}.pdf"'
 		return response
 		
 	def generar_pdf_default(self, model_string, pk):
