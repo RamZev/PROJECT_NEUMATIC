@@ -371,6 +371,12 @@ class ReciboUpdateView(MaestroDetalleUpdateView):
 		except Exception as e:
 			messages.error(self.request, f"Error al actualizar: {str(e)}")
 			return self.form_invalid(form)
+		
+	def get_form_kwargs(self):
+		kwargs = super().get_form_kwargs()
+		kwargs['usuario'] = self.request.user  # Pasar el usuario autenticado
+
+		return kwargs
 
 class ReciboDeleteView(MaestroDetalleDeleteView):
 	model = modelo

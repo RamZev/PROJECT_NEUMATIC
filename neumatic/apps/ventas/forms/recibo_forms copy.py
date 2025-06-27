@@ -233,10 +233,6 @@ class FacturaReciboForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         usuario = kwargs.pop('usuario', None)  # Pasar el usuario desde la vista
-        # Validar que el usuario exista
-        if not usuario:
-            raise ValueError("Se requiere un usuario para crear o actualizar el recibo")
-
         super().__init__(*args, **kwargs)
 
         if self.instance and self.instance.pk:
@@ -244,13 +240,14 @@ class FacturaReciboForm(forms.ModelForm):
         else:
             print(f"DEBUG: Modo Creación")
 
+        
         # Asignar valores iniciales para los campos personalizados
         if usuario:
-             self.fields['nombre_sucursal'].initial = usuario.id_sucursal
-             self.fields['punto_venta'].initial = usuario.id_punto_venta
-             print("Entró al init de la sucursal")
+            self.fields['nombre_sucursal'].initial = usuario.id_sucursal
+            self.fields['punto_venta'].initial = usuario.id_punto_venta
+            print("Entró al init de la sucursal")
         else:
-             print("No asignó nombre sucursal y nombre de punto de venta")
+            print("No Entró al init de la sucursal")
     
         
         if usuario and usuario.id_sucursal:
@@ -406,8 +403,8 @@ class RetencionReciboInputForm(forms.ModelForm):
         fields = ['id_codigo_retencion', 'certificado', 'importe_retencion', 'fecha_retencion']
 
 
-class RetencionReciboForm(RetencionReciboInputForm):
-#class RetencionReciboForm(forms.ModelForm):
+#class RetencionReciboForm(RetencionReciboInputForm):
+class RetencionReciboForm(forms.ModelForm):
     # Esta clase se usa para el formset, usando los nombres originales
     id_codigo_retencion = forms.ModelChoiceField(
         queryset=CodigoRetencion.objects.filter(estatus_cod_retencion=True).order_by('nombre_codigo_retencion'),
