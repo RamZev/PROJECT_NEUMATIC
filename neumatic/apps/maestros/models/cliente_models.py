@@ -134,3 +134,15 @@ class Cliente(ModeloBaseGenerico):
 		if errors:
 			#-- Lanza el conjunto de excepciones.
 			raise ValidationError(errors)
+	
+	@property
+	def cuit_formateado(self):
+		cuit = str(self.cuit)
+		if self.nombre_tipo_documento_identidad.lower() == "cuit":
+			cuit = f"{cuit[:2]}-{cuit[2:-1]}-{cuit[-1:]}"
+		return cuit
+	
+	@property
+	def nombre_tipo_documento_identidad(self):
+		return self.id_tipo_documento_identidad.nombre_documento_identidad
+	

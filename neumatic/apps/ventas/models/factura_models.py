@@ -231,7 +231,7 @@ class Factura(ModeloBaseGenerico):
 	)
 	observa_comprobante = models.CharField(
 		verbose_name="Observaciones",
-		max_length=30,
+		max_length=50,
 		null=True,
 		blank=True
 	)
@@ -292,6 +292,10 @@ class Factura(ModeloBaseGenerico):
 	def __str__(self):
 		numero = str(self.numero_comprobante).strip().zfill(12)
 		return f"{self.id_comprobante_venta.codigo_comprobante_venta} {self.letra_comprobante} {numero[:4]}-{numero[4:]}"
+	
+	@property
+	def condicion_venta(self):
+		return dict(CONDICION_VENTA).get(self.condicion_comprobante, "No definido")
 	
 	@property
 	def numero_comprobante_formateado(self):
