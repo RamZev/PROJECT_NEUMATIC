@@ -24,21 +24,31 @@ model_string = modelo.__name__.lower()   # Cuando el modelo es una sola palabra.
 #-- Usar esta forma cuando el modelo esté compuesto por más de una palabra: Ej. TipoCambio colocar "tipo_cambio".
 #model_string = "color"
 
+#-- Usar esta forma para personalizar el nombre de la plantilla y las vistas
+model_string2 = "factura_manual"
+
 formulario = FacturaForm
 
 template_form = f"{model_string}_form.html"
 home_view_name = "home"
-list_view_name = f"{model_string}_list"
-create_view_name = f"{model_string}_create"
-update_view_name = f"{model_string}_update"
-delete_view_name = f"{model_string}_delete"
+# list_view_name = f"{model_string}_list"
+# create_view_name = f"{model_string}_create"
+# update_view_name = f"{model_string}_update"
+# delete_view_name = f"{model_string}_delete"
+list_view_name = f"{model_string2}_list"
+create_view_name = f"{model_string2}_create"
+update_view_name = f"{model_string2}_update"
+delete_view_name = f"{model_string2}_delete"
+
 
 # @method_decorator(login_required, name='dispatch')
-class FacturaListView(MaestroDetalleListView):
+class FacturaManualListView(MaestroDetalleListView):
 	model = modelo
 	template_name = f"ventas/maestro_detalle_list.html"
 	context_object_name = 'objetos'
-	tipo_comprobante = 'electronico'  # Nuevo atributo de clase
+	tipo_comprobante = 'manual'  # Nuevo atributo de clase
+
+	print("Entró a la vista FacturaManualListView")
 
 	search_fields = [
 	 'id_factura',
@@ -77,7 +87,7 @@ class FacturaListView(MaestroDetalleListView):
 	#cadena_filtro = "Q(nombre_color__icontains=text)"
 	extra_context = {
 		#"master_title": model._meta.verbose_name_plural,
-		"master_title": "Comprobantes Electrónicos",
+		"master_title": "Comprobantes Manuales",
 		"home_view_name": home_view_name,
 		"list_view_name": list_view_name,
 		"create_view_name": create_view_name,
@@ -102,10 +112,8 @@ class FacturaListView(MaestroDetalleListView):
 		
 		# 2. NUEVO FILTRO: Comprobantes electrónicos o remitos
 		queryset = queryset.filter(
-			Q(id_comprobante_venta__electronica=True) |
-			Q(id_comprobante_venta__remito=True),
 			id_comprobante_venta__recibo=False,
-			id_comprobante_venta__presupuesto=False
+            id_comprobante_venta__presupuesto=False
 		)
 
 		# Aplicar búsqueda y ordenación
@@ -133,13 +141,13 @@ class FacturaListView(MaestroDetalleListView):
 		return context
 
 # @method_decorator(login_required, name='dispatch')
-class FacturaCreateView(MaestroDetalleCreateView):
+class FacturaManualCreateView(MaestroDetalleCreateView):
 	model = modelo
 	list_view_name = list_view_name
 	form_class = formulario
 	template_name = f"ventas/{template_form}"
 	success_url = reverse_lazy(list_view_name) # Nombre de la url.
-	tipo_comprobante = 'electronico'  # Nuevo atributo de clase
+	tipo_comprobante = 'manual'  # Nuevo atributo de clase
 
 	#-- Indicar el permiso que requiere para ejecutar la acción:
 	# Obtener el nombre de la aplicación a la que pertenece el modelo.
@@ -330,13 +338,13 @@ class FacturaCreateView(MaestroDetalleCreateView):
 		return kwargs
 
 # @method_decorator(login_required, name='dispatch')
-class FacturaUpdateView(MaestroDetalleUpdateView):
+class FacturaManualUpdateView(MaestroDetalleUpdateView):
 	model = modelo
 	list_view_name = list_view_name
 	form_class = formulario
 	template_name = f"ventas/{template_form}"
 	success_url = reverse_lazy(list_view_name) # Nombre de la url.
-	tipo_comprobante = 'electronico'  # Nuevo atributo de clase
+	tipo_comprobante = 'manual'  # Nuevo atributo de clase
 
 	#-- Indicar el permiso que requiere para ejecutar la acción:
 	# Obtener el nombre de la aplicación a la que pertenece el modelo.
@@ -406,7 +414,7 @@ class FacturaUpdateView(MaestroDetalleUpdateView):
 
 
 # @method_decorator(login_required, name='dispatch')
-class FacturaDeleteView(MaestroDetalleDeleteView):
+class FacturaManualDeleteView(MaestroDetalleDeleteView):
 	model = modelo
 	list_view_name = list_view_name
 	template_name = "base_confirm_delete.html"

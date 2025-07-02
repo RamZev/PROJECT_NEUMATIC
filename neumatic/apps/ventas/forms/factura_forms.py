@@ -116,7 +116,7 @@ class FacturaForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         usuario = kwargs.pop('usuario', None)  # Pasar el usuario desde la vista
-        
+        tipo_comprobante = kwargs.pop('tipo_comprobante', None)
         super().__init__(*args, **kwargs)
         
         # Asignar valores iniciales para los campos personalizados
@@ -146,9 +146,27 @@ class FacturaForm(forms.ModelForm):
             self.fields['tipo_venta'].initial = self.instance.id_cliente.id_vendedor.tipo_venta
         
         # Filtrar los comprobantes electrónicos y de remito
-        self.fields['id_comprobante_venta'].queryset = ComprobanteVenta.objects.filter(
-            Q(electronica=True) | Q(remito=True)
-        )
+        # self.fields['id_comprobante_venta'].queryset = ComprobanteVenta.objects.filter(
+        #     Q(electronica=True) | Q(remito=True)
+        # )
+        
+        # Filtro completo para comprobantes
+        if tipo_comprobante == 'electronico': 
+            self.fields['id_comprobante_venta'].queryset = ComprobanteVenta.objects.filter(
+                Q(electronica=True) | Q(remito=True),
+                recibo=False,
+                presupuesto=False,
+                estatus_comprobante_venta=True  # Solo comprobantes activos
+            ).order_by('nombre_comprobante_venta')
+        elif tipo_comprobante == 'manual':
+            self.fields['id_comprobante_venta'].queryset = ComprobanteVenta.objects.filter(
+                recibo=False,
+                presupuesto=False
+            ).order_by('nombre_comprobante_venta')
+        elif tipo_comprobante == 'presupuesto':
+            self.fields['id_comprobante_venta'].queryset = ComprobanteVenta.objects.filter(
+                presupuesto=True
+            ).order_by('nombre_comprobante_venta')
         
        
 class DetalleFacturaForm(forms.ModelForm):

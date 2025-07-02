@@ -3,6 +3,12 @@ from django.urls import path
 from .views.factura_views import (FacturaListView, FacturaCreateView, 
                                   FacturaUpdateView, FacturaDeleteView)
 
+from .views.factura2_views import (FacturaManualListView, FacturaManualCreateView, 
+                                  FacturaManualUpdateView, FacturaManualDeleteView)
+
+from .views.factura3_views import (PresupuestoListView, PresupuestoCreateView, 
+                                  PresupuestoUpdateView, PresupuestoDeleteView)
+
 from .views.recibo_views import (ReciboListView, ReciboCreateView, 
                                 ReciboUpdateView, ReciboDeleteView)
 
@@ -29,7 +35,20 @@ urlpatterns = [
    path('factura/crear/', FacturaCreateView.as_view(), name='factura_create'),
    path('factura/editar/<int:pk>/', FacturaUpdateView.as_view(), name='factura_update'),
    path('factura/eliminar/<int:pk>/', FacturaDeleteView.as_view(), name='factura_delete'),
-   
+
+   # Opción 2: Comprobante Manual
+   path('facturamanual/listar/', FacturaManualListView.as_view(), name='factura_manual_list'),
+   path('facturamanual/crear/', FacturaManualCreateView.as_view(), name='factura_manual_create'),
+   path('facturamanual/editar/<int:pk>/', FacturaManualUpdateView.as_view(), name='factura_manual_update'),
+   path('facturamanual/eliminar/<int:pk>/', FacturaManualDeleteView.as_view(), name='factura_manual_delete'),
+
+   # Opción 3: Presupuesto
+   path('presupuesto/listar/', PresupuestoListView.as_view(), name='presupuesto_list'),
+   path('presupeusto/crear/', PresupuestoCreateView.as_view(), name='presupuesto_create'),
+   path('presupuesto/editar/<int:pk>/', PresupuestoUpdateView.as_view(), name='presupuesto_update'),
+   path('presupuesto/eliminar/<int:pk>/', PresupuestoDeleteView.as_view(), name='presupuesto_delete'),
+   ###
+
    path('recibo/listar/', ReciboListView.as_view(), name='recibo_list'),
    path('recibo/crear/', ReciboCreateView.as_view(), name='recibo_create'),
    path('recibo/editar/<int:pk>/', ReciboUpdateView.as_view(), name='recibo_update'),

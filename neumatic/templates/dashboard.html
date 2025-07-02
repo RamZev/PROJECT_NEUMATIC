@@ -3,20 +3,38 @@
         <div class="container-fluid px-4">
             {% comment %} Accesos Directos Start {% endcomment %}
             <div class="row mt-1 mb-1">  <!-- Cambiado my-1 a mt-1 mb-0 -->
-                <!-- Facturación Electrónica -->
+                <!-- Comprobante Electrónico -->
                 <div class="col-xl-1 col-md-3 text-center">
-                    <a href="{% url 'factura_list' %}" class="text-decoration-none" title="Facturación Electrónica">
+                    <a href="{% url 'factura_list' %}" class="text-decoration-none" title="Comprobante Electrónico">
                         <div class="p-2 rounded-3 border border-primary hover-shadow" style="--bs-border-opacity: 0.5; height: 60px; display: flex; align-items: center; justify-content: center;">
                             <i class="fas fa-file-invoice-dollar fs-4 text-info"></i>
                         </div>
                     </a>
                 </div>
 
-                <!-- Facturación Manual -->
+                <!-- Comprobante Manual -->
                 <div class="col-xl-1 col-md-3 text-center">
-                    <a href="#" class="text-decoration-none" title="Facturación Manual">
+                    <a href="{% url 'factura_manual_list' %}" class="text-decoration-none" title="Comprobante Manual">
                         <div class="p-2 rounded-3 border border-primary hover-shadow" style="--bs-border-opacity: 0.5; height: 60px; display: flex; align-items: center; justify-content: center;">
                             <i class="fas fa-file-signature fs-4 text-warning"></i>
+                        </div>
+                    </a>
+                </div>
+
+                <!-- Recibo -->
+                <div class="col-xl-1 col-md-3 text-center">
+                    <a href="{% url 'recibo_list' %}" class="text-decoration-none" title="Recibo">
+                        <div class="p-2 rounded-3 border border-primary hover-shadow" style="--bs-border-opacity: 0.5; height: 60px; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-hand-holding-usd fs-4 text-success"></i>
+                        </div>
+                    </a>
+                </div>
+
+                <!-- Presupuesto -->
+                <div class="col-xl-1 col-md-3 text-center">
+                    <a href="{% url 'presupuesto_list' %}" class="text-decoration-none" title="Presupuesto">
+                        <div class="p-2 rounded-3 border border-primary hover-shadow" style="--bs-border-opacity: 0.5; height: 60px; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-file-invoice fs-4 text-secondary"></i>
                         </div>
                     </a>
                 </div>
@@ -35,15 +53,6 @@
                     <a href="{% url 'producto_list' %}" class="text-decoration-none" title="Productos">
                         <div class="p-2 rounded-3 border border-primary hover-shadow" style="--bs-border-opacity: 0.5; height: 60px; display: flex; align-items: center; justify-content: center;">
                             <i class="fas fa-boxes fs-4 text-primary"></i>
-                        </div>
-                    </a>
-                </div>
-
-                <!-- Recibos -->
-                <div class="col-xl-1 col-md-3 text-center">
-                    <a href="{% url 'recibo_list' %}" class="text-decoration-none" title="Recibos">
-                        <div class="p-2 rounded-3 border border-primary hover-shadow" style="--bs-border-opacity: 0.5; height: 60px; display: flex; align-items: center; justify-content: center;">
-                            <i class="fas fa-hand-holding-usd fs-4 text-success"></i>
                         </div>
                     </a>
                 </div>
