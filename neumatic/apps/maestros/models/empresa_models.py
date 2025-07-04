@@ -107,3 +107,9 @@ class Empresa(ModeloBaseGenerico):
 		
 		if errors:
 			raise ValidationError(errors)
+	
+	@property
+	def cuit_formateado(self):
+		cuit = str(self.cuit)
+		return f"{cuit[:2]}-{cuit[2:-1]}-{cuit[-1:]}"
+

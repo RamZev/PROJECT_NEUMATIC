@@ -31,10 +31,10 @@ class GeneraPDFView(View):
 		method_name = f"generar_pdf_{model_string.lower()}"
 		if hasattr(self, method_name):
 			method = getattr(self, method_name)
-			return method(pk)
+			return method(request, pk)
 		return self.generar_pdf_default(model_string, pk)
 	
-	def generar_pdf_factura(self, pk):
+	def generar_pdf_factura(self, request, pk):
 		# Obtener datos principales
 		factura = get_object_or_404(Factura, pk=pk)
 		detalles = DetalleFactura.objects.filter(id_factura=factura)
@@ -128,13 +128,14 @@ class GeneraPDFView(View):
 		
 		#-- Mostrar datos del recibo en el header-top-right. -------------------------------------------------
 		y_text_right = y_position + 3*mm
-		x_text_right = width/2 + 20*mm + 6*mm
+		x_text_right = width/2 + 20*mm + 10*mm
 		
 		c.setFont("Helvetica-Bold", 10)
-		c.drawString(x_text_right, y_text_right, f"{factura.id_comprobante_venta}")
+		# c.drawString(x_text_right, y_text_right, f"{factura.id_comprobante_venta}")
+		c.drawString(x_text_right, y_text_right, f"{factura.id_comprobante_venta.nombre_impresion}")
 		
 		y_text_right -= 4*mm
-		c.drawString(x_text_right, y_text_right, f"Comprobante Nº: {factura.compro_letra_numero_comprobante_formateado}")
+		c.drawString(x_text_right, y_text_right, f"Comprobante Nº: {factura.numero_comprobante_formateado}")
 		
 		y_text_right -= 4*mm
 		c.drawString(x_text_right, y_text_right, f"Fecha: {factura.fecha_comprobante.strftime('%d/%m/%Y')}")
@@ -144,7 +145,7 @@ class GeneraPDFView(View):
 		c.drawString(x_text_right, y_text_right, f"I.V.A.: {empresa.id_iva.nombre_iva}")
 		
 		y_text_right -= 3*mm
-		c.drawString(x_text_right, y_text_right, f"CUIT: {empresa.cuit}")
+		c.drawString(x_text_right, y_text_right, f"CUIT: {empresa.cuit_formateado}")
 		
 		y_text_right -= 3*mm
 		c.drawString(x_text_right, y_text_right, f"Ingresos Brutos: {empresa.ingresos_bruto}")
@@ -214,6 +215,14 @@ class GeneraPDFView(View):
 			textColor=colors.black,
 			alignment=TA_LEFT,
 		)
+		paragraph_style_bold = ParagraphStyle(
+			name='Normal',
+			fontName='Helvetica-Bold',
+			fontSize=7,
+			leading=8,
+			textColor=colors.black,
+			alignment=TA_LEFT,
+		)
 		
 		#-- Información de las columnas de la tabla.
 		table_info = [
@@ -277,10 +286,11 @@ class GeneraPDFView(View):
 			])
 			current_row += 1
 			if detalle.id_producto.despacho_1 or detalle.id_producto.despacho_2:
+				numero_despacho = detalle.id_producto.despacho_1 if detalle.id_producto.despacho_1 else detalle.id_producto.despacho_2
 				detail_data.append([
 					"",
 					"",
-					f"Nº Despacho: {detalle.id_producto.despacho_1}",
+					f"Nº Despacho: {numero_despacho}",
 					"",
 					"",
 					"",
@@ -360,30 +370,83 @@ class GeneraPDFView(View):
 		
 		#-- Dibujar recuadro Tatales.
 		height_total_box = 35*mm
-		x_total_box = margin
+		width_box_left = 125*mm
 		y_total_box = 82*mm - height_total_box
 		
-		c.rect(x_total_box, y_total_box, width - 2*margin, height_total_box)
+		c.rect(margin, y_total_box, width - 2*margin, height_total_box)
 		
-		x_divider_line = x_total_box + 125*mm
+		x_divider_line = margin + width_box_left
 		c.line(x_divider_line, y_total_box+height_total_box, x_divider_line, y_total_box)
 		
 		#-- Textos parte izquierda del recuadro Totales.
 		x_text_left = margin + 5*mm
 		y_text = 77*mm
 		
+		#-- Vendedor.
 		c.setFont("Helvetica-Bold", 8)
 		c.drawString(x_text_left, y_text, "Vendedor:")
 		c.setFont("Helvetica", 8)
 		c.drawString(x_text_left+15*mm, y_text, f"[{vendedor.id_vendedor}] {vendedor.nombre_vendedor}")
 		
-		#-- Recibí Conforme.
-		x_sign_line = x_text_left
-		y_sign_line = y_total_box + 5*mm
-		c.line(x_sign_line, y_sign_line, x_sign_line+50*mm, y_sign_line)
-		c.drawString(x_text_left+15*mm, y_total_box+2*mm, "Recibí Conforme")
+		#-- Id. Depósito(almacén).
+		c.drawRightString(x_divider_line-2*mm, y_text, f"Nro.: {str(factura.id_deposito.id_producto_deposito).zfill(2)}")
 		
-		#-- Textos parte derecha del recuadro Totales.
+		#-- Leyendas. -------------------
+		y_leyenda = y_text - 3*mm
+		c.setFont("Helvetica", 7)
+		
+		leyenda = "Retiro el vehículo de conformidad, previo control, encontrándose en perfectas condiciones todas mis pertenencias."
+		parrafo = Paragraph(leyenda, style=paragraph_style_normal)
+		# max_width = 120*mm
+		max_width = width_box_left - 2*mm
+		w, h = parrafo.wrap(max_width, 10*mm)
+		parrafo.drawOn(c, x_text_left, y_leyenda - h)
+		
+		y_leyenda -= h
+		
+		if factura.stock_clie:
+			leyenda = "Los productos de este comprobante quedan en deposito del Cliente."
+			parrafo = Paragraph(leyenda, style=paragraph_style_bold)
+			# max_width = 120*mm
+			w, h = parrafo.wrap(max_width, 10*mm)
+			parrafo.drawOn(c, x_text_left, y_leyenda - h)
+			
+			y_leyenda -= h
+		
+		if factura.no_estadist:
+			leyenda = "Este Comprobante no participa en Estadisticas."
+			parrafo = Paragraph(leyenda, style=paragraph_style_bold)
+			# max_width = 120*mm
+			w, h = parrafo.wrap(max_width, 10*mm)
+			parrafo.drawOn(c, x_text_left, y_leyenda - h)
+			
+			y_leyenda -= h
+		
+		if factura.letra_comprobante == "B":
+			alic_monto = ""
+			for alic, monto in iva.items():
+				alic_monto += f"{formato_argentino(alic)}% = ${formato_argentino(monto)}; "
+			
+			alic_monto = alic_monto[:-2]
+			leyenda = f"RÉGIMEN DE TRANSPARENCIA FISCAL AL CONSUMIDOR Ley 27743. <br/>\
+				IVA Contenido: {alic_monto}"
+			parrafo = Paragraph(leyenda, style=paragraph_style_bold)
+			# max_width = 120*mm
+			w, h = parrafo.wrap(max_width, 10*mm)
+			parrafo.drawOn(c, x_text_left, y_leyenda - h)
+			
+			y_leyenda -= h
+		#--------------------------------
+		
+		#-- Recibí Conforme.
+		line_size = 50*mm
+		x_sign_line = margin + (width_box_left/2 - line_size/2)
+		y_sign_line = y_total_box + 5*mm
+		c.line(x_sign_line, y_sign_line, x_sign_line+line_size, y_sign_line)
+		c.drawCentredString(x_sign_line+line_size/2, y_total_box+2*mm, "Recibí Conforme")
+		
+		
+		#-- Textos y Montos parte derecha del recuadro Totales.
 		x_amount = width - margin - 2*mm
 		x_text_right = x_divider_line + 35*mm
 		
@@ -401,12 +464,6 @@ class GeneraPDFView(View):
 			c.drawRightString(x_text_right, y_text_right, "Exento :")
 			c.setFont("Helvetica", 8)
 			c.drawRightString(x_amount, y_text_right, formato_argentino(factura.exento))
-			
-			y_text_right -= 4*mm
-			c.setFont("Helvetica-Bold", 8)
-			c.drawRightString(x_text_right, y_text_right, "Imp. Internos :")
-			c.setFont("Helvetica", 8)
-			c.drawRightString(x_amount, y_text_right, formato_argentino(0.0))
 			
 			for alic, monto in iva.items():
 				y_text_right -= 4*mm
@@ -461,6 +518,9 @@ class GeneraPDFView(View):
 		c.drawRightString(x_cae, y_cae-5*mm, "Vencimiento CAE :")
 		c.drawString(x_cae+2*mm, y_cae-5*mm, cae_vto)
 		
+		#-- Nro. Control (compro + letra + número).
+		c.setFont("Helvetica", 8)
+		c.drawCentredString(x_cae, y_qr+10*mm, f"Ctrl.: {factura.compro_letra_numero_comprobante_formateado}")
 		
 		#-- Cadenas.
 		c.setFont("Helvetica-BoldOblique", 8)
@@ -479,7 +539,7 @@ class GeneraPDFView(View):
 		response['Content-Disposition'] = f'inline; filename="factura_{factura.numero_comprobante}.pdf"'
 		return response
 	
-	def generar_pdf_recibo(self, pk):
+	def generar_pdf_recibo(self, request, pk):
 		#-- Obtener datos principales.
 		recibo = get_object_or_404(Factura, pk=pk)
 		detalle_recibo = DetalleRecibo.objects.filter(id_factura=recibo)
@@ -490,6 +550,8 @@ class GeneraPDFView(View):
 		
 		empresa = Empresa.objects.first()
 		cliente = recibo.id_cliente  # No necesitas consulta adicional
+		
+		usuario = f"{request.user.first_name} {request.user.last_name}" if request.user.first_name or request.user.last_name else str(request.user)
 		
 		if not empresa:
 			return HttpResponse("No se encontraron datos de empresa configurados", status=400)
@@ -543,7 +605,7 @@ class GeneraPDFView(View):
 		c.drawString(x_text_left, y_text_left, f"C.P.: ({empresa.codigo_postal})  {empresa.id_localidad} - {empresa.id_provincia}")
 		
 		y_text_left -= 3*mm
-		c.drawString(x_text_left, y_text_left, f"I.V.A.: {empresa.id_iva}    C.U.I.T.: {empresa.cuit}")
+		c.drawString(x_text_left, y_text_left, f"I.V.A.: {empresa.id_iva}    C.U.I.T.: {empresa.cuit_formateado}")
 		
 		
 		#-- Mostrar datos del recibo en el header-top-right.
@@ -558,7 +620,7 @@ class GeneraPDFView(View):
 		
 		c.setFont("Helvetica", 8)
 		y_text_right -= 4*mm
-		c.drawString(x_text_right, y_text_right, f"Fecha: {recibo.fecha_comprobante}")
+		c.drawString(x_text_right, y_text_right, f"Fecha: {recibo.fecha_comprobante.strftime('%d/%m/%Y')}")
 		
 		
 		#-- Dibujar recuadro header bottom.
@@ -582,7 +644,7 @@ class GeneraPDFView(View):
 		c.drawString(x_text_left, y_text, f"{cliente.domicilio_cliente}    C.P.: {cliente.codigo_postal}")
 		
 		y_text -= 3*mm
-		c.drawString(x_text_left, y_text, f"I.V.A.: {cliente.id_tipo_iva}    C.U.I.T.: {cliente.cuit}")
+		c.drawString(x_text_left, y_text, f"I.V.A.: {cliente.id_tipo_iva}    C.U.I.T.: {cliente.cuit_formateado}")
 		
 		
 		#-- Mostrar detalle del recibo si existe.
@@ -634,7 +696,7 @@ class GeneraPDFView(View):
 		table_data = [table_cols]
 		
 		if recibo.efectivo_recibo:
-			table_data.append(["EFECTIVO"] + 3*[""] + [formato_argentino(recibo.efectivo_recibo)])
+			table_data.append(["EFECTIVO"] + 3*[""] + [f"${formato_argentino(recibo.efectivo_recibo)}"])
 		
 		if retenciones:
 			table_data.append(["Retenciones:"] + 4*[""])
@@ -734,8 +796,9 @@ class GeneraPDFView(View):
 		
 		y_linea = y_text - h + 2  #-- Se ajusta +2 para que la línea quede alineada con la base del texto.
 		
-		#-- Dibuja la línea.
+		#-- Dibuja la línea para firma y el usuario que recibe el pago.
 		c.line(x_inicio, y_linea, x_fin, y_linea)
+		c.drawCentredString(x_inicio+((x_fin - x_inicio)/2), y_linea-4*mm, usuario)
 		
 		c.showPage()
 		c.save()

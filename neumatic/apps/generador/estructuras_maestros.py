@@ -191,7 +191,7 @@ estructura_campos = {
 			'fila_1': [
 				{'field_name': 'estatus_producto_estado', 'columna': 2, 'design': None},
 				{'field_name': 'estado_producto', 'columna': 2, 'design': None},
-				{'field_name': 'nombre_producto_estado', 'columna': 3, 'design': None},
+				{'field_name': 'nombre_impresion', 'columna': 2, 'design': None},
 			]
 		}
 	},
@@ -222,6 +222,7 @@ estructura_campos = {
 			'fila_4': [
 				{'field_name': 'codigo_afip_a', 'columna': 2, 'design': None},
 				{'field_name': 'codigo_afip_b', 'columna': 2, 'design': None},
+				{'field_name': 'compro_asociado', 'columna': 4, 'design': None},
 			],
 			'fila_5': [
 				{'field_name': 'info_michelin_auto', 'columna': 2, 'design': Design.checkbox},

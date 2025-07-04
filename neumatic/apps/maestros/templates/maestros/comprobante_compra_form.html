@@ -31,7 +31,7 @@
 								{% csrf_token %}
 								<div class="accordion" id="accordionPanelsStayOpenExample">
 									<!-- Estructura generada -->
-
+									
 									<div class="accordion-item">
 										<h2 class="accordion-header">
 											<button 
@@ -47,7 +47,7 @@
 										<div class="accordion-collapse collapse show"
 											id="Información_Comprobante_Compra">
 											<div class="accordion-body bg-secondary-subtle">
-		
+												
 												<div class="row">
 													<div class="col-md-2">
 														<label class="form-label text-primary mb-0">
@@ -55,19 +55,26 @@
 														</label>
 														{{ form.estatus_comprobante_compra }}
 													</div>
-								
+													
 													<div class="col-md-2">
 														<label class="form-label text-primary mb-0">
 															{{ form.codigo_comprobante_compra.label }}
 														</label>
 														{{ form.codigo_comprobante_compra }}
 													</div>
-								
+													
 													<div class="col-md-4">
 														<label class="form-label text-primary mb-0">
 															{{ form.nombre_comprobante_compra.label }}
 														</label>
 														{{ form.nombre_comprobante_compra }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0">
+															{{ form.nombre_impresion.label }}
+														</label>
+														{{ form.nombre_impresion }}
 													</div>
 												</div>
 												<div class="row">
@@ -77,21 +84,21 @@
 														</label>
 														{{ form.mult_compra }}
 													</div>
-								
+													
 													<div class="col-md-2">
 														<label class="form-label text-primary mb-0">
 															{{ form.mult_saldo.label }}
 														</label>
 														{{ form.mult_saldo }}
 													</div>
-								
+													
 													<div class="col-md-2">
 														<label class="form-label text-primary mb-0">
 															{{ form.mult_stock.label }}
 														</label>
 														{{ form.mult_stock }}
 													</div>
-								
+													
 													<div class="col-md-2">
 														<label class="form-label text-primary mb-0">
 															{{ form.mult_caja.label }}
@@ -106,21 +113,21 @@
 														</label>
 														{{ form.codigo_afip_a }}
 													</div>
-								
+													
 													<div class="col-md-2">
 														<label class="form-label text-primary mb-0">
 															{{ form.codigo_afip_b.label }}
 														</label>
 														{{ form.codigo_afip_b }}
 													</div>
-								
+													
 													<div class="col-md-2">
 														<label class="form-label text-primary mb-0">
 															{{ form.codigo_afip_c.label }}
 														</label>
 														{{ form.codigo_afip_c }}
 													</div>
-								
+													
 													<div class="col-md-2">
 														<label class="form-label text-primary mb-0">
 															{{ form.codigo_afip_m.label }}

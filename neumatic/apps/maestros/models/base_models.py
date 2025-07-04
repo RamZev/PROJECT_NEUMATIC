@@ -238,6 +238,8 @@ class ComprobanteVenta(ModeloBaseGenerico):
 												max_length=3, unique=True)
 	nombre_comprobante_venta = models.CharField("Nombre Comprobante", 
 												max_length=50)
+	nombre_impresion = models.CharField("Nombre Impresión", max_length=20,
+									 	default="")
 	compro_asociado = models.CharField("Comprobate Asociado", 
 										max_length=20, null=True, blank=True)
 	mult_venta = models.IntegerField("Mult. Venta")
@@ -306,6 +308,8 @@ class ComprobanteCompra(ModeloBaseGenerico):
 	codigo_comprobante_compra = models.CharField("Código comprobante",
 												 max_length=3, unique=True)
 	nombre_comprobante_compra = models.CharField("Nombre", max_length=30)
+	nombre_impresion = models.CharField("Nombre Impresión", max_length=20,
+									 	default="")
 	mult_compra = models.IntegerField("Mult. Compra")
 	mult_saldo = models.IntegerField("Mult. Saldo")
 	mult_stock = models.IntegerField("Mult. Stock")

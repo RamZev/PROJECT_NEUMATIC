@@ -229,9 +229,9 @@ class Factura(ModeloBaseGenerico):
 		null=True,
 		blank=True
 	)
-	observa_comprobante = models.CharField(
+	observa_comprobante = models.TextField(
 		verbose_name="Observaciones",
-		max_length=50,
+		# max_length=50,
 		null=True,
 		blank=True
 	)
