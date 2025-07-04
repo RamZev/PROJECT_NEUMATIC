@@ -109,6 +109,9 @@
             <!-- Elemento HTML para almacenar el valor de is_edit -->
             <div id="modo-edicion" data-is-edit="{{ is_edit|yesno:'true,false' }}"></div>
 
+            <!-- Div oculto con el diccionario libro_iva para cada comprobante -->
+            <div id="libroiva-data" data-libroiva='{{ libro_iva_dict|safe }}'</div>
+
             <div class="container-fluid tbl-container">
                 <!-- Formulario Encabezado Detalle - Inicio -->
                 <form method="post" id="factura-form" enctype="multipart/form-data">
@@ -118,7 +121,7 @@
                         <div class="accordion-item">
                             <h2 class="accordion-header">
                             <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseOne" aria-expanded="true" aria-controls="panelsStayOpen-collapseOne">
-                                Comprobante de Venta
+                                Comprobante Electrónico
                             </button>
                             </h2>
                             <div id="panelsStayOpen-collapseOne" class="accordion-collapse collapse show">
@@ -277,17 +280,11 @@
 
                                             </div>
 
-                                            <div class="col-md-3">
+                                            <div class="col-md-5">
                                                 {{ form.numero_comprobante }}
 
                                             </div>
 
-                                            <div class="col-md-2">
-                                                {{ form.discrimina_iva }}
-                                                <label class="form-check-label" for="{{ form.discrimina_iva.id_for_label }}">
-                                                    DIVA
-                                                </label>
-                                            </div>
                                         </div>
 
                                         <div class="row my-1">
@@ -378,7 +375,14 @@
                                                 <label for="{{ form.es_pendiente.id_for_label }}">Otros</label>
                                             </div>
                                             
-                                            <div class="col-md-4">
+                                            <div class="col-md-2">
+                                                {{ form.discrimina_iva }}
+                                                <label class="form-check-label" for="{{ form.discrimina_iva.id_for_label }}">
+                                                    DIVA
+                                                </label>
+                                            </div>
+                                            
+                                            <div class="col-md-3">
                                                 {{ form.es_pendiente }}
                                                 <label class="form-check-label" for="{{ form.es_pendiente.id_for_label }}">
                                                     Pendiente
@@ -925,11 +929,9 @@
         </div>
     </div>
 
-
 {% endblock modals %}
 
 {% block script %}
-    {% comment %} SCRIPTS JS Start {% endcomment %}
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const formsetContainer = document.getElementById('formset-container');
@@ -1157,6 +1159,42 @@
                 }
             });
 
+            // Agregar listener específico para el cambio en el select de reventa
+            /*
+            formsetContainer.addEventListener('change', function(event) {
+                if (event.target.name.includes('reventa')) {
+                    const row = event.target.closest('tr');
+                    
+                    alert("change");
+                }
+            });
+            */
+            formsetContainer.addEventListener('change', function(event) {
+                if (event.target.name.includes('reventa')) {
+                    const oldValue = event.target.getAttribute('data-prev-value') || 'M';
+                    const newValue = event.target.value;
+                    
+                    if (!confirm(`Cambiar de ${oldValue} a ${newValue}?`)) {
+                        event.target.value = oldValue;
+                        return;
+                    }
+                    
+                    // Guardar nuevo valor como anterior para próximos cambios
+                    event.target.setAttribute('data-prev-value', newValue);
+                    
+                    // Actualizar la fila
+                    const row = event.target.closest('tr');
+                    recalcularFilaCompleta(row);
+                    actualizarTotalFactura();
+                }
+            });
+            
+            // Inicializar valores previos al cargar
+            document.querySelectorAll('select[name*="reventa"]').forEach(select => {
+                select.setAttribute('data-prev-value', select.value);
+            });
+
+
             // Manejar el botón de insertar detalle de factura (versión optimizada)
             insertarBtn.addEventListener('click', function() {
                 // Obtener todos los checkboxes marcados
@@ -1242,7 +1280,7 @@
                         <td>
                             <input type="number" name="detallefactura_set-${currentIndex}-precio" 
                                 class="${formControlClass} text-end" value="${precioFinal}" ${nombreInputAttributes}
-                                min="0" step="0.1">
+                                min="0" step="0.01">
                         </td>
                         <td>
                             <input type="number" name="detallefactura_set-${currentIndex}-descuento" 
@@ -1579,8 +1617,10 @@
                             //
                             let tieneStock = false; // Bandera para verificar si hay stock mayor a cero
                             data.stock.forEach(stock => {
-                                if (parseFloat(stock.stock) > 0) { // Solo mostrar si el stock es mayor a cero
-                                    const row = `<tr><td>${stock.deposito}</td><td>${stock.stock}</td></tr>`;
+                                if (parseFloat(stock.stock) !== 0) { // Solo mostrar si el stock es distinto a cero
+                                    //const row = `<tr><td>${stock.deposito}</td><td>${stock.stock}</td></tr>`;
+                                    const row = `<tr><td style="color: ${parseFloat(stock.deposito) < 0 ? 'red' : 'inherit'}">${stock.deposito}</td><td>${stock.stock}</td></tr>`;
+
                                     tablaStock.insertAdjacentHTML("beforeend", row);
                                     tieneStock = true;
                                 }
@@ -1607,6 +1647,294 @@
 
             }
 
+            // Aquí puede ir?
+            // Funcionalidad del Remito
+
+            const comprobanteSelect = document.getElementById('id_id_comprobante_venta');
+            
+            if (comprobanteSelect) {
+                // Asignar el event listener
+                comprobanteSelect.addEventListener('change', function() {
+                    actualizarDatosComprobante(this);
+                });
+                
+                // Ejecutar al cargar si ya hay un valor seleccionado
+                if (comprobanteSelect.value) {
+                    actualizarDatosComprobante(comprobanteSelect);
+                }
+            }
+            
+            function actualizarDatosComprobante(selectElement) {
+                const comprobanteId = selectElement.value;
+                
+                if (!comprobanteId) {
+                    // Limpiar campos si no hay comprobante seleccionado
+                    document.getElementById('id_compro').value = '';
+                    document.getElementById('id_letra_comprobante').value = '';
+                    return;
+                }
+
+                // 1. Campo de búsqueda de cliente
+                const buscarCliente = document.getElementById('buscar_cliente');
+                if (buscarCliente) {
+                    buscarCliente.removeAttribute('readonly');
+                }
+                
+                // 2. Botón de validar
+                const validarBtn = document.getElementById('validarBtn');
+                if (validarBtn) {
+                    validarBtn.removeAttribute('disabled');
+                }
+                
+                // 3. Botón de listar agenda
+                const listarAgenda = document.getElementById('listar_agenda');
+                if (listarAgenda) {
+                    listarAgenda.removeAttribute('disabled');
+                }
+        
+                // Obtener solo los datos básicos del comprobante
+                fetch(`/ventas/comprobante/${comprobanteId}/codigo/`)
+                    .then(response => {
+                        if (!response.ok) throw new Error('Error en la respuesta');
+                        return response.json();
+                    })
+                    .then(data => {
+                        document.getElementById('id_compro').value = data.codigo || '';
+
+                        // Mapear los botones
+                        const addSerialBtn = document.getElementById('btnAgregarSerial');
+                        const addDetailBtn = document.getElementById('btnAgregarDetalle');
+
+                        // Actualizar el checkbox es_remito basado en la respuesta
+                        const esRemitoCheckbox = document.getElementById('id_es_remito');
+                        if (esRemitoCheckbox) {
+                            esRemitoCheckbox.checked = data.es_remito || false;
+                            
+                            // Si necesitas cambiar el estado visual (aunque esté disabled)
+                            if (data.es_remito) {
+                                esRemitoCheckbox.parentElement.classList.add('checked');
+                            } else {
+                                esRemitoCheckbox.parentElement.classList.remove('checked');
+                            }
+                        }
+
+                        // Actualizar el checkbox es_pendiente basado en la respuesta
+                        const esPendienteCheckbox = document.getElementById('id_es_pendiente');
+                        if (esPendienteCheckbox) {
+                            esPendienteCheckbox.checked = data.es_pendiente || false;
+
+                            // Si necesitas cambiar el estado visual (aunque esté disabled)
+                            if (data.es_pendiente) {
+                                esPendienteCheckbox.parentElement.classList.add('checked');
+                                addSerialBtn.disabled = true;
+                                addDetailBtn.disabled = true;
+                            } else {
+                                esPendienteCheckbox.parentElement.classList.remove('checked');
+                            }
+                        }
+
+                        // Revisar si existe un comprobante asociado
+                        if (data.compro_asociado) {
+                            // alert(data.compro_asociado);
+                        }
+
+                        ////
+                        // ---- Nuevo: Llenar el select comprobante_remito ----
+                        const selectRemito = document.getElementById('id_comprobante_remito');
+                        const selectIdRemito = document.getElementById('id_remito');
+                        if (selectRemito && data.compro_asociado) {
+                            selectIdRemito.removeAttribute('readonly');
+                            
+                            // Limpiar opciones existentes
+                            selectRemito.innerHTML = '';
+                            
+                            // Agregar opción vacía (opcional)
+                            const defaultOption = document.createElement('option');
+                            defaultOption.value = '';
+                            defaultOption.textContent = 'Seleccione...';
+                            selectRemito.appendChild(defaultOption);
+
+                            // Procesar el string (ej: "FA, FX, TY" -> ["FA", "FX", "TY"])
+                            const opciones = data.compro_asociado.split(',').map(item => item.trim());
+                            
+                            // Agregar cada opción al select
+                            opciones.forEach(opcion => {
+                                const option = document.createElement('option');
+                                option.value = opcion;  // Ej: "FA"
+                                option.textContent = opcion; // Mismo valor que el texto
+                                selectRemito.appendChild(option);
+                            });
+                        }    
+                        ////
+
+                    })
+                    .catch(error => {
+                        console.error('Error al obtener código:', error);
+                        document.getElementById('id_compro').value = '';
+                    });
+
+            }
+
+            // Verificar Remito
+            const remitoInput = document.getElementById('id_remito');
+            const comprobanteRemitoSelect = document.getElementById('id_comprobante_remito');
+            document.getElementById('id_remito').addEventListener('blur', function() {
+                const valor = this.value.trim();
+                const formsetContainer = document.getElementById('formset-container');
+                
+                if (!formsetContainer) {
+                    console.error('Error crítico: No se encontró el contenedor del formset');
+                    alert('Error en la configuración del formulario');
+                    return;
+                }
+            
+                // Si está vacío, no hacer nada
+                if (!valor) return;
+            
+                // Verificar que tenga exactamente 10 dígitos
+                if (!/^\d{10}$/.test(valor)) {
+                    alert("Error: Debe ingresar exactamente 10 dígitos numéricos (ej: 3400000001).");
+                    this.value = '';
+                    this.focus();
+                    return;
+                }
+
+                if (!comprobanteRemitoSelect.value) {
+                    alert("Debe seleccionar un tipo de comprobante remito primero");
+                    comprobanteRemitoSelect.focus();
+                    return;
+                }
+
+                // Implementación estandarizada con .then()/.catch()
+                fetch(`/ventas/verificar/remito/?comprobante_remito=${encodeURIComponent(comprobanteRemitoSelect.value)}&remito=${encodeURIComponent(valor)}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`Error en la solicitud: ${response.statusText}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (!data.existe) {
+                        alert("El remito indicado no existe");
+                        remitoInput.value = '';
+                        remitoInput.focus();
+                        return;
+                    }
+
+                    // Si existe, procesar los detalles del remito
+                    //
+                    if (data.detalles && data.detalles.length > 0) {
+                        // Confirmar con el usuario antes de cargar los detalles
+                        if (!confirm(`¿Desea cargar los ${data.detalles.length} ítems del remito ${valor}?`)) {
+                            return;
+                        }
+            
+                        // Limpiar detalles existentes si los hay
+                        const filasExistentes = formsetContainer.querySelectorAll('.detalle-form tbody tr');
+                        if (filasExistentes.length > 0) {
+                            if (!confirm('⚠️ Ya existen ítems en la factura. ¿Desea reemplazarlos?')) {
+                                return;
+                            }
+                            
+                            // Marcar todas las filas existentes para eliminación
+                            filasExistentes.forEach(row => {
+                                const deleteInput = row.querySelector('[name$="-DELETE"]');
+                                if (deleteInput) {
+                                    deleteInput.checked = true;
+                                    row.style.display = 'none';
+                                }
+                            });
+                        }
+            
+                        // Procesar cada detalle del remito
+                        data.detalles.forEach(detalle => {
+                            const currentIndex = formsetContainer.querySelectorAll('.detalle-form tbody tr:not([style*="display: none"])').length;
+
+                            ///
+                            const newFormHTML = `
+                            <tr data-form-index="${currentIndex}" class="small-font">
+                                <input type="hidden" name="detallefactura_set-${currentIndex}-id_detalle_factura">
+                                <input type="hidden" name="detallefactura_set-${currentIndex}-id_factura">
+                                <input type="hidden" name="detallefactura_set-${currentIndex}-id_producto" 
+                                    value="${detalle.id_producto}">
+                                <input type="hidden" name="detallefactura_set-${currentIndex}-precio_lista" 
+                                    value="${detalle.precio_lista}"
+                                    data-original="${detalle.precio_lista}" 
+                                    oninput="this.value=this.dataset.original">
+                                <input type="hidden" name="detallefactura_set-${currentIndex}-desc_vendedor" 
+                                    value="${detalle.desc_vendedor}">
+                                <td>
+                                    <input type="text" name="detallefactura_set-${currentIndex}-medida" 
+                                        class="form-control form-control-sm border border-primary" 
+                                        value="${detalle.medida}" readonly>
+                                </td>
+                                <td>
+                                    <input type="text" name="detallefactura_set-${currentIndex}-producto_venta" 
+                                        class="form-control form-control-sm border border-primary" 
+                                        value="${detalle.nombre}" readonly>
+                                </td>
+                                <td>
+                                    <input type="number" name="detallefactura_set-${currentIndex}-cantidad" 
+                                        class="form-control form-control-sm border border-primary text-end" 
+                                        value="${detalle.cantidad}" min="1" step="1" required readonly>
+                                </td>
+                                <td>
+                                    <select name="detallefactura_set-${currentIndex}-reventa" class="form-control form-control-sm border border-primary" required>
+                                        <option value="M" selected>M</option>
+                                        <option value="R">R</option>
+                                        <option value="E">E</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <input type="number" name="detallefactura_set-${currentIndex}-precio" 
+                                        class="form-control form-control-sm border border-primary text-end" 
+                                        value="${detalle.precio}" min="0" step="0.01">
+                                </td>
+                                <td>
+                                    <input type="number" name="detallefactura_set-${currentIndex}-descuento" 
+                                        class="form-control form-control-sm border border-primary text-end" 
+                                        value="${detalle.descuento}" step="0.1" min="0" readonly>
+                                </td>
+                                <input type="hidden" name="detallefactura_set-${currentIndex}-gravado" value="${detalle.gravado}">
+                                <input type="hidden" name="detallefactura_set-${currentIndex}-alic_iva" value="${detalle.alic_iva}">
+                                <input type="hidden" name="detallefactura_set-${currentIndex}-iva" value="${detalle.iva}">
+                                <td>
+                                    <input type="number" name="detallefactura_set-${currentIndex}-total" 
+                                        class="form-control form-control-sm border border-primary text-end" 
+                                        value="${detalle.total}" readonly>
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-danger btn-sm btn-delete" data-form-index="${currentIndex}" disabled>
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                    <input type="checkbox" name="detallefactura_set-${currentIndex}-DELETE" style="display: none;">
+                                </td>
+                            </tr>`;
+                            ///
+            
+                            formsetContainer.querySelector('.detalle-form tbody').insertAdjacentHTML('beforeend', newFormHTML);
+                            
+                            // Actualizar totales generales
+                            actualizarTotalFactura();
+                        });
+            
+                        // Actualizar el contador de formsets
+                        document.querySelector('[name$="TOTAL_FORMS"]').value = 
+                            formsetContainer.querySelectorAll('.detalle-form tbody tr:not([style*="display: none"])').length;
+            
+                        alert(`Se cargaron ${data.detalles.length} ítems del remito ${valor}`);
+                    } else {
+                        alert("El remito existe pero no tiene detalles asociados");
+                    }
+                    //
+                })
+                .catch(error => {
+                    console.error('Error al verificar remito:', error);
+                    alert("Error al conectar con el servidor");
+                });
+
+            });
+            /////
         });
     </script>
 
@@ -1890,8 +2218,6 @@
                 const condicion_comprobante = seleccion.getAttribute('data-condicion_venta');
                 const id_sucursal_cliente = seleccion.getAttribute('data-id_sucursal');
                 const vip = seleccion.getAttribute('data-vip') === 'true';
-            
-                document.getElementById('id_letra_comprobante').value = document.getElementById('id_es_remito').checked ? 'R' : (isChecked ? 'A' : 'B');
                 
                 document.getElementById('id_id_cliente').value = id_cliente || '';
                 document.getElementById('id_nombre_factura').value = nombre || '';
@@ -1928,12 +2254,27 @@
                     alert("⚠️ Este es un Cliente VIP - Trato Especial ⚠️");
                     document.getElementById('id_cliente_vip').value = "Cliente VIP" 
                 }
+
+                
+                document.getElementById('id_letra_comprobante').value = document.getElementById('id_es_remito').checked ? 'R' : (isChecked ? 'A' : 'B');
             
                 // Obtener número de comprobante (código existente)
                 const id_sucursal = document.getElementById('id_id_sucursal').value;
                 const id_punto_venta = document.getElementById('id_id_punto_venta').value;
                 const compro = document.getElementById('id_compro').value;
                 const letra_comprobante = document.getElementById('id_letra_comprobante').value;
+                //alert(letra_comprobante);
+
+                // const comprobanteSelect = document.getElementById('id_id_comprobante_venta');
+                const libroIvaDict = JSON.parse(document.getElementById('libroiva-data').dataset.libroiva);
+                const comprobanteId = document.getElementById('id_id_comprobante_venta').value;
+                const libroIva = libroIvaDict[comprobanteId] ?? false;
+
+                // Asignación de letra de comprobante
+                if (libroIva) {
+                    alert("¿Va al libro IVA?: " + libroIva);
+                }
+
             
                 if (id_sucursal && id_punto_venta && compro && letra_comprobante) {
                     const url = new URL('/ventas/obtener-numero-comprobante/', window.location.origin);
@@ -2348,312 +2689,9 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const comprobanteSelect = document.getElementById('id_id_comprobante_venta');
+            /////
             
-            if (comprobanteSelect) {
-                // Asignar el event listener
-                comprobanteSelect.addEventListener('change', function() {
-                    actualizarDatosComprobante(this);
-                });
-                
-                // Ejecutar al cargar si ya hay un valor seleccionado
-                if (comprobanteSelect.value) {
-                    actualizarDatosComprobante(comprobanteSelect);
-                }
-            }
-            
-            function actualizarDatosComprobante(selectElement) {
-                const comprobanteId = selectElement.value;
-                
-                if (!comprobanteId) {
-                    // Limpiar campos si no hay comprobante seleccionado
-                    document.getElementById('id_compro').value = '';
-                    document.getElementById('id_letra_comprobante').value = '';
-                    return;
-                }
-
-                // 1. Campo de búsqueda de cliente
-                const buscarCliente = document.getElementById('buscar_cliente');
-                if (buscarCliente) {
-                    buscarCliente.removeAttribute('readonly');
-                }
-                
-                // 2. Botón de validar
-                const validarBtn = document.getElementById('validarBtn');
-                if (validarBtn) {
-                    validarBtn.removeAttribute('disabled');
-                }
-                
-                // 3. Botón de listar agenda
-                const listarAgenda = document.getElementById('listar_agenda');
-                if (listarAgenda) {
-                    listarAgenda.removeAttribute('disabled');
-                }
-        
-                // Obtener solo los datos básicos del comprobante
-                fetch(`/ventas/comprobante/${comprobanteId}/codigo/`)
-                    .then(response => {
-                        if (!response.ok) throw new Error('Error en la respuesta');
-                        return response.json();
-                    })
-                    .then(data => {
-                        document.getElementById('id_compro').value = data.codigo || '';
-
-                        // Mapear los botones
-                        const addSerialBtn = document.getElementById('btnAgregarSerial');
-                        const addDetailBtn = document.getElementById('btnAgregarDetalle');
-
-                        // Actualizar el checkbox es_remito basado en la respuesta
-                        const esRemitoCheckbox = document.getElementById('id_es_remito');
-                        if (esRemitoCheckbox) {
-                            esRemitoCheckbox.checked = data.es_remito || false;
-                            
-                            // Si necesitas cambiar el estado visual (aunque esté disabled)
-                            if (data.es_remito) {
-                                esRemitoCheckbox.parentElement.classList.add('checked');
-                            } else {
-                                esRemitoCheckbox.parentElement.classList.remove('checked');
-                            }
-                        }
-
-                        // Actualizar el checkbox es_pendiente basado en la respuesta
-                        const esPendienteCheckbox = document.getElementById('id_es_pendiente');
-                        if (esPendienteCheckbox) {
-                            esPendienteCheckbox.checked = data.es_pendiente || false;
-
-                            // Si necesitas cambiar el estado visual (aunque esté disabled)
-                            if (data.es_pendiente) {
-                                esPendienteCheckbox.parentElement.classList.add('checked');
-                                addSerialBtn.disabled = true;
-                                addDetailBtn.disabled = true;
-                            } else {
-                                esPendienteCheckbox.parentElement.classList.remove('checked');
-                            }
-                        }
-
-                        // Revisar si existe un comprobante asociado
-                        if (data.compro_asociado) {
-                            // alert(data.compro_asociado);
-                        }
-
-                        ////
-                        // ---- Nuevo: Llenar el select comprobante_remito ----
-                        const selectRemito = document.getElementById('id_comprobante_remito');
-                        const selectIdRemito = document.getElementById('id_remito');
-                        if (selectRemito && data.compro_asociado) {
-                            selectIdRemito.removeAttribute('readonly');
-                            
-                            // Limpiar opciones existentes
-                            selectRemito.innerHTML = '';
-                            
-                            // Agregar opción vacía (opcional)
-                            const defaultOption = document.createElement('option');
-                            defaultOption.value = '';
-                            defaultOption.textContent = 'Seleccione...';
-                            selectRemito.appendChild(defaultOption);
-
-                            // Procesar el string (ej: "FA, FX, TY" -> ["FA", "FX", "TY"])
-                            const opciones = data.compro_asociado.split(',').map(item => item.trim());
-                            
-                            // Agregar cada opción al select
-                            opciones.forEach(opcion => {
-                                const option = document.createElement('option');
-                                option.value = opcion;  // Ej: "FA"
-                                option.textContent = opcion; // Mismo valor que el texto
-                                selectRemito.appendChild(option);
-                            });
-                        }    
-                        ////
-
-                    })
-                    .catch(error => {
-                        console.error('Error al obtener código:', error);
-                        document.getElementById('id_compro').value = '';
-                    });
-
-            }
-
-            // Verificar Remito
-            const remitoInput = document.getElementById('id_remito');
-            const comprobanteRemitoSelect = document.getElementById('id_comprobante_remito');
-            document.getElementById('id_remito').addEventListener('blur', function() {
-                const valor = this.value.trim();
-                const formsetContainer = document.getElementById('formset-container');
-                
-                if (!formsetContainer) {
-                    console.error('Error crítico: No se encontró el contenedor del formset');
-                    alert('Error en la configuración del formulario');
-                    return;
-                }
-            
-                // Si está vacío, no hacer nada
-                if (!valor) return;
-            
-                // Verificar que tenga exactamente 10 dígitos
-                if (!/^\d{10}$/.test(valor)) {
-                    alert("Error: Debe ingresar exactamente 10 dígitos numéricos (ej: 3400000001).");
-                    this.value = '';
-                    this.focus();
-                    return;
-                }
-
-                if (!comprobanteRemitoSelect.value) {
-                    alert("Debe seleccionar un tipo de comprobante remito primero");
-                    comprobanteRemitoSelect.focus();
-                    return;
-                }
-
-                // Implementación estandarizada con .then()/.catch()
-                fetch(`/ventas/verificar/remito/?comprobante_remito=${encodeURIComponent(comprobanteRemitoSelect.value)}&remito=${encodeURIComponent(valor)}`)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`Error en la solicitud: ${response.statusText}`);
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    if (!data.existe) {
-                        alert("El remito indicado no existe");
-                        remitoInput.value = '';
-                        remitoInput.focus();
-                        return;
-                    }
-
-                    // Si existe, procesar los detalles del remito
-                    //
-                    if (data.detalles && data.detalles.length > 0) {
-                        // Confirmar con el usuario antes de cargar los detalles
-                        if (!confirm(`¿Desea cargar los ${data.detalles.length} ítems del remito ${valor}?`)) {
-                            return;
-                        }
-            
-                        // Limpiar detalles existentes si los hay
-                        const filasExistentes = formsetContainer.querySelectorAll('.detalle-form tbody tr');
-                        if (filasExistentes.length > 0) {
-                            if (!confirm('⚠️ Ya existen ítems en la factura. ¿Desea reemplazarlos?')) {
-                                return;
-                            }
-                            
-                            // Marcar todas las filas existentes para eliminación
-                            filasExistentes.forEach(row => {
-                                const deleteInput = row.querySelector('[name$="-DELETE"]');
-                                if (deleteInput) {
-                                    deleteInput.checked = true;
-                                    row.style.display = 'none';
-                                }
-                            });
-                        }
-            
-                        // Procesar cada detalle del remito
-                        data.detalles.forEach(detalle => {
-                            const currentIndex = formsetContainer.querySelectorAll('.detalle-form tbody tr:not([style*="display: none"])').length;
-            
-                            // Convertir los datos del remito al formato esperado por el template
-                            const producto = {
-                                id: detalle.id_producto || 0, // Puede no estar disponible en el remito
-                                medida: '', // No viene en la respuesta, se puede dejar vacío
-                                nombre: detalle.producto_venta,
-                                precio: detalle.precio,
-                                descuentoVendedor: 0, // Asumimos 0 para remitos
-                                alicuotaIva: 21 // Valor por defecto, ajustar según necesidad
-                            };
-            
-                            // Cálculos iniciales (similar al código original)
-                            const precioListaOriginal = parseFloat(producto.precio);
-                            const descVendedor = 0; // Sin descuento para remitos
-                            const precioConDescuento = precioListaOriginal * (1 - (descVendedor / 100));
-                            const precioFinal = parseFloat(precioConDescuento.toFixed(2));
-                            const cantidad = parseFloat(detalle.cantidad) || 1.00;
-                            const montoTotal = precioConDescuento * cantidad;
-                            const gravado = (montoTotal / (1 + (producto.alicuotaIva / 100))).toFixed(2);
-                            const iva = (montoTotal - gravado).toFixed(2);
-                            const valorPorDefecto = document.getElementById('id_tipo_venta')?.value || "M";
-            
-                            // Crear y insertar la fila (similar al código original)
-                            const newFormHTML = `
-                            <tr data-form-index="${currentIndex}" class="small-font">
-                                <input type="hidden" name="detallefactura_set-${currentIndex}-id_detalle_factura" 
-                                    id="id_detallefactura_set-${currentIndex}-id_detalle_factura" value="${detalle.id_detalle_factura || ''}">
-                                <input type="hidden" name="detallefactura_set-${currentIndex}-id_factura" 
-                                    id="id_detallefactura_set-${currentIndex}-id_factura">
-                                <input type="hidden" name="detallefactura_set-${currentIndex}-id_producto" 
-                                    id="id_detallefactura_set-${currentIndex}-id_producto" value="${producto.id}">
-                                <input type="hidden" name="detallefactura_set-${currentIndex}-precio_lista" 
-                                    id="id_detallefactura_set-${currentIndex}-precio_lista" 
-                                    value="${precioListaOriginal}"
-                                    data-original="${precioListaOriginal}" 
-                                    oninput="this.value=this.dataset.original">
-                                <input type="hidden" name="detallefactura_set-${currentIndex}-desc_vendedor" 
-                                    id="id_detallefactura_set-${currentIndex}-desc_vendedor" value="${descVendedor}">
-                                <td>
-                                    <input type="text" name="detallefactura_set-${currentIndex}-medida" 
-                                        class="form-control form-control-sm border border-primary" value="${producto.medida}" readonly>
-                                </td>
-                                <td>
-                                    <input type="text" name="detallefactura_set-${currentIndex}-producto_venta" 
-                                        class="form-control form-control-sm border border-primary" value="${producto.nombre}" readonly>
-                                </td>
-                                <td>
-                                    <input type="number" name="detallefactura_set-${currentIndex}-cantidad" 
-                                        class="form-control form-control-sm border border-primary text-end" 
-                                        value="${cantidad}" min="1" step="1" required>
-                                </td>
-                                <td>
-                                    <select name="detallefactura_set-${currentIndex}-reventa" class="form-control form-control-sm border border-primary" required>
-                                        <option value="M" ${valorPorDefecto === "M" ? "selected" : ""}>M</option>
-                                        <option value="R" ${valorPorDefecto === "R" ? "selected" : ""}>R</option>
-                                        <option value="E" ${valorPorDefecto === "E" ? "selected" : ""}>E</option>
-                                    </select>
-                                </td>
-                                <td>
-                                    <input type="number" name="detallefactura_set-${currentIndex}-precio" 
-                                        class="form-control form-control-sm border border-primary text-end" 
-                                        value="${precioFinal}" min="0" step="0.1">
-                                </td>
-                                <td>
-                                    <input type="number" name="detallefactura_set-${currentIndex}-descuento" 
-                                        class="form-control form-control-sm border border-primary text-end" 
-                                        value="${detalle.descuento || 0}" step="0.1" min="0">
-                                </td>
-                                <input type="hidden" name="detallefactura_set-${currentIndex}-gravado" value="${gravado}">
-                                <input type="hidden" name="detallefactura_set-${currentIndex}-alic_iva" value="${producto.alicuotaIva}">
-                                <input type="hidden" name="detallefactura_set-${currentIndex}-iva" value="${iva}">
-                                <td>
-                                    <input type="number" name="detallefactura_set-${currentIndex}-total" 
-                                        class="form-control form-control-sm border border-primary text-end" 
-                                        value="${montoTotal.toFixed(2)}" readonly>
-                                </td>
-                                <td>
-                                    <button type="button" class="btn btn-danger btn-sm btn-delete" data-form-index="${currentIndex}">
-                                        <i class="bi bi-trash"></i>
-                                    </button>
-                                    <input type="checkbox" name="detallefactura_set-${currentIndex}-DELETE" style="display: none;">
-                                </td>
-                            </tr>`;
-            
-                            formsetContainer.querySelector('.detalle-form tbody').insertAdjacentHTML('beforeend', newFormHTML);
-                            
-                            // Actualizar totales generales
-                            actualizarTotalFactura();
-                        });
-            
-                        // Actualizar el contador de formsets
-                        document.querySelector('[name$="TOTAL_FORMS"]').value = 
-                            formsetContainer.querySelectorAll('.detalle-form tbody tr:not([style*="display: none"])').length;
-            
-                        alert(`Se cargaron ${data.detalles.length} ítems del remito ${valor}`);
-                    } else {
-                        alert("El remito existe pero no tiene detalles asociados");
-                    }
-                    //
-                })
-                .catch(error => {
-                    console.error('Error al verificar remito:', error);
-                    alert("Error al conectar con el servidor");
-                });
-
-            });
-            //
+            /////
 
         });
     </script>

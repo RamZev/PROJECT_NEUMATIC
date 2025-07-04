@@ -279,6 +279,7 @@ def datos_comprobante(request, pk):
     
 
 # Obtener número de comprobante
+@require_GET
 def obtener_numero_comprobante(request):
     # Obtener parámetros de la solicitud
     id_sucursal = request.GET.get('id_sucursal')
@@ -626,6 +627,7 @@ def validar_deudas_cliente(request, cliente_id):
 
 
 # Obtener número de comprobante: caso si letra de comprobante previo
+@require_GET
 def obtener_numero_comprobante2(request):
     # Obtener parámetros de la solicitud
     id_sucursal = request.GET.get('id_sucursal')
@@ -720,3 +722,15 @@ def buscar_codigo_banco(request):
         })
     except Banco.DoesNotExist:
         return JsonResponse({'success': False, 'error': 'Banco no encontrado'})
+
+
+@require_GET
+def obtener_libro_iva(request):
+    id_comprobante = request.GET.get('id')
+    try:
+        comprobante = ComprobanteVenta.objects.get(pk=id_comprobante)
+        print('libro_iva', comprobante.libro_iva)
+        return JsonResponse({'libro_iva': comprobante.libro_iva})
+    except ComprobanteVenta.DoesNotExist:
+        return JsonResponse({'error': 'No encontrado'}, status=404)
+
