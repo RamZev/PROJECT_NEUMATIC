@@ -151,48 +151,40 @@ class GeneraPDFView(View):
 		
 		
 		#-- Dibujar recuadro para Documentos de Crédito Electrónicos (FCE) -----------------------------------
-		c.setFont("Helvetica-Bold", 8)
-		box_heigth = 6*mm
-		y_box = y_header_top - box_heigth - 1*mm
-		
 		doc_fce = ("fc", "ft", "ce", "de" )
 		if factura.compro.lower() in doc_fce:
-			c.rect(margin, y_box, width - 2*margin, box_heigth)
-			c.drawString(x_text_left, y_box + 2*mm, f"Fecha de Vencimiento para el pago: {factura.fecha_comprobante.strftime("%d/%m/%Y")}")
-			
-			c.drawString(x_text_right, y_box + 2*mm, f"CBU del Emisor: {empresa.cbu}")
-			
-			y_box = y_box - box_heigth - 1*mm
-			y_text_left -= 7*mm
+			pass
+		
 		
 		#-- Dibujar recuadro Condición de Venta. -------------------------------------------------------------
-		c.rect(margin, y_box, width - 2*margin, box_heigth)
-		c.drawString(x_text_left, y_box + 2*mm, f"Condición de Venta: {factura.condicion_venta}")
+		c.setFont("Helvetica-Bold", 8)
+		condition_box_heigth = 6*mm
+		y_condition_box = y_header_top - condition_box_heigth - 1*mm
+		c.rect(margin, y_condition_box, width - 2*margin, condition_box_heigth)
+		c.drawString(x_text_left, y_condition_box + 2*mm, f"Condición de Venta: {factura.condicion_venta}")
 		
 		#-- Si es Factura Remito/FCE MIPYME.
 		fac_rto = ("fr", "ft")
 		nd_nc = ("cf", "df")
 		if factura.compro.lower() in fac_rto:
-			c.drawString(x_text_right, y_box + 2*mm, f"REMITO: {factura.comprobante_remito} {factura.remito}")
+			c.drawString(x_text_right, y_condition_box + 2*mm, f"REMITO: {factura.comprobante_remito} {factura.remito}")
 		
 		#-- Si es Nota de Crédito/Débito.
 		elif factura.compro.lower() in nd_nc:
-			c.drawString(x_text_right, y_box + 2*mm, f"FACTURA: {factura.compro_letra_numero_asociado_formateado}")
+			c.drawString(x_text_right, y_condition_box + 2*mm, f"FACTURA: {factura.compro_letra_numero_asociado_formateado}")
 		
 		c.setFont("Helvetica", 8)
 		
 		
 		#-- Dibujar recuadro Datos del Cliente. --------------------------------------------------------------
-		box_heigth = 15*mm
-		y_box = y_box - box_heigth - 1*mm
-		c.rect(margin, y_box, width - 2*margin, box_heigth)
+		cliente_box_heigth = 15*mm
+		y_client_box = y_header_top - condition_box_heigth - cliente_box_heigth - 2*mm
+		c.rect(margin, y_client_box, width - 2*margin, cliente_box_heigth)
 		
 		x_data_left = x_text_left + 10*mm
-		x_text_right = 92*mm
-		x_data_right = x_text_right + 1*mm
-		
+		x_text_right = 55*mm
+		x_data_right = x_text_right + 37*mm
 		y_text_left -= 14*mm
-		
 		
 		
 		c.setFont("Helvetica-Bold", 8)
@@ -200,9 +192,9 @@ class GeneraPDFView(View):
 		c.setFont("Helvetica", 8)
 		c.drawString(x_data_left, y_text_left, f": {cliente.id_cliente}")
 		c.setFont("Helvetica-Bold", 8)
-		c.drawRightString(x_text_right, y_text_left, "Ap. y Nombre/Razón Social:")
+		c.drawString(x_text_right, y_text_left, "Ap. y Nombre/Razón Social")
 		c.setFont("Helvetica", 8)
-		c.drawString(x_data_right, y_text_left, f" {cliente.nombre_cliente}")
+		c.drawString(x_data_right, y_text_left, f": {cliente.nombre_cliente}")
 		
 		y_text_left -= 4*mm
 		c.setFont("Helvetica-Bold", 8)
@@ -210,9 +202,9 @@ class GeneraPDFView(View):
 		c.setFont("Helvetica", 8)
 		c.drawString(x_data_left, y_text_left, f": {cliente.id_tipo_iva.nombre_iva if cliente.id_tipo_iva else ''}")
 		c.setFont("Helvetica-Bold", 8)
-		c.drawRightString(x_text_right, y_text_left, "Domicilio:")
+		c.drawString(x_text_right + 20*mm, y_text_left, "Domicilio")
 		c.setFont("Helvetica", 8)
-		c.drawString(x_data_right, y_text_left, f" {cliente.domicilio_cliente}")
+		c.drawString(x_data_right, y_text_left, f": {cliente.domicilio_cliente}")
 		
 		y_text_left -= 4*mm
 		c.setFont("Helvetica-Bold", 8)
@@ -220,9 +212,9 @@ class GeneraPDFView(View):
 		c.setFont("Helvetica", 8)
 		c.drawString(x_data_left, y_text_left, f": {cliente.cuit_formateado}")
 		c.setFont("Helvetica-Bold", 8)
-		c.drawRightString(x_text_right, y_text_left, "Localidad:")
+		c.drawString(x_text_right + 20*mm, y_text_left, "Localidad")
 		c.setFont("Helvetica", 8)
-		c.drawString(x_data_right, y_text_left, f" {cliente.id_localidad} - {cliente.id_provincia}")
+		c.drawString(x_data_right, y_text_left, f": {cliente.id_localidad} - {cliente.id_provincia}")
 		
 		
 		#-- Imprimir el detalle del comprobante. -------------------------------------------------------------
@@ -382,8 +374,7 @@ class GeneraPDFView(View):
 		tabla = Table(detail_data, colWidths=col_widths, style=table_style, repeatRows=1)
 		
 		#-- Dibujar tabla.
-		# y_table = y_client_box - 1*mm  # posición fija debajo del recuadro cliente
-		y_table = y_box - 1*mm  # posición fija debajo del recuadro cliente
+		y_table = y_client_box - 1*mm  # posición fija debajo del recuadro cliente
 		tabla.wrapOn(c, width - 2*margin, height)
 		tabla.drawOn(c, margin, y_table - tabla._height)
 		

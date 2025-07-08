@@ -40,7 +40,7 @@ class Cliente(ModeloBaseGenerico):
 	id_tipo_documento_identidad = models.ForeignKey(TipoDocumentoIdentidad, 
 										on_delete=models.PROTECT, 
 										verbose_name="Tipo Doc. Identidad*")
-	cuit = models.IntegerField("CUIT", null=True, blank=True)
+	cuit = models.IntegerField("Número doc.*", null=True, blank=True)
 	condicion_venta = models.IntegerField("Condición Venta*", 
 										  default=True,
 										  choices=CONDICION_VENTA)
@@ -113,11 +113,17 @@ class Cliente(ModeloBaseGenerico):
 		movil_cliente_str = str(self.movil_cliente) if self.movil_cliente else ''
 		sub_cuenta_str = str(self.sub_cuenta) if self.sub_cuenta else ''
 		
-		try:
-			validar_cuit(self.cuit)
-		except ValidationError as e:
-			#-- Agrego el error al dicciobario errors.
-			errors['cuit'] = e.messages
+		if getattr(self, 'id_tipo_documento_identidad', None) is not None:
+			nombre_doc = self.id_tipo_documento_identidad.nombre_documento_identidad.lower()
+			if nombre_doc in ('cuit', 'cuil'):
+				try:
+					validar_cuit(self.cuit)
+				except ValidationError as e:
+					#-- Agrego el error al dicciobario errors.
+					errors['cuit'] = e.messages
+		
+		if not self.cuit:
+			errors.update({'cuit': 'Debe indicar un Número de Documento de Identidad.'})
 		
 		if not re.match(r'^\+?\d[\d ]{0,14}$', telefono_str):
 			errors.update({'telefono_cliente': 'Debe indicar sólo dígitos numéricos positivos, \
