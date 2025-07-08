@@ -52,6 +52,7 @@ class FacturaManualListView(MaestroDetalleListView):
 
 	search_fields = [
 	 'id_factura',
+	 'compro',
 	 'numero_comprobante',
 	 'cuit',
 	 'id_cliente__nombre_cliente' #separar por guión bajo doble "__"

@@ -88,9 +88,9 @@ def buscar_producto(request):
             #print("descuento:", descuento)
                 
         # Obtener alícuota IVA
-        alicuota_iva = 0
-        if producto.id_alicuota_iva:
-            alicuota_iva = producto.id_alicuota_iva.alicuota_iva
+        # alicuota_iva = 0
+        # if producto.id_alicuota_iva:
+        #     alicuota_iva = producto.id_alicuota_iva.alicuota_iva
 
         resultados.append({
             'id': producto.id_producto,
@@ -105,7 +105,7 @@ def buscar_producto(request):
             'id_familia': producto.id_familia.id_producto_familia if producto.id_familia else None,
             'descuento_vendedor': descuento,
             'id_alicuota_iva': producto.id_alicuota_iva_id if producto.id_alicuota_iva else None,
-            'alicuota_iva': alicuota_iva
+            'alicuota_iva': producto.alicuota_iva
 
         })
 
