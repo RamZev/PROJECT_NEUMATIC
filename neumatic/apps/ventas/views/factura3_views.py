@@ -6,12 +6,14 @@ from django.db.models import F
 from django.db import DatabaseError
 from django.utils import timezone
 
+import json
+
 from .msdt_views_generics import *
 from ..models.factura_models import Factura
 from ...maestros.models.numero_models import Numero
 from ..forms.factura_forms import FacturaForm, DetalleFacturaFormSet
 from ..forms.factura_forms import SerialFacturaFormSet
-from ...maestros.models.base_models import ProductoStock
+from ...maestros.models.base_models import ProductoStock, ComprobanteVenta
 from ...maestros.models.valida_models import Valida
 
 from entorno.constantes_base import TIPO_VENTA
@@ -31,10 +33,6 @@ formulario = FacturaForm
 
 template_form = f"{model_string}_form.html"
 home_view_name = "home"
-# list_view_name = f"{model_string}_list"
-# create_view_name = f"{model_string}_create"
-# update_view_name = f"{model_string}_update"
-# delete_view_name = f"{model_string}_delete"
 list_view_name = f"{model_string2}_list"
 create_view_name = f"{model_string2}_create"
 update_view_name = f"{model_string2}_update"
@@ -47,8 +45,6 @@ class PresupuestoListView(MaestroDetalleListView):
 	template_name = f"ventas/maestro_detalle_list.html"
 	context_object_name = 'objetos'
 	tipo_comprobante = 'presupuesto'  # Nuevo atributo de clase
-
-	print("Entró a la vista PresupuestoListView")
 
 	search_fields = [
 	 'id_factura',
@@ -173,7 +169,11 @@ class PresupuestoCreateView(MaestroDetalleCreateView):
 			data['formset_detalle'] = DetalleFacturaFormSet(instance=self.object)
 			data['formset_serial'] = SerialFacturaFormSet(instance=self.object)
 
-		data['is_edit'] = False  # Indicar que es una creación
+		data['is_edit'] = True  # Indicar que es una edición
+
+		# Obtener todos los comprobantes con sus valores libro_iva
+		libro_iva_dict = {str(c.id_comprobante_venta): c.libro_iva for c in ComprobanteVenta.objects.all()}
+		data['libro_iva_dict'] = json.dumps(libro_iva_dict)
 
 		return data
 
@@ -366,6 +366,11 @@ class PresupuestoUpdateView(MaestroDetalleUpdateView):
 			data['formset_serial'] = SerialFacturaFormSet(instance=self.object)
 
 		data['is_edit'] = True  # Indicar que es una edición
+
+		# Obtener todos los comprobantes con sus valores libro_iva
+		libro_iva_dict = {str(c.id_comprobante_venta): c.libro_iva for c in ComprobanteVenta.objects.all()}
+		data['libro_iva_dict'] = json.dumps(libro_iva_dict)
+
 		return data
 
 	def form_valid(self, form):

@@ -2202,71 +2202,6 @@
             
             // Mantener las funciones completarSeleccionCliente y getCookie exactamente igual que en tu versión original
 
-            ///
-            function calcularNumeroComprobante() {
-                // Obtener datos necesarios para numeración
-                const libroIvaDict = JSON.parse(document.getElementById('libroiva-data').dataset.libroiva);
-                const comprobanteId = document.getElementById('id_id_comprobante_venta').value;
-                const libroIva = libroIvaDict[comprobanteId] ?? false;
-
-                const id_sucursal = document.getElementById('id_id_sucursal').value;
-                const id_punto_venta = document.getElementById('id_id_punto_venta').value;
-                const compro = document.getElementById('id_compro').value;
-
-                // Numeración según si va al libro IVA o no
-                if (libroIva) {
-                    const isRemito = document.getElementById('id_es_remito').checked;
-                    const isChecked = document.getElementById('id_discrimina_iva').checked;
-
-                    const letra = isRemito ? 'R' : (isChecked ? 'A' : 'B');
-                    document.getElementById('id_letra_comprobante').value = letra;
-
-                    if (id_sucursal && id_punto_venta && compro && letra) {
-                        const url = new URL('/ventas/obtener-numero-comprobante/', window.location.origin);
-                        url.searchParams.append('id_sucursal', id_sucursal);
-                        url.searchParams.append('id_punto_venta', id_punto_venta);
-                        url.searchParams.append('comprobante', compro);
-                        url.searchParams.append('letra', letra);
-
-                        fetch(url)
-                            .then(response => response.json())
-                            .then(data => {
-                                if (data.success) {
-                                    document.getElementById('id_numero_comprobante').value = data.numero_referencial;
-                                    const inputDefinitivo = document.getElementById('id_numero_definitivo');
-                                    if (inputDefinitivo) {
-                                        inputDefinitivo.value = data.numero_definitivo;
-                                    }
-                                }
-                            });
-                    }
-                } else {
-                    // No va al libro IVA, letra y número vienen desde backend
-                    document.getElementById('id_letra_comprobante').value = "";
-
-                    if (id_sucursal && id_punto_venta && compro) {
-                        const url = new URL('/ventas/obtener-numero-comprobante2/', window.location.origin);
-                        url.searchParams.append('id_sucursal', id_sucursal);
-                        url.searchParams.append('id_punto_venta', id_punto_venta);
-                        url.searchParams.append('comprobante', compro);
-
-                        fetch(url)
-                            .then(response => response.json())
-                            .then(data => {
-                                if (data.success) {
-                                    document.getElementById('id_numero_comprobante').value = data.numero_referencial;
-                                    const inputDefinitivo = document.getElementById('id_numero_definitivo');
-                                    if (inputDefinitivo) {
-                                        inputDefinitivo.value = data.numero_definitivo;
-                                    }
-                                    document.getElementById('id_letra_comprobante').value = data.letra;
-                                }
-                            });
-                    }
-                }
-            }
-            ///
-            
             // Función para completar la selección del cliente (extraída del código original)
             function completarSeleccionCliente(seleccion) {
                 const id_cliente = seleccion.getAttribute('data-id');
@@ -2320,9 +2255,6 @@
                     document.getElementById('id_cliente_vip').value = "Cliente VIP" 
                 }
 
-                calcularNumeroComprobante();
-
-                /*
                 // Obtener número de comprobante (código existente)
                 const libroIvaDict = JSON.parse(document.getElementById('libroiva-data').dataset.libroiva);
                 const comprobanteId = document.getElementById('id_id_comprobante_venta').value;
@@ -2389,7 +2321,6 @@
                             });
                     }
                 }
-                */
 
                 /*
                 if (id_sucursal && id_punto_venta && compro && letra_comprobante) {
@@ -2423,128 +2354,6 @@
                 modal.hide();
             }
             
-            // Selección del Cliente desde buscar_cliente
-            ///
-            const buscarClienteInput = document.getElementById('buscar_cliente');
-    
-            buscarClienteInput.addEventListener('blur', function () {
-                let busqueda = buscarClienteInput.value.trim();
-        
-                // Si está vacío, no hacer nada
-                if (!busqueda) return;
-        
-                // Verificar que solo contenga números
-                if (!/^\d+$/.test(busqueda)) {
-                    alert("Solo se permiten valores numéricos enteros.");
-                    buscarClienteInput.value = '';
-                    buscarClienteInput.focus();
-                    return;
-                }
-        
-                // Construir la URL para la búsqueda
-                const url = new URL('/ventas/buscar/cliente/', window.location.origin);
-                url.searchParams.append('busqueda', busqueda);
-        
-                fetch(url, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.error) {
-                        alert(data.error);
-                        buscarClienteInput.value = '';
-                        buscarClienteInput.focus();
-                    } else {
-                        // Verificar primero si el cliente está en blacklist
-                        if (data.black_list) {
-                            alert(`🚨 CLIENTE EN LISTA NEGRA 🚨\nMotivo: ${data.black_list_motivo || 'No especificado'}`);
-                            buscarClienteInput.value = '';
-                            buscarClienteInput.focus();
-                            return;
-                        }
-                        
-                        // Validar vencimientos de documentos
-                        const clienteId = data.id_cliente;
-                        if (clienteId) {
-                            fetch(`/ventas/clientes/${clienteId}/validar-vencimientos/`)
-                            .then(response => response.json())
-                            .then(vencimientoData => {
-                                if (vencimientoData.requiere_autorizacion) {
-                                    // Mostrar alerta con los detalles del vencimiento
-                                    const comprobante = vencimientoData.datos_comprobante || {};
-                                    let mensaje = `⚠️ CLIENTE CON DOCUMENTO VENCIDO ⚠️\n\n`;
-                                    mensaje += `Comprobante: ${comprobante.tipo_comprobante || 'N/A'}\n`;
-                                    mensaje += `Número: ${comprobante.numero_comprobante || 'N/A'}\n`;
-                                    mensaje += `Fecha Emisión: ${comprobante.fecha_comprobante || 'N/A'}\n`;
-                                    mensaje += `Días Vencidos: ${comprobante.dias_vencidos || 0}\n`;
-                                    mensaje += `Monto Pendiente: $${(comprobante.monto_pendiente || 0).toLocaleString('es-AR')}\n\n`;
-                                    mensaje += `Contacte a un supervisor para autorización.`;
-                                    
-                                    alert(mensaje);
-                                    buscarClienteInput.value = '';
-                                    buscarClienteInput.focus();
-                                    return;
-                                } else {
-                                    // Continuar con el flujo normal si no hay vencimientos
-                                    completarDatosCliente(data);
-                                }
-                            })
-                            .catch(error => {
-                                console.error('Error validando vencimientos:', error);
-                                // Continuar con el flujo normal si hay error en la validación
-                                completarDatosCliente(data);
-                            });
-                        } else {
-                            completarDatosCliente(data);
-                        }
-                    }
-                })
-                .catch(error => {
-                    console.error('Error en la búsqueda:', error);
-                    alert("Hubo un error en la búsqueda.");
-                });
-    
-                ///
-                // buscar_cliente
-                ///
-                
-                // Función para completar los datos del cliente (extraída para reutilización)
-                function completarDatosCliente(data) {
-                    document.getElementById('id_id_cliente').value = data.id_cliente || '';
-                    document.getElementById('id_nombre_factura').value = data.nombre || '';
-                    document.getElementById('id_domicilio_factura').value = data.direccion || '';
-                    document.getElementById('id_cuit').value = data.cuit || '';
-                    document.getElementById('id_movil_factura').value = data.movil || '';
-                    document.getElementById('id_email_factura').value = data.email || '';
-                    document.getElementById('id_id_vendedor').value = data.id_vendedor || '';
-                    document.getElementById('id_vendedor_factura').value = data.nombre_vendedor || '';
-    
-                    // Verificación de sucursal
-                    const id_sucursal_factura = document.getElementById('id_id_sucursal').value;
-                    if (data.id_sucursal !== id_sucursal_factura) {
-                        alert('Atención: El cliente pertenece a otra sucursal.');
-                    }
-    
-                    // Verificación VIP
-                    if (data.vip) {
-                        alert("⚠️ Este es un Cliente VIP - Trato Especial ⚠️");
-                        document.getElementById('id_cliente_vip').value = "Cliente VIP"; 
-                    }
-    
-                    // Deshabilitar botones
-                    document.getElementById('listar_agenda').disabled = true;
-                    document.getElementById('buscar_cliente').disabled = true;
-
-                    ///
-                    calcularNumeroComprobante();
-                    ///
-                }
-            });
-            ///
-
             // Función auxiliar para obtener el token CSRF
             function getCookie(name) {
                 let cookieValue = null;
@@ -2782,7 +2591,6 @@
     </script>
 
     <script>
-        /*
         document.addEventListener('DOMContentLoaded', function () {
             const buscarClienteInput = document.getElementById('buscar_cliente');
     
@@ -2895,7 +2703,6 @@
                 }
             });
         });
-        */
     </script>
 
     <script>

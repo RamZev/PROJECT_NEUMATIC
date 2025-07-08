@@ -6,12 +6,14 @@ from django.db.models import F
 from django.db import DatabaseError
 from django.utils import timezone
 
+import json
+
 from .msdt_views_generics import *
 from ..models.factura_models import Factura
 from ...maestros.models.numero_models import Numero
 from ..forms.factura_forms import FacturaForm, DetalleFacturaFormSet
 from ..forms.factura_forms import SerialFacturaFormSet
-from ...maestros.models.base_models import ProductoStock
+from ...maestros.models.base_models import ProductoStock, ComprobanteVenta
 from ...maestros.models.valida_models import Valida
 
 from entorno.constantes_base import TIPO_VENTA
@@ -47,8 +49,6 @@ class FacturaManualListView(MaestroDetalleListView):
 	template_name = f"ventas/maestro_detalle_list.html"
 	context_object_name = 'objetos'
 	tipo_comprobante = 'manual'  # Nuevo atributo de clase
-
-	print("Entró a la vista FacturaManualListView")
 
 	search_fields = [
 	 'id_factura',
@@ -175,6 +175,10 @@ class FacturaManualCreateView(MaestroDetalleCreateView):
 			data['formset_serial'] = SerialFacturaFormSet(instance=self.object)
 
 		data['is_edit'] = False  # Indicar que es una creación
+
+		# Obtener todos los comprobantes con sus valores libro_iva
+		libro_iva_dict = {str(c.id_comprobante_venta): c.libro_iva for c in ComprobanteVenta.objects.all()}
+		data['libro_iva_dict'] = json.dumps(libro_iva_dict)
 
 		return data
 
@@ -367,7 +371,13 @@ class FacturaManualUpdateView(MaestroDetalleUpdateView):
 			data['formset_serial'] = SerialFacturaFormSet(instance=self.object)
 
 		data['is_edit'] = True  # Indicar que es una edición
+
+		# Obtener todos los comprobantes con sus valores libro_iva
+		libro_iva_dict = {str(c.id_comprobante_venta): c.libro_iva for c in ComprobanteVenta.objects.all()}
+		data['libro_iva_dict'] = json.dumps(libro_iva_dict)
+
 		return data
+		
 
 	def form_valid(self, form):
 		context = self.get_context_data()

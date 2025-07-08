@@ -65,6 +65,25 @@
                         </div>
                     </a>
                 </div>
+
+                <!-- Consulta de Facturas por Cliente    -->
+                <div class="col-xl-1 col-md-3 text-center">
+                    <a href="{% url 'consulta_facturas_cliente' %}" class="text-decoration-none" title="Consulta de Facturas por Cliente">
+                        <div class="p-2 rounded-3 border border-primary hover-shadow" style="--bs-border-opacity: 0.5; height: 60px; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-search-dollar fs-4 text-danger"></i>
+                        </div>
+                    </a>
+                </div>
+                
+                <!-- Consulta de Productos Stock    -->
+                <div class="col-xl-1 col-md-3 text-center">
+                    <a href="{% url 'consulta_productos_stock' %}" class="text-decoration-none" title="Consulta de Productos Stock">
+                        <div class="p-2 rounded-3 border border-primary hover-shadow" style="--bs-border-opacity: 0.5; height: 60px; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-boxes fs-4 text-danger"></i>
+                        </div>
+                    </a>
+                </div>
+
             </div>
             {% comment %} Accesos Directos End {% endcomment %}
             

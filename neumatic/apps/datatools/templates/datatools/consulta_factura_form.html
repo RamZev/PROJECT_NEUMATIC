@@ -1,0 +1,158 @@
+{% extends 'datatool_form.html' %}
+{% load static %}
+{% load datatools_tags %}
+{% load custom_tags %}
+
+{% block style %}
+	body {
+		background-color: rgb(0, 204, 255);
+	}
+	
+	.tbl-container {
+		
+	}
+	
+	.tbl-fixed {
+		overflow-x: scroll;
+		overflow-y: scroll;
+		height: fit-content;
+		max-height: 60vh;
+		margin-top: 0px;
+		font-size: 80%;
+	}
+	table {
+		min-width: max-content;
+	}
+	table th {
+		position: sticky;
+		top: 0px;
+	}
+	
+	.decimal {
+		text-align: right;
+		font-familily: monospace;
+	}
+{% endblock style %}
+
+{% block maincomponent %}
+	{% block principalcomponent %}
+		<div id="layoutSidenav_content">
+			<main>
+				<div class="container-fluid">
+				<h4>Buscar Facturas por Cliente</h4>
+				
+				<!-- Formulario de búsqueda -->
+				<form method="get" class="row g-3 mb-4">
+					<div class="col-md-4">
+						<input type="text" name="buscar_por" class="form-control" placeholder="ID Cliente o RUC" value="{{ request.GET.buscar_por }}">
+					</div>
+					<div class="col-md-2">
+						<button type="submit" class="btn btn-primary">
+							<i class="bi bi-search"></i> Buscar
+						</button>
+					</div>
+				</form>
+
+				<!-- Tabla de facturas -->
+				<div class="table-responsive">
+					<table class="table table-bordered table-striped">
+					<thead class="table-primary">
+						<tr>
+						<th>ID</th>
+						<th>Documento</th>
+						<th>Comp.</th>
+						<th>Letra</th>
+						<th>Número</th>
+						<th>Fecha</th>
+						<th>Cliente</th>
+						<th>Total</th>
+						<th>Detalles</th>
+						</tr>
+					</thead>
+					<tbody>
+						{% for factura in facturas %}
+						<tr>
+							<td>{{ factura.id_factura }}</td>
+							<td>{{ factura.id_comprobante_venta }}</td>
+							<td>{{ factura.compro }}</td>
+							<td>{{ factura.letra_comprobante }}</td>
+							<td>{{ factura.numero_comprobante }}</td>
+							<td>{{ factura.fecha_comprobante|date:"d/m/Y" }}</td>
+							<td>{{ factura.nombre_factura }}</td>
+							<td class="decimal"><strong>{{ factura.total|formato_es_ar }}</strong></td>
+							<td>
+							<button class="btn btn-sm btn-outline-info" type="button" data-bs-toggle="collapse" data-bs-target="#detalles{{ factura.id_factura }}">
+								<i class="bi bi-eye"></i> Ver
+							</button>
+							</td>
+						</tr>
+						<tr class="collapse" id="detalles{{ factura.id_factura }}">
+							<td colspan="5">
+							<div class="table-responsive mt-2">
+								<table class="table table-sm table-bordered">
+								<thead class="table-primary">
+									<tr>
+									<th>Producto</th>
+									<th>Cantidad</th>
+									<th>Precio Unitario</th>
+									<th>Subtotal</th>
+									</tr>
+								</thead>
+								<tbody>
+									{% for detalle in detalles_factura|get_item:factura.id_factura %}
+										<tr>
+										<td>{{ detalle.producto_venta }}</td>
+										<td class="decimal">{{ detalle.cantidad|formato_es_ar }}</td>
+										<td class="decimal">{{ detalle.precio|formato_es_ar }}</td>
+										<td class="decimal"><strong>{{ detalle.total|formato_es_ar }}</strong></td>
+										</tr>
+									{% empty %}
+										<tr><td colspan="4">No hay detalles para esta factura.</td></tr>
+									{% endfor %}
+								</tbody>
+								</table>
+							</div>
+							</td>
+						</tr>
+						{% empty %}
+						<tr><td colspan="5">No se encontraron facturas para este cliente.</td></tr>
+						{% endfor %}
+					</tbody>
+					</table>
+
+					{% if page_obj.has_other_pages %}
+					<nav aria-label="Paginación">
+						<ul class="pagination justify-content-center">
+							{% if page_obj.has_previous %}
+							<li class="page-item">
+								<a class="page-link" href="?buscar_por={{ buscar_por }}&page=1">&laquo; Primero</a>
+							</li>
+							<li class="page-item">
+								<a class="page-link" href="?buscar_por={{ buscar_por }}&page={{ page_obj.previous_page_number }}">Anterior</a>
+							</li>
+							{% else %}
+							<li class="page-item disabled"><span class="page-link">Anterior</span></li>
+							{% endif %}
+
+							<li class="page-item disabled"><span class="page-link">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span></li>
+
+							{% if page_obj.has_next %}
+							<li class="page-item">
+								<a class="page-link" href="?buscar_por={{ buscar_por }}&page={{ page_obj.next_page_number }}">Siguiente</a>
+							</li>
+							<li class="page-item">
+								<a class="page-link" href="?buscar_por={{ buscar_por }}&page={{ page_obj.paginator.num_pages }}">Última &raquo;</a>
+							</li>
+							{% else %}
+							<li class="page-item disabled"><span class="page-link">Siguiente</span></li>
+							{% endif %}
+						</ul>
+					</nav>
+					{% endif %}
+
+				</div>
+				</div>
+			</main>
+		</div>
+	{% endblock principalcomponent %}
+{% endblock maincomponent %}
