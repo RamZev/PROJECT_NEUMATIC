@@ -3,7 +3,7 @@ from django.views import View
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.conf import settings
-from datetime import date
+from datetime import date, timedelta
 
 # from pathlib import Path
 from os import path
@@ -158,7 +158,11 @@ class GeneraPDFView(View):
 		doc_fce = ("fc", "ft", "ce", "de" )
 		if factura.compro.lower() in doc_fce:
 			c.rect(margin, y_box, width - 2*margin, box_heigth)
-			c.drawString(x_text_left, y_box + 2*mm, f"Fecha de Vencimiento para el pago: {factura.fecha_comprobante.strftime("%d/%m/%Y")}")
+			fecha_vcto = ""
+			if factura.fecha_comprobante and empresa.dias_vencimiento:
+				fecha_vcto = (factura.fecha_comprobante + timedelta(days=empresa.dias_vencimiento)).strftime("%d/%m/%Y")
+			
+			c.drawString(x_text_left, y_box + 2*mm, f"Fecha de Vencimiento para el pago: {fecha_vcto}")
 			
 			c.drawString(x_text_right, y_box + 2*mm, f"CBU del Emisor: {empresa.cbu}")
 			
@@ -556,7 +560,8 @@ class GeneraPDFView(View):
 		
 		buffer.seek(0)
 		response = HttpResponse(buffer, content_type='application/pdf')
-		response['Content-Disposition'] = f'inline; filename="factura_{factura.numero_comprobante}.pdf"'
+		# response['Content-Disposition'] = f'inline; filename="factura_{factura.numero_comprobante}.pdf"'
+		response['Content-Disposition'] = f'inline; filename="{factura.compro_letra_numero_comprobante_formateado}.pdf"'
 		return response
 	
 	def generar_pdf_recibo(self, request, pk):
