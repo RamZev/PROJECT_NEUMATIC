@@ -169,7 +169,7 @@ class FacturaCreateView(MaestroDetalleCreateView):
 			data['formset_detalle'] = DetalleFacturaFormSet(instance=self.object)
 			data['formset_serial'] = SerialFacturaFormSet(instance=self.object)
 
-		data['is_edit'] = True  # Indicar que es una edición
+		data['is_edit'] = False  # Indicar que es una edición
 
 		# Obtener todos los comprobantes con sus valores libro_iva
 		libro_iva_dict = {str(c.id_comprobante_venta): c.libro_iva for c in ComprobanteVenta.objects.all()}
