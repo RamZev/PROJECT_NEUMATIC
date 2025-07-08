@@ -885,3 +885,33 @@ class MarketingOrigen(ModeloBaseGenerico):
 			raise ValidationError(errors)
 		
 		return super().clean()
+
+
+class Leyenda(ModeloBaseGenerico):
+	id_leyenda = models.AutoField(
+		primary_key=True
+	)
+	estatus_leyenda = models.BooleanField(
+		"Estatus",
+		default=True,
+		choices=ESTATUS_GEN
+	)
+	nombre_leyenda = models.CharField(
+		"Nombre",
+		max_length=30,
+		null=True, blank=True
+	)
+	leyenda = models.CharField(
+		"Leyenda",
+		max_length=250,
+		null=True, blank=True
+	)
+	
+	class Meta:
+		db_table = 'leyenda'
+		verbose_name = 'Leyenda'
+		verbose_name_plural = 'Leyendas'
+		ordering = ['nombre_leyenda']
+	
+	def __str__(self):
+		return self.nombre_leyenda

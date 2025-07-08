@@ -85,6 +85,26 @@ class Factura(ModeloBaseGenerico):
 		null=True,
 		blank=True
 	)
+	comprobante_asociado = models.CharField(
+		verbose_name="Comp. Asociado",
+		max_length=2,
+		default="",
+		null=True,
+		blank=True
+	)
+	letra_asociado = models.CharField(
+		verbose_name="Letra",
+		max_length=1,
+		default="",
+		null=True,
+		blank=True
+	)
+	numero_asociado = models.CharField(
+		verbose_name="Número Asoc.",
+		max_length=15,
+		null=True,
+		blank=True
+	)
 	fecha_comprobante = models.DateField(
 		verbose_name="Fecha Emisión",
 		null=True,
@@ -301,14 +321,31 @@ class Factura(ModeloBaseGenerico):
 	def numero_comprobante_formateado(self):
 		numero = str(self.numero_comprobante).strip().zfill(12)
 		return f"{numero[:4]}-{numero[4:]}"
-
+	
 	@property
 	def letra_numero_comprobante_formateado(self):
 		return f"{self.letra_comprobante}-{self.numero_comprobante_formateado}"
-
+	
 	@property
 	def compro_letra_numero_comprobante_formateado(self):
 		return f"{self.compro} {self.letra_comprobante} {self.numero_comprobante_formateado}"
+	
+	@property
+	def numero_asociado_formateado(self):
+		numero = ""
+		if self.numero_asociado:
+			numero = str(self.numero_asociado).strip().zfill(12)
+			numero = f"{numero[:4]}-{numero[4:]}"
+		return numero
+	
+	@property
+	def letra_numero_asociado_formateado(self):
+		return f"{self.letra_asociado}-{self.numero_asociado_formateado}" if self.numero_asociado_formateado else ""
+	
+	@property
+	def compro_letra_numero_asociado_formateado(self):
+		compro = f"{self.comprobante_asociado} {self.letra_asociado} {self.numero_asociado_formateado}" if self.numero_asociado_formateado else ""
+		return compro
 
 
 class DetalleFactura(ModeloBaseGenerico):
