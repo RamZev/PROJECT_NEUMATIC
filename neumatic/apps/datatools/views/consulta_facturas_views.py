@@ -3,6 +3,7 @@ from django.views.generic import TemplateView
 from django.db.models import Q, Sum
 from django.shortcuts import render
 from django.core.paginator import Paginator
+from django.utils import timezone
 
 from apps.maestros.models.cliente_models import Cliente
 from apps.ventas.models.factura_models import Factura, DetalleFactura
@@ -91,6 +92,10 @@ class ConsultaFacturasClienteView(TemplateView):
             'buscar_por': buscar_por,
             'error': error,
         })
+
+        context['fecha'] = timezone.now()
+        print(context)
+
         return context
     
     def get(self, request, *args, **kwargs):
@@ -144,8 +149,11 @@ class ConsultaProductosView(TemplateView):
                     total_stock=Sum('productostock__stock')
                 ).filter(total_stock__gt=0)
             
+            # Agregar ordenamiento explícito
+            productos = productos.order_by('nombre_producto')
+            
             # Paginación
-            paginator = Paginator(productos, 15)  # 15 productos por página
+            paginator = Paginator(productos, 10)  # 15 productos por página
             page_number = self.request.GET.get('page')
             page_obj = paginator.get_page(page_number)
             
@@ -194,5 +202,8 @@ class ConsultaProductosView(TemplateView):
             'filtro_marca': filtro_marca,
             'error': error,
         })
+
+        context['fecha'] = timezone.now()
+
         return context
 

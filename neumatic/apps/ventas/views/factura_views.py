@@ -231,25 +231,25 @@ class FacturaCreateView(MaestroDetalleCreateView):
 
 				# 5. ACTUALIZACIÓN DEL DOCUMENTO ASOCIADO (PARTE CLAVE)
 				if comprobante_venta.pendiente:
-						try:
-							# Buscar el documento asociado (remito) con estado NULL o vacío
-							documento_asociado = Factura.objects.filter(
-									Q(compro=form.cleaned_data['comprobante_remito']) &
-									Q(numero_comprobante=form.cleaned_data['remito']) &
-									(Q(estado="") | Q(estado__isnull=True))
-							).select_for_update().first()
-							
-							if documento_asociado:
-									# Actualización directa y eficiente
-									Factura.objects.filter(pk=documento_asociado.pk).update(
-											estado="F"
-									)
-									print(f"Documento {documento_asociado.compro}-{documento_asociado.numero_comprobante} actualizado a estado 'F'")
-							else:
-									print("Advertencia: No se encontró el documento asociado para actualizar")
-						except Exception as e:
-							print(f"Error al actualizar documento asociado: {str(e)}")
-							# No hacemos return para no impedir la creación de la factura principal
+					try:
+						# Buscar el documento asociado (remito) con estado NULL o vacío
+						documento_asociado = Factura.objects.filter(
+								Q(compro=form.cleaned_data['comprobante_remito']) &
+								Q(numero_comprobante=form.cleaned_data['remito']) &
+								(Q(estado="") | Q(estado__isnull=True))
+						).select_for_update().first()
+						
+						if documento_asociado:
+								# Actualización directa y eficiente
+								Factura.objects.filter(pk=documento_asociado.pk).update(
+										estado="F"
+								)
+								print(f"Documento {documento_asociado.compro}-{documento_asociado.numero_comprobante} actualizado a estado 'F'")
+						else:
+								print("Advertencia: No se encontró el documento asociado para actualizar")
+					except Exception as e:
+						print(f"Error al actualizar documento asociado: {str(e)}")
+						# No hacemos return para no impedir la creación de la factura principal
 
 				# 6. ACTUALIZACIÓN DE LA AUTORIZACIÓN (NUEVO)
 				if form.cleaned_data.get('id_valida'):  # Si tiene autorización asociada

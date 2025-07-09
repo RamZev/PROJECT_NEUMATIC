@@ -18,147 +18,149 @@
 {% endblock style %}
 
 {% block maincomponent %}
-<div id="layoutSidenav_content">
-    <main>
-        <div class="container-fluid">
-            <h4>Consulta de Productos</h4>
-            
-            <!-- Formulario de búsqueda -->
-            <form method="get" class="row g-3 mb-4">
-                <div class="col-md-3">
-                    <input type="text" name="medida" class="form-control" 
-                           placeholder="Medida" value="{{ medida }}">
-                </div>
-                <div class="col-md-4">
-                    <input type="text" name="nombre" class="form-control" 
-                           placeholder="Nombre" value="{{ nombre }}">
-                </div>
-                <div class="col-md-3">
-                    <input type="text" name="cai" class="form-control" 
-                           placeholder="CAI" value="{{ cai }}">
-                </div>
-                <div class="col-md-2">
-                    <button type="submit" class="btn btn-primary">
-                        <i class="bi bi-search"></i> Buscar
-                    </button>
-                </div>
-                
-                <!-- Filtros de marca -->
-                <div class="col-md-12">
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="filtro_marca" 
-                               id="filtro_primeras" value="primeras" 
-                               {% if filtro_marca == 'primeras' %}checked{% endif %}>
-                        <label class="form-check-label" for="filtro_primeras">Primeras Marcas</label>
-                    </div>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="filtro_marca" 
-                               id="filtro_otras" value="otras" 
-                               {% if filtro_marca == 'otras' %}checked{% endif %}>
-                        <label class="form-check-label" for="filtro_otras">Otras Marcas</label>
-                    </div>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="filtro_marca" 
-                               id="filtro_stock" value="stock" 
-                               {% if filtro_marca == 'stock' %}checked{% endif %}>
-                        <label class="form-check-label" for="filtro_stock">Solo con Stock</label>
-                    </div>
-                </div>
-            </form>
+    {% block principalcomponent %}
+        <div id="layoutSidenav_content">
+            <main>
+                <div class="container-fluid">
+                    <h4>Consulta de Productos</h4>
+                    
+                    <!-- Formulario de búsqueda -->
+                    <form method="get" class="row g-3 mb-4">
+                        <div class="col-md-3">
+                            <input type="text" name="medida" class="form-control" 
+                                placeholder="Medida" value="{{ medida }}">
+                        </div>
+                        <div class="col-md-4">
+                            <input type="text" name="nombre" class="form-control" 
+                                placeholder="Nombre" value="{{ nombre }}">
+                        </div>
+                        <div class="col-md-3">
+                            <input type="text" name="cai" class="form-control" 
+                                placeholder="CAI" value="{{ cai }}">
+                        </div>
+                        <div class="col-md-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-search"></i> Buscar
+                            </button>
+                        </div>
+                        
+                        <!-- Filtros de marca -->
+                        <div class="col-md-12">
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="filtro_marca" 
+                                    id="filtro_primeras" value="primeras" 
+                                    {% if filtro_marca == 'primeras' %}checked{% endif %}>
+                                <label class="form-check-label" for="filtro_primeras">Primeras Marcas</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="filtro_marca" 
+                                    id="filtro_otras" value="otras" 
+                                    {% if filtro_marca == 'otras' %}checked{% endif %}>
+                                <label class="form-check-label" for="filtro_otras">Otras Marcas</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="filtro_marca" 
+                                    id="filtro_stock" value="stock" 
+                                    {% if filtro_marca == 'stock' %}checked{% endif %}>
+                                <label class="form-check-label" for="filtro_stock">Solo con Stock</label>
+                            </div>
+                        </div>
+                    </form>
 
-            <!-- Resultados -->
-            <div class="table-responsive tbl-fixed">
-                <table class="table table-bordered table-striped small-text">
-                    <thead class="table-primary">
-                        <tr>
-                            <th>Marca</th>
-                            <th>Medida</th>
-                            <th>CAI</th>
-                            <th>Nombre</th>
-                            <th>Precio</th>
-                            <th>Stock Total</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for producto in productos %}
-                        <tr>
-                            <td>{{ producto.id_marca|default:"-" }}</td>
-                            <td>{{ producto.medida }}</td>
-                            <td>{{ producto.id_cai|default:"-" }}</td>
-                            <td>{{ producto.nombre_producto }}</td>
-                            <td class="decimal">{{ producto.precio|formato_es_ar }}</td>
-                            <td class="decimal">{{ stock_por_producto|get_item:producto.id_producto|get_item:'total'|default:0 }}</td>
-                            <td>
-                                <button class="btn btn-sm btn-outline-info" 
-                                        data-bs-toggle="collapse" 
-                                        data-bs-target="#detalles{{ producto.id_producto }}">
-                                    <i class="bi bi-box-seam"></i> Stock
-                                </button>
-                            </td>
-                        </tr>
-                        <tr class="collapse" id="detalles{{ producto.id_producto }}">
-                            <td colspan="4">
-                                <div class="table-responsive mt-2">
-                                    <table class="table table-sm table-bordered">
-                                        <thead class="table-primary">
-                                            <tr>
-                                                <th>Depósito</th>
-                                                <th>Stock</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {% for deposito in stock_por_producto|get_item:producto.id_producto|get_item:'por_deposito' %}
-                                            <tr>
-                                                <td>{{ deposito.deposito }}</td>
-                                                <td class="decimal">{{ deposito.stock }}</td>
-                                            </tr>
-                                            {% empty %}
-                                            <tr><td colspan="2">No hay stock registrado</td></tr>
-                                            {% endfor %}
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </td>
-                        </tr>
-                        {% empty %}
-                        <tr><td colspan="7">No se encontraron productos</td></tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
+                    <!-- Resultados -->
+                    <div class="table-responsive tbl-fixed">
+                        <table class="table table-bordered table-striped small-text">
+                            <thead class="table-primary">
+                                <tr>
+                                    <th>Marca</th>
+                                    <th>Medida</th>
+                                    <th>CAI</th>
+                                    <th>Nombre</th>
+                                    <th>Precio</th>
+                                    <th>Stock Total</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for producto in productos %}
+                                <tr>
+                                    <td>{{ producto.id_marca|default:"-" }}</td>
+                                    <td>{{ producto.medida }}</td>
+                                    <td>{{ producto.id_cai|default:"-" }}</td>
+                                    <td>{{ producto.nombre_producto }}</td>
+                                    <td class="decimal">{{ producto.precio|formato_es_ar }}</td>
+                                    <td class="decimal">{{ stock_por_producto|get_item:producto.id_producto|get_item:'total'|default:0 }}</td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-info" 
+                                                data-bs-toggle="collapse" 
+                                                data-bs-target="#detalles{{ producto.id_producto }}">
+                                            <i class="bi bi-box-seam"></i> Stock
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr class="collapse" id="detalles{{ producto.id_producto }}">
+                                    <td colspan="4">
+                                        <div class="table-responsive mt-2">
+                                            <table class="table table-sm table-bordered">
+                                                <thead class="table-primary">
+                                                    <tr>
+                                                        <th>Depósito</th>
+                                                        <th>Stock</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {% for deposito in stock_por_producto|get_item:producto.id_producto|get_item:'por_deposito' %}
+                                                    <tr>
+                                                        <td>{{ deposito.deposito }}</td>
+                                                        <td class="decimal">{{ deposito.stock }}</td>
+                                                    </tr>
+                                                    {% empty %}
+                                                    <tr><td colspan="2">No hay stock registrado</td></tr>
+                                                    {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr><td colspan="7">No se encontraron productos</td></tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
 
-            <!-- Paginación -->
-            {% if page_obj.has_other_pages %}
-            <nav aria-label="Paginación">
-                <ul class="pagination justify-content-center">
-                    {% if page_obj.has_previous %}
-                    <li class="page-item">
-                        <a class="page-link" href="?page=1&medida={{ medida }}&nombre={{ nombre }}&cai={{ cai }}&filtro_marca={{ filtro_marca }}">&laquo; Primero</a>
-                    </li>
-                    <li class="page-item">
-                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}&medida={{ medida }}&nombre={{ nombre }}&cai={{ cai }}&filtro_marca={{ filtro_marca }}">Anterior</a>
-                    </li>
+                    <!-- Paginación -->
+                    {% if page_obj.has_other_pages %}
+                    <nav aria-label="Paginación">
+                        <ul class="pagination justify-content-center">
+                            {% if page_obj.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page=1&medida={{ medida }}&nombre={{ nombre }}&cai={{ cai }}&filtro_marca={{ filtro_marca }}">&laquo; Primero</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.previous_page_number }}&medida={{ medida }}&nombre={{ nombre }}&cai={{ cai }}&filtro_marca={{ filtro_marca }}">Anterior</a>
+                            </li>
+                            {% endif %}
+
+                            <li class="page-item disabled">
+                                <span class="page-link">
+                                    Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
+                                </span>
+                            </li>
+
+                            {% if page_obj.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.next_page_number }}&medida={{ medida }}&nombre={{ nombre }}&cai={{ cai }}&filtro_marca={{ filtro_marca }}">Siguiente</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}&medida={{ medida }}&nombre={{ nombre }}&cai={{ cai }}&filtro_marca={{ filtro_marca }}">Última &raquo;</a>
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
                     {% endif %}
-
-                    <li class="page-item disabled">
-                        <span class="page-link">
-                            Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
-                        </span>
-                    </li>
-
-                    {% if page_obj.has_next %}
-                    <li class="page-item">
-                        <a class="page-link" href="?page={{ page_obj.next_page_number }}&medida={{ medida }}&nombre={{ nombre }}&cai={{ cai }}&filtro_marca={{ filtro_marca }}">Siguiente</a>
-                    </li>
-                    <li class="page-item">
-                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}&medida={{ medida }}&nombre={{ nombre }}&cai={{ cai }}&filtro_marca={{ filtro_marca }}">Última &raquo;</a>
-                    </li>
-                    {% endif %}
-                </ul>
-            </nav>
-            {% endif %}
+                </div>
+            </main>
         </div>
-    </main>
-</div>
+    {% endblock principalcomponent %}
 {% endblock maincomponent %}
