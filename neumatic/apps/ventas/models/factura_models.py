@@ -332,11 +332,6 @@ class Factura(ModeloBaseGenerico):
 	@property
 	def letra_numero_asociado_formateado(self):
 		return f"{self.letra_asociado}-{self.numero_asociado_formateado}" if self.numero_asociado_formateado else ""
-	
-	@property
-	def compro_letra_numero_asociado_formateado(self):
-		compro = f"{self.comprobante_asociado} {self.letra_asociado} {self.numero_asociado_formateado}" if self.numero_asociado_formateado else ""
-		return compro
 
 
 class DetalleFactura(ModeloBaseGenerico):
