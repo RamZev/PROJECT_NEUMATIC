@@ -296,7 +296,7 @@ class FacturaManualCreateView(MaestroDetalleCreateView):
 							)
 					
 					# Mensaje de confirmación de la creación de la factura y redirección
-					messages.success(self.request, f"Factura {nuevo_numero} creada correctamente")
+					messages.success(self.request, f"Documento {nuevo_numero} creada correctamente")
 					return redirect(self.get_success_url())
 
 							
@@ -392,7 +392,7 @@ class FacturaManualUpdateView(MaestroDetalleUpdateView):
 					formset_detalle.instance = self.object
 					formset_detalle.save()
 
-				messages.success(self.request, "La factura se ha actualizado correctamente.")
+				messages.success(self.request, "El Documento se ha actualizado correctamente.")
 				return super().form_valid(form)
 			except Exception as e:
 				messages.error(self.request, f"Error al actualizar la factura: {str(e)}")

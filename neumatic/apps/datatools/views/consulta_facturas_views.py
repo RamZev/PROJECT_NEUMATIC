@@ -26,6 +26,8 @@ class ConsultaFacturasClienteView(TemplateView):
             try:
                 # Buscar cliente por ID, CUIT o nombre
                 if buscar_por.isdigit():
+                    print("Entçó a buscar ConsultaFacturasClienteView")
+                    
                     # Si es numérico, buscar por ID o CUIT
                     if len(buscar_por) == 11:  # Asumiendo que CUIT tiene 11 dígitos
                         cliente = Cliente.objects.filter(
@@ -91,10 +93,11 @@ class ConsultaFacturasClienteView(TemplateView):
             'detalles_factura': detalles_factura,
             'buscar_por': buscar_por,
             'error': error,
+            'fecha': timezone.now()  
         })
 
-        context['fecha'] = timezone.now()
-        print(context)
+        # context['fecha'] = timezone.now()
+        # print(context)
 
         return context
     
