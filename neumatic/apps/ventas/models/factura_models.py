@@ -324,7 +324,7 @@ class Factura(ModeloBaseGenerico):
 	
 	@property
 	def letra_numero_comprobante_formateado(self):
-		return f"{self.letra_comprobante}-{self.numero_comprobante_formateado}"
+		return f"{self.letra_comprobante} {self.numero_comprobante_formateado}"
 	
 	@property
 	def compro_letra_numero_comprobante_formateado(self):

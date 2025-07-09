@@ -560,7 +560,6 @@ class GeneraPDFView(View):
 		
 		buffer.seek(0)
 		response = HttpResponse(buffer, content_type='application/pdf')
-		# response['Content-Disposition'] = f'inline; filename="factura_{factura.numero_comprobante}.pdf"'
 		response['Content-Disposition'] = f'inline; filename="{factura.compro_letra_numero_comprobante_formateado}.pdf"'
 		return response
 	
@@ -641,11 +640,13 @@ class GeneraPDFView(View):
 		c.drawString(x_text_right, y_text_right, "RECIBO OFICIAL")
 		
 		y_text_right -= 4*mm
-		c.drawString(x_text_right, y_text_right, f"Nº: {recibo.letra_comprobante} {recibo.numero_comprobante_formateado}")
+		c.drawString(x_text_right, y_text_right, f"Nº: {recibo.letra_numero_comprobante_formateado}")
 		
 		c.setFont("Helvetica", 8)
 		y_text_right -= 4*mm
 		c.drawString(x_text_right, y_text_right, f"Fecha: {recibo.fecha_comprobante.strftime('%d/%m/%Y')}")
+		
+		c.drawString(x_text_right, y_text_left, f"Control: {recibo.compro_letra_numero_comprobante_formateado}")
 		
 		
 		#-- Dibujar recuadro header bottom.
@@ -794,8 +795,9 @@ class GeneraPDFView(View):
 		y_detail -= 15*mm
 		
 		#-- Dibuja la tabla en el canvas.
-		table.wrapOn(c, width - 2*margin, 200*mm)
-		table.drawOn(c, margin, y_detail - (len(table_data) * 8))  # Ajusta el 8 si la tabla se ve muy arriba/abajo
+		if len(table_data) > 1:
+			table.wrapOn(c, width - 2*margin, 200*mm)
+			table.drawOn(c, margin, y_detail - (len(table_data) * 8))  # Ajusta el 8 si la tabla se ve muy arriba/abajo
 		
 		
 		#-- Mostrar cifra en letras como párrafo.
@@ -812,7 +814,7 @@ class GeneraPDFView(View):
 		)
 		y_text = y_detail - ((len(table_data) * 8) - 10)*mm
 		letras_para = Paragraph(cifra_letras, letras_style)
-		w, h = letras_para.wrap(width - 2*margin - 50*mm, 30*mm)
+		w, h = letras_para.wrap(width - 2*margin - 70*mm, 30*mm)
 		letras_para.drawOn(c, margin + 5*mm, y_text - h)
 		
 		#-- Calcula el punto de inicio y fin de la línea.
