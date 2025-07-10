@@ -33,9 +33,9 @@ class GeneraPDFView(View):
 	def get(self, request, model_string, pk):
 		
 		comprobante = Factura.objects.filter(pk=pk).first()
-		facturas = ("FF", "CF", "DF", "FR", "FC", "CE", "DE", "FT",)
+		facturas = ("FF", "CF", "DF", "FR", "FC", "CE", "DE", "FT")
 		recibos = ("RB", "RR", "RC", "RE", "RS", "RN")
-		remitos = ("RF", "RD", "RT", "RM", "DM", "MR", "MD", "MS", "MM")
+		remitos = ("RF", "RD", "RT", "RM", "DM", "MR", "MD", "MS", "MM", "PR")
 		
 		if comprobante.compro in facturas:
 			return self.generar_pdf_factura(request, comprobante)
@@ -231,7 +231,8 @@ class GeneraPDFView(View):
 		
 		y_text_left -= 4*mm
 		c.setFont("Helvetica-Bold", 8)
-		c.drawString(x_text_left, y_text_left, "C.U.I.T.")
+		# c.drawString(x_text_left, y_text_left, "C.U.I.T.")
+		c.drawString(x_text_left, y_text_left, f"{cliente.nombre_tipo_documento_identidad}")
 		c.setFont("Helvetica", 8)
 		c.drawString(x_data_left, y_text_left, f": {cliente.cuit_formateado}")
 		c.setFont("Helvetica-Bold", 8)
@@ -570,7 +571,9 @@ class GeneraPDFView(View):
 		
 		buffer.seek(0)
 		response = HttpResponse(buffer, content_type='application/pdf')
-		response['Content-Disposition'] = f'inline; filename="{factura.compro_letra_numero_comprobante_formateado}.pdf"'
+		file = f"{factura.compro}_{factura.letra_comprobante}_{factura.numero_comprobante_formateado}"
+		# response['Content-Disposition'] = f'inline; filename="{factura.compro_letra_numero_comprobante_formateado}.pdf"'
+		response['Content-Disposition'] = f'inline; filename="{file}.pdf"'
 		return response
 	
 	def generar_pdf_recibo(self, request, recibo):
@@ -679,8 +682,8 @@ class GeneraPDFView(View):
 		c.drawString(x_text_left, y_text, f"{cliente.domicilio_cliente}    C.P.: {cliente.codigo_postal}")
 		
 		y_text -= 3*mm
-		c.drawString(x_text_left, y_text, f"I.V.A.: {cliente.id_tipo_iva}    C.U.I.T.: {cliente.cuit_formateado}")
-		
+		c.drawString(x_text_left, y_text, f"I.V.A.: {cliente.id_tipo_iva}    {cliente.nombre_tipo_documento_identidad}: {cliente.cuit_formateado}")
+
 		
 		#-- Mostrar detalle del recibo si existe.
 		c.setFont("Helvetica", 7)
@@ -841,7 +844,9 @@ class GeneraPDFView(View):
 		
 		buffer.seek(0)
 		response = HttpResponse(buffer, content_type='application/pdf')
-		response['Content-Disposition'] = f'inline; filename="Recibo {recibo.compro_letra_numero_comprobante_formateado}.pdf"'
+		file = f"{recibo.compro}_{recibo.letra_comprobante}_{recibo.numero_comprobante_formateado}"
+		# response['Content-Disposition'] = f'inline; filename="Recibo {recibo.compro_letra_numero_comprobante_formateado}.pdf"'
+		response['Content-Disposition'] = f'inline; filename="Recibo {file}.pdf"'
 		return response
 	
 	def generar_pdf_remito(self, request, remito):
@@ -883,7 +888,7 @@ class GeneraPDFView(View):
 			print("Logo no cargado - espacio reservado se mantiene")
 		
 		#-- Mostrar datos del Remito en el header-top-right.
-		y_text_right = y_position
+		y_text_right = y_position + 5*mm
 		x_text_right = width/2 + 40*mm
 		
 		c.setFont("Helvetica-Bold", 10)
@@ -893,7 +898,14 @@ class GeneraPDFView(View):
 		y_text_right -= 4*mm
 		c.drawString(x_text_right, y_text_right, f"{datetime.now().strftime("%d/%m/%Y %I:%M:%S %p")}")
 		
-		c.setFont("Helvetica", 8)
+		c.setFont("Helvetica", 7)
+		y_text_right -= 6*mm
+		c.drawString(x_text_right, y_text_right, f"Depósito: {remito.id_deposito.id_producto_deposito}")
+		
+		y_text_right -= 3*mm
+		c.drawString(x_text_right, y_text_right, f"Control: {remito.compro_letra_numero_comprobante_formateado}")
+		
+		
 		
 		#-- Dibujar recuadro Datos del Cliente. --------------------------------------------------------------
 		box_heigth = 15*mm
@@ -928,7 +940,7 @@ class GeneraPDFView(View):
 		
 		y_text_left -= 4*mm
 		c.setFont("Helvetica-Bold", 8)
-		c.drawString(x_text_left, y_text_left, "C.U.I.T.")
+		c.drawString(x_text_left, y_text_left, cliente.nombre_tipo_documento_identidad)
 		c.setFont("Helvetica", 8)
 		c.drawString(x_data_left, y_text_left, f": {cliente.cuit_formateado}")
 		c.setFont("Helvetica-Bold", 8)
@@ -960,7 +972,7 @@ class GeneraPDFView(View):
 		table_info = [
 			("CAI", 25*mm),
 			("Medida", 25*mm),
-			("Descripción", 100*mm),
+			("Descripción", 125*mm),
 			("Cantidad", 15*mm),
 		]
 		
@@ -1062,7 +1074,9 @@ class GeneraPDFView(View):
 		
 		buffer.seek(0)
 		response = HttpResponse(buffer, content_type='application/pdf')
-		response['Content-Disposition'] = f'inline; filename="Recibo {remito.compro_letra_numero_comprobante_formateado}.pdf"'
+		file = f"{remito.compro}_{remito.letra_comprobante}_{remito.numero_comprobante_formateado}"
+		# response['Content-Disposition'] = f'inline; filename="Recibo {remito.compro_letra_numero_comprobante_formateado}.pdf"'
+		response['Content-Disposition'] = f'inline; filename="Recibo {file}.pdf"'
 		return response
 	
 	

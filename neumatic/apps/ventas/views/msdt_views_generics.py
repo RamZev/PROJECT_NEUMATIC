@@ -84,6 +84,17 @@ class MaestroDetalleListView(ListView):
 		context = super().get_context_data(**kwargs)
 		context["busqueda"] = self.request.GET.get('busqueda', '')
 		
+		#-- Agregar los filtros actuales al contexto.
+		#-- Con esto se garantiza que la paginación funcione bien con
+		#-- los datos filtrados.
+		query_params = self.request.GET.copy()
+		if 'page' in query_params:
+			#-- Remover el parámetro de paginación actual.
+			query_params.pop('page')
+		
+		context['query_params'] = query_params.urlencode()
+		
+		
 		#-- Agregar valores de paginación y valor seleccionado.
 		context['pagination_options'] = self.pagination_options
 		context['selected_pagination'] = int(self.paginate_by)
