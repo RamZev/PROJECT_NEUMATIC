@@ -33,9 +33,14 @@ class GeneraPDFView(View):
 	def get(self, request, model_string, pk):
 		
 		comprobante = Factura.objects.filter(pk=pk).first()
-		facturas = ("FF", "CF", "DF", "FR", "FC", "CE", "DE", "FT")
+		# facturas = ("FF", "CF", "DF", "FR", "FC", "CE", "DE", "FT", "FA", "NC", "ND")
+		electronicos = ("FF", "CF", "DF", "FR", "FC", "CE", "DE", "FT")
+		manuales = ("FA", "NC", "ND")
+		presupuestos = ("PR",)
+		
+		facturas = electronicos + manuales + presupuestos
 		recibos = ("RB", "RR", "RC", "RE", "RS", "RN")
-		remitos = ("RF", "RD", "RT", "RM", "DM", "MR", "MD", "MS", "MM", "PR")
+		remitos = ("RF", "RD", "RT", "RM", "DM", "MR", "MD", "MS", "MM")
 		
 		if comprobante.compro in facturas:
 			return self.generar_pdf_factura(request, comprobante)
@@ -84,9 +89,10 @@ class GeneraPDFView(View):
 		
 		c.setFont("Helvetica-Bold", 16)
 		c.drawCentredString(x_line, y_letter_box+4*mm, factura.letra_comprobante)
-		c.setFont("Helvetica", 6)
-		c.drawCentredString(x_line, y_letter_box+1*mm, f"Cód.{factura.id_comprobante_venta.codigo_afip_a if factura.letra_comprobante == 'A' else factura.id_comprobante_venta.codigo_afip_b}")
-		c.setFont("Helvetica", 8)
+		if factura.compro != "PR":
+			c.setFont("Helvetica", 6)
+			c.drawCentredString(x_line, y_letter_box+1*mm, f"Cód.{factura.id_comprobante_venta.codigo_afip_a if factura.letra_comprobante == 'A' else factura.id_comprobante_venta.codigo_afip_b}")
+			c.setFont("Helvetica", 8)
 		
 		#-- Línea vertical divisoria.
 		c.line(x_line, y_position-area_box, x_line, y_position - header_top_height)
@@ -188,12 +194,14 @@ class GeneraPDFView(View):
 		
 		#-- Si es Factura Remito/FCE MIPYME.
 		fac_rto = ("fr", "ft")
-		nd_nc = ("cf", "df")
+		nd_nc = ("cf", "df", "nc", "nd")
 		if factura.compro.lower() in fac_rto:
 			c.drawString(x_text_right, y_box + 2*mm, f"REMITO: {factura.comprobante_remito} {factura.remito}")
 		
 		#-- Si es Nota de Crédito/Débito.
 		elif factura.compro.lower() in nd_nc:
+			# compro_asoc = Factura.objects.filter(pk=factura.id_comprobante_asociado).first()
+			# c.drawString(x_text_right, y_box + 2*mm, f"FACTURA: {compro_asoc.compro} {compro_asoc.letra_comprobante} {factura.numero_asociado_formateado}")
 			c.drawString(x_text_right, y_box + 2*mm, f"FACTURA: {factura.numero_asociado_formateado}")
 		
 		c.setFont("Helvetica", 8)
@@ -266,11 +274,11 @@ class GeneraPDFView(View):
 			("CAI", 20*mm),
 			("Medida", 20*mm),
 			("Descripción", 70*mm),
-			("Cantidad", 15*mm),
+			("Cantidad", 10*mm),
 			("Precio", 20*mm),
-			("Alíc. IVA", 15*mm),
-			("Desc.", 10*mm),
-			("Sub Total", 20*mm)
+			("Alíc. IVA", 12*mm),
+			("Desc.", 13*mm),
+			("Sub Total", 25*mm)
 		]
 		
 		#-- Establecer estilos iniciales de la tabla
@@ -316,13 +324,14 @@ class GeneraPDFView(View):
 				str(detalle.id_producto.medida if detalle.id_producto else ""),
 				Paragraph(str(detalle.producto_venta if detalle.producto_venta else ""), style=paragraph_style_normal),
 				formato_argentino(detalle.cantidad),
-				f"${formato_argentino(detalle.precio)}",
+				f"{formato_argentino(detalle.precio)}",
 				f"{formato_argentino(detalle.alic_iva)}%",
 				f"{formato_argentino(detalle.descuento)}%" if detalle.descuento else "",
-				f"${formato_argentino(detalle.total)}"
+				f"{formato_argentino(detalle.total)}"
 			])
 			current_row += 1
-			if detalle.id_producto.despacho_1 or detalle.id_producto.despacho_2:
+			# if detalle.id_producto.despacho_1 or detalle.id_producto.despacho_2:
+			if (detalle.id_producto.despacho_1 or detalle.id_producto.despacho_2) and factura.compro != "PR":
 				numero_despacho = detalle.id_producto.despacho_1 if detalle.id_producto.despacho_1 else detalle.id_producto.despacho_2
 				detail_data.append([
 					"",
@@ -410,113 +419,118 @@ class GeneraPDFView(View):
 		width_box_left = 125*mm
 		y_total_box = 82*mm - height_total_box
 		
+		y_sign_line = y_total_box + 5*mm
+		y_text = 77*mm
+		
 		c.rect(margin, y_total_box, width - 2*margin, height_total_box)
 		
 		x_divider_line = margin + width_box_left
 		c.line(x_divider_line, y_total_box+height_total_box, x_divider_line, y_total_box)
 		
-		#-- Textos parte izquierda del recuadro Totales.
-		x_text_left = margin + 5*mm
-		y_text = 77*mm
-		
-		#-- Vendedor.
-		c.setFont("Helvetica-Bold", 8)
-		c.drawString(x_text_left, y_text, "Vendedor:")
-		c.setFont("Helvetica", 8)
-		c.drawString(x_text_left+15*mm, y_text, f"[{vendedor.id_vendedor}] {vendedor.nombre_vendedor}")
-		
-		#-- Id. Depósito(almacén).
-		c.drawRightString(x_divider_line-2*mm, y_text, f"Nro.: {str(factura.id_deposito.id_producto_deposito).zfill(2)}")
-		
-		#-- Leyendas. -------------------
-		y_leyenda = y_text - 3*mm
-		c.setFont("Helvetica", 7)
-		
-		leyenda = Leyenda.objects.filter(nombre_leyenda__iexact="retiro conforme").first()
-		parrafo = Paragraph(leyenda.leyenda, style=paragraph_style_normal)
-		max_width = width_box_left - 2*mm
-		w, h = parrafo.wrap(max_width, 10*mm)
-		parrafo.drawOn(c, x_text_left, y_leyenda - h)
-		
-		y_leyenda -= h
-		
-		if factura.stock_clie:
-			leyenda = Leyenda.objects.filter(nombre_leyenda__iexact="stock cliente").first()
-			parrafo = Paragraph(leyenda.leyenda, style=paragraph_style_bold)
+		if factura.compro != "PR":
+			#-- Textos parte izquierda del recuadro Totales.
+			x_text_left = margin + 5*mm
+			# y_text = 77*mm
+			
+			#-- Vendedor.
+			c.setFont("Helvetica-Bold", 8)
+			c.drawString(x_text_left, y_text, "Vendedor:")
+			c.setFont("Helvetica", 8)
+			c.drawString(x_text_left+15*mm, y_text, f"[{vendedor.id_vendedor}] {vendedor.nombre_vendedor}")
+			
+			#-- Id. Depósito(almacén).
+			deposito = str(factura.id_deposito.id_producto_deposito).zfill(2) if factura.id_deposito else ""
+			c.drawRightString(x_divider_line-2*mm, y_text, f"Nro.: {deposito}")
+			
+			#-- Leyendas. -------------------
+			y_leyenda = y_text - 3*mm
+			c.setFont("Helvetica", 7)
+			
+			leyenda = Leyenda.objects.filter(nombre_leyenda__iexact="retiro conforme").first()
+			parrafo = Paragraph(leyenda.leyenda, style=paragraph_style_normal)
+			max_width = width_box_left - 2*mm
 			w, h = parrafo.wrap(max_width, 10*mm)
 			parrafo.drawOn(c, x_text_left, y_leyenda - h)
 			
 			y_leyenda -= h
-		
-		if factura.no_estadist:
-			leyenda = Leyenda.objects.filter(nombre_leyenda__iexact="no estadísticas").first()
-			parrafo = Paragraph(leyenda.leyenda, style=paragraph_style_bold)
-			w, h = parrafo.wrap(max_width, 10*mm)
-			parrafo.drawOn(c, x_text_left, y_leyenda - h)
 			
-			y_leyenda -= h
-		
-		if factura.letra_comprobante == "B":
-			alic_monto = ""
-			for alic, monto in iva.items():
-				alic_monto += f"{formato_argentino(alic)}% = ${formato_argentino(monto)}; "
-			alic_monto = alic_monto[:-2]
+			if factura.stock_clie:
+				leyenda = Leyenda.objects.filter(nombre_leyenda__iexact="stock cliente").first()
+				parrafo = Paragraph(leyenda.leyenda, style=paragraph_style_bold)
+				w, h = parrafo.wrap(max_width, 10*mm)
+				parrafo.drawOn(c, x_text_left, y_leyenda - h)
+				
+				y_leyenda -= h
 			
-			reg = Leyenda.objects.filter(nombre_leyenda__iexact="régimen transparencia").first()
-			leyenda = reg.leyenda
-			leyenda += f"<br/>IVA Contenido: {alic_monto}"
+			if factura.no_estadist:
+				leyenda = Leyenda.objects.filter(nombre_leyenda__iexact="no estadísticas").first()
+				parrafo = Paragraph(leyenda.leyenda, style=paragraph_style_bold)
+				w, h = parrafo.wrap(max_width, 10*mm)
+				parrafo.drawOn(c, x_text_left, y_leyenda - h)
+				
+				y_leyenda -= h
 			
-			parrafo = Paragraph(leyenda, style=paragraph_style_bold)
-			w, h = parrafo.wrap(max_width, 10*mm)
-			parrafo.drawOn(c, x_text_left, y_leyenda - h)
+			if factura.letra_comprobante == "B":
+				alic_monto = ""
+				for alic, monto in iva.items():
+					alic_monto += f"{formato_argentino(alic)}% = ${formato_argentino(monto)}; "
+				alic_monto = alic_monto[:-2]
+				
+				reg = Leyenda.objects.filter(nombre_leyenda__iexact="régimen transparencia").first()
+				leyenda = reg.leyenda
+				leyenda += f"<br/>IVA Contenido: {alic_monto}"
+				
+				parrafo = Paragraph(leyenda, style=paragraph_style_bold)
+				w, h = parrafo.wrap(max_width, 10*mm)
+				parrafo.drawOn(c, x_text_left, y_leyenda - h)
+				
+				y_leyenda -= h
+			#--------------------------------
 			
-			y_leyenda -= h
-		#--------------------------------
-		
-		#-- Recibí Conforme.
-		line_size = 50*mm
-		x_sign_line = margin + (width_box_left/2 - line_size/2)
-		y_sign_line = y_total_box + 5*mm
-		c.line(x_sign_line, y_sign_line, x_sign_line+line_size, y_sign_line)
-		c.drawCentredString(x_sign_line+line_size/2, y_total_box+2*mm, "Recibí Conforme")
+			#-- Recibí Conforme.
+			line_size = 50*mm
+			x_sign_line = margin + (width_box_left/2 - line_size/2)
+			# y_sign_line = y_total_box + 5*mm
+			c.line(x_sign_line, y_sign_line, x_sign_line+line_size, y_sign_line)
+			c.drawCentredString(x_sign_line+line_size/2, y_total_box+2*mm, "Recibí Conforme")
 		
 		
 		#-- Textos y Montos parte derecha del recuadro Totales.
 		x_amount = width - margin - 2*mm
 		x_text_right = x_divider_line + 35*mm
 		
-		if factura.letra_comprobante == 'A':
+		if factura.letra_comprobante == 'A' or factura.compro == 'PR':
 			
 			y_text_right = y_text
 			c.setFont("Helvetica-Bold", 8)
 			c.drawRightString(x_text_right, y_text, "Gravado :")
 			c.setFont("Helvetica", 8)
 			
-			c.drawRightString(x_amount, y_text_right, formato_argentino(factura.gravado))
+			c.drawRightString(x_amount, y_text_right, f"${formato_argentino(factura.gravado)}")
 			
 			y_text_right -= 4*mm
 			c.setFont("Helvetica-Bold", 8)
 			c.drawRightString(x_text_right, y_text_right, "Exento :")
 			c.setFont("Helvetica", 8)
-			c.drawRightString(x_amount, y_text_right, formato_argentino(factura.exento))
+			c.drawRightString(x_amount, y_text_right, f"${formato_argentino(factura.exento)}")
 			
 			for alic, monto in iva.items():
 				y_text_right -= 4*mm
 				c.setFont("Helvetica-Bold", 8)
 				c.drawRightString(x_text_right, y_text_right, f"I.V.A. {formato_argentino(alic)}% :")
 				c.setFont("Helvetica", 8)
-				c.drawRightString(x_amount, y_text_right, formato_argentino(monto))
+				c.drawRightString(x_amount, y_text_right, f"${formato_argentino(monto)}")
 			
 			y_text_right -= 4*mm
 			c.setFont("Helvetica-Bold", 8)
 			c.drawRightString(x_text_right, y_text_right, "IIBB PERCEPCIÓN :")
 			c.setFont("Helvetica", 8)
-			c.drawRightString(x_amount, y_text_right, formato_argentino(factura.percep_ib))
+			c.drawRightString(x_amount, y_text_right, f"${formato_argentino(factura.percep_ib)}")
 			
 			y_text_right -= 4*mm
 			c.setFont("Helvetica-Bold", 8)
 			c.drawRightString(x_text_right, y_text_right, "TOTAL :", charSpace=2)
-			c.drawRightString(x_amount, y_text_right, formato_argentino(factura.total))
+			c.drawRightString(x_amount, y_text_right, f"${formato_argentino(factura.total)}")
 			c.setFont("Helvetica", 8)
 			
 		else:
@@ -527,43 +541,44 @@ class GeneraPDFView(View):
 			c.setFont("Helvetica", 8)
 		
 		
-		#-- QR, Logo ARCA y datos del CAE.
-		
-		#-- Código QR.
-		x_qr = margin + 2*mm
-		y_qr = margin
-		
-		c.drawImage(path.join(settings.BASE_DIR, 'static', 'img', 'qr.png'), x_qr, y_qr, width=35*mm, height=35*mm, preserveAspectRatio=True)
-		
-		#-- Logo ARCA.
-		x_arca = x_qr+40*mm
-		y_arca = y_qr+5*mm
-		c.drawImage(path.join(settings.BASE_DIR, 'static', 'img', 'arca.png'), x_arca, y_arca, width=30*mm, height=30*mm, preserveAspectRatio=True)
-		
-		#-- Datos del CAE.
-		x_cae = 150*mm
-		y_cae = 35*mm
-		
-		c.setFont("Helvetica-Bold", 10)
-		c.drawRightString(x_cae, y_cae, "CAE Nº :")
-		cae = str(factura.cae if factura.cae else "")
-		cae_vto = str(factura.cae_vto  if factura.cae_vto else "")
-		c.drawString(x_cae+2*mm, y_cae, cae)
-		
-		c.drawRightString(x_cae, y_cae-5*mm, "Vencimiento CAE :")
-		c.drawString(x_cae+2*mm, y_cae-5*mm, cae_vto)
-		
-		#-- Nro. Control (compro + letra + número).
-		c.setFont("Helvetica", 8)
-		c.drawCentredString(x_cae, y_qr+10*mm, f"Ctrl.: {factura.compro_letra_numero_comprobante_formateado}")
-		
-		#-- Cadenas.
-		c.setFont("Helvetica-BoldOblique", 8)
-		c.drawString(x_arca, y_qr, "Comprobante Autorizado")
-		c.setFont("Helvetica", 8)
-		
-		c.setFont("Helvetica", 10)
-		c.drawCentredString(x_cae, y_qr, "ORIGINAL / DUPLICADO")
+		if factura.compro != "PR":
+			#-- QR, Logo ARCA y datos del CAE.
+			
+			#-- Código QR.
+			x_qr = margin + 2*mm
+			y_qr = margin
+			
+			c.drawImage(path.join(settings.BASE_DIR, 'static', 'img', 'qr.png'), x_qr, y_qr, width=35*mm, height=35*mm, preserveAspectRatio=True)
+			
+			#-- Logo ARCA.
+			x_arca = x_qr+40*mm
+			y_arca = y_qr+5*mm
+			c.drawImage(path.join(settings.BASE_DIR, 'static', 'img', 'arca.png'), x_arca, y_arca, width=30*mm, height=30*mm, preserveAspectRatio=True)
+			
+			#-- Datos del CAE.
+			x_cae = 150*mm
+			y_cae = 35*mm
+			
+			c.setFont("Helvetica-Bold", 10)
+			c.drawRightString(x_cae, y_cae, "CAE Nº :")
+			cae = str(factura.cae if factura.cae else "")
+			cae_vto = str(factura.cae_vto  if factura.cae_vto else "")
+			c.drawString(x_cae+2*mm, y_cae, cae)
+			
+			c.drawRightString(x_cae, y_cae-5*mm, "Vencimiento CAE :")
+			c.drawString(x_cae+2*mm, y_cae-5*mm, cae_vto)
+			
+			#-- Nro. Control (compro + letra + número).
+			c.setFont("Helvetica", 8)
+			c.drawCentredString(x_cae, y_qr+10*mm, f"Ctrl.: {factura.compro_letra_numero_comprobante_formateado}")
+			
+			#-- Cadenas.
+			c.setFont("Helvetica-BoldOblique", 8)
+			c.drawString(x_arca, y_qr, "Comprobante Autorizado")
+			c.setFont("Helvetica", 8)
+			
+			c.setFont("Helvetica", 10)
+			c.drawCentredString(x_cae, y_qr, "ORIGINAL / DUPLICADO")
 		
 		
 		c.showPage()
@@ -809,8 +824,10 @@ class GeneraPDFView(View):
 		#-- Dibuja la tabla en el canvas.
 		if len(table_data) > 1:
 			table.wrapOn(c, width - 2*margin, 200*mm)
-			table.drawOn(c, margin, y_detail - (len(table_data) * 8))  # Ajusta el 8 si la tabla se ve muy arriba/abajo
-		
+			table.drawOn(c, margin, y_detail - table._height)
+			y_base_tabla = y_detail - table._height  # base de la tabla
+		else:
+			y_base_tabla = y_detail  # si no hay tabla, usa y_detail como base		
 		
 		#-- Mostrar cifra en letras como párrafo.
 		cifra_letras = f"Son pesos: {numero_a_letras(recibo.total).upper()}."
@@ -824,12 +841,17 @@ class GeneraPDFView(View):
 			spaceBefore=0,
 			spaceAfter=0,
 		)
-		y_text = y_detail - ((len(table_data) * 8) - 10)*mm
+		#-- Distancia fija debajo de la tabla.
+		distancia = 30*mm
+		
+		#-- Posición para la cifra en letras.
+		y_text = y_base_tabla - distancia
+		
 		letras_para = Paragraph(cifra_letras, letras_style)
 		w, h = letras_para.wrap(width - 2*margin - 70*mm, 30*mm)
 		letras_para.drawOn(c, margin + 5*mm, y_text - h)
 		
-		#-- Calcula el punto de inicio y fin de la línea.
+		#-- Línea para firma justo a la derecha de la cifra en letras.
 		x_inicio = width - 70*mm
 		x_fin = width - margin - 5*mm
 		
