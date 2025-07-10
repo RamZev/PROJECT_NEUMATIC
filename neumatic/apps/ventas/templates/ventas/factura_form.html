@@ -404,12 +404,19 @@
                                                 </label>
                                             </div>
 
-                                            <div class="col-md-4">
+                                            <div class="col-md-3">
                                                 {{ form.es_presupuesto }}
                                                 <label class="form-check-label" for="{{ form.es_presupuesto.id_for_label }}">
                                                     Presupuesto
                                                 </label>
                                             </div>
+
+                                            <div class="col-md-1">
+                                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#observacionesModal">
+                                                    <i class="bi bi-pencil-square"></i>
+                                                </button>
+                                            </div>
+                                            
                                         </div>
                                     </div>
                                     <!-- sector derecho del encabezado end -->
@@ -939,6 +946,25 @@
                     <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">
                         <i class="bi bi-x-circle-fill me-2"></i>Cancelar
                     </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Observaciones-->
+    <div class="modal fade" id="observacionesModal" tabindex="-1" aria-labelledby="observacionesModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="observacionesModalLabel">Observaciones del Comprobante</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Renderizamos el campo aquí -->
+                    {{ form.observa_comprobante }}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
                 </div>
             </div>
         </div>
