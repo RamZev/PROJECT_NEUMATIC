@@ -737,43 +737,48 @@ def obtener_libro_iva(request):
 
 @require_GET
 def buscar_factura(request):
-
     try:
         id_cliente = request.GET.get('id_cliente')
         numero = request.GET.get('numero_comprobante')
 
+        # Validación más explícita
         if not id_cliente or not numero:
-            print("Error: Parámetros faltantes")  # Debug 3
-            return JsonResponse({'error': 'Se requieren id_cliente y numero_comprobante'}, status=400)
+            return JsonResponse(
+                {'error': 'Se requieren id_cliente y numero_comprobante'},
+                status=400
+            )
 
-        # Consulta con seguridad
+        try:
+            id_cliente = int(id_cliente)  # Conversión temprana
+        except ValueError:
+            return JsonResponse(
+                {'error': 'id_cliente debe ser un número entero'},
+                status=400
+            )
+
         facturas = Factura.objects.filter(
-            id_cliente_id=int(id_cliente),  # Convertir a entero explícitamente
-            numero_comprobante__iexact=numero,  # Búsqueda exacta case-insensitive
+            id_cliente_id=id_cliente,
+            numero_comprobante__iexact=numero.strip(),  # Limpieza adicional
             id_comprobante_venta__libro_iva=True
         ).select_related('id_comprobante_venta')
 
-        # Serialización manual segura
-        resultados = []
-        for factura in facturas:
-            resultados.append({
-                'id': factura.id_factura,
-                'numero_comprobante': factura.numero_comprobante,
-                'fecha': factura.fecha_comprobante.strftime('%Y-%m-%d') if factura.fecha_comprobante else None,
-                'total': str(factura.total),  # Convertir Decimal a string
-                'comprobante_nombre': factura.id_comprobante_venta.nombre_comprobante_venta if factura.id_comprobante_venta else None,
-                'libro_iva': factura.id_comprobante_venta.libro_iva if factura.id_comprobante_venta else False
-            })
+        resultados = [{
+            'id': f.id_factura,
+            'numero_comprobante': f.numero_comprobante,
+            'fecha': f.fecha_comprobante.strftime('%Y-%m-%d') if f.fecha_comprobante else None,
+            'total': str(f.total),
+            'comprobante_nombre': f.id_comprobante_venta.nombre_comprobante_venta if f.id_comprobante_venta else None,
+            'libro_iva': f.id_comprobante_venta.libro_iva if f.id_comprobante_venta else False
+        } for f in facturas]
 
         return JsonResponse({
             'facturas': resultados,
             'count': len(resultados)
         })
 
-    except ValueError as ve:
-        print(f"Error de valor: {str(ve)}")  # Debug 7
-        return JsonResponse({'error': f'ID de cliente inválido: {str(ve)}'}, status=400)
     except Exception as e:
-        print(f"Error inesperado: {str(e)}")  # Debug 8
-        return JsonResponse({'error': f'Error del servidor: {str(e)}'}, status=500)
-
+        logger.error(f"Error en buscar_factura: {str(e)}")  # Loggear en producción
+        return JsonResponse(
+            {'error': 'Error interno del servidor'},
+            status=500
+        )

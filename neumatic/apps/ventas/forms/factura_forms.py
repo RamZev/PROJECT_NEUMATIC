@@ -106,6 +106,13 @@ class FacturaForm(forms.ModelForm):
             "movil_factura": forms.TextInput(attrs={**formclasstext}),
             "numero_asociado": forms.TextInput(attrs={**formclasstext}),
             "email_factura": forms.TextInput(attrs={**formclasstext}),
+            "observa_comprobante": forms.Textarea(attrs={
+                **formclasstext,
+                'rows': 3,  # Altura inicial
+                'cols': 40,  # Ancho inicial
+                'class': 'form-control',  # Clases adicionales
+                'style': 'resize: vertical;'  # Permite redimensionar verticalmente
+            }),
             "stock_clie": forms.CheckboxInput(attrs={**formclasscheck}),
             
             "gravado": forms.TextInput(attrs={**formclassnumb, 'readonly': 'readonly'}),

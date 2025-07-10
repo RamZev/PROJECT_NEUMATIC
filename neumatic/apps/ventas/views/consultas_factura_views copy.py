@@ -13,7 +13,8 @@ from datetime import date, timedelta
 from apps.maestros.models.base_models import (ProductoStock, 
                                               ProductoMinimo,
                                               AlicuotaIva,
-                                              ComprobanteVenta)
+                                              ComprobanteVenta,
+                                              Banco)
 from apps.ventas.models.factura_models import Factura, DetalleFactura
 from apps.maestros.models.producto_models import Producto
 from apps.maestros.models.cliente_models import Cliente
@@ -22,7 +23,7 @@ from apps.maestros.models.base_models import ComprobanteVenta
 from apps.maestros.models.descuento_vendedor_models import DescuentoVendedor
 from apps.maestros.models.numero_models import Numero
 from apps.maestros.models.valida_models import Valida
-
+import traceback
 
 import json
 
@@ -87,9 +88,9 @@ def buscar_producto(request):
             #print("descuento:", descuento)
                 
         # Obtener alícuota IVA
-        alicuota_iva = 0
-        if producto.id_alicuota_iva:
-            alicuota_iva = producto.id_alicuota_iva.alicuota_iva
+        # alicuota_iva = 0
+        # if producto.id_alicuota_iva:
+        #     alicuota_iva = producto.id_alicuota_iva.alicuota_iva
 
         resultados.append({
             'id': producto.id_producto,
@@ -99,12 +100,12 @@ def buscar_producto(request):
             'nombre': producto.nombre_producto,
             'precio': producto.precio,
             'stock': ProductoStock.objects.filter(id_producto=producto).aggregate(total_stock=Sum('stock'))['total_stock'] or 0,
-            'minimo': ProductoMinimo.objects.filter(id_cai=producto.id_cai).aggregate(total_minimo=Sum('minimo'))['total_minimo'] or 0,
+            'minimo': producto.minimo,
             'id_marca': producto.id_marca.id_producto_marca if producto.id_marca else None,
             'id_familia': producto.id_familia.id_producto_familia if producto.id_familia else None,
             'descuento_vendedor': descuento,
             'id_alicuota_iva': producto.id_alicuota_iva_id if producto.id_alicuota_iva else None,
-            'alicuota_iva': alicuota_iva
+            'alicuota_iva': producto.alicuota_iva
 
         })
 
@@ -125,6 +126,8 @@ def detalle_producto(request, id_producto):
         }
         for stock in stock_por_deposito
     ]
+    
+    # print("stock_por_deposito", stock_por_deposito)
     
     # Obtener mínimos por depósito (usando id_cai)
     minimos_por_deposito = ProductoMinimo.objects.filter(id_cai=producto.id_cai).select_related('id_deposito')
@@ -276,6 +279,7 @@ def datos_comprobante(request, pk):
     
 
 # Obtener número de comprobante
+@require_GET
 def obtener_numero_comprobante(request):
     # Obtener parámetros de la solicitud
     id_sucursal = request.GET.get('id_sucursal')
@@ -403,11 +407,13 @@ def valida_autorizacion(request):
         sucursal_id = data.get('sucursal_id')
         fecha_comprobante = data.get('fecha_comprobante')
         
+        '''
         print("Datos recibidos:")
         print(f"Código: {codigo}")
         print(f"Cliente ID: {cliente_id}")
         print(f"Sucursal ID: {sucursal_id}")
         print(f"Fecha Comprobante: {fecha_comprobante}")
+        '''
 
         # Validación básica del código
         if not codigo.isdigit() or int(codigo) <= 0:
@@ -493,9 +499,16 @@ def verificar_remito(request):
         # Búsqueda optimizada con first()
         factura = Factura.objects.filter(
             compro=comprobante_remito,
-            numero_comprobante=remito
-        ).only('id_factura').first()  # Solo trae el ID
+            numero_comprobante=remito,
+        ).filter(
+            Q(estado="") | Q(estado__isnull=True)
+        ).select_related('id_comprobante_venta').only(
+            'id_factura',
+            'id_comprobante_venta__pendiente'
+        ).first()
         
+        # print("factura.estado:", factura.estado, factura.compro, factura.numero_comprobante)
+                        
         if not factura:
             return JsonResponse({
                 'existe': False,
@@ -509,22 +522,47 @@ def verificar_remito(request):
         detalles = DetalleFactura.objects.filter(
             id_factura=factura.id_factura
         ).select_related('id_producto').values(
-            'id_detalle_factura',
+            'id_producto',
             'id_producto__medida',
             'producto_venta',
             'cantidad',
             'precio',
+            'precio_lista',
+            'desc_vendedor',
             'descuento',
-            'total'
+            'gravado',
+            'alic_iva',
+            'iva',
+            'total',
+            'id_producto__id_alicuota_iva__alicuota_iva'
         )
         
-        print(detalles)
+        # Convertir el QuerySet a lista y asegurar valores decimales como float
+        detalles_lista = []
+        for detalle in detalles:
+            detalle_dict = {
+                'id_producto': detalle['id_producto'],
+                'medida': detalle['id_producto__medida'],
+                'nombre': detalle['producto_venta'],
+                'cantidad': float(detalle['cantidad']),
+                'precio': float(detalle['precio']),
+                'precio_lista': float(detalle['precio_lista']),
+                'desc_vendedor': float(detalle['desc_vendedor']),
+                'descuento': float(detalle['descuento']),
+                'gravado': float(detalle['gravado']),
+                'alic_iva': float(detalle.get('id_producto__id_alicuota_iva__alicuota_iva', detalle['alic_iva'])),
+                'iva': float(detalle['iva']),
+                'total': float(detalle['total'])
+            }
+            detalles_lista.append(detalle_dict)
+
+        print(detalles_lista)
 
         return JsonResponse({
             'existe': True,
             'id_factura': factura.id_factura,
             'pendiente': factura.id_comprobante_venta.pendiente,
-            'detalles': list(detalles)  # Convertimos el QuerySet a lista
+            'detalles': detalles_lista  # Convertimos el QuerySet a lista
         })
 
     except Exception as e:
@@ -532,3 +570,210 @@ def verificar_remito(request):
             {'error': f'Error en el servidor: {str(e)}'},
             status=500
         )
+
+
+# validar_deudas_cliente
+@require_GET
+@login_required
+def validar_deudas_cliente(request, cliente_id):
+    if not Cliente.objects.filter(id_cliente=cliente_id).exists():
+        return JsonResponse({
+            'success': True,
+            'has_debts': False,
+            'facturas_pendientes': [],
+            'message': 'Cliente no encontrado o sin deudas pendientes'
+        }, status=200)
+
+    facturas_pendientes = Factura.objects.filter(
+        id_cliente_id=cliente_id,
+        id_comprobante_venta__mult_saldo__isnull=False,
+        total__gt=F('entrega')
+    ).exclude(
+        id_comprobante_venta__mult_saldo=0
+    ).select_related('id_comprobante_venta').values(
+        'id_factura',
+        'letra_comprobante',
+        'numero_comprobante',
+        'fecha_comprobante',
+        'total',
+        'entrega',
+        'id_comprobante_venta__nombre_comprobante_venta'
+    )
+
+    resultados = []
+    for factura in facturas_pendientes:
+        factura_dict = {
+            'id_factura': factura['id_factura'],
+            'tipo_comprobante': factura['id_comprobante_venta__nombre_comprobante_venta'],
+            'letra_comprobante': factura['letra_comprobante'] or 'N/A',
+            'numero_comprobante': factura['numero_comprobante'] or 'N/A',
+            'fecha_comprobante': factura['fecha_comprobante'].strftime('%d/%m/%Y') if factura['fecha_comprobante'] else 'N/A',
+            'total': float(factura['total']),
+            'entrega': float(factura['entrega']),
+            'monto_pendiente': float(factura['total'] - factura['entrega']),
+        }
+        resultados.append(factura_dict)
+
+    has_debts = len(resultados) > 0
+
+    # print("resultados", resultados)
+
+    return JsonResponse({
+        'success': True,
+        'has_debts': has_debts,
+        'facturas_pendientes': resultados,
+        'message': 'No hay deudas pendientes' if not has_debts else 'Facturas pendientes encontradas'
+    }, status=200)
+
+
+# Obtener número de comprobante: caso si letra de comprobante previo
+@require_GET
+def obtener_numero_comprobante2(request):
+    # Obtener parámetros de la solicitud
+    id_sucursal = request.GET.get('id_sucursal')
+    id_punto_venta = request.GET.get('id_punto_venta')
+    comprobante = request.GET.get('comprobante')
+    #letra = request.GET.get('letra')
+
+    if not all([id_sucursal, id_punto_venta, comprobante]):
+        return JsonResponse({'error': 'Faltan parámetros requeridos'}, status=400)
+
+    try:
+        # Obtener número referencial (último número + 1)
+        ultimo_numero = Numero.objects.filter(
+            id_sucursal=id_sucursal,
+            id_punto_venta=id_punto_venta,
+            comprobante=comprobante
+        ).order_by('-numero').first()
+
+        numero_referencial = (ultimo_numero.numero + 1) if ultimo_numero else 1
+        letra = ultimo_numero.letra if ultimo_numero else "Z"
+        print("letra:", letra)
+
+        # Obtener número definitivo (podría incluir lógica adicional aquí)
+        numero_definitivo = numero_referencial  # Por defecto son iguales
+
+        return JsonResponse({
+            'numero_referencial': numero_referencial,
+            'numero_definitivo': numero_definitivo,
+            'letra': letra,
+            'success': True
+        })
+
+    except Exception as e:
+        return JsonResponse({
+            'error': str(e),
+            'success': False
+        }, status=500)
+
+@require_GET
+def buscar_banco(request):
+    codigo_banco = request.GET.get('codigo_banco', '').strip()
+
+    print("Código banco recibido:", codigo_banco)
+
+    if not codigo_banco:
+        return JsonResponse({'error': 'No se proporcionó un código de banco'}, status=400)
+
+    try:
+        codigo_banco = int(codigo_banco)
+        banco = Banco.objects.filter(codigo_banco=codigo_banco, estatus_banco=True).first()
+        
+        if banco:
+            print("Banco encontrado:", banco.nombre_banco, banco.id_banco)
+            return JsonResponse({
+                'id_banco': banco.id_banco,
+                'nombre_banco': banco.nombre_banco,
+                'success': True
+            })
+        else:
+            print("Banco no encontrado para código:", codigo_banco)
+            return JsonResponse({
+                'error': 'Banco no encontrado',
+                'success': False
+            }, status=404)
+
+    except ValueError:
+        print("Error: Código de banco no numérico:", codigo_banco)
+        return JsonResponse({
+            'error': 'El código de banco debe ser numérico',
+            'success': False
+        }, status=400)
+    except Exception as e:
+        print("Error en buscar_banco:", str(e))
+        print("Traceback:", traceback.format_exc())
+        return JsonResponse({
+            'error': f'Error en el servidor: {str(e)}',
+            'traceback': traceback.format_exc(),
+            'success': False
+        }, status=500)
+
+
+@require_GET
+def buscar_codigo_banco(request):
+    id_banco = request.GET.get('id_banco')
+    try:
+        if not id_banco:
+            return JsonResponse({'success': False, 'error': 'Parámetro id_banco requerido'})
+        banco = Banco.objects.get(id_banco=id_banco, estatus_banco=True)
+        return JsonResponse({
+            'success': True,
+            'codigo_banco': banco.codigo_banco
+        })
+    except Banco.DoesNotExist:
+        return JsonResponse({'success': False, 'error': 'Banco no encontrado'})
+
+
+@require_GET
+def obtener_libro_iva(request):
+    id_comprobante = request.GET.get('id')
+    try:
+        comprobante = ComprobanteVenta.objects.get(pk=id_comprobante)
+        print('libro_iva', comprobante.libro_iva)
+        return JsonResponse({'libro_iva': comprobante.libro_iva})
+    except ComprobanteVenta.DoesNotExist:
+        return JsonResponse({'error': 'No encontrado'}, status=404)
+
+
+@require_GET
+def buscar_factura(request):
+
+    try:
+        id_cliente = request.GET.get('id_cliente')
+        numero = request.GET.get('numero_comprobante')
+
+        if not id_cliente or not numero:
+            print("Error: Parámetros faltantes")  # Debug 3
+            return JsonResponse({'error': 'Se requieren id_cliente y numero_comprobante'}, status=400)
+
+        # Consulta con seguridad
+        facturas = Factura.objects.filter(
+            id_cliente_id=int(id_cliente),  # Convertir a entero explícitamente
+            numero_comprobante__iexact=numero,  # Búsqueda exacta case-insensitive
+            id_comprobante_venta__libro_iva=True
+        ).select_related('id_comprobante_venta')
+
+        # Serialización manual segura
+        resultados = []
+        for factura in facturas:
+            resultados.append({
+                'id': factura.id_factura,
+                'numero_comprobante': factura.numero_comprobante,
+                'fecha': factura.fecha_comprobante.strftime('%Y-%m-%d') if factura.fecha_comprobante else None,
+                'total': str(factura.total),  # Convertir Decimal a string
+                'comprobante_nombre': factura.id_comprobante_venta.nombre_comprobante_venta if factura.id_comprobante_venta else None,
+                'libro_iva': factura.id_comprobante_venta.libro_iva if factura.id_comprobante_venta else False
+            })
+
+        return JsonResponse({
+            'facturas': resultados,
+            'count': len(resultados)
+        })
+
+    except ValueError as ve:
+        print(f"Error de valor: {str(ve)}")  # Debug 7
+        return JsonResponse({'error': f'ID de cliente inválido: {str(ve)}'}, status=400)
+    except Exception as e:
+        print(f"Error inesperado: {str(e)}")  # Debug 8
+        return JsonResponse({'error': f'Error del servidor: {str(e)}'}, status=500)
+
