@@ -26,7 +26,8 @@ from .views.consultas_factura_views import (buscar_agenda,
                                             verificar_remito,
                                             buscar_banco,
                                             buscar_codigo_banco,
-                                            obtener_libro_iva)
+                                            obtener_libro_iva,
+                                            buscar_factura)
 
 from .views.crear_agenda import crear_agenda
 from .views.genera_pdf import GeneraPDFView
@@ -74,5 +75,6 @@ urlpatterns = [
    path('buscar/banco/', buscar_banco, name='buscar_banco'),
    path('buscar/codigo_banco/', buscar_codigo_banco, name='buscar_codigo_banco'),
    path('obtener/libro_iva/', obtener_libro_iva, name='obtener_libro_iva'),
+   path('buscar/factura/', buscar_factura, name='buscar_factura'),
 
 ]

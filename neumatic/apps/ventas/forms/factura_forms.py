@@ -104,6 +104,7 @@ class FacturaForm(forms.ModelForm):
             "nombre_factura": forms.TextInput(attrs={**formclasstext, 'readonly': 'readonly'}),
             "domicilio_factura": forms.TextInput(attrs={**formclasstext, 'readonly': 'readonly'}),
             "movil_factura": forms.TextInput(attrs={**formclasstext}),
+            "numero_asociado": forms.TextInput(attrs={**formclasstext}),
             "email_factura": forms.TextInput(attrs={**formclasstext}),
             "stock_clie": forms.CheckboxInput(attrs={**formclasscheck}),
             
