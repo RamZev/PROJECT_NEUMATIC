@@ -181,6 +181,14 @@ class FacturaManualCreateView(MaestroDetalleCreateView):
 		libro_iva_dict = {str(c.id_comprobante_venta): c.libro_iva for c in ComprobanteVenta.objects.all()}
 		data['libro_iva_dict'] = json.dumps(libro_iva_dict)
 
+		# Obtener todos los comprobantes con sus valores mult_venta
+		mult_venta_dict = {str(c.id_comprobante_venta): c.mult_venta for c in ComprobanteVenta.objects.all()}
+		data['mult_venta_dict'] = json.dumps(mult_venta_dict)
+
+		# Obtener todos los comprobantes con sus valores electronica
+		electronica_dict = {str(c.id_comprobante_venta): c.electronica for c in ComprobanteVenta.objects.all()}
+		data['electronica_dict'] = json.dumps(electronica_dict)
+
 		return data
 
 	def form_valid(self, form):
@@ -376,6 +384,14 @@ class FacturaManualUpdateView(MaestroDetalleUpdateView):
 		# Obtener todos los comprobantes con sus valores libro_iva
 		libro_iva_dict = {str(c.id_comprobante_venta): c.libro_iva for c in ComprobanteVenta.objects.all()}
 		data['libro_iva_dict'] = json.dumps(libro_iva_dict)
+
+		# Obtener todos los comprobantes con sus valores mult_venta
+		mult_venta_dict = {str(c.id_comprobante_venta): c.mult_venta for c in ComprobanteVenta.objects.all()}
+		data['mult_venta_dict'] = json.dumps(mult_venta_dict)
+
+		# Obtener todos los comprobantes con sus valores electronica
+		electronica_dict = {str(c.id_comprobante_venta): c.electronica for c in ComprobanteVenta.objects.all()}
+		data['electronica_dict'] = json.dumps(electronica_dict)
 
 		return data
 		

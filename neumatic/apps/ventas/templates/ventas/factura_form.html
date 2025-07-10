@@ -115,6 +115,9 @@
             <!-- Div oculto con el diccionario libro_iva para cada comprobante -->
             <div id="multventa-data" data-multventa='{{ mult_venta_dict|safe }}'</div>
 
+            <!-- Div oculto con el diccionario electronica para cada comprobante -->
+            <div id="electronica-data" data-electronica='{{ electronica_dict|safe }}'</div>
+
             <div class="container-fluid tbl-container">
                 <!-- Formulario Encabezado Detalle - Inicio -->
                 <form method="post" id="factura-form" enctype="multipart/form-data">
@@ -1953,8 +1956,9 @@
             //
             document.getElementById('id_numero_asociado').addEventListener('blur', function() {
                 // 1. Obtener valores del formulario
+                const inputElement = this; // Guardar referencia al input
                 const idCliente = document.getElementById('id_id_cliente').value;
-                const numeroComprobante = this.value.trim();
+                const numeroComprobante = inputElement.value.trim();
                 
                 // 2. Validación temprana - Si el número está vacío, salir sin hacer nada
                 if (numeroComprobante === '') {
@@ -1972,10 +1976,10 @@
                 url.searchParams.append('id_cliente', idCliente);
                 url.searchParams.append('numero_comprobante', numeroComprobante);
 
-                // 5. Opcional: Cambiar estilo durante la carga
-                this.readOnly = true;
-                const originalBgColor = this.style.backgroundColor;
-                this.style.backgroundColor = '#f5f5f5';
+                // 5. Cambiar estilo durante la carga
+                inputElement.readOnly = true;
+                const originalBgColor = inputElement.style.backgroundColor;
+                inputElement.style.backgroundColor = '#f5f5f5';
 
                 // 6. Realizar la petición al servidor
                 fetch(url, {
@@ -1996,8 +2000,10 @@
                         // Caso 1: Error del servidor
                         alert(`Error: ${data.error}`);
                     } else if (data.facturas.length === 0) {
-                        // Caso 2: No se encontraron resultados
-                        alert("No se encontraron facturas con los criterios especificados");
+                        // Caso 2: No se encontraron resultados - Nuevo comportamiento
+                        alert(`No se encontró la factura número: ${numeroComprobante}`);
+                        inputElement.value = ''; // Limpiar el input
+                        inputElement.focus();    // Regresar el foco
                     } else {
                         // Caso 3: Éxito - Procesar resultados
                         const factura = data.facturas[0];
@@ -2009,8 +2015,6 @@
                             \n- Fecha: ${factura.fecha}
                             \n- Total: $${factura.total}
                             \n- Comprobante: ${factura.comprobante_nombre}`);
-                        
-                        // Aquí puedes agregar lógica para autocompletar otros campos
                     }
                 })
                 .catch(error => {
@@ -2019,9 +2023,11 @@
                     alert("Error al conectar con el servidor");
                 })
                 .finally(() => {
-                    // 7. Restaurar el campo a su estado original
-                    this.readOnly = false;
-                    this.style.backgroundColor = originalBgColor;
+                    // 7. Restaurar el campo a su estado original (excepto cuando no se encontraron resultados)
+                    if (inputElement.value !== '') {
+                        inputElement.readOnly = false;
+                        inputElement.style.backgroundColor = originalBgColor;
+                    }
                 });
             });
             //
