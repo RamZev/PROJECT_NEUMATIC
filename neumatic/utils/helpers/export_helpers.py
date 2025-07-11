@@ -1,7 +1,7 @@
 # neumatic\utils\helpers\export_helpers.py
 
 from io import BytesIO, TextIOWrapper
-from reportlab.platypus import BaseDocTemplate, SimpleDocTemplate, Frame, PageTemplate, Table, TableStyle, Paragraph, Spacer
+from reportlab.platypus import BaseDocTemplate, SimpleDocTemplate, Frame, PageTemplate, LongTable, TableStyle, Paragraph, Spacer
 from reportlab.lib.pagesizes import A4, portrait
 from reportlab.lib.enums import TA_LEFT, TA_RIGHT
 from reportlab.pdfgen.canvas import Canvas
@@ -191,7 +191,7 @@ class ExportHelper:
 			table_data.append(totals_row)
 		
 		# table = Table(table_data)
-		table = Table(table_data, colWidths=cols_widths)
+		table = LongTable(table_data, colWidths=cols_widths)
 		
 		table_style = TableStyle([
 			#-- Estilos comunes toda la tabla.
@@ -701,7 +701,7 @@ class PDFGenerator:
 	
 	def _create_table(self, data, col_widths, style_config, repeat_rows=1):
 		"""Crea una tabla con los datos y estilos proporcionados"""
-		table = Table(data, colWidths=col_widths, repeatRows=repeat_rows)
+		table = LongTable(data, colWidths=col_widths, repeatRows=repeat_rows)
 		
 		#-- Estilo base.
 		table_style = TableStyle([
