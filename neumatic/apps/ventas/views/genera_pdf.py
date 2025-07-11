@@ -5,7 +5,6 @@ from django.shortcuts import get_object_or_404
 from django.conf import settings
 from datetime import date, datetime, timedelta
 
-# from pathlib import Path
 from os import path
 from io import BytesIO
 from reportlab.pdfgen import canvas
@@ -33,7 +32,6 @@ class GeneraPDFView(View):
 	def get(self, request, model_string, pk):
 		
 		comprobante = Factura.objects.filter(pk=pk).first()
-		# facturas = ("FF", "CF", "DF", "FR", "FC", "CE", "DE", "FT", "FA", "NC", "ND")
 		electronicos = ("FF", "CF", "DF", "FR", "FC", "CE", "DE", "FT")
 		manuales = ("FA", "NC", "ND")
 		presupuestos = ("PR",)
@@ -587,7 +585,6 @@ class GeneraPDFView(View):
 		buffer.seek(0)
 		response = HttpResponse(buffer, content_type='application/pdf')
 		file = f"{factura.compro}_{factura.letra_comprobante}_{factura.numero_comprobante_formateado}"
-		# response['Content-Disposition'] = f'inline; filename="{factura.compro_letra_numero_comprobante_formateado}.pdf"'
 		response['Content-Disposition'] = f'inline; filename="{file}.pdf"'
 		return response
 	
@@ -867,7 +864,6 @@ class GeneraPDFView(View):
 		buffer.seek(0)
 		response = HttpResponse(buffer, content_type='application/pdf')
 		file = f"{recibo.compro}_{recibo.letra_comprobante}_{recibo.numero_comprobante_formateado}"
-		# response['Content-Disposition'] = f'inline; filename="Recibo {recibo.compro_letra_numero_comprobante_formateado}.pdf"'
 		response['Content-Disposition'] = f'inline; filename="Recibo {file}.pdf"'
 		return response
 	
@@ -1088,8 +1084,6 @@ class GeneraPDFView(View):
 		y_table = y_box - 1*mm  # posición fija debajo del recuadro cliente
 		tabla.wrapOn(c, width - 2*margin, height)
 		tabla.drawOn(c, margin, y_table - tabla._height)
-		#########################################################################################
-		
 		
 		c.showPage()
 		c.save()
@@ -1097,7 +1091,6 @@ class GeneraPDFView(View):
 		buffer.seek(0)
 		response = HttpResponse(buffer, content_type='application/pdf')
 		file = f"{remito.compro}_{remito.letra_comprobante}_{remito.numero_comprobante_formateado}"
-		# response['Content-Disposition'] = f'inline; filename="Recibo {remito.compro_letra_numero_comprobante_formateado}.pdf"'
 		response['Content-Disposition'] = f'inline; filename="Recibo {file}.pdf"'
 		return response
 	
