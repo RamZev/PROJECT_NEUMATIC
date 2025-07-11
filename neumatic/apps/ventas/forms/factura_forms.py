@@ -91,8 +91,13 @@ class FacturaForm(forms.ModelForm):
             
             "comprobante_remito": forms.Select(attrs={**formclassselect}),            
             "remito": forms.TextInput(attrs={**formclasstext, 'readonly': 'readonly'}),
-            "fecha_comprobante": forms.TextInput(attrs={**formclassdate, 'type': 'date'}),
-                        
+            "fecha_comprobante": forms.TextInput(
+                attrs={
+                    **formclassdate,
+                    'type': 'date', 
+                    'readonly': 'readonly'
+                }
+            ),
             "cuit": forms.TextInput(attrs={**formclasstext, 'type': 'number', 'step': '1'}),  # Sin decimales
             "condicion_comprobante": forms.Select(attrs={**formclassselect}),
             "no_estadist": forms.CheckboxInput(attrs={**formclasscheck}),
