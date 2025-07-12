@@ -1132,15 +1132,21 @@
 
             ///
             function parseNumber(value) {
-                if (!value) return 0;
+                // Si es número, retornar directamente
                 if (typeof value === 'number') return value;
-                // Maneja casos como "1.234,56" o "1234.56"
-                if (typeof value === 'string') {
-                    value = value.replace(/\./g, '').replace(',', '.');
+                
+                // Si es string con formato "184.802,20"
+                if (typeof value === 'string' && value.includes('.') && value.includes(',')) {
+                    return parseFloat(
+                        value.replace(/\./g, '')  // Quita puntos de miles
+                             .replace(',', '.')   // Convierte coma decimal a punto
+                    );
                 }
+                
+                // Para strings numéricos simples "184802.20"
                 return parseFloat(value) || 0;
             }
-
+            
             // Función para formatear números al formato es-AR (ej: 1234,56)
             function formatNumber(value) {
                 const num = parseNumber(value);
@@ -1251,6 +1257,40 @@
             function actualizarTotalDepositos() {
                 let totalDepositos = 0;
                 const container = document.querySelector('#formset-container4');
+
+                if (!container) {
+                    console.warn("No se encontró el contenedor formset-container4");
+                    const totalInput = document.getElementById('id_total_depositos');
+                    if (totalInput) {
+                        totalInput.value = "0.00";
+                        actualizarVisualizacion('id_total_depositos');
+                    }
+                    return;
+                }
+
+                const rows = container.querySelectorAll('tbody tr:not([style*="display: none"])');
+                rows.forEach(row => {
+                    const input = row.querySelector('[name*="-importe_deposito"]');
+                    if (input) {
+                        const value = parseNumber(input.value);
+                        totalDepositos += value;
+                    }
+                });
+
+                const totalInput = document.getElementById('id_total_depositos');
+                if (totalInput) {
+                    totalInput.value = totalDepositos.toFixed(2);
+                    actualizarVisualizacion('id_total_depositos');
+                } else {
+                    console.error("No se encontró el campo id_total_depositos");
+                }
+            }
+
+
+            /*
+            function actualizarTotalDepositos() {
+                let totalDepositos = 0;
+                const container = document.querySelector('#formset-container4');
                 if (!container || container.querySelectorAll('tbody tr:not([style*="display: none"])').length === 0) {
                     document.getElementById('id_total_depositos').value = totalDepositos.toFixed(2);
                     actualizarVisualizacion('id_total_depositos');
@@ -1269,8 +1309,42 @@
                 document.getElementById('id_total_depositos').value = totalDepositos.toFixed(2);
                 actualizarVisualizacion('id_total_depositos');
             }
+            */
 
             // Calcular el total de tarjetas
+            function actualizarTotalTarjetas() {
+                let totalTarjetas = 0;
+                const container = document.querySelector('#formset-container5');
+
+                if (!container) {
+                    console.warn("No se encontró el contenedor formset-container5");
+                    const totalInput = document.getElementById('id_total_tarjetas');
+                    if (totalInput) {
+                        totalInput.value = "0.00";
+                        actualizarVisualizacion('id_total_tarjetas');
+                    }
+                    return;
+                }
+
+                const rows = container.querySelectorAll('tbody tr:not([style*="display: none"])');
+                rows.forEach(row => {
+                    const input = row.querySelector('[name*="-importe_tarjeta"]');
+                    if (input) {
+                        const value = parseNumber(input.value);
+                        totalTarjetas += value;
+                    }
+                });
+
+                const totalInput = document.getElementById('id_total_tarjetas');
+                if (totalInput) {
+                    totalInput.value = totalTarjetas.toFixed(2);
+                    actualizarVisualizacion('id_total_tarjetas');
+                } else {
+                    console.error("No se encontró el campo id_total_tarjetas");
+                }
+            }
+            
+            /*
             function actualizarTotalTarjetas() {
                 let totalTarjetas = 0;
                 const container = document.querySelector('#formset-container5');
@@ -1292,9 +1366,10 @@
                 document.getElementById('id_total_tarjetas').value = totalTarjetas.toFixed(2);
                 actualizarVisualizacion('id_total_tarjetas');
             }
+            */
 
-            // Calcular el total de cheques
-            function actualizarTotalCheques() {
+            
+            /*function actualizarTotalCheques() {
                 let totalCheques = 0;
                 const container = document.querySelector('#formset-container6');
                 if (!container || container.querySelectorAll('tbody tr:not([style*="display: none"])').length === 0) {
@@ -1315,7 +1390,41 @@
                 document.getElementById('id_total_cheques').value = totalCheques.toFixed(2);
                 actualizarVisualizacion('id_total_cheques');
             }
+            */
             ////
+
+            // Calcular el total de cheques
+            function actualizarTotalCheques() {
+                let totalCheques = 0;
+                const container = document.querySelector('#formset-container6');
+
+                if (!container) {
+                    console.warn("No se encontró el contenedor formset-container6");
+                    const totalInput = document.getElementById('id_total_cheques');
+                    if (totalInput) {
+                        totalInput.value = "0.00";
+                        actualizarVisualizacion('id_total_cheques');
+                    }
+                    return;
+                }
+
+                const rows = container.querySelectorAll('tbody tr:not([style*="display: none"])');
+                rows.forEach(row => {
+                    const input = row.querySelector('[name*="-importe_cheque"]');
+                    if (input) {
+                        const value = parseNumber(input.value);
+                        totalCheques += value;
+                    }
+                });
+
+                const totalInput = document.getElementById('id_total_cheques');
+                if (totalInput) {
+                    totalInput.value = totalCheques.toFixed(2);
+                    actualizarVisualizacion('id_total_cheques');
+                } else {
+                    console.error("No se encontró el campo id_total_cheques");
+                }
+            }
 
             // Calcular total formas de pago y resto a cobrar
             function actualizarResumenPagos() {
