@@ -452,4 +452,35 @@ class PresupuestoDeleteView(MaestroDetalleDeleteView):
 		"list_view_name" : list_view_name,
 		"mensaje": "Estás seguro que deseas eliminar el Registro"
 	}
+
+	# Sobrescritura del método Post
+	def post(self, request, *args, **kwargs):
+		"""
+		Sobrescribe el método post para añadir validación específica
+		sin afectar el flujo general de otras vistas
+		"""
+		self.object = self.get_object()
+		
+		# Validación exclusiva para Factura (no afecta otros modelos)
+		if hasattr(self.object, 'id_comprobante_venta') and self.object.id_comprobante_venta.electronica:
+			messages.error(
+				request,
+				f"No se puede eliminar {self.object}: Comprobante electrónico",
+				extra_tags='modal_error'  # Etiqueta para identificación en JS
+			)
+			return redirect(self.success_url)
+			
+		# Comportamiento normal para otros casos
+		try:
+			with transaction.atomic():
+				return super().post(request, *args, **kwargs)
+				
+		except ProtectedError:
+			messages.error(request, "No se puede eliminar (existen relaciones asociadas)")
+			return redirect(self.success_url)
+			
+		except Exception as e:
+			messages.error(request, f"Error inesperado: {str(e)}")
+			return redirect(self.success_url)
+
 # ------------------------------------------------------------------------------

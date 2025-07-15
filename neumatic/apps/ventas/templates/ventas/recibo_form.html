@@ -1,6 +1,6 @@
 {% extends 'proceso_form.html' %}
-
 {% load static %}
+{% load custom_tags %}
 
 {% block style %}
     body {
@@ -96,8 +96,13 @@
         border-radius: 0.25rem; /* Esquinas redondeadas */
         font-family: monospace; /* Alineación perfecta de dígitos */
         margin: 2px 0; /* Pequeño margen para separación visual */
-        font-size: 1.1rem;
+        font-size: 0.9rem;
     }
+
+    .decimal {
+		text-align: right;
+		font-familily: monospace;
+	}
     
 {% endblock style %}
 
@@ -409,8 +414,8 @@
                                     </label>
                                     
                                     <div>
-                                        {{ form.total_retenciones }}
-                                        <span>{{ form.total_retenciones.value|default:"0.00" }}</span>
+                                        {{ form.total_retenciones|formato_es_ar }}
+                                        <span class="formatted-number">{{ form.total_retenciones.value|default:"0.00" }}</span>
                                     </div>
                                 </div>
                                 <div class="col-md-2">
@@ -419,7 +424,7 @@
                                     </label>
                                     <div>
                                         {{ form.efectivo_recibo }}
-                                        <span>{{ form.efectivo_recibo.value|default:"0.00" }}</span>
+                                        <span class="formatted-number">{{ form.efectivo_recibo.value|default:"0.00" }}</span>
                                     </div>
                                 </div>
                                 <div class="col-md-2">
@@ -428,7 +433,7 @@
                                     </label>
                                     <div>
                                         {{ form.total_depositos }}
-                                        <span>{{ form.total_depositos.value|default:"0.00" }}</span>
+                                        <span class="formatted-number">{{ form.total_depositos.value|default:"0.00" }}</span>
                                     </div>
                                 </div>
                                 <div class="col-md-2">
@@ -437,7 +442,7 @@
                                     </label>
                                     <div>
                                         {{ form.total_tarjetas }}
-                                        <span>{{ form.total_tarjetas.value|default:"0.00" }}</span>
+                                        <span class="formatted-number">{{ form.total_tarjetas.value|default:"0.00" }}</span>
                                     </div>
                                 </div>
                                 <div class="col-md-2">
@@ -446,7 +451,7 @@
                                     </label>
                                     <div>
                                         {{ form.total_cheques }}
-                                        <span>{{ form.total_cheques.value|default:"0.00" }}</span>
+                                        <span class="formatted-number">{{ form.total_cheques.value|default:"0.00" }}</span>
                                     </div>
                                 </div>
                                 <div class="col-md-2">
@@ -455,7 +460,7 @@
                                     </label>
                                     <div>
                                         {{ form.total_formas_pago }}
-                                        <span>{{ form.total_formas_pago.value|default:"0.00" }}</span>
+                                        <span class="formatted-number">{{ form.total_formas_pago.value|default:"0.00" }}</span>
                                     </div>
                                 </div>
                             </div>
@@ -467,7 +472,7 @@
                                     </label>
                                     <div>
                                         {{ form.total }}
-                                        <span>{{ form.total.value|default:"0.00" }}</span>
+                                        <span class="formatted-number">{{ form.total.value|default:"0.00" }}</span>
                                     </div>
                                 </div>
 
@@ -477,7 +482,7 @@
                                     </label>
                                     <div>
                                         {{ form.total_cobrado }}
-                                        <span>{{ form.total_cobrado.value|default:"0.00" }}</span>
+                                        <span class="formatted-number">{{ form.total_cobrado.value|default:"0.00" }}</span>
                                     </div>
                                 </div>
                                 
@@ -487,7 +492,7 @@
                                     </label>
                                     <div>
                                         {{ form.resto_cobrar }}
-                                        <span>{{ form.resto_cobrar.value|default:"0.00" }}</span>
+                                        <span class="formatted-number">{{ form.resto_cobrar.value|default:"0.00" }}</span>
                                     </div>
                                 </div>
                             </div>
@@ -1088,6 +1093,7 @@
             const formsetContainer = document.getElementById('formset-container2');
             const isEdit = document.getElementById('modo-edicion').dataset.isEdit === 'true';
             
+            /*
             // Función para parsear valores (CRÍTICA)
             function parseNumber(value) {
                 // Si es número, retornar directamente
@@ -1122,6 +1128,47 @@
                     span.textContent = input.value || "0.00"; // Sin formato por ahora
                 }
             }
+            */
+
+            ///
+            function parseNumber(value) {
+                // Si es número, retornar directamente
+                if (typeof value === 'number') return value;
+                
+                // Si es string con formato "184.802,20"
+                if (typeof value === 'string' && value.includes('.') && value.includes(',')) {
+                    return parseFloat(
+                        value.replace(/\./g, '')  // Quita puntos de miles
+                             .replace(',', '.')   // Convierte coma decimal a punto
+                    );
+                }
+                
+                // Para strings numéricos simples "184802.20"
+                return parseFloat(value) || 0;
+            }
+            
+            // Función para formatear números al formato es-AR (ej: 1234,56)
+            function formatNumber(value) {
+                const num = parseNumber(value);
+                return num.toLocaleString('es-AR', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                });
+            }
+
+            // Función para actualizar visualización de campos
+            function actualizarVisualizacion(campoId) {
+                const input = document.getElementById(campoId);
+                const span = input?.nextElementSibling;
+                if (input && span && span.classList.contains('formatted-number')) {
+                    const value = input.value || "0.00";
+                    span.textContent = formatNumber(value);
+                } else {
+                    console.warn(`No se encontró input o span con clase formatted-number para ${campoId}`);
+                }
+            }
+            ///
+
             
             // Calcular el total cobrado
             function actualizarTotalCobrado() {
@@ -1147,6 +1194,41 @@
                 actualizarVisualizacion('id_total_cobrado');
             }
 
+            ///
+            function actualizarTotalRetenciones() {
+                let totalRetenciones = 0;
+                const container = document.querySelector('#formset-container3');
+
+                if (!container) {
+                    console.warn("No se encontró el contenedor formset-container3");
+                    const totalInput = document.getElementById('id_total_retenciones');
+                    if (totalInput) {
+                        totalInput.value = "0.00";
+                        actualizarVisualizacion('id_total_retenciones');
+                    }
+                    return;
+                }
+
+                const rows = container.querySelectorAll('tbody tr:not([style*="display: none"])');
+                rows.forEach(row => {
+                    const input = row.querySelector('[name*="-importe_retencion"]');
+                    if (input) {
+                        const value = parseNumber(input.value);
+                        totalRetenciones += value;
+                    }
+                });
+
+                const totalInput = document.getElementById('id_total_retenciones');
+                if (totalInput) {
+                    totalInput.value = totalRetenciones.toFixed(2);
+                    actualizarVisualizacion('id_total_retenciones');
+                } else {
+                    console.error("No se encontró el campo id_total_retenciones");
+                }
+            }
+            ///
+
+            /*
             // Calcular el total de retenciones
             function actualizarTotalRetenciones() {
                 let totalRetenciones = 0;
@@ -1169,8 +1251,43 @@
                 document.getElementById('id_total_retenciones').value = totalRetenciones.toFixed(2);
                 actualizarVisualizacion('id_total_retenciones');
             }
+            */
 
             // Calcular el total de depósitos
+            function actualizarTotalDepositos() {
+                let totalDepositos = 0;
+                const container = document.querySelector('#formset-container4');
+
+                if (!container) {
+                    console.warn("No se encontró el contenedor formset-container4");
+                    const totalInput = document.getElementById('id_total_depositos');
+                    if (totalInput) {
+                        totalInput.value = "0.00";
+                        actualizarVisualizacion('id_total_depositos');
+                    }
+                    return;
+                }
+
+                const rows = container.querySelectorAll('tbody tr:not([style*="display: none"])');
+                rows.forEach(row => {
+                    const input = row.querySelector('[name*="-importe_deposito"]');
+                    if (input) {
+                        const value = parseNumber(input.value);
+                        totalDepositos += value;
+                    }
+                });
+
+                const totalInput = document.getElementById('id_total_depositos');
+                if (totalInput) {
+                    totalInput.value = totalDepositos.toFixed(2);
+                    actualizarVisualizacion('id_total_depositos');
+                } else {
+                    console.error("No se encontró el campo id_total_depositos");
+                }
+            }
+
+
+            /*
             function actualizarTotalDepositos() {
                 let totalDepositos = 0;
                 const container = document.querySelector('#formset-container4');
@@ -1192,8 +1309,42 @@
                 document.getElementById('id_total_depositos').value = totalDepositos.toFixed(2);
                 actualizarVisualizacion('id_total_depositos');
             }
+            */
 
             // Calcular el total de tarjetas
+            function actualizarTotalTarjetas() {
+                let totalTarjetas = 0;
+                const container = document.querySelector('#formset-container5');
+
+                if (!container) {
+                    console.warn("No se encontró el contenedor formset-container5");
+                    const totalInput = document.getElementById('id_total_tarjetas');
+                    if (totalInput) {
+                        totalInput.value = "0.00";
+                        actualizarVisualizacion('id_total_tarjetas');
+                    }
+                    return;
+                }
+
+                const rows = container.querySelectorAll('tbody tr:not([style*="display: none"])');
+                rows.forEach(row => {
+                    const input = row.querySelector('[name*="-importe_tarjeta"]');
+                    if (input) {
+                        const value = parseNumber(input.value);
+                        totalTarjetas += value;
+                    }
+                });
+
+                const totalInput = document.getElementById('id_total_tarjetas');
+                if (totalInput) {
+                    totalInput.value = totalTarjetas.toFixed(2);
+                    actualizarVisualizacion('id_total_tarjetas');
+                } else {
+                    console.error("No se encontró el campo id_total_tarjetas");
+                }
+            }
+            
+            /*
             function actualizarTotalTarjetas() {
                 let totalTarjetas = 0;
                 const container = document.querySelector('#formset-container5');
@@ -1215,9 +1366,10 @@
                 document.getElementById('id_total_tarjetas').value = totalTarjetas.toFixed(2);
                 actualizarVisualizacion('id_total_tarjetas');
             }
+            */
 
-            // Calcular el total de cheques
-            function actualizarTotalCheques() {
+            
+            /*function actualizarTotalCheques() {
                 let totalCheques = 0;
                 const container = document.querySelector('#formset-container6');
                 if (!container || container.querySelectorAll('tbody tr:not([style*="display: none"])').length === 0) {
@@ -1238,7 +1390,41 @@
                 document.getElementById('id_total_cheques').value = totalCheques.toFixed(2);
                 actualizarVisualizacion('id_total_cheques');
             }
+            */
             ////
+
+            // Calcular el total de cheques
+            function actualizarTotalCheques() {
+                let totalCheques = 0;
+                const container = document.querySelector('#formset-container6');
+
+                if (!container) {
+                    console.warn("No se encontró el contenedor formset-container6");
+                    const totalInput = document.getElementById('id_total_cheques');
+                    if (totalInput) {
+                        totalInput.value = "0.00";
+                        actualizarVisualizacion('id_total_cheques');
+                    }
+                    return;
+                }
+
+                const rows = container.querySelectorAll('tbody tr:not([style*="display: none"])');
+                rows.forEach(row => {
+                    const input = row.querySelector('[name*="-importe_cheque"]');
+                    if (input) {
+                        const value = parseNumber(input.value);
+                        totalCheques += value;
+                    }
+                });
+
+                const totalInput = document.getElementById('id_total_cheques');
+                if (totalInput) {
+                    totalInput.value = totalCheques.toFixed(2);
+                    actualizarVisualizacion('id_total_cheques');
+                } else {
+                    console.error("No se encontró el campo id_total_cheques");
+                }
+            }
 
             // Calcular total formas de pago y resto a cobrar
             function actualizarResumenPagos() {
@@ -1446,7 +1632,8 @@
                 const importe = formsetContainer4.querySelector('#id_importe_deposito_input').value;
                 const detalle = formsetContainer4.querySelector('#id_detalle_deposito_input').value;
 
-                if (!banco || !concepto || !fecha || !importe || !detalle) {
+                // if (!banco || !concepto || !fecha || !importe || !detalle) {
+                if (!banco || !concepto || !fecha || !importe) {
                     alert('Por favor, complete todos los campos!!');
                     return;
                 }
@@ -1644,8 +1831,8 @@
                 if (!sucursal) camposFaltantes.push('Sucursal');
                 if (!codigoPostal) camposFaltantes.push('Código Postal');
                 if (!numero) camposFaltantes.push('Número de Cheque');
-                if (!cuenta) camposFaltantes.push('Cuenta');
-                if (!cuit) camposFaltantes.push('CUIT');
+                // if (!cuenta) camposFaltantes.push('Cuenta');
+                // if (!cuit) camposFaltantes.push('CUIT');
                 if (!fecha1) camposFaltantes.push('Fecha de Emisión');
                 if (!fecha2) camposFaltantes.push('Fecha de Cobro');
                 if (!importe) camposFaltantes.push('Importe');
