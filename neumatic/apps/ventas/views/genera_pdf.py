@@ -1,7 +1,6 @@
 # neumatic\apps\ventas\views\genera_pdf.py
 from django.views import View
 from django.http import HttpResponse
-from django.shortcuts import get_object_or_404
 from django.conf import settings
 from datetime import date, datetime, timedelta
 
@@ -29,7 +28,7 @@ class GeneraPDFView(View):
 	# 		return method(request, pk)
 	# 	return self.generar_pdf_default(model_string, pk)
 	
-	def get(self, request, model_string, pk):
+	def get(self, request, pk):
 		
 		comprobante = Factura.objects.filter(pk=pk).first()
 		electronicos = ("FF", "CF", "DF", "FR", "FC", "CE", "DE", "FT")
@@ -41,14 +40,16 @@ class GeneraPDFView(View):
 		remitos = ("RF", "RD", "RT", "RM", "DM", "MR", "MD", "MS", "MM")
 		
 		if comprobante.compro in facturas:
-			return self.generar_pdf_factura(request, comprobante)
+			return self.generar_pdf_factura(comprobante)
+		
 		elif comprobante.compro in recibos:
-			return self.generar_pdf_recibo(request, comprobante)
+			return self.generar_pdf_recibo(comprobante)
+		
 		elif comprobante.compro in remitos:
-			return self.generar_pdf_remito(request, comprobante)
+			return self.generar_pdf_remito(comprobante)
 	
-	def generar_pdf_factura(self, request, factura):
-		# Obtener datos principales
+	def generar_pdf_factura(self, factura):
+		#-- Obtener datos principales.
 		detalles = DetalleFactura.objects.filter(id_factura=factura)
 		empresa = Empresa.objects.first()
 		cliente = factura.id_cliente  # No necesitas consulta adicional
@@ -87,10 +88,16 @@ class GeneraPDFView(View):
 		
 		c.setFont("Helvetica-Bold", 16)
 		c.drawCentredString(x_line, y_letter_box+4*mm, factura.letra_comprobante)
-		if factura.compro != "PR":
-			c.setFont("Helvetica", 6)
-			c.drawCentredString(x_line, y_letter_box+1*mm, f"Cód.{factura.id_comprobante_venta.codigo_afip_a if factura.letra_comprobante == 'A' else factura.id_comprobante_venta.codigo_afip_b}")
-			c.setFont("Helvetica", 8)
+		c.setFont("Helvetica", 6)
+		
+		cod = ""
+		if factura.letra_comprobante == 'A':
+			cod = f"Cód.{factura.id_comprobante_venta.codigo_afip_a}"
+		elif factura.letra_comprobante == 'B':
+			cod = f"Cód.{factura.id_comprobante_venta.codigo_afip_b}"
+		
+		c.drawCentredString(x_line, y_letter_box+1*mm, cod)
+		c.setFont("Helvetica", 8)
 		
 		#-- Línea vertical divisoria.
 		c.line(x_line, y_position-area_box, x_line, y_position - header_top_height)
@@ -107,12 +114,14 @@ class GeneraPDFView(View):
 
 		#-- Posicionar el logo.
 		try:
-			c.drawImage(logo_path, 
-						x=margin + 5*mm,
-						y=y_position -5*mm,
-						width=logo_width,
-						height=logo_height,
-						preserveAspectRatio=True)
+			c.drawImage(
+				logo_path,
+				x=margin + 5*mm,
+				y=y_position -5*mm,
+				width=logo_width,
+				height=logo_height,
+				preserveAspectRatio=True
+			)
 		except:
 			print("Logo no cargado - espacio reservado se mantiene")
 		
@@ -144,11 +153,11 @@ class GeneraPDFView(View):
 		x_text_right = width/2 + 20*mm + 10*mm
 		
 		c.setFont("Helvetica-Bold", 10)
-		# c.drawString(x_text_right, y_text_right, f"{factura.id_comprobante_venta}")
-		c.drawString(x_text_right, y_text_right, f"{factura.id_comprobante_venta.nombre_impresion}")
+		nombre_comprobante = factura.id_comprobante_venta.nombre_impresion if factura.id_comprobante_venta.nombre_impresion else factura.id_comprobante_venta.nombre_comprobante_venta
+		c.drawString(x_text_right, y_text_right, nombre_comprobante)
 		
 		y_text_right -= 4*mm
-		c.drawString(x_text_right, y_text_right, f"Comprobante Nº: {factura.numero_comprobante_formateado}")
+		c.drawString(x_text_right, y_text_right, f"Comprobante Nro.: {factura.numero_comprobante_formateado}")
 		
 		y_text_right -= 4*mm
 		c.drawString(x_text_right, y_text_right, f"Fecha: {factura.fecha_comprobante.strftime('%d/%m/%Y')}")
@@ -172,8 +181,8 @@ class GeneraPDFView(View):
 		box_heigth = 6*mm
 		y_box = y_header_top - box_heigth - 1*mm
 		
-		doc_fce = ("fc", "ft", "ce", "de" )
-		if factura.compro.lower() in doc_fce:
+		doc_fce = ("FC", "FT", "CE", "DE" )
+		if factura.compro.upper() in doc_fce:
 			c.rect(margin, y_box, width - 2*margin, box_heigth)
 			fecha_vcto = ""
 			if factura.fecha_comprobante and empresa.dias_vencimiento:
@@ -191,16 +200,16 @@ class GeneraPDFView(View):
 		c.drawString(x_text_left, y_box + 2*mm, f"Condición de Venta: {factura.condicion_venta}")
 		
 		#-- Si es Factura Remito/FCE MIPYME.
-		fac_rto = ("fr", "ft")
-		nd_nc = ("cf", "df", "nc", "nd")
-		if factura.compro.lower() in fac_rto:
+		fac_rto = ("FR", "FT")
+		nd_nc = ("CF", "DF", "NC", "ND")
+		if factura.compro.upper() in fac_rto:
 			c.drawString(x_text_right, y_box + 2*mm, f"REMITO: {factura.comprobante_remito} {factura.remito}")
 		
 		#-- Si es Nota de Crédito/Débito.
-		elif factura.compro.lower() in nd_nc:
-			# compro_asoc = Factura.objects.filter(pk=factura.id_comprobante_asociado).first()
-			# c.drawString(x_text_right, y_box + 2*mm, f"FACTURA: {compro_asoc.compro} {compro_asoc.letra_comprobante} {factura.numero_asociado_formateado}")
-			c.drawString(x_text_right, y_box + 2*mm, f"FACTURA: {factura.numero_asociado_formateado}")
+		elif factura.compro.upper() in nd_nc:
+			compro_asoc = Factura.objects.filter(pk=factura.id_comprobante_asociado).first()
+			compro_asoc = compro_asoc.compro_letra_numero_comprobante_formateado if compro_asoc else ""
+			c.drawString(x_text_right - 10*mm, y_box + 2*mm, f"COMPROBANTE ASOCIADO: {compro_asoc}")
 		
 		c.setFont("Helvetica", 8)
 		
@@ -328,7 +337,6 @@ class GeneraPDFView(View):
 				f"{formato_argentino(detalle.total)}"
 			])
 			current_row += 1
-			# if detalle.id_producto.despacho_1 or detalle.id_producto.despacho_2:
 			if (detalle.id_producto.despacho_1 or detalle.id_producto.despacho_2) and factura.compro != "PR":
 				numero_despacho = detalle.id_producto.despacho_1 if detalle.id_producto.despacho_1 else detalle.id_producto.despacho_2
 				detail_data.append([
@@ -428,7 +436,6 @@ class GeneraPDFView(View):
 		if factura.compro != "PR":
 			#-- Textos parte izquierda del recuadro Totales.
 			x_text_left = margin + 5*mm
-			# y_text = 77*mm
 			
 			#-- Vendedor.
 			c.setFont("Helvetica-Bold", 8)
@@ -488,7 +495,6 @@ class GeneraPDFView(View):
 			#-- Recibí Conforme.
 			line_size = 50*mm
 			x_sign_line = margin + (width_box_left/2 - line_size/2)
-			# y_sign_line = y_total_box + 5*mm
 			c.line(x_sign_line, y_sign_line, x_sign_line+line_size, y_sign_line)
 			c.drawCentredString(x_sign_line+line_size/2, y_total_box+2*mm, "Recibí Conforme")
 		
@@ -588,7 +594,7 @@ class GeneraPDFView(View):
 		response['Content-Disposition'] = f'inline; filename="{file}.pdf"'
 		return response
 	
-	def generar_pdf_recibo(self, request, recibo):
+	def generar_pdf_recibo(self, recibo):
 		#-- Obtener datos principales.
 		detalle_recibo = DetalleRecibo.objects.filter(id_factura=recibo)
 		retenciones = RetencionRecibo.objects.filter(id_factura=recibo)
@@ -598,8 +604,10 @@ class GeneraPDFView(View):
 		
 		empresa = Empresa.objects.first()
 		cliente = recibo.id_cliente  # No necesitas consulta adicional
+		usuario = recibo.id_user
 		
-		usuario = f"{request.user.first_name} {request.user.last_name}" if request.user.first_name or request.user.last_name else str(request.user)
+		usuario = f"{usuario.first_name} {usuario.last_name}" if usuario.first_name or usuario.last_name else str(usuario)
+		
 		
 		if not empresa:
 			return HttpResponse("No se encontraron datos de empresa configurados", status=400)
@@ -631,12 +639,14 @@ class GeneraPDFView(View):
 
 		#-- Posicionar el logo.
 		try:
-			c.drawImage(logo_path, 
-						x=margin + 5*mm,
-						y=y_position -5*mm,
-						width=logo_width,
-						height=logo_height,
-						preserveAspectRatio=True)
+			c.drawImage(
+				logo_path, 
+				x=margin + 5*mm,
+				y=y_position -5*mm,
+				width=logo_width,
+				height=logo_height,
+				preserveAspectRatio=True
+			)
 		except:
 			print("Logo no cargado - espacio reservado se mantiene")
 		
@@ -661,10 +671,11 @@ class GeneraPDFView(View):
 		x_text_right = width/2 + 5*mm
 		
 		c.setFont("Helvetica-Bold", 10)
-		c.drawString(x_text_right, y_text_right, "RECIBO OFICIAL")
+		nombre_comprobante = recibo.id_comprobante_venta.nombre_impresion if recibo.id_comprobante_venta.nombre_impresion else recibo.id_comprobante_venta.nombre_comprobante_venta
+		c.drawString(x_text_right, y_text_right, nombre_comprobante)
 		
 		y_text_right -= 4*mm
-		c.drawString(x_text_right, y_text_right, f"Nº: {recibo.letra_numero_comprobante_formateado}")
+		c.drawString(x_text_right, y_text_right, f"Nro.: {recibo.letra_numero_comprobante_formateado}")
 		
 		c.setFont("Helvetica", 8)
 		y_text_right -= 4*mm
@@ -820,6 +831,10 @@ class GeneraPDFView(View):
 		
 		#-- Dibuja la tabla en el canvas.
 		if len(table_data) > 1:
+			c.drawString(x_text_left, y_detail, "Según los siguientes Medios de Pago:")
+			
+			y_detail -= 5*mm
+			
 			table.wrapOn(c, width - 2*margin, 200*mm)
 			table.drawOn(c, margin, y_detail - table._height)
 			y_base_tabla = y_detail - table._height  # base de la tabla
@@ -831,6 +846,16 @@ class GeneraPDFView(View):
 		letras_style = ParagraphStyle(
 			'letras',
 			fontName='Helvetica-Bold',
+			fontSize=8,
+			leading=10,
+			leftIndent=0,
+			rightIndent=0,
+			spaceBefore=0,
+			spaceAfter=0,
+		)
+		observ_style = ParagraphStyle(
+			'observ',
+			fontName='Helvetica',
 			fontSize=8,
 			leading=10,
 			leftIndent=0,
@@ -858,15 +883,30 @@ class GeneraPDFView(View):
 		c.line(x_inicio, y_linea, x_fin, y_linea)
 		c.drawCentredString(x_inicio+((x_fin - x_inicio)/2), y_linea-4*mm, usuario)
 		
+		#-- Observaciones si las tiene.
+		if recibo.observa_comprobante:
+			y_text -= (h + 10*mm)
+			
+			c.setFont("Helvetica-Bold", 8)
+			c.drawString(x_text_left, y_text, "Observaciones:")
+			c.setFont("Helvetica", 8)
+			
+			y_text -= 1*mm
+			observ_para = Paragraph(recibo.observa_comprobante, observ_style)
+			w, h = observ_para.wrap(width - 2*margin-10*mm, 40*mm)
+			observ_para.drawOn(c, margin + 5*mm, y_text - h)
+		
+		
 		c.showPage()
 		c.save()
 		
 		buffer.seek(0)
 		response = HttpResponse(buffer, content_type='application/pdf')
 		file = f"{recibo.compro}_{recibo.letra_comprobante}_{recibo.numero_comprobante_formateado}"
-		response['Content-Disposition'] = f'inline; filename="Recibo {file}.pdf"'
+		response['Content-Disposition'] = f'inline; filename="{file}.pdf"'
 		return response
 	
+	"""	Genera Remitos con formato.
 	def generar_pdf_remito(self, request, remito):
 		#-- Obtener datos principales.
 		detalle_remito = DetalleFactura.objects.filter(id_factura=remito)
@@ -1091,21 +1131,214 @@ class GeneraPDFView(View):
 		buffer.seek(0)
 		response = HttpResponse(buffer, content_type='application/pdf')
 		file = f"{remito.compro}_{remito.letra_comprobante}_{remito.numero_comprobante_formateado}"
-		response['Content-Disposition'] = f'inline; filename="Recibo {file}.pdf"'
+		response['Content-Disposition'] = f'inline; filename="{file}.pdf"'
 		return response
-	
-	
-	
 	"""	
-	def generar_pdf_default(self, model_string, pk):
+	def generar_pdf_remito(self, remito):
+		"""Se generan Remitos Sin formato para imprimir en formatos pre-impresos."""
+		#-- Obtener datos principales.
+		detalle_remito = DetalleFactura.objects.filter(id_factura=remito)
+		
+		cliente = remito.id_cliente  # No necesitas consulta adicional
+		
 		buffer = BytesIO()
-		p = canvas.Canvas(buffer, pagesize=portrait(A4))
-		p.setFont("Helvetica", 12)
-		p.drawString(100, 750, f"Documento {model_string} - ID {pk}")
-		p.showPage()
-		p.save()
+		c = canvas.Canvas(buffer, pagesize=portrait(A4))
+		width, height = portrait(A4)
+		margin = 10*mm
+		
+		#-- Posicionamiento inicial.
+		y_position = height - margin
+		
+		#-- Ajuste inicial
+		y_position -= 24*mm
+		
+		#-- Mostrar datos del Remito en la parte derecha.
+		x_datos_remito = 150*mm
+		
+		c.setFont("Helvetica-Bold", 12)
+		nombre_comprobante = remito.id_comprobante_venta.nombre_impresion if remito.id_comprobante_venta.nombre_impresion else remito.id_comprobante_venta.nombre_comprobante_venta
+		c.drawString(x_datos_remito, y_position, nombre_comprobante)
+		
+		c.setFont("Helvetica-Bold", 10)
+		y_position -= 10*mm
+		c.drawString(x_datos_remito, y_position, f"{datetime.now().strftime("%d/%m/%Y %I:%M:%S %p")}")
+		
+		
+		#-- Datos del Cliente. -------------------------------------------------------------------------------
+		x_text_left = margin + 5*mm
+		x_data_left = x_text_left + 11*mm
+		x_text_right = 95*mm
+		x_data_right = x_text_right + 1*mm
+		
+		y_position -= 26*mm
+		font_size = 9
+		paragraph_style = ParagraphStyle(
+			name='Normal',
+			fontName='Helvetica',
+			fontSize=font_size,
+			leading=10,
+			textColor=colors.black,
+		)
+		
+		c.setFont("Helvetica-Bold", font_size)
+		c.drawString(x_text_left, y_position, "Cuenta")
+		c.setFont("Helvetica", font_size)
+		c.drawString(x_data_left, y_position, f": {cliente.id_cliente}")
+		c.setFont("Helvetica-Bold", font_size)
+		c.drawRightString(x_text_right, y_position, "Ap. y Nombre/Razón Social:")
+		c.setFont("Helvetica", font_size)
+		
+		parrafo_cliente = Paragraph(f"{cliente.nombre_cliente}", paragraph_style)
+		max_width = 100*mm
+		w, h = parrafo_cliente.wrap(max_width, 20*mm)
+		line_height = font_size  # o paragraph_style.leading
+		parrafo_cliente.drawOn(c, x_data_right, y_position - (h - line_height))
+		
+		y_position = y_position - h - 2
+		c.setFont("Helvetica-Bold", font_size)
+		c.drawString(x_text_left, y_position, "I.V.A.")
+		c.setFont("Helvetica", font_size)
+		c.drawString(x_data_left, y_position, f": {cliente.id_tipo_iva.nombre_iva if cliente.id_tipo_iva else ''}")
+		c.setFont("Helvetica-Bold", font_size)
+		c.drawRightString(x_text_right, y_position, "Domicilio:")
+		c.setFont("Helvetica", font_size)
+		c.drawString(x_data_right, y_position, f" {cliente.domicilio_cliente}")
+		
+		y_position -= 4*mm
+		c.setFont("Helvetica-Bold", font_size)
+		c.drawString(x_text_left, y_position, cliente.nombre_tipo_documento_identidad)
+		c.setFont("Helvetica", font_size)
+		c.drawString(x_data_left, y_position, f": {cliente.cuit_formateado}")
+		c.setFont("Helvetica-Bold", font_size)
+		c.drawRightString(x_text_right, y_position, "Localidad:")
+		c.setFont("Helvetica", font_size)
+		c.drawString(x_data_right, y_position, f" {cliente.id_localidad} - {cliente.id_provincia}")
+		
+		#-- Imprimir el detalle del comprobante. -------------------------------------------------------------
+		
+		#-- Estilo de párrafo para la tabla.
+		paragraph_style_normal = ParagraphStyle(
+			name='Normal',
+			fontName='Helvetica',
+			fontSize=7,
+			leading=8,
+			textColor=colors.black,
+			alignment=TA_LEFT,
+		)
+		
+		#-- Información de las columnas de la tabla.
+		table_info = [
+			("CAI", 25*mm),
+			("Medida", 30*mm),
+			("Descripción", 120*mm),
+			("Cantidad", 15*mm),
+		]
+		
+		#-- Establecer estilos iniciales de la tabla
+		table_style = [
+			#-- Estilo general.
+			('FONTSIZE', (0, 0), (-1, -1), 7),
+			('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+			('TOPPADDING', (0, 0), (-1, -1), 0),
+			('BOTTOMPADDING', (0, 0), (-1, -1), 0),
+			('LEADING', (0, 0), (-1, -1), 8),
+			
+			#-- Estilo Headers.
+			# ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor("#BDBDBD")),  # Gris claro para el encabezado
+			# ('TEXTCOLOR', (0, 0), (-1, 0), colors.black),
+			# ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+			# ('TOPPADDING', (0, 0), (-1, 0), 3),
+			# ('BOTTOMPADDING', (0, 0), (-1, 0), 3),
+			# #-- Solo borde exterior del header:
+			# ('LINEABOVE', (0, 0), (-1, 0), 0.5, colors.black),
+			# ('LINEBELOW', (0, 0), (-1, 0), 0.5, colors.black),
+			# ('LINEBEFORE', (0, 0), (0, 0), 0.5, colors.black),
+			# ('LINEAFTER', (-1, 0), (-1, 0), 0.5, colors.black),
+			
+			#-- Estilo específicos.
+			('ALIGN', (3, 0), (-1, -1), 'RIGHT'),
+			# ('TOPPADDING', (0, 1), (-1, -1), 2),
+		]
+		
+		#-- Extraer encabezados y ancho de columnas.
+		headers = [header for header, width in table_info]
+		col_widths = [width for header, width in table_info]
+		
+		#-- Tabla Sin Encabezados.
+		detail_data = []
+		
+		#-- Establecer un contador de filas agregadas a la tabla (empezando en 0 porque no hay header).
+		current_row = 0
+		
+		#-- Agregar los datos a la tabla.
+		for detalle in detalle_remito:
+			detail_data.append([
+				Paragraph(str(detalle.id_producto.id_cai if detalle.id_producto and detalle.id_producto.id_cai else ""), style=paragraph_style_normal),
+				str(detalle.id_producto.medida if detalle.id_producto else ""),
+				Paragraph(str(detalle.producto_venta if detalle.producto_venta else ""), style=paragraph_style_normal),
+				formato_argentino(detalle.cantidad)
+			])
+			current_row += 1
+			if detalle.id_producto.despacho_1 or detalle.id_producto.despacho_2:
+				numero_despacho = detalle.id_producto.despacho_1 if detalle.id_producto.despacho_1 else detalle.id_producto.despacho_2
+				detail_data.append([
+					"",
+					"",
+					f"Nº Despacho: {numero_despacho}",
+					"",
+					"",
+					"",
+					"",
+					""
+				])
+				current_row += 1
+		
+		#-- Agregar una línea de detalle en blaco como separador.
+		detail_data.append([
+			"",
+			"",
+			"",
+			""
+		])
+		current_row += 1
+		
+		#-- Agregar Observaciones si las tiene.
+		if remito.observa_comprobante:
+			detail_data.append([
+				Paragraph(f"Observaciones: {remito.observa_comprobante}", style=paragraph_style_normal),
+				"",
+				"",
+				""
+			])
+			
+			#-- Aplicar estilos a la fila actual.
+			table_style.extend([
+				('SPAN', (0,current_row), (-1,current_row)),
+			])
+			current_row += 1
+		
+		#-- Crear la tabla con sus parámetros.
+		tabla = Table(detail_data, colWidths=col_widths, style=table_style, repeatRows=1)
+		
+		#-- Dibujar tabla.
+		y_table = height - 100*mm  # posición fija debajo del recuadro cliente
+		tabla.wrapOn(c, width - 2*margin, height)
+		tabla.drawOn(c, margin, y_table - tabla._height)
+		
+		#-- Depósito y Nro. Control. ---------
+		y_position = 35*mm
+		c.setFont("Helvetica", 7)
+		c.drawString(x_text_left, y_position, f"Depósito: {remito.id_deposito.id_producto_deposito}")
+		
+		y_position -= 4*mm
+		c.drawString(x_text_left, y_position, f"Control: {remito.compro_letra_numero_comprobante_formateado}")
+		#-------------------------------------
+		
+		c.showPage()
+		c.save()
+		
 		buffer.seek(0)
 		response = HttpResponse(buffer, content_type='application/pdf')
-		response['Content-Disposition'] = f'inline; filename="{model_string}_{pk}.pdf"'
+		file = f"{remito.compro}_{remito.letra_comprobante}_{remito.numero_comprobante_formateado}"
+		response['Content-Disposition'] = f'inline; filename="{file}.pdf"'
 		return response
-	"""

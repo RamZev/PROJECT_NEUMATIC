@@ -168,9 +168,9 @@
 													</button> {% endcomment %}
 
 													<!-- Botón Imprimir PDF -->
-													<!-- Botón Imprimir PDF -->
 													{% comment %} <a href="{% url 'generic_pdf' model_name=model_string_for_pdf pk=objeto.pk model_string=model_string%}"  {% endcomment %}
-													<a href="{% url 'generic_pdf' model_string=model_string pk=objeto.pk %}" 
+													{% comment %} <a href="{% url 'generic_pdf' model_string=model_string pk=objeto.pk %}" {% endcomment %}
+													<a href="{% url 'generic_pdf' pk=objeto.pk %}" 
 														target="_blank"
 														class="btn btn-outline-secondary btn-sm btn-print boton-oculto"
 														data-bs-toggle="tooltip" 
