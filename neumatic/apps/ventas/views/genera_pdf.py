@@ -325,6 +325,8 @@ class GeneraPDFView(View):
 		current_row = 1
 		
 		#-- Agregar los datos a la tabla.
+		for det in detalles:
+			print(det.id_producto)
 		for detalle in detalles:
 			detail_data.append([
 				Paragraph(str(detalle.id_producto.id_cai if detalle.id_producto and detalle.id_producto.id_cai else ""), style=paragraph_style_normal),
@@ -337,6 +339,8 @@ class GeneraPDFView(View):
 				f"{formato_argentino(detalle.total)}"
 			])
 			current_row += 1
+			print("detalle.id_producto.despacho_1", detalle.id_producto.despacho_1)
+			print("detalle.id_producto.despacho_2", detalle.id_producto.despacho_2)
 			if (detalle.id_producto.despacho_1 or detalle.id_producto.despacho_2) and factura.compro != "PR":
 				numero_despacho = detalle.id_producto.despacho_1 if detalle.id_producto.despacho_1 else detalle.id_producto.despacho_2
 				detail_data.append([
@@ -607,7 +611,6 @@ class GeneraPDFView(View):
 		usuario = recibo.id_user
 		
 		usuario = f"{usuario.first_name} {usuario.last_name}" if usuario.first_name or usuario.last_name else str(usuario)
-		
 		
 		if not empresa:
 			return HttpResponse("No se encontraron datos de empresa configurados", status=400)
