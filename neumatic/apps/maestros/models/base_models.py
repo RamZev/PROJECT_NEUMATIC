@@ -234,12 +234,12 @@ class ComprobanteVenta(ModeloBaseGenerico):
 	id_comprobante_venta = models.AutoField(primary_key=True)
 	estatus_comprobante_venta = models.BooleanField("Estatus", default=True,
 													choices=ESTATUS_GEN)
-	codigo_comprobante_venta = models.CharField("Código Comprobante",
+	codigo_comprobante_venta = models.CharField("Cód. Comprob.",
 												max_length=3, unique=True)
 	nombre_comprobante_venta = models.CharField("Nombre Comprobante", 
-												max_length=50)
+												max_length=30)
 	nombre_impresion = models.CharField("Nombre Impresión", max_length=20,
-									 	default="")
+									 	null=True, blank=True, default="")
 	compro_asociado = models.CharField("Comprobate Asociado", 
 										max_length=20, null=True, blank=True)
 	mult_venta = models.IntegerField("Mult. Venta")
