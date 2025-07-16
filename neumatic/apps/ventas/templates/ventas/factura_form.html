@@ -123,6 +123,9 @@
             <!-- Div oculto con el diccionario electronica para cada comprobante -->
             <div id="electronica-data" data-electronica='{{ electronica_dict|safe }}'</div>
 
+            <!-- Div oculto con el diccionario de operarios -->
+            <div id="operario-data" data-operario='{{ operario_dict|safe }}'</div>
+
             <div class="container-fluid tbl-container">
                 <!-- Formulario Encabezado Detalle - Inicio -->
                 <form method="post" id="factura-form" enctype="multipart/form-data">
@@ -463,14 +466,15 @@
                                         <table class="detalle-form table table-striped table-hover table-responsive" style="width: 100%;">
                                             <thead class="table-primary small-font">
                                                 <tr>
-                                                    <th style="width: 12%;">Medida</th>
-                                                    <th style="width: 30%;">Nombre Producto</th>
+                                                    <th style="width: 10%;">Medida</th>
+                                                    <th style="width: 25%;">Nombre Producto</th>
                                                     <th style="width: 8%;">Cantidad</th>
                                                     <th style="width: 8%;">Reventa</th>
-                                                    <th style="width: 12%;">Precio</th>
-                                                    <th style="width: 10%;">Descuento</th>
+                                                    <th style="width: 10%;">Precio</th>
+                                                    <th style="width: 8%;">Descuento</th>
+                                                    <th style="width: 10%;">Operario</th> <!-- Nueva columna -->
                                                     <th style="width: 15%;">Total</th>
-                                                    <th style="width: 5%;">Elim</th>
+                                                    <th style="width: 6%;">Elim</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -492,6 +496,7 @@
                                                         <td>{{ formdet.reventa }}</td>
                                                         <td>{{ formdet.precio }}</td>
                                                         <td>{{ formdet.descuento }}</td>
+                                                        <td>{{ formdet.id_operario }}</td> <!-- Nuevo campo -->
                                                         <td>
                                                             {{ formdet.gravado }}
                                                             {{ formdet.alic_iva }}
@@ -647,9 +652,24 @@
                         
                     </div>
 
-                    <!-- Card del Detalle de Factura - Inicio -->
-                    
-                    <!-- Card del Detalle de Factura - Fin -->
+                    <!-- Modal de Observaciones-->
+                    <div class="modal fade" id="observacionesModal" tabindex="-1" aria-labelledby="observacionesModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="observacionesModalLabel">Observaciones del Comprobante</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <!-- Renderizamos el campo aquí -->
+                                    {{ form.observa_comprobante }}
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
                 </form>
                 <!-- Formulario Encabezado Detalle - Fin -->
@@ -957,24 +977,6 @@
         </div>
     </div>
 
-    <!-- Modal de Observaciones-->
-    <div class="modal fade" id="observacionesModal" tabindex="-1" aria-labelledby="observacionesModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="observacionesModalLabel">Observaciones del Comprobante</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <!-- Renderizamos el campo aquí -->
-                    {{ form.observa_comprobante }}
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                </div>
-            </div>
-        </div>
-    </div>
 
 {% endblock modals %}
 
@@ -1256,6 +1258,10 @@
                     });
                 });
                 
+                // Obtener el diccionario de operarios desde el div oculto
+                const operarioData = document.getElementById('operario-data');
+                const operarioDict = operarioData ? JSON.parse(operarioData.dataset.operario) : {};
+                
                 // Insertar productos en la tabla detalle factura
                 productosSeleccionados.forEach(producto => {
                     const currentIndex = formsetContainer.querySelectorAll('.detalle-form tbody tr').length;
@@ -1322,6 +1328,10 @@
                         <td>
                             <input type="number" name="detallefactura_set-${currentIndex}-descuento" 
                                 class="${formControlClass} text-end" value="0" step="0.1" min="0">
+                        </td>
+                        <td>
+                            <input type="hidden" name="detallefactura_set-${currentIndex}-id_operario" value="">
+                            <select name="detallefactura_set-${currentIndex}-id_operario" class="${formControlClass}" style="font-size: 0.8rem; padding: 0.25rem;" required><option value="">Seleccione un operario</option>${Object.entries(operarioDict).map(([id, nombre]) => `<option value="${id}">${nombre}</option>`).join('')}</select>
                         </td>
 
                         <!-- Campos OCULTOS para IVA -->
@@ -1591,7 +1601,8 @@
                                             data-id-familia="${producto.id_familia}"
                                             data-descuento-vendedor="${producto.descuento_vendedor}"
                                             data-id-alicuota-iva="${producto.id_alicuota_iva}"
-                                            data-alicuota-iva="${producto.alicuota_iva}">
+                                            data-alicuota-iva="${producto.alicuota_iva}"
+                                            data-tipo-producto="${producto.tipo_producto}">
                                             
                                 </td>
                             </tr>
@@ -2124,6 +2135,21 @@
             manageInputs();
             ///
 
+            ///
+            const facturaForm = document.getElementById('factura-form');
+    
+            // Captura del submit de todo el formulario
+            facturaForm.addEventListener('submit', function(e) {
+                const numeroComprobante = document.getElementById('id_numero_comprobante').value.trim();
+                
+                if (!numeroComprobante) {
+                    e.preventDefault(); // Detiene el envío del formulario
+                    alert("❌ Error: El número de comprobante no se ha generado.\n\nPor favor complete los datos del comprobante y verifique que se genere el número automáticamente.");
+                    return false;
+                }
+            });
+            ///
+
         });
     </script>
 
@@ -2391,7 +2417,6 @@
             
             // Mantener las funciones completarSeleccionCliente y getCookie exactamente igual que en tu versión original
 
-            ///
             function calcularNumeroComprobante() {
                 // Obtener datos necesarios para numeración
                 const libroIvaDict = JSON.parse(document.getElementById('libroiva-data').dataset.libroiva);
@@ -2426,7 +2451,13 @@
                                     if (inputDefinitivo) {
                                         inputDefinitivo.value = data.numero_definitivo;
                                     }
+                                } else {
+                                    alert(data.message || "Ocurrió un error al obtener el número de comprobante.");
                                 }
+                            })
+                            .catch(error => {
+                                console.error("Error en la solicitud:", error);
+                                alert("Error al conectar con el servidor.");
                             });
                     }
                 } else {
@@ -2449,12 +2480,17 @@
                                         inputDefinitivo.value = data.numero_definitivo;
                                     }
                                     document.getElementById('id_letra_comprobante').value = data.letra;
+                                } else {
+                                    alert(data.message || "Ocurrió un error al obtener el número de comprobante.");
                                 }
+                            })
+                            .catch(error => {
+                                console.error("Error en la solicitud:", error);
+                                alert("Error al conectar con el servidor.");
                             });
                     }
                 }
             }
-            ///
             
             // Función para completar la selección del cliente (extraída del código original)
             function completarSeleccionCliente(seleccion) {
@@ -2517,9 +2553,7 @@
             }
             
             // Selección del Cliente desde buscar_cliente
-            ///
             const buscarClienteInput = document.getElementById('buscar_cliente');
-    
             buscarClienteInput.addEventListener('blur', function () {
                 let busqueda = buscarClienteInput.value.trim();
         
@@ -2614,7 +2648,10 @@
                     document.getElementById('id_email_factura').value = data.email || '';
                     document.getElementById('id_id_vendedor').value = data.id_vendedor || '';
                     document.getElementById('id_vendedor_factura').value = data.nombre_vendedor || '';
-    
+                    document.getElementById('id_tipo_venta').value = data.tipo_venta || '';
+                    document.getElementById('id_condicion_comprobante').value = data.condicion_venta || '';
+                    document.getElementById('id_discrimina_iva').checked = data.discrimina_iva;
+
                     // Verificación de sucursal
                     const id_sucursal_factura = document.getElementById('id_id_sucursal').value;
                     if (data.id_sucursal !== id_sucursal_factura) {
@@ -2636,7 +2673,7 @@
                     ///
                 }
             });
-            ///
+
 
             // Función auxiliar para obtener el token CSRF
             function getCookie(name) {

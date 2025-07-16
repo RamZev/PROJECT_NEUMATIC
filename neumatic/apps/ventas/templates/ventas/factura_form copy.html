@@ -1,6 +1,6 @@
 {% extends 'proceso_form.html' %}
-
 {% load static %}
+{% load custom_tags %}
 
 {% block style %}
     body {
@@ -98,6 +98,11 @@
         margin: 2px 0; /* Pequeño margen para separación visual */
         font-size: 1.1rem;
     }
+
+    .decimal {
+		text-align: right;
+		font-familily: monospace;
+	}
     
 {% endblock style %}
 
@@ -111,6 +116,12 @@
 
             <!-- Div oculto con el diccionario libro_iva para cada comprobante -->
             <div id="libroiva-data" data-libroiva='{{ libro_iva_dict|safe }}'</div>
+
+            <!-- Div oculto con el diccionario libro_iva para cada comprobante -->
+            <div id="multventa-data" data-multventa='{{ mult_venta_dict|safe }}'</div>
+
+            <!-- Div oculto con el diccionario electronica para cada comprobante -->
+            <div id="electronica-data" data-electronica='{{ electronica_dict|safe }}'</div>
 
             <div class="container-fluid tbl-container">
                 <!-- Formulario Encabezado Detalle - Inicio -->
@@ -333,10 +344,17 @@
                                                 {{ form.condicion_comprobante }}
                                             </div>
 
-                                            <div class="col-md-4">
+                                            <div class="col-md-3">
                                                 {{ form.no_estadist }}
                                                 <label class="form-check-label" for="{{ form.no_estadist.id_for_label }}">
                                                     No Estadísticas
+                                                </label>
+                                            </div>
+
+                                            <div class="col-md-2">
+                                                {{ form.stock_clie }}
+                                                <label class="form-check-label" for="{{ form.stock_clie.id_for_label }}">
+                                                    StockCli
                                                 </label>
                                             </div>
 
@@ -347,16 +365,18 @@
                                                 <label for="{{ form.movil_factura.id_for_label }}">Móvil</label>
                                             </div>
                                         
-                                            <div class="col-md-4">
+                                            <div class="col-md-3">
                                                 {{ form.movil_factura }}
                                             </div>
 
-                                            <div class="col-md-4">
-                                                {{ form.stock_clie }}
-                                                <label class="form-check-label" for="{{ form.stock_clie.id_for_label }}">
-                                                    Stock Cliente
-                                                </label>
+                                            <div class="col-md-3">
+                                                <label for="{{ form.numero_asociado.id_for_label }}">Factura Asociada</label>
                                             </div>
+
+                                            <div class="col-md-3">
+                                                {{ form.numero_asociado }}
+                                            </div>
+                                            
                                         </div>
 
                                         <div class="row my-1">
@@ -389,12 +409,19 @@
                                                 </label>
                                             </div>
 
-                                            <div class="col-md-4">
+                                            <div class="col-md-3">
                                                 {{ form.es_presupuesto }}
                                                 <label class="form-check-label" for="{{ form.es_presupuesto.id_for_label }}">
                                                     Presupuesto
                                                 </label>
                                             </div>
+
+                                            <div class="col-md-1">
+                                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#observacionesModal">
+                                                    <i class="bi bi-pencil-square"></i>
+                                                </button>
+                                            </div>
+                                            
                                         </div>
                                     </div>
                                     <!-- sector derecho del encabezado end -->
@@ -561,6 +588,7 @@
                                                                     </label>
                                                                     <div>
                                                                         {{ form.total }}
+                                                                        <!-- <span class="formatted-number">{{ form.total.value|formato_es_ar }}</span> -->
                                                                         <span class="formatted-number">{{ form.total.value|default:"0.00" }}</span>
                                                                     </div>
                                                                 </div>
@@ -929,6 +957,25 @@
         </div>
     </div>
 
+    <!-- Modal de Observaciones-->
+    <div class="modal fade" id="observacionesModal" tabindex="-1" aria-labelledby="observacionesModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="observacionesModalLabel">Observaciones del Comprobante</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Renderizamos el campo aquí -->
+                    {{ form.observa_comprobante }}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 {% endblock modals %}
 
 {% block script %}
@@ -1095,14 +1142,13 @@
             if (formsetContainer.querySelectorAll('.detalle-form tbody tr').length > 0) {
                 actualizarTotalFactura();
             }
-            ////////////*
+            ////////////
             
             const buscarProductoForm = document.getElementById('detalleForm');
             const tablaResultados = document.querySelector('#tabla-resultados tbody');
             const detalleModal = document.getElementById('detalleModal');
             const insertarBtn = document.getElementById('agregarDetalle');
             const cambia_precio_descripcion = {{ cambia_precio_descripcion|yesno:"true,false" }};
-            //alert(cambia_precio_descripcion);
 
             // inicio del bloque
             // Función para recalcular una fila específica
@@ -1159,16 +1205,7 @@
                 }
             });
 
-            // Agregar listener específico para el cambio en el select de reventa
-            /*
-            formsetContainer.addEventListener('change', function(event) {
-                if (event.target.name.includes('reventa')) {
-                    const row = event.target.closest('tr');
-                    
-                    alert("change");
-                }
-            });
-            */
+            
             formsetContainer.addEventListener('change', function(event) {
                 if (event.target.name.includes('reventa')) {
                     const oldValue = event.target.getAttribute('data-prev-value') || 'M';
@@ -1554,7 +1591,8 @@
                                             data-id-familia="${producto.id_familia}"
                                             data-descuento-vendedor="${producto.descuento_vendedor}"
                                             data-id-alicuota-iva="${producto.id_alicuota_iva}"
-                                            data-alicuota-iva="${producto.alicuota_iva}">
+                                            data-alicuota-iva="${producto.alicuota_iva}"
+                                            data-tipo-producto="${producto.tipo_producto}">
                                             
                                 </td>
                             </tr>
@@ -1691,7 +1729,29 @@
                 if (listarAgenda) {
                     listarAgenda.removeAttribute('disabled');
                 }
-        
+
+                // 4. habalitar o inhabilirae el input Factura Asociada
+                const multVentaDict = JSON.parse(document.getElementById('multventa-data').dataset.multventa);
+                const multVenta = multVentaDict[comprobanteId] ?? false;
+
+                // Analiza si son notas de crédito
+                if (multVenta < 0){
+                    document.getElementById('id_numero_asociado').readOnly = false;
+                } else {
+                    document.getElementById('id_numero_asociado').value = '';
+                    document.getElementById('id_numero_asociado').readOnly = true;
+                }
+
+                // 5. Habilitar la fecha si no es un docuento electrónico
+                const electronicaDict = JSON.parse(document.getElementById('electronica-data').dataset.electronica);
+                const electronica = electronicaDict[comprobanteId] ?? false;
+
+                if (electronica){
+                    document.getElementById('id_fecha_comprobante').readOnly = true;
+                } else {
+                    document.getElementById('id_fecha_comprobante').readOnly = false;
+                }
+
                 // Obtener solo los datos básicos del comprobante
                 fetch(`/ventas/comprobante/${comprobanteId}/codigo/`)
                     .then(response => {
@@ -1934,7 +1994,152 @@
                 });
 
             });
-            /////
+
+            //
+            document.getElementById('id_numero_asociado').addEventListener('blur', function() {
+                // 1. Obtener valores del formulario
+                const inputElement = this; // Guardar referencia al input
+                const idCliente = document.getElementById('id_id_cliente').value;
+                const numeroComprobante = inputElement.value.trim();
+                
+                // 2. Validación temprana - Si el número está vacío, salir sin hacer nada
+                if (numeroComprobante === '') {
+                    return;
+                }
+
+                // 3. Validar que existe un cliente seleccionado
+                if (!idCliente) {
+                    alert("Debe seleccionar un cliente primero");
+                    return;
+                }
+
+                // 4. Configurar la URL de búsqueda
+                const url = new URL('/ventas/buscar/factura/', window.location.origin);
+                url.searchParams.append('id_cliente', idCliente);
+                url.searchParams.append('numero_comprobante', numeroComprobante);
+
+                // 5. Cambiar estilo durante la carga
+                inputElement.readOnly = true;
+                const originalBgColor = inputElement.style.backgroundColor;
+                inputElement.style.backgroundColor = '#f5f5f5';
+
+                // 6. Realizar la petición al servidor
+                fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`Error HTTP: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.error) {
+                        // Caso 1: Error del servidor
+                        alert(`Error: ${data.error}`);
+                    } else if (data.facturas.length === 0) {
+                        // Caso 2: No se encontraron resultados - Nuevo comportamiento
+                        alert(`No se encontró la factura número: ${numeroComprobante}`);
+                        inputElement.value = ''; // Limpiar el input
+                        inputElement.focus();    // Regresar el foco
+                    } else {
+                        // Caso 3: Éxito - Procesar resultados
+                        const factura = data.facturas[0];
+                        console.log("Factura encontrada:", factura);
+                        
+                        // Mostrar datos importantes (opcional)
+                        alert(`Factura válida encontrada:
+                            \n- Número: ${factura.numero_comprobante}
+                            \n- Fecha: ${factura.fecha}
+                            \n- Total: $${factura.total}
+                            \n- Comprobante: ${factura.comprobante_nombre}`);
+                    }
+                })
+                .catch(error => {
+                    // Caso 4: Error de red/JS
+                    console.error("Error en la búsqueda:", error);
+                    alert("Error al conectar con el servidor");
+                })
+                .finally(() => {
+                    // 7. Restaurar el campo a su estado original (excepto cuando no se encontraron resultados)
+                    if (inputElement.value !== '') {
+                        inputElement.readOnly = false;
+                        inputElement.style.backgroundColor = originalBgColor;
+                    }
+                });
+            });
+            //
+
+            ///
+            // Controlar inputs de la ventana moodal Buscar Producto
+            const medidaInput = document.getElementById('medida_producto');
+            const nombreInput = document.getElementById('nombre_producto');
+            const caiInput = document.getElementById('cai_producto');
+            
+            // Array con todos los inputs para manejo general
+            const inputs = [medidaInput, nombreInput, caiInput];
+            
+            // Función para deshabilitar otros inputs cuando uno tiene valor
+            function manageInputs() {
+                // Verificar cuál input tiene valor
+                const inputWithValue = inputs.find(input => input.value.trim() !== '');
+                
+                if (inputWithValue) {
+                    // Deshabilitar los otros inputs
+                    inputs.forEach(input => {
+                        if (input !== inputWithValue) {
+                            input.disabled = true;
+                            input.value = ''; // Limpiar el valor por si acaso
+                        }
+                    });
+                } else {
+                    // Si no hay input con valor, habilitar todos
+                    inputs.forEach(input => {
+                        input.disabled = false;
+                    });
+                }
+            }
+            
+            // Añadir event listeners a cada input
+            inputs.forEach(input => {
+                // Evento cuando cambia el valor (input o pegado)
+                input.addEventListener('input', manageInputs);
+                
+                // Evento cuando pierde el foco (por si acaso)
+                input.addEventListener('blur', manageInputs);
+                
+                // Evento para tecla de borrado (Backspace, Delete)
+                input.addEventListener('keydown', function(e) {
+                    if ((e.key === 'Backspace' || e.key === 'Delete') && this.value === '') {
+                        // Si se presiona borrar y ya está vacío, habilitar todos
+                        inputs.forEach(i => i.disabled = false);
+                    }
+                });
+            });
+            
+            // Ejecutar al cargar por si hay valores iniciales
+            manageInputs();
+            ///
+
+            ///
+            const facturaForm = document.getElementById('factura-form');
+    
+            // Captura del submit de todo el formulario
+            facturaForm.addEventListener('submit', function(e) {
+                const numeroComprobante = document.getElementById('id_numero_comprobante').value.trim();
+                
+                if (!numeroComprobante) {
+                    e.preventDefault(); // Detiene el envío del formulario
+                    alert("❌ Error: El número de comprobante no se ha generado.\n\nPor favor complete los datos del comprobante y verifique que se genere el número automáticamente.");
+                    return false;
+                }
+            });
+            ///
+
         });
     </script>
 
@@ -2202,6 +2407,81 @@
             
             // Mantener las funciones completarSeleccionCliente y getCookie exactamente igual que en tu versión original
 
+            function calcularNumeroComprobante() {
+                // Obtener datos necesarios para numeración
+                const libroIvaDict = JSON.parse(document.getElementById('libroiva-data').dataset.libroiva);
+                const comprobanteId = document.getElementById('id_id_comprobante_venta').value;
+                const libroIva = libroIvaDict[comprobanteId] ?? false;
+
+                const id_sucursal = document.getElementById('id_id_sucursal').value;
+                const id_punto_venta = document.getElementById('id_id_punto_venta').value;
+                const compro = document.getElementById('id_compro').value;
+
+                // Numeración según si va al libro IVA o no
+                if (libroIva) {
+                    const isRemito = document.getElementById('id_es_remito').checked;
+                    const isChecked = document.getElementById('id_discrimina_iva').checked;
+
+                    const letra = isRemito ? 'R' : (isChecked ? 'A' : 'B');
+                    document.getElementById('id_letra_comprobante').value = letra;
+
+                    if (id_sucursal && id_punto_venta && compro && letra) {
+                        const url = new URL('/ventas/obtener-numero-comprobante/', window.location.origin);
+                        url.searchParams.append('id_sucursal', id_sucursal);
+                        url.searchParams.append('id_punto_venta', id_punto_venta);
+                        url.searchParams.append('comprobante', compro);
+                        url.searchParams.append('letra', letra);
+
+                        fetch(url)
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    document.getElementById('id_numero_comprobante').value = data.numero_referencial;
+                                    const inputDefinitivo = document.getElementById('id_numero_definitivo');
+                                    if (inputDefinitivo) {
+                                        inputDefinitivo.value = data.numero_definitivo;
+                                    }
+                                } else {
+                                    alert(data.message || "Ocurrió un error al obtener el número de comprobante.");
+                                }
+                            })
+                            .catch(error => {
+                                console.error("Error en la solicitud:", error);
+                                alert("Error al conectar con el servidor.");
+                            });
+                    }
+                } else {
+                    // No va al libro IVA, letra y número vienen desde backend
+                    document.getElementById('id_letra_comprobante').value = "";
+
+                    if (id_sucursal && id_punto_venta && compro) {
+                        const url = new URL('/ventas/obtener-numero-comprobante2/', window.location.origin);
+                        url.searchParams.append('id_sucursal', id_sucursal);
+                        url.searchParams.append('id_punto_venta', id_punto_venta);
+                        url.searchParams.append('comprobante', compro);
+
+                        fetch(url)
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    document.getElementById('id_numero_comprobante').value = data.numero_referencial;
+                                    const inputDefinitivo = document.getElementById('id_numero_definitivo');
+                                    if (inputDefinitivo) {
+                                        inputDefinitivo.value = data.numero_definitivo;
+                                    }
+                                    document.getElementById('id_letra_comprobante').value = data.letra;
+                                } else {
+                                    alert(data.message || "Ocurrió un error al obtener el número de comprobante.");
+                                }
+                            })
+                            .catch(error => {
+                                console.error("Error en la solicitud:", error);
+                                alert("Error al conectar con el servidor.");
+                            });
+                    }
+                }
+            }
+            
             // Función para completar la selección del cliente (extraída del código original)
             function completarSeleccionCliente(seleccion) {
                 const id_cliente = seleccion.getAttribute('data-id');
@@ -2255,57 +2535,136 @@
                     document.getElementById('id_cliente_vip').value = "Cliente VIP" 
                 }
 
-                
-                document.getElementById('id_letra_comprobante').value = document.getElementById('id_es_remito').checked ? 'R' : (isChecked ? 'A' : 'B');
-            
-                // Obtener número de comprobante (código existente)
-                const id_sucursal = document.getElementById('id_id_sucursal').value;
-                const id_punto_venta = document.getElementById('id_id_punto_venta').value;
-                const compro = document.getElementById('id_compro').value;
-                const letra_comprobante = document.getElementById('id_letra_comprobante').value;
-                //alert(letra_comprobante);
+                calcularNumeroComprobante();
 
-                // const comprobanteSelect = document.getElementById('id_id_comprobante_venta');
-                const libroIvaDict = JSON.parse(document.getElementById('libroiva-data').dataset.libroiva);
-                const comprobanteId = document.getElementById('id_id_comprobante_venta').value;
-                const libroIva = libroIvaDict[comprobanteId] ?? false;
-
-                // Asignación de letra de comprobante
-                if (libroIva) {
-                    alert("¿Va al libro IVA?: " + libroIva);
-                }
-
-            
-                if (id_sucursal && id_punto_venta && compro && letra_comprobante) {
-                    const url = new URL('/ventas/obtener-numero-comprobante/', window.location.origin);
-                    url.searchParams.append('id_sucursal', id_sucursal);
-                    url.searchParams.append('id_punto_venta', id_punto_venta);
-                    url.searchParams.append('comprobante', compro);
-                    url.searchParams.append('letra', letra_comprobante);
-            
-                    fetch(url, {
-                        method: 'GET',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            document.getElementById('id_numero_comprobante').value = data.numero_referencial;
-                            const inputDefinitivo = document.getElementById('id_numero_definitivo');
-                            if (inputDefinitivo) {
-                                inputDefinitivo.value = data.numero_definitivo;
-                            }
-                        }
-                    });
-                }
-            
                 // Cerrar el modal de agenda
                 const modal = bootstrap.Modal.getInstance(document.getElementById('agendaModal'));
                 modal.hide();
             }
             
+            // Selección del Cliente desde buscar_cliente
+            const buscarClienteInput = document.getElementById('buscar_cliente');
+            buscarClienteInput.addEventListener('blur', function () {
+                let busqueda = buscarClienteInput.value.trim();
+        
+                // Si está vacío, no hacer nada
+                if (!busqueda) return;
+        
+                // Verificar que solo contenga números
+                if (!/^\d+$/.test(busqueda)) {
+                    alert("Solo se permiten valores numéricos enteros.");
+                    buscarClienteInput.value = '';
+                    buscarClienteInput.focus();
+                    return;
+                }
+        
+                // Construir la URL para la búsqueda
+                const url = new URL('/ventas/buscar/cliente/', window.location.origin);
+                url.searchParams.append('busqueda', busqueda);
+        
+                fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        alert(data.error);
+                        buscarClienteInput.value = '';
+                        buscarClienteInput.focus();
+                    } else {
+                        // Verificar primero si el cliente está en blacklist
+                        if (data.black_list) {
+                            alert(`🚨 CLIENTE EN LISTA NEGRA 🚨\nMotivo: ${data.black_list_motivo || 'No especificado'}`);
+                            buscarClienteInput.value = '';
+                            buscarClienteInput.focus();
+                            return;
+                        }
+                        
+                        // Validar vencimientos de documentos
+                        const clienteId = data.id_cliente;
+                        if (clienteId) {
+                            fetch(`/ventas/clientes/${clienteId}/validar-vencimientos/`)
+                            .then(response => response.json())
+                            .then(vencimientoData => {
+                                if (vencimientoData.requiere_autorizacion) {
+                                    // Mostrar alerta con los detalles del vencimiento
+                                    const comprobante = vencimientoData.datos_comprobante || {};
+                                    let mensaje = `⚠️ CLIENTE CON DOCUMENTO VENCIDO ⚠️\n\n`;
+                                    mensaje += `Comprobante: ${comprobante.tipo_comprobante || 'N/A'}\n`;
+                                    mensaje += `Número: ${comprobante.numero_comprobante || 'N/A'}\n`;
+                                    mensaje += `Fecha Emisión: ${comprobante.fecha_comprobante || 'N/A'}\n`;
+                                    mensaje += `Días Vencidos: ${comprobante.dias_vencidos || 0}\n`;
+                                    mensaje += `Monto Pendiente: $${(comprobante.monto_pendiente || 0).toLocaleString('es-AR')}\n\n`;
+                                    mensaje += `Contacte a un supervisor para autorización.`;
+                                    
+                                    alert(mensaje);
+                                    buscarClienteInput.value = '';
+                                    buscarClienteInput.focus();
+                                    return;
+                                } else {
+                                    // Continuar con el flujo normal si no hay vencimientos
+                                    completarDatosCliente(data);
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error validando vencimientos:', error);
+                                // Continuar con el flujo normal si hay error en la validación
+                                completarDatosCliente(data);
+                            });
+                        } else {
+                            completarDatosCliente(data);
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Error en la búsqueda:', error);
+                    alert("Hubo un error en la búsqueda.");
+                });
+    
+                ///
+                // buscar_cliente
+                ///
+                
+                // Función para completar los datos del cliente (extraída para reutilización)
+                function completarDatosCliente(data) {
+                    document.getElementById('id_id_cliente').value = data.id_cliente || '';
+                    document.getElementById('id_nombre_factura').value = data.nombre || '';
+                    document.getElementById('id_domicilio_factura').value = data.direccion || '';
+                    document.getElementById('id_cuit').value = data.cuit || '';
+                    document.getElementById('id_movil_factura').value = data.movil || '';
+                    document.getElementById('id_email_factura').value = data.email || '';
+                    document.getElementById('id_id_vendedor').value = data.id_vendedor || '';
+                    document.getElementById('id_vendedor_factura').value = data.nombre_vendedor || '';
+                    document.getElementById('id_tipo_venta').value = data.tipo_venta || '';
+                    document.getElementById('id_condicion_comprobante').value = data.condicion_venta || '';
+                    document.getElementById('id_discrimina_iva').checked = data.discrimina_iva;
+
+                    // Verificación de sucursal
+                    const id_sucursal_factura = document.getElementById('id_id_sucursal').value;
+                    if (data.id_sucursal !== id_sucursal_factura) {
+                        alert('Atención: El cliente pertenece a otra sucursal.');
+                    }
+    
+                    // Verificación VIP
+                    if (data.vip) {
+                        alert("⚠️ Este es un Cliente VIP - Trato Especial ⚠️");
+                        document.getElementById('id_cliente_vip').value = "Cliente VIP"; 
+                    }
+    
+                    // Deshabilitar botones
+                    document.getElementById('listar_agenda').disabled = true;
+                    document.getElementById('buscar_cliente').disabled = true;
+
+                    ///
+                    calcularNumeroComprobante();
+                    ///
+                }
+            });
+
+
             // Función auxiliar para obtener el token CSRF
             function getCookie(name) {
                 let cookieValue = null;
@@ -2543,6 +2902,7 @@
     </script>
 
     <script>
+        /*
         document.addEventListener('DOMContentLoaded', function () {
             const buscarClienteInput = document.getElementById('buscar_cliente');
     
@@ -2655,9 +3015,11 @@
                 }
             });
         });
+        */
     </script>
 
     <script>
+        // Script que maneja is_edit en caso de actualización
         document.addEventListener('DOMContentLoaded', function () {
             // Obtener el elemento HTML que contiene el valor de is_edit
             const modoEdicion = document.getElementById('modo-edicion');
@@ -2680,20 +3042,19 @@
                     btnAgregarDetalle.disabled = true;  // Deshabilitar el botón "Agregar Detalle"
                 }
 
+                // Manejar el campo del modal de forma especial
+                const textareaObservaciones = document.getElementById('id_observa_comprobante');
+                if (textareaObservaciones) {
+                    textareaObservaciones.readOnly = true;
+                    textareaObservaciones.classList.add('readonly-textarea');
+                }
+
+
                 //alert("El formulario está en modo de solo lectura");
             } else {
                 //alert("El formulario está en modo de creación");
             }
         });   
-    </script>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            /////
-            
-            /////
-
-        });
     </script>
 
     <script>

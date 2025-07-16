@@ -256,6 +256,10 @@ class DetalleFacturaForm(forms.ModelForm):
                 'class': 'form-control form-control-sm border border-primary  text-end', 'step': '0.1',
                 'style': 'font-size: 0.8rem; padding: 0.25rem; margin-left: 0px; margin-right: 0px;'
                 }),
+            'id_operario': forms.Select(attrs={
+                'class': 'form-control form-control-sm border border-primary small-font',
+                'style': 'font-size: 0.8rem; padding: 0.25rem; margin-left: 0px; margin-right: 0px;'
+                }),
             #'gravado': forms.HiddenInput(),
             #'alic_iva': forms.HiddenInput(),
             #'iva': forms.HiddenInput(),

@@ -1,4 +1,5 @@
 # neumatic\apps\ventas\views\consultas_factura_views.py
+from asyncio.log import logger
 from django.db.models import Sum
 from django.http import JsonResponse
 from django.db.models import Q, F
@@ -72,6 +73,7 @@ def buscar_producto(request):
     resultados = []
     for producto in productos:
         # Filtrar los descuentos del vendedor por marca y familia
+        dv = None
         if col_descuento > 0:
             dv = DescuentoVendedor.objects.filter(
                 id_marca=producto.id_marca.id_producto_marca, 
@@ -83,14 +85,6 @@ def buscar_producto(request):
         if dv and col_descuento > 0:
             descuento_field = f"desc{col_descuento}"
             descuento = getattr(dv, descuento_field, 0)  # Devuelve 0 si el campo no existe
-            
-            #print("col_descuento:", col_descuento)
-            #print("descuento:", descuento)
-                
-        # Obtener alícuota IVA
-        # alicuota_iva = 0
-        # if producto.id_alicuota_iva:
-        #     alicuota_iva = producto.id_alicuota_iva.alicuota_iva
 
         resultados.append({
             'id': producto.id_producto,
@@ -105,7 +99,8 @@ def buscar_producto(request):
             'id_familia': producto.id_familia.id_producto_familia if producto.id_familia else None,
             'descuento_vendedor': descuento,
             'id_alicuota_iva': producto.id_alicuota_iva_id if producto.id_alicuota_iva else None,
-            'alicuota_iva': producto.alicuota_iva
+            'alicuota_iva': producto.alicuota_iva,
+            'tipo_producto': producto.tipo_producto
 
         })
 
@@ -223,7 +218,7 @@ def buscar_agenda(request):
 def buscar_cliente(request):
     busqueda = request.GET.get('busqueda', '').strip()
     
-    print("busqueda", busqueda)
+    # print("busqueda", busqueda)
 
     # Si el input está vacío, no hacer búsqueda
     if not busqueda:
@@ -242,22 +237,29 @@ def buscar_cliente(request):
     if cliente:
         response_data = {
             'id_cliente': cliente.id_cliente,
+            'cuit': cliente.cuit,
             'nombre': cliente.nombre_cliente,
             'direccion': cliente.domicilio_cliente,
-            'cuit': cliente.cuit,
             'movil': cliente.movil_cliente,
             'email': cliente.email_cliente,
             'id_vendedor': cliente.id_vendedor.id_vendedor if cliente.id_vendedor else None,
             'nombre_vendedor': cliente.id_vendedor.nombre_vendedor if cliente.id_vendedor else "Sin asignar",
+            'tipo_venta': cliente.id_vendedor.tipo_venta,
+            'nombre_iva': cliente.id_tipo_iva.nombre_iva,
+            'discrimina_iva': cliente.id_tipo_iva.discrimina_iva,
+            'condicion_venta': cliente.condicion_venta,
             'id_sucursal': cliente.id_sucursal.id_sucursal,
             'vip': cliente.vip,
+            'mayorista': cliente.mayorista,
+            'sub_cuenta': cliente.sub_cuenta,
+            'observaciones': cliente.observaciones_cliente,
             'black_list': cliente.black_list,
             'black_list_motivo': cliente.black_list_motivo
         }
     else:
         response_data = {'error': 'No se encontraron resultados'}
         
-    # print("response_data", response_data)
+    print("response_data", response_data)
 
     return JsonResponse(response_data)
 
@@ -291,7 +293,7 @@ def obtener_numero_comprobante(request):
         return JsonResponse({'error': 'Faltan parámetros requeridos'}, status=400)
 
     try:
-        # Obtener número referencial (último número + 1)
+        # Obtener el último número registrado
         ultimo_numero = Numero.objects.filter(
             id_sucursal=id_sucursal,
             id_punto_venta=id_punto_venta,
@@ -299,9 +301,14 @@ def obtener_numero_comprobante(request):
             letra=letra
         ).order_by('-numero').first()
 
-        numero_referencial = (ultimo_numero.numero + 1) if ultimo_numero else 1
+        # Si no hay registros, devolver un mensaje específico
+        if not ultimo_numero:
+            return JsonResponse({
+                'success': False,
+                'message': 'No se puede obtener la numeración de este comprobante, consulte al Administrador del Sistema!',
+            })
 
-        # Obtener número definitivo (podría incluir lógica adicional aquí)
+        numero_referencial = ultimo_numero.numero + 1
         numero_definitivo = numero_referencial  # Por defecto son iguales
 
         return JsonResponse({
@@ -315,7 +322,6 @@ def obtener_numero_comprobante(request):
             'error': str(e),
             'success': False
         }, status=500)
-
 
 def validar_vencimientos_cliente(request, cliente_id):
     try:
@@ -633,7 +639,6 @@ def obtener_numero_comprobante2(request):
     id_sucursal = request.GET.get('id_sucursal')
     id_punto_venta = request.GET.get('id_punto_venta')
     comprobante = request.GET.get('comprobante')
-    #letra = request.GET.get('letra')
 
     if not all([id_sucursal, id_punto_venta, comprobante]):
         return JsonResponse({'error': 'Faltan parámetros requeridos'}, status=400)
@@ -646,11 +651,15 @@ def obtener_numero_comprobante2(request):
             comprobante=comprobante
         ).order_by('-numero').first()
 
-        numero_referencial = (ultimo_numero.numero + 1) if ultimo_numero else 1
-        letra = ultimo_numero.letra if ultimo_numero else "Z"
-        print("letra:", letra)
+        # Si no hay registros, devolver un mensaje específico (igual que en la primera vista)
+        if not ultimo_numero:
+            return JsonResponse({
+                'success': False,
+                'message': 'No se puede obtener la numeración de este comprobante, consulte al Administrador del Sistema!',
+            })
 
-        # Obtener número definitivo (podría incluir lógica adicional aquí)
+        numero_referencial = ultimo_numero.numero + 1
+        letra = ultimo_numero.letra
         numero_definitivo = numero_referencial  # Por defecto son iguales
 
         return JsonResponse({
