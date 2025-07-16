@@ -13,7 +13,7 @@ from ..models.factura_models import Factura
 from ...maestros.models.numero_models import Numero
 from ..forms.factura_forms import FacturaForm, DetalleFacturaFormSet
 from ..forms.factura_forms import SerialFacturaFormSet
-from ...maestros.models.base_models import ProductoStock, ComprobanteVenta
+from ...maestros.models.base_models import ProductoStock, ComprobanteVenta, Operario
 from ...maestros.models.valida_models import Valida
 
 from entorno.constantes_base import TIPO_VENTA
@@ -182,6 +182,9 @@ class FacturaCreateView(MaestroDetalleCreateView):
 		# Obtener todos los comprobantes con sus valores electronica
 		electronica_dict = {str(c.id_comprobante_venta): c.electronica for c in ComprobanteVenta.objects.all()}
 		data['electronica_dict'] = json.dumps(electronica_dict)
+
+		operario_dict = {str(o.id_operario): o.nombre_operario for o in Operario.objects.all()}
+		data['operario_dict'] = json.dumps(operario_dict)
 
 		return data
 
