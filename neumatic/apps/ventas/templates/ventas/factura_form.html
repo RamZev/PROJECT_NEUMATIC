@@ -1248,16 +1248,20 @@
                 const productosSeleccionados = [];
                 
                 checkboxes.forEach(checkbox => {
+                    // alert("ID del producto: " + checkbox.dataset.id); // Mostrar el ID
+                    // alert("TIPO_PRODUCTO del producto: " + checkbox.dataset.tipoProducto); // Mostrar el TIPO_PRODUCTO
+                    
                     productosSeleccionados.push({
                         id: checkbox.dataset.id,
                         medida: checkbox.dataset.medida,
                         nombre: checkbox.dataset.nombre,
                         precio: parseFloat(checkbox.dataset.precio),
                         descuento_vendedor: parseFloat(checkbox.dataset.descuentoVendedor),
-                        alicuota_iva: parseFloat(checkbox.dataset.alicuotaIva).toFixed(2)
+                        alicuota_iva: parseFloat(checkbox.dataset.alicuotaIva).toFixed(2),
+                        tipo_producto: checkbox.dataset.tipoProducto
                     });
                 });
-                
+
                 // Obtener el diccionario de operarios desde el div oculto
                 const operarioData = document.getElementById('operario-data');
                 const operarioDict = operarioData ? JSON.parse(operarioData.dataset.operario) : {};
@@ -1281,6 +1285,32 @@
                     const iva = (montoTotal - gravado).toFixed(2);
                     const nombreInputAttributes = cambia_precio_descripcion ? 'required' : 'readonly';
                     const valorPorDefecto = document.getElementById('id_tipo_venta')?.value || "M";
+
+                    // alert(producto.tipo_producto);
+                    let campoOperarioHTML;
+                    if (producto.tipo_producto === "S") {
+                        // Caso para servicios (mostrar select de operarios)
+                        campoOperarioHTML = `
+                            <select name="detallefactura_set-${currentIndex}-id_operario" 
+                                    class="form-control form-control-sm border border-primary small-font" 
+                                    style="font-size: 0.8rem; padding: 0.25rem;" 
+                                    required>
+                                <option value="">Seleccione un operario</option>
+                                ${Object.entries(operarioDict).map(([id, nombre]) => 
+                                    `<option value="${id}">${nombre}</option>`
+                                ).join('')}
+                            </select>
+                        `;
+                    } else {
+                        // Caso para productos (mostrar select deshabilitado)
+                        campoOperarioHTML = `
+                            <select disabled
+                                    class="form-control form-control-sm border border-secondary small-font" 
+                                    style="font-size: 0.8rem; padding: 0.25rem;">
+                                <option value="">No aplica</option>
+                            </select>
+                        `;
+                    }
 
                     // Clase reutilizable
                     const formControlClass = 'form-control form-control-sm border border-primary small-font';
@@ -1331,7 +1361,7 @@
                         </td>
                         <td>
                             <input type="hidden" name="detallefactura_set-${currentIndex}-id_operario" value="">
-                            <select name="detallefactura_set-${currentIndex}-id_operario" class="${formControlClass}" style="font-size: 0.8rem; padding: 0.25rem;" required><option value="">Seleccione un operario</option>${Object.entries(operarioDict).map(([id, nombre]) => `<option value="${id}">${nombre}</option>`).join('')}</select>
+                            ${campoOperarioHTML}
                         </td>
 
                         <!-- Campos OCULTOS para IVA -->
@@ -1745,11 +1775,14 @@
                 const multVenta = multVentaDict[comprobanteId] ?? false;
 
                 // Analiza si son notas de crédito
+                const numeroAsociadoInput = document.getElementById('id_numero_asociado');
                 if (multVenta < 0){
                     document.getElementById('id_numero_asociado').readOnly = false;
+                    numeroAsociadoInput.setAttribute('required', 'required');
                 } else {
                     document.getElementById('id_numero_asociado').value = '';
                     document.getElementById('id_numero_asociado').readOnly = true;
+                    numeroAsociadoInput.required = false;  // Quitar requerimiento
                 }
 
                 // 5. Habilitar la fecha si no es un docuento electrónico
@@ -2163,7 +2196,7 @@
         
                 // Limpiar las tablas antes de abrir la ventana modal
                 document.querySelector("#tabla-stock tbody").innerHTML = "";
-                document.querySelector("#tabla-minimos tbody").innerHTML = "";
+                // document.querySelector("#tabla-minimos tbody").innerHTML = "";
             });
         });
     </script>

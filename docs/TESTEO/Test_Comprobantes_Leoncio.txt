@@ -1,0 +1,83 @@
+COMPROBANTES ELECTRÓNICOS
+===============================================================================
+Facturas:
+	*- Comp. Elect. -> Nuevo: No permite agregar detall para todos los clientes seleccionados.
+		*Corregido: declarar la variable cv antes de la línea 76 en consultas_factura_views.py: dv = None
+	*- Comp. Elect. -> Nuevo: No está guardando las observaciones del comprobante (observa_comprobante).
+		*Corregido.
+	- Comp. Elect. -> Editar: No permite modificar nada, pero si permite eliminar detalle y los seriales y agregar seriales.
+	- Comp. Elect. -> Nuevo: Al agregar los Seriales si se le da enter cierra el modal y blanquea el formulario del comprobante.
+	
+	- Detalle del Comprobante: los inputs numéricos deben mostrarse con su plantilla.
+	
+Notas de Crédito/Débito:
+	- No obliga a indicar el comprobante asociado.
+	- No se está guardando el id del comprobante asociado.
+
+Factura Remito:
+	- Cuando se intenta hacer una Fac/Rto y se indica un Remito que ya ha sido facturado, dice que no existe. Más bien debería:
+	  · Si no existe, decir que o existe.
+	  · Si existe pero ya ha sido facturado, debería decir que ya fue facturado y quizá mostrar los datos de la factura.
+	  · Si existe pero pertenece a otro cliente, debería decir que no pertenece a ese cliente al menos que esté permitido.
+	- Está deshabilitado el botón para agregar seriales.
+	 
+Factura Remito FCE (FC MiPYME)
+	- Está deshabilitado el botón para agregar seriales.
+	- Intento crear una FC con:
+	  · Código Cliente: 55439 (DEBONA MARCELO  Y VICTOR HUGO)
+	  · Con Remito: RF 3400003042
+	  Y salta un alert con el mensaje "Error al conectar con el servidor" y ese remitno no está facturado (estado=" ") y pertence al mismo cliente.
+
+Remito Dev. Manual (MD), Remito Devevolución (RD), Remito Interno Devol (DM):
+	- Está deshabilitado el botón para agregar Seriales y Detalle.
+	 
+General o Común:
+*- Comp. Elect. -> Editar: No se estan grabando los códigos de producto (id_producto) en la tabla detalle_factura.
+	*Corregido.
+*- La condición de Venta debería ser tomada del cliente (seleccionando por Ventana Modal).
+	*Corregido.
+- Por defecto la Sucursal de Impresión (suc_imp) está en NULL. (Preguntar a Mario cuándo es que se debe llenar este campo)
+- Al Editar un comprobante se debe deshabilitar el botón "Guardar".
+- En Comprobante de Venta, para loc comprobantes "FACTURA REMITO" o "FCE - FACTURA/RTO MIPYME" el campo "Comprobante Asociado" 
+  debería contemplar RF (REMITO) y RT (REMITO MANUAL) en vez de RM (REMITO INTERNO).
+- Si solo se relecciona el Depósito y Comprobante y luego se da click en el botón "Agregar Seriales" salta el alert "Primero seleccione un cliente"
+  pero luego me abre el modal para agregar los seriales y permite agregarlos.
+
+
+
+COMPROBANTES MANUALES
+===============================================================================
+- El título en el acordeón dice "Comprobante Electrónico" cuando debe decir "Comprobante Manual".
+
+Ajuste (AJ):
+	- Qué letra debe tener el Ajuste?
+	- Los botones "Agregar Seriales" y "Agregar Detalle" están deshabilitados.
+	
+Nota de Crédito (NC):
+	- No permite "insertar" un detalle después de seleccionado el producto/servicio, no hace nada (error en consola del navegador).
+	
+Nota de Débito (ND):
+	- No permite "insertar" un detalle después de seleccionado el producto/servicio, no hace nada (error en consola del navegador).
+	
+Movimiento Interno (MI):
+	- No permite "insertar" un detalle después de seleccionado el producto/servicio, no hace nada (error en consola del navegador).
+	
+Factura Rto. Manual (MF):
+	- Los botones "Agregar Seriales" y "Agregar Detalle" están deshabilitados.
+	
+Egresos de Caja (EG):
+	- Qué letra debe tener el Egreso de Caja?
+	- No permite "insertar" un detalle después de seleccionado el producto/servicio, no hace nada (error en consola del navegador).
+
+Ingresos de Caja (IN):
+	- Qué letra debe tener el Ingreso de Caja?
+	- No permite "insertar" un detalle después de seleccionado el producto/servicio, no hace nada (error en consola del navegador).
+
+
+
+
+RECIBOS
+===============================================================================
+PRESUPUESTOS
+===============================================================================
+	
