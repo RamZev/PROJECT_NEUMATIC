@@ -21,6 +21,8 @@ class ComprobanteVentaForm(CrudGenericForm):
 				forms.TextInput(attrs={**formclasstext}),
 			'nombre_impresion': 
 				forms.TextInput(attrs={**formclasstext}),
+			'tipo_comprobante': 
+				forms.Select(attrs={**formclassselect}),
 			'mult_venta': 
 				forms.NumberInput(attrs={**formclasstext, 'min': -1, 'max': 1}),
 			'mult_saldo': 

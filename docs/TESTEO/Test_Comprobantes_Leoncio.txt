@@ -12,7 +12,8 @@ Facturas:
 	
 Notas de Crédito/Débito:
 	- No obliga a indicar el comprobante asociado.
-	- No se está guardando el id del comprobante asociado.
+	*- No se está guardando el id del comprobante asociado.
+		*Corregido.
 
 Factura Remito:
 	- Cuando se intenta hacer una Fac/Rto y se indica un Remito que ya ha sido facturado, dice que no existe. Más bien debería:

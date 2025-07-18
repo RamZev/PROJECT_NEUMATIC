@@ -6,7 +6,7 @@ import re
 
 from utils.validator.validaciones import validar_cuit
 from .base_gen_models import ModeloBaseGenerico
-from entorno.constantes_base import ESTATUS_GEN, CONDICION_PAGO, TIPO_CUENTA
+from entorno.constantes_base import ESTATUS_GEN, CONDICION_PAGO, TIPO_CUENTA, TIPO_COMPROBANTE
 
 
 class Actividad(ModeloBaseGenerico):
@@ -234,12 +234,12 @@ class ComprobanteVenta(ModeloBaseGenerico):
 	id_comprobante_venta = models.AutoField(primary_key=True)
 	estatus_comprobante_venta = models.BooleanField("Estatus", default=True,
 													choices=ESTATUS_GEN)
-	codigo_comprobante_venta = models.CharField("Cód. Comprob.",
+	codigo_comprobante_venta = models.CharField("Cód. Comprobante",
 												max_length=3, unique=True)
 	nombre_comprobante_venta = models.CharField("Nombre Comprobante", 
 												max_length=30)
-	nombre_impresion = models.CharField("Nombre Impresión", max_length=20,
-									 	null=True, blank=True, default="")
+	tipo_comprobante = models.CharField("Tipo Comprobante", max_length=20,
+									 	null=True, blank=True, choices=TIPO_COMPROBANTE)
 	compro_asociado = models.CharField("Comprobate Asociado", 
 										max_length=20, null=True, blank=True)
 	mult_venta = models.IntegerField("Mult. Venta")
@@ -276,6 +276,9 @@ class ComprobanteVenta(ModeloBaseGenerico):
 		
 		if not self.codigo_comprobante_venta.isupper():
 			errors.update({'codigo_comprobante_venta': 'Debe ingresar solo mayúsculas.'})
+		
+		if not self.tipo_comprobante:
+			errors.update({'tipo_comprobante': 'Debe indicar un Tipo de Comprobante.'})
 		
 		if self.mult_venta != -1 and self.mult_venta != 0 and self.mult_venta != 1:
 			errors.update({'mult_venta': "Los valores permitidos son: -1, 0 y 1"})
