@@ -227,15 +227,14 @@ class ClienteInformeListView(InformeListView):
 				elif hasta:
 					queryset = queryset.filter(id_cliente__lte=hasta)
 			
-			
 			if vendedor:
-				queryset = queryset.filter(id_vendedor=vendedor)
+				queryset = queryset.filter(id_vendedor=vendedor.id_vendedor)
 			
 			if provincia:
-				queryset = queryset.filter(id_provincia=provincia)
+				queryset = queryset.filter(id_provincia=provincia.id_provincia)
 			
 			if localidad:
-				queryset = queryset.filter(id_localidad=localidad)
+				queryset = queryset.filter(id_localidad=localidad.id_localidad)
 		else:
 			#-- Agregar clases css a los campos con errores.
 			form.add_error_classes()
