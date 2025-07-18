@@ -51,6 +51,9 @@ class GeneraPDFView(View):
 	def generar_pdf_factura(self, factura):
 		#-- Obtener datos principales.
 		detalles = DetalleFactura.objects.filter(id_factura=factura)
+		print("facura:", factura)
+		print("Id facura:", factura.id_factura)
+		
 		empresa = Empresa.objects.first()
 		cliente = factura.id_cliente  # No necesitas consulta adicional
 		vendedor = factura.id_vendedor
@@ -182,6 +185,7 @@ class GeneraPDFView(View):
 		y_box = y_header_top - box_heigth - 1*mm
 		
 		doc_fce = ("FC", "FT", "CE", "DE" )
+		print("factura.compro.upper:", factura.compro.upper())
 		if factura.compro.upper() in doc_fce:
 			c.rect(margin, y_box, width - 2*margin, box_heigth)
 			fecha_vcto = ""
@@ -201,7 +205,7 @@ class GeneraPDFView(View):
 		
 		#-- Si es Factura Remito/FCE MIPYME.
 		fac_rto = ("FR", "FT")
-		nd_nc = ("CF", "DF", "NC", "ND")
+		nd_nc = ("CF", "DF", "NC", "ND", "CE", "DE")
 		if factura.compro.upper() in fac_rto:
 			c.drawString(x_text_right, y_box + 2*mm, f"REMITO: {factura.comprobante_remito} {factura.remito}")
 		
@@ -326,7 +330,7 @@ class GeneraPDFView(View):
 		
 		#-- Agregar los datos a la tabla.
 		for det in detalles:
-			print(det.id_producto)
+			print("det.id_producto:", det.id_producto)
 		for detalle in detalles:
 			detail_data.append([
 				Paragraph(str(detalle.id_producto.id_cai if detalle.id_producto and detalle.id_producto.id_cai else ""), style=paragraph_style_normal),
