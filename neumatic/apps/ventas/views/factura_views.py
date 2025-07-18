@@ -288,11 +288,34 @@ class FacturaCreateView(MaestroDetalleCreateView):
 					form.instance.estado = "C"  # Marcar como cobrado ("C")
 
 				# Verificación de Nota de Crédito
-				# Obtenemos el objeto ComprobanteVenta
-				comprobante_venta = form.cleaned_data['id_comprobante_venta']  
-				if comprobante_venta.libro_iva and comprobante_venta.mult_venta > 0:
-					print("Es una nota de crédito")
-					# Lógica específica para notas de crédito aquí
+				comprobante_venta = form.cleaned_data['id_comprobante_venta']
+				if comprobante_venta.libro_iva and comprobante_venta.mult_venta < 0:
+					try:
+						# 1. Obtener el documento asociado
+						id_comprobante_asociado = form.cleaned_data['id_comprobante_asociado']
+						documento_asociado = Factura.objects.select_for_update().get(id_factura=id_comprobante_asociado)
+						
+						# 2. Sumar el total de la NC al campo entrega del documento asociado
+						nuevo_entrega = documento_asociado.entrega + form.instance.total
+						actualizaciones = {'entrega': nuevo_entrega}
+						
+						# 3. Verificar si se completó el pago
+						if nuevo_entrega >= documento_asociado.total:
+							actualizaciones['estado'] = 'C'  # Marcamos como cobrado
+						
+						# 4. Actualizar el documento asociado
+						Factura.objects.filter(id_factura=id_comprobante_asociado).update(**actualizaciones)
+						
+						# 5. Cerrar la Nota de Crédito
+						form.instance.entrega = form.instance.total  # Asignar el total a entrega
+						form.instance.estado = "C"  # Marcar como cobrado ("C")
+						
+					except Factura.DoesNotExist:
+						form.add_error('id_comprobante_asociado', 'El documento asociado no existe')
+						return self.form_invalid(form)
+					except Exception as e:
+						form.add_error(None, f'Error al procesar nota de crédito: {str(e)}')
+						return self.form_invalid(form)
 
 				# 4. Guardado en el modelo Factura
 				self.object = form.save()

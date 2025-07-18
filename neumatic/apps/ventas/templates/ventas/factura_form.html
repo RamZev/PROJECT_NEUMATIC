@@ -377,6 +377,7 @@
                                             </div>
 
                                             <div class="col-md-3">
+                                                {{ form.id_comprobante_asociado }}
                                                 {{ form.numero_asociado }}
                                             </div>
                                             
@@ -2093,9 +2094,13 @@
                         // Caso 3: Éxito - Procesar resultados
                         const factura = data.facturas[0];
                         console.log("Factura encontrada:", factura);
+
+                        // Asignar el ID al elemento id_id_comprobante_asociado
+                        document.getElementById('id_id_comprobante_asociado').value = factura.id
                         
                         // Mostrar datos importantes (opcional)
                         alert(`Factura válida encontrada:
+                            \n- ID: ${factura.id}
                             \n- Número: ${factura.numero_comprobante}
                             \n- Fecha: ${factura.fecha}
                             \n- Total: $${factura.total}
