@@ -13,8 +13,9 @@ from ..models.factura_models import Factura
 from ...maestros.models.numero_models import Numero
 from ..forms.factura_forms import FacturaForm, DetalleFacturaFormSet
 from ..forms.factura_forms import SerialFacturaFormSet
-from ...maestros.models.base_models import ProductoStock, ComprobanteVenta
+from ...maestros.models.base_models import ProductoStock, ComprobanteVenta, Operario
 from ...maestros.models.valida_models import Valida
+from ...maestros.models.cliente_models import Cliente
 
 from entorno.constantes_base import TIPO_VENTA
 
@@ -184,131 +185,213 @@ class PresupuestoCreateView(MaestroDetalleCreateView):
 		electronica_dict = {str(c.id_comprobante_venta): c.electronica for c in ComprobanteVenta.objects.all()}
 		data['electronica_dict'] = json.dumps(electronica_dict)
 
+		# Obtener todos los operarios con sus id
+		operario_dict = {str(o.id_operario): o.nombre_operario for o in Operario.objects.all()}
+		data['operario_dict'] = json.dumps(operario_dict)
+
 		return data
 
 	def form_valid(self, form):
-			context = self.get_context_data()
-			formset_detalle = context['formset_detalle']
-			formset_serial = context['formset_serial']
+		context = self.get_context_data()
+		formset_detalle = context['formset_detalle']
+		formset_serial = context['formset_serial']
 
-			if not all([formset_detalle.is_valid(), formset_serial.is_valid()]):
-				return self.form_invalid(form)
+		if not all([formset_detalle.is_valid(), formset_serial.is_valid()]):
+			return self.form_invalid(form)
 
-			try:
-				with transaction.atomic():
-					# 1. Validación mínima necesaria
-					deposito = form.cleaned_data.get('id_deposito')
-					if not deposito:
-							form.add_error('id_deposito', 'Debe seleccionar un depósito')
-							return self.form_invalid(form)
+		try:
+			with transaction.atomic():
+				# 0. REGLA: Validación y actualización de datos del cliente
+				cliente_obj = form.cleaned_data['id_cliente']  # Esto es un objeto Cliente
+				cliente_id = cliente_obj.id_cliente  # Accede al campo id_cliente del modelo
+				
+				if cliente_id:
+					try:
+						cliente = Cliente.objects.get(id_cliente=cliente_id)
+						movil_factura = form.cleaned_data.get('movil_factura', '').strip()
+						email_factura = form.cleaned_data.get('email_factura', '').strip()
+						
+						updates = {}
+						
+						# Lógica para el teléfono móvil
+						if movil_factura:  # Solo si se ingresó un valor en el formulario
+							if not cliente.movil_cliente:
+								# Caso 1: No tiene móvil registrado -> actualizar movil_cliente
+								updates['movil_cliente'] = movil_factura
+								form.instance.movil_factura = movil_factura
+							elif cliente.movil_cliente != movil_factura:
+								# Caso 2: Tiene móvil diferente -> guardar en telefono_cliente
+								updates['telefono_cliente'] = movil_factura
+								form.instance.movil_factura = movil_factura
+						
+						# Lógica para el email
+						if email_factura:  # Solo si se ingresó un email en el formulario
+							if not cliente.email_cliente:
+								# Caso 1: No tiene email registrado -> actualizar email_cliente
+								updates['email_cliente'] = email_factura
+								form.instance.email_factura = email_factura
+							elif cliente.email_cliente != email_factura:
+								# Caso 2: Tiene email diferente -> guardar en email2_cliente
+								updates['email2_cliente'] = email_factura
+								form.instance.email_factura = email_factura
+						
+						# Aplicar actualizaciones si hay cambios
+						if updates:
+							Cliente.objects.filter(id_cliente=cliente_id).update(**updates)
+					
+					except Cliente.DoesNotExist:
+						pass				
+				
+				# 1. Validación mínima necesaria
+				deposito = form.cleaned_data.get('id_deposito')
+				if not deposito:
+						form.add_error('id_deposito', 'Debe seleccionar un depósito')
+						return self.form_invalid(form)
 
-					# 2. Validación para documentos pendientes
-					comprobante_venta = form.cleaned_data['id_comprobante_venta']
-					if comprobante_venta.pendiente:
-							comprobante_remito = form.cleaned_data.get('comprobante_remito')
-							remito = form.cleaned_data.get('remito')
+				# 2. Validación para documentos pendientes
+				comprobante_venta = form.cleaned_data['id_comprobante_venta']
+				if comprobante_venta.pendiente:
+						comprobante_remito = form.cleaned_data.get('comprobante_remito')
+						remito = form.cleaned_data.get('remito')
+						
+						if not all([comprobante_remito, remito]):
+								form.add_error(None, 'Para este tipo de comprobante debe especificar el documento asociado')
+								return self.form_invalid(form)
+
+				# 3. Numeración
+				sucursal = form.cleaned_data['id_sucursal']
+				punto_venta = form.cleaned_data['id_punto_venta']
+				comprobante = form.cleaned_data['compro']
+				letra = form.cleaned_data['letra_comprobante']
+				fecha_comprobante = form.cleaned_data['fecha_comprobante']
+
+				numero_obj, created = Numero.objects.select_for_update(
+						nowait=True
+				).get_or_create(
+						id_sucursal=sucursal,
+						id_punto_venta=punto_venta,
+						comprobante=comprobante,
+						letra=letra,
+						defaults={'numero': 0}
+				)
+
+				nuevo_numero = numero_obj.numero + 1
+				Numero.objects.filter(pk=numero_obj.pk).update(numero=F('numero') + 1)
+				
+				form.instance.numero_comprobante = nuevo_numero
+				form.instance.full_clean()
+
+				# Condición de Venta
+				condicion_comprobante = form.cleaned_data['condicion_comprobante']
+				if condicion_comprobante == 1:
+					# Venta de contado
+					form.instance.entrega = form.instance.total  # Asignar el total a entrega
+					form.instance.estado = "C"  # Marcar como cobrado ("C")
+
+				# Verificación de Nota de Crédito
+				comprobante_venta = form.cleaned_data['id_comprobante_venta']
+				if comprobante_venta.libro_iva and comprobante_venta.mult_venta < 0:
+					try:
+						# 1. Obtener el documento asociado
+						id_comprobante_asociado = form.cleaned_data['id_comprobante_asociado']
+						documento_asociado = Factura.objects.select_for_update().get(id_factura=id_comprobante_asociado)
+						
+						# 2. Sumar el total de la NC al campo entrega del documento asociado
+						nuevo_entrega = documento_asociado.entrega + form.instance.total
+						actualizaciones = {'entrega': nuevo_entrega}
+						
+						# 3. Verificar si se completó el pago
+						if nuevo_entrega >= documento_asociado.total:
+							actualizaciones['estado'] = 'C'  # Marcamos como cobrado
+						
+						# 4. Actualizar el documento asociado
+						Factura.objects.filter(id_factura=id_comprobante_asociado).update(**actualizaciones)
+						
+						# 5. Cerrar la Nota de Crédito
+						form.instance.entrega = form.instance.total  # Asignar el total a entrega
+						form.instance.estado = "C"  # Marcar como cobrado ("C")
+						
+					except Factura.DoesNotExist:
+						form.add_error('id_comprobante_asociado', 'El documento asociado no existe')
+						return self.form_invalid(form)
+					except Exception as e:
+						form.add_error(None, f'Error al procesar nota de crédito: {str(e)}')
+						return self.form_invalid(form)
+
+				# 4. Guardado en el modelo Factura
+				self.object = form.save()
+
+				# 5. ACTUALIZACIÓN DEL DOCUMENTO ASOCIADO (PARTE CLAVE)
+				if comprobante_venta.pendiente:
+						try:
+							# Buscar el documento asociado (remito) con estado NULL o vacío
+							documento_asociado = Factura.objects.filter(
+									Q(compro=form.cleaned_data['comprobante_remito']) &
+									Q(numero_comprobante=form.cleaned_data['remito']) &
+									(Q(estado="") | Q(estado__isnull=True))
+							).select_for_update().first()
 							
-							if not all([comprobante_remito, remito]):
-									form.add_error(None, 'Para este tipo de comprobante debe especificar el documento asociado')
-									return self.form_invalid(form)
+							if documento_asociado:
+									# Actualización directa y eficiente
+									Factura.objects.filter(pk=documento_asociado.pk).update(
+											estado="F"
+									)
+									print(f"Documento {documento_asociado.compro}-{documento_asociado.numero_comprobante} actualizado a estado 'F'")
+							else:
+									print("Advertencia: No se encontró el documento asociado para actualizar")
+						except Exception as e:
+							print(f"Error al actualizar documento asociado: {str(e)}")
+							# No hacemos return para no impedir la creación de la factura principal
 
-					# 3. Numeración
-					sucursal = form.cleaned_data['id_sucursal']
-					punto_venta = form.cleaned_data['id_punto_venta']
-					comprobante = form.cleaned_data['compro']
-					letra = form.cleaned_data['letra_comprobante']
-					fecha_comprobante = form.cleaned_data['fecha_comprobante']
-
-					numero_obj, created = Numero.objects.select_for_update(
-							nowait=True
-					).get_or_create(
-							id_sucursal=sucursal,
-							id_punto_venta=punto_venta,
-							comprobante=comprobante,
-							letra=letra,
-							defaults={'numero': 0}
+				# 6. ACTUALIZACIÓN DE LA AUTORIZACIÓN (NUEVO)
+				if form.cleaned_data.get('id_valida'):  # Si tiene autorización asociada
+					autorizacion = form.cleaned_data['id_valida']
+					Valida.objects.filter(pk=autorizacion.pk).update(
+							hs=timezone.now().time(),
+							estatus_valida=False,
+							# fecha_uso=timezone.now().date()  # Campo adicional para auditoría
 					)
+					print(f"Autorización {autorizacion.id_valida} marcada como utilizada")
 
-					nuevo_numero = numero_obj.numero + 1
-					Numero.objects.filter(pk=numero_obj.pk).update(numero=F('numero') + 1)
-					
-					form.instance.numero_comprobante = nuevo_numero
-					form.instance.full_clean()
+				# 7. Guardado en el modelo Detallefactura y DetalleSerial
+				formset_detalle.instance = self.object
+				detalles = formset_detalle.save()
+				
+				formset_serial.instance = self.object 
+				formset_serial.save() 						
 
-					# 4. Guardado en el modelo Factura
-					self.object = form.save()
-
-					# 5. ACTUALIZACIÓN DEL DOCUMENTO ASOCIADO (PARTE CLAVE)
-					if comprobante_venta.pendiente:
-							try:
-								# Buscar el documento asociado (remito) con estado NULL o vacío
-								documento_asociado = Factura.objects.filter(
-										Q(compro=form.cleaned_data['comprobante_remito']) &
-										Q(numero_comprobante=form.cleaned_data['remito']) &
-										(Q(estado="") | Q(estado__isnull=True))
-								).select_for_update().first()
-								
-								if documento_asociado:
-										# Actualización directa y eficiente
-										Factura.objects.filter(pk=documento_asociado.pk).update(
-												estado="F"
-										)
-										print(f"Documento {documento_asociado.compro}-{documento_asociado.numero_comprobante} actualizado a estado 'F'")
-								else:
-										print("Advertencia: No se encontró el documento asociado para actualizar")
-							except Exception as e:
-								print(f"Error al actualizar documento asociado: {str(e)}")
-								# No hacemos return para no impedir la creación de la factura principal
-
-					# 6. ACTUALIZACIÓN DE LA AUTORIZACIÓN (NUEVO)
-					if form.cleaned_data.get('id_valida'):  # Si tiene autorización asociada
-						autorizacion = form.cleaned_data['id_valida']
-						Valida.objects.filter(pk=autorizacion.pk).update(
-								hs=timezone.now().time(),
-								estatus_valida=False,
-								# fecha_uso=timezone.now().date()  # Campo adicional para auditoría
+				# 8. Actualización de inventario
+				for detalle in detalles:
+					# Solo actualizamos si es producto físico (tipo_producto = "P")
+					# print("entró al bucle detalles!!!")
+	
+					if (hasattr(detalle.id_producto, 'tipo_producto') and 
+						detalle.id_producto.tipo_producto == "P" and 
+						detalle.cantidad):
+						
+						# Actualización segura con bloqueo
+						# print("mult_stock", self.object.id_comprobante_venta.mult_stock)
+	
+						ProductoStock.objects.select_for_update().filter(
+								id_producto=detalle.id_producto,
+								id_deposito=deposito
+						).update(
+								#stock=F('stock') - detalle.cantidad,
+								stock=F('stock') + (detalle.cantidad * self.object.id_comprobante_venta.mult_stock),
+								fecha_producto_stock=fecha_comprobante
 						)
-						print(f"Autorización {autorizacion.id_valida} marcada como utilizada")
+				
+				# Mensaje de confirmación de la creación de la factura y redirección
+				messages.success(self.request, f"Documento {nuevo_numero} creado correctamente")
+				return redirect(self.get_success_url())
 
-					# 7. Guardado en el modelo Detallefactura y DetalleSerial
-					formset_detalle.instance = self.object
-					detalles = formset_detalle.save()
-					
-					formset_serial.instance = self.object 
-					formset_serial.save() 						
-
-					# 8. Actualización de inventario
-					for detalle in detalles:
-						# Solo actualizamos si es producto físico (tipo_producto = "P")
-						# print("entró al bucle detalles!!!")
-		
-						if (hasattr(detalle.id_producto, 'tipo_producto') and 
-							detalle.id_producto.tipo_producto == "P" and 
-							detalle.cantidad):
-							
-							# Actualización segura con bloqueo
-							# print("mult_stock", self.object.id_comprobante_venta.mult_stock)
-		
-							ProductoStock.objects.select_for_update().filter(
-									id_producto=detalle.id_producto,
-									id_deposito=deposito
-							).update(
-									#stock=F('stock') - detalle.cantidad,
-									stock=F('stock') + (detalle.cantidad * self.object.id_comprobante_venta.mult_stock),
-									fecha_producto_stock=fecha_comprobante
-							)
-					
-					# Mensaje de confirmación de la creación de la factura y redirección
-					messages.success(self.request, f"Documento {nuevo_numero} creado correctamente")
-					return redirect(self.get_success_url())
-
-							
-			except DatabaseError as e:
-				messages.error(self.request, "Error de concurrencia: Intente nuevamente")
-				return self.form_invalid(form)
-			except Exception as e:
-				messages.error(self.request, f"Error inesperado: {str(e)}")
-				return self.form_invalid(form)
+						
+		except DatabaseError as e:
+			messages.error(self.request, "Error de concurrencia: Intente nuevamente")
+			return self.form_invalid(form)
+		except Exception as e:
+			messages.error(self.request, f"Error inesperado: {str(e)}")
+			return self.form_invalid(form)
 		
 	def form_invalid(self, form):
 		print("Entro a form_invalid")
@@ -387,6 +470,10 @@ class PresupuestoUpdateView(MaestroDetalleUpdateView):
 		# Obtener todos los comprobantes con sus valores electronica
 		electronica_dict = {str(c.id_comprobante_venta): c.electronica for c in ComprobanteVenta.objects.all()}
 		data['electronica_dict'] = json.dumps(electronica_dict)
+
+		# Obtener todos los operarios con sus id
+		operario_dict = {str(o.id_operario): o.nombre_operario for o in Operario.objects.all()}
+		data['operario_dict'] = json.dumps(operario_dict)
 
 		return data
 

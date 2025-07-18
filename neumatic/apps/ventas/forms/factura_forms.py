@@ -109,6 +109,7 @@ class FacturaForm(forms.ModelForm):
             "nombre_factura": forms.TextInput(attrs={**formclasstext, 'readonly': 'readonly'}),
             "domicilio_factura": forms.TextInput(attrs={**formclasstext, 'readonly': 'readonly'}),
             "movil_factura": forms.TextInput(attrs={**formclasstext}),
+            "id_comprobante_asociado": forms.HiddenInput(),
             "numero_asociado": forms.TextInput(attrs={**formclasstext}),
             "email_factura": forms.TextInput(attrs={**formclasstext}),
             "observa_comprobante": forms.Textarea(attrs={

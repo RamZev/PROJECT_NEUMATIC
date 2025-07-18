@@ -88,6 +88,7 @@ def buscar_producto(request):
 
         resultados.append({
             'id': producto.id_producto,
+            'codigo': producto.codigo_producto,
             'marca': producto.id_marca.nombre_producto_marca if producto.id_marca else 'Sin marca',
             'medida': producto.medida,
             'cai': producto.id_cai.descripcion_cai if producto.id_cai else 'Sin CAI',
