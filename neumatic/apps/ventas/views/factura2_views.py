@@ -194,6 +194,9 @@ class FacturaManualCreateView(MaestroDetalleCreateView):
 		operario_dict = {str(o.id_operario): o.nombre_operario for o in Operario.objects.all()}
 		data['operario_dict'] = json.dumps(operario_dict)
 
+		# Tipo de Comprobante
+		data['tipo_comprobante'] = self.tipo_comprobante
+
 		return data
 
 	def form_valid(self, form):
@@ -479,6 +482,9 @@ class FacturaManualUpdateView(MaestroDetalleUpdateView):
 		# Obtener todos los operarios con sus id
 		operario_dict = {str(o.id_operario): o.nombre_operario for o in Operario.objects.all()}
 		data['operario_dict'] = json.dumps(operario_dict)
+
+		# Tipo de Comprobante
+		data['tipo_comprobante'] = self.tipo_comprobante
 
 		return data
 		
