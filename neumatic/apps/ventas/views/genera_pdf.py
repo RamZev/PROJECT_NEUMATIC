@@ -156,7 +156,7 @@ class GeneraPDFView(View):
 		x_text_right = width/2 + 20*mm + 10*mm
 		
 		c.setFont("Helvetica-Bold", 10)
-		nombre_comprobante = factura.id_comprobante_venta.nombre_impresion if factura.id_comprobante_venta.nombre_impresion else factura.id_comprobante_venta.nombre_comprobante_venta
+		nombre_comprobante = factura.id_comprobante_venta.tipo_comprobante if factura.id_comprobante_venta.tipo_comprobante else factura.id_comprobante_venta.nombre_comprobante_venta
 		c.drawString(x_text_right, y_text_right, nombre_comprobante)
 		
 		y_text_right -= 4*mm
@@ -678,7 +678,7 @@ class GeneraPDFView(View):
 		x_text_right = width/2 + 5*mm
 		
 		c.setFont("Helvetica-Bold", 10)
-		nombre_comprobante = recibo.id_comprobante_venta.nombre_impresion if recibo.id_comprobante_venta.nombre_impresion else recibo.id_comprobante_venta.nombre_comprobante_venta
+		nombre_comprobante = recibo.id_comprobante_venta.tipo_comprobante if recibo.id_comprobante_venta.tipo_comprobante else recibo.id_comprobante_venta.nombre_comprobante_venta
 		c.drawString(x_text_right, y_text_right, nombre_comprobante)
 		
 		y_text_right -= 4*mm
@@ -1163,7 +1163,7 @@ class GeneraPDFView(View):
 		x_datos_remito = 150*mm
 		
 		c.setFont("Helvetica-Bold", 12)
-		nombre_comprobante = remito.id_comprobante_venta.nombre_impresion if remito.id_comprobante_venta.nombre_impresion else remito.id_comprobante_venta.nombre_comprobante_venta
+		nombre_comprobante = remito.id_comprobante_venta.tipo_comprobante if remito.id_comprobante_venta.tipo_comprobante else remito.id_comprobante_venta.nombre_comprobante_venta
 		c.drawString(x_datos_remito, y_position, nombre_comprobante)
 		
 		c.setFont("Helvetica-Bold", 10)
