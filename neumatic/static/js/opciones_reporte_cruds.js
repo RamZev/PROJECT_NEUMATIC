@@ -110,6 +110,30 @@ if (vistaTabla) {
 }
 initializeDefaults();
 
+// Hab/Deshab Botón Generar
+function actualizarEstadoGenerar() {
+	const generarBtn = document.getElementById('generar');
+	// Busca la primera tabla de resultados visible en la página
+	const tablaResultados = document.querySelector('table tbody');
+	if (generarBtn && tablaResultados) {
+		// Busca si existe la celda con el texto "No se encontraron resultados."
+		const sinResultados = Array.from(tablaResultados.querySelectorAll('td'))
+			.some(td => td.textContent.trim() === 'No se encontraron resultados.');
+		generarBtn.disabled = sinResultados || tablaResultados.children.length === 0;
+	}
+}
+
+// Ejecuta al cargar la página
+actualizarEstadoGenerar()
+
+// Ejecuta después de cada búsqueda (ajusta el selector del formulario si es necesario)
+document.querySelectorAll('form').forEach(form => {
+	form.addEventListener('submit', function() {
+		setTimeout(actualizarEstadoGenerar, 500); // Espera a que se actualice la tabla
+	});
+});
+// ------------------------------------------
+
 
 // Script adicional para el botón "Generar".
 const generar = document.getElementById("generar");

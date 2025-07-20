@@ -16,9 +16,9 @@ class ComprobanteVentaForm(CrudGenericForm):
 			'estatus_comprobante_venta': 
 				forms.Select(attrs={**formclassselect}),
 			'codigo_comprobante_venta': 
-				forms.TextInput(attrs={**formclasstext}),
+				forms.TextInput(attrs={**formclasstext, 'oninput': 'this.value = this.value.toUpperCase()'}),
 			'nombre_comprobante_venta': 
-				forms.TextInput(attrs={**formclasstext}),
+				forms.TextInput(attrs={**formclasstext, 'oninput': 'this.value = this.value.toUpperCase()'}),
 			'nombre_impresion': 
 				forms.TextInput(attrs={**formclasstext}),
 			'tipo_comprobante': 
