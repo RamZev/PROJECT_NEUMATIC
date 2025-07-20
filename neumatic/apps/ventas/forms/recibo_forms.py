@@ -15,7 +15,8 @@ from ..models.recibo_models import (
 )
 from ..models.factura_models import Factura
 from apps.maestros.models.base_models import (CodigoRetencion,
-                                              Banco, 
+                                              Banco,
+                                              CuentaBanco, 
                                               ConceptoBanco,
                                               Tarjeta)
 
@@ -474,16 +475,16 @@ class RetencionReciboForm(RetencionReciboInputForm):
 
 # Formularios de Depósitos
 class DepositoReciboInputForm(forms.ModelForm):
-    id_banco_input = forms.ModelChoiceField(
-        queryset=Banco.objects.all().order_by('nombre_banco'),
-        label="Banco",
-        empty_label="Seleccione Banco",
+    id_cuenta_banco_input = forms.ModelChoiceField(
+        queryset=CuentaBanco.objects.all().order_by('numero_cuenta'),
+        label="Cuenta Banco",
+        empty_label="Seleccione Cuenta Banco",
         widget=forms.Select(attrs={
             'class': 'form-control form-control-sm border border-primary',
             'style': 'font-size: 0.8rem; padding: 0.25rem;'
         }),
         required=False,
-    )
+    )    
     id_concepto_banco_input = forms.ModelChoiceField(
         queryset=ConceptoBanco.objects.all().order_by('nombre_concepto_banco'),
         label="Concepto",
@@ -525,20 +526,22 @@ class DepositoReciboInputForm(forms.ModelForm):
 
     class Meta:
         model = DepositoRecibo
-        fields = ['id_banco', 'id_concepto_banco', 'fecha_deposito', 'importe_deposito', 'detalle_deposito']
+        fields = ['id_cuenta_banco_input', 'id_concepto_banco', 'fecha_deposito', 'importe_deposito', 'detalle_deposito']
 
 
 class DepositoReciboForm(forms.ModelForm):
     class Meta:
         model = DepositoRecibo
-        fields = ['id_deposito_recibo', 'id_factura', 'id_banco', 'id_concepto_banco',
-                 'fecha_deposito', 'importe_deposito', 'detalle_deposito']
+        fields = ['id_deposito_recibo', 'id_factura',
+                  'id_cuenta_banco', 'id_concepto_banco',
+                  'fecha_deposito', 'importe_deposito',
+                  'detalle_deposito']
         
         widgets = {
             'id_deposito_recibo': forms.HiddenInput(),
             'id_factura': forms.HiddenInput(),
             'DELETE': forms.CheckboxInput(attrs={'style': 'display: none;'}),
-            'id_banco': forms.Select(attrs={
+            'id_cuenta_banco': forms.Select(attrs={
                 'class': 'form-control form-control-sm border border-primary',
                 'style': 'font-size: 0.8rem; padding: 0.25rem;'
             }),
@@ -564,15 +567,15 @@ class DepositoReciboForm(forms.ModelForm):
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['id_banco'].queryset = Banco.objects.all().order_by('nombre_banco')
-        self.fields['id_banco'].empty_label = "Seleccione Banco"
-        self.fields['id_banco'].required = True
+        self.fields['id_cuenta_banco'].queryset = CuentaBanco.objects.all().order_by('numero_cuenta')
+        self.fields['id_cuenta_banco'].empty_label = "Seleccione Cuenta"
+        self.fields['id_cuenta_banco'].required = True
         self.fields['id_concepto_banco'].queryset = ConceptoBanco.objects.all().order_by('nombre_concepto_banco')
         self.fields['id_concepto_banco'].empty_label = "Seleccione Concepto"
         self.fields['id_concepto_banco'].required = True
         self.fields['fecha_deposito'].required = True
         self.fields['importe_deposito'].required = True
-        self.fields['detalle_deposito'].required = True
+        self.fields['detalle_deposito'].required = False
 
 
 # Formularios de Tarjetas

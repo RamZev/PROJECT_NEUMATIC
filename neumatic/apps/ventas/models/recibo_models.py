@@ -2,7 +2,11 @@
 from django.db import models
 
 from apps.maestros.models.base_gen_models import ModeloBaseGenerico
-from apps.maestros.models.base_models import Banco, ConceptoBanco, CodigoRetencion, Tarjeta
+from apps.maestros.models.base_models import (Banco, 
+											  CuentaBanco,
+											  ConceptoBanco, 
+											  CodigoRetencion, 
+											  Tarjeta)
 from .factura_models import Factura
 
 from entorno.constantes_base import ESTATUS_GEN, CONDICION_VENTA
@@ -113,8 +117,8 @@ class DepositoRecibo(ModeloBaseGenerico):
 		null=True,
 		blank=True
 	)
-	id_banco = models.ForeignKey(
-		Banco,
+	id_cuenta_banco = models.ForeignKey(
+		CuentaBanco,
 		on_delete=models.CASCADE,
 		verbose_name="Banco",
 		null=True,

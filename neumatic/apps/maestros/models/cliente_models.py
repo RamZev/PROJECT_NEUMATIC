@@ -100,8 +100,7 @@ class Cliente(ModeloBaseGenerico):
 		ordering = ['nombre_cliente']
 												
 	def __str__(self):
-		# return self.nombre_cliente
-		return f"{self.id_cliente} - {self.nombre_cliente}"
+		return self.nombre_cliente
 	
 	def clean(self):
 		super().clean()

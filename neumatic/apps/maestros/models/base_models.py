@@ -737,7 +737,7 @@ class CuentaBanco(ModeloBaseGenerico):
 		ordering = ['numero_cuenta']
 	
 	def __str__(self):
-		return self.numero_cuenta
+		return f"{self.tipo_cuenta} - {self.id_banco.nombre_banco}"
 	
 	def clean(self):
 		super().clean()
