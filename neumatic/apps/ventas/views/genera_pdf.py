@@ -781,8 +781,9 @@ class GeneraPDFView(View):
 		if depositos:
 			table_data.append(["Depósitos:"] + 4*[""])
 			for deposito in depositos:
+				cta_bco = f"{deposito.id_cuenta_banco.numero_cuenta}-{deposito.id_cuenta_banco.id_banco.nombre_banco}" if deposito.id_cuenta_banco else ""
 				row = [
-					deposito.id_banco,
+					cta_bco,
 					"",
 					deposito.fecha_deposito.strftime("%d/%m/%Y"),
 					"",

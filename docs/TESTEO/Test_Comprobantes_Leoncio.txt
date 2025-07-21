@@ -75,10 +75,12 @@ Ingresos de Caja (IN):
 	- No permite "insertar" un detalle después de seleccionado el producto/servicio, no hace nada (error en consola del navegador).
 
 
-
-
 RECIBOS
 ===============================================================================
+
+
+
+
 PRESUPUESTOS
 ===============================================================================
 	
