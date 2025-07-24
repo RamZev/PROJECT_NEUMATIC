@@ -1,10 +1,11 @@
 # neumatic\apps\informes\forms\buscador_vlpreciodiferente_forms.py
 
 from django import forms
+from decimal import Decimal
 from datetime import date
 
 from .informes_generics_forms import InformesGenericForm
-from diseno_base.diseno_bootstrap import formclassdate, formclasstext, formclassselect
+from diseno_base.diseno_bootstrap import formclassdate, formclasstext, formclassselect, formclassnumb
 from apps.maestros.models.base_models import ComprobanteVenta
 
 
@@ -37,6 +38,7 @@ class BuscadorPrecioDiferenteForm(InformesGenericForm):
 		required=False, 
 		label="Dif. superiro a",
 		widget=forms.NumberInput(attrs={**formclasstext})
+		# widget=forms.TextInput(attrs={**formclassnumb})
 	)
 	comprobantes = forms.ModelMultipleChoiceField(
 		queryset=ComprobanteVenta.objects.filter(estatus_comprobante_venta=True),
