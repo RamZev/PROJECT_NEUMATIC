@@ -1062,12 +1062,12 @@ CREATE VIEW "VLTablaDinamicaVentas" AS
 		cv.libro_iva
 	FROM
 		factura f
-		JOIN cliente c ON f.id_cliente_id = c.id_cliente
-		JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
-		JOIN vendedor v ON c.id_vendedor_id = v.id_vendedor
-		JOIN sucursal s ON f.id_sucursal_id = s.id_sucursal
-		JOIN localidad l ON c.id_localidad_id = l.id_localidad
-		JOIN provincia p ON l.id_provincia_id = p.id_provincia
+		LEFT JOIN cliente c ON f.id_cliente_id = c.id_cliente
+		LEFT JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
+		LEFT JOIN vendedor v ON c.id_vendedor_id = v.id_vendedor
+		LEFT JOIN sucursal s ON f.id_sucursal_id = s.id_sucursal
+		LEFT JOIN localidad l ON c.id_localidad_id = l.id_localidad
+		LEFT JOIN provincia p ON l.id_provincia_id = p.id_provincia
 	ORDER by
 		f.fecha_comprobante, f.numero_comprobante;
 
@@ -1108,6 +1108,7 @@ CREATE VIEW "VLTablaDinamicaDetalleVentas" AS
 		df.precio,
 		df.descuento,
 		df.gravado*cv.mult_venta AS gravado,
+		df.iva*cv.mult_venta AS iva,
 		df.total*cv.mult_venta AS total,
 		f.no_estadist,
 		f.id_user_id,
@@ -1122,17 +1123,19 @@ CREATE VIEW "VLTablaDinamicaDetalleVentas" AS
 		cv.libro_iva
 	FROM
 		detalle_factura df
-		JOIN factura f ON df.id_factura_id = f.id_factura
-		JOIN producto p ON df.id_producto_id = p.id_producto
-		JOIN producto_familia pf ON p.id_familia_id = pf.id_producto_familia
-		JOIN producto_marca pm ON p.id_marca_id = pm.id_producto_marca
-		JOIN operario o ON df.id_operario_id = o.id_operario
-		JOIN cliente c ON f.id_cliente_id = c.id_cliente
-		JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
-		JOIN vendedor v ON c.id_vendedor_id = v.id_vendedor
-		JOIN sucursal s ON f.id_sucursal_id = s.id_sucursal
-		JOIN localidad l ON c.id_localidad_id = l.id_localidad
-		JOIN provincia pr ON l.id_provincia_id = pr.id_provincia;
+		LEFT JOIN factura f ON df.id_factura_id = f.id_factura
+		LEFT JOIN producto p ON df.id_producto_id = p.id_producto
+		LEFT JOIN producto_familia pf ON p.id_familia_id = pf.id_producto_familia
+		LEFT JOIN producto_marca pm ON p.id_marca_id = pm.id_producto_marca
+		LEFT JOIN operario o ON df.id_operario_id = o.id_operario
+		LEFT JOIN cliente c ON f.id_cliente_id = c.id_cliente
+		LEFT JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
+		LEFT JOIN vendedor v ON c.id_vendedor_id = v.id_vendedor
+		LEFT JOIN sucursal s ON f.id_sucursal_id = s.id_sucursal
+		LEFT JOIN localidad l ON c.id_localidad_id = l.id_localidad
+		LEFT JOIN provincia pr ON l.id_provincia_id = pr.id_provincia
+	ORDER by
+		f.fecha_comprobante, f.numero_comprobante;
 
 
 -- ---------------------------------------------------------------------------
@@ -1185,17 +1188,126 @@ CREATE VIEW "VLTablaDinamicaEstadistica" AS
 		cv.libro_iva
 	FROM
 		detalle_factura df
-		JOIN factura f ON df.id_factura_id = f.id_factura
-		JOIN producto p ON df.id_producto_id = p.id_producto
-		JOIN producto_familia pf ON p.id_familia_id = pf.id_producto_familia
-		JOIN producto_marca pm ON p.id_marca_id = pm.id_producto_marca
-		JOIN operario o ON df.id_operario_id = o.id_operario
-		JOIN cliente c ON f.id_cliente_id = c.id_cliente
-		JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
-		JOIN vendedor v ON c.id_vendedor_id = v.id_vendedor
-		JOIN sucursal s ON f.id_sucursal_id = s.id_sucursal
-		JOIN localidad l ON c.id_localidad_id = l.id_localidad
-		JOIN provincia pr ON l.id_provincia_id = pr.id_provincia
+		LEFT JOIN factura f ON df.id_factura_id = f.id_factura
+		LEFT JOIN producto p ON df.id_producto_id = p.id_producto
+		LEFT JOIN producto_familia pf ON p.id_familia_id = pf.id_producto_familia
+		LEFT JOIN producto_marca pm ON p.id_marca_id = pm.id_producto_marca
+		LEFT JOIN operario o ON df.id_operario_id = o.id_operario
+		LEFT JOIN cliente c ON f.id_cliente_id = c.id_cliente
+		LEFT JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
+		LEFT JOIN vendedor v ON c.id_vendedor_id = v.id_vendedor
+		LEFT JOIN sucursal s ON f.id_sucursal_id = s.id_sucursal
+		LEFT JOIN localidad l ON c.id_localidad_id = l.id_localidad
+		LEFT JOIN provincia pr ON l.id_provincia_id = pr.id_provincia
 	WHERE
 		cv.mult_estadistica<>0 AND
 		f.no_estadist=False;
+
+
+-- ---------------------------------------------------------------------------
+-- Lista de Precios.
+-- Modelo: VLLista
+-- ---------------------------------------------------------------------------
+DROP VIEW IF EXISTS "main"."VLLista";
+CREATE VIEW "VLLista" AS 
+	SELECT
+		ROW_NUMBER() OVER() AS id,
+		p.id_producto,
+		p.id_cai_id,
+		p.cai,
+		p.tipo_producto,
+		p.medida,
+		p.segmento,
+		p.unidad,
+		p.id_familia_id,
+		pf.nombre_producto_familia,
+		p.id_modelo_id,
+		pm.nombre_modelo,
+		p.nombre_producto,
+		p.id_marca_id,
+		px.nombre_producto_marca,
+		p.precio,
+		p.costo,
+		p.descuento,
+		p.id_alicuota_iva_id,
+		p.alicuota_iva,
+		p.minimo,
+		p.despacho_1,
+		p.despacho_2,
+		p.fecha_fabricacion
+	FROM 
+		producto p
+		JOIN producto_marca px ON p.id_marca_id = px.id_producto_marca
+		JOIN producto_familia pf ON p.id_familia_id = pf.id_producto_familia
+		JOIN producto_modelo pm ON p.id_modelo_id = pm.id_modelo
+	ORDER by
+		p.id_familia_id, p.id_marca_id;
+
+
+-- ---------------------------------------------------------------------------
+-- Lista de Precios a Revendedor.
+-- Modelo: VLListaRevendedor
+-- ---------------------------------------------------------------------------
+DROP VIEW IF EXISTS "main"."VLListaRevendedor";
+CREATE VIEW "VLListaRevendedor" AS 
+	SELECT
+		ROW_NUMBER() OVER() AS id,
+		p.id_familia_id,
+		pf.nombre_producto_familia,
+		p.id_marca_id,
+		px.nombre_producto_marca,
+		p.id_modelo_id,
+		pm.nombre_modelo,
+		p.id_producto,
+		p.id_cai_id,
+		p.cai,
+		p.medida,
+		p.nombre_producto,
+		p.precio AS contado,
+		p.precio AS precio30,
+		p.precio AS precio90,
+		p.precio AS precio120
+	FROM 
+		producto p
+		JOIN producto_familia pf ON p.id_familia_id = pf.id_producto_familia
+		JOIN producto_marca px ON p.id_marca_id = px.id_producto_marca
+		JOIN producto_modelo pm ON p.id_modelo_id = pm.id_modelo
+ORDER by
+		p.id_familia_id, p.id_producto;
+
+
+-- ---------------------------------------------------------------------------
+-- Listado de Stock por Sucursal.
+-- Modelo: VLStockSucursal
+-- ---------------------------------------------------------------------------
+DROP VIEW IF EXISTS "main"."VLStockSucursal";
+CREATE VIEW "VLStockSucursal" AS 
+	SELECT
+		ROW_NUMBER() OVER() AS id,
+		p.id_familia_id,
+		pf.nombre_producto_familia,
+		p.id_modelo_id,
+		pm.nombre_modelo,
+		p.id_marca_id,
+		px.nombre_producto_marca,
+		ps.id_producto_id,
+		p.id_cai_id,
+		p.cai,
+		p.medida,
+		p.nombre_producto,
+	--	p.precio,
+		ps.stock,
+	--	ps.minimo,
+		p.costo*ps.stock AS costo_inventario,
+		ps.id_deposito_id
+	FROM
+		producto_stock ps
+		JOIN producto p ON ps.id_producto_id = p.id_producto
+		JOIN producto_marca px ON p.id_marca_id = px.id_producto_marca
+		JOIN producto_familia pf ON p.id_familia_id = pf.id_producto_familia
+		JOIN producto_modelo pm ON p.id_modelo_id = pm.id_modelo
+	WHERE
+		ps.stock <> 0
+	ORDER by
+		p.id_familia_id, p.id_modelo_id, p.id_marca_id;
+

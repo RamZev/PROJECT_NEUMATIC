@@ -2168,6 +2168,7 @@ class VLTablaDinamicaDetalleVentas(models.Model):
 	precio = models.DecimalField(max_digits=12, decimal_places=2)
 	descuento = models.DecimalField(max_digits=6, decimal_places=2)
 	gravado = models.DecimalField(max_digits=14, decimal_places=2)
+	iva = models.DecimalField(max_digits=12, decimal_places=2)
 	total = models.DecimalField(max_digits=14, decimal_places=2)
 	no_estadist = models.BooleanField()
 	id_user_id = models.IntegerField()
@@ -2188,7 +2189,6 @@ class VLTablaDinamicaDetalleVentas(models.Model):
 		db_table = 'VLTablaDinamicaDetalleVentas'
 		verbose_name = ('Tablas Dinámicas de Ventas - Detalle de Ventas por Productos')
 		verbose_name_plural = ('Tablas Dinámicas de Ventas - Detalle de Ventas por Productos')
-
 
 
 #-----------------------------------------------------------------------------
@@ -2263,5 +2263,258 @@ class VLTablaDinamicaEstadistica(models.Model):
 		db_table = 'VLTablaDinamicaEstadistica'
 		verbose_name = ('Tablas Dinámicas de Ventas - Tablas para Estadísticas')
 		verbose_name_plural = ('Tablas Dinámicas de Ventas - Tablas para Estadísticas')
+
+
+#-----------------------------------------------------------------------------
+# Lista de Precio.
+#-----------------------------------------------------------------------------
+class VLListaManager(models.Manager):
+	
+	def obtener_datos(self, id_familia_desde, id_familia_hasta, id_marca_desde, id_marca_hasta, id_modelo_desde, id_modelo_hasta):
+		
+		#-- La consulta SQL.
+		query = """
+			SELECT
+				*
+			FROM
+				VLLista
+		"""
+		
+		#-- Filtros y parámetros.
+		conditions = []
+		params = []
+		
+		if id_familia_desde and id_familia_hasta:
+			conditions.append("id_familia_id BETWEEN %s AND %s")
+			params.extend([id_familia_desde, id_familia_hasta])
+		elif id_familia_desde:
+			conditions.append("id_familia_id >= %s")
+			params.extend([id_familia_desde])
+		elif id_familia_hasta:
+			conditions.append("id_familia_id <= %s")
+			params.extend([id_familia_hasta])
+		
+		if id_marca_desde and id_marca_hasta:
+			conditions.append("id_marca_id BETWEEN %s AND %s")
+			params.extend([id_marca_desde, id_marca_hasta])
+		elif id_marca_desde:
+			conditions.append("id_marca_id >= %s")
+			params.extend([id_marca_desde])
+		elif id_marca_hasta:
+			conditions.append("id_marca_id <= %s")
+			params.extend([id_marca_hasta])
+		
+		if id_modelo_desde and id_modelo_hasta:
+			conditions.append("id_modelo_id BETWEEN %s AND %s")
+			params.extend([id_modelo_desde, id_modelo_hasta])
+		elif id_modelo_desde:
+			conditions.append("id_modelo_id >= %s")
+			params.extend([id_modelo_desde])
+		elif id_modelo_hasta:
+			conditions.append("id_modelo_id <= %s")
+			params.extend([id_modelo_hasta])
+		
+		if conditions:
+			query += " WHERE "
+			query += " AND ".join(conditions)
+		
+		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
+		return self.raw(query, params)
+
+
+class VLLista(models.Model):
+	id_producto_id = models.IntegerField()
+	id_cai_id = models.IntegerField()
+	cai = models.CharField(max_length=20)
+	tipo_producto = models.CharField(max_length=1)
+	medida = models.CharField(max_length=15)
+	segmento = models.CharField(max_length=3)
+	unidad = models.IntegerField()
+	id_familia_id = models.IntegerField()
+	nombre_producto_familia = models.CharField(max_length=50)
+	id_modelo_id = models.IntegerField()
+	nombre_modelo = models.CharField(max_length=50)
+	id_marca_id = models.IntegerField()
+	nombre_producto_marca = models.CharField(max_length=50)
+	nombre_producto = models.CharField(max_length=50)
+	precio = models.DecimalField(max_digits=12, decimal_places=2)
+	costo = models.DecimalField(max_digits=12, decimal_places=2)
+	descuento = models.DecimalField(max_digits=6, decimal_places=2)
+	id_alicuota_iva_id = models.IntegerField()
+	alicuota_iva = models.DecimalField(max_digits=6, decimal_places=2)
+	minimo = models.IntegerField()
+	despacho_1 = models.CharField(max_length=16)
+	despacho_2 = models.CharField(max_length=16)
+	fecha_fabricacion = models.CharField(max_length=6)
+	
+	objects = VLListaManager()
+	
+	class Meta:
+		managed = False
+		db_table = 'VLLista'
+		verbose_name = ('Lista de Precios')
+		verbose_name_plural = ('Lista de Precios')
+
+
+#-----------------------------------------------------------------------------
+# Lista de Precio a Revendedor.
+#-----------------------------------------------------------------------------
+class VLListaRevendedorManager(models.Manager):
+	
+	def obtener_datos(self, id_familia_desde, id_familia_hasta, id_marca_desde, id_marca_hasta, id_modelo_desde, id_modelo_hasta):
+		
+		#-- La consulta SQL.
+		query = """
+			SELECT
+				*
+			FROM
+				VLListaRevendedor
+		"""
+		
+		#-- Filtros y parámetros.
+		conditions = []
+		params = []
+		
+		if id_familia_desde and id_familia_hasta:
+			conditions.append("id_familia_id BETWEEN %s AND %s")
+			params.extend([id_familia_desde, id_familia_hasta])
+		elif id_familia_desde:
+			conditions.append("id_familia_id >= %s")
+			params.extend([id_familia_desde])
+		elif id_familia_hasta:
+			conditions.append("id_familia_id <= %s")
+			params.extend([id_familia_hasta])
+		
+		if id_marca_desde and id_marca_hasta:
+			conditions.append("id_marca_id BETWEEN %s AND %s")
+			params.extend([id_marca_desde, id_marca_hasta])
+		elif id_marca_desde:
+			conditions.append("id_marca_id >= %s")
+			params.extend([id_marca_desde])
+		elif id_marca_hasta:
+			conditions.append("id_marca_id <= %s")
+			params.extend([id_marca_hasta])
+		
+		if id_modelo_desde and id_modelo_hasta:
+			conditions.append("id_modelo_id BETWEEN %s AND %s")
+			params.extend([id_modelo_desde, id_modelo_hasta])
+		elif id_modelo_desde:
+			conditions.append("id_modelo_id >= %s")
+			params.extend([id_modelo_desde])
+		elif id_modelo_hasta:
+			conditions.append("id_modelo_id <= %s")
+			params.extend([id_modelo_hasta])
+		
+		if conditions:
+			query += " WHERE "
+			query += " AND ".join(conditions)
+		
+		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
+		return self.raw(query, params)
+
+
+class VLListaRevendedor(models.Model):
+	id_familia_id = models.IntegerField()
+	nombre_producto_familia = models.CharField(max_length=50)
+	id_producto_id = models.IntegerField()
+	id_cai_id = models.IntegerField()
+	cai = models.CharField(max_length=20)
+	medida = models.CharField(max_length=15)
+	nombre_producto = models.CharField(max_length=50)
+	precio = models.DecimalField(max_digits=12, decimal_places=2)
+	id_marca_id = models.IntegerField()
+	id_modelo_id = models.IntegerField()
+	
+	objects = VLListaRevendedorManager()
+	
+	class Meta:
+		managed = False
+		db_table = 'VLListaRevendedor'
+		verbose_name = ('Lista de Precios a Revendedor')
+		verbose_name_plural = ('Lista de Precios a Revendedor')
+
+
+#-----------------------------------------------------------------------------
+# Listado de Stock por Sucursal.
+#-----------------------------------------------------------------------------
+class VLStockSucursalManager(models.Manager):
+	
+	def obtener_datos(self, id_deposito, id_familia_desde, id_familia_hasta, id_marca_desde, id_marca_hasta, id_modelo_desde, id_modelo_hasta):
+		
+		#-- La consulta SQL.
+		query = """
+			SELECT
+				*
+			FROM
+				VLStockSucursal
+			WHERE
+				id_deposito_id = %s
+		"""
+		
+		#-- Filtros y parámetros.
+		conditions = []
+		params = [id_deposito]
+		
+		if id_familia_desde and id_familia_hasta:
+			conditions.append("id_familia_id BETWEEN %s AND %s")
+			params.extend([id_familia_desde, id_familia_hasta])
+		elif id_familia_desde:
+			conditions.append("id_familia_id >= %s")
+			params.extend([id_familia_desde])
+		elif id_familia_hasta:
+			conditions.append("id_familia_id <= %s")
+			params.extend([id_familia_hasta])
+		
+		if id_marca_desde and id_marca_hasta:
+			conditions.append("id_marca_id BETWEEN %s AND %s")
+			params.extend([id_marca_desde, id_marca_hasta])
+		elif id_marca_desde:
+			conditions.append("id_marca_id >= %s")
+			params.extend([id_marca_desde])
+		elif id_marca_hasta:
+			conditions.append("id_marca_id <= %s")
+			params.extend([id_marca_hasta])
+		
+		if id_modelo_desde and id_modelo_hasta:
+			conditions.append("id_modelo_id BETWEEN %s AND %s")
+			params.extend([id_modelo_desde, id_modelo_hasta])
+		elif id_modelo_desde:
+			conditions.append("id_modelo_id >= %s")
+			params.extend([id_modelo_desde])
+		elif id_modelo_hasta:
+			conditions.append("id_modelo_id <= %s")
+			params.extend([id_modelo_hasta])
+		
+		if conditions:
+			query += " AND "
+			query += " AND ".join(conditions)
+		
+		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
+		return self.raw(query, params)
+
+
+class VLStockSucursal(models.Model):
+	id_familia_id = models.IntegerField()
+	nombre_producto_familia = models.CharField(max_length=50)
+	id_modelo_id = models.IntegerField()
+	nombre_modelo = models.CharField(max_length=50)
+	id_marca_id = models.IntegerField()
+	nombre_producto_marca = models.CharField(max_length=50)
+	id_producto_id = models.IntegerField()
+	id_cai_id = models.IntegerField()
+	cai = models.CharField(max_length=20)
+	medida = models.CharField(max_length=15)
+	nombre_producto = models.CharField(max_length=50)
+	stock = models.IntegerField()
+	costo_inventario = models.DecimalField(max_digits=12, decimal_places=2)
+	id_deposito_id = models.IntegerField()
+	
+	objects = VLStockSucursalManager()
+	
+	class Meta:
+		managed = False
+		db_table = 'VLStockSucursal'
+		verbose_name = ('Listado de Stock por Sucursal')
+		verbose_name_plural = ('Listado de Stock por Sucursal')
 
 

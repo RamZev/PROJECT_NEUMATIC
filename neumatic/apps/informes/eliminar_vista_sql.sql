@@ -34,3 +34,6 @@ DROP VIEW IF EXISTS "main"."vlVentaSinEstadistica";
 DROP VIEW IF EXISTS "main"."VLTablaDinamicaVentas";
 DROP VIEW IF EXISTS "main"."VLTablaDinamicaDetalleVentas";
 DROP VIEW IF EXISTS "main"."VLTablaDinamicaEstadistica";
+DROP VIEW IF EXISTS "main"."VLLista";
+DROP VIEW IF EXISTS "main"."VLListaRevendedor";
+DROP VIEW IF EXISTS "main"."VLStockSucursal";

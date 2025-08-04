@@ -182,6 +182,7 @@
 						</a>
 						<div class="collapse" id="reportsCollapseProcesos" aria-labelledby="headingReportsTablas" data-bs-parent="#sidenavAccordionReports">
 							<nav class="sb-sidenav-menu-nested nav">
+								<!-- Informes - Ventas -->
 								<a class="nav-link" href="{% url 'vlsaldosclientes_informe_list' %}">Saldos de Clientes</a>
 								<a class="nav-link" href="{% url 'vlresumenctacte_informe_list' %}">Resumen de Cuenta Corriente</a>
 								<a class="nav-link" href="{% url 'vlmercaderiaporcliente_informe_list' %}">Mercadería por Cliente</a>
@@ -223,6 +224,20 @@
 								<a class="nav-link" href="{% url 'vlcomisionoperario_informe_list' %}">Comisiones a Operarios</a>
 								<a class="nav-link" href="{% url 'vlpreciodiferente_informe_list' %}">Diferencias de Precios en Facturación</a>
 								<a class="nav-link" href="{% url 'vlventasresumenib_informe_list' %}">Resumen de Ventas I. Brutos Mercadolibre</a>
+								
+								<!-- Informes - Stock -->
+								<a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseStock" aria-expanded="false" aria-controls="collapseStock">
+									Stock
+									<div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+								</a>
+								<div class="collapse" id="collapseStock" data-bs-parent="#reportsCollapseTablas">
+									<nav class="sb-sidenav-menu-nested nav">
+										<a class="nav-link" href="{% url 'vllista_informe_list' %}">Lista de Precios</a>
+										<a class="nav-link" href="{% url 'vllistarevendedor_informe_list' %}">Lista de Precios a Revendedores</a>
+										<a class="nav-link" href="{% url 'vlstocksucursal_informe_list' %}">Listado de Stock por Sucursal</a>
+									</nav>
+								</div>
+								
 								
 							</nav>
 						</div>
