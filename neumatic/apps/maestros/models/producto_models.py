@@ -22,33 +22,36 @@ class Producto(ModeloBaseGenerico):
 	id_modelo = models.ForeignKey(ProductoModelo, on_delete=models.PROTECT, 
 								  verbose_name="Modelo")
 	id_cai = models.ForeignKey(ProductoCai, on_delete=models.PROTECT,
-								null=True, blank=True, verbose_name="CAI")  # CAI del producto
-	cai = models.CharField("Medida", max_length=21, null=True, blank=True)  # CAI del producto
-	medida = models.CharField("Medida", max_length=15)  # Medida del producto
-	segmento = models.CharField("Segmento", max_length=3)  # Segmento del producto
-	nombre_producto = models.CharField("Nombre producto", max_length=50)  # Nombre del producto
+								null=True, blank=True, verbose_name="CAI")
+	cai = models.CharField("Medida", max_length=21, null=True, blank=True)
+	medida = models.CharField("Medida", max_length=15)
+	segmento = models.CharField("Segmento", max_length=3)
+	nombre_producto = models.CharField("Nombre producto", max_length=50)
 	unidad = models.IntegerField("Unidad", null=True, blank=True, default=0)
 	fecha_fabricacion = models.CharField("Fecha fabricación", max_length=6, 
-									null=True, blank=True)  # Fecha de fabricación
+									null=True, blank=True)
 	costo = models.DecimalField("Costo", max_digits=15, decimal_places=2,
-							default=0.00, null=True, blank=True)  # Costo del producto
+							default=0.00, null=True, blank=True)
 	alicuota_iva = models.DecimalField("Alícuota IVA", max_digits=4, 
 									   decimal_places=2, default=0.00,
-									   null=True, blank=True)  # Alicuota IVA
+									   null=True, blank=True)
 	id_alicuota_iva = models.ForeignKey(AlicuotaIva, on_delete=models.PROTECT, verbose_name="Alíc. IVA", default=1)
 	precio = models.DecimalField("Precio", max_digits=15, decimal_places=2,
-							default=0.00, null=True, blank=True)  # Precio del producto
-	stock = models.IntegerField("Stock", null=True, blank=True)  # Stock disponible
-	minimo = models.IntegerField("Stock mínimo", null=True, default=0)  # Stock mínimo
+							default=0.00, null=True, blank=True)
+	stock = models.IntegerField("Stock", null=True, blank=True)
+	minimo = models.IntegerField("Stock mínimo", null=True, default=0)
 	descuento = models.DecimalField("Descuento", max_digits=4, 
 								 decimal_places=2, default=0.00,
-								 null=True, blank=True)  # Descuento aplicable
+								 null=True, blank=True)
 	despacho_1 = models.CharField("Despacho 1", max_length=16, 
-							   null=True, blank=True)  # Dirección de despacho 1
+							   null=True, blank=True)
 	despacho_2 = models.CharField("Despacho 2", max_length=16, 
-							   null=True, blank=True)  # Dirección de despacho 2
-	descripcion_producto = models.CharField("Descripción", max_length=50)  # Descripción del producto
-	carrito = models.BooleanField("Carrito")  # Indica si el producto está en el carrito
+							   null=True, blank=True)
+	descripcion_producto = models.CharField("Descripción", max_length=50)
+	carrito = models.BooleanField("Carrito")
+	iva_exento = models.BooleanField("IVA Exento", default=False)
+	obliga_operario = models.BooleanField("Carrito", default=False)
+	
 	
 	class Meta:
 		db_table = 'producto'

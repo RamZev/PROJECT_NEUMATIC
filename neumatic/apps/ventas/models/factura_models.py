@@ -412,6 +412,14 @@ class DetalleFactura(ModeloBaseGenerico):
 		null=True,
 		blank=True
 	)
+	no_gravado = models.DecimalField(
+		verbose_name="No Gravado",
+		max_digits=14,
+		decimal_places=2,
+		null=True,
+		blank=True,
+		default=0.0
+	)
 	alic_iva = models.DecimalField(
 		verbose_name="Alíc. IVA(%)",
 		max_digits=6,
