@@ -3,7 +3,7 @@ from django import forms
 from .crud_forms_generics import CrudGenericForm
 from ..models.base_models import TipoRetencionIb
 from diseno_base.diseno_bootstrap import (
-	formclasstext, formclassselect)
+	formclasstext, formclassselect, formclassnumb)
 
 
 class TipoRetencionIbForm(CrudGenericForm):
@@ -18,19 +18,11 @@ class TipoRetencionIbForm(CrudGenericForm):
 			'descripcion_tipo_retencion_ib': 
 				forms.TextInput(attrs={**formclasstext}),
 			'alicuota_inscripto': 
-				forms.NumberInput(attrs={**formclasstext,
-										'min': 0,
-										'max': 99.99}),
+				forms.TextInput(attrs={**formclassnumb,}),
 			'alicuota_no_inscripto': 
-				forms.NumberInput(attrs={**formclasstext,
-										'min': 0,
-										'max': 99.99}),
+				forms.TextInput(attrs={**formclassnumb,}),
 			'monto': 
-				forms.NumberInput(attrs={**formclasstext,
-										'min': 0,
-										'max': 9999999999999.99}),
+				forms.TextInput(attrs={**formclassnumb,}),
 			'minimo': 
-				forms.NumberInput(attrs={**formclasstext,
-										'min': 0,
-										'max': 9999999999999.99}),
+				forms.TextInput(attrs={**formclassnumb,}),
 		}

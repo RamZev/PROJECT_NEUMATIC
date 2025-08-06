@@ -1,5 +1,6 @@
-# neumatic\apps\maestros\views\producto_stock_views.py
+# neumatic\apps\maestros\views\moneda_views.py
 from django.urls import reverse_lazy
+from decimal import Decimal
 from ..views.cruds_views_generics import *
 from ..models.base_models import Moneda
 from ..forms.moneda_forms import MonedaForm
@@ -83,7 +84,6 @@ class DataViewList():
 	]
 
 
-# ActividadListView - Inicio
 class MonedaListView(MaestroListView):
 	model = ConfigViews.model
 	template_name = ConfigViews.template_list
@@ -104,7 +104,6 @@ class MonedaListView(MaestroListView):
 	}
 
 
-# ActividadCreateView - Inicio
 class MonedaCreateView(MaestroCreateView):
 	model = ConfigViews.model
 	list_view_name = ConfigViews.list_view_name
@@ -113,16 +112,9 @@ class MonedaCreateView(MaestroCreateView):
 	success_url = ConfigViews.success_url
 	
 	#-- Indicar el permiso que requiere para ejecutar la acción.
-	# (revisar de donde lo copiaste que tienes asignado permission_change en vez de permission_add)
 	permission_required = ConfigViews.permission_add
-	
-	# extra_context = {
-	# 	"accion": f"Crear {ConfigViews.model._meta.verbose_name}",
-	# 	"list_view_name" : ConfigViews.list_view_name
-	# }
 
 
-# ActividadUpdateView
 class MonedaUpdateView(MaestroUpdateView):
 	model = ConfigViews.model
 	list_view_name = ConfigViews.list_view_name
@@ -132,14 +124,8 @@ class MonedaUpdateView(MaestroUpdateView):
 	
 	#-- Indicar el permiso que requiere para ejecutar la acción.
 	permission_required = ConfigViews.permission_change
-	
-	# extra_context = {
-	# 	"accion": f"Editar {ConfigViews.model._meta.verbose_name}",
-	# 	"list_view_name" : ConfigViews.list_view_name
-	# }
 
 
-# ActividadDeleteView
 class MonedaDeleteView (MaestroDeleteView):
 	model = ConfigViews.model
 	list_view_name = ConfigViews.list_view_name
@@ -148,9 +134,3 @@ class MonedaDeleteView (MaestroDeleteView):
 	
 	#-- Indicar el permiso que requiere para ejecutar la acción.
 	permission_required = ConfigViews.permission_delete
-	
-	# extra_context = {
-	# 	"accion": f"Eliminar {ConfigViews.model._meta.verbose_name}",
-	# 	"list_view_name" : ConfigViews.list_view_name,
-	# 	"mensaje": "Estás seguro de eliminar el Registro"
-	# }

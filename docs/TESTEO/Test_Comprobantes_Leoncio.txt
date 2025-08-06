@@ -77,7 +77,26 @@ Ingresos de Caja (IN):
 
 RECIBOS
 ===============================================================================
-
+- Permite crear un recibo sin especificar ni detalle del recibo ni medios de pago, solo importe total.
+- Quitar la validación del CUIT en pagos con cheques.
+- En pagos con cheques incluir en el modal la validación del campo cuenta cuando se deje en blanco.
+- No se está actualizando el campo estado en la tabla factura. Cuál es el manejo de ese campo (estado) para el 
+  caso de los Recibos y si se contempla para algún otro comprobante.?
+- Permitir eliminar un detalle de recibo??
+- Comprobar la duplicidad de registros en Numeros (id_sucursal, id_punto_venta, comprobante, letra) Capturar el error cuando el 
+  get() obtenda más de 1 registro.
+- Cuando se hacen recibos seguidos se está arrastrando on conservando la fecha de ingreso para pagos con cheques, hay que 
+  blanquear la fecha o poner la fecha actual por defecto desde el principio.
+- Pago con cualquier medio de pago con detalle (Retenciones, Depósitos, Tarjetas, Cheques):
+  1.- Se inserta un pago.
+  2.- Se elimina ese pago.
+  3.- Se inserta otro pago.
+  4.- Se graba el recibo pero al generar el pdf no salen los datos del pago en el resumen de medios de pago.
+- Pago con cualquier medio de pago con detalle (Retenciones, Depósitos, Tarjetas, Cheques):
+  Si se registran más de 1 detalle de cualquier medio de pago y se elimina uno y luego se vuelve agregar, se conserva el o los 
+  que no se eliminaron pero el o los que se agreguen nuevamente no aparecen el el pdf.
+- Al agregar detalles en cualquier medio de pago, estos se pueden modificar, pero si se modifica el importe se debe actualizar
+  el campo "Resto a Cobrar". Al menos que no se permita modificar los detalles de pagos, solo eliminar y agregar nuevamente.
 
 
 

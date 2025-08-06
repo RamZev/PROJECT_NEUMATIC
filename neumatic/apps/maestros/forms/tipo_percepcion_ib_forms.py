@@ -3,7 +3,7 @@ from django import forms
 from .crud_forms_generics import CrudGenericForm
 from ..models.base_models import TipoPercepcionIb
 from diseno_base.diseno_bootstrap import (
-	formclasstext, formclassselect, formclasscheck)
+	formclasstext, formclassselect, formclasscheck, formclassnumb)
 
 
 class TipoPercepcionIbForm(CrudGenericForm):
@@ -18,17 +18,11 @@ class TipoPercepcionIbForm(CrudGenericForm):
 			'descripcion_tipo_percepcion_ib': 
 				forms.TextInput(attrs={**formclasstext}),
 			'alicuota': 
-				forms.NumberInput(attrs={**formclasstext,
-										'min': 0,
-										'max': 99.99}),
+				forms.TextInput(attrs={**formclassnumb}),
 			'monto': 
-				forms.NumberInput(attrs={**formclasstext,
-										'min': 0,
-										'max': 9999999999999.99}),
+				forms.TextInput(attrs={**formclassnumb}),
 			'minimo': 
-				forms.NumberInput(attrs={**formclasstext,
-										'min': 0,
-										'max': 9999999999999.99}),
+				forms.TextInput(attrs={**formclassnumb}),
 			'neto_total': 
 				forms.CheckboxInput(attrs={**formclasscheck}),
 		}

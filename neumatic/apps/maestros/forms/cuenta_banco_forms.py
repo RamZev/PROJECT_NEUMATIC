@@ -3,7 +3,7 @@ from django import forms
 from .crud_forms_generics import CrudGenericForm
 from ..models.base_models import CuentaBanco
 from diseno_base.diseno_bootstrap import (
-	formclasstext, formclassselect)
+	formclasstext, formclassselect, formclassnumb)
 
 
 class CuentaBancoForm(CrudGenericForm):
@@ -30,7 +30,7 @@ class CuentaBancoForm(CrudGenericForm):
 			'codigo_imputacion': 
 				forms.NumberInput(attrs={**formclasstext, 'min': 0}),
 			'tope_negociacion': 
-				forms.NumberInput(attrs={**formclasstext, 
+				forms.TextInput(attrs={**formclassnumb, 
 							 	  'min': 0, 'max': 9999999999.99}),
 			'reporte_reques': 
 				forms.TextInput(attrs={**formclasstext}),

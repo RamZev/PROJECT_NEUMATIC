@@ -79,6 +79,11 @@ from apps.informes.views.vltabladinamicaventas_list_views import *
 from apps.informes.views.vltabladinamicadetalleventas_list_views import *
 from apps.informes.views.vltabladinamicaestadistica_list_views import *
 
+#- Lote 5:
+from apps.informes.views.vllista_list_views import *
+from apps.informes.views.vllistarevendedor_list_views import *
+from apps.informes.views.vlstocksucursal_list_views import *
+
 
 
 #-- Otras rutas.
@@ -754,6 +759,43 @@ urlpatterns = [
 	path("vltabladinamicaestadistica/vista-csv/", vltabladinamicaestadistica_vista_csv, 
 		 name="vltabladinamicaestadistica_vista_csv"),
 	
+	#-- 5to. Lote.
+	
+	#-- VL Lista de Precios.
+	path('vllista_informe/', VLListaInformeView.as_view(), 
+		 name='vllista_informe_list'),
+	path('vllista/vista-preliminar/', vllista_vista_pantalla, 
+		 name="vllista_vista_pantalla"),
+	path("vllista/vista-pdf/", vllista_vista_pdf, 
+		 name="vllista_vista_pdf"),
+	path("vllista/vista-excel/", vllista_vista_excel, 
+		 name="vllista_vista_excel"),
+	path("vllista/vista-csv/", vllista_vista_csv, 
+		 name="vllista_vista_csv"),
+	
+	#-- VL Lista de Precios a Revendedores.
+	path('vllistarevendedor_informe/', VLListaRevendedorInformeView.as_view(), 
+		 name='vllistarevendedor_informe_list'),
+	path('vllistarevendedor/vista-preliminar/', vllistarevendedor_vista_pantalla, 
+		 name="vllistarevendedor_vista_pantalla"),
+	path("vllistarevendedor/vista-pdf/", vllistarevendedor_vista_pdf, 
+		 name="vllistarevendedor_vista_pdf"),
+	path("vllistarevendedor/vista-excel/", vllistarevendedor_vista_excel, 
+		 name="vllistarevendedor_vista_excel"),
+	path("vllistarevendedor/vista-csv/", vllistarevendedor_vista_csv, 
+		 name="vllistarevendedor_vista_csv"),
+	
+	#-- VL Listado de Stock por Sucursal.
+	path('vlstocksucursal_informe/', VLStockSucursalInformeView.as_view(), 
+		 name='vlstocksucursal_informe_list'),
+	path('vlstocksucursal/vista-preliminar/', vlstocksucursal_vista_pantalla, 
+		 name="vlstocksucursal_vista_pantalla"),
+	path("vlstocksucursal/vista-pdf/", vlstocksucursal_vista_pdf, 
+		 name="vlstocksucursal_vista_pdf"),
+	path("vlstocksucursal/vista-excel/", vlstocksucursal_vista_excel, 
+		 name="vlstocksucursal_vista_excel"),
+	path("vlstocksucursal/vista-csv/", vlstocksucursal_vista_csv, 
+		 name="vlstocksucursal_vista_csv"),
 	
 	
 	

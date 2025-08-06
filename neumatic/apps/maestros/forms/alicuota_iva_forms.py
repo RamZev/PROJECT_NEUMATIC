@@ -3,7 +3,7 @@ from django import forms
 from .crud_forms_generics import CrudGenericForm
 from ..models.base_models import AlicuotaIva
 from diseno_base.diseno_bootstrap import (
-	formclasstext, formclassselect)
+	formclasstext, formclassselect, formclassnumb)
 
 
 class AlicuotaIvaForm(CrudGenericForm):
@@ -18,7 +18,7 @@ class AlicuotaIvaForm(CrudGenericForm):
 			'codigo_alicuota': 
 				forms.TextInput(attrs={**formclasstext}),
 			'alicuota_iva': 
-				forms.NumberInput(attrs={**formclasstext}),
+				forms.TextInput(attrs={**formclassnumb}),
 			'descripcion_alicuota_iva': 
 				forms.TextInput(attrs={**formclasstext}),
 		}

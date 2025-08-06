@@ -94,6 +94,17 @@ class DataViewList:
 			"excel": True,
 			"csv": True
 		},
+		'unidad': {
+			"label": "Unidad",
+			"col_width_table": 0,
+			"col_width_pdf": 0,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"table": False,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
 		'id_marca': {
 			"label": "Marca",
 			"col_width_table": 4,
@@ -116,7 +127,6 @@ class DataViewList:
 			"excel": True,
 			"csv": True
 		},
-		
 		"tipo_producto": {
 			"label": "Tipo Producto",
 			"col_width_table": 0,
@@ -205,17 +215,17 @@ class DataViewList:
 			"excel": True,
 			"csv": True
 		},
-		"stock": {
-			"label": "Stock",
-			"col_width_table": 0,
-			"col_width_pdf": 0,
-			"pdf_paragraph": False,
-			"date_format": None,
-			"table": False,
-			"pdf": False,
-			"excel": True,
-			"csv": True
-		},
+		# "stock": {
+		# 	"label": "Stock",
+		# 	"col_width_table": 0,
+		# 	"col_width_pdf": 0,
+		# 	"pdf_paragraph": False,
+		# 	"date_format": None,
+		# 	"table": False,
+		# 	"pdf": False,
+		# 	"excel": True,
+		# 	"csv": True
+		# },
 		"minimo": {
 			"label": "Mínimo",
 			"col_width_table": 0,
@@ -316,20 +326,38 @@ class ProductoInformeListView(InformeListView):
 					case "todos":
 						queryset = self.model.objects.all()
 			
-			if id_familia_desde or id_familia_hasta:
-				#-- Filtrar por rango de familias.
-				familias_ids = range=(id_familia_desde, id_familia_hasta+1)
+			if id_familia_desde and id_familia_hasta:
+				#-- Filtrar por rango de familias (ambos límites).
+				familias_ids = range(id_familia_desde, id_familia_hasta + 1)
 				queryset = queryset.filter(id_familia_id__in=familias_ids)
-				
-			if id_marca_desde or id_marca_hasta:
-				#-- Filtrar por rango de marcas.
-				marcas_ids = range=(id_marca_desde, id_marca_hasta+1)
+			elif id_familia_desde:
+				#-- Filtrar por familias desde el límite inferior.
+				queryset = queryset.filter(id_familia_id__gte=id_familia_desde)
+			elif id_familia_hasta:
+				#-- Filtrar por familias hasta el límite superior.
+				queryset = queryset.filter(id_familia_id__lte=id_familia_hasta)
+			
+			if id_marca_desde and id_marca_hasta:
+				#-- Filtrar por rango de marcas (ambos límites).
+				marcas_ids = range(id_marca_desde, id_marca_hasta + 1)
 				queryset = queryset.filter(id_marca_id__in=marcas_ids)
-				
-			if id_modelo_desde or id_modelo_hasta:
-				#-- Filtrar por rango de modelos.
-				modelos_ids = range=(id_modelo_desde, id_modelo_hasta+1)
+			elif id_marca_desde:
+				#-- Filtrar por marcas desde el límite inferior.
+				queryset = queryset.filter(id_marca_id__gte=id_marca_desde)
+			elif id_marca_hasta:
+				#-- Filtrar por marcas hasta el límite superior.
+				queryset = queryset.filter(id_marca_id__lte=id_marca_hasta)
+			
+			if id_modelo_desde and id_modelo_hasta:
+				#-- Filtrar por rango de modelos (ambos límites).
+				modelos_ids = range(id_modelo_desde, id_modelo_hasta + 1)
 				queryset = queryset.filter(id_modelo_id__in=modelos_ids)
+			elif id_modelo_desde:
+				#-- Filtrar por modelos desde el límite inferior.
+				queryset = queryset.filter(id_modelo_id__gte=id_modelo_desde)
+			elif id_modelo_hasta:
+				#-- Filtrar por modelos hasta el límite superior.
+				queryset = queryset.filter(id_modelo_id__lte=id_modelo_hasta)
 			
 		else:
 			#-- Agregar clases css a los campos con errores.

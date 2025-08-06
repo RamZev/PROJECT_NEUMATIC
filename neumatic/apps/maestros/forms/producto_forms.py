@@ -82,4 +82,8 @@ class ProductoForm(CrudGenericForm):
 				forms.TextInput(attrs={**formclasstext}),
 			'carrito': 
 				forms.CheckboxInput(attrs={**formclasscheck}),
+			'iva_exento': 
+				forms.CheckboxInput(attrs={**formclasscheck}),
+			'obliga_operario': 
+				forms.CheckboxInput(attrs={**formclasscheck}),
 		}

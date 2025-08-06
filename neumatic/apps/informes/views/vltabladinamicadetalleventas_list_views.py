@@ -109,7 +109,7 @@ class ConfigViews:
 		},
 		"fecha_comprobante": {
 			"label": "Fecha",
-			"col_width_pdf": 40,
+			"col_width_pdf": 35,
 			"pdf_paragraph": False,
 			"date_format": True,
 			"pdf": True,
@@ -154,7 +154,7 @@ class ConfigViews:
 		},
 		"nombre_cliente": {
 			"label": "Nombre Cliente",
-			"col_width_pdf": 140,
+			"col_width_pdf": 120,
 			"pdf_paragraph": True,
 			"date_format": False,
 			"pdf": True,
@@ -172,7 +172,7 @@ class ConfigViews:
 		},
 		"reventa": {
 			"label": "Rvta.",
-			"col_width_pdf": 25,
+			"col_width_pdf": 20,
 			"pdf_paragraph": False,
 			"date_format": False,
 			"pdf": True,
@@ -190,7 +190,7 @@ class ConfigViews:
 		},
 		"cai": {
 			"label": "CAI",
-			"col_width_pdf": 35,
+			"col_width_pdf": 60,
 			"pdf_paragraph": False,
 			"date_format": False,
 			"pdf": True,
@@ -199,7 +199,7 @@ class ConfigViews:
 		},
 		"nombre_producto": {
 			"label": "Descripción",
-			"col_width_pdf": 170,
+			"col_width_pdf": 160,
 			"pdf_paragraph": True,
 			"date_format": False,
 			"pdf": True,
@@ -235,7 +235,7 @@ class ConfigViews:
 		},
 		"cantidad": {
 			"label": "Cantidad",
-			"col_width_pdf": 45,
+			"col_width_pdf": 35,
 			"pdf_paragraph": False,
 			"date_format": False,
 			"pdf": True,
@@ -244,7 +244,7 @@ class ConfigViews:
 		},
 		"costo": {
 			"label": "Costo",
-			"col_width_pdf": 55,
+			"col_width_pdf": 50,
 			"pdf_paragraph": False,
 			"date_format": False,
 			"pdf": True,
@@ -253,7 +253,7 @@ class ConfigViews:
 		},
 		"precio": {
 			"label": "Precio",
-			"col_width_pdf": 55,
+			"col_width_pdf": 50,
 			"pdf_paragraph": False,
 			"date_format": False,
 			"pdf": True,
@@ -262,7 +262,7 @@ class ConfigViews:
 		},
 		"descuento": {
 			"label": "Descuento",
-			"col_width_pdf": 40,
+			"col_width_pdf": 35,
 			"pdf_paragraph": False,
 			"date_format": False,
 			"pdf": True,
@@ -271,16 +271,34 @@ class ConfigViews:
 		},
 		"gravado": {
 			"label": "Gravado",
-			"col_width_pdf": 60,
+			"col_width_pdf": 55,
 			"pdf_paragraph": False,
 			"date_format": False,
 			"pdf": True,
 			"excel": True,
 			"csv": True
 		},
+		"no_gravado": {
+			"label": "No Gravado",
+			"col_width_pdf": 55,
+			"pdf_paragraph": False,
+			"date_format": False,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
+		"iva": {
+			"label": "IVA",
+			"col_width_pdf": 0,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
 		"total": {
 			"label": "Total",
-			"col_width_pdf": 60,
+			"col_width_pdf": 55,
 			"pdf_paragraph": False,
 			"date_format": False,
 			"pdf": True,
