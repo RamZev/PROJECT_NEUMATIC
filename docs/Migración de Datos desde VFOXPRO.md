@@ -10,10 +10,6 @@ Eliminar los archivos de migraciones de las carpetas migrations de todas la apli
 
 Revise las carpetas migrations de las aplicaciones:
 
-
-
- 
-
 ## 3. Aplicar las migraciones
 
 ```shell
@@ -253,6 +249,8 @@ Para la fase de desarrollo, utilice
 > 
 > Password : admin54321$$
 
+## 
+
 ## 5. Migración de Maestros Base
 
 | Algoritmo                         | Origen                         | Observaciones                                                                                                                             |
@@ -270,17 +268,82 @@ Para la fase de desarrollo, utilice
 | operario_migra.py                 | operario.dbf                   | Antes de ejecutar el algoritmo, en la tabla DBF, se eliminaron los dos últimos registros uno blank otro sin nombre y se hizo un pack      |
 | tipo_documento_identidad_migra.py | tipo_documento_identidad.json  |                                                                                                                                           |
 | sucursal_migra.py                 | sucursal.dbf                   | Ojo solo migró los 10 primeros, no el 11 se agregó manual el 11 y 12 por el vendedor URIEL ECOMMERCE                                      |
-|                                   |                                |                                                                                                                                           |
+| punto_venta_migra.py              | punto_venta.json               |                                                                                                                                           |
 
-
+## 
 
 ## Migración de Maestros Base Relacionados a Producto
 
+Antes de iniciar este proceso de migración, se debe depurar la tabla **lista.dbf**, debe revisarse principalmente estos casos:
 
+* Eliminar los registro con el campo **lista.codigo** duplicados
 
-| Algoritmo                  | Origen        | Observaciones                                                                                                                      |
-| -------------------------- | ------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
-| producto_familia_migra.py  | articulo.dbf  |                                                                                                                                    |
-| producto_modelo_migra.py   | modelos.dbf   |                                                                                                                                    |
-| producto_deposito_migra.py | depositos.dbf | Antes de ejecutar el algoritmo, en la tabla DBF, se hizo un pack, había un archivo marcado para borrar                             |
-| producto_marca_migra.py    | marcas.dbf    | Antes de ejecutar el algoritmo, en la tabla DBF, en los CODIGO=30, 52, 210 se asignó Al campo moneda "P", porque estaban en blanco |
+* Modificar valores del campo lista **lista.iva** mayores a 100
+
+* Hacer pack 
+
+| Algoritmo                  | Origen        | Observaciones                                                                                                                                                                                                                                                                                                                                        |
+| -------------------------- | ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| producto_familia_migra.py  | articulo.dbf  |                                                                                                                                                                                                                                                                                                                                                      |
+| producto_modelo_migra.py   | modelos.dbf   |                                                                                                                                                                                                                                                                                                                                                      |
+| producto_deposito_migra.py | depositos.dbf | Antes de ejecutar el algoritmo, en la tabla DBF, se hizo un pack, había un archivo marcado para borrar                                                                                                                                                                                                                                               |
+| producto_marca_migra.py    | marcas.dbf    | Antes de ejecutar el algoritmo, en la tabla DBF, en los CODIGO=30, 52, 210 se asignó Al campo moneda "P", porque estaban en blanco                                                                                                                                                                                                                   |
+| producto_cai_migra.py      | lista.dbf     | Nota: Se insertan los valores no repetidos del campo CODFABRICA                                                                                                                                                                                                                                                                                      |
+| producto_migra.py          | lista.dbf     | EJECUTAR AJ_LISTA.PRG. El campo CODIGO tiene repeticiones -Errores en el campo IVA valores mayores a 100, revisar con los SELECT - SQL. Luego ejecute: actualiza_producto_cai.py LUEGO HACER PACK. SELECT codigo, COUNT(*) as repeticiones FROM lista GROUP BY codigo HAVING COUNT(*) > 1 ORDER BY repeticiones DESC BOORAR LOS REGISTROS SIN NOMBRE |
+| producto_stock_migra.py    | stock.dbf     |                                                                                                                                                                                                                                                                                                                                                      |
+| producto_minimo_migra.py   | listamin.dbf  |                                                                                                                                                                                                                                                                                                                                                      |
+
+## Migración de Maestros Base Relacionados a Cliente
+
+| Algoritmo                   | Origen                  | Observaciones                                                                                                                                                                                                                                |
+| --------------------------- | ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| vendedor_migra.py           | vendedor.dbf            | Se asignó código 1 a SANTA FE MOSTRADOR. Hacer un pack.                                                                                                                                                                                      |
+| tipo_percepcion_ib_migra.py | tipo_percepcion_ib.json |                                                                                                                                                                                                                                              |
+| cliente_migra.py            | clientes.dbf            | Eliminar todos los registros cuyos campos SITIVA y NOMBRE estén en blanco. Verificar que no haya duplicación del campo CODIGO. SELECT codigo, COUNT(*) as repeticiones FROM clientes GROUP BY codigo HAVING COUNT(*) > 1 luego hacer un pack |
+| descuento_vendedor_migra.py | descvend.dbf            |                                                                                                                                                                                                                                              |
+| numero_migra.py             |                         | problema con los encabezados en mayúsculas, deben ser en minúsculas. No hay punto de venta 25                                                                                                                                                |
+
+## 
+
+## Migración de Maestros Detalles Relacionados a la Facturación
+
+| Algoritmo                | Origen      | Observaciones                                                                                                                                                                                                            |
+| ------------------------ | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| factura_migra.py         | factura.dbf | Antes de migrar, eliminar ID que se repiten en factura.dbf: 1550326, 1551103, 1591230                                                                                                                                    |
+| detalle_factura_migra.py | detven.dbf  | En la tabla origen detven.dbf hay que corregir en los 1566500 y 1569043 la inversón de PRECIO y CANTIDAD, se colocó el precio en la cantidad. También filtrar por el campo ALICIVA > 21 y reemplazar esos valores por 21 |
+
+## Migración de Maestros Detalles Relacionados a los Recibos
+
+| Algoritmo                 | Origen                | Observaciones |
+| ------------------------- | --------------------- | ------------- |
+| banco_migra.py            | banco.json            |               |
+| cuenta_banco_migra.py     | cuenta_banco.json     |               |
+| tarjeta_migra.py          | tarjeta.json          |               |
+| codigo_retencion_migra.py | codigo_retencion.json |               |
+| concepto_banco_migra.py   | concepto_banco.json   |               |
+| marketing_origen_migra.py | marketing_origen.json |               |
+| leyenda_migra.py          | leyenda.json          |               |
+
+**Al finalizar las migraciones:**
+
+1. Ejecute la actualización del superusuario (OBLIGATORIO)
+   
+   **actualiza_user.py** 
+
+2. Crear las vistas en la base de datos
+   
+   2.1. Abrir la base de datos en DB Browser
+   
+   2.2. Copiar todo el contenido del script: crear_vista_sql.sql
+   
+   2.3. Ir a la pestaña Execute SQL y pagar todo el contendo
+   
+   2.4. Ejecutar todo el contenido
+   
+   2.5. Grabar los cambios y salir de DB Browser
+
+3. Entrar al sistema e ir a comprobantes de venta
+   
+   3.1. Asignar los documentos relacionados a Facturas Remito
+   
+   3.2. Marcar los Recibos y Remitos el checkbox y grupo correspondiente
