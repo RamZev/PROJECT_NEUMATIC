@@ -35,6 +35,7 @@
 				<th>Cliente</th>
 				<th>Nombre</th>
 				<th class="numeric" style="padding-right: 15px;">Gravado</th>
+				<th class="numeric" style="padding-right: 15px;">No Gravado</th>
 				<th class="numeric" style="padding-right: 15px;">IVA</th>
 				<th class="numeric" style="padding-right: 15px;">Percepción</th>
 				<th class="numeric" style="padding-right: 15px;">Total</th>
@@ -44,7 +45,6 @@
 		<tbody>
 			
 			{% for obj in objetos %}
-				
 				<tr>
 					<td>{{ obj.comprobante }}</td>
 					<td>{{ obj.fecha_comprobante|date:'d/m/Y' }}</td>
@@ -52,6 +52,7 @@
 					<td>{{ obj.id_cliente_id }}</td>
 					<td>{{ obj.nombre_cliente }}</td>
 					<td class="numeric" style="padding-right: 15px;">{{ obj.gravado|formato_es_ar }}</td>
+					<td class="numeric" style="padding-right: 15px;">{{ obj.exento|formato_es_ar }}</td>
 					<td class="numeric" style="padding-right: 15px;">{{ obj.iva|formato_es_ar }}</td>
 					<td class="numeric" style="padding-right: 15px;">{{ obj.percepcion|formato_es_ar }}</td>
 					<td class="numeric" style="padding-right: 15px;">{{ obj.total|formato_es_ar }}</td>

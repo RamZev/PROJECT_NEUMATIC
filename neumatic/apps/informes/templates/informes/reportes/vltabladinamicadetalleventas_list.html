@@ -41,6 +41,7 @@
 				<th class="numeric" style="padding-right: 15px;">Precio</th>
 				<th class="numeric" style="padding-right: 15px;">Descuento</th>
 				<th class="numeric" style="padding-right: 15px;">Gravado</th>
+				<th class="numeric" style="padding-right: 15px;">No Gravado</th>
 				<th class="numeric" style="padding-right: 15px;">Total</th>
 			</tr>
 		</thead>
@@ -48,7 +49,6 @@
 		<tbody>
 			
 			{% for obj in objetos %}
-				
 				<tr>
 					<td>{{ obj.comprobante }}</td>
 					<td>{{ obj.fecha_comprobante|date:'d/m/Y' }}</td>
@@ -62,6 +62,7 @@
 					<td class="numeric" style="padding-right: 15px;">{{ obj.precio|formato_es_ar }}</td>
 					<td class="numeric" style="padding-right: 15px;">{{ obj.descuento|formato_es_ar }}</td>
 					<td class="numeric" style="padding-right: 15px;">{{ obj.gravado|formato_es_ar }}</td>
+					<td class="numeric" style="padding-right: 15px;">{{ obj.no_gravado|formato_es_ar }}</td>
 					<td class="numeric" style="padding-right: 15px;">{{ obj.total|formato_es_ar }}</td>
 				</tr>
 			{% endfor %}

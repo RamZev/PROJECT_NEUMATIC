@@ -1,3 +1,4 @@
+<!-- neumatic\apps\maestros\templates\maestros\producto_form.html -->
 {% extends 'maestro_form.html' %}
 {% load static %}
 <!-- -------------------------------------------------------------------- -->
@@ -74,14 +75,16 @@
 													</div>
 													
 													<!-- ******** -->
+													 
 													{% if form.instance.pk %}
 														<div class="col-md-2">
 															<label class="form-label text-primary mb-0">
 																{{ form.tipo_producto.label }}
 															</label>
-															<input 
-																type="text" 
-																name="tp" 
+															<!-- Campo oculto para el valor real -->
+															{{ form.tipo_producto }}
+															<!-- Input de solo lectura para mostrar el valor -->
+															<input type="text" 
 																value="{{ form.instance.get_tipo_producto_display }}" 
 																class="form-control form-control-sm border border-primary mb-2" 
 																disabled>
@@ -94,6 +97,7 @@
 															{{ form.tipo_producto }}
 														</div>
 													{% endif %}
+													
 													<!-- ******** -->
 													
 												</div>
@@ -229,6 +233,25 @@
 															</label>
 														</div>
 													</div>
+													
+													<div class="col-md-2 d-flex align-items-center">
+														<div class="form-check mt-lg-4">
+															<label class="form-check-label form-label text-primary">
+																{{ form.iva_exento }}
+																{{ form.iva_exento.label }}
+															</label>
+														</div>
+													</div>
+													
+													<div class="col-md-2 d-flex align-items-center">
+														<div class="form-check mt-lg-4">
+															<label class="form-check-label form-label text-primary">
+																{{ form.obliga_operario }}
+																{{ form.obliga_operario.label }}
+															</label>
+														</div>
+													</div>
+													
 												</div>
 												
 											</div>
@@ -400,7 +423,7 @@
 				</div>
 							
 				<div class="modal-footer">
-					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+					<button type="button" class="btn btnletlet-secondary" data-bs-dismiss="modal">Cancelar</button>
 					<button type="button" class="btn btn-primary" id="saveChanges">Guardar</button>
 				</div>
 			</div>
@@ -413,17 +436,17 @@
 	
 	<script>
 		document.addEventListener('DOMContentLoaded', function () {
-			var editMinimoModal = document.getElementById('editMinimoModal');
+			let editMinimoModal = document.getElementById('editMinimoModal');
 			
 			editMinimoModal.addEventListener('show.bs.modal', function (event) {
-				var button = event.relatedTarget;
+				let button = event.relatedTarget;
 				
 				// Obtener los nombres y IDs
-				var depositoNombre = button.getAttribute('data-deposito-nombre');
-				var depositoId = button.getAttribute('data-deposito-id');
-				var caiDescripcion = button.getAttribute('data-cai-descripcion');
-				var caiId = button.getAttribute('data-cai-id');
-				var minimo = button.getAttribute('data-minimo');
+				let depositoNombre = button.getAttribute('data-deposito-nombre');
+				let depositoId = button.getAttribute('data-deposito-id');
+				let caiDescripcion = button.getAttribute('data-cai-descripcion');
+				let caiId = button.getAttribute('data-cai-id');
+				let minimo = button.getAttribute('data-minimo');
 				
 				// Asigna el nombre y descripción al modal
 				document.getElementById('editDepositoNombre').value = depositoNombre;
@@ -436,9 +459,9 @@
 			});
 			
 			document.getElementById('saveChanges').addEventListener('click', function () {
-				var depositoId = document.getElementById('editDepositoId').value;
-				var caiId = document.getElementById('editCaiId').value;
-				var minimo = document.getElementById('editMinimo').value;
+				let depositoId = document.getElementById('editDepositoId').value;
+				let caiId = document.getElementById('editCaiId').value;
+				let minimo = document.getElementById('editMinimo').value;
 				
 				fetch("{% url 'actualizar_minimo' %}", {
 					method: 'POST',
@@ -456,22 +479,22 @@
 				.then(data => {
 					if (data.success) {
 						// alert(data.message);
-						var modal = bootstrap.Modal.getInstance(editMinimoModal);
+						let modal = bootstrap.Modal.getInstance(editMinimoModal);
 						modal.hide();
 						
 						// Convierte el valor minimo a un número, eliminando ceros a la izquierda
-						var minimoSinCeros = parseInt(minimo, 10);
+						let minimoSinCeros = parseInt(minimo, 10);
 						
 						// Actualiza el valor en la tabla sin recargar la página
 						// Selecciona la celda correcta con el atributo data-deposito-id y data-cai-id
-						var updatedCell = document.querySelector(`[data-deposito-cell-id="${depositoId}"][data-cai-cell-id="${caiId}"]`);
+						let updatedCell = document.querySelector(`[data-deposito-cell-id="${depositoId}"][data-cai-cell-id="${caiId}"]`);
 						if (updatedCell) {
 							// Actualiza la celda correspondiente
 							updatedCell.textContent = minimoSinCeros;
 						}
 						
 						// Actualiza el atributo data-minimo en el botón de edición para que el valor se refleje en futuras ediciones
-						var editButton = document.querySelector(`[data-deposito-id="${depositoId}"][data-cai-id="${caiId}"]`);
+						let editButton = document.querySelector(`[data-deposito-id="${depositoId}"][data-cai-id="${caiId}"]`);
 						if (editButton) {
 							// Actualiza el valor del atributo data-minimo con el valor sin ceros a la izquierda
 							editButton.setAttribute('data-minimo', minimoSinCeros);
@@ -484,6 +507,43 @@
 					}
 				});
 			});
+			
+			//-- Funcionalidad para habilitar/deshabilitar checkbox form.obliga_operario.
+			function toggleObligaOperario() {
+				let tipoProductoValue;
+				let obligaOperarioCheckbox = document.getElementById("id_obliga_operario");
+				
+				// Verificar si estamos en modo edición (campo oculto)
+				let hiddenTipoProducto = document.querySelector("input[name='tipo_producto'][type='hidden']");
+				if (hiddenTipoProducto) {
+					// Modo edición - obtener valor del campo oculto
+					tipoProductoValue = hiddenTipoProducto.value;
+				} else {
+					// Modo creación - obtener valor del select
+					let tipoProductoSelect = document.getElementById("id_tipo_producto");
+					if (tipoProductoSelect) {
+						tipoProductoValue = tipoProductoSelect.value;
+					}
+				}
+				
+				console.log("tipoProductoValue:", tipoProductoValue);
+				if (tipoProductoValue === "S") {
+					obligaOperarioCheckbox.disabled = false;
+				} else {
+					obligaOperarioCheckbox.disabled = true;
+					obligaOperarioCheckbox.checked = false;
+				}
+			}
+			
+			// Inicializa el estado en función del valor actual.
+			toggleObligaOperario();
+
+			// Escucha cambios en el campo tipo_producto (solo en modo creación)
+			let tipoProductoSelect = document.getElementById("id_tipo_producto");
+			if (tipoProductoSelect) {
+				tipoProductoSelect.addEventListener("change", toggleObligaOperario);
+			}			
+			
 		});
 	</script>	
 	

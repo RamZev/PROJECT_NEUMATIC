@@ -1048,6 +1048,7 @@ CREATE VIEW "VLTablaDinamicaVentas" AS
 		c.nombre_cliente,
 		c.mayorista,
 		f.gravado*cv.mult_venta AS gravado,
+		f.exento*cv.mult_venta AS exento,
 		f.iva*cv.mult_venta AS iva,
 		f.percep_ib*cv.mult_venta AS percepcion,
 		f.total*cv.mult_venta AS total,
@@ -1108,6 +1109,7 @@ CREATE VIEW "VLTablaDinamicaDetalleVentas" AS
 		df.precio,
 		df.descuento,
 		df.gravado*cv.mult_venta AS gravado,
+		df.no_gravado*cv.mult_venta AS no_gravado,
 		df.iva*cv.mult_venta AS iva,
 		df.total*cv.mult_venta AS total,
 		f.no_estadist,
@@ -1174,6 +1176,7 @@ CREATE VIEW "VLTablaDinamicaEstadistica" AS
 		df.precio,
 		df.descuento,
 		df.gravado*cv.mult_estadistica AS gravado,
+		df.no_gravado*cv.estadistica AS no_gravado,
 		df.total*cv.mult_estadistica AS total,
 		f.no_estadist,
 		f.id_user_id,
@@ -1201,7 +1204,9 @@ CREATE VIEW "VLTablaDinamicaEstadistica" AS
 		LEFT JOIN provincia pr ON l.id_provincia_id = pr.id_provincia
 	WHERE
 		cv.mult_estadistica<>0 AND
-		f.no_estadist=False;
+		f.no_estadist=False
+	ORDER by
+		f.fecha_comprobante, f.numero_comprobante;
 
 
 -- ---------------------------------------------------------------------------

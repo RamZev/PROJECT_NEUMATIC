@@ -170,6 +170,15 @@ class ConfigViews:
 			"excel": True,
 			"csv": True
 		},
+		"exento": {
+			"label": "No Gravado",
+			"col_width_pdf": 65,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
 		"iva": {
 			"label": "IVA",
 			"col_width_pdf": 80,

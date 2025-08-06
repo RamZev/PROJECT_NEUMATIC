@@ -50,7 +50,7 @@ class Producto(ModeloBaseGenerico):
 	descripcion_producto = models.CharField("Descripción", max_length=50)
 	carrito = models.BooleanField("Carrito")
 	iva_exento = models.BooleanField("IVA Exento", default=False)
-	obliga_operario = models.BooleanField("Carrito", default=False)
+	obliga_operario = models.BooleanField("Obliga Operario", default=False)
 	
 	
 	class Meta:
@@ -112,6 +112,11 @@ class Producto(ModeloBaseGenerico):
 		unidad_str = str(self.unidad) if self.unidad else ""
 		costo_str = str(self.costo) if self.costo else ""
 		descuento_str = str(self.descuento) if self.descuento else ""
+		tipo = self.tipo_producto
+		obliga = self.obliga_operario
+
+		if tipo != 'S' and obliga:
+			errors.update({'obliga_operario': 'El campo obliga operario solo puede estar marcado para servicios.'})
 		
 		if not re.match(r'^$|^20\d{2}(0[1-9]|1[0-2])$', fecha_fabricacion_str):
 			errors.update({'fecha_fabricacion': 'Debe indicar el dato en el formato AAAAMM (AAAA para el año, MM para el mes). Indicar año y mes válidos. El año debe iniciar en 20'})
