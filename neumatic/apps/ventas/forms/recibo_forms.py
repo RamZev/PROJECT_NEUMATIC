@@ -22,7 +22,7 @@ from apps.maestros.models.base_models import (CodigoRetencion,
 
 from diseno_base.diseno_bootstrap import (
     formclasstext, 
-    formclassnumb,
+    formclassnumb2,
     formclassselect, 
     formclassdate, 
     formclasscheck
@@ -101,7 +101,7 @@ class FacturaReciboForm(forms.ModelForm):
     total_cobrado = forms.DecimalField(
         max_digits=15, decimal_places=2, required=False, initial=0.00,
         widget=forms.NumberInput(attrs={
-            **formclassnumb,
+            **formclassnumb2,
             'readonly': 'readonly',
             'style': 'font-size: 0.8rem; padding: 0.25rem; background-color: #E6F6FF;',
             'step': '0.01',
@@ -111,7 +111,7 @@ class FacturaReciboForm(forms.ModelForm):
     total_retenciones = forms.DecimalField(
         max_digits=15, decimal_places=2, required=False, initial=0.00,
         widget=forms.NumberInput(attrs={
-            **formclassnumb,
+            **formclassnumb2,
             'readonly': 'readonly',
             'style': 'font-size: 0.8rem; padding: 0.25rem; background-color: #E6F6FF;'
         })
@@ -119,7 +119,7 @@ class FacturaReciboForm(forms.ModelForm):
     total_depositos = forms.DecimalField(
         max_digits=15, decimal_places=2, required=False, initial=0.00,
         widget=forms.NumberInput(attrs={
-            **formclassnumb,
+            **formclassnumb2,
             'readonly': 'readonly',
             'style': 'font-size: 0.8rem; padding: 0.25rem; background-color: #E6F6FF;'
         })
@@ -127,7 +127,7 @@ class FacturaReciboForm(forms.ModelForm):
     total_tarjetas = forms.DecimalField(
         max_digits=15, decimal_places=2, required=False, initial=0.00,
         widget=forms.NumberInput(attrs={
-            **formclassnumb,
+            **formclassnumb2,
             'readonly': 'readonly',
             'style': 'font-size: 0.8rem; padding: 0.25rem; background-color: #E6F6FF;'
         })
@@ -135,7 +135,7 @@ class FacturaReciboForm(forms.ModelForm):
     total_cheques = forms.DecimalField(
         max_digits=15, decimal_places=2, required=False, initial=0.00,
         widget=forms.NumberInput(attrs={
-            **formclassnumb,
+            **formclassnumb2,
             'readonly': 'readonly',
             'style': 'font-size: 0.8rem; padding: 0.25rem; background-color: #E6F6FF;'
         })
@@ -143,7 +143,7 @@ class FacturaReciboForm(forms.ModelForm):
     total_formas_pago = forms.DecimalField(
         max_digits=15, decimal_places=2, required=False, initial=0.00,
         widget=forms.NumberInput(attrs={
-            **formclassnumb,
+            **formclassnumb2,
             'readonly': 'readonly',
             'style': 'font-size: 0.8rem; padding: 0.25rem; background-color: #E6F6FF;'
         })
@@ -151,7 +151,7 @@ class FacturaReciboForm(forms.ModelForm):
     resto_cobrar = forms.DecimalField(
         max_digits=15, decimal_places=2, required=False, initial=0.00,
         widget=forms.NumberInput(attrs={
-            **formclassnumb,
+            **formclassnumb2,
             'readonly': 'readonly',
             'style': 'font-size: 0.8rem; padding: 0.25rem; background-color: #E6F6FF;'
         })
@@ -225,10 +225,10 @@ class FacturaReciboForm(forms.ModelForm):
             "email_factura": forms.TextInput(attrs={**formclasstext}),
 
             'total': forms.NumberInput(attrs={
-                **formclassnumb, 
+                **formclassnumb2, 
             }),
             'efectivo_recibo': forms.NumberInput(attrs={
-                **formclassnumb, 
+                **formclassnumb2, 
             }),
         }
 

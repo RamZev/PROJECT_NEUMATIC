@@ -1615,8 +1615,10 @@
             });
 
             function actualizarContadorFormsets3() {
-                const visibleRows = formsetContainer3.querySelectorAll('tbody tr:not([style*="display: none"])').length;
-                totalForms3.value = visibleRows;
+                // const visibleRows = formsetContainer3.querySelectorAll('tbody tr:not([style*="display: none"])').length;
+                // totalForms3.value = visibleRows;
+                const allRows = formsetContainer3.querySelectorAll('tbody tr').length;
+                totalForms3.value = allRows;
             }
 
             /* #endregion */
@@ -1710,8 +1712,8 @@
             });
 
             function actualizarContadorFormsets4() {
-                const visibleRows = formsetContainer4.querySelectorAll('tbody tr:not([style*="display: none"])').length;
-                totalForms4.value = visibleRows;
+                const allRows = formsetContainer4.querySelectorAll('tbody tr').length;
+                totalForms4.value = allRows;
             }
 
             /* #endregion */
@@ -1799,9 +1801,9 @@
                 }
             });
 
-            function actualizarContadorFormsets5() {
-                const visibleRows = formsetContainer5.querySelectorAll('tbody tr:not([style*="display: none"])').length;
-                totalForms5.value = visibleRows;
+            function actualizarContadorFormsets5(){
+                 const allRows = formsetContainer5.querySelectorAll('tbody tr').length;
+                totalForms5.value = allRows;
             }
 
             /* #endregion */
@@ -1979,8 +1981,8 @@
             });
 
             function actualizarContadorFormsets6() {
-                const visibleRows = formsetContainer6.querySelectorAll('tbody tr:not([style*="display: none"])').length;
-                totalForms6.value = visibleRows;
+                const allRows = formsetContainer6.querySelectorAll('tbody tr').length;
+                totalForms6.value = allRows;
             }
             ///
             

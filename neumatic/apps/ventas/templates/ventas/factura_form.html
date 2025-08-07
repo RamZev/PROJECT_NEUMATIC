@@ -1148,8 +1148,8 @@
 
             // Función para actualizar el contador de formsets (NUEVA)
             function actualizarContadorFormsets() {
-                const visibleRows = document.querySelectorAll('.detalle-form tbody tr:not([style*="display: none"])').length;
-                document.getElementById('id_detallefactura_set-TOTAL_FORMS').value = visibleRows;
+                const allRows = document.querySelectorAll('.detalle-form tbody tr').length;
+                document.getElementById('id_detallefactura_set-TOTAL_FORMS').value = allRows;
             }
             ////////////
 
@@ -1429,9 +1429,10 @@
                     // Actualizar totales generales
                     actualizarTotalFactura();
                     
-                    // Actualizar el contador de formsets
-                    document.querySelector('[name$="TOTAL_FORMS"]').value = 
-                        formsetContainer.querySelectorAll('.detalle-form tbody tr').length;
+                    // Actualizar el contador de formsets detalle_factura
+                    // document.querySelector('[name$="TOTAL_FORMS"]').value = 
+                    //    formsetContainer.querySelectorAll('.detalle-form tbody tr').length;
+                    actualizarContadorFormsets();
                 });
                 
                 // Cerrar modal y limpiar selecciones
@@ -3171,6 +3172,12 @@
                     return;
                 }
             });
+
+            // Función para actualizar el contador de formsets de seriales
+            function actualizarSerialContadorFormsets() {
+                const allSerialRows = document.querySelectorAll('#serialTableBody tr').length;
+                document.getElementById('id_serialfactura_set-TOTAL_FORMS').value = allSerialRows;
+            }
         
             // 2. Insertar serial (mismo patrón que detalles)
             document.getElementById('btnGuardarSerial').addEventListener('click', function() {
@@ -3182,9 +3189,10 @@
                     return;
                 }
 
-                const totalForms = document.getElementById('id_serialfactura_set-TOTAL_FORMS');
-                const formCount = parseInt(totalForms.value);
-                
+                // const totalForms = document.getElementById('id_serialfactura_set-TOTAL_FORMS');
+                // const formCount = parseInt(totalForms.value);
+                const formCount = document.querySelectorAll('#serialTableBody tr').length;
+                                
                 const newRow = `
                 <tr>
                     <td>
@@ -3205,12 +3213,11 @@
                 // Insertar nueva fila
                 serialTableBody.insertAdjacentHTML('beforeend', newRow);
                 
-                // Actualizar contador
-                totalForms.value = formCount + 1;
-                
                 // Cerrar modal y limpiar
                 serialModal.hide();
                 serialInput.value = '';
+
+                actualizarSerialContadorFormsets();
             });
         
             // Manejo de eliminación de Detalle de Seriales
@@ -3228,11 +3235,7 @@
                             row.style.display = 'none';
                             
                             // Actualizar el contador de formsets
-                            const totalForms = document.getElementById('id_serialfactura_set-TOTAL_FORMS');
-                            if (totalForms) {
-                                const visibleRows = document.querySelectorAll('#serialTableBody tr:not([style*="display: none"])').length;
-                                totalForms.value = visibleRows;
-                            }
+                            actualizarSerialContadorFormsets();
                         } else {
                             console.error('Error: No se encontró el campo DELETE para serial');
                         }
@@ -3287,6 +3290,37 @@
                     e.preventDefault(); // Cancelar envío si no fue desde un botón
                 }
             });
+
+            //
+            document.getElementById('serialModal').addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault(); // Prevenir el comportamiento por defecto
+                    
+                    const focusableElements = Array.from(serialModal.querySelectorAll(
+                        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+                    )).filter(el => !el.disabled && el.offsetParent !== null);
+                    
+                    const currentIndex = focusableElements.indexOf(document.activeElement);
+                    let nextIndex = currentIndex + 1;
+                    
+                    // Si está en el último elemento, volver al primero
+                    if (nextIndex >= focusableElements.length) {
+                        nextIndex = 0;
+                    }
+                    
+                    if (focusableElements[nextIndex]) {
+                        focusableElements[nextIndex].focus();
+                        
+                        // Si es un select, abrir el dropdown
+                        if (focusableElements[nextIndex].tagName === 'SELECT') {
+                            setTimeout(() => {
+                                focusableElements[nextIndex].click();
+                            }, 50);
+                        }
+                    }
+                }
+            });
+            //
         });
     </script>
         
