@@ -8,4 +8,5 @@ class VentasConfig(AppConfig):
     def ready(self):
         import apps.ventas.models.factura_models
         import apps.ventas.models.recibo_models
+        import apps.ventas.models.venta_models
 

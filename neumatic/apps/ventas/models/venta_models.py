@@ -44,7 +44,7 @@ class StockCliente(ModeloBaseGenerico):
 	)
 	comentario = models.CharField(
 		verbose_name="Comentario",
-		max_length=50,
+		max_length=60,
 		null=True,
 		blank=True
 	)
@@ -53,4 +53,4 @@ class StockCliente(ModeloBaseGenerico):
 		db_table = 'stock_cliente'
 		verbose_name = 'Stock Cliente'
 		verbose_name_plural = 'Stocks Clientes'
-		ordering = ['id_stock_cliente']
+		ordering = ['id_stock_cliente', 'fecha_retiro']
