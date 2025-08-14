@@ -1298,6 +1298,7 @@ CREATE VIEW "VLStockSucursal" AS
 		ps.id_producto_id,
 		p.id_cai_id,
 		p.cai,
+	--	pc.cai,  -- El definitivo cuando se migren los IDs.
 		p.medida,
 		p.nombre_producto,
 	--	p.precio,
@@ -1307,12 +1308,101 @@ CREATE VIEW "VLStockSucursal" AS
 		ps.id_deposito_id
 	FROM
 		producto_stock ps
-		JOIN producto p ON ps.id_producto_id = p.id_producto
-		JOIN producto_marca px ON p.id_marca_id = px.id_producto_marca
-		JOIN producto_familia pf ON p.id_familia_id = pf.id_producto_familia
-		JOIN producto_modelo pm ON p.id_modelo_id = pm.id_modelo
+		LEFT JOIN producto p ON ps.id_producto_id = p.id_producto
+		LEFT JOIN producto_marca px ON p.id_marca_id = px.id_producto_marca
+		LEFT JOIN producto_familia pf ON p.id_familia_id = pf.id_producto_familia
+		LEFT JOIN producto_modelo pm ON p.id_modelo_id = pm.id_modelo
+		LEFT JOIN producto_cai pc ON p.id_cai_id = pc.id_cai
 	WHERE
 		ps.stock <> 0
 	ORDER by
 		p.id_familia_id, p.id_modelo_id, p.id_marca_id;
+
+
+-- ---------------------------------------------------------------------------
+-- Stock General por Sucursal.
+-- Modelo: VLStockGeneralSucursal
+-- ---------------------------------------------------------------------------
+DROP VIEW IF EXISTS "main"."VLStockGeneralSucursal";
+CREATE VIEW VLStockGeneralSucursal AS 
+	SELECT 1 AS dummy;
+
+
+-- ---------------------------------------------------------------------------
+-- Listado de Stock a Fecha.
+-- Modelo: VLStockFecha
+-- ---------------------------------------------------------------------------
+DROP VIEW IF EXISTS "main"."VLStockFecha";
+CREATE VIEW "VLStockFecha" AS 
+	SELECT
+		ROW_NUMBER() OVER() AS id,
+		p.id_familia_id,
+		pf.nombre_producto_familia,
+		p.id_modelo_id,
+		pm.nombre_modelo,
+		p.id_marca_id,
+		px.nombre_producto_marca,
+		ps.id_producto_id,
+		p.id_cai_id,
+		p.cai,
+	--	pc.cai,  -- El definitivo cuando se migren los IDs.
+		p.medida,
+		p.nombre_producto,
+	--	ps.minimo,
+		SUM(ps.stock) AS stock
+	FROM
+		producto_stock ps
+		LEFT JOIN producto p ON ps.id_producto_id = p.id_producto
+		LEFT JOIN producto_marca px ON p.id_marca_id = px.id_producto_marca
+		LEFT JOIN producto_familia pf ON p.id_familia_id = pf.id_producto_familia
+		LEFT JOIN producto_modelo pm ON p.id_modelo_id = pm.id_modelo
+		LEFT JOIN producto_cai pc ON p.id_cai_id = pc.id_cai
+	WHERE
+		p.tipo_producto = "P" AND
+		ps.stock <> 0
+	GROUP by
+		ps.id_producto_id
+	HAVING
+		SUM(ps.stock) <> 0
+	ORDER by
+		p.id_familia_id, p.id_modelo_id, p.id_marca_id, ps.id_producto_id;
+
+
+-- ---------------------------------------------------------------------------
+-- Listado de Stock Único.
+-- Modelo: VLStockUnico
+-- ---------------------------------------------------------------------------
+DROP VIEW IF EXISTS "main"."VLStockUnico";
+CREATE VIEW "VLStockUnico" AS 
+	SELECT
+		ROW_NUMBER() OVER() AS id,
+		p.id_familia_id,
+		pf.nombre_producto_familia,
+		p.id_modelo_id,
+		pm.nombre_modelo,
+		p.id_marca_id,
+		px.nombre_producto_marca,
+		ps.id_producto_id,
+		p.id_cai_id,
+		p.cai,
+	--	pc.cai,  -- El definitivo cuando se migren los IDs.
+		p.medida,
+		p.nombre_producto,
+	--	ps.minimo,
+		SUM(ps.stock) AS stock
+	FROM
+		producto_stock ps
+		LEFT JOIN producto p ON ps.id_producto_id = p.id_producto
+		LEFT JOIN producto_marca px ON p.id_marca_id = px.id_producto_marca
+		LEFT JOIN producto_familia pf ON p.id_familia_id = pf.id_producto_familia
+		LEFT JOIN producto_modelo pm ON p.id_modelo_id = pm.id_modelo
+		LEFT JOIN producto_cai pc ON p.id_cai_id = pc.id_cai
+	WHERE
+		ps.stock <> 0
+	GROUP by
+		ps.id_producto_id
+	HAVING
+		SUM(ps.stock) <> 0
+	ORDER by
+		p.id_familia_id, p.id_modelo_id, p.id_marca_id, ps.id_producto_id;
 

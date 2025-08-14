@@ -83,6 +83,9 @@ from apps.informes.views.vltabladinamicaestadistica_list_views import *
 from apps.informes.views.vllista_list_views import *
 from apps.informes.views.vllistarevendedor_list_views import *
 from apps.informes.views.vlstocksucursal_list_views import *
+from apps.informes.views.vlstockgeneralsucursal_list_views import *
+from apps.informes.views.vlstockfecha_list_views import *
+from apps.informes.views.vlstockunico_list_views import *
 
 
 
@@ -796,6 +799,42 @@ urlpatterns = [
 		 name="vlstocksucursal_vista_excel"),
 	path("vlstocksucursal/vista-csv/", vlstocksucursal_vista_csv, 
 		 name="vlstocksucursal_vista_csv"),
+	
+	#-- VL Stock General por Sucursal.
+	path('vlstockgeneralsucursal_informe/', VLStockGeneralSucursalInformeView.as_view(), 
+		 name='vlstockgeneralsucursal_informe_list'),
+	path('vlstockgeneralsucursal/vista-preliminar/', vlstockgeneralsucursal_vista_pantalla, 
+		 name="vlstockgeneralsucursal_vista_pantalla"),
+	path("vlstockgeneralsucursal/vista-pdf/", vlstockgeneralsucursal_vista_pdf, 
+		 name="vlstockgeneralsucursal_vista_pdf"),
+	path("vlstockgeneralsucursal/vista-excel/", vlstockgeneralsucursal_vista_excel, 
+		 name="vlstockgeneralsucursal_vista_excel"),
+	path("vlstockgeneralsucursal/vista-csv/", vlstockgeneralsucursal_vista_csv, 
+		 name="vlstockgeneralsucursal_vista_csv"),
+	
+	#-- VL Listado Stock a Fecha.
+	path('vlstockfecha_informe/', VLStockFechaInformeView.as_view(), 
+		 name='vlstockfecha_informe_list'),
+	path('vlstockfecha/vista-preliminar/', vlstockfecha_vista_pantalla, 
+		 name="vlstockfecha_vista_pantalla"),
+	path("vlstockfecha/vista-pdf/", vlstockfecha_vista_pdf, 
+		 name="vlstockfecha_vista_pdf"),
+	path("vlstockfecha/vista-excel/", vlstockfecha_vista_excel, 
+		 name="vlstockfecha_vista_excel"),
+	path("vlstockfecha/vista-csv/", vlstockfecha_vista_csv, 
+		 name="vlstockfecha_vista_csv"),
+	
+	#-- VL Listado Stock Único.
+	path('vlstockunico_informe/', VLStockUnicoInformeView.as_view(), 
+		 name='vlstockunico_informe_list'),
+	path('vlstockunico/vista-preliminar/', vlstockunico_vista_pantalla, 
+		 name="vlstockunico_vista_pantalla"),
+	path("vlstockunico/vista-pdf/", vlstockunico_vista_pdf, 
+		 name="vlstockunico_vista_pdf"),
+	path("vlstockunico/vista-excel/", vlstockunico_vista_excel, 
+		 name="vlstockunico_vista_excel"),
+	path("vlstockunico/vista-csv/", vlstockunico_vista_csv, 
+		 name="vlstockunico_vista_csv"),
 	
 	
 	

@@ -1,64 +1,146 @@
-Datos del QuerySet:
-151570	ABRANCHUK RUBEN DARIO	07/02/2024
-125156	BALZI MARIA, FARGIONI MARCOS Y	28/10/2024
-111795	BCC TRANSPORTE SRL	27/05/2024
-149557	BECERRA EDGARDO	12/11/2024
-159355	BERTINI S. A.	24/09/2024
-155366	BILBAO S.A.	09/02/2024
-157061	CARASSO MAURO SEBASTIAN	24/05/2024
-159051	CARNEVALI MARCHI SRL	20/09/2024
-155861	CERYSAN SRL	21/03/2024
-127497	CIARLO GASTON ARIEL	21/09/2024
-150171	COZZI GERARDO	08/08/2024
-126437	CURZIO MARIELA ALEJANDRA	13/08/2024
-104083	ENRIA JUAN RAMON	11/05/2024
-105394	F Y M LOGISTICA SRL	29/05/2024
-122178	FERREIRA JORGE JOSE	14/11/2024
-159162	GARCIA HORACIO FABIAN	07/11/2024
-155444	GINE NESTOR MARCELO Y GINE MAR	01/02/2024
-131605	GONZALO FERNANDEZ Y ALEJANDRO	23/04/2024
-151606	HERRERA ALEJANDRO	28/02/2024
-130519	LA GRINGA TRANSPORTE SRL	05/11/2024
-114417	LEDESMA JORGE DAMIAN	15/08/2024
-140046	LINIERS LEONARDO	01/01/2024
+==================================================================
+Consultas pruebas en DB Browse
+==================================================================
+-- CONSULTA 1:
+-----------
+SELECT
+	s.nombre_sucursal,
+	p.id_producto,
+	p.cai,
+	p.medida,
+	p.nombre_producto,
+	px.nombre_producto_marca,
+	SUM(ps.stock)
+FROM
+	producto_stock ps
+	LEFT JOIN producto_deposito pd ON ps.id_deposito_id = pd.id_producto_deposito
+	LEFT JOIN sucursal s ON pd.id_sucursal_id = s.id_sucursal
+	LEFT JOIN producto p ON ps.id_producto_id = p.id_producto
+	LEFT JOIN producto_marca px ON p.id_marca_id = px.id_producto_marca
+GROUP by
+	ps.id_producto_id
+HAVING
+	ps.stock <> 0
+ORDER by
+	s.nombre_sucursal, ps.id_producto_id;
+
+*--------------------------
+-- CONSULTA 2:
+-----------
+
+-- SELECT * FROM sucursal
+-- SELECT * FROM producto_deposito
+-- SELECT * FROM producto_stock
+---------------------------
+SELECT 
+	s.id_sucursal,
+	s.nombre_sucursal,
+	pd.nombre_producto_deposito,
+	ps.id_producto_id,
+	ps.stock
+	--sum(ps.stock)
+FROM
+	sucursal s
+	LEFT JOIN producto_deposito pd ON pd.id_sucursal_id = s.id_sucursal
+	LEFT JOIN producto_stock ps ON ps.id_deposito_id = pd.id_producto_deposito
+WHERE
+	ps.stock <> 0
+	AND ps.id_producto_id = 1890
+--GROUP by
+--	ps.id_producto_id
+ORDER by
+	s.id_sucursal;
+
+*--------------------------
+-- CONSULTA 3:
+-----------
+
+SELECT 
+	p.id_familia_id,
+	pf.nombre_producto_familia,
+	p.id_modelo_id,
+	pmd.nombre_modelo,
+	p.id_marca_id,
+	pm.nombre_producto_marca,
+	p.id_producto,
+	p.cai,
+	p.medida,
+	p.nombre_producto,
+	SUM(CASE WHEN s.id_sucursal = 1 THEN ps.stock ELSE 0 END) AS Sucursal_1,
+	SUM(CASE WHEN s.id_sucursal = 2 THEN ps.stock ELSE 0 END) AS Sucursal_2,
+	SUM(CASE WHEN s.id_sucursal = 3 THEN ps.stock ELSE 0 END) AS Sucursal_3
+	-- Agregar más sucursales según sea necesario
+FROM
+	producto p
+	JOIN producto_familia pf ON p.id_familia_id = pf.id_producto_familia
+	JOIN producto_modelo pmd ON p.id_modelo_id = pmd.id_modelo
+	JOIN producto_marca pm ON p.id_marca_id = pm.id_producto_marca
+	JOIN producto_stock ps ON p.id_producto = ps.id_producto_id
+	JOIN producto_deposito pd ON ps.id_deposito_id = pd.id_producto_deposito
+	JOIN sucursal s ON pd.id_sucursal_id = s.id_sucursal
+WHERE
+	p.tipo_producto = 'P'  -- Solo productos
+GROUP BY
+	p.id_familia_id,
+	pf.nombre_producto_familia,
+	p.id_modelo_id,
+	pmd.nombre_modelo,
+	p.id_marca_id,
+	pm.nombre_producto_marca,
+	p.id_producto,
+	p.cai,
+	p.medida,
+	p.nombre_producto
+ORDER BY
+	pf.nombre_producto_familia,
+	pm.nombre_producto_marca,
+	pmd.nombre_modelo,
+	p.id_producto;
 
 
-Como quiero el reporte:
-----------------------------------------------------------------------------------------------------------------------------------
-| Código	| Cliente								| Fecha		 | Código	| Cliente								| Fecha		 |
-----------------------------------------------------------------------------------------------------------------------------------
-| 151570	| ABRANCHUK RUBEN DARIO					| 07/02/2024 | 155861	| CERYSAN SRL							| 21/03/2024 |
-| 125156	| BALZI MARIA, FARGIONI MARCOS Y		| 28/10/2024 | 127497	| CIARLO GASTON ARIEL					| 21/09/2024 |
-| 111795	| BCC TRANSPORTE SRL					| 27/05/2024 | 150171	| COZZI GERARDO							| 08/08/2024 |
-| 149557	| BECERRA EDGARDO						| 12/11/2024 | 126437	| CURZIO MARIELA ALEJANDRA				| 13/08/2024 |
-| 159355	| BERTINI S. A.							| 24/09/2024 | 104083	| ENRIA JUAN RAMON						| 11/05/2024 |
-| 155366	| BILBAO S.A.							| 09/02/2024 | 105394	| F Y M LOGISTICA SRL					| 29/05/2024 |
-| 157061	| CARASSO MAURO SEBASTIAN				| 24/05/2024 | 122178	| FERREIRA JORGE JOSE					| 14/11/2024 |
-| 159051	| CARNEVALI MARCHI SRL					| 20/09/2024 | 159162	| GARCIA HORACIO FABIAN					| 07/11/2024 |
 
-----------------------------------------------------------------------------------------------------------------------------------
-| Código	| Cliente								| Fecha		 | Código	| Cliente								| Fecha		 |
-----------------------------------------------------------------------------------------------------------------------------------
-| 155444	| GINE NESTOR MARCELO Y GINE MAR		| 01/02/2024
-| 131605	| GONZALO FERNANDEZ Y ALEJANDRO			| 23/04/2024
-| 151606	| HERRERA ALEJANDRO						| 28/02/2024
-| 130519	| LA GRINGA TRANSPORTE SRL				| 05/11/2024
-| 114417	| LEDESMA JORGE DAMIAN					| 15/08/2024
-| 140046	| LINIERS LEONARDO						| 01/01/2024
 
-***************************
+	Sucursal_1	| Sucursal_2	| Sucursal_n
+----------------+---------------+-----------
+Familia 1
+	Modelo 1
+		10		|		5		|		4
+		 5		|		0		|		1
+	------------+---------------+----------
+stm:	15		|		5		|		5
 
-["151570", "ABRANCHUK RUBEN DARIO",	"07/02/2024", [155861], "CERYSAN SRL", "21/03/2024"]
-["125156", "BALZI MARIA, FARGIONI MARCOS Y","28/10/2024", "127497", "CIARLO GASTON ARIEL", "21/09/2024"]
-["111795", "BCC TRANSPORTE SRL", "27/05/2024", "150171", "COZZI GERARDO", "08/08/2024"]
-["149557", "BECERRA EDGARDO", "12/11/2024", "126437", "CURZIO MARIELA ALEJANDRA", "13/08/2024"]
-["159355", "BERTINI S. A.", "24/09/2024", "104083", "ENRIA JUAN RAMON", "11/05/2024"]
-["155366", "BILBAO S.A.", "09/02/2024", "105394", "F Y M LOGISTICA SRL", "29/05/2024"]
-["157061", "CARASSO MAURO SEBASTIAN", "24/05/2024", "122178", "FERREIRA JORGE JOSE", "14/11/2024"]
-["159051", "CARNEVALI MARCHI SRL", "20/09/2024", "159162", "GARCIA HORACIO FABIAN", "07/11/2024"]
-["155444", GINE NESTOR MARCELO Y GINE MAR",	"01/02/2024", "", ""]
-["131605", GONZALO FERNANDEZ Y ALEJANDRO", "23/04/2024", "", ""]
-["151606", HERRERA ALEJANDRO", "28/02/2024", "", ""]
-["130519", LA GRINGA TRANSPORTE SRL", "05/11/2024", "", ""]
-["114417", LEDESMA JORGE DAMIAN", "15/08/2024", "", ""]
-["140046", LINIERS LEONARDO", "01/01/2024", "", ""]
+	Modelo 2
+		 2		|		2		|		0
+		 6		|		2		|		3
+	------------+---------------+----------
+stm:	10		|		4		|		3
+stf:	25		|		9		|		8
+
+Familia 2
+	Modelo 3
+		12		|		8		|		6
+		10		|		8		|	   10
+	------------+---------------+----------
+stm:	22		|	   16		|	   16
+stf:	22		|	   16		|	   16
+===========================================
+tg:		47		|	   25		|	   24
+
+********************************************************
+
+Ok, en base al código que te he compartido necesito lo siguiente:
+1.- Si es posible, agregar en la consulta sql una columna que totalice el stock de cada sucursal por producto.
+
+2.- Una columna que totalice el estock de cada sucursal por producto de las sucursales que no fueron seleccionadas.
+
+
+Por ejmeplo:
+· Todas las Sucursales: Sucursal 1, Sucursal 2, Sucursal 3, Sucursal 4, Sucursal 5 
+· Sucursales seleccionadas: Sucursal 1, Sucursal 2, Sucursal 3
+
+Resultado de la consulta:
+| stock_suc_1	| stock_suc_2	| stock_suc_3	| otras_suc	| stock_total |
++---------------+---------------+---------------+-----------|-------------|
+|		5		|		2		|		0		|		4	|		11	  |
+|		3		|		3		|		2		|		6	|		14	  |
+|		1		|		0		|		4		|		9	|		14	  |
