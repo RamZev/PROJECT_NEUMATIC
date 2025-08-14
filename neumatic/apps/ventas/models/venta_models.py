@@ -1,4 +1,5 @@
 from django.db import models
+from apps.maestros.models.base_models import ModeloBaseGenerico
 
 
 class StockCliente(ModeloBaseGenerico):
