@@ -721,7 +721,8 @@ CREATE VIEW "VLEstadisticasVentas" AS
 	SELECT 
 		f.id_factura, 
 		df.id_producto_id, 
-		p.cai,
+	--	p.cai,
+		pc.cai,
 		p.nombre_producto,
 		p.id_familia_id,
 		pf.nombre_producto_familia, 
@@ -736,11 +737,12 @@ CREATE VIEW "VLEstadisticasVentas" AS
 		f.id_sucursal_id
 	FROM 
 		detalle_factura df JOIN factura f ON df.id_factura_id = f.id_factura
-			INNER JOIN producto p ON df.id_producto_id = p.id_producto
-			INNER JOIN producto_modelo pm ON p.id_modelo_id = pm.id_modelo
-			INNER JOIN producto_familia pf ON p.id_familia_id = pf.id_producto_familia
-			INNER JOIN producto_marca m ON p.id_marca_id = m.id_producto_marca
-			INNER JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
+		LEFT JOIN producto p ON df.id_producto_id = p.id_producto
+		LEFT JOIN producto_modelo pm ON p.id_modelo_id = pm.id_modelo
+		LEFT JOIN producto_familia pf ON p.id_familia_id = pf.id_producto_familia
+		LEFT JOIN producto_marca m ON p.id_marca_id = m.id_producto_marca
+		LEFT JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
+		LEFT JOIN producto_cai pc ON p.id_cai_id = pc.id_cai
 	WHERE 
 		df.id_producto_id <> 0 AND cv.mult_estadistica <> 0 AND f.no_estadist = False;
 
@@ -1099,7 +1101,8 @@ CREATE VIEW "VLTablaDinamicaDetalleVentas" AS
 		c.mayorista,
 		df.reventa,
 		df.id_producto_id,
-		p.cai,
+	--	p.cai,
+		pc.cai,
 		p.nombre_producto,
 		pm.nombre_producto_marca,
 		pf.nombre_producto_familia,
@@ -1136,9 +1139,9 @@ CREATE VIEW "VLTablaDinamicaDetalleVentas" AS
 		LEFT JOIN sucursal s ON f.id_sucursal_id = s.id_sucursal
 		LEFT JOIN localidad l ON c.id_localidad_id = l.id_localidad
 		LEFT JOIN provincia pr ON l.id_provincia_id = pr.id_provincia
+		LEFT JOIN producto_cai pc ON p.id_cai_id = pc.id_cai
 	ORDER by
 		f.fecha_comprobante, f.numero_comprobante;
-
 
 -- ---------------------------------------------------------------------------
 -- Tablas Dinámicas de Ventas - Tablas para Estadísticas.
@@ -1166,7 +1169,8 @@ CREATE VIEW "VLTablaDinamicaEstadistica" AS
 		c.mayorista,
 		df.reventa,
 		df.id_producto_id,
-		p.cai,
+	--	p.cai,
+		pc.cai,
 		p.nombre_producto,
 		pm.nombre_producto_marca,
 		pf.nombre_producto_familia,
@@ -1202,6 +1206,7 @@ CREATE VIEW "VLTablaDinamicaEstadistica" AS
 		LEFT JOIN sucursal s ON f.id_sucursal_id = s.id_sucursal
 		LEFT JOIN localidad l ON c.id_localidad_id = l.id_localidad
 		LEFT JOIN provincia pr ON l.id_provincia_id = pr.id_provincia
+		LEFT JOIN producto_cai pc ON p.id_cai_id = pc.id_cai
 	WHERE
 		cv.mult_estadistica<>0 AND
 		f.no_estadist=False
@@ -1219,7 +1224,8 @@ CREATE VIEW "VLLista" AS
 		ROW_NUMBER() OVER() AS id,
 		p.id_producto,
 		p.id_cai_id,
-		p.cai,
+	--	p.cai,
+		pc.cai,
 		p.tipo_producto,
 		p.medida,
 		p.segmento,
@@ -1242,9 +1248,10 @@ CREATE VIEW "VLLista" AS
 		p.fecha_fabricacion
 	FROM 
 		producto p
-		JOIN producto_marca px ON p.id_marca_id = px.id_producto_marca
-		JOIN producto_familia pf ON p.id_familia_id = pf.id_producto_familia
-		JOIN producto_modelo pm ON p.id_modelo_id = pm.id_modelo
+		LEFT JOIN producto_marca px ON p.id_marca_id = px.id_producto_marca
+		LEFT JOIN producto_familia pf ON p.id_familia_id = pf.id_producto_familia
+		LEFT JOIN producto_modelo pm ON p.id_modelo_id = pm.id_modelo
+		LEFT JOIN producto_cai pc ON p.id_cai_id = pc.id_cai
 	ORDER by
 		p.id_familia_id, p.id_marca_id;
 
@@ -1265,7 +1272,8 @@ CREATE VIEW "VLListaRevendedor" AS
 		pm.nombre_modelo,
 		p.id_producto,
 		p.id_cai_id,
-		p.cai,
+	--	p.cai,
+		pc.cai,
 		p.medida,
 		p.nombre_producto,
 		p.precio AS contado,
@@ -1274,9 +1282,10 @@ CREATE VIEW "VLListaRevendedor" AS
 		p.precio AS precio120
 	FROM 
 		producto p
-		JOIN producto_familia pf ON p.id_familia_id = pf.id_producto_familia
-		JOIN producto_marca px ON p.id_marca_id = px.id_producto_marca
-		JOIN producto_modelo pm ON p.id_modelo_id = pm.id_modelo
+		LEFT JOIN producto_familia pf ON p.id_familia_id = pf.id_producto_familia
+		LEFT JOIN producto_marca px ON p.id_marca_id = px.id_producto_marca
+		LEFT JOIN producto_modelo pm ON p.id_modelo_id = pm.id_modelo
+		LEFT JOIN producto_cai pc ON p.id_cai_id = pc.id_cai
 ORDER by
 		p.id_familia_id, p.id_producto;
 
@@ -1297,7 +1306,8 @@ CREATE VIEW "VLStockSucursal" AS
 		px.nombre_producto_marca,
 		ps.id_producto_id,
 		p.id_cai_id,
-		p.cai,
+	--	p.cai,
+		pc.cai,  -- El definitivo cuando se migren los IDs.
 		p.medida,
 		p.nombre_producto,
 	--	p.precio,
@@ -1307,12 +1317,101 @@ CREATE VIEW "VLStockSucursal" AS
 		ps.id_deposito_id
 	FROM
 		producto_stock ps
-		JOIN producto p ON ps.id_producto_id = p.id_producto
-		JOIN producto_marca px ON p.id_marca_id = px.id_producto_marca
-		JOIN producto_familia pf ON p.id_familia_id = pf.id_producto_familia
-		JOIN producto_modelo pm ON p.id_modelo_id = pm.id_modelo
+		LEFT JOIN producto p ON ps.id_producto_id = p.id_producto
+		LEFT JOIN producto_marca px ON p.id_marca_id = px.id_producto_marca
+		LEFT JOIN producto_familia pf ON p.id_familia_id = pf.id_producto_familia
+		LEFT JOIN producto_modelo pm ON p.id_modelo_id = pm.id_modelo
+		LEFT JOIN producto_cai pc ON p.id_cai_id = pc.id_cai
 	WHERE
 		ps.stock <> 0
 	ORDER by
 		p.id_familia_id, p.id_modelo_id, p.id_marca_id;
+
+
+-- ---------------------------------------------------------------------------
+-- Stock General por Sucursal.
+-- Modelo: VLStockGeneralSucursal
+-- ---------------------------------------------------------------------------
+DROP VIEW IF EXISTS "main"."VLStockGeneralSucursal";
+CREATE VIEW VLStockGeneralSucursal AS 
+	SELECT 1 AS dummy;
+
+
+-- ---------------------------------------------------------------------------
+-- Listado de Stock a Fecha.
+-- Modelo: VLStockFecha
+-- ---------------------------------------------------------------------------
+DROP VIEW IF EXISTS "main"."VLStockFecha";
+CREATE VIEW "VLStockFecha" AS 
+	SELECT
+		ROW_NUMBER() OVER() AS id,
+		p.id_familia_id,
+		pf.nombre_producto_familia,
+		p.id_modelo_id,
+		pm.nombre_modelo,
+		p.id_marca_id,
+		px.nombre_producto_marca,
+		ps.id_producto_id,
+		p.id_cai_id,
+	--	p.cai,
+		pc.cai,
+		p.medida,
+		p.nombre_producto,
+	--	ps.minimo,
+		SUM(ps.stock) AS stock
+	FROM
+		producto_stock ps
+		LEFT JOIN producto p ON ps.id_producto_id = p.id_producto
+		LEFT JOIN producto_marca px ON p.id_marca_id = px.id_producto_marca
+		LEFT JOIN producto_familia pf ON p.id_familia_id = pf.id_producto_familia
+		LEFT JOIN producto_modelo pm ON p.id_modelo_id = pm.id_modelo
+		LEFT JOIN producto_cai pc ON p.id_cai_id = pc.id_cai
+	WHERE
+		p.tipo_producto = "P" AND
+		ps.stock <> 0
+	GROUP by
+		ps.id_producto_id
+	HAVING
+		SUM(ps.stock) <> 0
+	ORDER by
+		p.id_familia_id, p.id_modelo_id, p.id_marca_id, ps.id_producto_id;
+
+
+-- ---------------------------------------------------------------------------
+-- Listado de Stock Único.
+-- Modelo: VLStockUnico
+-- ---------------------------------------------------------------------------
+DROP VIEW IF EXISTS "main"."VLStockUnico";
+CREATE VIEW "VLStockUnico" AS 
+	SELECT
+		ROW_NUMBER() OVER() AS id,
+		p.id_familia_id,
+		pf.nombre_producto_familia,
+		p.id_modelo_id,
+		pm.nombre_modelo,
+		p.id_marca_id,
+		px.nombre_producto_marca,
+		ps.id_producto_id,
+		p.id_cai_id,
+	--	p.cai,
+		pc.cai,
+		p.medida,
+		p.nombre_producto,
+	--	ps.minimo,
+		SUM(ps.stock) AS stock
+	FROM
+		producto_stock ps
+		LEFT JOIN producto p ON ps.id_producto_id = p.id_producto
+		LEFT JOIN producto_marca px ON p.id_marca_id = px.id_producto_marca
+		LEFT JOIN producto_familia pf ON p.id_familia_id = pf.id_producto_familia
+		LEFT JOIN producto_modelo pm ON p.id_modelo_id = pm.id_modelo
+		LEFT JOIN producto_cai pc ON p.id_cai_id = pc.id_cai
+	WHERE
+		ps.stock <> 0
+	GROUP by
+		ps.id_producto_id
+	HAVING
+		SUM(ps.stock) <> 0
+	ORDER by
+		p.id_familia_id, p.id_modelo_id, p.id_marca_id, ps.id_producto_id;
 

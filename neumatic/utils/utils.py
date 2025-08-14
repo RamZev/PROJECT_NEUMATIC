@@ -49,6 +49,8 @@ def serializar_queryset(queryset):
 def formato_argentino(valor):
 	return locale.format_string('%.2f', valor, grouping=True)
 
+def formato_argentino_entero(valor):
+	return locale.format_string('%d', valor, grouping=True)
 
 def format_date(date_value):
 	"""Helper para formatear fechas en formato dd/mm/yyyy."""

@@ -2521,3 +2521,244 @@ class VLStockSucursal(models.Model):
 		verbose_name_plural = ('Listado de Stock por Sucursal')
 
 
+#-----------------------------------------------------------------------------
+# Stock General por Sucursal.
+#-----------------------------------------------------------------------------
+class VLStockGeneralSucursalManager(models.Manager):
+	
+	def obtener_datos(self, id_familia_desde, id_familia_hasta, id_marca_desde, id_marca_hasta, id_modelo_desde, id_modelo_hasta, sucursales_seleccionadas):
+		from django.db import connection
+		from collections import namedtuple
+		
+		#-- Construcción de la consulta base.
+		query = """
+			SELECT
+				p.id_familia_id,
+				pf.nombre_producto_familia,
+				p.id_modelo_id,
+				pmd.nombre_modelo,
+				p.id_marca_id,
+				SUBSTR(pm.nombre_producto_marca, 1, 90) AS nombre_producto_marca,
+				p.id_producto,
+				p.id_cai_id,
+				p.cai,
+				p.medida,
+				SUBSTR(p.nombre_producto, 1, 200) AS nombre_producto,
+				{sucursal_columns},
+				{otras_sucursales},
+				{total_general}
+			FROM 
+				producto p
+				JOIN producto_familia pf ON p.id_familia_id = pf.id_producto_familia
+				JOIN producto_modelo pmd ON p.id_modelo_id = pmd.id_modelo
+				JOIN producto_marca pm ON p.id_marca_id = pm.id_producto_marca
+				JOIN producto_stock ps ON p.id_producto = ps.id_producto_id
+				JOIN producto_deposito pd ON ps.id_deposito_id = pd.id_producto_deposito
+				JOIN sucursal s ON pd.id_sucursal_id = s.id_sucursal
+			WHERE
+				p.tipo_producto = 'P' {filters}
+			GROUP BY
+				p.id_familia_id, pf.nombre_producto_familia,
+				p.id_modelo_id, pmd.nombre_modelo,
+				p.id_marca_id, pm.nombre_producto_marca,
+				p.id_producto, p.id_cai_id, p.cai, p.medida, p.nombre_producto
+		"""
+		
+		#-- Parámetros para la consulta.
+		params = []
+		sucursal_columns = []
+		
+		#-- IDs de sucursales seleccionadas para usar en los filtros.
+		sucursales_ids = [s.id_sucursal for s in sucursales_seleccionadas] if sucursales_seleccionadas else []
+		
+		#-- Columnas dinámicas para sucursales seleccionadas.
+		if sucursales_seleccionadas:
+			for sucursal in sucursales_seleccionadas:
+				sucursal_columns.append(
+					f'SUM(CASE WHEN s.id_sucursal = %s THEN ps.stock ELSE 0 END) AS stock_suc_{sucursal.id_sucursal}'
+				)
+				params.append(sucursal.id_sucursal)
+			
+			#-- Columna para stock en sucursales NO seleccionadas.
+			otras_sucursales = """
+				SUM(CASE WHEN s.id_sucursal NOT IN ({}) THEN ps.stock ELSE 0 END) AS otras_suc
+			""".format(','.join(['%s']*len(sucursales_ids)))
+			params.extend(sucursales_ids)
+			
+			#-- Columna para el stock total.
+			total_general = "SUM(ps.stock) AS stock_total"
+		else:
+			sucursal_columns.append("0 AS stock")
+			otras_sucursales = "0 AS otras_suc"
+			total_general = "0 AS stock_total"
+		
+		#-- 2. Construcción de filtros.
+		conditions = []
+		
+		#-- Filtros por rango.
+		range_filters = [
+			('p.id_familia_id', id_familia_desde, id_familia_hasta),
+			('p.id_marca_id', id_marca_desde, id_marca_hasta),
+			('p.id_modelo_id', id_modelo_desde, id_modelo_hasta)
+		]
+		
+		for field, desde, hasta in range_filters:
+			if desde and hasta:
+				conditions.append(f"{field} BETWEEN %s AND %s")
+				params.extend([desde, hasta])
+			elif desde:
+				conditions.append(f"{field} >= %s")
+				params.append(desde)
+			elif hasta:
+				conditions.append(f"{field} <= %s")
+				params.append(hasta)
+		
+		filters = "AND " + " AND ".join(conditions) if conditions else ""
+		
+		#-- 4. Ensamblar consulta final.
+		final_query = query.format(
+			sucursal_columns=", ".join(sucursal_columns),
+			otras_sucursales=otras_sucursales,
+			total_general=total_general,
+			filters=filters
+		)
+		
+		#-- 5. Ejecutar con cursor y mapear a objetos del modelo.
+		with connection.cursor() as cursor:
+			cursor.execute(final_query, params)
+			columns = [col[0] for col in cursor.description]
+			rows = cursor.fetchall()
+		
+		#-- Crear objetos modelo simulados.
+		ModelProxy = namedtuple('ModelProxy', columns)
+		return [ModelProxy(*row) for row in rows]
+
+
+class VLStockGeneralSucursal(models.Model):
+	id_familia_id = models.IntegerField()
+	nombre_producto_familia = models.CharField(max_length=50)
+	id_modelo_id = models.IntegerField()
+	nombre_modelo = models.CharField(max_length=50)
+	id_marca_id = models.IntegerField()
+	nombre_producto_marca = models.CharField(max_length=50)
+	id_producto = models.IntegerField()
+	id_cai_id = models.IntegerField()
+	cai = models.CharField(max_length=20)
+	medida = models.CharField(max_length=15)
+	nombre_producto = models.CharField(max_length=50)
+	stock = models.IntegerField()
+	otras_suc = models.IntegerField()
+	stock_total = models.IntegerField()
+	
+	objects = VLStockGeneralSucursalManager()
+	
+	class Meta:
+		managed = False
+		db_table = 'VLStockGeneralSucursal'
+		verbose_name = ('Stock General por Sucursal')
+		verbose_name_plural = ('Stock General por Sucursal')
+
+
+#-----------------------------------------------------------------------------
+# Listado de Stock a Fecha.
+#-----------------------------------------------------------------------------
+class VLStockFechaManager(models.Manager):
+	
+	def obtener_datos(self, id_producto_desde, id_producto_hasta, fecha):
+		
+		#-- La consulta SQL.
+		query = """
+			SELECT
+				*
+			FROM
+				VLStockFecha
+		"""
+		
+		#-- Filtros y parámetros.
+		condition = []
+		params = []
+		
+		if id_producto_desde and id_producto_hasta:
+			condition.append("id_producto_id BETWEEN %s AND %s")
+			params.extend([id_producto_desde, id_producto_hasta])
+		elif id_producto_desde:
+			condition.append("id_producto_id >= %s")
+			params.extend([id_producto_desde])
+		elif id_producto_hasta:
+			condition.append("id_producto_id <= %s")
+			params.extend([id_producto_hasta])
+		
+		if condition:
+			# query += f" WHERE {condition}"
+			query += " WHERE "
+			query += " ".join(condition)
+		
+		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
+		return self.raw(query, params)
+
+
+class VLStockFecha(models.Model):
+	id_familia_id = models.IntegerField()
+	nombre_producto_familia = models.CharField(max_length=50)
+	id_modelo_id = models.IntegerField()
+	nombre_modelo = models.CharField(max_length=50)
+	id_marca_id = models.IntegerField()
+	nombre_producto_marca = models.CharField(max_length=50)
+	id_producto_id = models.IntegerField()
+	id_cai_id = models.IntegerField()
+	cai = models.CharField(max_length=20)
+	medida = models.CharField(max_length=15)
+	nombre_producto = models.CharField(max_length=50)
+	stock = models.IntegerField()
+	
+	objects = VLStockFechaManager()
+	
+	class Meta:
+		managed = False
+		db_table = 'VLStockFecha'
+		verbose_name = ('Listado de Stock a Fecha')
+		verbose_name_plural = ('Listado de Stock a Fecha')
+
+
+#-----------------------------------------------------------------------------
+# Listado de Stock Único.
+#-----------------------------------------------------------------------------
+class VLStockUnicoManager(models.Manager):
+	
+	def obtener_datos(self):
+		
+		#-- La consulta SQL.
+		query = """
+			SELECT
+				*
+			FROM
+				VLStockUnico
+		"""
+		
+		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
+		return self.raw(query)
+
+
+class VLStockUnico(models.Model):
+	id_familia_id = models.IntegerField()
+	nombre_producto_familia = models.CharField(max_length=50)
+	id_modelo_id = models.IntegerField()
+	nombre_modelo = models.CharField(max_length=50)
+	id_marca_id = models.IntegerField()
+	nombre_producto_marca = models.CharField(max_length=50)
+	id_producto_id = models.IntegerField()
+	id_cai_id = models.IntegerField()
+	cai = models.CharField(max_length=20)
+	medida = models.CharField(max_length=15)
+	nombre_producto = models.CharField(max_length=50)
+	stock = models.IntegerField()
+	
+	objects = VLStockUnicoManager()
+	
+	class Meta:
+		managed = False
+		db_table = 'VLStockUnico'
+		verbose_name = ('Listado de Stock Único')
+		verbose_name_plural = ('Listado de Stock Único')
+
+

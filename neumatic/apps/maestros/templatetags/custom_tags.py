@@ -51,3 +51,27 @@ def formato_es_ar(value):
 	except (ValueError, TypeError):
 		#-- Devuelve el valor sin formatear si no es un número válido.
 		return value
+
+@register.filter
+def formato_es_ar_entero(value):
+    """
+    Formatea un número entero con el formato de Argentina:
+    - Separador de miles: punto (.)
+    - Sin decimales
+    - Compatible con int, float y Decimal.
+    """
+    try:
+        # Configura el locale para números en es_AR
+        locale.setlocale(locale.LC_NUMERIC, 'es_AR.UTF-8')
+        
+        # Convierte a float si es Decimal y luego a int
+        if isinstance(value, Decimal):
+            value = int(float(value))
+        elif isinstance(value, float):
+            value = int(value)
+            
+        # Formatea con separadores de miles y sin decimales
+        return locale.format_string('%d', value, grouping=True)
+    except (ValueError, TypeError):
+        # Devuelve el valor sin formatear si no es un número válido
+        return value

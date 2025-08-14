@@ -1,11 +1,11 @@
-<!-- neumatic\apps\informes\templates\informes\reportes\vlstocksucursal_list.html -->
+<!-- apps\informes\templates\informes\reportes\vlstockunico_list.html -->
 
 {% extends 'informes/reportes/base_reportes.html' %}
 {% load static %}
 {% load custom_tags %}
 
 <!-- Blque Header -------------------------------------------------------------------------- -->
- 
+
 <!-- Contenido Inferior Izquierdo -->
 {% block header_bottom_left %}
 	{% for param, valor in parametros_i.items %}
@@ -33,11 +33,6 @@
 				<th>Descripción</th>
 				<th>Marca</th>
 				<th class="numeric">Stock</th>
-				{% if valorizado %}
-					<th class="numeric">Importe</th>
-				{% else %}
-					<th></th>
-				{% endif %}
 			</tr>
 		</thead>
 		<tbody>
@@ -45,7 +40,7 @@
 			{% for familia_id, familia_data in objetos.items %}
 				<!-- Fila con los datos de la Familia -->
 				<tr>
-					<td colspan="8" style="padding-top: 5px;">
+					<td colspan="7" style="padding-top: 5px;">
 						<strong>Familia: {{ familia_data.familia }}</strong>
 					</td>
 				</tr>
@@ -54,7 +49,7 @@
 					<!-- Fila con los datos del Modelo -->
 					<tr>
 						<td></td>
-						<td colspan="7">
+						<td colspan="6">
 							<strong>Modelo: {{ modelo_data.modelo }}</strong>
 						</td>
 					</tr>
@@ -68,58 +63,37 @@
 							<td>{{ det.medida }}</td>
 							<td>{{ det.nombre_producto }}</td>
 							<td>{{ det.nombre_producto_marca }}</td>
-							<td class="numeric">{{ det.stock|formato_es_ar }}</td>
-							{% if valorizado %}
-								<td class="numeric">{{ det.costo_inventario|formato_es_ar }}</td>
-							{% else %}
-								<td></td>
-							{% endif %}
+							<td class="numeric" style="padding-right: 10px;">{{ det.stock|formato_es_ar_entero }}</td>
 						</tr>
 					{% endfor %}
 					
 					<!-- Sub-Totales por Modelo -->
 					<tr>
 						<td class="numeric" colspan="6"><strong>Total Modelo:</strong></td>
-						<td class="numeric"><strong>{{ modelo_data.stm_cantidad|formato_es_ar }}</strong></td>
-						{% if valorizado %}
-							<td class="numeric"><strong>{{ modelo_data.stm_importe|formato_es_ar }}</strong></td>
-						{% else %}
-							<td></td>
-						{% endif %}
+						<td class="numeric" style="padding-right: 10px;"><strong>{{ modelo_data.stm_stock|default:0|formato_es_ar_entero }}</strong></td>						
 					</tr>
-				
-				{% endfor %}
 					
+				{% endfor %}
+				
 				<!-- Sub-Totales por Familia -->
 				<tr>
 					<td class="numeric" colspan="6"><strong>Total Familia:</strong></td>
-					<td class="numeric"><strong>{{ familia_data.stf_cantidad|formato_es_ar }}</strong></td>
-					{% if valorizado %}
-						<td class="numeric"><strong>{{ familia_data.stf_importe|formato_es_ar }}</strong></td>
-					{% else %}
-						<td></td>
-					{% endif %}
+					<td class="numeric" style="padding-right: 10px;"><strong>{{ familia_data.stf_stock|default:0|formato_es_ar_entero }}</strong></td>
 				</tr>
 				
 				<tr>
-					<td colspan="8"><hr></td>
+					<td colspan="7"><hr></td>
 				</tr>
 			
 			{% endfor %}
 			
 			<!-- Totales Generales -->
-			{% comment %} <tr style="border-top: 1px solid #000;"> {% endcomment %}
 			<tr>
 				<td class="numeric" colspan="6"><strong>Total General:</strong></td>
-				<td class="numeric"><strong>{{ tg_cantidad|formato_es_ar }}</strong></td>
-				{% if valorizado %}
-					<td class="numeric"><strong>{{ tg_importe|formato_es_ar }}</strong></td>
-				{% else %}
-					<td></td>
-				{% endif %}
+				<td class="numeric" style="padding-right: 10px;"><strong>{{ stock_general|default:0|formato_es_ar_entero }}</strong></td>
 			</tr>
 			
 		</tbody>
-		
+	
 	</table>
 {% endblock content %}
