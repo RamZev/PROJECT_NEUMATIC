@@ -9,6 +9,7 @@ from ...maestros.models.base_models import ComprobanteVenta
 
 from diseno_base.diseno_bootstrap import (formclasstext, 
                                           formclassnumb,
+                                          formclassnumb2,
                                           formclassselect, 
                                           formclassdate, 
                                           formclasscheck)
@@ -55,7 +56,7 @@ class FacturaForm(forms.ModelForm):
     
     es_remito = forms.BooleanField(
         required=False,
-        widget=forms.CheckboxInput(attrs={'class': 'form-check-input', 'disabled': 'disabled'})
+        widget=forms.CheckboxInput(attrs={'class': 'form-check-input', 'readonly': 'readonly'})
     )
     
     es_pendiente = forms.BooleanField(
@@ -181,10 +182,19 @@ class FacturaForm(forms.ModelForm):
             self.fields['id_comprobante_venta'].queryset = ComprobanteVenta.objects.filter(
                 presupuesto=True
             ).order_by('nombre_comprobante_venta')
-        
+
+    def clean_discrimina_iva(self):
+        # Siempre retorna True o False, incluso si el checkbox está deshabilitado
+        return bool(self.data.get('discrimina_iva', False))    
        
 class DetalleFacturaForm(forms.ModelForm):
     gravado = forms.DecimalField(
+        max_digits=12, 
+        decimal_places=2,
+        widget=forms.HiddenInput(),
+    )
+
+    no_gravado = forms.DecimalField(
         max_digits=12, 
         decimal_places=2,
         widget=forms.HiddenInput(),

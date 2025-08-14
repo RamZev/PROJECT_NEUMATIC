@@ -261,77 +261,26 @@ class FacturaCreateView(MaestroDetalleCreateView):
 							return self.form_invalid(form)
 
 				# 3. Numeración
-				# sucursal = form.cleaned_data['id_sucursal']
-				# punto_venta = form.cleaned_data['id_punto_venta']
-				# comprobante = form.cleaned_data['compro']
-				# letra = form.cleaned_data['letra_comprobante']
-				# fecha_comprobante = form.cleaned_data['fecha_comprobante']
-
-				# numero_obj, created = Numero.objects.select_for_update(
-				# 		nowait=True
-				# ).get_or_create(
-				# 		id_sucursal=sucursal,
-				# 		id_punto_venta=punto_venta,
-				# 		comprobante=comprobante,
-				# 		letra=letra,
-				# 		defaults={'numero': 0}
-				# )
-
-				# nuevo_numero = numero_obj.numero + 1
-				# Numero.objects.filter(pk=numero_obj.pk).update(numero=F('numero') + 1)
-				
-				# form.instance.numero_comprobante = nuevo_numero
-				# form.instance.full_clean()
-
-				# 3. Numeración (nueva versión)
 				sucursal = form.cleaned_data['id_sucursal']
 				punto_venta = form.cleaned_data['id_punto_venta']
 				comprobante = form.cleaned_data['compro']
+				letra = form.cleaned_data['letra_comprobante']
 				fecha_comprobante = form.cleaned_data['fecha_comprobante']
-				
-				# Determinamos id_discrimina_iva basado en el tipo de IVA (Regla: True solo si id_tipo_iva == 4)
-				cliente = form.cleaned_data['id_cliente']
-				id_discrimina_iva = (cliente.id_tipo_iva.discrimina_iva)
 
-				# Obtener configuración AFIP del comprobante
-				comprobante_data = ComprobanteVenta.objects.filter(
-					codigo_comprobante_venta=comprobante
-				).first()
-
-				if not comprobante_data:
-					form.add_error(None, 'No se encontró la configuración AFIP para este comprobante')
-					return self.form_invalid(form)
-
-				# Determinar comprobante AFIP y letra
-				codigo_afip_a = comprobante_data.codigo_afip_a
-				codigo_afip_b = comprobante_data.codigo_afip_b
-
-				if codigo_afip_a != codigo_afip_b:
-					if id_discrimina_iva:
-						comprobante_afip = codigo_afip_a
-						letra = 'A'
-					else:
-						comprobante_afip = codigo_afip_b
-						letra = 'B'
-				else:
-					comprobante_afip = codigo_afip_a
-					letra = comprobante_data.letra_defecto
-
-				# Bloquear y obtener/crear el número
-				numero_obj, created = Numero.objects.select_for_update(nowait=True).get_or_create(
-					id_sucursal=sucursal,
-					id_punto_venta=punto_venta,
-					comprobante=comprobante_afip,
-					letra=letra,
-					defaults={'numero': 0}
+				numero_obj, created = Numero.objects.select_for_update(
+						nowait=True
+				).get_or_create(
+						id_sucursal=sucursal,
+						id_punto_venta=punto_venta,
+						comprobante=comprobante,
+						letra=letra,
+						defaults={'numero': 0}
 				)
 
 				nuevo_numero = numero_obj.numero + 1
 				Numero.objects.filter(pk=numero_obj.pk).update(numero=F('numero') + 1)
-
+				
 				form.instance.numero_comprobante = nuevo_numero
-				form.instance.letra_comprobante = letra
-				form.instance.compro = comprobante_afip  # Guardamos el código AFIP real
 				form.instance.full_clean()
 
 				# Condición de Venta

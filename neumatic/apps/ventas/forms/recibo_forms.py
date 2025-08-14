@@ -79,7 +79,7 @@ class FacturaReciboForm(forms.ModelForm):
     
     discrimina_iva = forms.BooleanField(
         required=False,
-        widget=forms.CheckboxInput(attrs={'class': 'form-check-input', 'disabled': 'disabled'})
+        widget=forms.CheckboxInput(attrs={'class': 'form-check-input', 'readonly': 'readonly'})
     )
     
     es_remito = forms.BooleanField(
@@ -293,6 +293,10 @@ class FacturaReciboForm(forms.ModelForm):
         self.fields['total_cheques'].initial = 0.00
         self.fields['total_formas_pago'].initial = 0.00
         self.fields['resto_cobrar'].initial = 0.00
+    
+    def clean_discrimina_iva(self):
+        # Siempre retorna True o False, incluso si el checkbox está deshabilitado
+        return bool(self.data.get('discrimina_iva', False))
 
 # Detalle del Recibo
 class DetalleReciboForm(forms.ModelForm):

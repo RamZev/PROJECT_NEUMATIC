@@ -500,6 +500,7 @@
                                                         <td>{{ formdet.id_operario }}</td> <!-- Nuevo campo -->
                                                         <td>
                                                             {{ formdet.gravado }}
+                                                            {{ formdet.no_gravado }}
                                                             {{ formdet.alic_iva }}
                                                             {{ formdet.iva }}
                                                             {{ formdet.total }}</td>
@@ -1000,6 +1001,7 @@
 
             function actualizarVisualizacionTotales() {
                 const campos = ['id_gravado', 'id_exento', 'id_iva', 'id_percep_ib', 'id_total'];
+                // alert("actualizarVisualizacionTotales");
                 
                 //alert("🔍 INICIANDO VERIFICACIÓN DE FORMATEO 🔍");
                 
@@ -1074,10 +1076,12 @@
                 document.querySelectorAll('.detalle-form tbody tr:not([style*="display: none"])').forEach(row => {
                     const total = parseNumber(row.querySelector('[name*="-total"]').value);
                     const gravado = parseNumber(row.querySelector('[name*="-gravado"]').value);
+                    const no_gravado = parseNumber(row.querySelector('[name*="-no_gravado"]').value);
                     const iva = parseNumber(row.querySelector('[name*="-iva"]').value);
                     
                     totalFactura += total;
                     totalGravado += gravado;
+                    totalExento += no_gravado;
                     totalIva += iva;
                 });
             
@@ -1181,9 +1185,19 @@
                 row.querySelector('[name*="-total"]').value = totalConDescuento.toFixed(2);
                 
                 // Calcular impuestos
-                const gravado = totalConDescuento / (1 + (alicIva / 100));
+                // const gravado = totalConDescuento / (1 + (alicIva / 100));
+                // row.querySelector('[name*="-gravado"]').value = gravado.toFixed(2);
+                // row.querySelector('[name*="-iva"]').value = (totalConDescuento - gravado).toFixed(2);
+                let gravado = 0;
+                let no_gravado = 0;
+                if (alicIva > 0) {
+                    gravado = totalConDescuento / (1 + (alicIva / 100));
+                } else {
+                    no_gravado = totalConDescuento;
+                }
                 row.querySelector('[name*="-gravado"]').value = gravado.toFixed(2);
-                row.querySelector('[name*="-iva"]').value = (totalConDescuento - gravado).toFixed(2);
+                row.querySelector('[name*="-no_gravado"]').value = no_gravado.toFixed(2);
+                row.querySelector('[name*="-iva"]').value = (totalConDescuento - gravado).toFixed(2);                
                 
                 return totalConDescuento;
             };
@@ -1271,7 +1285,8 @@
                         precio: parseFloat(checkbox.dataset.precio),
                         descuento_vendedor: parseFloat(checkbox.dataset.descuentoVendedor),
                         alicuota_iva: parseFloat(checkbox.dataset.alicuotaIva).toFixed(2),
-                        tipo_producto: checkbox.dataset.tipoProducto
+                        tipo_producto: checkbox.dataset.tipoProducto,
+                        obliga_operario: checkbox.dataset.obligaOperario === 'true'
                     });
                 });
 
@@ -1294,14 +1309,26 @@
                     const cantidad = 1.00;
                     const montoTotal = precioConDescuento * cantidad;
                     const alicuotaIva = parseFloat(producto.alicuota_iva || 0);
-                    const gravado = (montoTotal / (1 + (alicuotaIva / 100))).toFixed(2);
-                    const iva = (montoTotal - gravado).toFixed(2);
+                    
+                    // const gravado = (montoTotal / (1 + (alicuotaIva / 100))).toFixed(2);
+                    // const iva = (montoTotal - gravado).toFixed(2);
+                    
+                    // Cálculo de gravado, no_gravado e iva según alicuota_iva
+                    let gravado = 0;
+                    let no_gravado = 0;
+                    let iva = 0;
+                    if (alicuotaIva > 0) {
+                        gravado = (montoTotal / (1 + (alicuotaIva / 100))).toFixed(2);
+                        iva = (montoTotal - gravado).toFixed(2);
+                    } else {
+                        no_gravado = montoTotal.toFixed(2);
+                    }
+                    
                     const nombreInputAttributes = cambia_precio_descripcion ? 'required' : 'readonly';
                     const valorPorDefecto = document.getElementById('id_tipo_venta')?.value || "M";
 
-                    // alert(producto.tipo_producto);
                     let campoOperarioHTML;
-                    if (producto.tipo_producto === "S") {
+                    if (producto.tipo_producto === "S" && producto.obliga_operario === 'true') {
                         // Caso para servicios (mostrar select de operarios)
                         campoOperarioHTML = `
                             <select name="detallefactura_set-${currentIndex}-id_operario" 
@@ -1380,6 +1407,8 @@
                         <!-- Campos OCULTOS para IVA -->
                         <input type="hidden" name="detallefactura_set-${currentIndex}-gravado" 
                         value="${gravado}">
+                        <input type="hidden" name="detallefactura_set-${currentIndex}-no_gravado" 
+                        value="${no_gravado}">
                         <input type="hidden" name="detallefactura_set-${currentIndex}-alic_iva" 
                         value="${parseFloat(producto.alicuota_iva || 0).toFixed(2)}">
                         <input type="hidden" 
@@ -1646,7 +1675,8 @@
                                             data-descuento-vendedor="${producto.descuento_vendedor}"
                                             data-id-alicuota-iva="${producto.id_alicuota_iva}"
                                             data-alicuota-iva="${producto.alicuota_iva}"
-                                            data-tipo-producto="${producto.tipo_producto}">
+                                            data-tipo-producto="${producto.tipo_producto}"
+                                            data-obliga-operario="${producto.obliga_operario}">
                                             
                                 </td>
                             </tr>
@@ -2467,9 +2497,49 @@
             });
             
             // Mantener las funciones completarSeleccionCliente y getCookie exactamente igual que en tu versión original
-
             function calcularNumeroComprobante() {
                 // Obtener datos necesarios para numeración
+                const id_sucursal = document.getElementById('id_id_sucursal').value;
+                const id_punto_venta = document.getElementById('id_id_punto_venta').value;
+                const compro = document.getElementById('id_compro').value;
+                const id_discrimina_iva = document.getElementById('id_discrimina_iva').value;
+
+                if (id_sucursal && id_punto_venta && compro) {
+                    ///
+                    const url = new URL('/ventas/obtener-numero-comprobante3/', window.location.origin);
+                    url.searchParams.append('id_sucursal', id_sucursal);
+                    url.searchParams.append('id_punto_venta', id_punto_venta);
+                    url.searchParams.append('comprobante', compro);
+                    url.searchParams.append('id_discrimina_iva', id_discrimina_iva);
+
+                    fetch(url)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                document.getElementById('id_numero_comprobante').value = data.numero_referencial;
+                                const inputDefinitivo = document.getElementById('id_numero_definitivo');
+                                if (inputDefinitivo) {
+                                    inputDefinitivo.value = data.numero_definitivo;
+                                }
+                                document.getElementById('id_letra_comprobante').value = data.letra;
+                            } else {
+                                alert(data.message || "Ocurrió un error al obtener el número de comprobante.");
+                            }
+                        })
+                        .catch(error => {
+                            console.error("Error en la solicitud:", error);
+                            alert("Error al conectar con el servidor.");
+                        });
+                    ///
+                } else {
+
+                }
+            }
+
+            // Función original calcularNumeroComprobante
+            function calcularNumeroComprobante_ini() {
+                // Obtener datos necesarios para numeración
+                alert("calcularNumeroComprobante")
                 const libroIvaDict = JSON.parse(document.getElementById('libroiva-data').dataset.libroiva);
                 const comprobanteId = document.getElementById('id_id_comprobante_venta').value;
                 const libroIva = libroIvaDict[comprobanteId] ?? false;
@@ -3292,6 +3362,66 @@
             });
 
             //
+            document.getElementById('detalleModal').addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault(); // Prevenir el comportamiento por defecto
+                    
+                    // Definir el orden de los elementos enfocables
+                    const focusableElements = [
+                        // Filtros
+                        document.getElementById('filtro_primeras'),
+                        document.getElementById('filtro_otras'),
+                        document.getElementById('filtro_stock'),
+                        
+                        // Campos de búsqueda
+                        document.getElementById('medida_producto'),
+                        document.getElementById('nombre_producto'),
+                        document.getElementById('cai_producto'),
+                        
+                        // Botón Buscar
+                        document.querySelector('#detalleForm button[type="submit"]'),
+                        
+                        // Tabla de resultados (si tiene elementos enfocables)
+                        ...Array.from(document.querySelectorAll('#tabla-resultados [tabindex="0"]')),
+                        
+                        // Botones finales
+                        document.getElementById('agregarDetale'),
+                        document.getElementById('cancelarDetale')
+                    ].filter(el => el && !el.disabled); // Filtra elementos nulos o deshabilitados
+
+                    // Encontrar el elemento actualmente enfocado
+                    const currentIndex = focusableElements.indexOf(document.activeElement);
+                    let nextIndex = currentIndex + 1;
+
+                    // Si está en el último elemento, volver al primero
+                    if (nextIndex >= focusableElements.length) {
+                        nextIndex = 0;
+                    }
+
+                    // Enfocar el siguiente elemento
+                    if (focusableElements[nextIndex]) {
+                        focusableElements[nextIndex].focus();
+                        
+                        // Si es un radio button, seleccionarlo automáticamente
+                        if (focusableElements[nextIndex].type === 'radio') {
+                            focusableElements[nextIndex].checked = true;
+                        }
+                        
+                        // Si es un botón de la tabla, simular clic
+                        if (focusableElements[nextIndex].classList.contains('btn-select-row')) {
+                            focusableElements[nextIndex].click();
+                        }
+                    }
+                }
+            });
+
+            // Enfoque automático al abrir el modal
+            document.getElementById('detalleModal').addEventListener('shown.bs.modal', function() {
+                document.getElementById('medida_producto').focus();
+            });
+            //
+
+            //
             document.getElementById('serialModal').addEventListener('keydown', function(e) {
                 if (e.key === 'Enter') {
                     e.preventDefault(); // Prevenir el comportamiento por defecto
@@ -3322,6 +3452,7 @@
             });
             //
         });
+
     </script>
         
 {% endblock script %}

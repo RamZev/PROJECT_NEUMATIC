@@ -111,7 +111,6 @@ class ConsultaFacturasClienteView(TemplateView):
             })
 
 
-
 class ConsultaProductosView(TemplateView):
     template_name = 'datatools/consulta_productos_form.html'
     
@@ -156,7 +155,7 @@ class ConsultaProductosView(TemplateView):
             productos = productos.order_by('nombre_producto')
             
             # Paginación
-            paginator = Paginator(productos, 10)  # 15 productos por página
+            paginator = Paginator(productos, 10)
             page_number = self.request.GET.get('page')
             page_obj = paginator.get_page(page_number)
             
@@ -169,7 +168,7 @@ class ConsultaProductosView(TemplateView):
                 stock_data = ProductoStock.objects.filter(
                     id_producto__in=productos_ids
                 ).select_related('id_deposito')
-                
+
                 # Organizar el stock por producto
                 for producto in page_obj:
                     stock_por_producto[producto.id_producto] = {
@@ -177,7 +176,6 @@ class ConsultaProductosView(TemplateView):
                         'por_deposito': []
                     }
                     
-                    # Filtrar y sumar el stock para este producto
                     for deposito in depositos:
                         stock_items = [s for s in stock_data 
                                      if s.id_producto_id == producto.id_producto 
@@ -185,7 +183,8 @@ class ConsultaProductosView(TemplateView):
                         
                         stock = sum(s.stock for s in stock_items) if stock_items else 0
                         
-                        if stock > 0:  # Solo mostrar depósitos con stock
+                        # Cambio clave: Mostrar stock según filtro seleccionado
+                        if filtro_marca != 'stock' or stock > 0:
                             stock_por_producto[producto.id_producto]['por_deposito'].append({
                                 'deposito': deposito.nombre_producto_deposito,
                                 'stock': stock
@@ -204,9 +203,7 @@ class ConsultaProductosView(TemplateView):
             'cai': cai,
             'filtro_marca': filtro_marca,
             'error': error,
+            'fecha': timezone.now()
         })
 
-        context['fecha'] = timezone.now()
-
         return context
-

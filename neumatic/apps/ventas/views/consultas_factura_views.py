@@ -101,7 +101,8 @@ def buscar_producto(request):
             'descuento_vendedor': descuento,
             'id_alicuota_iva': producto.id_alicuota_iva_id if producto.id_alicuota_iva else None,
             'alicuota_iva': producto.alicuota_iva,
-            'tipo_producto': producto.tipo_producto
+            'tipo_producto': producto.tipo_producto,
+            'obliga_operario': producto.obliga_operario,
 
         })
 
@@ -676,6 +677,87 @@ def obtener_numero_comprobante2(request):
             'error': str(e),
             'success': False
         }, status=500)
+
+
+# Obtener el último número de comprobante
+@require_GET
+def obtener_numero_comprobante3(request):
+    # Obtener parámetros de la solicitud
+    id_sucursal = request.GET.get('id_sucursal')
+    id_punto_venta = request.GET.get('id_punto_venta')
+    comprobante = request.GET.get('comprobante')
+    id_discrimina_iva = request.GET.get('id_discrimina_iva') == 'on' 
+    
+    comprobante_ini = comprobante
+
+    if not all([id_sucursal, id_punto_venta, comprobante, id_discrimina_iva]):
+        return JsonResponse({'error': 'Faltan parámetros requeridos'}, status=400)
+
+    try:
+        # Buscar en ComprobanteVenta los códigos AFIP
+        comprobante_data = ComprobanteVenta.objects.filter(
+            codigo_comprobante_venta=comprobante
+        ).first()
+
+        if not comprobante_data:
+            return JsonResponse({
+                'success': False,
+                'message': 'No se encontró la configuración AFIP para este comprobante, consulte al Administrador del Sistema!',
+            })
+
+        codigo_afip_a = comprobante_data.codigo_afip_a
+        codigo_afip_b = comprobante_data.codigo_afip_b
+
+        # Validar que los códigos AFIP A y B no estén vacíos
+        if not codigo_afip_a or not codigo_afip_b:
+            return JsonResponse({
+                'success': False,
+                'message': 'La configuración AFIP para este comprobante está incompleta, consulte al Administrador del Sistema!',
+            })
+
+        letra = ""
+        comprobante = ""
+        if codigo_afip_a != codigo_afip_b:
+            # Caso codigo_afip_a, codigo_afip_b
+            if id_discrimina_iva:
+                comprobante = codigo_afip_a
+            else:
+                comprobante = codigo_afip_a
+        else:
+            # Caso NO codigo_afip_a, codigo_afip_b
+            comprobante = codigo_afip_a
+
+        # Obtener número referencial (último número + 1)
+        ultimo_numero = Numero.objects.filter(
+            id_sucursal=id_sucursal,
+            id_punto_venta=id_punto_venta,
+            comprobante=comprobante
+        ).order_by('-numero').first()
+
+        # Si no hay registros, devolver un mensaje específico (igual que en la primera vista)
+        if not ultimo_numero:
+            return JsonResponse({
+                'success': False,
+                'message': 'No se puede obtener la numeración de este comprobante, consulte al Administrador del Sistema!',
+            })
+
+        numero_referencial = ultimo_numero.numero + 1
+        letra = ultimo_numero.letra
+        numero_definitivo = numero_referencial
+
+        return JsonResponse({
+            'numero_referencial': numero_referencial,
+            'numero_definitivo': numero_definitivo,
+            'letra': letra,
+            'success': True
+        })
+
+    except Exception as e:
+        return JsonResponse({
+            'error': str(e),
+            'success': False
+        }, status=500)
+
 
 @require_GET
 def buscar_banco(request):

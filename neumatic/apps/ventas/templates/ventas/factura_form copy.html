@@ -123,6 +123,9 @@
             <!-- Div oculto con el diccionario electronica para cada comprobante -->
             <div id="electronica-data" data-electronica='{{ electronica_dict|safe }}'</div>
 
+            <!-- Div oculto con el diccionario de operarios -->
+            <div id="operario-data" data-operario='{{ operario_dict|safe }}'</div>
+
             <div class="container-fluid tbl-container">
                 <!-- Formulario Encabezado Detalle - Inicio -->
                 <form method="post" id="factura-form" enctype="multipart/form-data">
@@ -132,7 +135,7 @@
                         <div class="accordion-item">
                             <h2 class="accordion-header">
                             <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseOne" aria-expanded="true" aria-controls="panelsStayOpen-collapseOne">
-                                Comprobante Electrónico
+                                Comprobante - {{ tipo_comprobante }}
                             </button>
                             </h2>
                             <div id="panelsStayOpen-collapseOne" class="accordion-collapse collapse show">
@@ -208,8 +211,8 @@
                                                 </button>
                                                 {% comment %} <button type="button" class="btn btn-outline-primary btn-sm me-2" id="listarBtn">Listar</button> {% endcomment %}
                                                 
-                                                <a href="{% url 'cliente_create' %}" target="_blank" title="Crear Cliente"
-                                                class="btn btn-outline-primary btn-sm me-2  h-75 d-flex align-items-center text-decoration-none">
+                                                <a id="crearClienteBtn" href="{% url 'cliente_create' %}" target="_blank" title="Crear Cliente"
+                                                    class="btn btn-outline-primary btn-sm me-2  h-75 d-flex align-items-center text-decoration-none">
                                                     <i class="bi bi-building-add"></i>
                                                 </a>
                                                 
@@ -374,6 +377,7 @@
                                             </div>
 
                                             <div class="col-md-3">
+                                                {{ form.id_comprobante_asociado }}
                                                 {{ form.numero_asociado }}
                                             </div>
                                             
@@ -463,14 +467,15 @@
                                         <table class="detalle-form table table-striped table-hover table-responsive" style="width: 100%;">
                                             <thead class="table-primary small-font">
                                                 <tr>
-                                                    <th style="width: 12%;">Medida</th>
-                                                    <th style="width: 30%;">Nombre Producto</th>
+                                                    <th style="width: 10%;">Medida</th>
+                                                    <th style="width: 25%;">Nombre Producto</th>
                                                     <th style="width: 8%;">Cantidad</th>
                                                     <th style="width: 8%;">Reventa</th>
-                                                    <th style="width: 12%;">Precio</th>
-                                                    <th style="width: 10%;">Descuento</th>
+                                                    <th style="width: 10%;">Precio</th>
+                                                    <th style="width: 8%;">Descuento</th>
+                                                    <th style="width: 10%;">Operario</th> <!-- Nueva columna -->
                                                     <th style="width: 15%;">Total</th>
-                                                    <th style="width: 5%;">Elim</th>
+                                                    <th style="width: 6%;">Elim</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -492,6 +497,7 @@
                                                         <td>{{ formdet.reventa }}</td>
                                                         <td>{{ formdet.precio }}</td>
                                                         <td>{{ formdet.descuento }}</td>
+                                                        <td>{{ formdet.id_operario }}</td> <!-- Nuevo campo -->
                                                         <td>
                                                             {{ formdet.gravado }}
                                                             {{ formdet.alic_iva }}
@@ -632,10 +638,22 @@
                                                         {{ formser.producto_serial }}
                                                     </td>
                                                     <td>
-                                                        <button type="button" class="btn btn-danger btn-sm btn-delete-serial">
+                                                        <button 
+                                                            type="button" 
+                                                            class="btn btn-danger btn-sm btn-delete-serial"
+                                                            data-serial-index="{{ forloop.counter0 }}" 
+                                                            data-bs-toggle="tooltip" 
+                                                            title="Eliminar"
+                                                        >
                                                             <i class="bi bi-trash"></i>
                                                         </button>
+                                                        <input 
+                                                            type="checkbox" 
+                                                            name="serialfactura_set-{{ forloop.counter0 }}-DELETE" 
+                                                            class="d-none"
+                                                        >
                                                     </td>
+                                                    
                                                 </tr>
                                                 {% endfor %}
                                             </tbody>
@@ -647,9 +665,24 @@
                         
                     </div>
 
-                    <!-- Card del Detalle de Factura - Inicio -->
-                    
-                    <!-- Card del Detalle de Factura - Fin -->
+                    <!-- Modal de Observaciones-->
+                    <div class="modal fade" id="observacionesModal" tabindex="-1" aria-labelledby="observacionesModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="observacionesModalLabel">Observaciones del Comprobante</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <!-- Renderizamos el campo aquí -->
+                                    {{ form.observa_comprobante }}
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
                 </form>
                 <!-- Formulario Encabezado Detalle - Fin -->
@@ -957,24 +990,6 @@
         </div>
     </div>
 
-    <!-- Modal de Observaciones-->
-    <div class="modal fade" id="observacionesModal" tabindex="-1" aria-labelledby="observacionesModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="observacionesModalLabel">Observaciones del Comprobante</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <!-- Renderizamos el campo aquí -->
-                    {{ form.observa_comprobante }}
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                </div>
-            </div>
-        </div>
-    </div>
 
 {% endblock modals %}
 
@@ -1110,7 +1125,7 @@
             });
     
             ////////////
-            // Manejo mejorado de eliminación
+            // Manejo de eliminación de Detalle de Factura
             document.addEventListener('click', function (event) {
                 if (event.target.closest('.btn-delete')) {
                     const row = event.target.closest('tr');
@@ -1133,8 +1148,8 @@
 
             // Función para actualizar el contador de formsets (NUEVA)
             function actualizarContadorFormsets() {
-                const visibleRows = document.querySelectorAll('.detalle-form tbody tr:not([style*="display: none"])').length;
-                document.getElementById('id_detallefactura_set-TOTAL_FORMS').value = visibleRows;
+                const allRows = document.querySelectorAll('.detalle-form tbody tr').length;
+                document.getElementById('id_detallefactura_set-TOTAL_FORMS').value = allRows;
             }
             ////////////
 
@@ -1246,15 +1261,24 @@
                 const productosSeleccionados = [];
                 
                 checkboxes.forEach(checkbox => {
+                    // alert("ID del producto: " + checkbox.dataset.id); // Mostrar el ID
+                    // alert("TIPO_PRODUCTO del producto: " + checkbox.dataset.tipoProducto); // Mostrar el TIPO_PRODUCTO
+                    
                     productosSeleccionados.push({
                         id: checkbox.dataset.id,
                         medida: checkbox.dataset.medida,
                         nombre: checkbox.dataset.nombre,
                         precio: parseFloat(checkbox.dataset.precio),
                         descuento_vendedor: parseFloat(checkbox.dataset.descuentoVendedor),
-                        alicuota_iva: parseFloat(checkbox.dataset.alicuotaIva).toFixed(2)
+                        alicuota_iva: parseFloat(checkbox.dataset.alicuotaIva).toFixed(2),
+                        tipo_producto: checkbox.dataset.tipoProducto,
+                        obliga_operario: checkbox.dataset.obligaOperario === 'true'
                     });
                 });
+
+                // Obtener el diccionario de operarios desde el div oculto
+                const operarioData = document.getElementById('operario-data');
+                const operarioDict = operarioData ? JSON.parse(operarioData.dataset.operario) : {};
                 
                 // Insertar productos en la tabla detalle factura
                 productosSeleccionados.forEach(producto => {
@@ -1275,6 +1299,31 @@
                     const iva = (montoTotal - gravado).toFixed(2);
                     const nombreInputAttributes = cambia_precio_descripcion ? 'required' : 'readonly';
                     const valorPorDefecto = document.getElementById('id_tipo_venta')?.value || "M";
+
+                    let campoOperarioHTML;
+                    if (producto.tipo_producto === "S" && producto.obliga_operario === 'true') {
+                        // Caso para servicios (mostrar select de operarios)
+                        campoOperarioHTML = `
+                            <select name="detallefactura_set-${currentIndex}-id_operario" 
+                                    class="form-control form-control-sm border border-primary small-font" 
+                                    style="font-size: 0.8rem; padding: 0.25rem;" 
+                                    required>
+                                <option value="">Seleccione un operario</option>
+                                ${Object.entries(operarioDict).map(([id, nombre]) => 
+                                    `<option value="${id}">${nombre}</option>`
+                                ).join('')}
+                            </select>
+                        `;
+                    } else {
+                        // Caso para productos (mostrar select deshabilitado)
+                        campoOperarioHTML = `
+                            <select disabled
+                                    class="form-control form-control-sm border border-secondary small-font" 
+                                    style="font-size: 0.8rem; padding: 0.25rem;">
+                                <option value="">No aplica</option>
+                            </select>
+                        `;
+                    }
 
                     // Clase reutilizable
                     const formControlClass = 'form-control form-control-sm border border-primary small-font';
@@ -1322,6 +1371,10 @@
                         <td>
                             <input type="number" name="detallefactura_set-${currentIndex}-descuento" 
                                 class="${formControlClass} text-end" value="0" step="0.1" min="0">
+                        </td>
+                        <td>
+                            <input type="hidden" name="detallefactura_set-${currentIndex}-id_operario" value="">
+                            ${campoOperarioHTML}
                         </td>
 
                         <!-- Campos OCULTOS para IVA -->
@@ -1376,9 +1429,10 @@
                     // Actualizar totales generales
                     actualizarTotalFactura();
                     
-                    // Actualizar el contador de formsets
-                    document.querySelector('[name$="TOTAL_FORMS"]').value = 
-                        formsetContainer.querySelectorAll('.detalle-form tbody tr').length;
+                    // Actualizar el contador de formsets detalle_factura
+                    // document.querySelector('[name$="TOTAL_FORMS"]').value = 
+                    //    formsetContainer.querySelectorAll('.detalle-form tbody tr').length;
+                    actualizarContadorFormsets();
                 });
                 
                 // Cerrar modal y limpiar selecciones
@@ -1592,7 +1646,8 @@
                                             data-descuento-vendedor="${producto.descuento_vendedor}"
                                             data-id-alicuota-iva="${producto.id_alicuota_iva}"
                                             data-alicuota-iva="${producto.alicuota_iva}"
-                                            data-tipo-producto="${producto.tipo_producto}">
+                                            data-tipo-producto="${producto.tipo_producto}"
+                                            data-obliga-operario="${producto.obliga_operario}">
                                             
                                 </td>
                             </tr>
@@ -1735,11 +1790,14 @@
                 const multVenta = multVentaDict[comprobanteId] ?? false;
 
                 // Analiza si son notas de crédito
+                const numeroAsociadoInput = document.getElementById('id_numero_asociado');
                 if (multVenta < 0){
                     document.getElementById('id_numero_asociado').readOnly = false;
+                    numeroAsociadoInput.setAttribute('required', 'required');
                 } else {
                     document.getElementById('id_numero_asociado').value = '';
                     document.getElementById('id_numero_asociado').readOnly = true;
+                    numeroAsociadoInput.required = false;  // Quitar requerimiento
                 }
 
                 // 5. Habilitar la fecha si no es un docuento electrónico
@@ -2050,9 +2108,13 @@
                         // Caso 3: Éxito - Procesar resultados
                         const factura = data.facturas[0];
                         console.log("Factura encontrada:", factura);
+
+                        // Asignar el ID al elemento id_id_comprobante_asociado
+                        document.getElementById('id_id_comprobante_asociado').value = factura.id
                         
                         // Mostrar datos importantes (opcional)
                         alert(`Factura válida encontrada:
+                            \n- ID: ${factura.id}
                             \n- Número: ${factura.numero_comprobante}
                             \n- Fecha: ${factura.fecha}
                             \n- Total: $${factura.total}
@@ -2153,7 +2215,7 @@
         
                 // Limpiar las tablas antes de abrir la ventana modal
                 document.querySelector("#tabla-stock tbody").innerHTML = "";
-                document.querySelector("#tabla-minimos tbody").innerHTML = "";
+                // document.querySelector("#tabla-minimos tbody").innerHTML = "";
             });
         });
     </script>
@@ -3031,15 +3093,40 @@
             if (isEdit) {
                 // Deshabilitar solo los campos de entrada y el botón "Agregar Detalle"
                 const inputs = document.querySelectorAll('#factura-form input, #factura-form select, #factura-form textarea');
+                
+                const validarBtn =  document.getElementById('validarBtn');
+                const listar_agenda =  document.getElementById('listar_agenda');
+                const crearClienteBtn =  document.getElementById('crearClienteBtn');
+                
                 const btnAgregarDetalle = document.getElementById('btnAgregarDetalle');
+                const btnAgregarSerial = document.getElementById('btnAgregarSerial');
 
                 inputs.forEach(input => {
-                    input.disabled = true;  // Deshabilitar campos
-                    input.classList.add('readonly-select');  // Aplicar estilo visual
+                    input.disabled = true;  
+                    input.classList.add('readonly-select');  
                 });
+                
+                if (validarBtn) {
+                    validarBtn.disabled = true;
+                }
 
+                if (listar_agenda) {
+                    listar_agenda.disabled = true;
+                }
+
+                if (crearClienteBtn) {
+                    // Guardamos el href original por si luego queremos habilitarlo de nuevo
+                    crearClienteBtn.setAttribute('data-original-href', crearClienteBtn.getAttribute('href'));
+                    crearClienteBtn.removeAttribute('href'); // Eliminamos el href para que no sea clickeable
+                    crearClienteBtn.classList.add('disabled'); // Añadimos clase visual
+                }
+                
                 if (btnAgregarDetalle) {
-                    btnAgregarDetalle.disabled = true;  // Deshabilitar el botón "Agregar Detalle"
+                    btnAgregarDetalle.disabled = true;
+                }
+
+                if (btnAgregarSerial) {
+                    btnAgregarSerial.disabled = true;
                 }
 
                 // Manejar el campo del modal de forma especial
@@ -3049,7 +3136,22 @@
                     textareaObservaciones.classList.add('readonly-textarea');
                 }
 
+                const deleteButtons = document.querySelectorAll('button[data-form-index]');
+                if (deleteButtons.length > 0) {
+                    deleteButtons.forEach(button => {
+                        button.disabled = true;
+                        // button.classList.add('disabled'); // Estilo visual (opcional)
+                    });
+                }
 
+                const deleteButtonsSerial = document.querySelectorAll('button[data-serial-index]');
+                if (deleteButtonsSerial.length > 0) {
+                    deleteButtonsSerial.forEach(button => {
+                        button.disabled = true;
+                        // button.classList.add('disabled'); // Estilo visual (opcional)
+                    });
+                }
+ 
                 //alert("El formulario está en modo de solo lectura");
             } else {
                 //alert("El formulario está en modo de creación");
@@ -3071,6 +3173,12 @@
                     return;
                 }
             });
+
+            // Función para actualizar el contador de formsets de seriales
+            function actualizarSerialContadorFormsets() {
+                const allSerialRows = document.querySelectorAll('#serialTableBody tr').length;
+                document.getElementById('id_serialfactura_set-TOTAL_FORMS').value = allSerialRows;
+            }
         
             // 2. Insertar serial (mismo patrón que detalles)
             document.getElementById('btnGuardarSerial').addEventListener('click', function() {
@@ -3081,18 +3189,19 @@
                     alert('Ingrese un serial válido');
                     return;
                 }
-        
-                const totalForms = document.getElementById('id_serialfactura_set-TOTAL_FORMS');
-                const formCount = parseInt(totalForms.value);
-                
+
+                // const totalForms = document.getElementById('id_serialfactura_set-TOTAL_FORMS');
+                // const formCount = parseInt(totalForms.value);
+                const formCount = document.querySelectorAll('#serialTableBody tr').length;
+                                
                 const newRow = `
                 <tr>
                     <td>
                         <input type="hidden" name="serialfactura_set-${formCount}-id_serial_factura">
                         <input type="hidden" name="serialfactura_set-${formCount}-id_factura">
                         <input type="text" name="serialfactura_set-${formCount}-producto_serial"
-                               class="form-control form-control-sm border border-secondary"
-                               value="${serialValue}" required>
+                            class="form-control form-control-sm border border-secondary"
+                            value="${serialValue}" required>
                     </td>
                     <td>
                         <button type="button" class="btn btn-danger btn-sm btn-delete-serial">
@@ -3102,23 +3211,34 @@
                     </td>
                 </tr>`;
                 
+                // Insertar nueva fila
                 serialTableBody.insertAdjacentHTML('beforeend', newRow);
-                totalForms.value = formCount + 1;
+                
+                // Cerrar modal y limpiar
                 serialModal.hide();
                 serialInput.value = '';
+
+                actualizarSerialContadorFormsets();
             });
         
-            // 3. Eliminar serial (igual que detalles)
-            serialTableBody.addEventListener('click', function(e) {
-                if (e.target.closest('.btn-delete-serial')) {
-                    const row = e.target.closest('tr');
-                    if (confirm('¿Eliminar este serial?')) {
-                        const deleteInput = row.querySelector('[name$="-DELETE"]');
+            // Manejo de eliminación de Detalle de Seriales
+            document.addEventListener('click', function(event) {
+                if (event.target.closest('.btn-delete-serial')) {
+                    const row = event.target.closest('tr');
+                    const deleteInput = row.querySelector('input[name$="-DELETE"]');
+                    
+                    if (confirm('¿Está seguro de eliminar este serial?')) {
                         if (deleteInput) {
+                            // Marcar para eliminación en backend
                             deleteInput.checked = true;
+                            
+                            // Ocultar la fila visualmente
                             row.style.display = 'none';
+                            
+                            // Actualizar el contador de formsets
+                            actualizarSerialContadorFormsets();
                         } else {
-                            row.remove();
+                            console.error('Error: No se encontró el campo DELETE para serial');
                         }
                     }
                 }
@@ -3171,7 +3291,99 @@
                     e.preventDefault(); // Cancelar envío si no fue desde un botón
                 }
             });
+
+            //
+            document.getElementById('detalleModal').addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault(); // Prevenir el comportamiento por defecto
+                    
+                    // Definir el orden de los elementos enfocables
+                    const focusableElements = [
+                        // Filtros
+                        document.getElementById('filtro_primeras'),
+                        document.getElementById('filtro_otras'),
+                        document.getElementById('filtro_stock'),
+                        
+                        // Campos de búsqueda
+                        document.getElementById('medida_producto'),
+                        document.getElementById('nombre_producto'),
+                        document.getElementById('cai_producto'),
+                        
+                        // Botón Buscar
+                        document.querySelector('#detalleForm button[type="submit"]'),
+                        
+                        // Tabla de resultados (si tiene elementos enfocables)
+                        ...Array.from(document.querySelectorAll('#tabla-resultados [tabindex="0"]')),
+                        
+                        // Botones finales
+                        document.getElementById('agregarDetale'),
+                        document.getElementById('cancelarDetale')
+                    ].filter(el => el && !el.disabled); // Filtra elementos nulos o deshabilitados
+
+                    // Encontrar el elemento actualmente enfocado
+                    const currentIndex = focusableElements.indexOf(document.activeElement);
+                    let nextIndex = currentIndex + 1;
+
+                    // Si está en el último elemento, volver al primero
+                    if (nextIndex >= focusableElements.length) {
+                        nextIndex = 0;
+                    }
+
+                    // Enfocar el siguiente elemento
+                    if (focusableElements[nextIndex]) {
+                        focusableElements[nextIndex].focus();
+                        
+                        // Si es un radio button, seleccionarlo automáticamente
+                        if (focusableElements[nextIndex].type === 'radio') {
+                            focusableElements[nextIndex].checked = true;
+                        }
+                        
+                        // Si es un botón de la tabla, simular clic
+                        if (focusableElements[nextIndex].classList.contains('btn-select-row')) {
+                            focusableElements[nextIndex].click();
+                        }
+                    }
+                }
+            });
+
+            // Enfoque automático al abrir el modal
+            document.getElementById('detalleModal').addEventListener('shown.bs.modal', function() {
+                document.getElementById('medida_producto').focus();
+            });
+            //
+
+            //
+            document.getElementById('serialModal').addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault(); // Prevenir el comportamiento por defecto
+                    
+                    const focusableElements = Array.from(serialModal.querySelectorAll(
+                        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+                    )).filter(el => !el.disabled && el.offsetParent !== null);
+                    
+                    const currentIndex = focusableElements.indexOf(document.activeElement);
+                    let nextIndex = currentIndex + 1;
+                    
+                    // Si está en el último elemento, volver al primero
+                    if (nextIndex >= focusableElements.length) {
+                        nextIndex = 0;
+                    }
+                    
+                    if (focusableElements[nextIndex]) {
+                        focusableElements[nextIndex].focus();
+                        
+                        // Si es un select, abrir el dropdown
+                        if (focusableElements[nextIndex].tagName === 'SELECT') {
+                            setTimeout(() => {
+                                focusableElements[nextIndex].click();
+                            }, 50);
+                        }
+                    }
+                }
+            });
+            //
         });
+
     </script>
         
 {% endblock script %}
