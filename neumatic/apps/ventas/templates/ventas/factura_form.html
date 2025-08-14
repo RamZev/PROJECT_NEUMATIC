@@ -211,8 +211,8 @@
                                                 </button>
                                                 {% comment %} <button type="button" class="btn btn-outline-primary btn-sm me-2" id="listarBtn">Listar</button> {% endcomment %}
                                                 
-                                                <a href="{% url 'cliente_create' %}" target="_blank" title="Crear Cliente"
-                                                class="btn btn-outline-primary btn-sm me-2  h-75 d-flex align-items-center text-decoration-none">
+                                                <a id="crearClienteBtn" href="{% url 'cliente_create' %}" target="_blank" title="Crear Cliente"
+                                                    class="btn btn-outline-primary btn-sm me-2  h-75 d-flex align-items-center text-decoration-none">
                                                     <i class="bi bi-building-add"></i>
                                                 </a>
                                                 
@@ -638,10 +638,22 @@
                                                         {{ formser.producto_serial }}
                                                     </td>
                                                     <td>
-                                                        <button type="button" class="btn btn-danger btn-sm btn-delete-serial">
+                                                        <button 
+                                                            type="button" 
+                                                            class="btn btn-danger btn-sm btn-delete-serial"
+                                                            data-serial-index="{{ forloop.counter0 }}" 
+                                                            data-bs-toggle="tooltip" 
+                                                            title="Eliminar"
+                                                        >
                                                             <i class="bi bi-trash"></i>
                                                         </button>
+                                                        <input 
+                                                            type="checkbox" 
+                                                            name="serialfactura_set-{{ forloop.counter0 }}-DELETE" 
+                                                            class="d-none"
+                                                        >
                                                     </td>
+                                                    
                                                 </tr>
                                                 {% endfor %}
                                             </tbody>
@@ -1113,7 +1125,7 @@
             });
     
             ////////////
-            // Manejo mejorado de eliminación
+            // Manejo de eliminación de Detalle de Factura
             document.addEventListener('click', function (event) {
                 if (event.target.closest('.btn-delete')) {
                     const row = event.target.closest('tr');
@@ -1136,8 +1148,8 @@
 
             // Función para actualizar el contador de formsets (NUEVA)
             function actualizarContadorFormsets() {
-                const visibleRows = document.querySelectorAll('.detalle-form tbody tr:not([style*="display: none"])').length;
-                document.getElementById('id_detallefactura_set-TOTAL_FORMS').value = visibleRows;
+                const allRows = document.querySelectorAll('.detalle-form tbody tr').length;
+                document.getElementById('id_detallefactura_set-TOTAL_FORMS').value = allRows;
             }
             ////////////
 
@@ -1417,9 +1429,10 @@
                     // Actualizar totales generales
                     actualizarTotalFactura();
                     
-                    // Actualizar el contador de formsets
-                    document.querySelector('[name$="TOTAL_FORMS"]').value = 
-                        formsetContainer.querySelectorAll('.detalle-form tbody tr').length;
+                    // Actualizar el contador de formsets detalle_factura
+                    // document.querySelector('[name$="TOTAL_FORMS"]').value = 
+                    //    formsetContainer.querySelectorAll('.detalle-form tbody tr').length;
+                    actualizarContadorFormsets();
                 });
                 
                 // Cerrar modal y limpiar selecciones
@@ -3079,15 +3092,40 @@
             if (isEdit) {
                 // Deshabilitar solo los campos de entrada y el botón "Agregar Detalle"
                 const inputs = document.querySelectorAll('#factura-form input, #factura-form select, #factura-form textarea');
+                
+                const validarBtn =  document.getElementById('validarBtn');
+                const listar_agenda =  document.getElementById('listar_agenda');
+                const crearClienteBtn =  document.getElementById('crearClienteBtn');
+                
                 const btnAgregarDetalle = document.getElementById('btnAgregarDetalle');
+                const btnAgregarSerial = document.getElementById('btnAgregarSerial');
 
                 inputs.forEach(input => {
-                    input.disabled = true;  // Deshabilitar campos
-                    input.classList.add('readonly-select');  // Aplicar estilo visual
+                    input.disabled = true;  
+                    input.classList.add('readonly-select');  
                 });
+                
+                if (validarBtn) {
+                    validarBtn.disabled = true;
+                }
 
+                if (listar_agenda) {
+                    listar_agenda.disabled = true;
+                }
+
+                if (crearClienteBtn) {
+                    // Guardamos el href original por si luego queremos habilitarlo de nuevo
+                    crearClienteBtn.setAttribute('data-original-href', crearClienteBtn.getAttribute('href'));
+                    crearClienteBtn.removeAttribute('href'); // Eliminamos el href para que no sea clickeable
+                    crearClienteBtn.classList.add('disabled'); // Añadimos clase visual
+                }
+                
                 if (btnAgregarDetalle) {
-                    btnAgregarDetalle.disabled = true;  // Deshabilitar el botón "Agregar Detalle"
+                    btnAgregarDetalle.disabled = true;
+                }
+
+                if (btnAgregarSerial) {
+                    btnAgregarSerial.disabled = true;
                 }
 
                 // Manejar el campo del modal de forma especial
@@ -3097,7 +3135,22 @@
                     textareaObservaciones.classList.add('readonly-textarea');
                 }
 
+                const deleteButtons = document.querySelectorAll('button[data-form-index]');
+                if (deleteButtons.length > 0) {
+                    deleteButtons.forEach(button => {
+                        button.disabled = true;
+                        // button.classList.add('disabled'); // Estilo visual (opcional)
+                    });
+                }
 
+                const deleteButtonsSerial = document.querySelectorAll('button[data-serial-index]');
+                if (deleteButtonsSerial.length > 0) {
+                    deleteButtonsSerial.forEach(button => {
+                        button.disabled = true;
+                        // button.classList.add('disabled'); // Estilo visual (opcional)
+                    });
+                }
+ 
                 //alert("El formulario está en modo de solo lectura");
             } else {
                 //alert("El formulario está en modo de creación");
@@ -3119,6 +3172,12 @@
                     return;
                 }
             });
+
+            // Función para actualizar el contador de formsets de seriales
+            function actualizarSerialContadorFormsets() {
+                const allSerialRows = document.querySelectorAll('#serialTableBody tr').length;
+                document.getElementById('id_serialfactura_set-TOTAL_FORMS').value = allSerialRows;
+            }
         
             // 2. Insertar serial (mismo patrón que detalles)
             document.getElementById('btnGuardarSerial').addEventListener('click', function() {
@@ -3129,18 +3188,19 @@
                     alert('Ingrese un serial válido');
                     return;
                 }
-        
-                const totalForms = document.getElementById('id_serialfactura_set-TOTAL_FORMS');
-                const formCount = parseInt(totalForms.value);
-                
+
+                // const totalForms = document.getElementById('id_serialfactura_set-TOTAL_FORMS');
+                // const formCount = parseInt(totalForms.value);
+                const formCount = document.querySelectorAll('#serialTableBody tr').length;
+                                
                 const newRow = `
                 <tr>
                     <td>
                         <input type="hidden" name="serialfactura_set-${formCount}-id_serial_factura">
                         <input type="hidden" name="serialfactura_set-${formCount}-id_factura">
                         <input type="text" name="serialfactura_set-${formCount}-producto_serial"
-                               class="form-control form-control-sm border border-secondary"
-                               value="${serialValue}" required>
+                            class="form-control form-control-sm border border-secondary"
+                            value="${serialValue}" required>
                     </td>
                     <td>
                         <button type="button" class="btn btn-danger btn-sm btn-delete-serial">
@@ -3150,23 +3210,34 @@
                     </td>
                 </tr>`;
                 
+                // Insertar nueva fila
                 serialTableBody.insertAdjacentHTML('beforeend', newRow);
-                totalForms.value = formCount + 1;
+                
+                // Cerrar modal y limpiar
                 serialModal.hide();
                 serialInput.value = '';
+
+                actualizarSerialContadorFormsets();
             });
         
-            // 3. Eliminar serial (igual que detalles)
-            serialTableBody.addEventListener('click', function(e) {
-                if (e.target.closest('.btn-delete-serial')) {
-                    const row = e.target.closest('tr');
-                    if (confirm('¿Eliminar este serial?')) {
-                        const deleteInput = row.querySelector('[name$="-DELETE"]');
+            // Manejo de eliminación de Detalle de Seriales
+            document.addEventListener('click', function(event) {
+                if (event.target.closest('.btn-delete-serial')) {
+                    const row = event.target.closest('tr');
+                    const deleteInput = row.querySelector('input[name$="-DELETE"]');
+                    
+                    if (confirm('¿Está seguro de eliminar este serial?')) {
                         if (deleteInput) {
+                            // Marcar para eliminación en backend
                             deleteInput.checked = true;
+                            
+                            // Ocultar la fila visualmente
                             row.style.display = 'none';
+                            
+                            // Actualizar el contador de formsets
+                            actualizarSerialContadorFormsets();
                         } else {
-                            row.remove();
+                            console.error('Error: No se encontró el campo DELETE para serial');
                         }
                     }
                 }
@@ -3219,6 +3290,37 @@
                     e.preventDefault(); // Cancelar envío si no fue desde un botón
                 }
             });
+
+            //
+            document.getElementById('serialModal').addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault(); // Prevenir el comportamiento por defecto
+                    
+                    const focusableElements = Array.from(serialModal.querySelectorAll(
+                        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+                    )).filter(el => !el.disabled && el.offsetParent !== null);
+                    
+                    const currentIndex = focusableElements.indexOf(document.activeElement);
+                    let nextIndex = currentIndex + 1;
+                    
+                    // Si está en el último elemento, volver al primero
+                    if (nextIndex >= focusableElements.length) {
+                        nextIndex = 0;
+                    }
+                    
+                    if (focusableElements[nextIndex]) {
+                        focusableElements[nextIndex].focus();
+                        
+                        // Si es un select, abrir el dropdown
+                        if (focusableElements[nextIndex].tagName === 'SELECT') {
+                            setTimeout(() => {
+                                focusableElements[nextIndex].click();
+                            }, 50);
+                        }
+                    }
+                }
+            });
+            //
         });
     </script>
         

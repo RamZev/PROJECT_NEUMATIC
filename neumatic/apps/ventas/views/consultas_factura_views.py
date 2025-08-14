@@ -268,7 +268,7 @@ def datos_comprobante(request, pk):
     try:
         comprobante = ComprobanteVenta.objects.get(pk=pk)
         
-        print("Entramos a la vista:", comprobante.compro_asociado)
+        # print("Entramos a la vista:", comprobante.compro_asociado)
         
         return JsonResponse({
             'codigo': comprobante.codigo_comprobante_venta,
@@ -301,12 +301,13 @@ def obtener_numero_comprobante(request):
             comprobante=comprobante,
             letra=letra
         ).order_by('-numero').first()
+        
 
         # Si no hay registros, devolver un mensaje específico
         if not ultimo_numero:
             return JsonResponse({
                 'success': False,
-                'message': 'No se puede obtener la numeración de este comprobante, consulte al Administrador del Sistema!',
+                'message': '*No se puede obtener la numeración de este comprobante, consulte al Administrador del Sistema!',
             })
 
         numero_referencial = ultimo_numero.numero + 1
