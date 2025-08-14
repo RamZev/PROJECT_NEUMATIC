@@ -55,7 +55,7 @@
 					<td>{{ obj.nombre_cliente }}</td>
 					<td>{{ obj.reventa }}</td>
 					<td>{{ obj.id_producto_id }}</td>
-					<td>{{ obj.cai }}</td>
+					<td>{{ obj.cai|default_if_none:"" }}</td>
 					<td>{{ obj.nombre_producto }}</td>
 					<td class="numeric" style="padding-right: 15px;">{{ obj.cantidad|formato_es_ar }}</td>
 					<td class="numeric" style="padding-right: 15px;">{{ obj.costo|formato_es_ar }}</td>

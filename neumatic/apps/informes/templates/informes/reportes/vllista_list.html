@@ -50,7 +50,7 @@
 					<tr>
 						<td></td>
 						<td>{{ det.id_producto }}</td>
-						<td>{{ det.cai }}</td>
+						<td>{{ det.cai|default_if_none:"" }}</td>
 						<td>{{ det.medida }}</td>
 						<td>{{ det.nombre_producto }}</td>
 						<td>{{ det.nombre_producto_marca }}</td>
