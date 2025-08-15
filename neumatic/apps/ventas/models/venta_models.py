@@ -1,6 +1,7 @@
 from django.db import models
 from apps.maestros.models.base_models import ModeloBaseGenerico
 
+
 class StockCliente(ModeloBaseGenerico):
 	id_stock_cliente = models.AutoField(primary_key=True)
 	id_factura = models.ForeignKey(

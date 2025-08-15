@@ -21,13 +21,14 @@ CREATE VIEW "VLSaldosClientes" AS
 		f.entrega, 
 		f.condicion_comprobante,
 		cv.mult_saldo
-	FROM factura f 
+	FROM
+		factura f 
 		JOIN cliente c ON f.id_cliente_id = c.id_cliente 
 		JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta 
 		JOIN localidad l ON c.id_localidad_id = l.id_localidad
 	WHERE 
-		f.condicion_comprobante = 2 AND 
-		cv.mult_saldo <> 0;
+		f.condicion_comprobante = 2
+		AND cv.mult_saldo <> 0;
 
 -- ---------------------------------------------------------------------------
 -- Resumen Cuenta Corriente.
@@ -53,10 +54,12 @@ CREATE VIEW "VLResumenCtaCte" AS
 		f.total * cv.mult_saldo AS total, 
 		f.entrega * cv.mult_saldo AS entrega, 
 		0 AS intereses
-	FROM factura f 
+	FROM
+		factura f 
 		JOIN cliente c ON f.id_cliente_id = c.id_cliente
 		JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
-	WHERE cv.mult_saldo <> 0;
+	WHERE
+		cv.mult_saldo <> 0;
 
 -- ---------------------------------------------------------------------------
 -- Mercadería por Cliente.
@@ -79,7 +82,8 @@ CREATE VIEW "VLMercaderiaPorCliente" AS
 	   CAST(COALESCE(df.precio, 0.0) AS DECIMAL) AS precio, 
 	   CAST(COALESCE(df.descuento, 0.0) AS DECIMAL) AS descuento, 
 	   CAST(COALESCE(df.total, 0.0) AS DECIMAL) AS total
-	FROM detalle_factura df JOIN factura f ON df.id_factura_id = f.id_factura 
+	FROM
+		detalle_factura df JOIN factura f ON df.id_factura_id = f.id_factura 
 		JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
 		JOIN producto p ON df.id_producto_id = p.id_producto 
 		JOIN producto_marca m ON p.id_marca_id = m.id_producto_marca;
@@ -104,7 +108,8 @@ CREATE VIEW "VLRemitosClientes" AS
 		CAST(COALESCE(df.precio, 0.0) AS DECIMAL) AS precio, 
 		CAST(COALESCE(df.descuento, 0.0) AS DECIMAL) AS descuento, 
 		CAST(COALESCE(df.total, 0.0) AS DECIMAL) * CAST(COALESCE(cv.mult_stock, 0.0) AS DECIMAL) * -1 AS total
-	FROM detalle_factura df
+	FROM
+		detalle_factura df
 		JOIN factura f ON df.id_factura_id = f.id_factura
 		JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
 		JOIN producto p ON df.id_producto_id = p.id_producto
@@ -129,12 +134,15 @@ CREATE VIEW "VLTotalRemitosClientes" AS
 		c.cuit, 
 		c.telefono_cliente, 
 		(f.total * cv.mult_stock * -1) AS total
-	FROM factura f
+	FROM
+		factura f
 		JOIN cliente c ON f.id_cliente_id = c.id_cliente
 		JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
 		JOIN tipo_iva ti ON c.id_tipo_iva_id = ti.id_tipo_iva
-	WHERE cv.mult_saldo = 0
-	ORDER BY c.nombre_cliente;
+	WHERE
+		cv.mult_saldo = 0
+	ORDER BY
+		c.nombre_cliente;
 
 -- ---------------------------------------------------------------------------
 -- Ventas por Localidad.
@@ -160,12 +168,15 @@ CREATE VIEW "VLVentaComproLocalidad" AS
 		CAST(COALESCE(f.percep_ib, 0.0) AS DECIMAL) AS percep_ib,
 		CAST(COALESCE(f.total, 0.0) AS DECIMAL) AS total,
 		u.iniciales
-	FROM factura f
+	FROM
+		factura f
 		JOIN cliente c ON f.id_cliente_id = c.id_cliente
 		JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
 		JOIN usuarios_user u ON f.id_user_id = u.id
-	WHERE cv.mult_venta <> 0
-	ORDER BY f.fecha_comprobante;
+	WHERE
+		cv.mult_venta <> 0
+	ORDER BY
+		f.fecha_comprobante;
 
 -- ---------------------------------------------------------------------------
 -- Ventas por Mostrador.
@@ -193,13 +204,16 @@ CREATE VIEW "VLVentaMostrador" AS
 		df.precio,
 		df.total*cv.mult_venta AS Total,
 		f.id_sucursal_id
-	FROM detalle_factura df
+	FROM
+		detalle_factura df
 		JOIN factura f ON df.id_factura_id = f.id_factura
 		JOIN cliente c ON f.id_cliente_id = c.id_cliente
 		JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
 		JOIN producto p ON df.id_producto_id = p.id_producto
-	WHERE cv.mult_venta <> 0 AND f.no_estadist <> True
-	ORDER BY f.fecha_comprobante, f.numero_comprobante;
+	WHERE
+		cv.mult_venta <> 0 AND f.no_estadist <> True
+	ORDER BY
+		f.fecha_comprobante, f.numero_comprobante;
 
 -- ---------------------------------------------------------------------------
 -- Ventas por Comprobantes.
@@ -226,10 +240,12 @@ CREATE VIEW "VLVentaCompro" AS
 		f.percep_ib*cv.mult_venta AS percep_ib,
 		f.total*cv.mult_venta AS total,
 		f.id_sucursal_id
-	FROM factura f
+	FROM
+		factura f
 		JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
 		JOIN cliente c ON f.id_cliente_id = c.id_cliente
-	ORDER BY nombre_comprobante_venta, letra_comprobante, numero_comprobante;
+	ORDER BY
+		nombre_comprobante_venta, letra_comprobante, numero_comprobante;
 
 -- ---------------------------------------------------------------------------
 -- Comprobantes Vencidos.
@@ -252,10 +268,13 @@ CREATE VIEW "VLComprobantesVencidos" AS
 		ROUND(CAST(f.total - f.entrega AS NUMERIC), 2) * 1.0 AS saldo,
 		f.id_vendedor_id,
 		f.id_sucursal_id
-	FROM factura f
+	FROM
+		factura f
 		JOIN cliente c ON f.id_cliente_id = c.id_cliente
-	WHERE f.estado = ""
-	ORDER by f.fecha_comprobante;
+	WHERE
+		f.estado = ""
+	ORDER by
+		f.fecha_comprobante;
 
 -- ---------------------------------------------------------------------------
 -- Remitos Pendientes.
@@ -282,13 +301,17 @@ CREATE VIEW "VLRemitosPendientes" AS
 		f.id_vendedor_id,
 		f.id_sucursal_id AS id_sucursal_fac,
 		c.id_sucursal_id AS id_sucursal_cli
-	FROM detalle_factura df
-		INNER JOIN factura f ON df.id_factura_id = f.id_factura
-		INNER JOIN producto p ON df.id_producto_id = p.id_producto
-		INNER JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
-		INNER JOIN cliente c ON f.id_cliente_id = c.id_cliente
-	WHERE cv.mult_venta = 0 AND f.estado = ""
-	ORDER BY c.nombre_cliente, f.fecha_comprobante, f.numero_comprobante;
+	FROM
+		detalle_factura df
+		JOIN factura f ON df.id_factura_id = f.id_factura
+		JOIN producto p ON df.id_producto_id = p.id_producto
+		JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
+		JOIN cliente c ON f.id_cliente_id = c.id_cliente
+	WHERE
+		cv.mult_venta = 0
+		AND f.estado = ""
+	ORDER BY
+		c.nombre_cliente, f.fecha_comprobante, f.numero_comprobante;
 
 -- ---------------------------------------------------------------------------
 -- Remitos Vendedor.
@@ -313,13 +336,16 @@ CREATE VIEW "VLRemitosVendedor" AS
 		df.descuento,
 		df.total*cv.mult_stock*-1 AS total,
 		f.id_vendedor_id
-	FROM detalle_factura df
-		INNER JOIN factura f ON df.id_factura_id = f.id_factura
-		INNER JOIN producto p ON df.id_producto_id = p.id_producto
-		INNER JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
-		INNER JOIN cliente c ON f.id_cliente_id = c.id_cliente
-	WHERE cv.mult_venta = 0
-	ORDER BY c.nombre_cliente, f.fecha_comprobante, f.numero_comprobante;
+	FROM
+		detalle_factura df
+		JOIN factura f ON df.id_factura_id = f.id_factura
+		JOIN producto p ON df.id_producto_id = p.id_producto
+		JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
+		JOIN cliente c ON f.id_cliente_id = c.id_cliente
+	WHERE
+		cv.mult_venta = 0
+	ORDER BY
+		c.nombre_cliente, f.fecha_comprobante, f.numero_comprobante;
 
 -- ---------------------------------------------------------------------------
 -- Libro I.V.A. Ventas - Detalle.
@@ -344,12 +370,15 @@ CREATE VIEW "VLIVAVentasFULL" AS
 		ROUND(f.percep_ib*cv.mult_venta, 2) * 1.0 AS percep_ib,
 		ROUND(f.total*cv.mult_venta, 2) * 1.0 AS total,
 		f.id_sucursal_id
-	FROM factura f
-		INNER JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
-		INNER JOIN cliente c ON f.id_cliente_id = c.id_cliente
-		INNER JOIN tipo_iva ti ON c.id_tipo_iva_id = ti.id_tipo_iva
-	WHERE cv.libro_iva
-	ORDER by f.fecha_comprobante, f.numero_comprobante;
+	FROM
+		factura f
+		JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
+		JOIN cliente c ON f.id_cliente_id = c.id_cliente
+		JOIN tipo_iva ti ON c.id_tipo_iva_id = ti.id_tipo_iva
+	WHERE
+		cv.libro_iva
+	ORDER by
+		f.fecha_comprobante, f.numero_comprobante;
 
 
 -- ---------------------------------------------------------------------------
@@ -369,13 +398,16 @@ CREATE VIEW "VLIVAVentasProvincias" AS
 		ROUND(f.percep_ib*cv.mult_venta * 1.0, 2)  AS percep_ib,
 		ROUND(f.total*cv.mult_venta * 1.0, 2)  AS total,
 		f.id_sucursal_id AS id_sucursal_id
-	FROM factura f
-		INNER JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
-		INNER JOIN cliente c ON f.id_cliente_id = c.id_cliente
-		INNER JOIN localidad l ON c.id_localidad_id = l.id_localidad
-		INNER JOIN provincia p ON l.id_provincia_id = p.id_provincia
-	WHERE cv.libro_iva
-	ORDER by p.nombre_provincia;
+	FROM
+		factura f
+		JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
+		JOIN cliente c ON f.id_cliente_id = c.id_cliente
+		JOIN localidad l ON c.id_localidad_id = l.id_localidad
+		JOIN provincia p ON l.id_provincia_id = p.id_provincia
+	WHERE
+		cv.libro_iva
+	ORDER by
+		p.nombre_provincia;
 
 
 -- ---------------------------------------------------------------------------
@@ -395,14 +427,17 @@ CREATE VIEW "VLIVAVentasSitrib" AS
 		ROUND(f.percep_ib*cv.mult_venta * 1.0, 2) AS percep_ib, 
 		ROUND(f.total*cv.mult_venta * 1.0, 2) AS total,
 		f.id_sucursal_id
-	FROM factura f
-		INNER JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
-		INNER JOIN cliente c ON f.id_cliente_id = c.id_cliente
-		INNER JOIN tipo_iva ti ON c.id_tipo_iva_id = ti.id_tipo_iva
-		INNER JOIN localidad l ON c.id_localidad_id = l.id_localidad
-		INNER JOIN provincia p ON l.id_provincia_id = p.id_provincia
-	WHERE cv.libro_iva
-	ORDER by ti.codigo_iva;
+	FROM
+		factura f
+		JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
+		JOIN cliente c ON f.id_cliente_id = c.id_cliente
+		JOIN tipo_iva ti ON c.id_tipo_iva_id = ti.id_tipo_iva
+		JOIN localidad l ON c.id_localidad_id = l.id_localidad
+		JOIN provincia p ON l.id_provincia_id = p.id_provincia
+	WHERE
+		cv.libro_iva
+	ORDER by
+		ti.codigo_iva;
 
 
 -- ---------------------------------------------------------------------------
@@ -418,12 +453,16 @@ CREATE VIEW "VLPercepIBVendedorTotales" AS
 		f.fecha_comprobante,
 		ROUND(f.gravado*cv.mult_venta * 1.0, 2) AS neto,
 		ROUND(f.percep_ib*cv.mult_venta * 1.0, 2) AS percep_ib
-	FROM factura f
-		INNER JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
-		INNER JOIN cliente c ON f.id_cliente_id = c.id_cliente 
-		INNER JOIN vendedor v ON c.id_vendedor_id = v.id_vendedor
-	WHERE f.percep_ib<>0 AND cv.mult_venta<>0
-	ORDER BY c.id_vendedor_id;
+	FROM
+		factura f
+		JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
+		JOIN cliente c ON f.id_cliente_id = c.id_cliente 
+		JOIN vendedor v ON c.id_vendedor_id = v.id_vendedor
+	WHERE
+		f.percep_ib <> 0
+		AND cv.mult_venta <> 0
+	ORDER BY
+		c.id_vendedor_id;
 
 
 -- ---------------------------------------------------------------------------
@@ -448,12 +487,16 @@ CREATE VIEW VLPercepIBVendedorDetallado AS
 		f.gravado*cv.mult_venta AS neto,
 		f.percep_ib*cv.mult_venta AS percep_ib,
 		f.no_estadist
-	FROM factura f
-		INNER JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
-		INNER JOIN cliente c ON f.id_cliente_id = c.id_cliente 
-		INNER JOIN vendedor v ON c.id_vendedor_id = v.id_vendedor
-	WHERE f.percep_ib<>0 AND cv.mult_venta<>0
-	ORDER BY v.nombre_vendedor, f.fecha_comprobante, f.numero_comprobante;
+	FROM
+		factura f
+		JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
+		JOIN cliente c ON f.id_cliente_id = c.id_cliente 
+		JOIN vendedor v ON c.id_vendedor_id = v.id_vendedor
+	WHERE
+		f.percep_ib <> 0
+		AND cv.mult_venta <> 0
+	ORDER BY
+		v.nombre_vendedor, f.fecha_comprobante, f.numero_comprobante;
 
 
 -- ---------------------------------------------------------------------------
@@ -471,12 +514,16 @@ CREATE VIEW "VLPercepIBSubcuentaTotales" AS
 		c.nombre_cliente,
 		ROUND(f.gravado * cv.mult_venta * 1.0, 2) AS neto,
 		ROUND(f.percep_ib * cv.mult_venta * 1.0, 2) AS percep_ib
-	FROM factura f
-		INNER JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
-		INNER JOIN cliente c ON f.id_cliente_id = c.id_cliente 
+	FROM
+		factura f
+		JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
+		JOIN cliente c ON f.id_cliente_id = c.id_cliente 
 		LEFT JOIN cliente p ON c.sub_cuenta = p.id_cliente 
-	WHERE f.percep_ib <> 0 AND cv.mult_venta <> 0 
-	ORDER BY c.sub_cuenta;
+	WHERE
+		f.percep_ib <> 0
+		AND cv.mult_venta <> 0 
+	ORDER BY
+		c.sub_cuenta;
 
 
 -- ---------------------------------------------------------------------------
@@ -501,13 +548,18 @@ CREATE VIEW "VLPercepIBSubcuentaDetallado" AS
 		f.gravado*cv.mult_venta AS neto,
 		f.percep_ib*cv.mult_venta AS percep_ib,
 		f.no_estadist
-	FROM factura f
-		INNER JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
-		INNER JOIN cliente c ON f.id_cliente_id = c.id_cliente
+	FROM
+		factura f
+		JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
+		JOIN cliente c ON f.id_cliente_id = c.id_cliente
 		LEFT JOIN cliente p ON c.sub_cuenta = p.id_cliente
-	WHERE f.percep_ib<>0 AND cv.mult_venta<>0
-	GROUP BY c.sub_cuenta, f.numero_comprobante
-	ORDER BY c.sub_cuenta, f.fecha_comprobante, f.numero_comprobante;
+	WHERE
+		f.percep_ib<>0
+		AND cv.mult_venta<>0
+	GROUP BY
+		c.sub_cuenta, f.numero_comprobante
+	ORDER BY
+		c.sub_cuenta, f.fecha_comprobante, f.numero_comprobante;
 
 
 -- ---------------------------------------------------------------------------
@@ -551,9 +603,10 @@ CREATE VIEW "VLComisionVendedor" AS
 		c.id_vendedor_id,
 		v.nombre_vendedor,
 		"R" AS consulta
-	FROM factura f
-		INNER JOIN cliente c ON f.id_cliente_id = c.id_cliente
-		INNER JOIN vendedor v ON c.id_vendedor_id = v.id_vendedor
+	FROM
+		factura f
+		JOIN cliente c ON f.id_cliente_id = c.id_cliente
+		JOIN vendedor v ON c.id_vendedor_id = v.id_vendedor
 	WHERE
 		(f.compro = 'RC' OR f.compro = 'RB' OR f.compro = 'RE');
 	--ORDER BY
@@ -607,16 +660,16 @@ CREATE VIEW "VLComisionVendedorDetalle" AS
 		"D" AS consulta
 	FROM 
 		detalle_factura df
-		INNER JOIN factura f ON df.id_factura_id = f.id_factura
-		INNER JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
-		INNER JOIN cliente c ON f.id_cliente_id = c.id_cliente
-		INNER JOIN vendedor v ON c.id_vendedor_id = v.id_vendedor
-		INNER JOIN producto p ON df.id_producto_id = p.id_producto
-		INNER JOIN producto_familia pf ON p.id_familia_id = pf.id_producto_familia
-		INNER JOIN producto_marca pm ON p.id_marca_id = pm.id_producto_marca
+		JOIN factura f ON df.id_factura_id = f.id_factura
+		JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
+		JOIN cliente c ON f.id_cliente_id = c.id_cliente
+		JOIN vendedor v ON c.id_vendedor_id = v.id_vendedor
+		JOIN producto p ON df.id_producto_id = p.id_producto
+		JOIN producto_familia pf ON p.id_familia_id = pf.id_producto_familia
+		JOIN producto_marca pm ON p.id_marca_id = pm.id_producto_marca
 	WHERE 
-		cv.mult_comision<>0 AND 
-		f.no_estadist <> True;
+		cv.mult_comision<>0
+		AND f.no_estadist <> True;
 
 
 -- ---------------------------------------------------------------------------
@@ -642,15 +695,16 @@ CREATE VIEW "VLComisionOperario" AS
 		(((df.total*cv.mult_estadistica) * pf.comision_operario / 100)) * 1.0 AS monto_comision
 	FROM
 		detalle_factura df
-			INNER JOIN factura f ON df.id_factura_id = f.id_factura
-			INNER JOIN operario o ON df.id_operario_id = o.id_operario
-			INNER JOIN producto p ON df.id_producto_id = p.id_producto
-			INNER JOIN producto_familia pf ON p.id_familia_id = pf.id_producto_familia
-			INNER JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
+		JOIN factura f ON df.id_factura_id = f.id_factura
+		JOIN operario o ON df.id_operario_id = o.id_operario
+		JOIN producto p ON df.id_producto_id = p.id_producto
+		JOIN producto_familia pf ON p.id_familia_id = pf.id_producto_familia
+		JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
 	WHERE 
-		pf.comision_operario <> 0 AND
-		cv.mult_estadistica <> 0
-	ORDER BY o.nombre_operario, f.fecha_comprobante, f.numero_comprobante;
+		pf.comision_operario <> 0
+		AND cv.mult_estadistica <> 0
+	ORDER BY
+		o.nombre_operario, f.fecha_comprobante, f.numero_comprobante;
 
 
 -- ---------------------------------------------------------------------------
@@ -678,13 +732,15 @@ CREATE VIEW "VLPrecioDiferente" AS
 		round(p.precio*p.descuento/100,2) AS adicional,
 		c.id_vendedor_id,
 		v.nombre_vendedor
-	FROM detalle_factura df
-		INNER JOIN factura f ON df.id_factura_id = f.id_factura
-		INNER JOIN producto p ON df.id_producto_id = p.id_producto
-		INNER JOIN cliente c ON f.id_cliente_id = c.id_cliente
-		INNER JOIN vendedor v ON c.id_vendedor_id = v.id_vendedor
+	FROM
+		detalle_factura df
+		JOIN factura f ON df.id_factura_id = f.id_factura
+		JOIN producto p ON df.id_producto_id = p.id_producto
+		JOIN cliente c ON f.id_cliente_id = c.id_cliente
+		JOIN vendedor v ON c.id_vendedor_id = v.id_vendedor
 	WHERE 
-		f.no_estadist = False AND df.precio <> df.precio_lista
+		f.no_estadist = False
+		AND df.precio <> df.precio_lista
 	ORDER BY
 		v.nombre_vendedor, f.fecha_comprobante, f.numero_comprobante;
 
@@ -704,10 +760,11 @@ CREATE VIEW "VLVentasResumenIB" AS
 		c.id_provincia_id,
 		p.nombre_provincia,
 		f.suc_imp
-	FROM factura f
-		INNER JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
-		INNER JOIN cliente c ON f.id_cliente_id = c.id_cliente
-		INNER JOIN provincia p ON c.id_provincia_id = p.id_provincia
+	FROM
+		factura f
+		JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
+		JOIN cliente c ON f.id_cliente_id = c.id_cliente
+		JOIN provincia p ON c.id_provincia_id = p.id_provincia
 	WHERE
 		cv.libro_iva = True;
 
@@ -736,7 +793,8 @@ CREATE VIEW "VLEstadisticasVentas" AS
 		f.id_cliente_id,
 		f.id_sucursal_id
 	FROM 
-		detalle_factura df JOIN factura f ON df.id_factura_id = f.id_factura
+		detalle_factura df
+		LEFT JOIN factura f ON df.id_factura_id = f.id_factura
 		LEFT JOIN producto p ON df.id_producto_id = p.id_producto
 		LEFT JOIN producto_modelo pm ON p.id_modelo_id = pm.id_modelo
 		LEFT JOIN producto_familia pf ON p.id_familia_id = pf.id_producto_familia
@@ -744,7 +802,9 @@ CREATE VIEW "VLEstadisticasVentas" AS
 		LEFT JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
 		LEFT JOIN producto_cai pc ON p.id_cai_id = pc.id_cai
 	WHERE 
-		df.id_producto_id <> 0 AND cv.mult_estadistica <> 0 AND f.no_estadist = False;
+		df.id_producto_id <> 0
+		AND cv.mult_estadistica <> 0
+		AND f.no_estadist = False;
 
 
 -- ---------------------------------------------------------------------------
@@ -771,13 +831,15 @@ CREATE VIEW "VLEstadisticasVentasVendedor" AS
 		f.id_vendedor_id
 	FROM 
 		detalle_factura df JOIN factura f ON df.id_factura_id = f.id_factura
-			INNER JOIN producto p ON df.id_producto_id = p.id_producto
-			INNER JOIN producto_modelo pm ON p.id_modelo_id = pm.id_modelo
-			INNER JOIN producto_familia pf ON p.id_familia_id = pf.id_producto_familia
-			INNER JOIN producto_marca m ON p.id_marca_id = m.id_producto_marca
-			INNER JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
+		JOIN producto p ON df.id_producto_id = p.id_producto
+		JOIN producto_modelo pm ON p.id_modelo_id = pm.id_modelo
+		JOIN producto_familia pf ON p.id_familia_id = pf.id_producto_familia
+		JOIN producto_marca m ON p.id_marca_id = m.id_producto_marca
+		JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
 	WHERE 
-		df.id_producto_id <> 0 AND cv.mult_estadistica <> 0 AND f.no_estadist = False;
+		df.id_producto_id <> 0
+		AND cv.mult_estadistica <> 0
+		AND f.no_estadist = False;
 
 
 -- ---------------------------------------------------------------------------
@@ -817,7 +879,8 @@ CREATE VIEW "VLEstadisticasVentasVendedorCliente" AS
 		JOIN vendedor v ON f.id_vendedor_id = v.id_vendedor
 	WHERE 
 		--df.id_producto_id <> 0 AND cv.mult_estadistica <> 0 AND f.no_estadist = False
-		df.id_producto_id <> 0 AND cv.mult_estadistica <> 0
+		df.id_producto_id <> 0
+		AND cv.mult_estadistica <> 0
 	ORDER BY
 		--f.id_vendedor_id, c.nombre_cliente
 		v.nombre_vendedor, c.nombre_cliente;
@@ -854,7 +917,8 @@ CREATE VIEW "VLEstadisticasSegunCondicion" AS
 		JOIN producto_marca pk ON p.id_marca_id = pk.id_producto_marca
 		JOIN producto_modelo pm ON p.id_modelo_id = pm.id_modelo
 	WHERE
-		f.no_estadist = False AND cv.mult_estadistica <> 0
+		f.no_estadist = False
+		AND cv.mult_estadistica <> 0
 	ORDER BY
 		p.id_familia_id, p.id_marca_id, p.id_modelo_id, df.id_producto_id;
 
@@ -894,7 +958,8 @@ CREATE VIEW "VLEstadisticasVentasMarca" AS
 		JOIN producto_familia pf ON p.id_familia_id = pf.id_producto_familia
 		JOIN producto_modelo pm ON p.id_modelo_id = pm.id_modelo
 	WHERE
-		cv.mult_estadistica <> 0 AND f.no_estadist <> True
+		cv.mult_estadistica <> 0
+		AND f.no_estadist <> True
 	ORDER BY
 		p.id_marca_id, p.id_familia_id, p.id_modelo_id, p.id_producto;
 
@@ -935,7 +1000,8 @@ CREATE VIEW "VLEstadisticasVentasMarcaVendedor" AS
 		JOIN producto_familia pf ON p.id_familia_id = pf.id_producto_familia
 		JOIN producto_modelo pm ON p.id_modelo_id = pm.id_modelo
 	WHERE
-		cv.mult_estadistica <> 0 AND f.no_estadist <> True
+		cv.mult_estadistica <> 0
+		AND f.no_estadist <> True
 	ORDER BY
 		p.id_marca_id, p.id_familia_id, p.id_modelo_id, p.id_producto;
 
@@ -985,16 +1051,19 @@ CREATE VIEW "VLEstadisticasVentasProvincia" AS
 		pr.id_provincia,
 		pr.nombre_provincia
 	FROM 
-		detalle_factura df JOIN factura f ON df.id_factura_id = f.id_factura
-			JOIN producto p ON df.id_producto_id = p.id_producto
-			JOIN producto_modelo pm ON p.id_modelo_id = pm.id_modelo
-			JOIN producto_familia pf ON p.id_familia_id = pf.id_producto_familia
-			JOIN producto_marca m ON p.id_marca_id = m.id_producto_marca
-			JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
-			JOIN cliente c ON f.id_cliente_id = c.id_cliente
-			JOIN provincia pr ON c.id_provincia_id = pr.id_provincia
+		detalle_factura df
+		JOIN factura f ON df.id_factura_id = f.id_factura
+		JOIN producto p ON df.id_producto_id = p.id_producto
+		JOIN producto_modelo pm ON p.id_modelo_id = pm.id_modelo
+		JOIN producto_familia pf ON p.id_familia_id = pf.id_producto_familia
+		JOIN producto_marca m ON p.id_marca_id = m.id_producto_marca
+		JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
+		JOIN cliente c ON f.id_cliente_id = c.id_cliente
+		JOIN provincia pr ON c.id_provincia_id = pr.id_provincia
 	WHERE 
-		df.id_producto_id <> 0 AND cv.mult_estadistica <> 0 AND f.no_estadist = False;
+		df.id_producto_id <> 0
+		AND cv.mult_estadistica <> 0
+		AND f.no_estadist = False;
 
 
 -- ---------------------------------------------------------------------------
@@ -1208,8 +1277,8 @@ CREATE VIEW "VLTablaDinamicaEstadistica" AS
 		LEFT JOIN provincia pr ON l.id_provincia_id = pr.id_provincia
 		LEFT JOIN producto_cai pc ON p.id_cai_id = pc.id_cai
 	WHERE
-		cv.mult_estadistica<>0 AND
-		f.no_estadist=False
+		cv.mult_estadistica<>0
+		AND f.no_estadist=False
 	ORDER by
 		f.fecha_comprobante, f.numero_comprobante;
 
