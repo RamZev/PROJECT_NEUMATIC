@@ -24,3 +24,53 @@ RESUMEN FINAL:
 2025-08-15 09:31:08,406 - INFO - Enteros inválidos (NUMERO): 0
 2025-08-15 09:31:08,406 - INFO - Otros errores: 1
 2025-08-15 09:31:08,406 - INFO - Tasa de éxito: 99.99%
+2025-08-15 09:45:06,274 - INFO - Eliminados 0 registros existentes
+2025-08-15 09:45:06,293 - INFO - Cargando cache de relaciones...
+2025-08-15 09:45:17,577 - ERROR - Error en lote: table stock_cliente has no column named retirado
+2025-08-15 09:45:18,313 - ERROR - Error en lote: table stock_cliente has no column named retirado
+2025-08-15 09:45:19,131 - ERROR - Error en lote: table stock_cliente has no column named retirado
+2025-08-15 09:45:20,070 - ERROR - Error en lote: table stock_cliente has no column named retirado
+2025-08-15 09:45:20,887 - ERROR - Error en lote: table stock_cliente has no column named retirado
+2025-08-15 09:45:21,640 - ERROR - Error en lote: table stock_cliente has no column named retirado
+2025-08-15 09:45:22,458 - ERROR - Error en lote: [<class 'decimal.InvalidOperation'>]
+2025-08-15 09:45:23,337 - ERROR - Error en lote: table stock_cliente has no column named retirado
+2025-08-15 09:45:24,230 - ERROR - Error en lote: table stock_cliente has no column named retirado
+2025-08-15 09:45:25,140 - ERROR - Error en lote: table stock_cliente has no column named retirado
+2025-08-15 09:45:26,021 - ERROR - Error en lote: table stock_cliente has no column named retirado
+2025-08-15 09:45:26,961 - ERROR - Error en lote: table stock_cliente has no column named retirado
+2025-08-15 09:45:28,360 - INFO - 
+RESUMEN FINAL:
+2025-08-15 09:45:28,360 - INFO - Total registros procesados: 12943
+2025-08-15 09:45:28,360 - INFO - Registros migrados exitosamente: 0
+2025-08-15 09:45:28,360 - INFO - Facturas no encontradas: 0
+2025-08-15 09:45:28,360 - INFO - Productos no encontrados: 0
+2025-08-15 09:45:28,360 - INFO - Decimales inválidos (RETIRADO): 0
+2025-08-15 09:45:28,360 - INFO - Fechas inválidas: 0
+2025-08-15 09:45:28,360 - INFO - Enteros inválidos (NUMERO): 0
+2025-08-15 09:45:28,360 - INFO - Otros errores: 12943
+2025-08-15 09:45:28,360 - INFO - Tasa de éxito: 0.00%
+2025-08-15 09:46:42,160 - INFO - Eliminados 0 registros existentes
+2025-08-15 09:46:42,175 - INFO - Cargando cache de relaciones...
+2025-08-15 09:46:53,100 - INFO - Lote guardado: 1000 registros
+2025-08-15 09:46:53,581 - INFO - Lote guardado: 1000 registros
+2025-08-15 09:46:53,869 - INFO - Lote guardado: 1000 registros
+2025-08-15 09:46:54,197 - INFO - Lote guardado: 1000 registros
+2025-08-15 09:46:54,518 - INFO - Lote guardado: 1000 registros
+2025-08-15 09:46:54,841 - INFO - Lote guardado: 1000 registros
+2025-08-15 09:46:54,907 - ERROR - Error en lote: [<class 'decimal.InvalidOperation'>]
+2025-08-15 09:49:26,337 - INFO - Lote guardado: 1000 registros
+2025-08-15 09:49:26,713 - INFO - Lote guardado: 1000 registros
+2025-08-15 09:49:27,114 - INFO - Lote guardado: 1000 registros
+2025-08-15 09:49:27,587 - INFO - Lote guardado: 1000 registros
+2025-08-15 09:49:28,136 - INFO - Lote guardado: 1000 registros
+2025-08-15 09:49:28,483 - INFO - 
+RESUMEN FINAL:
+2025-08-15 09:49:28,483 - INFO - Total registros procesados: 12943
+2025-08-15 09:49:28,483 - INFO - Registros migrados exitosamente: 12942
+2025-08-15 09:49:28,483 - INFO - Facturas no encontradas: 0
+2025-08-15 09:49:28,483 - INFO - Productos no encontrados: 0
+2025-08-15 09:49:28,483 - INFO - Decimales inválidos (RETIRADO): 0
+2025-08-15 09:49:28,483 - INFO - Fechas inválidas: 0
+2025-08-15 09:49:28,483 - INFO - Enteros inválidos (NUMERO): 0
+2025-08-15 09:49:28,483 - INFO - Otros errores: 1
+2025-08-15 09:49:28,483 - INFO - Tasa de éxito: 99.99%
