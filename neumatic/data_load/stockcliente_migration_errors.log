@@ -1,0 +1,115 @@
+2025-08-14 18:54:23,518 - INFO - Eliminados 12580 registros existentes
+2025-08-14 18:54:23,666 - INFO - Cargando cache de relaciones...
+2025-08-14 18:54:32,763 - INFO - Lote exitoso: 500 registros (Total: 500)
+2025-08-14 18:54:32,972 - INFO - Lote exitoso: 500 registros (Total: 1000)
+2025-08-14 18:54:33,197 - INFO - Lote exitoso: 500 registros (Total: 1500)
+2025-08-14 18:54:33,373 - INFO - Lote exitoso: 500 registros (Total: 2000)
+2025-08-14 18:54:33,780 - INFO - Lote exitoso: 500 registros (Total: 2500)
+2025-08-14 18:54:33,971 - INFO - Lote exitoso: 500 registros (Total: 3000)
+2025-08-14 18:54:34,173 - INFO - Lote exitoso: 500 registros (Total: 3500)
+2025-08-14 18:54:34,355 - INFO - Lote exitoso: 500 registros (Total: 4000)
+2025-08-14 18:54:34,555 - INFO - Lote exitoso: 500 registros (Total: 4500)
+2025-08-14 18:54:34,746 - INFO - Lote exitoso: 500 registros (Total: 5000)
+2025-08-14 18:54:34,955 - INFO - Lote exitoso: 500 registros (Total: 5500)
+2025-08-14 18:54:35,058 - ERROR - Error en bulk_create: [<class 'decimal.InvalidOperation'>]
+2025-08-14 18:55:20,571 - ERROR - Error guardando registro individual: [<class 'decimal.InvalidOperation'>]
+2025-08-14 18:55:25,430 - INFO - Lote exitoso: 500 registros (Total: 6499)
+2025-08-14 18:55:25,711 - INFO - Lote exitoso: 500 registros (Total: 6999)
+2025-08-14 18:55:25,928 - INFO - Lote exitoso: 500 registros (Total: 7499)
+2025-08-14 18:55:26,144 - INFO - Lote exitoso: 500 registros (Total: 7999)
+2025-08-14 18:55:26,351 - INFO - Lote exitoso: 500 registros (Total: 8499)
+2025-08-14 18:55:26,569 - INFO - Lote exitoso: 500 registros (Total: 8999)
+2025-08-14 18:55:26,768 - INFO - Lote exitoso: 500 registros (Total: 9499)
+2025-08-14 18:55:26,961 - INFO - Lote exitoso: 500 registros (Total: 9999)
+2025-08-14 18:55:27,187 - INFO - Lote exitoso: 500 registros (Total: 10499)
+2025-08-14 18:55:27,377 - INFO - Lote exitoso: 500 registros (Total: 10999)
+2025-08-14 18:55:27,561 - INFO - Lote exitoso: 500 registros (Total: 11499)
+2025-08-14 18:55:27,762 - INFO - Lote exitoso: 500 registros (Total: 11999)
+2025-08-14 18:55:27,962 - INFO - Lote exitoso: 500 registros (Total: 12499)
+2025-08-14 18:55:28,109 - INFO - Último lote exitoso: 81 registros (Total: 12580)
+2025-08-14 18:55:28,114 - INFO - 
+RESUMEN FINAL DE MIGRACIÓN:
+2025-08-14 18:55:28,114 - INFO - Total registros procesados: 12943
+2025-08-14 18:55:28,115 - INFO - Registros migrados exitosamente: 12580
+2025-08-14 18:55:28,115 - INFO - Facturas no encontradas: 0
+2025-08-14 18:55:28,115 - INFO - Productos no encontrados: 0
+2025-08-14 18:55:28,116 - INFO - Decimales inválidos: 362
+2025-08-14 18:55:28,116 - INFO - Otros errores: 1
+2025-08-14 18:55:28,117 - INFO - Registros problemáticos detallados en: stockcliente_problemas_detalle.log
+2025-08-14 18:55:28,117 - INFO - Tasa de éxito: 97.20%
+2025-08-14 19:01:18,751 - INFO - Eliminados 12580 registros existentes
+2025-08-14 19:01:18,900 - INFO - Cargando cache de relaciones...
+2025-08-14 19:01:27,988 - INFO - Lote guardado: 1000 registros
+2025-08-14 19:01:28,472 - INFO - Lote guardado: 1000 registros
+2025-08-14 19:01:28,722 - INFO - Lote guardado: 1000 registros
+2025-08-14 19:01:28,977 - INFO - Lote guardado: 1000 registros
+2025-08-14 19:01:29,288 - INFO - Lote guardado: 1000 registros
+2025-08-14 19:01:29,530 - INFO - Lote guardado: 1000 registros
+2025-08-14 19:01:29,591 - ERROR - Error en lote: [<class 'decimal.InvalidOperation'>]
+2025-08-14 19:03:08,237 - INFO - Lote guardado: 1000 registros
+2025-08-14 19:03:08,534 - INFO - Lote guardado: 1000 registros
+2025-08-14 19:03:08,801 - INFO - Lote guardado: 1000 registros
+2025-08-14 19:03:09,101 - INFO - Lote guardado: 1000 registros
+2025-08-14 19:03:09,391 - INFO - Lote guardado: 1000 registros
+2025-08-14 19:03:09,683 - INFO - 
+RESUMEN FINAL:
+2025-08-14 19:03:09,684 - INFO - Total registros procesados: 12943
+2025-08-14 19:03:09,684 - INFO - Registros migrados exitosamente: 12942
+2025-08-14 19:03:09,685 - INFO - Facturas no encontradas: 0
+2025-08-14 19:03:09,685 - INFO - Productos no encontrados: 0
+2025-08-14 19:03:09,686 - INFO - Decimales inválidos (RETIRADO): 0
+2025-08-14 19:03:09,687 - INFO - Fechas inválidas: 0
+2025-08-14 19:03:09,687 - INFO - Enteros inválidos (NUMERO): 0
+2025-08-14 19:03:09,687 - INFO - Otros errores: 1
+2025-08-14 19:03:09,688 - INFO - Tasa de éxito: 99.99%
+2025-08-14 22:51:37,050 - INFO - Eliminados 12942 registros existentes
+2025-08-14 22:51:37,157 - INFO - Cargando cache de relaciones...
+2025-08-14 22:51:44,769 - INFO - Lote guardado: 1000 registros
+2025-08-14 22:51:45,163 - INFO - Lote guardado: 1000 registros
+2025-08-14 22:51:45,379 - INFO - Lote guardado: 1000 registros
+2025-08-14 22:51:45,605 - INFO - Lote guardado: 1000 registros
+2025-08-14 22:51:45,846 - INFO - Lote guardado: 1000 registros
+2025-08-14 22:51:46,073 - INFO - Lote guardado: 1000 registros
+2025-08-14 22:51:46,125 - ERROR - Error en lote: [<class 'decimal.InvalidOperation'>]
+2025-08-14 22:53:25,276 - INFO - Lote guardado: 1000 registros
+2025-08-14 22:53:25,525 - INFO - Lote guardado: 1000 registros
+2025-08-14 22:53:25,776 - INFO - Lote guardado: 1000 registros
+2025-08-14 22:53:26,017 - INFO - Lote guardado: 1000 registros
+2025-08-14 22:53:26,259 - INFO - Lote guardado: 1000 registros
+2025-08-14 22:53:26,518 - INFO - 
+RESUMEN FINAL:
+2025-08-14 22:53:26,519 - INFO - Total registros procesados: 12943
+2025-08-14 22:53:26,519 - INFO - Registros migrados exitosamente: 12942
+2025-08-14 22:53:26,520 - INFO - Facturas no encontradas: 0
+2025-08-14 22:53:26,521 - INFO - Productos no encontrados: 0
+2025-08-14 22:53:26,528 - INFO - Decimales inválidos (RETIRADO): 0
+2025-08-14 22:53:26,529 - INFO - Fechas inválidas: 0
+2025-08-14 22:53:26,529 - INFO - Enteros inválidos (NUMERO): 0
+2025-08-14 22:53:26,529 - INFO - Otros errores: 1
+2025-08-14 22:53:26,529 - INFO - Tasa de éxito: 99.99%
+2025-08-14 23:10:58,365 - INFO - Eliminados 12942 registros existentes
+2025-08-14 23:11:07,750 - INFO - Eliminados 0 registros existentes
+2025-08-14 23:11:07,753 - INFO - Cargando cache de relaciones...
+2025-08-14 23:11:14,952 - INFO - Lote guardado: 1000 registros
+2025-08-14 23:11:15,359 - INFO - Lote guardado: 1000 registros
+2025-08-14 23:11:15,584 - INFO - Lote guardado: 1000 registros
+2025-08-14 23:11:15,801 - INFO - Lote guardado: 1000 registros
+2025-08-14 23:11:16,033 - INFO - Lote guardado: 1000 registros
+2025-08-14 23:11:16,275 - INFO - Lote guardado: 1000 registros
+2025-08-14 23:11:16,327 - ERROR - Error en lote: [<class 'decimal.InvalidOperation'>]
+2025-08-14 23:12:52,597 - INFO - Lote guardado: 1000 registros
+2025-08-14 23:12:52,820 - INFO - Lote guardado: 1000 registros
+2025-08-14 23:12:53,163 - INFO - Lote guardado: 1000 registros
+2025-08-14 23:12:53,397 - INFO - Lote guardado: 1000 registros
+2025-08-14 23:12:53,646 - INFO - Lote guardado: 1000 registros
+2025-08-14 23:12:53,863 - INFO - 
+RESUMEN FINAL:
+2025-08-14 23:12:53,863 - INFO - Total registros procesados: 12943
+2025-08-14 23:12:53,864 - INFO - Registros migrados exitosamente: 12942
+2025-08-14 23:12:53,864 - INFO - Facturas no encontradas: 0
+2025-08-14 23:12:53,864 - INFO - Productos no encontrados: 0
+2025-08-14 23:12:53,864 - INFO - Decimales inválidos (RETIRADO): 0
+2025-08-14 23:12:53,864 - INFO - Fechas inválidas: 0
+2025-08-14 23:12:53,864 - INFO - Enteros inválidos (NUMERO): 0
+2025-08-14 23:12:53,864 - INFO - Otros errores: 1
+2025-08-14 23:12:53,865 - INFO - Tasa de éxito: 99.99%
