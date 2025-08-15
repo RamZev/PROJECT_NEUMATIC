@@ -123,12 +123,12 @@ def cargar_datos():
             
             # Convertir valores con manejo de nulos
             cantidad = safe_decimal(record.get('CANTIDAD'), 'CANTIDAD')
-            retiro = safe_decimal(record.get('RETIRADO'), 'RETIRADO')
+            retirado = safe_decimal(record.get('RETIRADO'), 'RETIRADO')
             fecha = safe_date(record.get('FECHA'))
             numero = safe_int(record.get('NUMERO'))
             
             # Contar conversiones fallidas
-            if retiro is None and record.get('RETIRADO') not in [None, '']:
+            if retirado is None and record.get('RETIRADO') not in [None, '']:
                 counters['decimales_invalidos'] += 1
             if fecha is None and record.get('FECHA') not in [None, '']:
                 counters['fechas_invalidas'] += 1
@@ -140,7 +140,7 @@ def cargar_datos():
                 id_factura=factura,
                 id_producto=producto,
                 cantidad=cantidad,
-                retiro=retiro,
+                retirado=retirado,
                 fecha_retiro=fecha,
                 numero=numero,
                 comentario=record.get('COMENTARIO', '').strip() or None
