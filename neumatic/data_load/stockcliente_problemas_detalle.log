@@ -1,0 +1,1817 @@
+REGISTROS PROBLEMÁTICOS DETALLADOS:
+
+ID: 1504549
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1504549, 'CODIGO': 43001, 'CANTIDAD': 2.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1506742
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1506742, 'CODIGO': 43400, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1508384
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1508384, 'CODIGO': 43604, 'CANTIDAD': 8.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1508387
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1508387, 'CODIGO': 43604, 'CANTIDAD': 8.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1510830
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1510830, 'CODIGO': 5810, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1517203
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1517203, 'CODIGO': 43400, 'CANTIDAD': 8.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1517877
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1517877, 'CODIGO': 22150, 'CANTIDAD': 1.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1517877
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1517877, 'CODIGO': 140600, 'CANTIDAD': 1.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1517920
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1517920, 'CODIGO': 22150, 'CANTIDAD': 1.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1517920
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1517920, 'CODIGO': 140600, 'CANTIDAD': 1.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1526599
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1526599, 'CODIGO': 21400, 'CANTIDAD': 1.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1526599
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1526599, 'CODIGO': 140600, 'CANTIDAD': 1.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1528521
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1528521, 'CODIGO': 43250, 'CANTIDAD': 2.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1533503
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1533503, 'CODIGO': 140630, 'CANTIDAD': 2.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1533503
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1533503, 'CODIGO': 140630, 'CANTIDAD': 2.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1533503
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1533503, 'CODIGO': 140005, 'CANTIDAD': 2.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1535182
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1535182, 'CODIGO': 43250, 'CANTIDAD': 2.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1536673
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1536673, 'CODIGO': 43250, 'CANTIDAD': 2.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1536710
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1536710, 'CODIGO': 117640, 'CANTIDAD': 2.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1536998
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1536998, 'CODIGO': 43400, 'CANTIDAD': 2.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1537254
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1537254, 'CODIGO': 43250, 'CANTIDAD': 2.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1538127
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1538127, 'CODIGO': 28600, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1538453
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1538453, 'CODIGO': 22201, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1538453
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1538453, 'CODIGO': 140600, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1542164
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1542164, 'CODIGO': 22652, 'CANTIDAD': 2.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1542164
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1542164, 'CODIGO': 140600, 'CANTIDAD': 2.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1542392
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1542392, 'CODIGO': 5105, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1542755
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1542755, 'CODIGO': 45500, 'CANTIDAD': 6.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1542777
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1542777, 'CODIGO': 45550, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1542805
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1542805, 'CODIGO': 45550, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1542817
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1542817, 'CODIGO': 28760, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1543653
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1543653, 'CODIGO': 9701, 'CANTIDAD': 2.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1544565
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1544565, 'CODIGO': 45500, 'CANTIDAD': 3.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1545520
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1545520, 'CODIGO': 43400, 'CANTIDAD': 5.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1545520
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1545520, 'CODIGO': 43158, 'CANTIDAD': 6.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1546471
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1546471, 'CODIGO': 6100, 'CANTIDAD': 1.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1548566
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1548566, 'CODIGO': 35720, 'CANTIDAD': 2.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1548566
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1548566, 'CODIGO': 35720, 'CANTIDAD': 2.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1548566
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1548566, 'CODIGO': 140600, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1549721
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1549721, 'CODIGO': 3212, 'CANTIDAD': 3.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1549978
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1549978, 'CODIGO': 43158, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1552538
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1552538, 'CODIGO': 8262, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1552538
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1552538, 'CODIGO': 180420, 'CANTIDAD': 1.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1552538
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1552538, 'CODIGO': 180540, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1552538
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1552538, 'CODIGO': 140600, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1552643
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1552643, 'CODIGO': 9511, 'CANTIDAD': 2.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1554984
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1554984, 'CODIGO': 26653, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1555375
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1555375, 'CODIGO': 45500, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1555421
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1555421, 'CODIGO': 45500, 'CANTIDAD': 10.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1555763
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1555763, 'CODIGO': 6295, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1555763
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1555763, 'CODIGO': 140600, 'CANTIDAD': 2.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1555792
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1555792, 'CODIGO': 43158, 'CANTIDAD': 2.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1559429
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1559429, 'CODIGO': 42800, 'CANTIDAD': 2.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1559443
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1559443, 'CODIGO': 86324, 'CANTIDAD': 2.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1562512
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1562512, 'CODIGO': 43404, 'CANTIDAD': 2.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1562913
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1562913, 'CODIGO': 36750, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1562913
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1562913, 'CODIGO': 35000, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1569441
+Tipo problema: error_guardado
+Error: [<class 'decimal.InvalidOperation'>]
+Registro: {'_state': <django.db.models.base.ModelState object at 0x00000269230B5FA0>, 'id_user_id': 1, 'usuario': None, 'estacion': 'ESTACION03', 'fcontrol': '2025-08-14 18:55:20', 'id_stock_cliente': None, 'id_factura_id': 1569043, 'id_producto_id': 180000, 'cantidad': Decimal('131756'), 'retiro': Decimal('131756'), 'fecha_retiro': datetime.date(2024, 11, 25), 'numero': 400003669, 'comentario': None}
+--------------------------------------------------
+
+ID: 1569843
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1569843, 'CODIGO': 5105, 'CANTIDAD': 1.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1571348
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1571348, 'CODIGO': 8255, 'CANTIDAD': 3.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1571965
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1571965, 'CODIGO': 43250, 'CANTIDAD': 2.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1572657
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1572657, 'CODIGO': 8854, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1572826
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1572826, 'CODIGO': 180000, 'CANTIDAD': 1.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1573019
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1573019, 'CODIGO': 45500, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1573445
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1573445, 'CODIGO': 26850, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1573503
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1573503, 'CODIGO': 43155, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1576219
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1576219, 'CODIGO': 3212, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1576278
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1576278, 'CODIGO': 140600, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1577099
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1577099, 'CODIGO': 26662, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1577331
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1577331, 'CODIGO': 43250, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1579369
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1579369, 'CODIGO': 43250, 'CANTIDAD': 1.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1580882
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1580882, 'CODIGO': 137800, 'CANTIDAD': 1.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1581044
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1581044, 'CODIGO': 43856, 'CANTIDAD': 8.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1581046
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1581046, 'CODIGO': 43856, 'CANTIDAD': 8.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1581727
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1581727, 'CODIGO': 43251, 'CANTIDAD': 2.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1582920
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1582920, 'CODIGO': 28600, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1582920
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1582920, 'CODIGO': 140600, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1582920
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1582920, 'CODIGO': 180000, 'CANTIDAD': 1.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1583898
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1583898, 'CODIGO': 1280, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1583898
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1583898, 'CODIGO': 140600, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1584738
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1584738, 'CODIGO': 43250, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1584738
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1584738, 'CODIGO': 43404, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1584738
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1584738, 'CODIGO': 43155, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1585475
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1585475, 'CODIGO': 24353, 'CANTIDAD': 2.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1585841
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1585841, 'CODIGO': 21577, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1586371
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1586371, 'CODIGO': 26900, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1587413
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1587413, 'CODIGO': 3212, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1587413
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1587413, 'CODIGO': 140600, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1587501
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1587501, 'CODIGO': 8610, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1587501
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1587501, 'CODIGO': 140600, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1587572
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1587572, 'CODIGO': 26900, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1587980
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1587980, 'CODIGO': 5105, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1588951
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1588951, 'CODIGO': 26900, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1589384
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1589384, 'CODIGO': 3190, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1589635
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1589635, 'CODIGO': 1890, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1589635
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1589635, 'CODIGO': 180000, 'CANTIDAD': 1.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1589808
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1589808, 'CODIGO': 43158, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1590154
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1590154, 'CODIGO': 35200, 'CANTIDAD': 5.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1590247
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1590247, 'CODIGO': 43251, 'CANTIDAD': 2.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1590605
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1590605, 'CODIGO': 1222, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1591872
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1591872, 'CODIGO': 26250, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1594417
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1594417, 'CODIGO': 43251, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1594538
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1594538, 'CODIGO': 88999, 'CANTIDAD': 2.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1595801
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1595801, 'CODIGO': 26662, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1596579
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1596579, 'CODIGO': 1280, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1596579
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1596579, 'CODIGO': 180000, 'CANTIDAD': 1.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1596579
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1596579, 'CODIGO': 140600, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1597729
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1597729, 'CODIGO': 43251, 'CANTIDAD': 2.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1597950
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1597950, 'CODIGO': 3190, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1598237
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1598237, 'CODIGO': 3651, 'CANTIDAD': 2.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1599440
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1599440, 'CODIGO': 28603, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1599440
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1599440, 'CODIGO': 140600, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1599704
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1599704, 'CODIGO': 43251, 'CANTIDAD': 1.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1600043
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1600043, 'CODIGO': 40450, 'CANTIDAD': 8.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1600468
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1600468, 'CODIGO': 2765, 'CANTIDAD': 2.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1600541
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1600541, 'CODIGO': 43251, 'CANTIDAD': 2.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1600932
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1600932, 'CODIGO': 40450, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1601007
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1601007, 'CODIGO': 23203, 'CANTIDAD': 2.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1601291
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1601291, 'CODIGO': 23400, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1602784
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1602784, 'CODIGO': 43001, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1607044
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1607044, 'CODIGO': 43158, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1607942
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1607942, 'CODIGO': 140600, 'CANTIDAD': 1.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1609399
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1609399, 'CODIGO': 3190, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1612265
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1612265, 'CODIGO': 5105, 'CANTIDAD': 1.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1615482
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1615482, 'CODIGO': 26900, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1615482
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1615482, 'CODIGO': 140600, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1616425
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1616425, 'CODIGO': 2781, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1616583
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1616583, 'CODIGO': 42800, 'CANTIDAD': 2.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1617476
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1617476, 'CODIGO': 43603, 'CANTIDAD': 2.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1617476
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1617476, 'CODIGO': 139032, 'CANTIDAD': 2.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1617489
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1617489, 'CODIGO': 43251, 'CANTIDAD': 2.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1617490
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1617490, 'CODIGO': 43251, 'CANTIDAD': 6.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1617491
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1617491, 'CODIGO': 45550, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1617492
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1617492, 'CODIGO': 45550, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1617493
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1617493, 'CODIGO': 45550, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1617494
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1617494, 'CODIGO': 45550, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1617495
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1617495, 'CODIGO': 45500, 'CANTIDAD': 2.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1617512
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1617512, 'CODIGO': 45500, 'CANTIDAD': 8.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1617516
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1617516, 'CODIGO': 45500, 'CANTIDAD': 3.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1617517
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1617517, 'CODIGO': 45500, 'CANTIDAD': 3.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1617539
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1617539, 'CODIGO': 45500, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1617929
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1617929, 'CODIGO': 43603, 'CANTIDAD': 16.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1617929
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1617929, 'CODIGO': 43251, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1617929
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1617929, 'CODIGO': 43401, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1618261
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1618261, 'CODIGO': 198010, 'CANTIDAD': 1.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1618307
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1618307, 'CODIGO': 45550, 'CANTIDAD': 20.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1618307
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1618307, 'CODIGO': 45500, 'CANTIDAD': 20.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1618387
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1618387, 'CODIGO': 45550, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1618449
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1618449, 'CODIGO': 20650, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1618829
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1618829, 'CODIGO': 1222, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1619800
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1619800, 'CODIGO': 43603, 'CANTIDAD': 16.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1619800
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1619800, 'CODIGO': 43251, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1619800
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1619800, 'CODIGO': 43401, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1619842
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1619842, 'CODIGO': 43401, 'CANTIDAD': 20.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1619842
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1619842, 'CODIGO': 43158, 'CANTIDAD': 20.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1619993
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1619993, 'CODIGO': 28763, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1620758
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1620758, 'CODIGO': 43401, 'CANTIDAD': 8.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1620813
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1620813, 'CODIGO': 28764, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1620947
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1620947, 'CODIGO': 5917, 'CANTIDAD': 2.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1620947
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1620947, 'CODIGO': 5917, 'CANTIDAD': 2.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1620947
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1620947, 'CODIGO': 140600, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1624366
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1624366, 'CODIGO': 43401, 'CANTIDAD': 2.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1624366
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1624366, 'CODIGO': 43130, 'CANTIDAD': 2.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1624378
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1624378, 'CODIGO': 43401, 'CANTIDAD': 12.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1624378
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1624378, 'CODIGO': 43130, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1624551
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1624551, 'CODIGO': 43401, 'CANTIDAD': 24.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1625996
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1625996, 'CODIGO': 81042, 'CANTIDAD': 2.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1628045
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1628045, 'CODIGO': 43251, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1628109
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1628109, 'CODIGO': 340160, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1628147
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1628147, 'CODIGO': 43856, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1628147
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1628147, 'CODIGO': 43251, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1628399
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1628399, 'CODIGO': 43251, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1628849
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1628849, 'CODIGO': 43158, 'CANTIDAD': 10.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1628861
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1628861, 'CODIGO': 43401, 'CANTIDAD': 2.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1628861
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1628861, 'CODIGO': 43850, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1628908
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1628908, 'CODIGO': 45550, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1629013
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1629013, 'CODIGO': 3210, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1629013
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1629013, 'CODIGO': 140600, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1629502
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1629502, 'CODIGO': 5812, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1629958
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1629958, 'CODIGO': 22202, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1630459
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1630459, 'CODIGO': 12954, 'CANTIDAD': 2.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1630924
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1630924, 'CODIGO': 140600, 'CANTIDAD': 1.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1630924
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1630924, 'CODIGO': 153900, 'CANTIDAD': 1.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1631001
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1631001, 'CODIGO': 43155, 'CANTIDAD': 2.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1631019
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1631019, 'CODIGO': 28770, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1631033
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1631033, 'CODIGO': 26662, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1631114
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1631114, 'CODIGO': 26900, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1631114
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1631114, 'CODIGO': 140600, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1628700
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1628700, 'CODIGO': 40255, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1631568
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1631568, 'CODIGO': 43401, 'CANTIDAD': 2.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1631757
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1631757, 'CODIGO': 43401, 'CANTIDAD': 12.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1632165
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1632165, 'CODIGO': 43401, 'CANTIDAD': 2.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1632493
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1632493, 'CODIGO': 43251, 'CANTIDAD': 2.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1632501
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1632501, 'CODIGO': 29783, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1632645
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1632645, 'CODIGO': 43251, 'CANTIDAD': 2.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1632645
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1632645, 'CODIGO': 45550, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1632790
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1632790, 'CODIGO': 21575, 'CANTIDAD': 2.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1632816
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1632816, 'CODIGO': 43130, 'CANTIDAD': 1.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1633005
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1633005, 'CODIGO': 28770, 'CANTIDAD': 2.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1633040
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1633040, 'CODIGO': 43401, 'CANTIDAD': 2.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1633242
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1633242, 'CODIGO': 43155, 'CANTIDAD': 2.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1633739
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1633739, 'CODIGO': 43251, 'CANTIDAD': 1.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1633739
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1633739, 'CODIGO': 139021, 'CANTIDAD': 1.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1633913
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1633913, 'CODIGO': 35048, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1634086
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1634086, 'CODIGO': 133000, 'CANTIDAD': 1.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1634241
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1634241, 'CODIGO': 6702, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1634295
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1634295, 'CODIGO': 6501, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1634313
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1634313, 'CODIGO': 3210, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1634313
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1634313, 'CODIGO': 140600, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1634386
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1634386, 'CODIGO': 43158, 'CANTIDAD': 2.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1634754
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1634754, 'CODIGO': 43158, 'CANTIDAD': 6.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1635084
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1635084, 'CODIGO': 213570, 'CANTIDAD': 2.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1635084
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1635084, 'CODIGO': 213570, 'CANTIDAD': 2.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1635084
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1635084, 'CODIGO': 140600, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1635462
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1635462, 'CODIGO': 43251, 'CANTIDAD': 2.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1635462
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1635462, 'CODIGO': 43401, 'CANTIDAD': 2.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1635736
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1635736, 'CODIGO': 3210, 'CANTIDAD': 1.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1635736
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1635736, 'CODIGO': 140600, 'CANTIDAD': 1.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1636470
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1636470, 'CODIGO': 43401, 'CANTIDAD': 2.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1636573
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1636573, 'CODIGO': 5812, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1636698
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1636698, 'CODIGO': 28770, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1636698
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1636698, 'CODIGO': 140600, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1636917
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1636917, 'CODIGO': 37373, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1638139
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1638139, 'CODIGO': 3651, 'CANTIDAD': 1.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1638474
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1638474, 'CODIGO': 26270, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1638474
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1638474, 'CODIGO': 140600, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1639541
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1639541, 'CODIGO': 6410, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1639564
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1639564, 'CODIGO': 43251, 'CANTIDAD': 2.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1639830
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1639830, 'CODIGO': 43401, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1639830
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1639830, 'CODIGO': 43251, 'CANTIDAD': 6.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1641127
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1641127, 'CODIGO': 3210, 'CANTIDAD': 2.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1641130
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1641130, 'CODIGO': 9436, 'CANTIDAD': 2.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1641137
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1641137, 'CODIGO': 140600, 'CANTIDAD': 2.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1641369
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1641369, 'CODIGO': 36455, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1642091
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1642091, 'CODIGO': 43251, 'CANTIDAD': 2.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1642099
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1642099, 'CODIGO': 43401, 'CANTIDAD': 8.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1642099
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1642099, 'CODIGO': 43158, 'CANTIDAD': 12.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1642245
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1642245, 'CODIGO': 36880, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1642245
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1642245, 'CODIGO': 140600, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1642532
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1642532, 'CODIGO': 28770, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1642560
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1642560, 'CODIGO': 43158, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1642621
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1642621, 'CODIGO': 43401, 'CANTIDAD': 2.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1642666
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1642666, 'CODIGO': 22153, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1642666
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1642666, 'CODIGO': 140600, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1642681
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1642681, 'CODIGO': 26900, 'CANTIDAD': 2.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1642790
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1642790, 'CODIGO': 42950, 'CANTIDAD': 6.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1642791
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1642791, 'CODIGO': 42950, 'CANTIDAD': 6.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1642805
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1642805, 'CODIGO': 1550, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1642805
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1642805, 'CODIGO': 140600, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1642821
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1642821, 'CODIGO': 42955, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1643000
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1643000, 'CODIGO': 26250, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1643000
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1643000, 'CODIGO': 140600, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1643240
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1643240, 'CODIGO': 150740, 'CANTIDAD': 1.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1643240
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1643240, 'CODIGO': 150660, 'CANTIDAD': 1.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1643432
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1643432, 'CODIGO': 1632, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1643432
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1643432, 'CODIGO': 140600, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1643440
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1643440, 'CODIGO': 5403, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1643440
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1643440, 'CODIGO': 140600, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1643522
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1643522, 'CODIGO': 214450, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1643522
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1643522, 'CODIGO': 140600, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1643560
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1643560, 'CODIGO': 133000, 'CANTIDAD': 1.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1643770
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1643770, 'CODIGO': 36452, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1643770
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1643770, 'CODIGO': 140600, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1644017
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1644017, 'CODIGO': 8662, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1644017
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1644017, 'CODIGO': 140600, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1644135
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1644135, 'CODIGO': 2360, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1644135
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1644135, 'CODIGO': 140600, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1644174
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1644174, 'CODIGO': 7331, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1644174
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1644174, 'CODIGO': 140600, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1645184
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1645184, 'CODIGO': 2781, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1645442
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1645442, 'CODIGO': 6294, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1645442
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1645442, 'CODIGO': 140600, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1645638
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1645638, 'CODIGO': 43251, 'CANTIDAD': 2.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1645677
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1645677, 'CODIGO': 131590, 'CANTIDAD': 2.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1645677
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1645677, 'CODIGO': 140600, 'CANTIDAD': 2.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1645692
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1645692, 'CODIGO': 138752, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1645765
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1645765, 'CODIGO': 7161, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1645790
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1645790, 'CODIGO': 28770, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1645841
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1645841, 'CODIGO': 29251, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1645914
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1645914, 'CODIGO': 150702, 'CANTIDAD': 12.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1645914
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1645914, 'CODIGO': 151181, 'CANTIDAD': 3.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1646167
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1646167, 'CODIGO': 28770, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1646210
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1646210, 'CODIGO': 1280, 'CANTIDAD': 1.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1646210
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1646210, 'CODIGO': 1280, 'CANTIDAD': 3.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1646210
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1646210, 'CODIGO': 140600, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1646298
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1646298, 'CODIGO': 2781, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1646298
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1646298, 'CODIGO': 180400, 'CANTIDAD': 1.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1646298
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1646298, 'CODIGO': 180560, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1646298
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1646298, 'CODIGO': 140600, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1646320
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1646320, 'CODIGO': 22361, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1646381
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1646381, 'CODIGO': 27781, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1646381
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1646381, 'CODIGO': 140600, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1646385
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1646385, 'CODIGO': 28770, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1646385
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1646385, 'CODIGO': 140600, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1646498
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1646498, 'CODIGO': 3225, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1646498
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1646498, 'CODIGO': 140600, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1646643
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1646643, 'CODIGO': 43251, 'CANTIDAD': 2.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1646700
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1646700, 'CODIGO': 25250, 'CANTIDAD': 2.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1646945
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1646945, 'CODIGO': 49354, 'CANTIDAD': 2.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1647030
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1647030, 'CODIGO': 23803, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1647183
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1647183, 'CODIGO': 120755, 'CANTIDAD': 2.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1647231
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1647231, 'CODIGO': 24301, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1647242
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1647242, 'CODIGO': 29150, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1647315
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1647315, 'CODIGO': 150740, 'CANTIDAD': 2.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1647315
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1647315, 'CODIGO': 150621, 'CANTIDAD': 3.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1647315
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1647315, 'CODIGO': 151400, 'CANTIDAD': 1.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1647315
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1647315, 'CODIGO': 151262, 'CANTIDAD': 1.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1647466
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1647466, 'CODIGO': 44655, 'CANTIDAD': 2.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1647500
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1647500, 'CODIGO': 33201, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1647599
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1647599, 'CODIGO': 150202, 'CANTIDAD': 20.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1647626
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1647626, 'CODIGO': 29251, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1647641
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1647641, 'CODIGO': 43130, 'CANTIDAD': 1.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1647661
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1647661, 'CODIGO': 43130, 'CANTIDAD': 2.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1647719
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1647719, 'CODIGO': 29239, 'CANTIDAD': 2.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1647731
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1647731, 'CODIGO': 1222, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1647791
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1647791, 'CODIGO': 47552, 'CANTIDAD': 2.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1647791
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1647791, 'CODIGO': 48452, 'CANTIDAD': 2.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1647804
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1647804, 'CODIGO': 340580, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1647804
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1647804, 'CODIGO': 140600, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1647824
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1647824, 'CODIGO': 29783, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1647827
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1647827, 'CODIGO': 43155, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1647829
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1647829, 'CODIGO': 43155, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1647865
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1647865, 'CODIGO': 45551, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1647887
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1647887, 'CODIGO': 5811, 'CANTIDAD': 2.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1647896
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1647896, 'CODIGO': 24449, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1647896
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1647896, 'CODIGO': 140600, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1647917
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1647917, 'CODIGO': 43850, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1647922
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1647922, 'CODIGO': 47552, 'CANTIDAD': 2.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1647942
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1647942, 'CODIGO': 29760, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1647953
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1647953, 'CODIGO': 213140, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1647953
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1647953, 'CODIGO': 213280, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1647953
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1647953, 'CODIGO': 213660, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1647953
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1647953, 'CODIGO': 24301, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1647953
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1647953, 'CODIGO': 24449, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1647953
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1647953, 'CODIGO': 26662, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1647953
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1647953, 'CODIGO': 29783, 'CANTIDAD': 8.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1648001
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1648001, 'CODIGO': 47450, 'CANTIDAD': 2.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1648080
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1648080, 'CODIGO': 28770, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1648080
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1648080, 'CODIGO': 140600, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1648305
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1648305, 'CODIGO': 43401, 'CANTIDAD': 20.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1648312
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1648312, 'CODIGO': 3225, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1648353
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1648353, 'CODIGO': 50153, 'CANTIDAD': 12.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1648386
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1648386, 'CODIGO': 26662, 'CANTIDAD': 2.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1648436
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1648436, 'CODIGO': 50551, 'CANTIDAD': 2.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1648444
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1648444, 'CODIGO': 3651, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1648445
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1648445, 'CODIGO': 3651, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1648449
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1648449, 'CODIGO': 3225, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1648495
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1648495, 'CODIGO': 23451, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1648495
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1648495, 'CODIGO': 140600, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1648503
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1648503, 'CODIGO': 3225, 'CANTIDAD': 2.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1648563
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1648563, 'CODIGO': 31070, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1648619
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1648619, 'CODIGO': 6294, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1648646
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1648646, 'CODIGO': 43401, 'CANTIDAD': 2.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1648678
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1648678, 'CODIGO': 3225, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1648692
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1648692, 'CODIGO': 6294, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1648692
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1648692, 'CODIGO': 140600, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1648717
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1648717, 'CODIGO': 5812, 'CANTIDAD': 2.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1648720
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1648720, 'CODIGO': 28552, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1648775
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1648775, 'CODIGO': 3225, 'CANTIDAD': 2.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1648794
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1648794, 'CODIGO': 5105, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1648794
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1648794, 'CODIGO': 140600, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1648843
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1648843, 'CODIGO': 43158, 'CANTIDAD': 2.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------
+
+ID: 1648856
+Tipo problema: decimal_invalido
+Registro: OrderedDict({'ID': 1648856, 'CODIGO': 26660, 'CANTIDAD': 4.0, 'RETIRADO': None, 'FECHA': None, 'NUMERO': None, 'COMENTARIO': ''})
+--------------------------------------------------

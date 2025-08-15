@@ -25,7 +25,7 @@ class StockCliente(ModeloBaseGenerico):
 		null=True,
 		blank=True
 	)
-	retiro = models.DecimalField(
+	retirado = models.DecimalField(
 		verbose_name="Retiro",
 		max_digits=7,
 		decimal_places=2,
