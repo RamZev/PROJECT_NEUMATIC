@@ -500,6 +500,7 @@
                                                         <td>{{ formdet.id_operario }}</td> <!-- Nuevo campo -->
                                                         <td>
                                                             {{ formdet.gravado }}
+                                                            {{ formdet.no_gravado }}
                                                             {{ formdet.alic_iva }}
                                                             {{ formdet.iva }}
                                                             {{ formdet.total }}</td>
@@ -1000,6 +1001,7 @@
 
             function actualizarVisualizacionTotales() {
                 const campos = ['id_gravado', 'id_exento', 'id_iva', 'id_percep_ib', 'id_total'];
+                // alert("actualizarVisualizacionTotales");
                 
                 //alert("🔍 INICIANDO VERIFICACIÓN DE FORMATEO 🔍");
                 
@@ -1074,10 +1076,12 @@
                 document.querySelectorAll('.detalle-form tbody tr:not([style*="display: none"])').forEach(row => {
                     const total = parseNumber(row.querySelector('[name*="-total"]').value);
                     const gravado = parseNumber(row.querySelector('[name*="-gravado"]').value);
+                    const no_gravado = parseNumber(row.querySelector('[name*="-no_gravado"]').value);
                     const iva = parseNumber(row.querySelector('[name*="-iva"]').value);
                     
                     totalFactura += total;
                     totalGravado += gravado;
+                    totalExento += no_gravado;
                     totalIva += iva;
                 });
             
@@ -1181,9 +1185,19 @@
                 row.querySelector('[name*="-total"]').value = totalConDescuento.toFixed(2);
                 
                 // Calcular impuestos
-                const gravado = totalConDescuento / (1 + (alicIva / 100));
+                // const gravado = totalConDescuento / (1 + (alicIva / 100));
+                // row.querySelector('[name*="-gravado"]').value = gravado.toFixed(2);
+                // row.querySelector('[name*="-iva"]').value = (totalConDescuento - gravado).toFixed(2);
+                let gravado = 0;
+                let no_gravado = 0;
+                if (alicIva > 0) {
+                    gravado = totalConDescuento / (1 + (alicIva / 100));
+                } else {
+                    no_gravado = totalConDescuento;
+                }
                 row.querySelector('[name*="-gravado"]').value = gravado.toFixed(2);
-                row.querySelector('[name*="-iva"]').value = (totalConDescuento - gravado).toFixed(2);
+                row.querySelector('[name*="-no_gravado"]').value = no_gravado.toFixed(2);
+                row.querySelector('[name*="-iva"]').value = (totalConDescuento - gravado).toFixed(2);                
                 
                 return totalConDescuento;
             };
@@ -1295,8 +1309,21 @@
                     const cantidad = 1.00;
                     const montoTotal = precioConDescuento * cantidad;
                     const alicuotaIva = parseFloat(producto.alicuota_iva || 0);
-                    const gravado = (montoTotal / (1 + (alicuotaIva / 100))).toFixed(2);
-                    const iva = (montoTotal - gravado).toFixed(2);
+                    
+                    // const gravado = (montoTotal / (1 + (alicuotaIva / 100))).toFixed(2);
+                    // const iva = (montoTotal - gravado).toFixed(2);
+                    
+                    // Cálculo de gravado, no_gravado e iva según alicuota_iva
+                    let gravado = 0;
+                    let no_gravado = 0;
+                    let iva = 0;
+                    if (alicuotaIva > 0) {
+                        gravado = (montoTotal / (1 + (alicuotaIva / 100))).toFixed(2);
+                        iva = (montoTotal - gravado).toFixed(2);
+                    } else {
+                        no_gravado = montoTotal.toFixed(2);
+                    }
+                    
                     const nombreInputAttributes = cambia_precio_descripcion ? 'required' : 'readonly';
                     const valorPorDefecto = document.getElementById('id_tipo_venta')?.value || "M";
 
@@ -1328,7 +1355,7 @@
                     // Clase reutilizable
                     const formControlClass = 'form-control form-control-sm border border-primary small-font';
 
-                    // Crear y insertar la fila
+                    // Crear y insertar la fila de detalle de factura
                     const newFormHTML = `
                     <tr data-form-index="${currentIndex}" class="small-font">
 
@@ -1380,6 +1407,8 @@
                         <!-- Campos OCULTOS para IVA -->
                         <input type="hidden" name="detallefactura_set-${currentIndex}-gravado" 
                         value="${gravado}">
+                        <input type="hidden" name="detallefactura_set-${currentIndex}-no_gravado" 
+                        value="${no_gravado}">
                         <input type="hidden" name="detallefactura_set-${currentIndex}-alic_iva" 
                         value="${parseFloat(producto.alicuota_iva || 0).toFixed(2)}">
                         <input type="hidden" 
@@ -1939,6 +1968,7 @@
                         return;
                     }
 
+                    
                     // Si existe, procesar los detalles del remito
                     //
                     if (data.detalles && data.detalles.length > 0) {
@@ -1963,12 +1993,12 @@
                                 }
                             });
                         }
-            
+
                         // Procesar cada detalle del remito
                         data.detalles.forEach(detalle => {
                             const currentIndex = formsetContainer.querySelectorAll('.detalle-form tbody tr:not([style*="display: none"])').length;
 
-                            ///
+                            /// irsertar fila relacionada a remito
                             const newFormHTML = `
                             <tr data-form-index="${currentIndex}" class="small-font">
                                 <input type="hidden" name="detallefactura_set-${currentIndex}-id_detalle_factura">
@@ -2030,10 +2060,12 @@
                             </tr>`;
                             ///
             
+                                                        
                             formsetContainer.querySelector('.detalle-form tbody').insertAdjacentHTML('beforeend', newFormHTML);
                             
                             // Actualizar totales generales
                             actualizarTotalFactura();
+                            alert("actualizarTotalFactura!");
                         });
             
                         // Actualizar el contador de formsets
@@ -2468,9 +2500,49 @@
             });
             
             // Mantener las funciones completarSeleccionCliente y getCookie exactamente igual que en tu versión original
-
             function calcularNumeroComprobante() {
                 // Obtener datos necesarios para numeración
+                const id_sucursal = document.getElementById('id_id_sucursal').value;
+                const id_punto_venta = document.getElementById('id_id_punto_venta').value;
+                const compro = document.getElementById('id_compro').value;
+                const id_discrimina_iva = document.getElementById('id_discrimina_iva').value;
+
+                if (id_sucursal && id_punto_venta && compro) {
+                    ///
+                    const url = new URL('/ventas/obtener-numero-comprobante3/', window.location.origin);
+                    url.searchParams.append('id_sucursal', id_sucursal);
+                    url.searchParams.append('id_punto_venta', id_punto_venta);
+                    url.searchParams.append('comprobante', compro);
+                    url.searchParams.append('id_discrimina_iva', id_discrimina_iva);
+
+                    fetch(url)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                document.getElementById('id_numero_comprobante').value = data.numero_referencial;
+                                const inputDefinitivo = document.getElementById('id_numero_definitivo');
+                                if (inputDefinitivo) {
+                                    inputDefinitivo.value = data.numero_definitivo;
+                                }
+                                document.getElementById('id_letra_comprobante').value = data.letra;
+                            } else {
+                                alert(data.message || "Ocurrió un error al obtener el número de comprobante.");
+                            }
+                        })
+                        .catch(error => {
+                            console.error("Error en la solicitud:", error);
+                            alert("Error al conectar con el servidor.");
+                        });
+                    ///
+                } else {
+
+                }
+            }
+
+            // Función original calcularNumeroComprobante
+            function calcularNumeroComprobante_ini() {
+                // Obtener datos necesarios para numeración
+                alert("calcularNumeroComprobante")
                 const libroIvaDict = JSON.parse(document.getElementById('libroiva-data').dataset.libroiva);
                 const comprobanteId = document.getElementById('id_id_comprobante_venta').value;
                 const libroIva = libroIvaDict[comprobanteId] ?? false;
