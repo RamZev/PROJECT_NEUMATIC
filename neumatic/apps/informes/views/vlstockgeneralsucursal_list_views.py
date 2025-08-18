@@ -13,6 +13,7 @@ from reportlab.platypus import Paragraph
 
 from .report_views_generics import *
 from apps.informes.models import VLStockGeneralSucursal
+from apps.maestros.models.sucursal_models import Sucursal
 from ..forms.buscador_vlstockgeneralsucursal_forms import BuscadorStockGeneralSucursalForm
 from utils.utils import deserializar_datos, formato_argentino_entero, normalizar
 from utils.helpers.export_helpers import ExportHelper, PDFGenerator
@@ -128,7 +129,7 @@ class ConfigViews:
 		},
 		"cai": {
 			"label": "CAI",
-			"col_width_pdf": 40,
+			"col_width_pdf": 70,
 			"pdf": True,
 			"excel": True,
 			"csv": True
@@ -142,7 +143,7 @@ class ConfigViews:
 		},
 		"nombre_producto": {
 			"label": "Descripción",
-			"col_width_pdf": 200,
+			"col_width_pdf": 170,
 			"pdf": True,
 			"excel": True,
 			"csv": True
@@ -188,15 +189,28 @@ class VLStockGeneralSucursalInformeView(InformeFormView):
 		id_modelo_hasta = cleaned_data.get('id_modelo_hasta', None)
 		sucursales_seleccionadas = cleaned_data.get('sucursales', [])
 		
-		queryset = VLStockGeneralSucursal.objects.obtener_datos(
-			id_familia_desde,
-			id_familia_hasta,
-			id_marca_desde,
-			id_marca_hasta,
-			id_modelo_desde,
-			id_modelo_hasta,
-			sucursales_seleccionadas
-		)
+		tipo_salida = self.request.GET.get('tipo_salida')
+		
+		if tipo_salida in ["pantalla", "pdf_preliminar"]:
+			queryset = VLStockGeneralSucursal.objects.obtener_datos(
+				id_familia_desde,
+				id_familia_hasta,
+				id_marca_desde,
+				id_marca_hasta,
+				id_modelo_desde,
+				id_modelo_hasta,
+				sucursales_seleccionadas
+			)
+		else:
+			queryset = VLStockGeneralSucursal.objects.obtener_datos_tabulares(
+				id_familia_desde,
+				id_familia_hasta,
+				id_marca_desde,
+				id_marca_hasta,
+				id_modelo_desde,
+				id_modelo_hasta,
+				Sucursal.objects.filter(estatus_sucursal=True)
+			)
 		return queryset
 	
 	def obtener_contexto_reporte(self, queryset, cleaned_data):
@@ -214,153 +228,166 @@ class VLStockGeneralSucursalInformeView(InformeFormView):
 		id_modelo_hasta = cleaned_data.get('id_modelo_hasta', None)
 		sucursales_seleccionadas = cleaned_data.get('sucursales', [])
 		
-		fecha_hora_reporte = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+		tipo_salida = self.request.GET.get('tipo_salida')
 		
-		dominio = f"http://{self.request.get_host()}"
-		
-		familia = "Todas"
-		if id_familia_desde and id_familia_hasta:
-			familia = f"Desde: {id_familia_desde} - Hasta: {id_familia_hasta}"
-		elif id_familia_desde:
-			familia = f"Desde: {id_familia_desde}"
-		elif id_familia_hasta:
-			familia = f"Hasta: {id_familia_hasta}"
-		
-		marca = "Todas"
-		if id_marca_desde and id_marca_hasta:
-			marca = f"Desde: {id_marca_desde} - Hasta: {id_marca_hasta}"
-		elif id_marca_desde:
-			marca = f"Desde: {id_marca_desde}"
-		elif id_marca_hasta:
-			marca = f"Hasta: {id_marca_hasta}"
-		
-		modelo = "Todos"
-		if id_modelo_desde and id_modelo_hasta:
-			modelo = f"Desde: {id_modelo_desde} - Hasta: {id_modelo_hasta}"
-		elif id_modelo_desde:
-			modelo = f"Desde: {id_modelo_desde}"
-		elif id_modelo_hasta:
-			modelo = f"Hasta: {id_modelo_hasta}"
-		
-		#-- Estructura para mapeo de columnas.
-		sucursales_info = [
-			{
-				'nombre': sucursal.nombre_sucursal[:5],			 	#-- Nombre corto de la sucursal.
-				'columna': f'stock_suc_{sucursal.id_sucursal}',		#-- Nombre real de la columna.
-				'id': sucursal.id_sucursal
+		if tipo_salida in ["pantalla", "pdf_preliminar"]:
+			
+			fecha_hora_reporte = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+			
+			dominio = f"http://{self.request.get_host()}"
+			
+			familia = "Todas"
+			if id_familia_desde and id_familia_hasta:
+				familia = f"Desde: {id_familia_desde} - Hasta: {id_familia_hasta}"
+			elif id_familia_desde:
+				familia = f"Desde: {id_familia_desde}"
+			elif id_familia_hasta:
+				familia = f"Hasta: {id_familia_hasta}"
+			
+			marca = "Todas"
+			if id_marca_desde and id_marca_hasta:
+				marca = f"Desde: {id_marca_desde} - Hasta: {id_marca_hasta}"
+			elif id_marca_desde:
+				marca = f"Desde: {id_marca_desde}"
+			elif id_marca_hasta:
+				marca = f"Hasta: {id_marca_hasta}"
+			
+			modelo = "Todos"
+			if id_modelo_desde and id_modelo_hasta:
+				modelo = f"Desde: {id_modelo_desde} - Hasta: {id_modelo_hasta}"
+			elif id_modelo_desde:
+				modelo = f"Desde: {id_modelo_desde}"
+			elif id_modelo_hasta:
+				modelo = f"Hasta: {id_modelo_hasta}"
+			
+			#-- Estructura para mapeo de columnas.
+			sucursales_info = _sucursal_info(sucursales_seleccionadas)
+			
+			param_left = {
+				"Sucursal(es)": ", ".join([s['nombre'] for s in sucursales_info]),
 			}
-			for sucursal in sucursales_seleccionadas
-		]
-		
-		param_left = {
-			"Sucursal(es)": ", ".join([s['nombre'] for s in sucursales_info]),
-		}
-		param_right = {
-			"Familia": familia,
-			"Marca": marca,
-			"Modelo": modelo,
-		}
-		
-		# **************************************************
-		
-		#-- Convertir QUERYSET a LISTA DE DICCIONARIOS al inicio (optimización clave).
-		queryset_list = [raw_to_dict(obj) for obj in queryset]
-		
-		grouped_data = {}
-		
-		#-- Inicializar totales generales.
-		total_general = {
-			**{sucursal['nombre']: 0 for sucursal in sucursales_info},
-			'otras_suc': 0,
-			'stock_total': 0
-		}
-		
-		for obj in queryset_list:
-			#-- Agrupar por Familia.
-			id_familia = obj['id_familia_id']
-			if id_familia not in grouped_data:
-				grouped_data[id_familia] = {
-					'familia': obj['nombre_producto_familia'],
-					'modelos': {},
-					'stf': {
-						**{sucursal['nombre']: 0 for sucursal in sucursales_info},
-						'otras_suc': 0,
-						'stock_total': 0
+			param_right = {
+				"Familia": familia,
+				"Marca": marca,
+				"Modelo": modelo,
+			}
+			
+			# **************************************************
+			
+			#-- Convertir QUERYSET a LISTA DE DICCIONARIOS al inicio (optimización clave).
+			queryset_list = [raw_to_dict(obj) for obj in queryset]
+			
+			grouped_data = {}
+			
+			#-- Inicializar totales generales.
+			total_general = {
+				**{sucursal['nombre']: 0 for sucursal in sucursales_info},
+				'otras_suc': 0,
+				'stock_total': 0
+			}
+			
+			for obj in queryset_list:
+				#-- Agrupar por Familia.
+				id_familia = obj['id_familia_id']
+				if id_familia not in grouped_data:
+					grouped_data[id_familia] = {
+						'familia': obj['nombre_producto_familia'],
+						'modelos': {},
+						'stf': {
+							**{sucursal['nombre']: 0 for sucursal in sucursales_info},
+							'otras_suc': 0,
+							'stock_total': 0
+						}
 					}
-				}
-			
-			#-- Agrupar por Modelo dentro de Familia.
-			id_modelo = obj['id_modelo_id']
-			if id_modelo not in grouped_data[id_familia]['modelos']:
-				grouped_data[id_familia]['modelos'][id_modelo] = {
-					'modelo': obj['nombre_modelo'],
-					'detalle': [],
-					'stm': {
-						**{sucursal['nombre']: 0 for sucursal in sucursales_info},
-						'otras_suc': 0,
-						'stock_total': 0
-					},
-				}
-			
-			#-- Crear registro de detalle con stocks por sucursal.
-			detalle = {
-				'id_producto': obj['id_producto'],
-				'id_cai_id': obj['id_cai_id'],
-				'cai': obj['cai'],
-				'medida': obj['medida'],
-				'nombre_producto': obj['nombre_producto'],
-				'nombre_producto_marca': obj['nombre_producto_marca'],
-				'stocks': {},
-				'otras_suc': obj.get('otras_suc', 0),
-				'stock_total': obj.get('stock_total', 0)
-			}
-			
-			#-- Procesar stocks por sucursal y acumular totales.
-			for sucursal in sucursales_info:
-				stock = obj.get(sucursal['columna'], 0)
-				detalle['stocks'][sucursal['nombre']] = stock
 				
-				#-- Acumular subtotales por modelo.
-				grouped_data[id_familia]['modelos'][id_modelo]['stm'][sucursal['nombre']] += stock
+				#-- Agrupar por Modelo dentro de Familia.
+				id_modelo = obj['id_modelo_id']
+				if id_modelo not in grouped_data[id_familia]['modelos']:
+					grouped_data[id_familia]['modelos'][id_modelo] = {
+						'modelo': obj['nombre_modelo'],
+						'detalle': [],
+						'stm': {
+							**{sucursal['nombre']: 0 for sucursal in sucursales_info},
+							'otras_suc': 0,
+							'stock_total': 0
+						},
+					}
 				
-				#-- Acumular subtotales por familia.
-				grouped_data[id_familia]['stf'][sucursal['nombre']] += stock
+				#-- Crear registro de detalle con stocks por sucursal.
+				detalle = {
+					'id_producto': obj['id_producto'],
+					'id_cai_id': obj['id_cai_id'],
+					'cai': obj['cai'],
+					'medida': obj['medida'],
+					'nombre_producto': obj['nombre_producto'],
+					'nombre_producto_marca': obj['nombre_producto_marca'],
+					'stocks': {},
+					'otras_suc': obj.get('otras_suc', 0),
+					'stock_total': obj.get('stock_total', 0)
+				}
+				
+				#-- Procesar stocks por sucursal y acumular totales.
+				for sucursal in sucursales_info:
+					stock = obj.get(sucursal['columna'], 0)
+					detalle['stocks'][sucursal['nombre']] = stock
+					
+					#-- Acumular subtotales por modelo.
+					grouped_data[id_familia]['modelos'][id_modelo]['stm'][sucursal['nombre']] += stock
+					
+					#-- Acumular subtotales por familia.
+					grouped_data[id_familia]['stf'][sucursal['nombre']] += stock
+					
+					#-- Acumular total general.
+					total_general[sucursal['nombre']] += stock
+				
+				#-- Procesar otras sucursales y stock total.
+				otras_suc = obj.get('otras_suc', 0)
+				stock_total = obj.get('stock_total', 0)
+				
+				#-- Acumular para modelo.
+				grouped_data[id_familia]['modelos'][id_modelo]['stm']['otras_suc'] += otras_suc
+				grouped_data[id_familia]['modelos'][id_modelo]['stm']['stock_total'] += stock_total
+				
+				#-- Acumular para familia.
+				grouped_data[id_familia]['stf']['otras_suc'] += otras_suc
+				grouped_data[id_familia]['stf']['stock_total'] += stock_total
 				
 				#-- Acumular total general.
-				total_general[sucursal['nombre']] += stock
+				total_general['otras_suc'] += otras_suc
+				total_general['stock_total'] += stock_total
+				
+				grouped_data[id_familia]['modelos'][id_modelo]['detalle'].append(detalle)
+				
+			# **************************************************
 			
-			#-- Procesar otras sucursales y stock total.
-			otras_suc = obj.get('otras_suc', 0)
-			stock_total = obj.get('stock_total', 0)
-			
-			#-- Acumular para modelo.
-			grouped_data[id_familia]['modelos'][id_modelo]['stm']['otras_suc'] += otras_suc
-			grouped_data[id_familia]['modelos'][id_modelo]['stm']['stock_total'] += stock_total
-			
-			#-- Acumular para familia.
-			grouped_data[id_familia]['stf']['otras_suc'] += otras_suc
-			grouped_data[id_familia]['stf']['stock_total'] += stock_total
-			
-			#-- Acumular total general.
-			total_general['otras_suc'] += otras_suc
-			total_general['stock_total'] += stock_total
-			
-			grouped_data[id_familia]['modelos'][id_modelo]['detalle'].append(detalle)
-			
-		# **************************************************
+			#-- Se retorna un contexto que será consumido tanto para la vista en pantalla como para la generación del PDF.
+			return {
+				"objetos": grouped_data,
+				"sucursales_info": sucursales_info,
+				"total_general": total_general,
+				"parametros_i": param_left,
+				"parametros_d": param_right,
+				'fecha_hora_reporte': fecha_hora_reporte,
+				'titulo': ConfigViews.report_title,
+				'logo_url': f"{dominio}{static('img/logo_01.png')}",
+				'css_url': f"{dominio}{static('css/reportes.css')}",
+			}
 		
-		#-- Se retorna un contexto que será consumido tanto para la vista en pantalla como para la generación del PDF.
-		return {
-			"objetos": grouped_data,
-			"sucursales_info": sucursales_info,
-			"total_general": total_general,
-			"parametros_i": param_left,
-			"parametros_d": param_right,
-			'fecha_hora_reporte': fecha_hora_reporte,
-			'titulo': ConfigViews.report_title,
-			'logo_url': f"{dominio}{static('img/logo_01.png')}",
-			'css_url': f"{dominio}{static('css/reportes.css')}",
-		}
+		else:
+			#-- Convertir QUERYSET a LISTA DE DICCIONARIOS al inicio (optimización clave).
+			queryset_list = [raw_to_dict(obj) for obj in queryset]
+			
+			#-- Estructura para mapeo de columnas.
+			sucursales = Sucursal.objects.filter(estatus_sucursal=True)
+			
+			sucursales_info = _sucursal_info(sucursales)
+			
+			#-- Se retorna un contexto que será consumido tanto para la vista en pantalla como para la generación del PDF.
+			return {
+				"objetos": queryset_list,
+				"sucursales_info": sucursales_info,
+			}
+			
 	
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
@@ -446,7 +473,7 @@ def generar_pdf(contexto_reporte):
 	
 	#-- Agregar las sucursales seleccionadas a ConfigViews.table_info.
 	sucursales_info = contexto_reporte.get("sucursales_info", [])
-	table_info = _extend_table_info(sucursales_info)
+	table_info = _extend_table_info(sucursales_info, "pdf")
 	
 	#-- Construir datos de la tabla:
 	
@@ -607,7 +634,7 @@ def vlstockgeneralsucursal_vista_excel(request):
 	queryset = view_instance.obtener_queryset(cleaned_data)
 	
 	#-- Agregar las sucursales seleccionadas a ConfigViews.table_info.
-	table_info = _extend_table_info(sucursales_info)
+	table_info = _extend_table_info(sucursales_info, "excel")
 	
 	#-- Filtrar los headers de las columnas.
 	headers_titles = {field: table_info[field] for field in table_info if table_info[field]['excel']}
@@ -651,7 +678,7 @@ def vlstockgeneralsucursal_vista_csv(request):
 	queryset = view_instance.obtener_queryset(cleaned_data)
 	
 	#-- Agregar las sucursales seleccionadas a ConfigViews.table_info.
-	table_info = _extend_table_info(sucursales_info)
+	table_info = _extend_table_info(sucursales_info, "csv")
 	
 	#-- Filtrar los headers de las columnas.
 	headers_titles = {field: table_info[field] for field in table_info if table_info[field]['csv']}
@@ -670,7 +697,19 @@ def vlstockgeneralsucursal_vista_csv(request):
 	return response
 
 
-def _extend_table_info(sucursales_info):
+def _sucursal_info(sucursales):
+	info = [
+		{
+			'nombre': sucursal.nombre_sucursal[:5],			 	#-- Nombre corto de la sucursal.
+			'columna': f'stock_suc_{sucursal.id_sucursal}',		#-- Nombre real de la columna.
+			'id': sucursal.id_sucursal
+		}
+		for sucursal in sucursales
+	]
+	return info
+
+
+def _extend_table_info(sucursales_info, salida="pantalla"):
 	table_info = ConfigViews.table_info.copy()
 	
 	for suc in sucursales_info:
@@ -684,14 +723,18 @@ def _extend_table_info(sucursales_info):
 			}}
 		)
 	
+	if salida in ["pantalla", "pdf"]:
+		table_info.update({
+			"otras_suc": {
+				"label": "Otras Suc.",
+				"col_width_pdf": 45,
+				"pdf": True,
+				"excel": True,
+				"csv": True
+			}
+		})
+	
 	table_info.update({
-		"otras_suc": {
-			"label": "Otras Suc.",
-			"col_width_pdf": 45,
-			"pdf": True,
-			"excel": True,
-			"csv": True
-		},
 		"stock_total": {
 			"label": "Stock Total",
 			"col_width_pdf": 45,
