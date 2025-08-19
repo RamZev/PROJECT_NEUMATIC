@@ -316,6 +316,8 @@ class FacturaManualCreateView(MaestroDetalleCreateView):
 					else:
 						letra = "X"
 
+				messages.success(self.request, f"messages.success de prueba")
+				
 				# Bloquear y obtener/crear el número
 				numero_obj, created = Numero.objects.select_for_update(nowait=True).get_or_create(
 					id_sucursal=sucursal,
@@ -328,6 +330,8 @@ class FacturaManualCreateView(MaestroDetalleCreateView):
 				nuevo_numero = numero_obj.numero + 1
 				Numero.objects.filter(pk=numero_obj.pk).update(numero=F('numero') + 1)
 
+				
+				# Establecimiento de la letra y el número del comprobante
 				form.instance.numero_comprobante = nuevo_numero
 				form.instance.letra_comprobante = letra
 				form.instance.compro = comprobante

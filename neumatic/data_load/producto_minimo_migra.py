@@ -38,7 +38,7 @@ registros_creados = 0
 inicio = time.time()  # Registrar tiempo inicial
 
 # Procesar registros en bloques
-batch_size = 500  # Tamaño del lote para inserciones en bloque
+batch_size = 2000  # Tamaño del lote para inserciones en bloque
 bulk_data = []  # Lista para acumular los registros a insertar
 errores = 0  # Contador de errores
 registros_creados = 0  # Contador de registros creados

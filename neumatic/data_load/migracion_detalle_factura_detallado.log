@@ -1,0 +1,1198 @@
+2025-07-23 19:51:44,073 - INFO - Eliminando 176000 registros existentes...
+2025-07-23 19:52:14,073 - INFO - Iniciando migración. Total registros: 201095
+2025-07-23 19:52:14,073 - INFO - Cargando cachés de referencia...
+2025-07-23 19:52:21,576 - INFO - Lote guardado: 2000 registros
+2025-07-23 19:52:22,110 - INFO - Lote guardado: 2000 registros
+2025-07-23 19:52:22,786 - INFO - Lote guardado: 2000 registros
+2025-07-23 19:52:23,353 - INFO - Lote guardado: 2000 registros
+2025-07-23 19:52:23,871 - INFO - Lote guardado: 2000 registros
+2025-07-23 19:52:23,871 - INFO - Progreso: 10000 registros procesados
+2025-07-23 19:52:24,422 - INFO - Lote guardado: 2000 registros
+2025-07-23 19:52:24,972 - INFO - Lote guardado: 2000 registros
+2025-07-23 19:52:25,698 - INFO - Lote guardado: 2000 registros
+2025-07-23 19:52:26,264 - INFO - Lote guardado: 2000 registros
+2025-07-23 19:52:26,799 - INFO - Lote guardado: 2000 registros
+2025-07-23 19:52:26,815 - INFO - Progreso: 20000 registros procesados
+2025-07-23 19:52:27,552 - INFO - Lote guardado: 2000 registros
+2025-07-23 19:52:28,103 - INFO - Lote guardado: 2000 registros
+2025-07-23 19:52:28,653 - INFO - Lote guardado: 2000 registros
+2025-07-23 19:52:29,187 - INFO - Lote guardado: 2000 registros
+2025-07-23 19:52:29,921 - INFO - Lote guardado: 2000 registros
+2025-07-23 19:52:29,922 - INFO - Progreso: 30000 registros procesados
+2025-07-23 19:52:30,438 - INFO - Lote guardado: 2000 registros
+2025-07-23 19:52:30,953 - INFO - Lote guardado: 2000 registros
+2025-07-23 19:52:31,488 - INFO - Lote guardado: 2000 registros
+2025-07-23 19:52:32,005 - INFO - Lote guardado: 2000 registros
+2025-07-23 19:52:32,683 - INFO - Lote guardado: 2000 registros
+2025-07-23 19:52:32,683 - INFO - Progreso: 40000 registros procesados
+2025-07-23 19:52:33,235 - INFO - Lote guardado: 2000 registros
+2025-07-23 19:52:33,782 - INFO - Lote guardado: 2000 registros
+2025-07-23 19:52:34,363 - INFO - Lote guardado: 2000 registros
+2025-07-23 19:52:34,899 - INFO - Lote guardado: 2000 registros
+2025-07-23 19:52:35,449 - INFO - Lote guardado: 2000 registros
+2025-07-23 19:52:35,449 - INFO - Progreso: 50000 registros procesados
+2025-07-23 19:52:35,969 - INFO - Lote guardado: 2000 registros
+2025-07-23 19:52:36,643 - INFO - Lote guardado: 2000 registros
+2025-07-23 19:52:37,179 - INFO - Lote guardado: 2000 registros
+2025-07-23 19:52:37,744 - INFO - Lote guardado: 2000 registros
+2025-07-23 19:52:38,263 - INFO - Lote guardado: 2000 registros
+2025-07-23 19:52:38,263 - INFO - Progreso: 60000 registros procesados
+2025-07-23 19:52:38,990 - INFO - Lote guardado: 2000 registros
+2025-07-23 19:52:39,509 - INFO - Lote guardado: 2000 registros
+2025-07-23 19:52:40,044 - INFO - Lote guardado: 2000 registros
+2025-07-23 19:52:40,594 - INFO - Lote guardado: 2000 registros
+2025-07-23 19:52:41,269 - INFO - Lote guardado: 2000 registros
+2025-07-23 19:52:41,269 - INFO - Progreso: 70000 registros procesados
+2025-07-23 19:52:41,789 - INFO - Lote guardado: 2000 registros
+2025-07-23 19:52:42,312 - INFO - Lote guardado: 2000 registros
+2025-07-23 19:52:43,015 - INFO - Lote guardado: 2000 registros
+2025-07-23 19:52:43,580 - INFO - Lote guardado: 2000 registros
+2025-07-23 19:52:44,101 - INFO - Lote guardado: 2000 registros
+2025-07-23 19:52:44,101 - INFO - Progreso: 80000 registros procesados
+2025-07-23 19:52:44,779 - INFO - Lote guardado: 2000 registros
+2025-07-23 19:52:45,329 - INFO - Lote guardado: 2000 registros
+2025-07-23 19:52:45,849 - INFO - Lote guardado: 2000 registros
+2025-07-23 19:52:46,367 - INFO - Lote guardado: 2000 registros
+2025-07-23 19:52:47,074 - INFO - Lote guardado: 2000 registros
+2025-07-23 19:52:47,074 - INFO - Progreso: 90000 registros procesados
+2025-07-23 19:52:47,629 - INFO - Lote guardado: 2000 registros
+2025-07-23 19:52:48,174 - INFO - Lote guardado: 2000 registros
+2025-07-23 19:52:48,709 - INFO - Lote guardado: 2000 registros
+2025-07-23 19:52:49,401 - INFO - Lote guardado: 2000 registros
+2025-07-23 19:52:49,937 - INFO - Lote guardado: 2000 registros
+2025-07-23 19:52:49,937 - INFO - Progreso: 100000 registros procesados
+2025-07-23 19:52:50,461 - INFO - Lote guardado: 2000 registros
+2025-07-23 19:52:51,133 - INFO - Lote guardado: 2000 registros
+2025-07-23 19:52:51,652 - INFO - Lote guardado: 2000 registros
+2025-07-23 19:52:52,187 - INFO - Lote guardado: 2000 registros
+2025-07-23 19:52:52,754 - INFO - Lote guardado: 2000 registros
+2025-07-23 19:52:52,754 - INFO - Progreso: 110000 registros procesados
+2025-07-23 19:52:53,303 - INFO - Lote guardado: 2000 registros
+2025-07-23 19:52:54,026 - INFO - Lote guardado: 2000 registros
+2025-07-23 19:52:54,577 - INFO - Lote guardado: 2000 registros
+2025-07-23 19:52:55,142 - INFO - Lote guardado: 2000 registros
+2025-07-23 19:52:55,661 - INFO - Lote guardado: 2000 registros
+2025-07-23 19:52:55,661 - INFO - Progreso: 120000 registros procesados
+2025-07-23 19:52:56,465 - INFO - Lote guardado: 2000 registros
+2025-07-23 19:52:56,985 - INFO - Lote guardado: 2000 registros
+2025-07-23 19:52:57,504 - INFO - Lote guardado: 2000 registros
+2025-07-23 19:52:58,023 - INFO - Lote guardado: 2000 registros
+2025-07-23 19:52:58,745 - INFO - Lote guardado: 2000 registros
+2025-07-23 19:52:58,745 - INFO - Progreso: 130000 registros procesados
+2025-07-23 19:52:59,280 - INFO - Lote guardado: 2000 registros
+2025-07-23 19:52:59,784 - INFO - Lote guardado: 2000 registros
+2025-07-23 19:53:00,340 - INFO - Lote guardado: 2000 registros
+2025-07-23 19:53:01,056 - INFO - Lote guardado: 2000 registros
+2025-07-23 19:53:01,606 - INFO - Lote guardado: 2000 registros
+2025-07-23 19:53:01,606 - INFO - Progreso: 140000 registros procesados
+2025-07-23 19:53:02,126 - INFO - Lote guardado: 2000 registros
+2025-07-23 19:53:02,661 - INFO - Lote guardado: 2000 registros
+2025-07-23 19:53:03,196 - INFO - Lote guardado: 2000 registros
+2025-07-23 19:53:03,859 - INFO - Lote guardado: 2000 registros
+2025-07-23 19:53:04,394 - INFO - Lote guardado: 2000 registros
+2025-07-23 19:53:04,394 - INFO - Progreso: 150000 registros procesados
+2025-07-23 19:53:04,928 - INFO - Lote guardado: 2000 registros
+2025-07-23 19:53:05,463 - INFO - Lote guardado: 2000 registros
+2025-07-23 19:53:05,983 - INFO - Lote guardado: 2000 registros
+2025-07-23 19:53:06,719 - INFO - Lote guardado: 2000 registros
+2025-07-23 19:53:07,239 - INFO - Lote guardado: 2000 registros
+2025-07-23 19:53:07,239 - INFO - Progreso: 160000 registros procesados
+2025-07-23 19:53:07,794 - INFO - Lote guardado: 2000 registros
+2025-07-23 19:53:08,497 - INFO - Lote guardado: 2000 registros
+2025-07-23 19:53:09,048 - INFO - Lote guardado: 2000 registros
+2025-07-23 19:53:09,596 - INFO - Lote guardado: 2000 registros
+2025-07-23 19:53:10,134 - INFO - Lote guardado: 2000 registros
+2025-07-23 19:53:10,134 - INFO - Progreso: 170000 registros procesados
+2025-07-23 19:53:10,667 - INFO - Lote guardado: 2000 registros
+2025-07-23 19:53:11,218 - INFO - Lote guardado: 2000 registros
+2025-07-23 19:53:11,773 - INFO - Lote guardado: 2000 registros
+2025-07-23 19:53:12,010 - ERROR - Error en factura ID 1632588 - Registro 178006: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:12,038 - ERROR - Error en factura ID 1632588 - Registro 178007: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:12,059 - ERROR - Error en factura ID 1632588 - Registro 178008: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:12,078 - ERROR - Error en factura ID 1632591 - Registro 178009: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:12,089 - ERROR - Error en factura ID 1632593 - Registro 178010: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:12,106 - ERROR - Error en factura ID 1632593 - Registro 178011: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:12,122 - ERROR - Error en factura ID 1632593 - Registro 178012: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:12,139 - ERROR - Error en factura ID 1632593 - Registro 178013: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:12,174 - ERROR - Error en factura ID 1632594 - Registro 178014: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:12,193 - ERROR - Error en factura ID 1632595 - Registro 178015: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:12,212 - ERROR - Error en factura ID 1632595 - Registro 178016: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:12,223 - ERROR - Error en factura ID 1632595 - Registro 178017: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:12,240 - ERROR - Error en factura ID 1632595 - Registro 178018: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:12,276 - ERROR - Error en factura ID 1632595 - Registro 178019: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:12,295 - ERROR - Error en factura ID 1632595 - Registro 178020: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:12,312 - ERROR - Error en factura ID 1632595 - Registro 178021: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:12,324 - ERROR - Error en factura ID 1632595 - Registro 178022: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:12,359 - ERROR - Error en factura ID 1632596 - Registro 178023: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:12,379 - ERROR - Error en factura ID 1632597 - Registro 178024: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:12,396 - ERROR - Error en factura ID 1632599 - Registro 178025: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:12,409 - ERROR - Error en factura ID 1632600 - Registro 178026: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:12,445 - ERROR - Error en factura ID 1632600 - Registro 178027: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:12,462 - ERROR - Error en factura ID 1632600 - Registro 178028: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:12,479 - ERROR - Error en factura ID 1632602 - Registro 178029: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:12,505 - ERROR - Error en factura ID 1632602 - Registro 178030: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:12,524 - ERROR - Error en factura ID 1632605 - Registro 178031: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:12,543 - ERROR - Error en factura ID 1632605 - Registro 178032: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:12,563 - ERROR - Error en factura ID 1632608 - Registro 178033: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:12,574 - ERROR - Error en factura ID 1632608 - Registro 178034: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:12,607 - ERROR - Error en factura ID 1632608 - Registro 178035: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:12,626 - ERROR - Error en factura ID 1632608 - Registro 178036: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:12,644 - ERROR - Error en factura ID 1632611 - Registro 178037: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:12,675 - ERROR - Error en factura ID 1632612 - Registro 178038: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:12,721 - ERROR - Error en factura ID 1632614 - Registro 178039: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:12,745 - ERROR - Error en factura ID 1632616 - Registro 178040: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:12,763 - ERROR - Error en factura ID 1632617 - Registro 178041: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:12,790 - ERROR - Error en factura ID 1632618 - Registro 178042: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:12,813 - ERROR - Error en factura ID 1632619 - Registro 178043: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:12,830 - ERROR - Error en factura ID 1632620 - Registro 178044: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:12,842 - ERROR - Error en factura ID 1632620 - Registro 178045: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:12,874 - ERROR - Error en factura ID 1632622 - Registro 178046: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:12,894 - ERROR - Error en factura ID 1632623 - Registro 178047: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:12,914 - ERROR - Error en factura ID 1632623 - Registro 178048: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:12,925 - ERROR - Error en factura ID 1632623 - Registro 178049: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:12,942 - ERROR - Error en factura ID 1632623 - Registro 178050: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:12,975 - ERROR - Error en factura ID 1632624 - Registro 178051: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:12,997 - ERROR - Error en factura ID 1632626 - Registro 178052: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:13,014 - ERROR - Error en factura ID 1632626 - Registro 178053: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:13,042 - ERROR - Error en factura ID 1632626 - Registro 178054: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:13,064 - ERROR - Error en factura ID 1632626 - Registro 178055: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:13,081 - ERROR - Error en factura ID 1632627 - Registro 178056: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:13,095 - ERROR - Error en factura ID 1632628 - Registro 178057: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:13,124 - ERROR - Error en factura ID 1632629 - Registro 178058: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:13,145 - ERROR - Error en factura ID 1632631 - Registro 178059: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:13,164 - ERROR - Error en factura ID 1632633 - Registro 178060: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:13,182 - ERROR - Error en factura ID 1632633 - Registro 178061: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:13,208 - ERROR - Error en factura ID 1632634 - Registro 178062: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:13,232 - ERROR - Error en factura ID 1632635 - Registro 178063: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:13,248 - ERROR - Error en factura ID 1632635 - Registro 178064: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:13,277 - ERROR - Error en factura ID 1632635 - Registro 178065: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:13,298 - ERROR - Error en factura ID 1632635 - Registro 178066: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:13,315 - ERROR - Error en factura ID 1632637 - Registro 178067: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:13,329 - ERROR - Error en factura ID 1632637 - Registro 178068: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:13,347 - ERROR - Error en factura ID 1632637 - Registro 178069: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:13,377 - ERROR - Error en factura ID 1632638 - Registro 178070: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:13,399 - ERROR - Error en factura ID 1632639 - Registro 178071: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:13,415 - ERROR - Error en factura ID 1632639 - Registro 178072: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:13,429 - ERROR - Error en factura ID 1632639 - Registro 178073: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:13,458 - ERROR - Error en factura ID 1632640 - Registro 178074: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:13,481 - ERROR - Error en factura ID 1632640 - Registro 178075: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:13,499 - ERROR - Error en factura ID 1632640 - Registro 178076: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:13,510 - ERROR - Error en factura ID 1632640 - Registro 178077: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:13,548 - ERROR - Error en factura ID 1632640 - Registro 178078: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:13,566 - ERROR - Error en factura ID 1632642 - Registro 178079: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:13,594 - ERROR - Error en factura ID 1632645 - Registro 178080: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:13,616 - ERROR - Error en factura ID 1632645 - Registro 178081: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:13,633 - ERROR - Error en factura ID 1632647 - Registro 178082: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:13,659 - ERROR - Error en factura ID 1632647 - Registro 178083: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:13,680 - ERROR - Error en factura ID 1632647 - Registro 178084: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:13,700 - ERROR - Error en factura ID 1632649 - Registro 178085: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:13,711 - ERROR - Error en factura ID 1632649 - Registro 178086: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:13,728 - ERROR - Error en factura ID 1632650 - Registro 178087: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:13,747 - ERROR - Error en factura ID 1632650 - Registro 178088: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:13,764 - ERROR - Error en factura ID 1632650 - Registro 178089: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:13,794 - ERROR - Error en factura ID 1632651 - Registro 178090: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:13,817 - ERROR - Error en factura ID 1632651 - Registro 178091: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:13,834 - ERROR - Error en factura ID 1632651 - Registro 178092: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:13,863 - ERROR - Error en factura ID 1632652 - Registro 178093: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:13,883 - ERROR - Error en factura ID 1632653 - Registro 178094: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:13,900 - ERROR - Error en factura ID 1632653 - Registro 178095: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:13,912 - ERROR - Error en factura ID 1632654 - Registro 178096: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:13,929 - ERROR - Error en factura ID 1632654 - Registro 178097: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:13,945 - ERROR - Error en factura ID 1632656 - Registro 178098: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:13,979 - ERROR - Error en factura ID 1632658 - Registro 178099: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:14,000 - ERROR - Error en factura ID 1632658 - Registro 178100: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:14,017 - ERROR - Error en factura ID 1632660 - Registro 178101: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:14,045 - ERROR - Error en factura ID 1632660 - Registro 178102: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:14,068 - ERROR - Error en factura ID 1632661 - Registro 178103: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:14,085 - ERROR - Error en factura ID 1632661 - Registro 178104: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:14,096 - ERROR - Error en factura ID 1632661 - Registro 178105: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:14,113 - ERROR - Error en factura ID 1632662 - Registro 178106: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:14,131 - ERROR - Error en factura ID 1632664 - Registro 178107: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:14,162 - ERROR - Error en factura ID 1632665 - Registro 178108: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:14,185 - ERROR - Error en factura ID 1632666 - Registro 178109: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:14,202 - ERROR - Error en factura ID 1632667 - Registro 178110: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:14,228 - ERROR - Error en factura ID 1632667 - Registro 178111: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:14,247 - ERROR - Error en factura ID 1632667 - Registro 178112: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:14,268 - ERROR - Error en factura ID 1632667 - Registro 178113: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:14,296 - ERROR - Error en factura ID 1632667 - Registro 178114: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:14,315 - ERROR - Error en factura ID 1632667 - Registro 178115: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:14,334 - ERROR - Error en factura ID 1632667 - Registro 178116: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:14,352 - ERROR - Error en factura ID 1632667 - Registro 178117: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:14,363 - ERROR - Error en factura ID 1632668 - Registro 178118: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:14,398 - ERROR - Error en factura ID 1632669 - Registro 178119: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:14,419 - ERROR - Error en factura ID 1632671 - Registro 178120: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:14,436 - ERROR - Error en factura ID 1632672 - Registro 178121: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:14,462 - ERROR - Error en factura ID 1632674 - Registro 178122: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:14,481 - ERROR - Error en factura ID 1632674 - Registro 178123: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:14,502 - ERROR - Error en factura ID 1632674 - Registro 178124: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:14,523 - ERROR - Error en factura ID 1632674 - Registro 178125: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:14,545 - ERROR - Error en factura ID 1632675 - Registro 178126: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:14,565 - ERROR - Error en factura ID 1632676 - Registro 178127: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:14,587 - ERROR - Error en factura ID 1632676 - Registro 178128: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:14,603 - ERROR - Error en factura ID 1632676 - Registro 178129: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:14,634 - ERROR - Error en factura ID 1632676 - Registro 178130: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:14,654 - ERROR - Error en factura ID 1632677 - Registro 178131: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:14,679 - ERROR - Error en factura ID 1632678 - Registro 178132: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:14,703 - ERROR - Error en factura ID 1632680 - Registro 178133: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:14,721 - ERROR - Error en factura ID 1632680 - Registro 178134: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:14,746 - ERROR - Error en factura ID 1632680 - Registro 178135: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:14,769 - ERROR - Error en factura ID 1632680 - Registro 178136: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:14,788 - ERROR - Error en factura ID 1632685 - Registro 178137: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:14,806 - ERROR - Error en factura ID 1632685 - Registro 178138: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:14,831 - ERROR - Error en factura ID 1632687 - Registro 178139: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:14,853 - ERROR - Error en factura ID 1632688 - Registro 178140: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:14,875 - ERROR - Error en factura ID 1632692 - Registro 178141: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:14,883 - ERROR - Error en factura ID 1632692 - Registro 178142: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:14,940 - ERROR - Error en factura ID 1632692 - Registro 178143: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:14,972 - ERROR - Error en factura ID 1632693 - Registro 178144: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:14,992 - ERROR - Error en factura ID 1632693 - Registro 178145: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:15,014 - ERROR - Error en factura ID 1632696 - Registro 178146: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:15,034 - ERROR - Error en factura ID 1632697 - Registro 178147: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:15,055 - ERROR - Error en factura ID 1632697 - Registro 178148: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:15,079 - ERROR - Error en factura ID 1632697 - Registro 178149: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:15,103 - ERROR - Error en factura ID 1632697 - Registro 178150: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:15,122 - ERROR - Error en factura ID 1632698 - Registro 178151: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:15,141 - ERROR - Error en factura ID 1632698 - Registro 178152: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:15,158 - ERROR - Error en factura ID 1632699 - Registro 178153: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:15,171 - ERROR - Error en factura ID 1632699 - Registro 178154: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:15,199 - ERROR - Error en factura ID 1632699 - Registro 178155: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:15,223 - ERROR - Error en factura ID 1632699 - Registro 178156: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:15,241 - ERROR - Error en factura ID 1632702 - Registro 178157: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:15,267 - ERROR - Error en factura ID 1632702 - Registro 178158: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:15,287 - ERROR - Error en factura ID 1632703 - Registro 178159: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:15,308 - ERROR - Error en factura ID 1632705 - Registro 178160: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:15,317 - ERROR - Error en factura ID 1632705 - Registro 178161: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:15,352 - ERROR - Error en factura ID 1632707 - Registro 178162: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:15,372 - ERROR - Error en factura ID 1632707 - Registro 178163: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:15,393 - ERROR - Error en factura ID 1632708 - Registro 178164: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:15,415 - ERROR - Error en factura ID 1632709 - Registro 178165: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:15,433 - ERROR - Error en factura ID 1632709 - Registro 178166: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:15,460 - ERROR - Error en factura ID 1632710 - Registro 178167: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:15,478 - ERROR - Error en factura ID 1632711 - Registro 178168: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:15,492 - ERROR - Error en factura ID 1632712 - Registro 178169: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:15,517 - ERROR - Error en factura ID 1632714 - Registro 178170: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:15,538 - ERROR - Error en factura ID 1632715 - Registro 178171: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:15,561 - ERROR - Error en factura ID 1632716 - Registro 178172: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:15,580 - ERROR - Error en factura ID 1632719 - Registro 178173: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:15,605 - ERROR - Error en factura ID 1632721 - Registro 178174: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:15,627 - ERROR - Error en factura ID 1632721 - Registro 178175: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:15,646 - ERROR - Error en factura ID 1632721 - Registro 178176: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:15,667 - ERROR - Error en factura ID 1632721 - Registro 178177: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:15,693 - ERROR - Error en factura ID 1632721 - Registro 178178: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:15,716 - ERROR - Error en factura ID 1632721 - Registro 178179: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:15,738 - ERROR - Error en factura ID 1632721 - Registro 178180: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:15,759 - ERROR - Error en factura ID 1632721 - Registro 178181: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:15,777 - ERROR - Error en factura ID 1632721 - Registro 178182: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:15,803 - ERROR - Error en factura ID 1632721 - Registro 178183: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:15,824 - ERROR - Error en factura ID 1632721 - Registro 178184: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:15,840 - ERROR - Error en factura ID 1632721 - Registro 178185: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:15,860 - ERROR - Error en factura ID 1632721 - Registro 178186: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:15,889 - ERROR - Error en factura ID 1632722 - Registro 178187: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:15,907 - ERROR - Error en factura ID 1632724 - Registro 178188: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:15,935 - ERROR - Error en factura ID 1632725 - Registro 178189: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:15,956 - ERROR - Error en factura ID 1632726 - Registro 178190: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:15,981 - ERROR - Error en factura ID 1632727 - Registro 178191: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:16,001 - ERROR - Error en factura ID 1632728 - Registro 178192: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:16,022 - ERROR - Error en factura ID 1632728 - Registro 178193: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:16,045 - ERROR - Error en factura ID 1632728 - Registro 178194: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:16,064 - ERROR - Error en factura ID 1632729 - Registro 178195: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:16,084 - ERROR - Error en factura ID 1632729 - Registro 178196: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:16,111 - ERROR - Error en factura ID 1632729 - Registro 178197: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:16,134 - ERROR - Error en factura ID 1632729 - Registro 178198: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:16,155 - ERROR - Error en factura ID 1632730 - Registro 178199: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:16,185 - ERROR - Error en factura ID 1632732 - Registro 178200: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:16,205 - ERROR - Error en factura ID 1632733 - Registro 178201: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:16,224 - ERROR - Error en factura ID 1632733 - Registro 178202: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:16,236 - ERROR - Error en factura ID 1632733 - Registro 178203: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:16,270 - ERROR - Error en factura ID 1632733 - Registro 178204: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:16,293 - ERROR - Error en factura ID 1632734 - Registro 178205: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:16,309 - ERROR - Error en factura ID 1632734 - Registro 178206: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:16,336 - ERROR - Error en factura ID 1632734 - Registro 178207: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:16,358 - ERROR - Error en factura ID 1632736 - Registro 178208: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:16,379 - ERROR - Error en factura ID 1632737 - Registro 178209: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:16,399 - ERROR - Error en factura ID 1632739 - Registro 178210: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:16,421 - ERROR - Error en factura ID 1632740 - Registro 178211: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:16,448 - ERROR - Error en factura ID 1632741 - Registro 178212: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:16,471 - ERROR - Error en factura ID 1632741 - Registro 178213: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:16,490 - ERROR - Error en factura ID 1632742 - Registro 178214: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:16,516 - ERROR - Error en factura ID 1632742 - Registro 178215: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:16,540 - ERROR - Error en factura ID 1632742 - Registro 178216: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:16,559 - ERROR - Error en factura ID 1632742 - Registro 178217: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:16,583 - ERROR - Error en factura ID 1632743 - Registro 178218: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:16,603 - ERROR - Error en factura ID 1632744 - Registro 178219: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:16,625 - ERROR - Error en factura ID 1632744 - Registro 178220: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:16,653 - ERROR - Error en factura ID 1632744 - Registro 178221: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:16,674 - ERROR - Error en factura ID 1632744 - Registro 178222: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:16,698 - ERROR - Error en factura ID 1632744 - Registro 178223: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:16,714 - ERROR - Error en factura ID 1632745 - Registro 178224: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:16,737 - ERROR - Error en factura ID 1632745 - Registro 178225: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:16,759 - ERROR - Error en factura ID 1632746 - Registro 178226: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:16,788 - ERROR - Error en factura ID 1632748 - Registro 178227: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:16,810 - ERROR - Error en factura ID 1632748 - Registro 178228: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:16,833 - ERROR - Error en factura ID 1632748 - Registro 178229: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:16,857 - ERROR - Error en factura ID 1632749 - Registro 178230: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:16,876 - ERROR - Error en factura ID 1632750 - Registro 178231: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:16,900 - ERROR - Error en factura ID 1632750 - Registro 178232: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:16,920 - ERROR - Error en factura ID 1632750 - Registro 178233: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:16,943 - ERROR - Error en factura ID 1632751 - Registro 178234: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:16,968 - ERROR - Error en factura ID 1632752 - Registro 178235: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:16,994 - ERROR - Error en factura ID 1632754 - Registro 178236: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:17,011 - ERROR - Error en factura ID 1632754 - Registro 178237: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:17,040 - ERROR - Error en factura ID 1632755 - Registro 178238: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:17,060 - ERROR - Error en factura ID 1632759 - Registro 178239: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:17,088 - ERROR - Error en factura ID 1632761 - Registro 178240: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:17,110 - ERROR - Error en factura ID 1632762 - Registro 178241: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:17,134 - ERROR - Error en factura ID 1632762 - Registro 178242: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:17,156 - ERROR - Error en factura ID 1632762 - Registro 178243: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:17,177 - ERROR - Error en factura ID 1632763 - Registro 178244: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:17,201 - ERROR - Error en factura ID 1632765 - Registro 178245: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:17,223 - ERROR - Error en factura ID 1632765 - Registro 178246: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:17,243 - ERROR - Error en factura ID 1632765 - Registro 178247: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:17,263 - ERROR - Error en factura ID 1632766 - Registro 178248: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:17,281 - ERROR - Error en factura ID 1632766 - Registro 178249: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:17,309 - ERROR - Error en factura ID 1632766 - Registro 178250: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:17,333 - ERROR - Error en factura ID 1632766 - Registro 178251: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:17,353 - ERROR - Error en factura ID 1632766 - Registro 178252: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:17,373 - ERROR - Error en factura ID 1632766 - Registro 178253: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:17,399 - ERROR - Error en factura ID 1632767 - Registro 178254: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:17,422 - ERROR - Error en factura ID 1632767 - Registro 178255: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:17,444 - ERROR - Error en factura ID 1632767 - Registro 178256: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:17,467 - ERROR - Error en factura ID 1632767 - Registro 178257: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:17,492 - ERROR - Error en factura ID 1632767 - Registro 178258: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:17,513 - ERROR - Error en factura ID 1632767 - Registro 178259: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:17,546 - ERROR - Error en factura ID 1632769 - Registro 178260: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:17,597 - ERROR - Error en factura ID 1632769 - Registro 178261: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:17,606 - ERROR - Error en factura ID 1632770 - Registro 178262: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:17,642 - ERROR - Error en factura ID 1632772 - Registro 178263: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:17,662 - ERROR - Error en factura ID 1632773 - Registro 178264: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:17,687 - ERROR - Error en factura ID 1632773 - Registro 178265: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:17,708 - ERROR - Error en factura ID 1632774 - Registro 178266: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:17,729 - ERROR - Error en factura ID 1632774 - Registro 178267: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:17,744 - ERROR - Error en factura ID 1632775 - Registro 178268: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:17,775 - ERROR - Error en factura ID 1632775 - Registro 178269: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:17,798 - ERROR - Error en factura ID 1632775 - Registro 178270: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:17,823 - ERROR - Error en factura ID 1632775 - Registro 178271: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:17,844 - ERROR - Error en factura ID 1632777 - Registro 178272: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:17,865 - ERROR - Error en factura ID 1632777 - Registro 178273: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:17,880 - ERROR - Error en factura ID 1632777 - Registro 178274: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:17,911 - ERROR - Error en factura ID 1632777 - Registro 178275: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:17,937 - ERROR - Error en factura ID 1632778 - Registro 178276: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:17,961 - ERROR - Error en factura ID 1632780 - Registro 178277: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:17,980 - ERROR - Error en factura ID 1632780 - Registro 178278: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:18,002 - ERROR - Error en factura ID 1632781 - Registro 178279: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:18,025 - ERROR - Error en factura ID 1632782 - Registro 178280: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:18,049 - ERROR - Error en factura ID 1632783 - Registro 178281: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:18,070 - ERROR - Error en factura ID 1632786 - Registro 178282: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:18,084 - ERROR - Error en factura ID 1632786 - Registro 178283: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:18,110 - ERROR - Error en factura ID 1632786 - Registro 178284: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:18,135 - ERROR - Error en factura ID 1632788 - Registro 178285: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:18,159 - ERROR - Error en factura ID 1632788 - Registro 178286: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:18,181 - ERROR - Error en factura ID 1632789 - Registro 178287: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:18,209 - ERROR - Error en factura ID 1632790 - Registro 178288: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:18,229 - ERROR - Error en factura ID 1632792 - Registro 178289: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:18,254 - ERROR - Error en factura ID 1632794 - Registro 178290: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:18,274 - ERROR - Error en factura ID 1632794 - Registro 178291: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:18,296 - ERROR - Error en factura ID 1632794 - Registro 178292: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:18,324 - ERROR - Error en factura ID 1632794 - Registro 178293: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:18,348 - ERROR - Error en factura ID 1632794 - Registro 178294: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:18,369 - ERROR - Error en factura ID 1632794 - Registro 178295: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:18,376 - ERROR - Error en factura ID 1632797 - Registro 178296: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:18,410 - ERROR - Error en factura ID 1632798 - Registro 178297: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:18,431 - ERROR - Error en factura ID 1632799 - Registro 178298: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:18,460 - ERROR - Error en factura ID 1632799 - Registro 178299: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:18,480 - ERROR - Error en factura ID 1632799 - Registro 178300: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:18,501 - ERROR - Error en factura ID 1632803 - Registro 178301: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:18,526 - ERROR - Error en factura ID 1632804 - Registro 178302: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:18,547 - ERROR - Error en factura ID 1632805 - Registro 178303: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:18,575 - ERROR - Error en factura ID 1632805 - Registro 178304: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:18,597 - ERROR - Error en factura ID 1632805 - Registro 178305: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:18,621 - ERROR - Error en factura ID 1632805 - Registro 178306: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:18,641 - ERROR - Error en factura ID 1632807 - Registro 178307: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:18,664 - ERROR - Error en factura ID 1632808 - Registro 178308: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:18,689 - ERROR - Error en factura ID 1632809 - Registro 178309: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:18,709 - ERROR - Error en factura ID 1632810 - Registro 178310: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:18,732 - ERROR - Error en factura ID 1632810 - Registro 178311: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:18,759 - ERROR - Error en factura ID 1632810 - Registro 178312: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:18,783 - ERROR - Error en factura ID 1632810 - Registro 178313: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:18,800 - ERROR - Error en factura ID 1632810 - Registro 178314: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:18,827 - ERROR - Error en factura ID 1632815 - Registro 178315: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:18,850 - ERROR - Error en factura ID 1632816 - Registro 178316: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:18,873 - ERROR - Error en factura ID 1632817 - Registro 178317: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:18,896 - ERROR - Error en factura ID 1632817 - Registro 178318: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:18,916 - ERROR - Error en factura ID 1632818 - Registro 178319: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:18,948 - ERROR - Error en factura ID 1632819 - Registro 178320: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:18,967 - ERROR - Error en factura ID 1632819 - Registro 178321: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:18,992 - ERROR - Error en factura ID 1632820 - Registro 178322: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:19,016 - ERROR - Error en factura ID 1632820 - Registro 178323: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:19,034 - ERROR - Error en factura ID 1632822 - Registro 178324: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:19,058 - ERROR - Error en factura ID 1632826 - Registro 178325: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:19,082 - ERROR - Error en factura ID 1632826 - Registro 178326: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:19,105 - ERROR - Error en factura ID 1632826 - Registro 178327: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:19,127 - ERROR - Error en factura ID 1632829 - Registro 178328: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:19,151 - ERROR - Error en factura ID 1632831 - Registro 178329: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:19,172 - ERROR - Error en factura ID 1632832 - Registro 178330: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:19,195 - ERROR - Error en factura ID 1632832 - Registro 178331: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:19,218 - ERROR - Error en factura ID 1632832 - Registro 178332: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:19,241 - ERROR - Error en factura ID 1632833 - Registro 178333: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:19,263 - ERROR - Error en factura ID 1632833 - Registro 178334: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:19,283 - ERROR - Error en factura ID 1632833 - Registro 178335: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:19,306 - ERROR - Error en factura ID 1632833 - Registro 178336: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:19,327 - ERROR - Error en factura ID 1632834 - Registro 178337: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:19,350 - ERROR - Error en factura ID 1632834 - Registro 178338: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:19,377 - ERROR - Error en factura ID 1632836 - Registro 178339: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:19,396 - ERROR - Error en factura ID 1632837 - Registro 178340: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:19,419 - ERROR - Error en factura ID 1632838 - Registro 178341: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:19,430 - ERROR - Error en factura ID 1632840 - Registro 178342: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:19,447 - ERROR - Error en factura ID 1632840 - Registro 178343: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:19,481 - ERROR - Error en factura ID 1632840 - Registro 178344: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:19,502 - ERROR - Error en factura ID 1632841 - Registro 178345: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:19,523 - ERROR - Error en factura ID 1632842 - Registro 178346: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:19,544 - ERROR - Error en factura ID 1632843 - Registro 178347: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:19,564 - ERROR - Error en factura ID 1632844 - Registro 178348: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:19,587 - ERROR - Error en factura ID 1632845 - Registro 178349: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:19,614 - ERROR - Error en factura ID 1632845 - Registro 178350: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:19,639 - ERROR - Error en factura ID 1632845 - Registro 178351: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:19,652 - ERROR - Error en factura ID 1632846 - Registro 178352: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:19,686 - ERROR - Error en factura ID 1632846 - Registro 178353: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:19,703 - ERROR - Error en factura ID 1632846 - Registro 178354: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:19,728 - ERROR - Error en factura ID 1632846 - Registro 178355: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:19,754 - ERROR - Error en factura ID 1632847 - Registro 178356: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:19,781 - ERROR - Error en factura ID 1632847 - Registro 178357: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:19,803 - ERROR - Error en factura ID 1632847 - Registro 178358: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:19,830 - ERROR - Error en factura ID 1632848 - Registro 178359: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:19,851 - ERROR - Error en factura ID 1632848 - Registro 178360: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:19,874 - ERROR - Error en factura ID 1632850 - Registro 178361: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:19,895 - ERROR - Error en factura ID 1632851 - Registro 178362: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:19,916 - ERROR - Error en factura ID 1632852 - Registro 178363: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:19,937 - ERROR - Error en factura ID 1632853 - Registro 178364: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:19,953 - ERROR - Error en factura ID 1632854 - Registro 178365: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:19,982 - ERROR - Error en factura ID 1632855 - Registro 178366: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:20,004 - ERROR - Error en factura ID 1632856 - Registro 178367: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:20,029 - ERROR - Error en factura ID 1632856 - Registro 178368: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:20,054 - ERROR - Error en factura ID 1632857 - Registro 178369: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:20,071 - ERROR - Error en factura ID 1632858 - Registro 178370: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:20,103 - ERROR - Error en factura ID 1632859 - Registro 178371: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:20,131 - ERROR - Error en factura ID 1632860 - Registro 178372: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:20,152 - ERROR - Error en factura ID 1632861 - Registro 178373: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:20,182 - ERROR - Error en factura ID 1632862 - Registro 178374: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:20,198 - ERROR - Error en factura ID 1632865 - Registro 178375: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:20,221 - ERROR - Error en factura ID 1632865 - Registro 178376: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:20,252 - ERROR - Error en factura ID 1632866 - Registro 178377: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:20,270 - ERROR - Error en factura ID 1632867 - Registro 178378: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:20,299 - ERROR - Error en factura ID 1632867 - Registro 178379: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:20,327 - ERROR - Error en factura ID 1632867 - Registro 178380: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:20,350 - ERROR - Error en factura ID 1632868 - Registro 178381: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:20,371 - ERROR - Error en factura ID 1632868 - Registro 178382: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:20,397 - ERROR - Error en factura ID 1632869 - Registro 178383: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:20,420 - ERROR - Error en factura ID 1632871 - Registro 178384: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:20,444 - ERROR - Error en factura ID 1632872 - Registro 178385: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:20,507 - ERROR - Error en factura ID 1632872 - Registro 178386: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:20,536 - ERROR - Error en factura ID 1632873 - Registro 178387: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:20,555 - ERROR - Error en factura ID 1632874 - Registro 178388: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:20,584 - ERROR - Error en factura ID 1632874 - Registro 178389: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:20,606 - ERROR - Error en factura ID 1632875 - Registro 178390: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:20,630 - ERROR - Error en factura ID 1632876 - Registro 178391: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:20,650 - ERROR - Error en factura ID 1632877 - Registro 178392: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:20,675 - ERROR - Error en factura ID 1632878 - Registro 178393: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:20,703 - ERROR - Error en factura ID 1632879 - Registro 178394: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:20,722 - ERROR - Error en factura ID 1632881 - Registro 178395: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:20,750 - ERROR - Error en factura ID 1632881 - Registro 178396: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:20,771 - ERROR - Error en factura ID 1632881 - Registro 178397: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:20,798 - ERROR - Error en factura ID 1632882 - Registro 178398: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:20,823 - ERROR - Error en factura ID 1632882 - Registro 178399: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:20,839 - ERROR - Error en factura ID 1632882 - Registro 178400: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:20,869 - ERROR - Error en factura ID 1632882 - Registro 178401: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:20,888 - ERROR - Error en factura ID 1632884 - Registro 178402: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:20,914 - ERROR - Error en factura ID 1632886 - Registro 178403: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:20,939 - ERROR - Error en factura ID 1632886 - Registro 178404: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:20,957 - ERROR - Error en factura ID 1632886 - Registro 178405: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:20,981 - ERROR - Error en factura ID 1632891 - Registro 178406: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:21,005 - ERROR - Error en factura ID 1632891 - Registro 178407: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:21,024 - ERROR - Error en factura ID 1632892 - Registro 178408: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:21,058 - ERROR - Error en factura ID 1632892 - Registro 178409: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:21,087 - ERROR - Error en factura ID 1632892 - Registro 178410: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:21,111 - ERROR - Error en factura ID 1632892 - Registro 178411: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:21,133 - ERROR - Error en factura ID 1632894 - Registro 178412: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:21,157 - ERROR - Error en factura ID 1632894 - Registro 178413: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:21,184 - ERROR - Error en factura ID 1632894 - Registro 178414: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:21,205 - ERROR - Error en factura ID 1632896 - Registro 178415: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:21,238 - ERROR - Error en factura ID 1632898 - Registro 178416: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:21,259 - ERROR - Error en factura ID 1632899 - Registro 178417: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:21,286 - ERROR - Error en factura ID 1632899 - Registro 178418: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:21,314 - ERROR - Error en factura ID 1632900 - Registro 178419: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:21,335 - ERROR - Error en factura ID 1632903 - Registro 178420: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:21,358 - ERROR - Error en factura ID 1632903 - Registro 178421: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:21,386 - ERROR - Error en factura ID 1632903 - Registro 178422: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:21,408 - ERROR - Error en factura ID 1632904 - Registro 178423: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:21,432 - ERROR - Error en factura ID 1632904 - Registro 178424: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:21,453 - ERROR - Error en factura ID 1632904 - Registro 178425: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:21,475 - ERROR - Error en factura ID 1632906 - Registro 178426: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:21,502 - ERROR - Error en factura ID 1632906 - Registro 178427: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:21,523 - ERROR - Error en factura ID 1632906 - Registro 178428: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:21,550 - ERROR - Error en factura ID 1632907 - Registro 178429: [<class 'decimal.InvalidOperation'>]
+2025-07-23 19:53:21,573 - ERROR - Error en factura ID 1632909 - Registro 178430: [<class 'decimal.InvalidOperation'>]
+2025-07-24 00:06:19,562 - INFO - Eliminando 176000 registros existentes...
+2025-07-24 00:06:22,423 - INFO - Iniciando migración. Total registros: 201095
+2025-07-24 00:06:22,423 - INFO - Cargando cachés de referencia...
+2025-07-24 00:06:30,251 - INFO - Lote guardado: 2000 registros
+2025-07-24 00:06:30,776 - INFO - Lote guardado: 2000 registros
+2025-07-24 00:06:31,471 - INFO - Lote guardado: 2000 registros
+2025-07-24 00:06:32,013 - INFO - Lote guardado: 2000 registros
+2025-07-24 00:06:32,539 - INFO - Lote guardado: 2000 registros
+2025-07-24 00:06:32,542 - INFO - Progreso: 10000 registros procesados
+2025-07-24 00:06:33,089 - INFO - Lote guardado: 2000 registros
+2025-07-24 00:06:33,791 - INFO - Lote guardado: 2000 registros
+2025-07-24 00:06:34,320 - INFO - Lote guardado: 2000 registros
+2025-07-24 00:06:34,855 - INFO - Lote guardado: 2000 registros
+2025-07-24 00:06:35,565 - INFO - Lote guardado: 2000 registros
+2025-07-24 00:06:35,567 - INFO - Progreso: 20000 registros procesados
+2025-07-24 00:06:36,087 - INFO - Lote guardado: 2000 registros
+2025-07-24 00:06:36,643 - INFO - Lote guardado: 2000 registros
+2025-07-24 00:06:37,174 - INFO - Lote guardado: 2000 registros
+2025-07-24 00:06:37,910 - INFO - Lote guardado: 2000 registros
+2025-07-24 00:06:38,461 - INFO - Lote guardado: 2000 registros
+2025-07-24 00:06:38,463 - INFO - Progreso: 30000 registros procesados
+2025-07-24 00:06:38,997 - INFO - Lote guardado: 2000 registros
+2025-07-24 00:06:39,525 - INFO - Lote guardado: 2000 registros
+2025-07-24 00:06:40,227 - INFO - Lote guardado: 2000 registros
+2025-07-24 00:06:40,751 - INFO - Lote guardado: 2000 registros
+2025-07-24 00:06:41,303 - INFO - Lote guardado: 2000 registros
+2025-07-24 00:06:41,305 - INFO - Progreso: 40000 registros procesados
+2025-07-24 00:06:41,995 - INFO - Lote guardado: 2000 registros
+2025-07-24 00:06:42,560 - INFO - Lote guardado: 2000 registros
+2025-07-24 00:06:43,126 - INFO - Lote guardado: 2000 registros
+2025-07-24 00:06:43,684 - INFO - Lote guardado: 2000 registros
+2025-07-24 00:06:44,228 - INFO - Lote guardado: 2000 registros
+2025-07-24 00:06:44,230 - INFO - Progreso: 50000 registros procesados
+2025-07-24 00:06:44,965 - INFO - Lote guardado: 2000 registros
+2025-07-24 00:06:45,508 - INFO - Lote guardado: 2000 registros
+2025-07-24 00:06:46,046 - INFO - Lote guardado: 2000 registros
+2025-07-24 00:06:46,597 - INFO - Lote guardado: 2000 registros
+2025-07-24 00:06:47,302 - INFO - Lote guardado: 2000 registros
+2025-07-24 00:06:47,304 - INFO - Progreso: 60000 registros procesados
+2025-07-24 00:06:47,845 - INFO - Lote guardado: 2000 registros
+2025-07-24 00:06:48,381 - INFO - Lote guardado: 2000 registros
+2025-07-24 00:06:49,110 - INFO - Lote guardado: 2000 registros
+2025-07-24 00:06:49,659 - INFO - Lote guardado: 2000 registros
+2025-07-24 00:06:50,187 - INFO - Lote guardado: 2000 registros
+2025-07-24 00:06:50,190 - INFO - Progreso: 70000 registros procesados
+2025-07-24 00:06:50,720 - INFO - Lote guardado: 2000 registros
+2025-07-24 00:06:51,287 - INFO - Lote guardado: 2000 registros
+2025-07-24 00:06:52,001 - INFO - Lote guardado: 2000 registros
+2025-07-24 00:06:52,530 - INFO - Lote guardado: 2000 registros
+2025-07-24 00:06:53,080 - INFO - Lote guardado: 2000 registros
+2025-07-24 00:06:53,082 - INFO - Progreso: 80000 registros procesados
+2025-07-24 00:06:53,640 - INFO - Lote guardado: 2000 registros
+2025-07-24 00:06:54,169 - INFO - Lote guardado: 2000 registros
+2025-07-24 00:06:54,851 - INFO - Lote guardado: 2000 registros
+2025-07-24 00:06:55,357 - INFO - Lote guardado: 2000 registros
+2025-07-24 00:06:55,915 - INFO - Lote guardado: 2000 registros
+2025-07-24 00:06:55,917 - INFO - Progreso: 90000 registros procesados
+2025-07-24 00:06:56,462 - INFO - Lote guardado: 2000 registros
+2025-07-24 00:06:57,172 - INFO - Lote guardado: 2000 registros
+2025-07-24 00:06:57,712 - INFO - Lote guardado: 2000 registros
+2025-07-24 00:06:58,258 - INFO - Lote guardado: 2000 registros
+2025-07-24 00:06:58,794 - INFO - Lote guardado: 2000 registros
+2025-07-24 00:06:58,796 - INFO - Progreso: 100000 registros procesados
+2025-07-24 00:06:59,535 - INFO - Lote guardado: 2000 registros
+2025-07-24 00:07:00,096 - INFO - Lote guardado: 2000 registros
+2025-07-24 00:07:00,646 - INFO - Lote guardado: 2000 registros
+2025-07-24 00:07:01,343 - INFO - Lote guardado: 2000 registros
+2025-07-24 00:07:01,888 - INFO - Lote guardado: 2000 registros
+2025-07-24 00:07:01,890 - INFO - Progreso: 110000 registros procesados
+2025-07-24 00:07:02,455 - INFO - Lote guardado: 2000 registros
+2025-07-24 00:07:03,166 - INFO - Lote guardado: 2000 registros
+2025-07-24 00:07:03,719 - INFO - Lote guardado: 2000 registros
+2025-07-24 00:07:04,277 - INFO - Lote guardado: 2000 registros
+2025-07-24 00:07:04,848 - INFO - Lote guardado: 2000 registros
+2025-07-24 00:07:04,850 - INFO - Progreso: 120000 registros procesados
+2025-07-24 00:07:05,428 - INFO - Lote guardado: 2000 registros
+2025-07-24 00:07:05,978 - INFO - Lote guardado: 2000 registros
+2025-07-24 00:07:06,719 - INFO - Lote guardado: 2000 registros
+2025-07-24 00:07:07,261 - INFO - Lote guardado: 2000 registros
+2025-07-24 00:07:07,821 - INFO - Lote guardado: 2000 registros
+2025-07-24 00:07:07,823 - INFO - Progreso: 130000 registros procesados
+2025-07-24 00:07:08,349 - INFO - Lote guardado: 2000 registros
+2025-07-24 00:07:08,929 - INFO - Lote guardado: 2000 registros
+2025-07-24 00:07:09,641 - INFO - Lote guardado: 2000 registros
+2025-07-24 00:07:10,250 - INFO - Lote guardado: 2000 registros
+2025-07-24 00:07:10,790 - INFO - Lote guardado: 2000 registros
+2025-07-24 00:07:10,792 - INFO - Progreso: 140000 registros procesados
+2025-07-24 00:07:11,537 - INFO - Lote guardado: 2000 registros
+2025-07-24 00:07:12,104 - INFO - Lote guardado: 2000 registros
+2025-07-24 00:07:12,698 - INFO - Lote guardado: 2000 registros
+2025-07-24 00:07:13,250 - INFO - Lote guardado: 2000 registros
+2025-07-24 00:07:13,799 - INFO - Lote guardado: 2000 registros
+2025-07-24 00:07:13,801 - INFO - Progreso: 150000 registros procesados
+2025-07-24 00:07:14,496 - INFO - Lote guardado: 2000 registros
+2025-07-24 00:07:15,069 - INFO - Lote guardado: 2000 registros
+2025-07-24 00:07:15,622 - INFO - Lote guardado: 2000 registros
+2025-07-24 00:07:16,158 - INFO - Lote guardado: 2000 registros
+2025-07-24 00:07:16,714 - INFO - Lote guardado: 2000 registros
+2025-07-24 00:07:16,716 - INFO - Progreso: 160000 registros procesados
+2025-07-24 00:07:17,242 - INFO - Lote guardado: 2000 registros
+2025-07-24 00:07:17,958 - INFO - Lote guardado: 2000 registros
+2025-07-24 00:07:18,506 - INFO - Lote guardado: 2000 registros
+2025-07-24 00:07:19,066 - INFO - Lote guardado: 2000 registros
+2025-07-24 00:07:19,590 - INFO - Lote guardado: 2000 registros
+2025-07-24 00:07:19,593 - INFO - Progreso: 170000 registros procesados
+2025-07-24 00:07:20,325 - INFO - Lote guardado: 2000 registros
+2025-07-24 00:07:20,900 - INFO - Lote guardado: 2000 registros
+2025-07-24 00:07:21,436 - INFO - Lote guardado: 2000 registros
+2025-07-24 00:07:22,151 - INFO - Lote guardado: 2000 registros
+2025-07-24 00:07:22,691 - INFO - Lote guardado: 2000 registros
+2025-07-24 00:07:22,693 - INFO - Progreso: 180000 registros procesados
+2025-07-24 00:07:23,255 - INFO - Lote guardado: 2000 registros
+2025-07-24 00:07:23,797 - INFO - Lote guardado: 2000 registros
+2025-07-24 00:07:24,348 - INFO - Lote guardado: 2000 registros
+2025-07-24 00:07:25,078 - INFO - Lote guardado: 2000 registros
+2025-07-24 00:07:25,592 - INFO - Lote guardado: 2000 registros
+2025-07-24 00:07:25,595 - INFO - Progreso: 190000 registros procesados
+2025-07-24 00:07:26,165 - INFO - Lote guardado: 2000 registros
+2025-07-24 00:07:26,705 - INFO - Lote guardado: 2000 registros
+2025-07-24 00:07:27,259 - INFO - Lote guardado: 2000 registros
+2025-07-24 00:07:27,978 - INFO - Lote guardado: 2000 registros
+2025-07-24 00:07:28,549 - INFO - Lote guardado: 2000 registros
+2025-07-24 00:07:28,551 - INFO - Progreso: 200000 registros procesados
+2025-07-24 00:07:28,853 - INFO - Último lote guardado: 1086 registros
+2025-07-24 00:07:28,854 - INFO - 
+=== REPORTE FINAL ===
+2025-07-24 00:07:28,854 - INFO - Total registros procesados: 201086
+2025-07-24 00:07:28,854 - INFO - Total errores: 0
+2025-07-24 00:07:28,854 - WARNING - 
+Productos no encontrados (1):
+2025-07-24 00:07:28,855 - WARNING -  - Código convertido: 0 | Valor original: 0
+2025-07-24 00:07:28,855 - INFO - 
+Tiempo total: 1 minutos 9 segundos
+2025-07-28 03:57:16,979 - INFO - Iniciando migración. Total registros: 201095
+2025-07-28 03:57:16,992 - INFO - Cargando cachés de referencia...
+2025-07-28 03:57:25,075 - INFO - Lote guardado: 2000 registros
+2025-07-28 03:57:25,688 - INFO - Lote guardado: 2000 registros
+2025-07-28 03:57:26,393 - INFO - Lote guardado: 2000 registros
+2025-07-28 03:57:27,038 - INFO - Lote guardado: 2000 registros
+2025-07-28 03:57:27,567 - INFO - Lote guardado: 2000 registros
+2025-07-28 03:57:27,569 - INFO - Progreso: 10000 registros procesados
+2025-07-28 03:57:28,181 - INFO - Lote guardado: 2000 registros
+2025-07-28 03:57:28,675 - INFO - Lote guardado: 2000 registros
+2025-07-28 03:57:29,482 - INFO - Lote guardado: 2000 registros
+2025-07-28 03:57:30,073 - INFO - Lote guardado: 2000 registros
+2025-07-28 03:57:30,673 - INFO - Lote guardado: 2000 registros
+2025-07-28 03:57:30,675 - INFO - Progreso: 20000 registros procesados
+2025-07-28 03:57:31,359 - INFO - Lote guardado: 2000 registros
+2025-07-28 03:57:31,878 - INFO - Lote guardado: 2000 registros
+2025-07-28 03:57:32,458 - INFO - Lote guardado: 2000 registros
+2025-07-28 03:57:32,950 - INFO - Lote guardado: 2000 registros
+2025-07-28 03:57:33,701 - INFO - Lote guardado: 2000 registros
+2025-07-28 03:57:33,703 - INFO - Progreso: 30000 registros procesados
+2025-07-28 03:57:34,244 - INFO - Lote guardado: 2000 registros
+2025-07-28 03:57:34,763 - INFO - Lote guardado: 2000 registros
+2025-07-28 03:57:35,311 - INFO - Lote guardado: 2000 registros
+2025-07-28 03:57:35,914 - INFO - Lote guardado: 2000 registros
+2025-07-28 03:57:36,622 - INFO - Lote guardado: 2000 registros
+2025-07-28 03:57:36,624 - INFO - Progreso: 40000 registros procesados
+2025-07-28 03:57:37,196 - INFO - Lote guardado: 2000 registros
+2025-07-28 03:57:37,906 - INFO - Lote guardado: 2000 registros
+2025-07-28 03:57:38,487 - INFO - Lote guardado: 2000 registros
+2025-07-28 03:57:39,093 - INFO - Lote guardado: 2000 registros
+2025-07-28 03:57:39,704 - INFO - Lote guardado: 2000 registros
+2025-07-28 03:57:39,705 - INFO - Progreso: 50000 registros procesados
+2025-07-28 03:57:40,208 - INFO - Lote guardado: 2000 registros
+2025-07-28 03:57:41,002 - INFO - Lote guardado: 2000 registros
+2025-07-28 03:57:41,596 - INFO - Lote guardado: 2000 registros
+2025-07-28 03:57:42,140 - INFO - Lote guardado: 2000 registros
+2025-07-28 03:57:42,785 - INFO - Lote guardado: 2000 registros
+2025-07-28 03:57:42,787 - INFO - Progreso: 60000 registros procesados
+2025-07-28 03:57:43,617 - INFO - Lote guardado: 2000 registros
+2025-07-28 03:57:44,207 - INFO - Lote guardado: 2000 registros
+2025-07-28 03:57:44,794 - INFO - Lote guardado: 2000 registros
+2025-07-28 03:57:45,370 - INFO - Lote guardado: 2000 registros
+2025-07-28 03:57:46,093 - INFO - Lote guardado: 2000 registros
+2025-07-28 03:57:46,096 - INFO - Progreso: 70000 registros procesados
+2025-07-28 03:57:46,759 - INFO - Lote guardado: 2000 registros
+2025-07-28 03:57:47,368 - INFO - Lote guardado: 2000 registros
+2025-07-28 03:57:48,255 - INFO - Lote guardado: 2000 registros
+2025-07-28 03:57:48,933 - INFO - Lote guardado: 2000 registros
+2025-07-28 03:57:49,556 - INFO - Lote guardado: 2000 registros
+2025-07-28 03:57:49,558 - INFO - Progreso: 80000 registros procesados
+2025-07-28 03:57:50,338 - INFO - Lote guardado: 2000 registros
+2025-07-28 03:57:51,019 - INFO - Lote guardado: 2000 registros
+2025-07-28 03:57:51,652 - INFO - Lote guardado: 2000 registros
+2025-07-28 03:57:52,203 - INFO - Lote guardado: 2000 registros
+2025-07-28 03:57:52,894 - INFO - Lote guardado: 2000 registros
+2025-07-28 03:57:52,897 - INFO - Progreso: 90000 registros procesados
+2025-07-28 03:57:53,458 - INFO - Lote guardado: 2000 registros
+2025-07-28 03:57:54,032 - INFO - Lote guardado: 2000 registros
+2025-07-28 03:57:54,699 - INFO - Lote guardado: 2000 registros
+2025-07-28 03:57:55,425 - INFO - Lote guardado: 2000 registros
+2025-07-28 03:57:56,064 - INFO - Lote guardado: 2000 registros
+2025-07-28 03:57:56,067 - INFO - Progreso: 100000 registros procesados
+2025-07-28 03:57:56,604 - INFO - Lote guardado: 2000 registros
+2025-07-28 03:57:57,357 - INFO - Lote guardado: 2000 registros
+2025-07-28 03:57:57,965 - INFO - Lote guardado: 2000 registros
+2025-07-28 03:57:58,494 - INFO - Lote guardado: 2000 registros
+2025-07-28 03:57:59,102 - INFO - Lote guardado: 2000 registros
+2025-07-28 03:57:59,104 - INFO - Progreso: 110000 registros procesados
+2025-07-28 03:57:59,758 - INFO - Lote guardado: 2000 registros
+2025-07-28 03:58:00,702 - INFO - Lote guardado: 2000 registros
+2025-07-28 03:58:01,298 - INFO - Lote guardado: 2000 registros
+2025-07-28 03:58:01,844 - INFO - Lote guardado: 2000 registros
+2025-07-28 03:58:02,521 - INFO - Lote guardado: 2000 registros
+2025-07-28 03:58:02,524 - INFO - Progreso: 120000 registros procesados
+2025-07-28 03:58:03,335 - INFO - Lote guardado: 2000 registros
+2025-07-28 03:58:03,908 - INFO - Lote guardado: 2000 registros
+2025-07-28 03:58:04,472 - INFO - Lote guardado: 2000 registros
+2025-07-28 03:58:05,097 - INFO - Lote guardado: 2000 registros
+2025-07-28 03:58:05,802 - INFO - Lote guardado: 2000 registros
+2025-07-28 03:58:05,804 - INFO - Progreso: 130000 registros procesados
+2025-07-28 03:58:06,314 - INFO - Lote guardado: 2000 registros
+2025-07-28 03:58:06,827 - INFO - Lote guardado: 2000 registros
+2025-07-28 03:58:07,570 - INFO - Lote guardado: 2000 registros
+2025-07-28 03:58:08,297 - INFO - Lote guardado: 2000 registros
+2025-07-28 03:58:08,919 - INFO - Lote guardado: 2000 registros
+2025-07-28 03:58:08,921 - INFO - Progreso: 140000 registros procesados
+2025-07-28 03:58:09,533 - INFO - Lote guardado: 2000 registros
+2025-07-28 03:58:10,075 - INFO - Lote guardado: 2000 registros
+2025-07-28 03:58:10,716 - INFO - Lote guardado: 2000 registros
+2025-07-28 03:58:11,444 - INFO - Lote guardado: 2000 registros
+2025-07-28 03:58:11,974 - INFO - Lote guardado: 2000 registros
+2025-07-28 03:58:11,976 - INFO - Progreso: 150000 registros procesados
+2025-07-28 03:58:12,514 - INFO - Lote guardado: 2000 registros
+2025-07-28 03:58:13,030 - INFO - Lote guardado: 2000 registros
+2025-07-28 03:58:13,701 - INFO - Lote guardado: 2000 registros
+2025-07-28 03:58:14,454 - INFO - Lote guardado: 2000 registros
+2025-07-28 03:58:14,968 - INFO - Lote guardado: 2000 registros
+2025-07-28 03:58:14,969 - INFO - Progreso: 160000 registros procesados
+2025-07-28 03:58:15,555 - INFO - Lote guardado: 2000 registros
+2025-07-28 03:58:16,294 - INFO - Lote guardado: 2000 registros
+2025-07-28 03:58:16,918 - INFO - Lote guardado: 2000 registros
+2025-07-28 03:58:17,455 - INFO - Lote guardado: 2000 registros
+2025-07-28 03:58:18,016 - INFO - Lote guardado: 2000 registros
+2025-07-28 03:58:18,018 - INFO - Progreso: 170000 registros procesados
+2025-07-28 03:58:18,574 - INFO - Lote guardado: 2000 registros
+2025-07-28 03:58:19,163 - INFO - Lote guardado: 2000 registros
+2025-07-28 03:58:19,728 - INFO - Lote guardado: 2000 registros
+2025-07-28 03:58:20,545 - INFO - Lote guardado: 2000 registros
+2025-07-28 03:58:21,098 - INFO - Lote guardado: 2000 registros
+2025-07-28 03:58:21,100 - INFO - Progreso: 180000 registros procesados
+2025-07-28 03:58:21,748 - INFO - Lote guardado: 2000 registros
+2025-07-28 03:58:22,352 - INFO - Lote guardado: 2000 registros
+2025-07-28 03:58:23,138 - INFO - Lote guardado: 2000 registros
+2025-07-28 03:58:23,669 - INFO - Lote guardado: 2000 registros
+2025-07-28 03:58:24,389 - INFO - Lote guardado: 2000 registros
+2025-07-28 03:58:24,391 - INFO - Progreso: 190000 registros procesados
+2025-07-28 03:58:25,000 - INFO - Lote guardado: 2000 registros
+2025-07-28 03:58:25,612 - INFO - Lote guardado: 2000 registros
+2025-07-28 03:58:26,224 - INFO - Lote guardado: 2000 registros
+2025-07-28 03:58:26,872 - INFO - Lote guardado: 2000 registros
+2025-07-28 03:58:27,669 - INFO - Lote guardado: 2000 registros
+2025-07-28 03:58:27,672 - INFO - Progreso: 200000 registros procesados
+2025-07-28 03:58:27,998 - INFO - Último lote guardado: 1086 registros
+2025-07-28 03:58:27,999 - INFO - 
+=== REPORTE FINAL ===
+2025-07-28 03:58:27,999 - INFO - Total registros procesados: 201086
+2025-07-28 03:58:28,000 - INFO - Total errores: 0
+2025-07-28 03:58:28,000 - WARNING - 
+Productos no encontrados (1):
+2025-07-28 03:58:28,001 - WARNING -  - Código convertido: 0 | Valor original: 0
+2025-07-28 03:58:28,001 - INFO - 
+Tiempo total: 1 minutos 11 segundos
+2025-07-28 10:22:58,431 - INFO - Iniciando migración. Total registros: 201095
+2025-07-28 10:22:58,487 - INFO - Cargando cachés de referencia...
+2025-07-28 10:23:06,986 - INFO - Lote guardado: 2000 registros
+2025-07-28 10:23:08,132 - INFO - Lote guardado: 2000 registros
+2025-07-28 10:23:09,467 - INFO - Lote guardado: 2000 registros
+2025-07-28 10:23:10,604 - INFO - Lote guardado: 2000 registros
+2025-07-28 10:23:11,763 - INFO - Lote guardado: 2000 registros
+2025-07-28 10:23:11,765 - INFO - Progreso: 10000 registros procesados
+2025-07-28 10:23:12,921 - INFO - Lote guardado: 2000 registros
+2025-07-28 10:23:14,073 - INFO - Lote guardado: 2000 registros
+2025-07-28 10:23:15,389 - INFO - Lote guardado: 2000 registros
+2025-07-28 10:23:16,508 - INFO - Lote guardado: 2000 registros
+2025-07-28 10:23:17,662 - INFO - Lote guardado: 2000 registros
+2025-07-28 10:23:17,664 - INFO - Progreso: 20000 registros procesados
+2025-07-28 10:23:18,992 - INFO - Lote guardado: 2000 registros
+2025-07-28 10:23:20,145 - INFO - Lote guardado: 2000 registros
+2025-07-28 10:23:21,277 - INFO - Lote guardado: 2000 registros
+2025-07-28 10:23:22,440 - INFO - Lote guardado: 2000 registros
+2025-07-28 10:23:23,765 - INFO - Lote guardado: 2000 registros
+2025-07-28 10:23:23,767 - INFO - Progreso: 30000 registros procesados
+2025-07-28 10:23:24,931 - INFO - Lote guardado: 2000 registros
+2025-07-28 10:23:26,081 - INFO - Lote guardado: 2000 registros
+2025-07-28 10:23:27,246 - INFO - Lote guardado: 2000 registros
+2025-07-28 10:23:28,413 - INFO - Lote guardado: 2000 registros
+2025-07-28 10:23:29,749 - INFO - Lote guardado: 2000 registros
+2025-07-28 10:23:29,751 - INFO - Progreso: 40000 registros procesados
+2025-07-28 10:23:30,937 - INFO - Lote guardado: 2000 registros
+2025-07-28 10:23:32,115 - INFO - Lote guardado: 2000 registros
+2025-07-28 10:23:33,298 - INFO - Lote guardado: 2000 registros
+2025-07-28 10:23:34,466 - INFO - Lote guardado: 2000 registros
+2025-07-28 10:23:35,622 - INFO - Lote guardado: 2000 registros
+2025-07-28 10:23:35,624 - INFO - Progreso: 50000 registros procesados
+2025-07-28 10:23:36,778 - INFO - Lote guardado: 2000 registros
+2025-07-28 10:23:38,102 - INFO - Lote guardado: 2000 registros
+2025-07-28 10:23:39,284 - INFO - Lote guardado: 2000 registros
+2025-07-28 10:23:40,435 - INFO - Lote guardado: 2000 registros
+2025-07-28 10:23:41,610 - INFO - Lote guardado: 2000 registros
+2025-07-28 10:23:41,612 - INFO - Progreso: 60000 registros procesados
+2025-07-28 10:23:42,920 - INFO - Lote guardado: 2000 registros
+2025-07-28 10:23:44,052 - INFO - Lote guardado: 2000 registros
+2025-07-28 10:23:45,229 - INFO - Lote guardado: 2000 registros
+2025-07-28 10:23:46,383 - INFO - Lote guardado: 2000 registros
+2025-07-28 10:23:47,736 - INFO - Lote guardado: 2000 registros
+2025-07-28 10:23:47,738 - INFO - Progreso: 70000 registros procesados
+2025-07-28 10:23:48,906 - INFO - Lote guardado: 2000 registros
+2025-07-28 10:23:50,047 - INFO - Lote guardado: 2000 registros
+2025-07-28 10:23:51,383 - INFO - Lote guardado: 2000 registros
+2025-07-28 10:23:52,547 - INFO - Lote guardado: 2000 registros
+2025-07-28 10:23:53,710 - INFO - Lote guardado: 2000 registros
+2025-07-28 10:23:53,714 - INFO - Progreso: 80000 registros procesados
+2025-07-28 10:23:55,092 - INFO - Lote guardado: 2000 registros
+2025-07-28 10:23:56,247 - INFO - Lote guardado: 2000 registros
+2025-07-28 10:23:57,416 - INFO - Lote guardado: 2000 registros
+2025-07-28 10:23:58,592 - INFO - Lote guardado: 2000 registros
+2025-07-28 10:23:59,909 - INFO - Lote guardado: 2000 registros
+2025-07-28 10:23:59,912 - INFO - Progreso: 90000 registros procesados
+2025-07-28 10:24:01,080 - INFO - Lote guardado: 2000 registros
+2025-07-28 10:24:02,243 - INFO - Lote guardado: 2000 registros
+2025-07-28 10:24:03,422 - INFO - Lote guardado: 2000 registros
+2025-07-28 10:24:04,765 - INFO - Lote guardado: 2000 registros
+2025-07-28 10:24:05,923 - INFO - Lote guardado: 2000 registros
+2025-07-28 10:24:05,926 - INFO - Progreso: 100000 registros procesados
+2025-07-28 10:24:07,088 - INFO - Lote guardado: 2000 registros
+2025-07-28 10:24:08,447 - INFO - Lote guardado: 2000 registros
+2025-07-28 10:24:09,614 - INFO - Lote guardado: 2000 registros
+2025-07-28 10:24:10,770 - INFO - Lote guardado: 2000 registros
+2025-07-28 10:24:11,944 - INFO - Lote guardado: 2000 registros
+2025-07-28 10:24:11,946 - INFO - Progreso: 110000 registros procesados
+2025-07-28 10:24:13,112 - INFO - Lote guardado: 2000 registros
+2025-07-28 10:24:14,458 - INFO - Lote guardado: 2000 registros
+2025-07-28 10:24:15,663 - INFO - Lote guardado: 2000 registros
+2025-07-28 10:24:16,833 - INFO - Lote guardado: 2000 registros
+2025-07-28 10:24:18,004 - INFO - Lote guardado: 2000 registros
+2025-07-28 10:24:18,007 - INFO - Progreso: 120000 registros procesados
+2025-07-28 10:24:19,340 - INFO - Lote guardado: 2000 registros
+2025-07-28 10:24:20,505 - INFO - Lote guardado: 2000 registros
+2025-07-28 10:24:21,644 - INFO - Lote guardado: 2000 registros
+2025-07-28 10:24:22,812 - INFO - Lote guardado: 2000 registros
+2025-07-28 10:24:24,188 - INFO - Lote guardado: 2000 registros
+2025-07-28 10:24:24,190 - INFO - Progreso: 130000 registros procesados
+2025-07-28 10:24:25,354 - INFO - Lote guardado: 2000 registros
+2025-07-28 10:24:26,517 - INFO - Lote guardado: 2000 registros
+2025-07-28 10:24:27,691 - INFO - Lote guardado: 2000 registros
+2025-07-28 10:24:29,017 - INFO - Lote guardado: 2000 registros
+2025-07-28 10:24:30,167 - INFO - Lote guardado: 2000 registros
+2025-07-28 10:24:30,170 - INFO - Progreso: 140000 registros procesados
+2025-07-28 10:24:31,338 - INFO - Lote guardado: 2000 registros
+2025-07-28 10:24:32,492 - INFO - Lote guardado: 2000 registros
+2025-07-28 10:24:33,689 - INFO - Lote guardado: 2000 registros
+2025-07-28 10:24:35,096 - INFO - Lote guardado: 2000 registros
+2025-07-28 10:24:36,286 - INFO - Lote guardado: 2000 registros
+2025-07-28 10:24:36,288 - INFO - Progreso: 150000 registros procesados
+2025-07-28 10:24:37,494 - INFO - Lote guardado: 2000 registros
+2025-07-28 10:24:38,731 - INFO - Lote guardado: 2000 registros
+2025-07-28 10:24:39,909 - INFO - Lote guardado: 2000 registros
+2025-07-28 10:24:41,283 - INFO - Lote guardado: 2000 registros
+2025-07-28 10:24:42,462 - INFO - Lote guardado: 2000 registros
+2025-07-28 10:24:42,464 - INFO - Progreso: 160000 registros procesados
+2025-07-28 10:24:43,659 - INFO - Lote guardado: 2000 registros
+2025-07-28 10:24:45,047 - INFO - Lote guardado: 2000 registros
+2025-07-28 10:24:46,284 - INFO - Lote guardado: 2000 registros
+2025-07-28 10:24:47,448 - INFO - Lote guardado: 2000 registros
+2025-07-28 10:24:48,647 - INFO - Lote guardado: 2000 registros
+2025-07-28 10:24:48,650 - INFO - Progreso: 170000 registros procesados
+2025-07-28 10:24:49,828 - INFO - Lote guardado: 2000 registros
+2025-07-28 10:24:50,999 - INFO - Lote guardado: 2000 registros
+2025-07-28 10:24:52,158 - INFO - Lote guardado: 2000 registros
+2025-07-28 10:24:53,513 - INFO - Lote guardado: 2000 registros
+2025-07-28 10:24:54,684 - INFO - Lote guardado: 2000 registros
+2025-07-28 10:24:54,686 - INFO - Progreso: 180000 registros procesados
+2025-07-28 10:24:55,852 - INFO - Lote guardado: 2000 registros
+2025-07-28 10:24:57,038 - INFO - Lote guardado: 2000 registros
+2025-07-28 10:24:58,407 - INFO - Lote guardado: 2000 registros
+2025-07-28 10:24:59,624 - INFO - Lote guardado: 2000 registros
+2025-07-28 10:25:00,828 - INFO - Lote guardado: 2000 registros
+2025-07-28 10:25:00,830 - INFO - Progreso: 190000 registros procesados
+2025-07-28 10:25:02,080 - INFO - Lote guardado: 2000 registros
+2025-07-28 10:25:03,481 - INFO - Lote guardado: 2000 registros
+2025-07-28 10:25:04,957 - INFO - Lote guardado: 2000 registros
+2025-07-28 10:25:06,225 - INFO - Lote guardado: 2000 registros
+2025-07-28 10:25:07,728 - INFO - Lote guardado: 2000 registros
+2025-07-28 10:25:07,731 - INFO - Progreso: 200000 registros procesados
+2025-07-28 10:25:08,423 - INFO - Último lote guardado: 1086 registros
+2025-07-28 10:25:08,423 - INFO - 
+=== REPORTE FINAL ===
+2025-07-28 10:25:08,424 - INFO - Total registros procesados: 201086
+2025-07-28 10:25:08,424 - INFO - Total errores: 0
+2025-07-28 10:25:08,424 - WARNING - 
+Productos no encontrados (1):
+2025-07-28 10:25:08,425 - WARNING -  - Código convertido: 0 | Valor original: 0
+2025-07-28 10:25:08,425 - INFO - 
+Tiempo total: 2 minutos 10 segundos
+2025-07-31 17:28:43,872 - INFO - Iniciando migración. Total registros: 205484
+2025-07-31 17:28:43,885 - INFO - Cargando cachés de referencia...
+2025-07-31 17:28:52,667 - INFO - Lote guardado: 2000 registros
+2025-07-31 17:28:53,281 - INFO - Lote guardado: 2000 registros
+2025-07-31 17:28:53,989 - INFO - Lote guardado: 2000 registros
+2025-07-31 17:28:54,511 - INFO - Lote guardado: 2000 registros
+2025-07-31 17:28:55,036 - INFO - Lote guardado: 2000 registros
+2025-07-31 17:28:55,037 - INFO - Progreso: 10000 registros procesados
+2025-07-31 17:28:55,573 - INFO - Lote guardado: 2000 registros
+2025-07-31 17:28:56,262 - INFO - Lote guardado: 2000 registros
+2025-07-31 17:28:56,781 - INFO - Lote guardado: 2000 registros
+2025-07-31 17:28:57,292 - INFO - Lote guardado: 2000 registros
+2025-07-31 17:28:57,797 - INFO - Lote guardado: 2000 registros
+2025-07-31 17:28:57,799 - INFO - Progreso: 20000 registros procesados
+2025-07-31 17:28:58,332 - INFO - Lote guardado: 2000 registros
+2025-07-31 17:28:58,995 - INFO - Lote guardado: 2000 registros
+2025-07-31 17:28:59,522 - INFO - Lote guardado: 2000 registros
+2025-07-31 17:29:00,054 - INFO - Lote guardado: 2000 registros
+2025-07-31 17:29:00,572 - INFO - Lote guardado: 2000 registros
+2025-07-31 17:29:00,575 - INFO - Progreso: 30000 registros procesados
+2025-07-31 17:29:01,275 - INFO - Lote guardado: 2000 registros
+2025-07-31 17:29:01,789 - INFO - Lote guardado: 2000 registros
+2025-07-31 17:29:02,327 - INFO - Lote guardado: 2000 registros
+2025-07-31 17:29:03,019 - INFO - Lote guardado: 2000 registros
+2025-07-31 17:29:03,583 - INFO - Lote guardado: 2000 registros
+2025-07-31 17:29:03,585 - INFO - Progreso: 40000 registros procesados
+2025-07-31 17:29:04,118 - INFO - Lote guardado: 2000 registros
+2025-07-31 17:29:04,669 - INFO - Lote guardado: 2000 registros
+2025-07-31 17:29:05,357 - INFO - Lote guardado: 2000 registros
+2025-07-31 17:29:05,913 - INFO - Lote guardado: 2000 registros
+2025-07-31 17:29:06,442 - INFO - Lote guardado: 2000 registros
+2025-07-31 17:29:06,444 - INFO - Progreso: 50000 registros procesados
+2025-07-31 17:29:07,112 - INFO - Lote guardado: 2000 registros
+2025-07-31 17:29:07,636 - INFO - Lote guardado: 2000 registros
+2025-07-31 17:29:08,171 - INFO - Lote guardado: 2000 registros
+2025-07-31 17:29:08,692 - INFO - Lote guardado: 2000 registros
+2025-07-31 17:29:09,198 - INFO - Lote guardado: 2000 registros
+2025-07-31 17:29:09,200 - INFO - Progreso: 60000 registros procesados
+2025-07-31 17:29:09,724 - INFO - Lote guardado: 2000 registros
+2025-07-31 17:29:10,410 - INFO - Lote guardado: 2000 registros
+2025-07-31 17:29:10,924 - INFO - Lote guardado: 2000 registros
+2025-07-31 17:29:11,469 - INFO - Lote guardado: 2000 registros
+2025-07-31 17:29:12,002 - INFO - Lote guardado: 2000 registros
+2025-07-31 17:29:12,004 - INFO - Progreso: 70000 registros procesados
+2025-07-31 17:29:12,693 - INFO - Lote guardado: 2000 registros
+2025-07-31 17:29:13,223 - INFO - Lote guardado: 2000 registros
+2025-07-31 17:29:13,782 - INFO - Lote guardado: 2000 registros
+2025-07-31 17:29:14,335 - INFO - Lote guardado: 2000 registros
+2025-07-31 17:29:15,038 - INFO - Lote guardado: 2000 registros
+2025-07-31 17:29:15,041 - INFO - Progreso: 80000 registros procesados
+2025-07-31 17:29:15,561 - INFO - Lote guardado: 2000 registros
+2025-07-31 17:29:16,099 - INFO - Lote guardado: 2000 registros
+2025-07-31 17:29:16,672 - INFO - Lote guardado: 2000 registros
+2025-07-31 17:29:17,200 - INFO - Lote guardado: 2000 registros
+2025-07-31 17:29:17,893 - INFO - Lote guardado: 2000 registros
+2025-07-31 17:29:17,895 - INFO - Progreso: 90000 registros procesados
+2025-07-31 17:29:18,455 - INFO - Lote guardado: 2000 registros
+2025-07-31 17:29:19,007 - INFO - Lote guardado: 2000 registros
+2025-07-31 17:29:19,541 - INFO - Lote guardado: 2000 registros
+2025-07-31 17:29:20,091 - INFO - Lote guardado: 2000 registros
+2025-07-31 17:29:20,611 - INFO - Lote guardado: 2000 registros
+2025-07-31 17:29:20,613 - INFO - Progreso: 100000 registros procesados
+2025-07-31 17:29:21,318 - INFO - Lote guardado: 2000 registros
+2025-07-31 17:29:21,861 - INFO - Lote guardado: 2000 registros
+2025-07-31 17:29:22,412 - INFO - Lote guardado: 2000 registros
+2025-07-31 17:29:22,953 - INFO - Lote guardado: 2000 registros
+2025-07-31 17:29:23,619 - INFO - Lote guardado: 2000 registros
+2025-07-31 17:29:23,621 - INFO - Progreso: 110000 registros procesados
+2025-07-31 17:29:24,163 - INFO - Lote guardado: 2000 registros
+2025-07-31 17:29:24,701 - INFO - Lote guardado: 2000 registros
+2025-07-31 17:29:25,419 - INFO - Lote guardado: 2000 registros
+2025-07-31 17:29:25,936 - INFO - Lote guardado: 2000 registros
+2025-07-31 17:29:26,459 - INFO - Lote guardado: 2000 registros
+2025-07-31 17:29:26,462 - INFO - Progreso: 120000 registros procesados
+2025-07-31 17:29:26,981 - INFO - Lote guardado: 2000 registros
+2025-07-31 17:29:27,499 - INFO - Lote guardado: 2000 registros
+2025-07-31 17:29:28,173 - INFO - Lote guardado: 2000 registros
+2025-07-31 17:29:28,716 - INFO - Lote guardado: 2000 registros
+2025-07-31 17:29:29,257 - INFO - Lote guardado: 2000 registros
+2025-07-31 17:29:29,259 - INFO - Progreso: 130000 registros procesados
+2025-07-31 17:29:29,793 - INFO - Lote guardado: 2000 registros
+2025-07-31 17:29:30,310 - INFO - Lote guardado: 2000 registros
+2025-07-31 17:29:30,981 - INFO - Lote guardado: 2000 registros
+2025-07-31 17:29:31,511 - INFO - Lote guardado: 2000 registros
+2025-07-31 17:29:32,044 - INFO - Lote guardado: 2000 registros
+2025-07-31 17:29:32,045 - INFO - Progreso: 140000 registros procesados
+2025-07-31 17:29:32,734 - INFO - Lote guardado: 2000 registros
+2025-07-31 17:29:33,251 - INFO - Lote guardado: 2000 registros
+2025-07-31 17:29:33,789 - INFO - Lote guardado: 2000 registros
+2025-07-31 17:29:34,471 - INFO - Lote guardado: 2000 registros
+2025-07-31 17:29:35,012 - INFO - Lote guardado: 2000 registros
+2025-07-31 17:29:35,015 - INFO - Progreso: 150000 registros procesados
+2025-07-31 17:29:35,578 - INFO - Lote guardado: 2000 registros
+2025-07-31 17:29:36,108 - INFO - Lote guardado: 2000 registros
+2025-07-31 17:29:36,806 - INFO - Lote guardado: 2000 registros
+2025-07-31 17:29:37,333 - INFO - Lote guardado: 2000 registros
+2025-07-31 17:29:37,898 - INFO - Lote guardado: 2000 registros
+2025-07-31 17:29:37,901 - INFO - Progreso: 160000 registros procesados
+2025-07-31 17:29:38,445 - INFO - Lote guardado: 2000 registros
+2025-07-31 17:29:38,998 - INFO - Lote guardado: 2000 registros
+2025-07-31 17:29:39,528 - INFO - Lote guardado: 2000 registros
+2025-07-31 17:29:40,250 - INFO - Lote guardado: 2000 registros
+2025-07-31 17:29:40,785 - INFO - Lote guardado: 2000 registros
+2025-07-31 17:29:40,787 - INFO - Progreso: 170000 registros procesados
+2025-07-31 17:29:41,368 - INFO - Lote guardado: 2000 registros
+2025-07-31 17:29:41,925 - INFO - Lote guardado: 2000 registros
+2025-07-31 17:29:42,601 - INFO - Lote guardado: 2000 registros
+2025-07-31 17:29:43,132 - INFO - Lote guardado: 2000 registros
+2025-07-31 17:29:43,646 - INFO - Lote guardado: 2000 registros
+2025-07-31 17:29:43,648 - INFO - Progreso: 180000 registros procesados
+2025-07-31 17:29:44,172 - INFO - Lote guardado: 2000 registros
+2025-07-31 17:29:44,860 - INFO - Lote guardado: 2000 registros
+2025-07-31 17:29:45,414 - INFO - Lote guardado: 2000 registros
+2025-07-31 17:29:45,964 - INFO - Lote guardado: 2000 registros
+2025-07-31 17:29:46,473 - INFO - Lote guardado: 2000 registros
+2025-07-31 17:29:46,475 - INFO - Progreso: 190000 registros procesados
+2025-07-31 17:29:47,019 - INFO - Lote guardado: 2000 registros
+2025-07-31 17:29:47,784 - INFO - Lote guardado: 2000 registros
+2025-07-31 17:29:48,291 - INFO - Lote guardado: 2000 registros
+2025-07-31 17:29:48,828 - INFO - Lote guardado: 2000 registros
+2025-07-31 17:29:49,383 - INFO - Lote guardado: 2000 registros
+2025-07-31 17:29:49,385 - INFO - Progreso: 200000 registros procesados
+2025-07-31 17:29:49,920 - INFO - Lote guardado: 2000 registros
+2025-07-31 17:29:50,467 - INFO - Lote guardado: 2000 registros
+2025-07-31 17:29:51,018 - INFO - Último lote guardado: 1474 registros
+2025-07-31 17:29:51,019 - INFO - 
+=== REPORTE FINAL ===
+2025-07-31 17:29:51,019 - INFO - Total registros procesados: 205474
+2025-07-31 17:29:51,020 - INFO - Total errores: 0
+2025-07-31 17:29:51,020 - WARNING - 
+Productos no encontrados (1):
+2025-07-31 17:29:51,021 - WARNING -  - Código convertido: 0 | Valor original: 0
+2025-07-31 17:29:51,021 - INFO - 
+Tiempo total: 1 minutos 7 segundos
+2025-07-31 18:30:52,134 - INFO - Iniciando migración. Total registros: 205484
+2025-07-31 18:30:52,134 - INFO - Cargando cachés de referencia...
+2025-07-31 18:31:00,275 - INFO - Lote guardado: 2000 registros
+2025-07-31 18:31:00,832 - INFO - Lote guardado: 2000 registros
+2025-07-31 18:31:01,562 - INFO - Lote guardado: 2000 registros
+2025-07-31 18:31:02,105 - INFO - Lote guardado: 2000 registros
+2025-07-31 18:31:02,672 - INFO - Lote guardado: 2000 registros
+2025-07-31 18:31:02,675 - INFO - Progreso: 10000 registros procesados
+2025-07-31 18:31:03,243 - INFO - Lote guardado: 2000 registros
+2025-07-31 18:31:03,971 - INFO - Lote guardado: 2000 registros
+2025-07-31 18:31:04,526 - INFO - Lote guardado: 2000 registros
+2025-07-31 18:31:05,079 - INFO - Lote guardado: 2000 registros
+2025-07-31 18:31:05,633 - INFO - Lote guardado: 2000 registros
+2025-07-31 18:31:05,635 - INFO - Progreso: 20000 registros procesados
+2025-07-31 18:31:06,199 - INFO - Lote guardado: 2000 registros
+2025-07-31 18:31:06,940 - INFO - Lote guardado: 2000 registros
+2025-07-31 18:31:07,514 - INFO - Lote guardado: 2000 registros
+2025-07-31 18:31:08,067 - INFO - Lote guardado: 2000 registros
+2025-07-31 18:31:08,644 - INFO - Lote guardado: 2000 registros
+2025-07-31 18:31:08,647 - INFO - Progreso: 30000 registros procesados
+2025-07-31 18:31:09,375 - INFO - Lote guardado: 2000 registros
+2025-07-31 18:31:09,944 - INFO - Lote guardado: 2000 registros
+2025-07-31 18:31:10,542 - INFO - Lote guardado: 2000 registros
+2025-07-31 18:31:11,269 - INFO - Lote guardado: 2000 registros
+2025-07-31 18:31:11,837 - INFO - Lote guardado: 2000 registros
+2025-07-31 18:31:11,839 - INFO - Progreso: 40000 registros procesados
+2025-07-31 18:31:12,383 - INFO - Lote guardado: 2000 registros
+2025-07-31 18:31:12,952 - INFO - Lote guardado: 2000 registros
+2025-07-31 18:31:13,695 - INFO - Lote guardado: 2000 registros
+2025-07-31 18:31:14,328 - INFO - Lote guardado: 2000 registros
+2025-07-31 18:31:14,893 - INFO - Lote guardado: 2000 registros
+2025-07-31 18:31:14,895 - INFO - Progreso: 50000 registros procesados
+2025-07-31 18:31:15,651 - INFO - Lote guardado: 2000 registros
+2025-07-31 18:31:16,211 - INFO - Lote guardado: 2000 registros
+2025-07-31 18:31:16,771 - INFO - Lote guardado: 2000 registros
+2025-07-31 18:31:17,299 - INFO - Lote guardado: 2000 registros
+2025-07-31 18:31:17,882 - INFO - Lote guardado: 2000 registros
+2025-07-31 18:31:17,884 - INFO - Progreso: 60000 registros procesados
+2025-07-31 18:31:18,502 - INFO - Lote guardado: 2000 registros
+2025-07-31 18:31:19,273 - INFO - Lote guardado: 2000 registros
+2025-07-31 18:31:19,876 - INFO - Lote guardado: 2000 registros
+2025-07-31 18:31:20,437 - INFO - Lote guardado: 2000 registros
+2025-07-31 18:31:21,014 - INFO - Lote guardado: 2000 registros
+2025-07-31 18:31:21,016 - INFO - Progreso: 70000 registros procesados
+2025-07-31 18:31:21,751 - INFO - Lote guardado: 2000 registros
+2025-07-31 18:31:22,329 - INFO - Lote guardado: 2000 registros
+2025-07-31 18:31:22,968 - INFO - Lote guardado: 2000 registros
+2025-07-31 18:31:23,572 - INFO - Lote guardado: 2000 registros
+2025-07-31 18:31:24,402 - INFO - Lote guardado: 2000 registros
+2025-07-31 18:31:24,405 - INFO - Progreso: 80000 registros procesados
+2025-07-31 18:31:25,031 - INFO - Lote guardado: 2000 registros
+2025-07-31 18:31:25,644 - INFO - Lote guardado: 2000 registros
+2025-07-31 18:31:26,220 - INFO - Lote guardado: 2000 registros
+2025-07-31 18:31:26,879 - INFO - Lote guardado: 2000 registros
+2025-07-31 18:31:27,639 - INFO - Lote guardado: 2000 registros
+2025-07-31 18:31:27,642 - INFO - Progreso: 90000 registros procesados
+2025-07-31 18:31:28,202 - INFO - Lote guardado: 2000 registros
+2025-07-31 18:31:28,781 - INFO - Lote guardado: 2000 registros
+2025-07-31 18:31:29,374 - INFO - Lote guardado: 2000 registros
+2025-07-31 18:31:29,996 - INFO - Lote guardado: 2000 registros
+2025-07-31 18:31:30,579 - INFO - Lote guardado: 2000 registros
+2025-07-31 18:31:30,581 - INFO - Progreso: 100000 registros procesados
+2025-07-31 18:31:31,335 - INFO - Lote guardado: 2000 registros
+2025-07-31 18:31:31,922 - INFO - Lote guardado: 2000 registros
+2025-07-31 18:31:32,514 - INFO - Lote guardado: 2000 registros
+2025-07-31 18:31:33,096 - INFO - Lote guardado: 2000 registros
+2025-07-31 18:31:33,854 - INFO - Lote guardado: 2000 registros
+2025-07-31 18:31:33,855 - INFO - Progreso: 110000 registros procesados
+2025-07-31 18:31:34,421 - INFO - Lote guardado: 2000 registros
+2025-07-31 18:31:34,985 - INFO - Lote guardado: 2000 registros
+2025-07-31 18:31:35,775 - INFO - Lote guardado: 2000 registros
+2025-07-31 18:31:36,353 - INFO - Lote guardado: 2000 registros
+2025-07-31 18:31:36,950 - INFO - Lote guardado: 2000 registros
+2025-07-31 18:31:36,952 - INFO - Progreso: 120000 registros procesados
+2025-07-31 18:31:37,549 - INFO - Lote guardado: 2000 registros
+2025-07-31 18:31:38,165 - INFO - Lote guardado: 2000 registros
+2025-07-31 18:31:38,946 - INFO - Lote guardado: 2000 registros
+2025-07-31 18:31:39,545 - INFO - Lote guardado: 2000 registros
+2025-07-31 18:31:40,171 - INFO - Lote guardado: 2000 registros
+2025-07-31 18:31:40,174 - INFO - Progreso: 130000 registros procesados
+2025-07-31 18:31:40,776 - INFO - Lote guardado: 2000 registros
+2025-07-31 18:31:41,355 - INFO - Lote guardado: 2000 registros
+2025-07-31 18:31:42,151 - INFO - Lote guardado: 2000 registros
+2025-07-31 18:31:42,779 - INFO - Lote guardado: 2000 registros
+2025-07-31 18:31:43,355 - INFO - Lote guardado: 2000 registros
+2025-07-31 18:31:43,357 - INFO - Progreso: 140000 registros procesados
+2025-07-31 18:31:44,084 - INFO - Lote guardado: 2000 registros
+2025-07-31 18:31:44,679 - INFO - Lote guardado: 2000 registros
+2025-07-31 18:31:45,262 - INFO - Lote guardado: 2000 registros
+2025-07-31 18:31:46,009 - INFO - Lote guardado: 2000 registros
+2025-07-31 18:31:46,589 - INFO - Lote guardado: 2000 registros
+2025-07-31 18:31:46,591 - INFO - Progreso: 150000 registros procesados
+2025-07-31 18:31:47,176 - INFO - Lote guardado: 2000 registros
+2025-07-31 18:31:47,761 - INFO - Lote guardado: 2000 registros
+2025-07-31 18:31:48,520 - INFO - Lote guardado: 2000 registros
+2025-07-31 18:31:49,082 - INFO - Lote guardado: 2000 registros
+2025-07-31 18:31:49,648 - INFO - Lote guardado: 2000 registros
+2025-07-31 18:31:49,650 - INFO - Progreso: 160000 registros procesados
+2025-07-31 18:31:50,213 - INFO - Lote guardado: 2000 registros
+2025-07-31 18:31:50,795 - INFO - Lote guardado: 2000 registros
+2025-07-31 18:31:51,383 - INFO - Lote guardado: 2000 registros
+2025-07-31 18:31:52,134 - INFO - Lote guardado: 2000 registros
+2025-07-31 18:31:52,708 - INFO - Lote guardado: 2000 registros
+2025-07-31 18:31:52,710 - INFO - Progreso: 170000 registros procesados
+2025-07-31 18:31:53,299 - INFO - Lote guardado: 2000 registros
+2025-07-31 18:31:53,864 - INFO - Lote guardado: 2000 registros
+2025-07-31 18:31:54,636 - INFO - Lote guardado: 2000 registros
+2025-07-31 18:31:55,217 - INFO - Lote guardado: 2000 registros
+2025-07-31 18:31:55,800 - INFO - Lote guardado: 2000 registros
+2025-07-31 18:31:55,802 - INFO - Progreso: 180000 registros procesados
+2025-07-31 18:31:56,393 - INFO - Lote guardado: 2000 registros
+2025-07-31 18:31:57,152 - INFO - Lote guardado: 2000 registros
+2025-07-31 18:31:57,750 - INFO - Lote guardado: 2000 registros
+2025-07-31 18:31:58,337 - INFO - Lote guardado: 2000 registros
+2025-07-31 18:31:58,926 - INFO - Lote guardado: 2000 registros
+2025-07-31 18:31:58,928 - INFO - Progreso: 190000 registros procesados
+2025-07-31 18:31:59,518 - INFO - Lote guardado: 2000 registros
+2025-07-31 18:32:00,334 - INFO - Lote guardado: 2000 registros
+2025-07-31 18:32:00,905 - INFO - Lote guardado: 2000 registros
+2025-07-31 18:32:01,479 - INFO - Lote guardado: 2000 registros
+2025-07-31 18:32:02,047 - INFO - Lote guardado: 2000 registros
+2025-07-31 18:32:02,049 - INFO - Progreso: 200000 registros procesados
+2025-07-31 18:32:02,622 - INFO - Lote guardado: 2000 registros
+2025-07-31 18:32:03,214 - INFO - Lote guardado: 2000 registros
+2025-07-31 18:32:03,836 - INFO - Último lote guardado: 1474 registros
+2025-07-31 18:32:03,836 - INFO - 
+=== REPORTE FINAL ===
+2025-07-31 18:32:03,836 - INFO - Total registros procesados: 205474
+2025-07-31 18:32:03,837 - INFO - Total errores: 0
+2025-07-31 18:32:03,837 - WARNING - 
+Productos no encontrados (1):
+2025-07-31 18:32:03,837 - WARNING -  - Código convertido: 0 | Valor original: 0
+2025-07-31 18:32:03,837 - INFO - 
+Tiempo total: 1 minutos 11 segundos

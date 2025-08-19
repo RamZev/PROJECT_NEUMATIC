@@ -1,129 +1,148 @@
-# neumatic\data_load\producto_migra.py
 import os
 import sys
 import django
-import time  # Para medir el tiempo de procesamiento
+import time
 from dbfread import DBF
 from django.db import connection
+from django.utils import timezone
 
-# Añadir el directorio base del proyecto al sys.path
+# Configuración inicial
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(BASE_DIR)
-
-# Configurar Django
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'neumatic.settings')
 django.setup()
 
 from apps.maestros.models.producto_models import Producto
-from apps.maestros.models.base_models import ProductoFamilia
-from apps.maestros.models.base_models import ProductoMarca
-from apps.maestros.models.base_models import ProductoModelo
+from apps.maestros.models.base_models import ProductoFamilia, ProductoMarca, ProductoModelo
 
 def reset_producto():
-    """Elimina los datos existentes en la tabla Producto y resetea su ID en SQLite."""
-    Producto.objects.all().delete()  # Eliminar los datos existentes
-    
-    # Reiniciar el autoincremento en SQLite
+    """Elimina los datos existentes y resetea la secuencia"""
+    print("🔁 Reseteando tabla Producto...")
     with connection.cursor() as cursor:
+        cursor.execute("PRAGMA foreign_keys = OFF;")
+        Producto.objects.all().delete()
         cursor.execute("DELETE FROM sqlite_sequence WHERE name='producto';")
+        cursor.execute("PRAGMA foreign_keys = ON;")
+    print("✅ Tabla reseteada correctamente")
+
+def get_related_objects():
+    """Precarga objetos relacionados para optimización"""
+    familias = {str(f.pk): f for f in ProductoFamilia.objects.all()}
+    marcas = {str(m.pk): m for m in ProductoMarca.objects.all()}
+    modelos = {str(m.pk): m for m in ProductoModelo.objects.all()}
+    return familias, marcas, modelos
 
 def cargar_datos():
-    """Lee los datos de la tabla lista.dbf, asegura que el código sea consecutivo,
-    migra los datos al modelo Producto y elimina los registros marcados como pendientes."""
-    reset_producto()  # Eliminar datos existentes antes de migrar
+    """Carga los datos desde el DBF en lotes con progreso"""
+    reset_producto()
+    
+    # Precargar objetos relacionados
+    familias, marcas, modelos = get_related_objects()
+    missing_relations = {'familias': set(), 'marcas': set(), 'modelos': set()}
 
-    # Ruta de la tabla de Visual FoxPro
+    # Configuración de rutas y lectura de datos
     dbf_path = os.path.join(BASE_DIR, 'data_load', 'datavfox', 'lista.DBF')
+    records = sorted(DBF(dbf_path, encoding='latin-1'), key=lambda r: r['CODIGO'])
+    total_registros = len(records)
+    lote_size = 500  # Tamaño del lote para bulk_create
+    
+    print(f"\n📊 Total de registros a procesar: {total_registros:,}")
+    print(f"⚡ Procesando en lotes de {lote_size} registros...\n")
 
-    # Abrir la tabla de Visual FoxPro usando dbfread y ordenarla por CODIGO
-    table = sorted(DBF(dbf_path, encoding='latin-1'), key=lambda r: r['CODIGO'])
+    start_time = timezone.now()
+    batch = []
+    processed = 0
+    skipped = 0
 
-    expected_codigo = 1  # El código esperado para asegurar consecutividad
-    total_registros = len(table)  # Número total de registros
-
-    print(f"Total de registros a procesar: {total_registros}")
-
-    for idx, record in enumerate(table):
-        codigo = int(record['CODIGO'])
-
-        # Obtener instancias relacionadas para ProductoFamilia, ProductoMarca y ProductoModelo
+    for i, record in enumerate(records, 1):
         try:
-            familia = ProductoFamilia.objects.get(pk=record.get('ARTICULO'))
-            marca = ProductoMarca.objects.get(pk=record.get('MARCA'))
-            modelo = ProductoModelo.objects.get(pk=record.get('MODELO'))
-        except ProductoFamilia.DoesNotExist:
-            print(f"Código {codigo}: Error en articulo {record.get('ARTICULO')}")
+            codigo = int(record['CODIGO'])
+            
+            # Verificar relaciones
+            familia_id = str(record.get('ARTICULO', ''))
+            marca_id = str(record.get('MARCA', ''))
+            modelo_id = str(record.get('MODELO', ''))
+            
+            familia = familias.get(familia_id)
+            marca = marcas.get(marca_id)
+            modelo = modelos.get(modelo_id)
+            
+            if not all([familia, marca, modelo]):
+                # Registrar relaciones faltantes
+                if not familia:
+                    missing_relations['familias'].add(familia_id)
+                if not marca:
+                    missing_relations['marcas'].add(marca_id)
+                if not modelo:
+                    missing_relations['modelos'].add(modelo_id)
+                skipped += 1
+                continue
+
+            # Preparar datos con valores por defecto
+            batch.append(Producto(
+                id_producto=codigo,
+                estatus_producto=True,
+                codigo_producto=str(codigo).strip(),
+                tipo_producto=record.get('TIPO', '').strip(),
+                id_familia=familia,
+                id_marca=marca,
+                id_modelo=modelo,
+                cai=record.get('CODFABRICA', '').strip(),
+                medida=record.get('MEDIDA', '').strip(),
+                segmento=record.get('SEGMENTO', '').strip(),
+                nombre_producto=record.get('NOMBRE', 'Sin Nombre').strip(),
+                unidad=record.get('UNIDAD', 0) or 0,
+                fecha_fabricacion=record.get('FECHA', '').strip(),
+                costo=record.get('COSTO', 0.00) or 0.00,
+                alicuota_iva=record.get('IVA', 0.00) or 0.00,
+                precio=record.get('PRECIO', 0.00) or 0.00,
+                stock=record.get('STOCK', 0) or 0,
+                minimo=record.get('MINIMO', 0) or 0,
+                descuento=record.get('DESCUENTO', 0.00) or 0.00,
+                despacho_1=record.get('DESPACHO1', '').strip(),
+                despacho_2=record.get('DESPACHO2', '').strip(),
+                descripcion_producto=record.get('DETALLE', '').strip(),
+                carrito=record.get('CARRITO', False) or False
+            ))
+
+            # Procesar lote completo
+            if len(batch) >= lote_size:
+                Producto.objects.bulk_create(batch)
+                processed += len(batch)
+                batch = []
+                
+                # Mostrar progreso cada 500 registros
+                if i % 500 == 0:
+                    percent = (i / total_registros) * 100
+                    print(f"🔄 Procesados: {i:,}/{total_registros:,} ({percent:.1f}%) | "
+                          f"Insertados: {processed:,} | Saltados: {skipped:,}", end='\r')
+
+        except Exception as e:
+            print(f"\n⚠️ Error en registro {i}: {str(e)}")
+            skipped += 1
             continue
-        except ProductoMarca.DoesNotExist:
-            print(f"Código {codigo}: Error en marca {record.get('MARCA')}")
-            continue
-        except ProductoModelo.DoesNotExist:
-            print(f"Código {codigo}: Error en modelo {record.get('MODELO')}")
-            continue
 
-        # Validar y obtener valores con predeterminados si son nulos
-        tipo_producto = record.get('TIPO', '').strip()
-        cai = record.get('CODFABRICA', '').strip()
-        medida = record.get('MEDIDA', '').strip()
-        segmento = record.get('SEGMENTO', '').strip()
-        nombre_producto = record.get('NOMBRE', 'Sin Nombre').strip()
-        unidad = record.get('UNIDAD', 0) or 0
-        fecha_fabricacion = record.get('FECHA', '').strip()
-        costo = record.get('COSTO', 0.00) or 0.00
-        alicuota_iva = record.get('IVA', 0.00) or 0.00
-        precio = record.get('PRECIO', 0.00) or 0.00
-        stock = record.get('STOCK', 0) or 0
-        minimo = record.get('MINIMO', 0) or 0
-        descuento = record.get('DESCUENTO', 0.00) or 0.00
-        despacho_1 = record.get('DESPACHO1', '').strip()
-        despacho_2 = record.get('DESPACHO2', '').strip()
-        descripcion_producto = record.get('DETALLE', '').strip()
-        carrito = record.get('CARRITO', False) or False
+    # Insertar último lote parcial
+    if batch:
+        Producto.objects.bulk_create(batch)
+        processed += len(batch)
 
-        # Crear el registro actual
-        Producto.objects.create(
-            id_producto=codigo,
-            estatus_producto=True,
-            codigo_producto=str(codigo).strip(),
-            tipo_producto=tipo_producto,
-            id_familia=familia,
-            id_marca=marca,
-            id_modelo=modelo,
-            cai=cai,
-            medida=medida,
-            segmento=segmento,
-            nombre_producto=nombre_producto,
-            unidad=unidad,
-            fecha_fabricacion=fecha_fabricacion,
-            costo=costo,
-            alicuota_iva=alicuota_iva,
-            precio=precio,
-            stock=stock,
-            minimo=minimo,
-            descuento=descuento,
-            despacho_1=despacho_1,
-            despacho_2=despacho_2,
-            descripcion_producto=descripcion_producto,
-            carrito=carrito
-        )
-
-        expected_codigo += 1
-
-        # Mostrar mensaje cada 100 registros procesados
-        if (idx + 1) % 100 == 0:
-            print(f"{idx + 1} registros procesados...")
-
-
+    # Estadísticas finales
+    end_time = timezone.now()
+    duration = (end_time - start_time).total_seconds()
+    
+    print("\n\n📝 Resumen de migración:")
+    print(f"✅ Registros insertados: {processed:,}")
+    print(f"⏭️ Registros saltados: {skipped:,}")
+    print(f"⏱️ Tiempo total: {duration:.2f} segundos")
+    print(f"🚀 Velocidad: {processed/duration:.1f} registros/segundo")
+    
+    # Mostrar relaciones faltantes si las hay
+    if any(missing_relations.values()):
+        print("\n⚠️ Relaciones faltantes detectadas:")
+        for rel_type, ids in missing_relations.items():
+            if ids:
+                print(f"- {rel_type.capitalize()}: {', '.join(sorted(ids)[:5])}{'...' if len(ids)>5 else ''}")
 
 if __name__ == '__main__':
-    start_time = time.time()  # Empezar el control de tiempo
     cargar_datos()
-    end_time = time.time()  # Terminar el control de tiempo
-
-    # Calcular el tiempo total en minutos y segundos
-    elapsed_time = end_time - start_time
-    minutes = elapsed_time // 60
-    seconds = elapsed_time % 60
-
-    print(f"Migración de Producto completada.")
-    print(f"Tiempo de procesamiento: {int(minutes)} minutos y {int(seconds)} segundos.")

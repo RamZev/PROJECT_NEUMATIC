@@ -1857,6 +1857,15 @@
                     document.getElementById('id_fecha_comprobante').readOnly = false;
                 }
 
+                // Habilitar el número de comprobante y asignarle valor en blanco
+                // if (tipoComprobante == "FACTURA" && !electronica){
+                //     alert("Factura Manual");
+                //     document.getElementById('id_numero_comprobante').readOnly = false;
+                //     document.getElementById('id_numero_comprobante').setAttribute('autocomplete', 'new-password');
+                // } else {
+                //     document.getElementById('id_numero_comprobante').readOnly = true;
+                // }
+
                 // Obtener solo los datos básicos del comprobante
                 fetch(`/ventas/comprobante/${comprobanteId}/codigo/`)
                     .then(response => {
@@ -2557,6 +2566,34 @@
                 const id_punto_venta = document.getElementById('id_id_punto_venta').value;
                 const compro = document.getElementById('id_compro').value;
                 const id_discrimina_iva = document.getElementById('id_discrimina_iva').value;
+
+                // Habilitar el número de comprobante y asignarle valor en blanco
+                // const comprobanteSelect = document.getElementById('id_id_comprobante_venta');
+                const comprobanteId = document.getElementById('id_id_comprobante_venta').value;
+
+                const tipoComprobanteDict = JSON.parse(document.getElementById('tipocomprobante-data').dataset.tipocomprobante);
+                const tipoComprobante = tipoComprobanteDict[comprobanteId] ?? false;
+
+                const electronicaDict = JSON.parse(document.getElementById('electronica-data').dataset.electronica);
+                const electronica = electronicaDict[comprobanteId] ?? false;
+
+                if (tipoComprobante == "FACTURA" && !electronica){
+                    alert("Factura Manual");
+                    document.getElementById('id_numero_comprobante').readOnly = false;
+                    // document.getElementById('id_numero_comprobante').setAttribute('autocomplete', 'new-password');
+                    
+                    if (document.getElementById('id_discrimina_iva').checked) {
+                        // El checkbox está marcado (true)
+                        document.getElementById('id_letra_comprobante').value = "A";
+                    } else {
+                        // El checkbox no está marcado (false)
+                        document.getElementById('id_letra_comprobante').value = "B";
+                    }
+                    return;
+
+                } else {
+                    document.getElementById('id_numero_comprobante').readOnly = true;
+                }
 
                 if (id_sucursal && id_punto_venta && compro) {
                     ///

@@ -1,3 +1,4 @@
+# neumatic\data_load\numero_migra.py
 import os
 import sys
 import django
@@ -62,10 +63,16 @@ def cargar_datos():
 
         # Buscar el id_punto_venta en el modelo PuntoVenta
         try:
-            punto_venta = PuntoVenta.objects.get(
+            # punto_venta = PuntoVenta.objects.get(
+            #     id_sucursal=sucursal_id,
+            #     punto_venta=punto_venta_str
+            # )
+
+            punto_venta = PuntoVenta.objects.filter(
                 id_sucursal=sucursal_id,
                 punto_venta=punto_venta_str
-            )
+            ).first()  # Cambiamos get() por filter().first()
+
         except PuntoVenta.DoesNotExist:
             print(f"Punto de venta no encontrado para sucursal {sucursal_id} y punto de venta {punto_venta_str}")
             continue

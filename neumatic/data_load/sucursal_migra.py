@@ -21,6 +21,19 @@ from apps.maestros.models.sucursal_models import Sucursal
 # Ruta de la tabla de Visual FoxPro
 dbf_path = os.path.join(BASE_DIR, 'data_load', 'datavfox', 'sucursal.DBF')
 
+
+def reset_sucursal():
+    """Elimina los datos existentes en la tabla Sucursal y resetea su ID en SQLite."""
+    Sucursal.objects.all().delete()  # Eliminar los datos existentes
+    
+    # Reiniciar el autoincremento en SQLite
+    with connection.cursor() as cursor:
+        cursor.execute("DELETE FROM sqlite_sequence WHERE name='sucursal';")
+
+
+# Resen de la tabla sucursal
+reset_sucursal()
+
 # Abrir la tabla de Visual FoxPro usando dbfread
 table = DBF(dbf_path, encoding='latin-1')
 
@@ -29,7 +42,7 @@ print(f"Total de registros a procesar: {total_registros}")
 
 codigo_inicio = 1
 # codigo_final = None
-codigo_final = 10
+codigo_final = 12
 
 # Filtrar y ordenar la tabla DBF
 table = sorted(
@@ -54,6 +67,8 @@ sucursales = {
     8: {"id_provincia": 13, "id_localidad": 5658, "codigo_postal": "3560"},
     9: {"id_provincia": 13, "id_localidad": 1043, "codigo_postal": "2152"},
     10: {"id_provincia": 13, "id_localidad": 2202, "codigo_postal": "3000"},
+    11: {"id_provincia": 13, "id_localidad": 2202, "codigo_postal": "3000"},
+    12: {"id_provincia": 13, "id_localidad": 2202, "codigo_postal": "3000"},
 }
 
 for idx, record in enumerate(table):

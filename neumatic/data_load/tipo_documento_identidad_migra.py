@@ -34,16 +34,19 @@ def cargar_tipo_documento_identidad_desde_json(ruta_json):
 
     # Recorrer los elementos del JSON y migrar cada uno
     for item in tipos_documento_identidad:
-        codigo = item["codigo"]
-        nombre = item["descripcion"]
+        nombre_documento_identidad = item["nombre_documento_identidad"]
+        tipo_documento_identidad = item["tipo_documento_identidad"]
+        codigo_afip = item["codigo_afip"]
+        ws_afip = item["ws_afip"]
+
 
         # Crear o actualizar el registro en la base de datos
         TipoDocumentoIdentidad.objects.create(
             estatus_tipo_documento_identidad=True,
-            nombre_documento_identidad=nombre,
-            tipo_documento_identidad=codigo,
-            codigo_afip=nombre,  # Asignar el valor de descripcion
-            ws_afip=''  # Asignar el valor en blanco
+            nombre_documento_identidad=nombre_documento_identidad,
+            tipo_documento_identidad=tipo_documento_identidad,
+            codigo_afip=codigo_afip,
+            ws_afip=ws_afip
         )
 
     print(f"Se han migrado {len(tipos_documento_identidad)} tipos de documento de identidad de forma exitosa.")

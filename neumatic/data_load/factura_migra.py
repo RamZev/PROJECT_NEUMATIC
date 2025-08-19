@@ -83,6 +83,7 @@ def cargar_datos_factura():
         batch_size = 1000
         facturas_batch = []
         registros_procesados = 0
+        total_regs = 0
         errores = 0
 
         for idx, record in enumerate(table, 1):
@@ -112,6 +113,8 @@ def cargar_datos_factura():
                     id_vendedor_instancia = id_cliente_instancia.id_vendedor
 
                 # Crear instancia - AQUÍ ESTÁ LA CORRECCIÓN PRINCIPAL
+                
+
                 factura = Factura(
                     id_factura=codigo_origen,
                     id_orig=codigo_origen,
@@ -140,8 +143,8 @@ def cargar_datos_factura():
                     no_estadist=bool(safe_int(record.get('NOESTADIST', False))),
                     suc_imp=safe_int(record.get('SUCIMP')),
                     cae=safe_int(record.get('CAE')),
-                    cae_vto=record.get('CAE_VTO'),
-                    observa_comprobante=record.get('OBSERVACIONES', '').strip(),
+                    cae_vto=record.get('CAEVTO'),
+                    observa_comprobante=record.get('OBSERVA', '').strip(),
                     stock_clie=bool(safe_int(record.get('STOCKCLIE', 0))),
                     id_deposito=id_deposito_instancia,
                     promo=bool(safe_int(record.get('PROMO', 0)))
@@ -149,11 +152,14 @@ def cargar_datos_factura():
                 
                 facturas_batch.append(factura)
                 registros_procesados += 1
+                
 
                 # Guardar por lotes
                 if len(facturas_batch) >= batch_size:
                     Factura.objects.bulk_create(facturas_batch)
                     logger.info(f"Lote guardado: {len(facturas_batch)} registros")
+                    total_regs = total_regs + len(facturas_batch)
+                    print(f"Lote guardado: {len(facturas_batch)} registros - Acumulado:  {total_regs} registros")
                     facturas_batch = []
 
             except Exception as e:

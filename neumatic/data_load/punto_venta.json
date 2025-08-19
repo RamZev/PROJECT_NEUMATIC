@@ -108,5 +108,27 @@
         "id_user_id": 1,
         "punto_venta": "00046",
         "usuario": "admin"
+    },
+    {
+        "descripcion_punto_venta": "Rosario Sud 46*",
+        "estacion": "ESTACION03",
+        "estatus_punto_venta": 1,
+        "fcontrol": "2025-03-18 16:49:34",
+        "id_punto_venta": 11,
+        "id_sucursal_id": 11,
+        "id_user_id": 1,
+        "punto_venta": "00046",
+        "usuario": "admin"
+    },
+    {
+        "descripcion_punto_venta": "Rosario Sud 46**",
+        "estacion": "ESTACION03",
+        "estatus_punto_venta": 1,
+        "fcontrol": "2025-03-18 16:49:34",
+        "id_punto_venta": 12,
+        "id_sucursal_id": 11,
+        "id_user_id": 1,
+        "punto_venta": "00046",
+        "usuario": "admin"
     }
 ]

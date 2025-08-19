@@ -3,85 +3,116 @@ import csv
 import os
 import sys
 import django
+from django.db import transaction
+from django.db.models import Q
 from django.db import connection
 
-# Añadir el directorio base del proyecto al sys.path
+import socket
+from datetime import datetime
+
+
+# Configuración de paths y Django
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(BASE_DIR)
-
-# Configurar Django
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'neumatic.settings')
 django.setup()
 
+from django.contrib.auth.models import User
 from apps.maestros.models.base_models import Localidad, Provincia
 
+BATCH_SIZE = 2000  # Tamaño del lote para procesamiento por lotes
+
 def cargar_localidades_desde_csv(archivo_csv):
-    """Carga los datos de localidades desde un archivo CSV y los migra al modelo Localidad."""
-    # Abrir el archivo CSV y leer su contenido
+    """Carga los datos de localidades desde un archivo CSV optimizado con lotes."""
+    # Pre-cargar todas las provincias en memoria para evitar consultas repetidas
+    provincias_cache = {p.id_provincia: p for p in Provincia.objects.all()}
+    
+    # Leer todo el archivo CSV primero (mejor para procesamiento por lotes)
     with open(archivo_csv, newline='', encoding='utf-8-sig') as csvfile:
         reader = csv.DictReader(csvfile, delimiter=';')
-
-        # Inicializar contador de filas procesadas
-        filas_procesadas = 0
-
-        # Resetear la tabla Localidad (eliminar los datos existentes)
+        rows = [clean_row(row) for row in reader if validate_row(row)]
+    
+    # Procesar en lotes
+    total_rows = len(rows)
+    localidades_batch = []
+    filas_procesadas = 0
+    
+    with transaction.atomic():
         reset_localidades()
+        
+        for i, row in enumerate(rows, 1):
+            try:
+                localidad = process_row(row, provincias_cache)
+                if localidad:
+                    localidades_batch.append(localidad)
+                    
+                    # Procesar lote cuando alcanza el tamaño definido
+                    if len(localidades_batch) >= BATCH_SIZE:
+                        Localidad.objects.bulk_create(localidades_batch)
+                        filas_procesadas += len(localidades_batch)
+                        localidades_batch = []
+                        print(f"Procesadas {filas_procesadas}/{total_rows} filas...")
+            except Exception as e:
+                print(f"Error procesando fila {i}: {e}")
+        
+        # Procesar el último lote (si queda algo)
+        if localidades_batch:
+            Localidad.objects.bulk_create(localidades_batch)
+            filas_procesadas += len(localidades_batch)
+    
+    print(f"Migración completada. {filas_procesadas}/{total_rows} localidades procesadas.")
 
-        # Iterar sobre cada fila del archivo CSV
-        for row in reader:
-            # Limpiar las claves del diccionario del CSV para evitar caracteres extraños
-            row = {key.strip(): value for key, value in row.items()}
+def clean_row(row):
+    """Limpia los nombres de campos y valores del row."""
+    return {key.strip(): value.strip() if value else '' for key, value in row.items()}
 
-            # Asegurar que las claves existen en el diccionario del CSV
-            if 'CP' in row and 'Localidad' in row and 'Cod_Provincia' in row:
-                nombre_localidad = row['Localidad'].strip()
-                codigo_postal = row['CP'].strip()
-                codigo_provincia_csv = row['Cod_Provincia'].strip()
+def validate_row(row):
+    """Valida que la fila tenga los campos requeridos."""
+    required_fields = {'CP', 'Localidad', 'Cod_Provincia'}
+    return all(field in row for field in required_fields)
 
-                # Obtener el objeto Provincia sumando 1 al código de provincia del CSV
-                id_provincia = int(codigo_provincia_csv) + 1
-
-                try:
-                    #print("id_provincia try", id_provincia)
-                    #provincia = Provincia.objects.get(codigo_provincia=str(id_provincia))
-                    provincia = Provincia.objects.get(id_provincia=id_provincia)
-                except Provincia.DoesNotExist:
-                    print(f"Provincia con código {id_provincia} no encontrada. Fila omitida.")
-                    continue  # Si no encuentra la provincia, saltar esta fila
-
-                # Crear el registro de Localidad
-                Localidad.objects.create(
-                    estatus_localidad=True,  # Estatus en True
-                    nombre_localidad=nombre_localidad,
-                    id_provincia=provincia,
-                    codigo_postal=codigo_postal
-                )
-
-                # Incrementar el contador de filas procesadas
-                filas_procesadas += 1
-
-                # Mostrar mensaje cada 100 filas procesadas
-                if filas_procesadas % 100 == 0:
-                    print(f"{filas_procesadas} filas procesadas...")
-            else:
-                print(f"Encabezados faltantes en la fila: {row}")
-
-    print(f"Se han migrado {filas_procesadas} localidades de forma exitosa.")
+def process_row(row, provincias_cache):
+    """Procesa una fila individual y devuelve un objeto Localidad no guardado."""
+    nombre_localidad = row['Localidad']
+    codigo_postal = row['CP']
+    id_provincia = int(row['Cod_Provincia']) + 1
+    
+    provincia = provincias_cache.get(id_provincia)
+    if not provincia:
+        print(f"Provincia con código {id_provincia} no encontrada. Fila omitida.")
+        return None
+    
+    # Obtener valores para campos heredados
+    id_user = 1  # Obtener instancia del usuario admin
+    estacion = socket.gethostname()   # Obtener nombre de la estación
+    fcontrol = datetime.now().strftime("%Y-%m-%d %H:%M:%S")  # Fecha actual
+    
+    return Localidad(
+        estatus_localidad=True,
+        nombre_localidad=nombre_localidad,
+        id_provincia=provincia,
+        codigo_postal=codigo_postal,
+        # Campos heredados
+        usuario="admin",
+        estacion=estacion,
+        fcontrol=fcontrol
+    )
 
 def reset_localidades():
-    """Elimina los datos existentes en la tabla Localidad y resetea su ID en SQLite."""
-    # Eliminar los datos existentes en la tabla
+    """Elimina los datos existentes de forma optimizada."""
+    # Usar DELETE más eficiente para tablas grandes
     Localidad.objects.all().delete()
-
-    # Reiniciar el autoincremento en SQLite
-    with connection.cursor() as cursor:
-        cursor.execute("DELETE FROM sqlite_sequence WHERE name='localidad';")  # Ajustar el nombre de la tabla si es necesario
-
-    print("Datos de la tabla Localidad eliminados y autoincremento reseteado.")
+    
+    # Resetear secuencia de forma compatible con múltiples bases de datos
+    if connection.vendor == 'sqlite':
+        cursor = connection.cursor()
+        cursor.execute("DELETE FROM sqlite_sequence WHERE name='localidad';")
+    elif connection.vendor == 'postgresql':
+        cursor = connection.cursor()
+        cursor.execute("ALTER SEQUENCE localidad_id_seq RESTART WITH 1;")
+    
+    print("Tabla Localidad reseteada correctamente.")
 
 if __name__ == '__main__':
-    # Ruta del archivo CSV
     archivo_csv = os.path.join(BASE_DIR, 'data_load', 'Codigos-Postales-Argentina.csv')
-
-    # Ejecutar la migración
     cargar_localidades_desde_csv(archivo_csv)
