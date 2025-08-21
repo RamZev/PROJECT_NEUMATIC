@@ -1484,3 +1484,14 @@ CREATE VIEW "VLStockUnico" AS
 	ORDER by
 		p.id_familia_id, p.id_modelo_id, p.id_marca_id, ps.id_producto_id;
 
+
+-- ---------------------------------------------------------------------------
+-- Reposición de Stock.
+-- Modelo: VLStockGeneralSucursal
+-- ---------------------------------------------------------------------------
+DROP VIEW IF EXISTS "main"."VLReposicionStock";
+CREATE VIEW VLReposicionStock AS 
+	SELECT 1 AS dummy;
+
+
+

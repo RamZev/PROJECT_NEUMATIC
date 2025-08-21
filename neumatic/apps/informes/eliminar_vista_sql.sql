@@ -40,3 +40,4 @@ DROP VIEW IF EXISTS "main"."VLStockSucursal";
 DROP VIEW IF EXISTS "main"."VLStockGeneralSucursal";
 DROP VIEW IF EXISTS "main"."VLStockFecha";
 DROP VIEW IF EXISTS "main"."VLStockUnico";
+DROP VIEW IF EXISTS "main"."VLReposicionStock";

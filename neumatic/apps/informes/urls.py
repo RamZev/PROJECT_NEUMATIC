@@ -84,8 +84,9 @@ from apps.informes.views.vllista_list_views import *
 from apps.informes.views.vllistarevendedor_list_views import *
 from apps.informes.views.vlstocksucursal_list_views import *
 from apps.informes.views.vlstockgeneralsucursal_list_views import *
-from apps.informes.views.vlstockfecha_list_views import *
+# from apps.informes.views.vlstockfecha_list_views import *
 from apps.informes.views.vlstockunico_list_views import *
+from apps.informes.views.vlreposicionstock_list_views import *
 
 
 
@@ -812,17 +813,17 @@ urlpatterns = [
 	path("vlstockgeneralsucursal/vista-csv/", vlstockgeneralsucursal_vista_csv, 
 		 name="vlstockgeneralsucursal_vista_csv"),
 	
-	#-- VL Listado Stock a Fecha.
-	path('vlstockfecha_informe/', VLStockFechaInformeView.as_view(), 
-		 name='vlstockfecha_informe_list'),
-	path('vlstockfecha/vista-preliminar/', vlstockfecha_vista_pantalla, 
-		 name="vlstockfecha_vista_pantalla"),
-	path("vlstockfecha/vista-pdf/", vlstockfecha_vista_pdf, 
-		 name="vlstockfecha_vista_pdf"),
-	path("vlstockfecha/vista-excel/", vlstockfecha_vista_excel, 
-		 name="vlstockfecha_vista_excel"),
-	path("vlstockfecha/vista-csv/", vlstockfecha_vista_csv, 
-		 name="vlstockfecha_vista_csv"),
+	# #-- VL Listado Stock a Fecha.
+	# path('vlstockfecha_informe/', VLStockFechaInformeView.as_view(), 
+	# 	 name='vlstockfecha_informe_list'),
+	# path('vlstockfecha/vista-preliminar/', vlstockfecha_vista_pantalla, 
+	# 	 name="vlstockfecha_vista_pantalla"),
+	# path("vlstockfecha/vista-pdf/", vlstockfecha_vista_pdf, 
+	# 	 name="vlstockfecha_vista_pdf"),
+	# path("vlstockfecha/vista-excel/", vlstockfecha_vista_excel, 
+	# 	 name="vlstockfecha_vista_excel"),
+	# path("vlstockfecha/vista-csv/", vlstockfecha_vista_csv, 
+	# 	 name="vlstockfecha_vista_csv"),
 	
 	#-- VL Listado Stock Único.
 	path('vlstockunico_informe/', VLStockUnicoInformeView.as_view(), 
@@ -835,6 +836,18 @@ urlpatterns = [
 		 name="vlstockunico_vista_excel"),
 	path("vlstockunico/vista-csv/", vlstockunico_vista_csv, 
 		 name="vlstockunico_vista_csv"),
+	
+	#-- VL Reposición de Stock.
+	path('vlreposicionstock_informe/', VLReposicionStockInformeView.as_view(), 
+		 name='vlreposicionstock_informe_list'),
+	path('vlreposicionstock/vista-preliminar/', vlreposicionstock_vista_pantalla, 
+		 name="vlreposicionstock_vista_pantalla"),
+	path("vlreposicionstock/vista-pdf/", vlreposicionstock_vista_pdf, 
+		 name="vlreposicionstock_vista_pdf"),
+	path("vlreposicionstock/vista-excel/", vlreposicionstock_vista_excel, 
+		 name="vlreposicionstock_vista_excel"),
+	path("vlreposicionstock/vista-csv/", vlreposicionstock_vista_csv, 
+		 name="vlreposicionstock_vista_csv"),
 	
 	
 	
