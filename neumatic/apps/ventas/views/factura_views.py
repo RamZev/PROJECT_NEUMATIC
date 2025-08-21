@@ -274,7 +274,7 @@ class FacturaCreateView(MaestroDetalleCreateView):
 				# Determinamos id_discrimina_iva basado en el tipo de IVA (Regla: True solo si id_tipo_iva == 4)
 				cliente = form.cleaned_data['id_cliente']
 				id_discrimina_iva = (cliente.id_tipo_iva.discrimina_iva)
-
+				
 				# Obtener configuración AFIP del comprobante
 				comprobante_data = ComprobanteVenta.objects.filter(
 					codigo_comprobante_venta=comprobante
@@ -283,6 +283,38 @@ class FacturaCreateView(MaestroDetalleCreateView):
 				if not comprobante_data:
 					form.add_error(None, 'No se encontró la configuración AFIP para este comprobante')
 					return self.form_invalid(form)
+
+				# Determinar el tipo de numeración basado en comprobante_data
+				if comprobante_data.electronica:
+					tipo_numeracion = 'eletronica'
+				elif comprobante_data.tipo_documento == "FACTURA" and not comprobante_data.electronica:
+					tipo_numeracion = 'manual'
+				else:
+					tipo_numeracion = 'automatica'
+
+				
+				# Manejar la numeración según el tipo
+				if tipo_numeracion == 'automatica':
+					resultado = self._asignar_numeracion_automatica(
+						sucursal, punto_venta, comprobante_afip, letra, form
+					)
+					
+				elif tipo_numeracion == 'manual':
+					resultado = self._asignar_numeracion_manual(
+						sucursal, punto_venta, comprobante_afip, letra, form
+					)
+					
+				elif tipo_numeracion == 'electronica':
+					print("tipo_numeracion", tipo_numeracion)
+					resultado = self._asignar_numeracion_electronica(
+						sucursal, punto_venta, comprobante_afip, letra, fecha_comprobante, form
+					)
+					
+				else:
+					form.add_error(None, 'Tipo de numeración no válido')
+					return self.form_invalid(form)
+				
+				
 
 				# Determinar comprobante AFIP y letra
 				codigo_afip_a = comprobante_data.codigo_afip_a
@@ -310,6 +342,10 @@ class FacturaCreateView(MaestroDetalleCreateView):
 					else:
 						letra = "X"
 
+				# Manejar la numeración según el tipo - Inicio
+
+				# Manejar la numeración según el tipo - Fin
+				
 				# Bloquear y obtener/crear el número
 				numero_obj, created = Numero.objects.select_for_update(nowait=True).get_or_create(
 					id_sucursal=sucursal,
@@ -324,9 +360,11 @@ class FacturaCreateView(MaestroDetalleCreateView):
 
 				form.instance.numero_comprobante = nuevo_numero
 				form.instance.letra_comprobante = letra
-				# form.instance.compro = comprobante_afip  # Guardamos el código AFIP real
 				form.instance.compro = comprobante
 				form.instance.full_clean()
+
+				messages.success(self.request, f"Parte final de la asignación del documento")
+				# Final 3. Numeración (nueva versión)
 
 				# Condición de Venta
 				condicion_comprobante = form.cleaned_data['condicion_comprobante']
@@ -483,6 +521,16 @@ class FacturaCreateView(MaestroDetalleCreateView):
 		kwargs['usuario'] = self.request.user  # Pasar el usuario autenticado
 
 		return kwargs
+
+	def _asignar_numeracion_automatica(self, sucursal, punto_venta, comprobante_afip, letra, form):
+		pass
+
+	def _asignar_numeracion_manual(self, sucursal, punto_venta, comprobante_afip, letra, form):
+		pass
+
+	def _asignar_numeracion_electronica(self, sucursal, punto_venta, comprobante_afip, letra, fecha_comprobante, form):
+		pass
+
 
 # @method_decorator(login_required, name='dispatch')
 class FacturaUpdateView(MaestroDetalleUpdateView):
