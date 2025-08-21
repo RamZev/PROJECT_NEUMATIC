@@ -88,7 +88,13 @@ class FacturaForm(forms.ModelForm):
             "id_comprobante_venta": forms.Select(attrs={**formclassselect}),
             "compro": forms.TextInput(attrs={**formclasstext, 'readonly': 'readonly'}),
             "letra_comprobante": forms.TextInput(attrs={**formclasstext, 'readonly': 'readonly'}),
-            "numero_comprobante": forms.TextInput(attrs={**formclasstext, 'readonly': 'readonly', 'type': 'number', 'step': 'any'}),
+            "numero_comprobante": forms.TextInput(attrs={
+                **formclasstext, 
+                'readonly': 'readonly', 
+                'type': 'number',
+                'autocomplete':"off" ,
+                'required': 'required',
+                'step': 'any'}),
             
             "comprobante_remito": forms.Select(attrs={**formclassselect}),            
             "remito": forms.TextInput(attrs={**formclasstext, 'readonly': 'readonly'}),

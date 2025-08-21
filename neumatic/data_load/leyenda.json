@@ -1,0 +1,42 @@
+[
+    {
+        "estacion": null,
+        "estatus_leyenda": 1,
+        "fcontrol": null,
+        "id_leyenda": 1,
+        "id_user_id": null,
+        "leyenda": "Retiro el vehículo de conformidad, previo control, encontrándose en perfectas condiciones todas mis pertenencias.",
+        "nombre_leyenda": "Retiro Conforme",
+        "usuario": null
+    },
+    {
+        "estacion": null,
+        "estatus_leyenda": 1,
+        "fcontrol": null,
+        "id_leyenda": 2,
+        "id_user_id": null,
+        "leyenda": "Los productos de este comprobante quedan en deposito del Cliente.",
+        "nombre_leyenda": "Stock Cliente",
+        "usuario": null
+    },
+    {
+        "estacion": null,
+        "estatus_leyenda": 1,
+        "fcontrol": null,
+        "id_leyenda": 3,
+        "id_user_id": null,
+        "leyenda": "Este Comprobante no participa en Estadisticas.",
+        "nombre_leyenda": "No Estadísticas",
+        "usuario": null
+    },
+    {
+        "estacion": null,
+        "estatus_leyenda": 1,
+        "fcontrol": null,
+        "id_leyenda": 4,
+        "id_user_id": null,
+        "leyenda": "REGIMEN DE TRANSPARENCIA FISCAL AL CONSUMIDOR Ley 27743.",
+        "nombre_leyenda": "Régimen Transparencia",
+        "usuario": null
+    }
+]

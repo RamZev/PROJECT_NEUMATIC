@@ -5,6 +5,7 @@ from django.db import transaction
 from django.db.models import F
 from django.db import DatabaseError
 from django.utils import timezone
+from django.utils.safestring import mark_safe
 
 import json
 
@@ -190,6 +191,10 @@ class FacturaManualCreateView(MaestroDetalleCreateView):
 		electronica_dict = {str(c.id_comprobante_venta): c.electronica for c in ComprobanteVenta.objects.all()}
 		data['electronica_dict'] = json.dumps(electronica_dict)
 
+		# Obtener todos los comprobantes con sus valores tipo_comprobante
+		tipo_comprobante_dict = {str(c.id_comprobante_venta): c.tipo_comprobante for c in ComprobanteVenta.objects.all()}
+		data['tipo_comprobante_dict'] = mark_safe(json.dumps(tipo_comprobante_dict, ensure_ascii=False))
+		
 		# Obtener todos los operarios con sus id
 		operario_dict = {str(o.id_operario): o.nombre_operario for o in Operario.objects.all()}
 		data['operario_dict'] = json.dumps(operario_dict)
@@ -266,27 +271,70 @@ class FacturaManualCreateView(MaestroDetalleCreateView):
 								form.add_error(None, 'Para este tipo de comprobante debe especificar el documento asociado')
 								return self.form_invalid(form)
 
-				# 3. Numeración
+				# 3. Numeración (nueva versión)
 				sucursal = form.cleaned_data['id_sucursal']
 				punto_venta = form.cleaned_data['id_punto_venta']
 				comprobante = form.cleaned_data['compro']
-				letra = form.cleaned_data['letra_comprobante']
 				fecha_comprobante = form.cleaned_data['fecha_comprobante']
+				
+				# Determinamos id_discrimina_iva basado en el tipo de IVA (Regla: True solo si id_tipo_iva == 4)
+				cliente = form.cleaned_data['id_cliente']
+				id_discrimina_iva = (cliente.id_tipo_iva.discrimina_iva)
 
-				numero_obj, created = Numero.objects.select_for_update(
-						nowait=True
-				).get_or_create(
+				# Obtener configuración AFIP del comprobante
+				comprobante_data = ComprobanteVenta.objects.filter(
+					codigo_comprobante_venta=comprobante
+				).first()
+
+				if not comprobante_data:
+					form.add_error(None, 'No se encontró la configuración AFIP para este comprobante')
+					return self.form_invalid(form)
+
+				# Determinar comprobante AFIP y letra
+				codigo_afip_a = comprobante_data.codigo_afip_a
+				codigo_afip_b = comprobante_data.codigo_afip_b
+
+				if codigo_afip_a != codigo_afip_b:
+					if id_discrimina_iva:
+						comprobante_afip = codigo_afip_a
+						letra = 'A'
+					else:
+						comprobante_afip = codigo_afip_b
+						letra = 'B'
+				else:
+					comprobante_afip = codigo_afip_a
+					# Buscar si ya existe un número para esta combinación
+					numero_existente = Numero.objects.filter(
 						id_sucursal=sucursal,
 						id_punto_venta=punto_venta,
-						comprobante=comprobante,
-						letra=letra,
-						defaults={'numero': 0}
+						comprobante=comprobante_afip
+					).first()
+					
+					if numero_existente:
+						letra = numero_existente.letra
+						print("if numero_existente", letra)
+					else:
+						letra = "X"
+
+				messages.success(self.request, f"messages.success de prueba")
+				
+				# Bloquear y obtener/crear el número
+				numero_obj, created = Numero.objects.select_for_update(nowait=True).get_or_create(
+					id_sucursal=sucursal,
+					id_punto_venta=punto_venta,
+					comprobante=comprobante_afip,
+					letra=letra,
+					defaults={'numero': 0}
 				)
 
 				nuevo_numero = numero_obj.numero + 1
 				Numero.objects.filter(pk=numero_obj.pk).update(numero=F('numero') + 1)
+
 				
+				# Establecimiento de la letra y el número del comprobante
 				form.instance.numero_comprobante = nuevo_numero
+				form.instance.letra_comprobante = letra
+				form.instance.compro = comprobante
 				form.instance.full_clean()
 
 				# Condición de Venta
@@ -402,14 +450,23 @@ class FacturaManualCreateView(MaestroDetalleCreateView):
 			return self.form_invalid(form)
 		
 	def form_invalid(self, form):
-		print("Entro a form_invalid")
+		print("Entro a form_invalid***")
 		print("Errores del formulario principal:", form.errors)
 
 		context = self.get_context_data()
 		formset_detalle = context['formset_detalle']
+		# formset_serial = context['formset_serial']
 
 		if formset_detalle:
-			print("Errores del formset:", formset_detalle.errors)
+			print("Errores del formset detalle:")
+			for i, form_d in enumerate(formset_detalle):
+				print(f"Form {i}:", form_d.errors)
+				print("Non field errors:", form_d.non_field_errors())
+
+		# if formset_serial:
+		# 	print("Errores del formset serial:")
+		# 	for i, form_s in enumerate(formset_serial):
+		# 		print(f"Form {i}:", form_s.errors)
 
 		return super().form_invalid(form)
 
@@ -479,6 +536,10 @@ class FacturaManualUpdateView(MaestroDetalleUpdateView):
 		electronica_dict = {str(c.id_comprobante_venta): c.electronica for c in ComprobanteVenta.objects.all()}
 		data['electronica_dict'] = json.dumps(electronica_dict)
 
+		# Obtener todos los comprobantes con sus valores tipo_comprobante
+		tipo_comprobante_dict = {str(c.id_comprobante_venta): c.tipo_comprobante for c in ComprobanteVenta.objects.all()}
+		data['tipo_comprobante_dict'] = mark_safe(json.dumps(tipo_comprobante_dict, ensure_ascii=False))
+		
 		# Obtener todos los operarios con sus id
 		operario_dict = {str(o.id_operario): o.nombre_operario for o in Operario.objects.all()}
 		data['operario_dict'] = json.dumps(operario_dict)

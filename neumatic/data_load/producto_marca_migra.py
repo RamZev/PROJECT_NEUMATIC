@@ -74,9 +74,9 @@ def cargar_datos():
         ProductoMarca.objects.create(
             estatus_producto_marca=True,
             nombre_producto_marca=record['NOMBRE'].strip(),
-            principal=False,
-            info_michelin_auto=False,
-            info_michelin_camion=False,
+            principal=not bool(record['OTRAS']),
+            info_michelin_auto=bool(record['XTRAXTORA']),
+            info_michelin_camion=bool(record['XTRAXTORC']),
             id_moneda=id_moneda_instancia  # Instancia de Moneda
         )
 

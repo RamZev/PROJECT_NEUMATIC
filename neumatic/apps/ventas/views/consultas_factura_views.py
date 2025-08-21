@@ -533,12 +533,15 @@ def verificar_remito(request):
         ).select_related('id_producto').values(
             'id_producto',
             'id_producto__medida',
+            'id_producto__tipo_producto',
+            'id_producto__obliga_operario',
             'producto_venta',
             'cantidad',
             'precio',
             'precio_lista',
             'desc_vendedor',
             'descuento',
+            'no_gravado',
             'gravado',
             'alic_iva',
             'iva',
@@ -559,9 +562,12 @@ def verificar_remito(request):
                 'desc_vendedor': float(detalle['desc_vendedor']),
                 'descuento': float(detalle['descuento']),
                 'gravado': float(detalle['gravado']),
+                'no_gravado': float(detalle['no_gravado']),
                 'alic_iva': float(detalle.get('id_producto__id_alicuota_iva__alicuota_iva', detalle['alic_iva'])),
                 'iva': float(detalle['iva']),
-                'total': float(detalle['total'])
+                'total': float(detalle['total']),
+                'tipo_producto': detalle['id_producto__tipo_producto'],
+                'obliga_operario': detalle['id_producto__obliga_operario']
             }
             detalles_lista.append(detalle_dict)
 

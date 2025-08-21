@@ -1,17 +1,17 @@
+# neumatic\data_load\detalle_factura_migra.py
 import os
 import sys
 import django
-import time  # Para medir el tiempo de procesamiento
+import time
+import logging
 from dbfread import DBF
 from django.db import connection
 from decimal import Decimal
 from django.db import transaction
 
-# Añadir el directorio base del proyecto al sys.path
+# Configuración inicial
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(BASE_DIR)
-
-# Configurar Django
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'neumatic.settings')
 django.setup()
 
@@ -19,97 +19,191 @@ from apps.ventas.models.factura_models import Factura, DetalleFactura
 from apps.maestros.models.producto_models import Producto
 from apps.maestros.models.base_models import Operario
 
+# Configurar logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler('migracion_detalle_factura.log'),
+        logging.StreamHandler()
+    ]
+)
+logger = logging.getLogger(__name__)
+
+def safe_decimal(value, default=Decimal('0.00')):
+    """Conversión segura a Decimal"""
+    try:
+        return Decimal(str(value)) if value is not None else default
+    except:
+        return default
+
+def safe_int(value, default=0):
+    """Conversión segura a entero con múltiples formatos"""
+    try:
+        if value is None:
+            return default
+            
+        # Manejar casos donde el valor podría ser string con decimales ("180646.00")
+        if isinstance(value, str):
+            value = value.split('.')[0]  # Eliminar parte decimal si existe
+            
+        return int(float(value)) if str(value).strip() else default
+    except:
+        return default
+
 def reset_detalle_factura():
-    """Elimina los datos existentes en la tabla DetalleFactura y resetea su ID en SQLite."""
-    DetalleFactura.objects.all().delete()  # Eliminar los datos existentes
-    with connection.cursor() as cursor:
-        cursor.execute("DELETE FROM sqlite_sequence WHERE name='detalle_factura';")
-    print("Tabla DetalleFactura reiniciada.")
+    """Elimina los datos existentes en la tabla DetalleFactura"""
+    try:
+        with transaction.atomic():
+            count = DetalleFactura.objects.count()
+            DetalleFactura.objects.all().delete()
+            logger.info(f"Eliminados {count} registros existentes")
+            
+            if 'sqlite' in connection.settings_dict['ENGINE']:
+                with connection.cursor() as cursor:
+                    cursor.execute("DELETE FROM sqlite_sequence WHERE name='detalle_factura';")
+    except Exception as e:
+        logger.error(f"Error al resetear tabla: {e}")
+        raise
 
 def cargar_datos_detalle_factura():
-    """Lee los datos de la tabla origen y migra los datos al modelo DetalleFactura."""
+    """Proceso de migración optimizado con bulk_create"""
+    start_time = time.time()
     reset_detalle_factura()
 
-    # Ruta de la tabla de Visual FoxPro
+    # Configuración para mejor rendimiento en SQLite
+    if 'sqlite' in connection.settings_dict['ENGINE']:
+        with connection.cursor() as cursor:
+            cursor.execute("PRAGMA synchronous = OFF;")
+            cursor.execute("PRAGMA journal_mode = MEMORY;")
+            cursor.execute("PRAGMA cache_size = 10000;")
+
+    # Ruta del archivo DBF
     dbf_path = os.path.join(BASE_DIR, 'data_load', 'datavfox', 'detven.DBF')
+    
+    if not os.path.exists(dbf_path):
+        logger.error(f"Archivo DBF no encontrado en: {dbf_path}")
+        return
 
-    # Abrir la tabla de Visual FoxPro usando dbfread
-    table = DBF(dbf_path, encoding='latin-1')
+    try:
+        table = DBF(dbf_path, encoding='latin-1')
+    except UnicodeDecodeError:
+        table = DBF(dbf_path, encoding='utf-8')
 
-    total_registros = len(table)
-    print(f"Total de registros a procesar: {total_registros}")
+    logger.info(f"Iniciando migración. Total registros: {len(table)}")
 
-    # Código inicial para filtrar
-    codigo_inicio = 1
-
-    # Filtrar y ordenar los registros
-    table = sorted(
-        [record for record in table if int(record['ID']) >= codigo_inicio],
-        key=lambda record: int(record['ID'])
-    )
-
-    print("Inicio del ciclo de migración.")
-
-    registros_procesados = 0
-    for idx, record in enumerate(table):
+    # Precargar productos asegurando el tipo de dato correcto
+    logger.info("Cargando cache de productos...")
+    productos_cache = {}
+    
+    for p in Producto.objects.all():
         try:
-            # Obtener el código de la tabla origen
-            codigo_origen = int(record.get('ID', 0))
+            key = int(float(str(p.codigo_producto).split('.')[0]))
+            productos_cache[key] = p
+        except Exception as e:
+            logger.error(f"Error procesando código de producto {p.codigo_producto}: {e}")
+            continue
+    
+    logger.info(f"Total productos cargados: {len(productos_cache)}")
+    
+    # Cargar otros caches
+    facturas_cache = {f.pk: f for f in Factura.objects.all()}
+    operarios_cache = {o.pk: o for o in Operario.objects.all()}
 
-            # Obtener instancias relacionadas
-            id_factura_instancia = Factura.objects.filter(pk=codigo_origen).first()
-            operario_id = record.get('OPERARIO', None)
-            id_operario_instancia = Operario.objects.filter(pk=operario_id).first() if operario_id else None
-            codigo_producto = record.get('CODIGO', None)
-            id_producto_instancia = Producto.objects.filter(codigo_producto=codigo_producto).first() if codigo_producto else None
+    # Configuración de procesamiento por lotes
+    batch_size = 2000  # Tamaño óptimo para SQLite
+    detalles_batch = []
+    registros_procesados = 0
+    productos_no_encontrados = set()
 
+    for idx, record in enumerate(table, 1):
+        try:
+            codigo_origen = safe_int(record.get('ID'))
+            if not codigo_origen:
+                logger.warning(f"Registro {idx} sin ID válido")
+                continue
+
+            # Buscar factura
+            id_factura_instancia = facturas_cache.get(codigo_origen)
             if not id_factura_instancia:
-                print(f"Advertencia: Factura con ID {codigo_origen} no encontrada. Registro omitido.")
+                logger.warning(f"Factura no encontrada ID: {codigo_origen}")
                 continue
 
+            # Obtener código de producto con conversión robusta
+            codigo_producto_raw = record.get('CODIGO')
+            codigo_producto = safe_int(codigo_producto_raw)
+            
+            # Buscar producto
+            id_producto_instancia = productos_cache.get(codigo_producto)
+            
             if not id_producto_instancia:
-                print(f"Advertencia: Producto con código {codigo_producto} no encontrado. Registro omitido.")
+                productos_no_encontrados.add((codigo_producto, codigo_producto_raw))
                 continue
 
-            # Crear el registro de DetalleFactura
-            DetalleFactura.objects.create(
+            # Crear instancia (sin guardar aún)
+            detalle = DetalleFactura(
                 id_factura=id_factura_instancia,
                 id_producto=id_producto_instancia,
-                codigo=int(record.get('CODIGO', 0)),  # Convierte a entero
-                cantidad=Decimal(record.get('CANTIDAD', 0) or 0),
-                costo=Decimal(record.get('COSTO', 0) or 0),
-                precio=Decimal(record.get('PRECIO', 0) or 0),
-                descuento=Decimal(record.get('DESCUENTO', 0) or 0),
-                gravado=Decimal(record.get('GRAVADO', 0) or 0),
-                alic_iva=Decimal(record.get('ALICIVA', 0) or 0),
-                iva=Decimal(record.get('IVA', 0) or 0),
-                total=Decimal(record.get('TOTAL', 0) or 0),
-                reventa=record.get('REVENTA', '').strip(),
-                stock=Decimal(record.get('STOCK', 0) or 0),
-                act_stock=bool(record.get('ACTSTOCK', False)),
-                id_operario=id_operario_instancia
+                codigo=codigo_producto,
+                producto_venta=id_producto_instancia.nombre_producto,  # Campo añadido
+                cantidad=safe_decimal(record.get('CANTIDAD')),
+                costo=safe_decimal(record.get('COSTO')),
+                precio=safe_decimal(record.get('PRECIO')),
+                precio_lista=id_producto_instancia.precio,  # Campo añadido
+                descuento=safe_decimal(record.get('DESCUENTO')),
+                gravado=safe_decimal(record.get('GRAVADO')),
+                alic_iva=safe_decimal(record.get('ALICIVA')),
+                iva=safe_decimal(record.get('IVA')),
+                total=safe_decimal(record.get('TOTAL')),
+                reventa=str(record.get('REVENTA', '')).strip()[:1],
+                stock=safe_decimal(record.get('STOCK')),
+                act_stock=bool(safe_int(record.get('ACTSTOCK', 0))),
+                id_operario=operarios_cache.get(safe_int(record.get('OPERARIO')))
             )
-
+            
+            detalles_batch.append(detalle)
             registros_procesados += 1
 
-            # Mostrar progreso cada 100 registros
-            if registros_procesados % 1000 == 0:
-                print(f"{registros_procesados} registros procesados.")
+            # Guardar por lotes
+            if len(detalles_batch) >= batch_size:
+                with transaction.atomic():
+                    DetalleFactura.objects.bulk_create(detalles_batch)
+                logger.info(f"Lote guardado: {len(detalles_batch)} registros")
+                detalles_batch = []
+
+            if registros_procesados % 10000 == 0:
+                logger.info(f"Progreso: {registros_procesados} registros procesados")
 
         except Exception as e:
-            print(f"Error procesando el registro ID {record.get('ID', 'N/A')}: {e}")
+            logger.error(f"Error en registro {codigo_origen}: {str(e)}")
+            continue
 
-    print(f"Total de registros procesados: {registros_procesados}")
+    # Guardar los últimos registros si los hay
+    if detalles_batch:
+        with transaction.atomic():
+            DetalleFactura.objects.bulk_create(detalles_batch)
+        logger.info(f"Último lote guardado: {len(detalles_batch)} registros")
+
+    # Reporte final
+    logger.info("\n=== REPORTE FINAL ===")
+    logger.info(f"Total registros procesados: {registros_procesados}")
+    
+    if productos_no_encontrados:
+        logger.warning(f"\nProductos no encontrados ({len(productos_no_encontrados)}):")
+        for codigo, codigo_raw in sorted(productos_no_encontrados)[:100]:  # Mostrar solo los primeros 100
+            logger.warning(f" - Código convertido: {codigo} | Valor original: {codigo_raw}")
+            
+            # Verificación adicional en BD para diagnóstico
+            producto = Producto.objects.filter(
+                codigo_producto=str(codigo)
+            ).first()
+            
+            if producto:
+                logger.error(f"   ¡INCONSISTENCIA! El producto existe en BD: ID {producto.id}, Código: {producto.codigo_producto}")
+
+    elapsed_time = time.time() - start_time
+    mins, secs = divmod(elapsed_time, 60)
+    logger.info(f"\nTiempo total: {int(mins)} minutos {int(secs)} segundos")
 
 if __name__ == '__main__':
-    start_time = time.time()  # Empezar el control de tiempo
     cargar_datos_detalle_factura()
-    end_time = time.time()  # Terminar el control de tiempo
-
-    # Calcular el tiempo total en minutos y segundos
-    elapsed_time = end_time - start_time
-    minutes = elapsed_time // 60
-    seconds = elapsed_time % 60
-
-    print("Migración de DetalleFactura completada.")
-    print(f"Tiempo de procesamiento: {int(minutes)} minutos y {int(seconds)} segundos.")

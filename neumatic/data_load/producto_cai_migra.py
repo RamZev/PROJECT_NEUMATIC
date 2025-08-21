@@ -19,8 +19,18 @@ from apps.maestros.models.producto_models import ProductoCai
 # Ruta de la tabla de Visual FoxPro
 dbf_path = os.path.join(BASE_DIR, 'data_load', 'datavfox', 'lista.DBF')
 
+def reset_producto_cai():
+    """Elimina los datos existentes en la tabla y resetea su ID en SQLite."""
+    ProductoCai.objects.all().delete()  # Eliminar los datos existentes
+    
+    # Reiniciar el autoincremento en SQLite
+    with connection.cursor() as cursor:
+        cursor.execute("DELETE FROM sqlite_sequence WHERE name='producto_cai';")
+
 def migrar_productos_cai():
     start_time = time.time()  # Registrar el tiempo inicial
+
+    reset_producto_cai()
 
     # Abrir la tabla DBF y procesar los datos
     print("Cargando datos desde la tabla DBF...")

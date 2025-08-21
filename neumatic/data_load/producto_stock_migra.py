@@ -45,7 +45,7 @@ def migrar_producto_stock():
         print(f"\n{tabla_origen}: Total de registros a procesar: {total_registros}")
         
         # Variables para el procesamiento
-        batch_size = 1000
+        batch_size = 2000
         bulk_data = []
         registros_creados = 0
         errores = 0

@@ -115,16 +115,19 @@
             <div id="modo-edicion" data-is-edit="{{ is_edit|yesno:'true,false' }}"></div>
 
             <!-- Div oculto con el diccionario libro_iva para cada comprobante -->
-            <div id="libroiva-data" data-libroiva='{{ libro_iva_dict|safe }}'</div>
+            <div id="libroiva-data" data-libroiva='{{ libro_iva_dict|safe }}'></div>
 
             <!-- Div oculto con el diccionario libro_iva para cada comprobante -->
-            <div id="multventa-data" data-multventa='{{ mult_venta_dict|safe }}'</div>
+            <div id="multventa-data" data-multventa='{{ mult_venta_dict|safe }}'></div>
 
             <!-- Div oculto con el diccionario electronica para cada comprobante -->
-            <div id="electronica-data" data-electronica='{{ electronica_dict|safe }}'</div>
+            <div id="electronica-data" data-electronica='{{ electronica_dict|safe }}'></div>
+
+            <!-- Div oculto con el diccionario tipo_comprobante para cada comprobante -->
+            <div id="tipocomprobante-data" data-tipocomprobante='{{ tipo_comprobante_dict|safe }}'></div>
 
             <!-- Div oculto con el diccionario de operarios -->
-            <div id="operario-data" data-operario='{{ operario_dict|safe }}'</div>
+            <div id="operario-data" data-operario='{{ operario_dict|safe }}'></div>
 
             <div class="container-fluid tbl-container">
                 <!-- Formulario Encabezado Detalle - Inicio -->
@@ -1355,7 +1358,7 @@
                     // Clase reutilizable
                     const formControlClass = 'form-control form-control-sm border border-primary small-font';
 
-                    // Crear y insertar la fila
+                    // Crear y insertar la fila de detalle de factura
                     const newFormHTML = `
                     <tr data-form-index="${currentIndex}" class="small-font">
 
@@ -1814,12 +1817,13 @@
                     listarAgenda.removeAttribute('disabled');
                 }
 
-                // 4. habalitar o inhabilirae el input Factura Asociada
+                // 4. habilitar o inhabilitar el input Factura Asociada
+                const numeroAsociadoInput = document.getElementById('id_numero_asociado');
+
+                // Analiza si es Nota de Crédito
                 const multVentaDict = JSON.parse(document.getElementById('multventa-data').dataset.multventa);
                 const multVenta = multVentaDict[comprobanteId] ?? false;
-
-                // Analiza si son notas de crédito
-                const numeroAsociadoInput = document.getElementById('id_numero_asociado');
+                
                 if (multVenta < 0){
                     document.getElementById('id_numero_asociado').readOnly = false;
                     numeroAsociadoInput.setAttribute('required', 'required');
@@ -1829,7 +1833,21 @@
                     numeroAsociadoInput.required = false;  // Quitar requerimiento
                 }
 
-                // 5. Habilitar la fecha si no es un docuento electrónico
+                // Analiza si es Nota de Débito
+                const tipoComprobanteDict = JSON.parse(document.getElementById('tipocomprobante-data').dataset.tipocomprobante);
+                const tipoComprobante = tipoComprobanteDict[comprobanteId] ?? false;
+
+                if (tipoComprobante == "NOTA DE DÉBITO"){
+                    alert(tipoComprobante);
+                    document.getElementById('id_numero_asociado').readOnly = false;
+                    numeroAsociadoInput.setAttribute('required', 'required');
+                } else {
+                    document.getElementById('id_numero_asociado').value = '';
+                    document.getElementById('id_numero_asociado').readOnly = true;
+                    numeroAsociadoInput.required = false;  // Quitar requerimiento
+                }
+
+                // 5. Habilitar la fecha si no es un documento electrónico
                 const electronicaDict = JSON.parse(document.getElementById('electronica-data').dataset.electronica);
                 const electronica = electronicaDict[comprobanteId] ?? false;
 
@@ -1838,6 +1856,15 @@
                 } else {
                     document.getElementById('id_fecha_comprobante').readOnly = false;
                 }
+
+                // Habilitar el número de comprobante y asignarle valor en blanco
+                // if (tipoComprobante == "FACTURA" && !electronica){
+                //     alert("Factura Manual");
+                //     document.getElementById('id_numero_comprobante').readOnly = false;
+                //     document.getElementById('id_numero_comprobante').setAttribute('autocomplete', 'new-password');
+                // } else {
+                //     document.getElementById('id_numero_comprobante').readOnly = true;
+                // }
 
                 // Obtener solo los datos básicos del comprobante
                 fetch(`/ventas/comprobante/${comprobanteId}/codigo/`)
@@ -1968,6 +1995,7 @@
                         return;
                     }
 
+                    
                     // Si existe, procesar los detalles del remito
                     //
                     if (data.detalles && data.detalles.length > 0) {
@@ -1992,12 +2020,40 @@
                                 }
                             });
                         }
-            
+
+                        // Obtener diccionario de operarios
+                        const operarioData = document.getElementById('operario-data');
+                        const operarioDict = operarioData ? JSON.parse(operarioData.dataset.operario) : {};
+
                         // Procesar cada detalle del remito
                         data.detalles.forEach(detalle => {
                             const currentIndex = formsetContainer.querySelectorAll('.detalle-form tbody tr:not([style*="display: none"])').length;
 
-                            ///
+                            // Determinar campo de operario
+                            let campoOperarioHTML;
+                            if (detalle.tipo_producto === "S" && detalle.obliga_operario === true) {
+                                campoOperarioHTML = `
+                                    <select name="detallefactura_set-${currentIndex}-id_operario" 
+                                            class="form-control form-control-sm border border-primary small-font" 
+                                            style="font-size: 0.8rem; padding: 0.25rem;" 
+                                            required>
+                                        <option value="">Seleccione un operario</option>
+                                        ${Object.entries(operarioDict).map(([id, nombre]) => 
+                                            `<option value="${id}">${nombre}</option>`
+                                        ).join('')}
+                                    </select>
+                                `;
+                            } else {
+                                campoOperarioHTML = `
+                                    <select disabled
+                                            class="form-control form-control-sm border border-secondary small-font" 
+                                            style="font-size: 0.8rem; padding: 0.25rem;">
+                                        <option value="">No aplica</option>
+                                    </select>
+                                `;
+                            }
+
+                            /// insertar fila relacionada a remito
                             const newFormHTML = `
                             <tr data-form-index="${currentIndex}" class="small-font">
                                 <input type="hidden" name="detallefactura_set-${currentIndex}-id_detalle_factura">
@@ -2042,7 +2098,12 @@
                                         class="form-control form-control-sm border border-primary text-end" 
                                         value="${detalle.descuento}" step="0.1" min="0" readonly>
                                 </td>
+                                <td>
+                                    <input type="hidden" name="detallefactura_set-${currentIndex}-id_operario" value="">
+                                    ${campoOperarioHTML}
+                                </td>
                                 <input type="hidden" name="detallefactura_set-${currentIndex}-gravado" value="${detalle.gravado}">
+                                <input type="hidden" name="detallefactura_set-${currentIndex}-no_gravado" value="${detalle.no_gravado}">
                                 <input type="hidden" name="detallefactura_set-${currentIndex}-alic_iva" value="${detalle.alic_iva}">
                                 <input type="hidden" name="detallefactura_set-${currentIndex}-iva" value="${detalle.iva}">
                                 <td>
@@ -2059,10 +2120,12 @@
                             </tr>`;
                             ///
             
+                                                        
                             formsetContainer.querySelector('.detalle-form tbody').insertAdjacentHTML('beforeend', newFormHTML);
                             
                             // Actualizar totales generales
                             actualizarTotalFactura();
+                            alert("actualizarTotalFactura!");
                         });
             
                         // Actualizar el contador de formsets
@@ -2503,6 +2566,34 @@
                 const id_punto_venta = document.getElementById('id_id_punto_venta').value;
                 const compro = document.getElementById('id_compro').value;
                 const id_discrimina_iva = document.getElementById('id_discrimina_iva').value;
+
+                // Habilitar el número de comprobante y asignarle valor en blanco
+                // const comprobanteSelect = document.getElementById('id_id_comprobante_venta');
+                const comprobanteId = document.getElementById('id_id_comprobante_venta').value;
+
+                const tipoComprobanteDict = JSON.parse(document.getElementById('tipocomprobante-data').dataset.tipocomprobante);
+                const tipoComprobante = tipoComprobanteDict[comprobanteId] ?? false;
+
+                const electronicaDict = JSON.parse(document.getElementById('electronica-data').dataset.electronica);
+                const electronica = electronicaDict[comprobanteId] ?? false;
+
+                if (tipoComprobante == "FACTURA" && !electronica){
+                    alert("Factura Manual");
+                    document.getElementById('id_numero_comprobante').readOnly = false;
+                    // document.getElementById('id_numero_comprobante').setAttribute('autocomplete', 'new-password');
+                    
+                    if (document.getElementById('id_discrimina_iva').checked) {
+                        // El checkbox está marcado (true)
+                        document.getElementById('id_letra_comprobante').value = "A";
+                    } else {
+                        // El checkbox no está marcado (false)
+                        document.getElementById('id_letra_comprobante').value = "B";
+                    }
+                    return;
+
+                } else {
+                    document.getElementById('id_numero_comprobante').readOnly = true;
+                }
 
                 if (id_sucursal && id_punto_venta && compro) {
                     ///

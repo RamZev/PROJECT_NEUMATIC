@@ -19,6 +19,20 @@ from apps.maestros.models.producto_models import ProductoDeposito
 from apps.maestros.models.sucursal_models import Sucursal
 
 
+def reset_producto_deposito():
+    """Elimina los datos existentes en la tabla y resetea su ID en SQLite."""
+    ProductoDeposito.objects.all().delete()  # Eliminar los datos existentes
+    print("Datos de Tabla eliminados")
+
+    # Reiniciar el autoincremento en SQLite
+    with connection.cursor() as cursor:
+        cursor.execute("DELETE FROM sqlite_sequence WHERE name='producto_deposito';")
+    print("Secuencia de ID reseteada")
+
+
+# Eliminación de datos y secuencia de ID
+reset_producto_deposito()
+
 # Tabla origen y modelo destino
 tabla_origen = 'depositos.DBF'
 modelo_dest = ProductoDeposito
