@@ -3,144 +3,177 @@ Consultas pruebas en DB Browse
 ==================================================================
 -- CONSULTA 1:
 -----------
+
+--Aquí va el Query para los productos por debajo la línea de reposición o stock mínimo (original)
+
+--CREATE VIEW VLSTOCKMINIMO AS
 SELECT
-	s.nombre_sucursal,
-	p.id_producto,
-	p.cai,
-	p.medida,
-	p.nombre_producto,
-	px.nombre_producto_marca,
-	SUM(ps.stock)
+	producto_stock.id_deposito_id,
+	producto_stock.id_producto_id,
+	producto.medida,
+	producto.id_cai_id,
+	producto.cai,
+	producto.segmento,
+	producto_familia.nombre_producto_familia,
+	producto_modelo.nombre_modelo,
+	producto.nombre_producto,
+	producto_marca.nombre_producto_marca,
+	SUM(producto_stock.stock) AS stock,
+	producto_minimo.minimo
 FROM
-	producto_stock ps
-	LEFT JOIN producto_deposito pd ON ps.id_deposito_id = pd.id_producto_deposito
-	LEFT JOIN sucursal s ON pd.id_sucursal_id = s.id_sucursal
-	LEFT JOIN producto p ON ps.id_producto_id = p.id_producto
-	LEFT JOIN producto_marca px ON p.id_marca_id = px.id_producto_marca
+	producto_stock
+	INNER JOIN producto on producto_stock.id_producto_id = producto.id_producto
+	INNER JOIN producto_marca on producto.id_marca_id = producto_marca.id_producto_marca
+	INNER JOIN producto_familia on producto.id_familia_id = producto_familia.id_producto_familia
+	INNER JOIN producto_modelo on producto.id_modelo_id = producto_modelo.id_modelo
+	INNER JOIN producto_minimo on producto.id_cai_id = producto_minimo.id_cai_id
+WHERE
+	producto_stock.stock < producto_minimo.minimo
+	AND producto_minimo.minimo <> 0
+	AND producto_stock.id_deposito_id = 1
 GROUP by
-	ps.id_producto_id
+	producto.cai, producto_stock.id_deposito_id
 HAVING
-	ps.stock <> 0
+	SUM(producto_stock.stock) < producto_minimo.minimo
 ORDER by
-	s.nombre_sucursal, ps.id_producto_id;
+	producto.id_familia_id, producto.id_marca_id
+
 
 *--------------------------
 -- CONSULTA 2:
 -----------
 
--- SELECT * FROM sucursal
--- SELECT * FROM producto_deposito
--- SELECT * FROM producto_stock
----------------------------
-SELECT 
-	s.id_sucursal,
-	s.nombre_sucursal,
+-- Definitiva
+SELECT
+	ps.id_deposito_id,
 	pd.nombre_producto_deposito,
+	p.id_familia_id,
+	pf.nombre_producto_familia,
+	p.id_modelo_id,
+	pm.nombre_modelo,
+	p.id_marca_id,
+	px.nombre_producto_marca,
 	ps.id_producto_id,
-	ps.stock
-	--sum(ps.stock)
+	p.id_cai_id,
+	pc.cai,
+	p.medida,
+	p.segmento,
+	p.nombre_producto,
+	ps.stock,
+	--SUM(ps.stock) AS stock,
+	CASE 
+		WHEN pn.minimo THEN pn.minimo ELSE 0
+	END AS minimo
 FROM
-	sucursal s
-	LEFT JOIN producto_deposito pd ON pd.id_sucursal_id = s.id_sucursal
-	LEFT JOIN producto_stock ps ON ps.id_deposito_id = pd.id_producto_deposito
+	producto_stock ps
+	JOIN producto p ON ps.id_producto_id = p.id_producto
+	JOIN producto_cai pc ON p.id_cai_id = pc.id_cai
+	JOIN producto_minimo pn ON p.id_cai_id = pn.id_cai_id AND ps.id_deposito_id = pn.id_deposito_id
+	JOIN producto_familia pf ON p.id_familia_id = pf.id_producto_familia
+	JOIN producto_modelo pm ON p.id_modelo_id = pm.id_modelo
+	JOIN producto_marca px ON p.id_marca_id = px.id_producto_marca
+	JOIN producto_deposito pd ON ps.id_deposito_id = pd.id_producto_deposito
 WHERE
-	ps.stock <> 0
-	AND ps.id_producto_id = 1890
+	ps.stock < pn.minimo 
+	AND pn.minimo <> 0
+	AND ps.id_deposito_id = 4
 --GROUP by
---	ps.id_producto_id
+--	pc.cai, ps.id_deposito_id
+--HAVING
+--	SUM(ps.stock) < pn.minimo
 ORDER by
-	s.id_sucursal;
+	--pf.nombre_producto_familia, pm.nombre_modelo, px.nombre_producto_marca
+	p.id_familia_id, p.id_modelo_id, p.id_marca_id
+
 
 *--------------------------
 -- CONSULTA 3:
 -----------
 
-SELECT 
-	p.id_familia_id,
-	pf.nombre_producto_familia,
-	p.id_modelo_id,
-	pmd.nombre_modelo,
-	p.id_marca_id,
-	pm.nombre_producto_marca,
-	p.id_producto,
-	p.cai,
-	p.medida,
-	p.nombre_producto,
-	SUM(CASE WHEN s.id_sucursal = 1 THEN ps.stock ELSE 0 END) AS Sucursal_1,
-	SUM(CASE WHEN s.id_sucursal = 2 THEN ps.stock ELSE 0 END) AS Sucursal_2,
-	SUM(CASE WHEN s.id_sucursal = 3 THEN ps.stock ELSE 0 END) AS Sucursal_3
-	-- Agregar más sucursales según sea necesario
+-- Comprobar que no se repitan los CAI en un mismo depósito.
+SELECT
+	pn.id_deposito_id,
+	pn.id_cai_id,
+	pc.cai,
+	count(pc.cai),
+	pn.minimo
 FROM
-	producto p
-	JOIN producto_familia pf ON p.id_familia_id = pf.id_producto_familia
-	JOIN producto_modelo pmd ON p.id_modelo_id = pmd.id_modelo
-	JOIN producto_marca pm ON p.id_marca_id = pm.id_producto_marca
-	JOIN producto_stock ps ON p.id_producto = ps.id_producto_id
+	producto_minimo pn
+	JOIN producto_cai pc ON pn.id_cai_id = pc.id_cai
+GROUP by
+	pn.id_deposito_id, pn.id_cai_id
+HAVING
+	count(pc.cai) > 1
+ORDER by
+	pn.id_deposito_id, pn.id_cai_id;
+
+
+*--------------------------
+-- CONSULTA 4:
+-----------
+
+-- Consulta de Stock por Sucursal y Producto.
+SELECT
+	s.id_sucursal AS 'Id. Sucursal',
+	s.nombre_sucursal AS 'Sucursal',
+	ps.id_deposito_id AS 'Id. Depósito',
+	pd.nombre_producto_deposito AS 'Depósito',
+	ps.id_producto_id AS 'Producto',
+	sum(ps.stock) AS 'Stock'
+FROM
+	producto_stock ps
 	JOIN producto_deposito pd ON ps.id_deposito_id = pd.id_producto_deposito
 	JOIN sucursal s ON pd.id_sucursal_id = s.id_sucursal
 WHERE
-	p.tipo_producto = 'P'  -- Solo productos
-GROUP BY
-	p.id_familia_id,
-	pf.nombre_producto_familia,
-	p.id_modelo_id,
-	pmd.nombre_modelo,
-	p.id_marca_id,
-	pm.nombre_producto_marca,
-	p.id_producto,
-	p.cai,
-	p.medida,
-	p.nombre_producto
-ORDER BY
-	pf.nombre_producto_familia,
-	pm.nombre_producto_marca,
-	pmd.nombre_modelo,
-	p.id_producto;
+	ps.stock <> 0
+GROUP by
+	s.id_sucursal, ps.id_producto_id
+ORDER by
+	--s.id_sucursal, ps.id_deposito_id
+	s.id_sucursal, ps.id_producto_id
+	--pd.nombre_producto_deposito
+
+-- Simplificada
+SELECT
+	sum(ps.stock) AS 'Stock'
+FROM
+	producto_stock ps
+	JOIN producto_deposito pd ON ps.id_deposito_id = pd.id_producto_deposito
+	JOIN sucursal s ON pd.id_sucursal_id = s.id_sucursal
+WHERE
+	ps.stock <> 0
+GROUP by
+	s.id_sucursal, ps.id_producto_id
+ORDER by
+	s.id_sucursal, ps.id_producto_id;
 
 
 
 
-	Sucursal_1	| Sucursal_2	| Sucursal_n
-----------------+---------------+-----------
-Familia 1
-	Modelo 1
-		10		|		5		|		4
-		 5		|		0		|		1
-	------------+---------------+----------
-stm:	15		|		5		|		5
-
-	Modelo 2
-		 2		|		2		|		0
-		 6		|		2		|		3
-	------------+---------------+----------
-stm:	10		|		4		|		3
-stf:	25		|		9		|		8
-
-Familia 2
-	Modelo 3
-		12		|		8		|		6
-		10		|		8		|	   10
-	------------+---------------+----------
-stm:	22		|	   16		|	   16
-stf:	22		|	   16		|	   16
-===========================================
-tg:		47		|	   25		|	   24
-
-********************************************************
-
-Ok, en base al código que te he compartido necesito lo siguiente:
-1.- Si es posible, agregar en la consulta sql una columna que totalice el stock de cada sucursal por producto.
-
-2.- Una columna que totalice el estock de cada sucursal por producto de las sucursales que no fueron seleccionadas.
 
 
-Por ejmeplo:
-· Todas las Sucursales: Sucursal 1, Sucursal 2, Sucursal 3, Sucursal 4, Sucursal 5 
-· Sucursales seleccionadas: Sucursal 1, Sucursal 2, Sucursal 3
 
-Resultado de la consulta:
-| stock_suc_1	| stock_suc_2	| stock_suc_3	| otras_suc	| stock_total |
-+---------------+---------------+---------------+-----------|-------------|
-|		5		|		2		|		0		|		4	|		11	  |
-|		3		|		3		|		2		|		6	|		14	  |
-|		1		|		0		|		4		|		9	|		14	  |
+
+
+
+===============================================
+Sanear la tabla producto
+===============================================
+0.- Hay registros cuyo campo "nombre_producto" contiene "PRODUCTO SIN DESCRIPCION...".
+	Decidir qué hacer con esos registros, eliminarlos?.
+	
+1.- Depurar los registros según "tipo_producto".
+	Hay registros con tipo_producto="P" y son servicios.
+	
+2.- Hay registros cuyo campo "cai" contienen información pero no cuentan con un "id_cai_id".
+	Registrar el cai en la tabla producto_cai y asignar el id de este al correspondiente registro en la tabla producto.
+	
+3.- Crear una rutina que por cada producto con tipo_producto="P" se cree un registro por cada depósito en producto_stock y si 
+	además tiene cai, se haga lo mismo en la tabla producto_minimo.
+	
+4.- Asignar el correspondiente id_alicuota_iva.
+	El campo alicuota_iva tiene la alícuota pero el campo id_alicuota_iva tiene el id 1 en todos los registros.
+	
+*.- Eliminar el campo "cai".
+	Este cai es el que ya estaba en la tabla producto y se dejó para poder asignarle el id correspondiente de la tabla producto_cai.
+

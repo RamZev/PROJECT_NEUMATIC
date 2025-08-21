@@ -421,6 +421,9 @@ class TipoIva(ModeloBaseGenerico):
 	nombre_iva = models.CharField("Nombre", max_length=25)
 	discrimina_iva = models.BooleanField("Discrimina IVA", null=True,
 										 blank=True)
+	codigo_afip_responsable = models.IntegerField("Cód. AFIP", unique=True,
+												  null=True, blank=True,
+												  default=0)
 	
 	class Meta:
 		db_table = 'tipo_iva'

@@ -31,7 +31,7 @@
 								{% csrf_token %}
 								<div class="accordion" id="accordionPanelsStayOpenExample">
 									<!-- Estructura generada -->
-
+									
 									<div class="accordion-item">
 										<h2 class="accordion-header">
 											<button 
@@ -47,7 +47,7 @@
 										<div class="accordion-collapse collapse show"
 											id="Información_Tipo_I.V.A.">
 											<div class="accordion-body bg-secondary-subtle">
-		
+												
 												<div class="row">
 													<div class="col-md-2">
 														<label class="form-label text-primary mb-0">
@@ -55,21 +55,28 @@
 														</label>
 														{{ form.estatus_tipo_iva }}
 													</div>
-								
+													
 													<div class="col-md-2">
 														<label class="form-label text-primary mb-0">
 															{{ form.codigo_iva.label }}
 														</label>
 														{{ form.codigo_iva }}
 													</div>
-								
+													
 													<div class="col-md-3">
 														<label class="form-label text-primary mb-0">
 															{{ form.nombre_iva.label }}
 														</label>
 														{{ form.nombre_iva }}
 													</div>
-								
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0">
+															{{ form.codigo_afip_responsable.label }}
+														</label>
+														{{ form.codigo_afip_responsable }}
+													</div>
+													
 													<div class="col-md-2 d-flex align-items-center">
 														<div class="form-check mt-lg-4">
 															<label class="form-check-label form-label text-primary">
@@ -82,7 +89,7 @@
 											</div>
 										</div>
 									</div>
-		
+									
 								</div>
 								
 								<div class="container mt-3">

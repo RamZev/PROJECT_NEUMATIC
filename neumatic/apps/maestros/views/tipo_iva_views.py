@@ -56,7 +56,7 @@ class ConfigViews():
 
 
 class DataViewList():
-	search_fields = ['codigo_iva', 'nombre_iva']
+	search_fields = ['codigo_iva', 'nombre_iva', 'codigo_afip_responsable']
 	
 	ordering = ['nombre_iva']
 	
@@ -64,8 +64,9 @@ class DataViewList():
 	
 	table_headers = {
 		'estatus_tipo_iva': (1, 'Estatus'),
-		'nombre_iva': (5, 'Nombre'),
+		'nombre_iva': (3, 'Nombre'),
 		'codigo_iva': (2, 'Código IVA'),
+		'codigo_afip_responsable': (2, 'Código AFIP'),
 		'discrimina_iva': (2, 'Discrimina IVA'),
 		
 		'acciones': (2, 'Acciones'),
@@ -75,11 +76,11 @@ class DataViewList():
 		{'field_name': 'estatus_tipo_iva', 'date_format': None},
 		{'field_name': 'nombre_iva', 'date_format': None},
 		{'field_name': 'codigo_iva', 'date_format': None},
+		{'field_name': 'codigo_afip_responsable', 'date_format': None},
 		{'field_name': 'discrimina_iva', 'date_format': None},
 	]
 
 
-# ProvinciaListView - Inicio
 class TipoIvaListView(MaestroListView):
 	model = ConfigViews.model
 	template_name = ConfigViews.template_list
@@ -100,7 +101,6 @@ class TipoIvaListView(MaestroListView):
 	}
 
 
-# ProvinciaCreateView - Inicio
 class TipoIvaCreateView(MaestroCreateView):
 	model = ConfigViews.model
 	list_view_name = ConfigViews.list_view_name
@@ -109,16 +109,9 @@ class TipoIvaCreateView(MaestroCreateView):
 	success_url = ConfigViews.success_url
 	
 	#-- Indicar el permiso que requiere para ejecutar la acción.
-	# (revisar de donde lo copiaste que tienes asignado permission_change en vez de permission_add)
 	permission_required = ConfigViews.permission_add
-	
-	# extra_context = {
-	# 	"accion": f"Crear {ConfigViews.model._meta.verbose_name}",
-	# 	"list_view_name" : ConfigViews.list_view_name
-	# }
 
 
-# ProvinciaUpdateView
 class TipoIvaUpdateView(MaestroUpdateView):
 	model = ConfigViews.model
 	list_view_name = ConfigViews.list_view_name
@@ -128,14 +121,8 @@ class TipoIvaUpdateView(MaestroUpdateView):
 	
 	#-- Indicar el permiso que requiere para ejecutar la acción.
 	permission_required = ConfigViews.permission_change
-	
-	# extra_context = {
-	# 	"accion": f"Editar {ConfigViews.model._meta.verbose_name}",
-	# 	"list_view_name" : ConfigViews.list_view_name
-	# }
 
 
-# ProvinciaDeleteView
 class TipoIvaDeleteView (MaestroDeleteView):
 	model = ConfigViews.model
 	list_view_name = ConfigViews.list_view_name
@@ -144,9 +131,3 @@ class TipoIvaDeleteView (MaestroDeleteView):
 	
 	#-- Indicar el permiso que requiere para ejecutar la acción.
 	permission_required = ConfigViews.permission_delete
-	
-	# extra_context = {
-	# 	"accion": f"Eliminar {ConfigViews.model._meta.verbose_name}",
-	# 	"list_view_name" : ConfigViews.list_view_name,
-	# 	"mensaje": "Estás seguro de eliminar el Registro"
-	# }
