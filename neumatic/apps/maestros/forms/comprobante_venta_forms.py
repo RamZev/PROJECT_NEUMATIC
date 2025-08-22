@@ -54,9 +54,9 @@ class ComprobanteVentaForm(CrudGenericForm):
 			'info_michelin_camion': 
 				forms.CheckboxInput(attrs={**formclasscheck}),
 			'codigo_afip_a': 
-				forms.TextInput(attrs={**formclasstext}),
+				forms.TextInput(attrs={**formclasstext, 'oninput': 'this.value = this.value.toUpperCase()'}),
 			'codigo_afip_b': 
-				forms.TextInput(attrs={**formclasstext}),
+				forms.TextInput(attrs={**formclasstext, 'oninput': 'this.value = this.value.toUpperCase()'}),
 			'compro_asociado': 
 				forms.TextInput(attrs={**formclasstext}),
 		}

@@ -248,3 +248,47 @@
 	{% endblock principalcomponent %}
 {% endblock maincomponent %}
 <!-- -------------------------------------------------------------------- -->
+
+<!-- JavaScript específico para ComprobanteVenta -->
+{% block script %}
+	{{ block.super }}
+	
+	<script>
+		document.addEventListener('DOMContentLoaded', function () {
+			// --- CÓDIGO ESPECÍFICO PARA COMPROBANTE VENTA ---
+			const libroIvaCheckbox = document.getElementById('{{ form.libro_iva.id_for_label }}');
+			const codigoAfipA = document.getElementById('{{ form.codigo_afip_a.id_for_label }}');
+			const codigoAfipB = document.getElementById('{{ form.codigo_afip_b.id_for_label }}');
+			
+			// Función para actualizar el estado de los campos AFIP.
+			function actualizarCamposAFIP() {
+				if (libroIvaCheckbox.checked) {
+					// Si libro_iva está marcado, habilitar ambos campos.
+					codigoAfipA.removeAttribute('readonly');
+					codigoAfipB.removeAttribute('readonly');
+					codigoAfipB.classList.remove('bg-light');
+				} else {
+					// Si libro_iva NO está marcado, hacer codigo_afip_b readonly.
+					// y copiar el valor de codigo_afip_a a codigo_afip_b.
+					codigoAfipB.setAttribute('readonly', 'readonly');
+					codigoAfipB.classList.add('bg-light');
+					codigoAfipB.value = codigoAfipA.value;
+				}
+			}
+			
+			// Ejecutar la función al cargar la página.
+			actualizarCamposAFIP();
+			
+			// Agregar event listeners para cambios
+			libroIvaCheckbox.addEventListener('change', actualizarCamposAFIP);
+			
+			// También actualizar cuando cambie el valor de codigo_afip_a.
+			codigoAfipA.addEventListener('input', function() {
+				if (!libroIvaCheckbox.checked) {
+					codigoAfipB.value = codigoAfipA.value;
+				}
+			});
+		});
+	</script>
+{% endblock script %}
+<!-- -------------------------------------------------------------------- -->
