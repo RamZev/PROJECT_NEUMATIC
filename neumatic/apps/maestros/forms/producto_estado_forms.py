@@ -15,9 +15,9 @@ class ProductoEstadoForm(CrudGenericForm):
 			'estatus_producto_estado':
 				forms.Select(attrs={**formclassselect}),
 			'estado_producto': 
-				forms.TextInput(attrs={**formclasstext}),
+				forms.TextInput(attrs={**formclasstext, 'oninput': 'this.value = this.value.toUpperCase()'}),
 			'nombre_producto_estado': 
-				forms.TextInput(attrs={**formclasstext}),
+				forms.TextInput(attrs={**formclasstext, 'oninput': 'this.value = this.value.toUpperCase()'}),
 		}
 		
 		error_messages = {

@@ -56,8 +56,9 @@ class ConfigViews():
 
 
 class DataViewList():
-	search_fields = ['codigo_comprobante_venta', 
-					 'nombre_comprobante_venta'
+	search_fields = [
+		'codigo_comprobante_venta', 
+		'nombre_comprobante_venta'
 	]
 	
 	ordering = ['nombre_comprobante_venta']
@@ -71,9 +72,9 @@ class DataViewList():
 		'libro_iva': (1, 'Lib. IVA'),
 		'electronica': (1, 'Elec.'),
 		'presupuesto': (1, 'Pres.'),
-  	'pendiente': (1, 'Pend.'),
-   	'remito': (1, 'Remito'),
-    'recibo': (1, 'Recibo'),
+		'pendiente': (1, 'Pend.'),
+		'remito': (1, 'Remito'),
+		'recibo': (1, 'Recibo'),
 		'acciones': (2, 'Acciones'),
 	}
 	
@@ -86,11 +87,10 @@ class DataViewList():
 		{'field_name': 'presupuesto', 'date_format': None},
 		{'field_name': 'pendiente', 'date_format': None},
 		{'field_name': 'remito', 'date_format': None},	
-  	{'field_name': 'recibo', 'date_format': None},
+  		{'field_name': 'recibo', 'date_format': None},
 	]
 
 
-# ProvinciaListView - Inicio
 class ComprobanteVentaListView(MaestroListView):
 	model = ConfigViews.model
 	template_name = ConfigViews.template_list
@@ -111,7 +111,6 @@ class ComprobanteVentaListView(MaestroListView):
 	}
 
 
-# ProvinciaCreateView - Inicio
 class ComprobanteVentaCreateView(MaestroCreateView):
 	model = ConfigViews.model
 	list_view_name = ConfigViews.list_view_name
@@ -120,16 +119,9 @@ class ComprobanteVentaCreateView(MaestroCreateView):
 	success_url = ConfigViews.success_url
 	
 	#-- Indicar el permiso que requiere para ejecutar la acción.
-	# (revisar de donde lo copiaste que tienes asignado permission_change en vez de permission_add)
 	permission_required = ConfigViews.permission_add
-	
-	# extra_context = {
-	# 	"accion": f"Crear {ConfigViews.model._meta.verbose_name}",
-	# 	"list_view_name" : ConfigViews.list_view_name
-	# }
 
 
-# ProvinciaUpdateView
 class ComprobanteVentaUpdateView(MaestroUpdateView):
 	model = ConfigViews.model
 	list_view_name = ConfigViews.list_view_name
@@ -139,14 +131,8 @@ class ComprobanteVentaUpdateView(MaestroUpdateView):
 	
 	#-- Indicar el permiso que requiere para ejecutar la acción.
 	permission_required = ConfigViews.permission_change
-	
-	# extra_context = {
-	# 	"accion": f"Editar {ConfigViews.model._meta.verbose_name}",
-	# 	"list_view_name" : ConfigViews.list_view_name
-	# }
 
 
-# ProvinciaDeleteView
 class ComprobanteVentaDeleteView (MaestroDeleteView):
 	model = ConfigViews.model
 	list_view_name = ConfigViews.list_view_name
@@ -155,9 +141,3 @@ class ComprobanteVentaDeleteView (MaestroDeleteView):
 	
 	#-- Indicar el permiso que requiere para ejecutar la acción.
 	permission_required = ConfigViews.permission_delete
-	
-	# extra_context = {
-	# 	"accion": f"Eliminar {ConfigViews.model._meta.verbose_name}",
-	# 	"list_view_name" : ConfigViews.list_view_name,
-	# 	"mensaje": "Estás seguro de eliminar el Registro"
-	# }

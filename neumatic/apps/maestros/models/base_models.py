@@ -298,6 +298,15 @@ class ComprobanteVenta(ModeloBaseGenerico):
 		if self.mult_estadistica != -1 and self.mult_estadistica != 0 and self.mult_estadistica != 1:
 			errors.update({'mult_estadistica': "Los valores permitidos son: -1, 0 y 1"})
 		
+		# --- NUEVA VALIDACIÓN PARA CÓDIGOS AFIP ---
+		if self.libro_iva:
+			#-- Si libro_iva está activado, validar que los códigos sean diferentes.
+			if self.codigo_afip_a == self.codigo_afip_b:
+				errors.update({'codigo_afip_b': 'Los códigos AFIP A y B deben ser diferentes cuando Libro IVA está activado.'})
+		else:
+			#-- Si libro_iva NO está activado, forzar que codigo_afip_b sea igual a codigo_afip_a.
+			self.codigo_afip_b = self.codigo_afip_a
+		
 		if errors:
 			raise ValidationError(errors)
 		
@@ -924,3 +933,45 @@ class Leyenda(ModeloBaseGenerico):
 	def __str__(self):
 		return self.nombre_leyenda
 
+
+class MedidasEstados(ModeloBaseGenerico):
+	id_medida_estado = models.AutoField(
+		primary_key=True
+	)
+	estatus_medida_estado = models.BooleanField(
+		"Estatus",
+		default=True,
+		choices=ESTATUS_GEN
+	)
+	id_cai = models.ForeignKey(
+		ProductoCai,
+		on_delete=models.PROTECT,
+		verbose_name="Moneda",
+		null=True,
+		blank=True
+	)
+	id_estado = models.ForeignKey(
+		ProductoEstado,
+		on_delete=models.PROTECT,
+		verbose_name="Estado",
+		null=True,
+		blank=True
+	)
+	stock_desde = models.IntegerField(
+		"Desde Stock",
+		default=0,
+		null=True,
+		blank=True
+	)
+	stock_hasta = models.IntegerField(
+		"Hasta Stock",
+		default=0,
+		null=True,
+		blank=True
+	)
+	
+	class Meta:
+		db_table = 'medidas_estados'
+		verbose_name = 'Estado por Medida'
+		verbose_name_plural = 'Estados por Medidas'
+	
