@@ -265,7 +265,7 @@ class FacturaCreateView(MaestroDetalleCreateView):
 							form.add_error(None, 'Para este tipo de comprobante debe especificar el documento asociado')
 							return self.form_invalid(form)
 
-				# 3. Numeración (nueva versión)
+				# 3. Numeración - Inicio  ----------------------->
 				sucursal = form.cleaned_data['id_sucursal']
 				punto_venta = form.cleaned_data['id_punto_venta']
 				comprobante = form.cleaned_data['compro']
@@ -286,35 +286,15 @@ class FacturaCreateView(MaestroDetalleCreateView):
 
 				# Determinar el tipo de numeración basado en comprobante_data
 				if comprobante_data.electronica:
-					tipo_numeracion = 'eletronica'
-				elif comprobante_data.tipo_documento == "FACTURA" and not comprobante_data.electronica:
+					tipo_numeracion = 'electronica'
+				elif not comprobante_data.electronica and comprobante_data.libro_iva:
 					tipo_numeracion = 'manual'
-				else:
+				elif comprobante_data.remito:
 					tipo_numeracion = 'automatica'
-
-				
-				# Manejar la numeración según el tipo
-				if tipo_numeracion == 'automatica':
-					resultado = self._asignar_numeracion_automatica(
-						sucursal, punto_venta, comprobante_afip, letra, form
-					)
-					
-				elif tipo_numeracion == 'manual':
-					resultado = self._asignar_numeracion_manual(
-						sucursal, punto_venta, comprobante_afip, letra, form
-					)
-					
-				elif tipo_numeracion == 'electronica':
-					print("tipo_numeracion", tipo_numeracion)
-					resultado = self._asignar_numeracion_electronica(
-						sucursal, punto_venta, comprobante_afip, letra, fecha_comprobante, form
-					)
-					
 				else:
-					form.add_error(None, 'Tipo de numeración no válido')
-					return self.form_invalid(form)
-				
-				
+					pass
+					# form.add_error(None, 'Tipo de numeración no válido')
+					# return self.form_invalid(form)
 
 				# Determinar comprobante AFIP y letra
 				codigo_afip_a = comprobante_data.codigo_afip_a
@@ -342,29 +322,53 @@ class FacturaCreateView(MaestroDetalleCreateView):
 					else:
 						letra = "X"
 
-				# Manejar la numeración según el tipo - Inicio
+				# Manejar la numeración según el tipo
+				if tipo_numeracion == 'electronica':
+					print("tipo_numeracion*:", tipo_numeracion)	
+					# Bloquear y obtener/crear el número
+					numero_obj, created = Numero.objects.select_for_update(nowait=True).get_or_create(
+						id_sucursal=sucursal,
+						id_punto_venta=punto_venta,
+						comprobante=comprobante_afip,
+						letra=letra,
+						defaults={'numero': 0}
+					)
 
-				# Manejar la numeración según el tipo - Fin
-				
+					nuevo_numero = numero_obj.numero + 1
+					Numero.objects.filter(pk=numero_obj.pk).update(numero=F('numero') + 1)
+				elif tipo_numeracion == 'manual':
+				 	print("tipo_numeracion**:", tipo_numeracion)
+				elif tipo_numeracion == 'automatica':
+					print("tipo_numeracion***:", tipo_numeracion)
+					# Bloquear y obtener/crear el número
+					numero_obj, created = Numero.objects.select_for_update(nowait=True).get_or_create(
+						id_sucursal=sucursal,
+						id_punto_venta=punto_venta,
+						comprobante=comprobante_afip,
+						letra=letra,
+						defaults={'numero': 0}
+					)
+
+					nuevo_numero = numero_obj.numero + 1
+					Numero.objects.filter(pk=numero_obj.pk).update(numero=F('numero') + 1)
+
 				# Bloquear y obtener/crear el número
-				numero_obj, created = Numero.objects.select_for_update(nowait=True).get_or_create(
-					id_sucursal=sucursal,
-					id_punto_venta=punto_venta,
-					comprobante=comprobante_afip,
-					letra=letra,
-					defaults={'numero': 0}
-				)
+				# numero_obj, created = Numero.objects.select_for_update(nowait=True).get_or_create(
+				# 	id_sucursal=sucursal,
+				# 	id_punto_venta=punto_venta,
+				# 	comprobante=comprobante_afip,
+				# 	letra=letra,
+				# 	defaults={'numero': 0}
+				# )
 
-				nuevo_numero = numero_obj.numero + 1
-				Numero.objects.filter(pk=numero_obj.pk).update(numero=F('numero') + 1)
+				# nuevo_numero = numero_obj.numero + 1
+				# Numero.objects.filter(pk=numero_obj.pk).update(numero=F('numero') + 1)
 
 				form.instance.numero_comprobante = nuevo_numero
 				form.instance.letra_comprobante = letra
 				form.instance.compro = comprobante
 				form.instance.full_clean()
-
-				messages.success(self.request, f"Parte final de la asignación del documento")
-				# Final 3. Numeración (nueva versión)
+				# Final 3. Numeración (nueva versión) ----------------------->
 
 				# Condición de Venta
 				condicion_comprobante = form.cleaned_data['condicion_comprobante']
@@ -523,13 +527,16 @@ class FacturaCreateView(MaestroDetalleCreateView):
 		return kwargs
 
 	def _asignar_numeracion_automatica(self, sucursal, punto_venta, comprobante_afip, letra, form):
-		pass
+		
+		return("_asignar_numeracion_automatica")
 
 	def _asignar_numeracion_manual(self, sucursal, punto_venta, comprobante_afip, letra, form):
-		pass
+		
+		return("_asignar_numeracion_manual")
 
 	def _asignar_numeracion_electronica(self, sucursal, punto_venta, comprobante_afip, letra, fecha_comprobante, form):
-		pass
+		
+		return("_asignar_numeracion_electronica")
 
 
 # @method_decorator(login_required, name='dispatch')
