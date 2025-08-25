@@ -162,16 +162,23 @@ class ConfigViews:
 			"excel": True,
 			"csv": True
 		},
-		"stock": {
-			"label": "Stock",
-			"col_width_pdf": 50,
+		"minimo": {
+			"label": "Mínimo",
+			"col_width_pdf": 45,
 			"pdf": True,
 			"excel": True,
 			"csv": True
 		},
-		"minimo": {
-			"label": "Mínimo",
-			"col_width_pdf": 50,
+		"stock": {
+			"label": "Stock",
+			"col_width_pdf": 45,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
+		"faltante": {
+			"label": "Faltante",
+			"col_width_pdf": 45,
 			"pdf": True,
 			"excel": True,
 			"csv": True
@@ -404,7 +411,7 @@ def generar_pdf(contexto_reporte):
 	col_widths = [value['col_width_pdf'] for value in ConfigViews.table_info.values() if value['pdf']]
 	
 	col_widths.insert(0, 10)
-	blank_cols = [""] * 6
+	blank_cols = [""] * 7
 	
 	table_data = [headers_titles]
 	
@@ -451,8 +458,9 @@ def generar_pdf(contexto_reporte):
 					obj['medida'],
 					Paragraph(str(obj['nombre_producto']), generator.styles['CellStyle']),
 					Paragraph(str(obj['nombre_producto_marca']), generator.styles['CellStyle']),
+					formato_argentino_entero(obj['minimo']),
 					formato_argentino_entero(obj['stock']),
-					formato_argentino_entero(obj['minimo'])
+					formato_argentino_entero(obj['faltante']),
 				])
 				
 				current_row += 1

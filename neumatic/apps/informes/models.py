@@ -2886,10 +2886,13 @@ class VLReposicionStockManager(models.Manager):
 				p.medida,
 				p.segmento,
 				p.nombre_producto,
-				ps.stock,
 				CASE 
 					WHEN pn.minimo THEN pn.minimo ELSE 0
 				END AS minimo,
+				ps.stock,
+				CASE
+					WHEN pn.minimo THEN pn.minimo - ps.stock ELSE 0
+				END AS faltante,
 				{sucursal_columns}
 			FROM
 				producto_stock ps
@@ -2901,7 +2904,7 @@ class VLReposicionStockManager(models.Manager):
 				JOIN producto_marca px ON p.id_marca_id = px.id_producto_marca
 				JOIN producto_deposito pd ON ps.id_deposito_id = pd.id_producto_deposito
 			WHERE
-				ps.stock < pn.minimo 
+				ps.stock < pn.minimo
 				AND pn.minimo <> 0
 				{filters}
 			ORDER by
@@ -2983,8 +2986,9 @@ class VLReposicionStock(models.Model):
 	medida = models.CharField(max_length=15)
 	segmento = models.CharField(max_length=3)
 	nombre_producto = models.CharField(max_length=50)
-	stock = models.IntegerField()
 	minimo = models.IntegerField()
+	stock = models.IntegerField()
+	faltante = models.IntegerField()
 	
 	objects = VLReposicionStockManager()
 	
