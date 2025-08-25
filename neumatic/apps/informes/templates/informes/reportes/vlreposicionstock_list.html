@@ -31,8 +31,9 @@
 				<th>Medida</th>
 				<th>Descripción</th>
 				<th>Marca</th>
-				<th class="numeric">Stock</th>
 				<th class="numeric">Mínimo</th>
+				<th class="numeric">Stock</th>
+				<th class="numeric">Faltante</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -40,7 +41,7 @@
 			{% for familia_id, familia_data in objetos.items %}
 				<!-- Fila con los datos de la Familia -->
 				<tr>
-					<td colspan="7" style="padding-top: 5px;">
+					<td colspan="8" style="padding-top: 5px;">
 						<strong>Familia: {{ familia_data.familia }}</strong>
 					</td>
 				</tr>
@@ -49,7 +50,7 @@
 					<!-- Fila con los datos del Modelo -->
 					<tr>
 						<td></td>
-						<td colspan="6">
+						<td colspan="7">
 							<strong>Modelo: {{ modelo_data.modelo }}</strong>
 						</td>
 					</tr>
@@ -62,15 +63,16 @@
 							<td>{{ det.medida }}</td>
 							<td>{{ det.nombre_producto }}</td>
 							<td>{{ det.nombre_producto_marca }}</td>
-							<td class="numeric">{{ det.stock|formato_es_ar_entero }}</td>
 							<td class="numeric">{{ det.minimo|formato_es_ar_entero }}</td>
+							<td class="numeric">{{ det.stock|formato_es_ar_entero }}</td>
+							<td class="numeric">{{ det.faltante|formato_es_ar_entero }}</td>
 						</tr>
 					{% endfor %}
 					
 				{% endfor %}
 				
 				<tr>
-					<td colspan="7"><hr></td>
+					<td colspan="8"><hr></td>
 				</tr>
 			
 			{% endfor %}
