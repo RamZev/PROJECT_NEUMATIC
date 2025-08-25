@@ -316,6 +316,8 @@ class FacturaManualCreateView(MaestroDetalleCreateView):
 					else:
 						letra = "X"
 
+				messages.success(self.request, f"messages.success de prueba")
+				
 				# Bloquear y obtener/crear el número
 				numero_obj, created = Numero.objects.select_for_update(nowait=True).get_or_create(
 					id_sucursal=sucursal,

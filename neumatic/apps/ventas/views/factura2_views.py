@@ -271,16 +271,23 @@ class FacturaManualCreateView(MaestroDetalleCreateView):
 								form.add_error(None, 'Para este tipo de comprobante debe especificar el documento asociado')
 								return self.form_invalid(form)
 
-				# 3. Numeración (nueva versión)
+				# 3. Numeración - Inicio  ----------------------->
 				sucursal = form.cleaned_data['id_sucursal']
 				punto_venta = form.cleaned_data['id_punto_venta']
 				comprobante = form.cleaned_data['compro']
 				fecha_comprobante = form.cleaned_data['fecha_comprobante']
+				numero_plantilla = form.cleaned_data['numero_comprobante']
+				print("numero_plantilla:", numero_plantilla)
+
+				# ←←← SIMULACIÓN DE ERROR - AGREGA ESTAS LÍNEAS →→→
+				# from django.core.exceptions import ValidationError
+				# raise ValidationError("🚨 ERROR DE PRUEBA: Este es un mensaje de error simulado")
+				# ←←← FIN DE SIMULACIÓN →→→
 				
 				# Determinamos id_discrimina_iva basado en el tipo de IVA (Regla: True solo si id_tipo_iva == 4)
 				cliente = form.cleaned_data['id_cliente']
 				id_discrimina_iva = (cliente.id_tipo_iva.discrimina_iva)
-
+				
 				# Obtener configuración AFIP del comprobante
 				comprobante_data = ComprobanteVenta.objects.filter(
 					codigo_comprobante_venta=comprobante
@@ -289,6 +296,19 @@ class FacturaManualCreateView(MaestroDetalleCreateView):
 				if not comprobante_data:
 					form.add_error(None, 'No se encontró la configuración AFIP para este comprobante')
 					return self.form_invalid(form)
+
+				# Determinar el tipo de numeración basado en comprobante_data
+				if comprobante_data.electronica:
+					tipo_numeracion = 'electronica'
+				elif not comprobante_data.electronica and comprobante_data.libro_iva:
+					tipo_numeracion = 'manual'
+					print("Entró")
+				elif comprobante_data.remito:
+					tipo_numeracion = 'automatica'
+				else:
+					pass
+					# form.add_error(None, 'Tipo de numeración no válido')
+					# return self.form_invalid(form)
 
 				# Determinar comprobante AFIP y letra
 				codigo_afip_a = comprobante_data.codigo_afip_a
@@ -316,26 +336,156 @@ class FacturaManualCreateView(MaestroDetalleCreateView):
 					else:
 						letra = "X"
 
-				messages.success(self.request, f"messages.success de prueba")
-				
-				# Bloquear y obtener/crear el número
-				numero_obj, created = Numero.objects.select_for_update(nowait=True).get_or_create(
-					id_sucursal=sucursal,
-					id_punto_venta=punto_venta,
-					comprobante=comprobante_afip,
-					letra=letra,
-					defaults={'numero': 0}
-				)
+				# Manejar la numeración según el tipo
+				if tipo_numeracion == 'electronica':
+					#------------------------------------------->
+					# Facturación Electrónica
+					from datetime import datetime, timedelta
+					
+					# Obtener token, sign y expiration
+					token, sign, expiration = self.obtener_token_afiparca()
 
-				nuevo_numero = numero_obj.numero + 1
-				Numero.objects.filter(pk=numero_obj.pk).update(numero=F('numero') + 1)
+					# Datos de autenticación por defecto
+					datos_auth= {
+						'token': token,
+						'sign': sign,
+						'cuit': '30692402363'
+					}
 
+					# FeCabReq
+					cant_reg = 1
+					punto_venta_obj = form.cleaned_data['id_punto_venta']
+					punto_venta_valor = punto_venta_obj.punto_venta
+					pto_vta = f"{int(punto_venta_valor):04d}"
+					cbte_tipo = comprobante_afip
+
+					# FECAEDetRequest
+					concepto = 3
+
+					# Datos de cabecera del comprobante por defecto
+					datos_comprobante = {
+						'cant_reg': cant_reg,
+						'pto_vta': pto_vta,
+						'cbte_tipo': cbte_tipo,
+						'concepto': concepto,
+						'doc_tipo': '80',
+						'doc_nro': '20000000001',
+						'cbte_desde': '00000001',
+						'cbte_hasta': '00000001',
+						'cbte_fch': datetime.now().strftime('%Y%m%d'),
+						'imp_total': '100.00',
+						'imp_tot_conc': '0.00',
+						'imp_neto': '82.64',
+						'imp_op_ex': '0.00',
+						'imp_trib': '0.00',
+						'imp_iva': '17.36',
+						'fch_serv_desde': datetime.now().strftime('%Y%m%d'),
+						'fch_serv_hasta': datetime.now().strftime('%Y%m%d'),
+						'fch_vto_pago': (datetime.now() + timedelta(days=30)).strftime('%Y%m%d'),
+						'mon_id': 'PES',
+						'mon_cotiz': '1.000',
+						'can_mis_mon_ext': 'N',
+						'condicion_iva_receptor_id': '1'
+					}
+
+					datos_cliente = {
+						'nombre': 'CLIENTE GENERICO',
+						'domicilio': 'DIRECCION GENERICA 123',
+						'localidad': 'CIUDAD',
+						'cp': '1000'
+					}
+
+					# Si no se proporcionan impuestos, usar uno por defecto
+					datos_impuestos = [{
+							'iva_id': '5',
+							'iva_base_imp': '82.64',
+							'iva_importe': '17.36'
+						}]
+
+					# Generar el XML
+					xml_content = self.generar_xml_afiparca(
+						datos_auth, 
+						datos_comprobante, 
+						datos_cliente,
+						datos_impuestos
+						)
+
+					# Guardar en archivo prueba.xml
+					from pathlib import Path
+
+					# Establecer el nombre del archivo
+					
+					nuevo_numero = str(numero_plantilla)[-8:]
+					archivo_xml = f"{comprobante_afip}_{pto_vta}_{nuevo_numero}_Solicitud.xml"
+					# print(archivo_xml)
+
+					# === Construir ruta: neumatic/xml_afiparca/prueba.xml ===
+					BASE_DIR = Path(__file__).resolve().parent.parent.parent.parent
+					xml_dir = BASE_DIR / "xml_afiparca"
+
+					# Asegurar que la carpeta exista
+					xml_dir.mkdir(exist_ok=True, parents=True)  # `parents=True` por si hay subcarpetas
+
+					xml_path = xml_dir / archivo_xml
+
+					try:
+						with open(xml_path, 'w', encoding='utf-8') as f:
+							f.write(xml_content)
+						print(f"✅ Archivo XML guardado en: {xml_path.resolve()}")
+					except Exception as e:
+						print(f"❌ Error al guardar el archivo: {e}")
+
+					print(f"Archivo {archivo_xml} creado con éxito.")
+
+					#------------------------------------------->
+					
+					# Caso auxiliar: Usar el número proporcionado por el usuario
+					nuevo_numero = numero_plantilla
+					
+					# Actualizar el modelo Numero con este número (si es mayor al actual)
+					numero_obj, created = Numero.objects.select_for_update(nowait=True).get_or_create(
+						id_sucursal=sucursal,
+						id_punto_venta=punto_venta,
+						comprobante=comprobante_afip,
+						letra=letra,
+						defaults={'numero': numero_plantilla}  # Valor inicial
+					)
+					
+					# Si ya existe, actualizar solo si el número manual es mayor
+					if not created and numero_plantilla > numero_obj.numero:
+						Numero.objects.filter(pk=numero_obj.pk).update(numero=numero_plantilla)
+					
+					# Validar que el número manual no sea menor que el actual
+					elif not created and numero_plantilla <= numero_obj.numero:
+						form.add_error('numero_comprobante', 
+									f'Error: El número {numero_plantilla} debe ser mayor al último usado ({numero_obj.numero})')
+						return self.form_invalid(form)
+
+				elif tipo_numeracion == 'manual':
+					print("tipo_numeracion**:", tipo_numeracion)
+					nuevo_numero = numero_plantilla
 				
-				# Establecimiento de la letra y el número del comprobante
+				elif tipo_numeracion == 'automatica':
+					print("tipo_numeracion***:", tipo_numeracion)
+					# Bloquear y obtener/crear el número
+					numero_obj, created = Numero.objects.select_for_update(nowait=True).get_or_create(
+						id_sucursal=sucursal,
+						id_punto_venta=punto_venta,
+						comprobante=comprobante_afip,
+						letra=letra,
+						defaults={'numero': 0}
+					)
+
+					nuevo_numero = numero_obj.numero + 1
+					Numero.objects.filter(pk=numero_obj.pk).update(numero=F('numero') + 1)
+
+				# Asignar valores definicitivo
 				form.instance.numero_comprobante = nuevo_numero
 				form.instance.letra_comprobante = letra
 				form.instance.compro = comprobante
+				print("comprobante:", comprobante)
 				form.instance.full_clean()
+				# Final 3. Numeración (nueva versión) ----------------------->
 
 				# Condición de Venta
 				condicion_comprobante = form.cleaned_data['condicion_comprobante']
@@ -440,11 +590,11 @@ class FacturaManualCreateView(MaestroDetalleCreateView):
 				# Mensaje de confirmación de la creación de la factura y redirección
 				messages.success(self.request, f"Documento {nuevo_numero} creada correctamente")
 				return redirect(self.get_success_url())
-
 						
 		except DatabaseError as e:
 			messages.error(self.request, "Error de concurrencia: Intente nuevamente")
 			return self.form_invalid(form)
+
 		except Exception as e:
 			messages.error(self.request, f"Error inesperado: {str(e)}")
 			return self.form_invalid(form)
@@ -470,7 +620,6 @@ class FacturaManualCreateView(MaestroDetalleCreateView):
 
 		return super().form_invalid(form)
 
-
 	def get_success_url(self):
 		return reverse(list_view_name)
 
@@ -492,6 +641,171 @@ class FacturaManualCreateView(MaestroDetalleCreateView):
 		kwargs['usuario'] = self.request.user  # Pasar el usuario autenticado
 
 		return kwargs
+	
+	def obtener_token_afiparca(self):
+		from afip import Afip
+		from pathlib import Path
+
+		BASE_DIR = Path(__file__).resolve().parent.parent.parent.parent  # Sube 4 niveles
+		cert_dir = BASE_DIR / "certif"
+
+		# Certificado (Puede estar guardado en archivos, DB, etc)
+		cert = (cert_dir / "MAASDEMO.crt").read_text()
+		key = (cert_dir / "MAASDEMO.key").read_text()
+		
+		# CUIT del certificado
+		tax_id = 20207882950
+
+		# Instanciamos la clase Afip con las credenciales
+		afip = Afip({
+			"CUIT": tax_id,
+			"cert": cert,
+			"key": key
+		})
+
+		# Esta URL la podes encontrar en el manual del web service
+		WSDL_TEST = "https://fwshomo.afip.gov.ar/wsct/CTService?wsdl"
+
+		# URL al archivo WSDL de produccion
+		#
+		# Esta URL la podes encontrar en el manual del web service
+		WSDL = "https://serviciosjava.afip.gob.ar/wsct/CTService?wsdl"
+
+		# URL del Web service de produccion
+		#
+		# Esta URL la podes encontrar en el manual del web service
+		URL = "https://serviciosjava.afip.gob.ar/wsct/CTService"
+
+		# URL del Web service de test
+		#
+		# Esta URL la podes encontrar en el manual del web service
+		URL_TEST = "https://fwshomo.afip.gov.ar/wsct/CTService"
+
+		# Seterar en true si el web service requiere usar soap v1.2
+		#
+		# Si no estas seguro de que necesita v1.2 proba con ambas opciones
+		soapV1_2 = True
+
+		# Nombre del web service.
+		#
+		# El nombre por el cual se llama al web service en ARCA.
+		# Esto lo podes encontrar en el manual correspondiente.
+		# Por ej. el de factura electronica se llama "wsfe", el de
+		# comprobantes T se llama "wsct"
+		# servicio = "wsct"
+		servicio = "wsfe"
+
+		# A partir de aca ya no debes cambiar ninguna variable
+
+		# Preparamos las opciones para el web service
+		options = {
+		"WSDL": WSDL,
+		"WSDL_TEST": WSDL_TEST,
+		"URL": URL,
+		"URL_TEST": URL_TEST,
+		"soapV1_2": soapV1_2
+		}
+
+		# Consumimos el web service con el objeto sfip
+		genericWebService = afip.webService(servicio, options)
+
+		# Obtenemos el Token Authorizataion
+		ta = genericWebService.getTokenAuthorization()
+		
+		print('token', ta['token'])
+		print('sign', ta['sign'])
+		print('expiration', ta['expiration'])
+
+		token = ta['token']
+		sign = ta['sign']
+		expiration = ta['expiration']
+
+		return token, sign, expiration
+
+	def generar_xml_afiparca(self, auth, comprobante, cliente, impuestos):
+		from xml.etree.ElementTree import Element, SubElement, tostring
+		from xml.dom import minidom
+
+		# Namespaces
+		SOAP_ENV = "http://schemas.xmlsoap.org/soap/envelope/"
+		FE_NS = "http://ar.gov.afip.dif.FEV1/"
+
+		# === Envelope con namespaces correctos ===
+		envelope = Element(f"{{{SOAP_ENV}}}Envelope")
+		envelope.set("xmlns:soap", SOAP_ENV)
+		envelope.set("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance")
+		envelope.set("xmlns:xsd", "http://www.w3.org/2001/XMLSchema")
+		envelope.set("soap:encodingStyle", SOAP_ENV + "encoding/")
+
+		# Header
+		header = SubElement(envelope, "soap:Header")
+
+		# Body
+		body = SubElement(envelope, "soap:Body")
+
+		# FECAESolicitar (con namespace correcto)
+		fe_cae_solicitar = SubElement(body, "FECAESolicitar")
+		fe_cae_solicitar.set("xmlns", FE_NS)  # Así se pone el xmlns en el elemento
+
+		# === Auth ===
+		auth_node = SubElement(fe_cae_solicitar, "Auth")
+		SubElement(auth_node, "Token").text = auth['token']
+		SubElement(auth_node, "Sign").text = auth['sign']
+		SubElement(auth_node, "Cuit").text = auth['cuit']
+
+		# === FeCAEReq ===
+		fe_cae_req = SubElement(fe_cae_solicitar, "FeCAEReq")
+
+		# FeCabReq
+		cab = SubElement(fe_cae_req, "FeCabReq")
+		SubElement(cab, "CantReg").text = str(comprobante.get('cant_reg', '1'))
+		SubElement(cab, "PtoVta").text = str(comprobante.get('pto_vta', '0001'))
+		SubElement(cab, "CbteTipo").text = str(comprobante.get('cbte_tipo', '001'))
+
+		# FeDetReq
+		det_req = SubElement(fe_cae_req, "FeDetReq")
+		det = SubElement(det_req, "FECAEDetRequest")
+
+		# Campos directos
+		fields = {
+			'Concepto': 'concepto',
+			'DocTipo': 'doc_tipo',
+			'DocNro': 'doc_nro',
+			'CbteDesde': 'cbte_desde',
+			'CbteHasta': 'cbte_hasta',
+			'CbteFch': 'cbte_fch',
+			'ImpTotal': 'imp_total',
+			'ImpTotConc': 'imp_tot_conc',
+			'ImpNeto': 'imp_neto',
+			'ImpOpEx': 'imp_op_ex',
+			'ImpTrib': 'imp_trib',
+			'ImpIVA': 'imp_iva',
+			'FchServDesde': 'fch_serv_desde',
+			'FchServHasta': 'fch_serv_hasta',
+			'FchVtoPago': 'fch_vto_pago',
+			'MonId': 'mon_id',
+			'MonCotiz': 'mon_cotiz',
+			'CanMisMonExt': 'can_mis_mon_ext',
+			'CondicionIVAReceptorId': 'condicion_iva_receptor_id',
+		}
+		for tag, key in fields.items():
+			SubElement(det, tag).text = str(comprobante.get(key, '0.00' if 'Imp' in key else ''))
+
+		# IVA - Usamos tus claves tal cual
+		iva_node = SubElement(det, "Iva")
+		if impuestos:
+			for imp in impuestos:
+				alic = SubElement(iva_node, "AlicIva")
+				SubElement(alic, "Id").text = str(imp.get('iva_id', '0'))
+				SubElement(alic, "BaseImp").text = str(imp.get('iva_base_imp', '0.00'))
+				SubElement(alic, "Importe").text = str(imp.get('iva_importe', '0.00'))
+		# Si no hay impuestos, AFIP espera <Iva></Iva> o <Iva/>, ya está cubierto
+
+		# === Pretty print ===
+		raw = tostring(envelope, encoding='utf-8')
+		parsed = minidom.parseString(raw)
+		return '\n'.join([line for line in parsed.toprettyxml(indent="    ").splitlines() if line.strip()])	
+
 
 # @method_decorator(login_required, name='dispatch')
 class FacturaManualUpdateView(MaestroDetalleUpdateView):
