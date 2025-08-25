@@ -17,6 +17,8 @@ from ..forms.factura_forms import SerialFacturaFormSet
 from ...maestros.models.base_models import ProductoStock, ComprobanteVenta, Operario
 from ...maestros.models.valida_models import Valida
 from ...maestros.models.cliente_models import Cliente
+# OJO: es nuevo 25/08/2025
+from ...maestros.models.empresa_models import Empresa
 
 from entorno.constantes_base import TIPO_VENTA
 
@@ -362,30 +364,51 @@ class FacturaManualCreateView(MaestroDetalleCreateView):
 					# FECAEDetRequest
 					concepto = 3
 
+					cliente_obj = form.cleaned_data['id_cliente']
+					doc_tipo = cliente_obj.id_tipo_documento_identidad.ws_afip
+					doc_nro = cliente_obj.cuit
+					# Números que deben ser btenidos por el ws
+					# Temporalmente se usa el que está en la plantilla
+					cbte_desde = str(numero_plantilla)[-8:]
+					cbte_hasta = cbte_desde
+					
+					fecha_comprobante = form.cleaned_data['fecha_comprobante']
+					# Formatear fecha comprobante
+					cbte_fch = fecha_comprobante.strftime('%Y%m%d')
+					
+					
+					
+					fecha_vto = fecha_comprobante + timedelta(days=30)
+					fch_vto_pago = fecha_vto.strftime('%Y%m%d')
+					mon_id = 'PES'
+					mon_cotiz = '1.000'
+					can_mis_mon_ext = 'N'
+					condicion_iva_receptor_id = cliente_obj.id_tipo_iva.codigo_afip_responsable
+
 					# Datos de cabecera del comprobante por defecto
 					datos_comprobante = {
 						'cant_reg': cant_reg,
 						'pto_vta': pto_vta,
 						'cbte_tipo': cbte_tipo,
 						'concepto': concepto,
-						'doc_tipo': '80',
-						'doc_nro': '20000000001',
-						'cbte_desde': '00000001',
-						'cbte_hasta': '00000001',
-						'cbte_fch': datetime.now().strftime('%Y%m%d'),
+						'doc_tipo': doc_tipo,
+						'doc_nro': doc_nro,
+						'cbte_desde': cbte_desde,
+						'cbte_hasta': cbte_hasta,
+						'cbte_fch': cbte_fch,
 						'imp_total': '100.00',
 						'imp_tot_conc': '0.00',
 						'imp_neto': '82.64',
 						'imp_op_ex': '0.00',
 						'imp_trib': '0.00',
 						'imp_iva': '17.36',
-						'fch_serv_desde': datetime.now().strftime('%Y%m%d'),
-						'fch_serv_hasta': datetime.now().strftime('%Y%m%d'),
-						'fch_vto_pago': (datetime.now() + timedelta(days=30)).strftime('%Y%m%d'),
-						'mon_id': 'PES',
-						'mon_cotiz': '1.000',
-						'can_mis_mon_ext': 'N',
-						'condicion_iva_receptor_id': '1'
+						'fch_serv_desde': cbte_fch,
+						'fch_serv_hasta': cbte_fch,
+						'fch_vto_pago': fch_vto_pago,
+						'mon_id': mon_id,
+						'mon_cotiz': mon_cotiz,
+						'can_mis_mon_ext': can_mis_mon_ext,
+						'condicion_iva_receptor_id': condicion_iva_receptor_id
 					}
 
 					datos_cliente = {
@@ -646,14 +669,32 @@ class FacturaManualCreateView(MaestroDetalleCreateView):
 		from afip import Afip
 		from pathlib import Path
 
+		# Obteber Datos del modelo Empresa
+		empresa = Empresa.objects.first()
+
+		if not empresa:
+			raise ValueError("No se encontró configuración de empresa")
+		else:
+			print("se instancio empresa y tenemos el primer registro!!!")
+
 		BASE_DIR = Path(__file__).resolve().parent.parent.parent.parent  # Sube 4 niveles
 		cert_dir = BASE_DIR / "certif"
 
 		# Certificado (Puede estar guardado en archivos, DB, etc)
-		cert = (cert_dir / "MAASDEMO.crt").read_text()
-		key = (cert_dir / "MAASDEMO.key").read_text()
-		
-		# CUIT del certificado
+		# cert = (cert_dir / "MAASDEMO.crt").read_text()
+		# key = (cert_dir / "MAASDEMO.key").read_text()
+
+		# Certificado
+		cert = empresa.ws_archivo_crt2
+		# Clave privada
+		key = empresa.ws_archivo_key2
+		# CUIT
+		tax_id = empresa.cuit
+		print("CUIT de la empresa:", tax_id)
+
+		# CUIT del certificado (Mario)
+		# Es temporal porque los certificados 
+		# Son de mario y no de Debona
 		tax_id = 20207882950
 
 		# Instanciamos la clase Afip con las credenciales
