@@ -41,7 +41,9 @@
 			{% for familia_id, familia_data in objetos.items %}
 				<!-- Fila con los datos de la Familia -->
 				<tr>
-					<td colspan="8" style="padding-top: 5px;">
+					{% comment %} <td colspan="8" style="background-color: rgba(255,0,0,0.5);"> {% endcomment %}
+					{% comment %} <td colspan="8" style="background-color: rgba(255,0,0,1.0);"> {% endcomment %}
+					<td colspan="8">
 						<strong>Familia: {{ familia_data.familia }}</strong>
 					</td>
 				</tr>
@@ -50,7 +52,7 @@
 					<!-- Fila con los datos del Modelo -->
 					<tr>
 						<td></td>
-						<td colspan="7">
+						<td colspan="7" style="color">
 							<strong>Modelo: {{ modelo_data.modelo }}</strong>
 						</td>
 					</tr>

@@ -2865,7 +2865,8 @@ class VLStockUnico(models.Model):
 #-----------------------------------------------------------------------------
 class VLReposicionStockManager(models.Manager):
 	
-	def obtener_datos(self, id_deposito, id_familia_desde, id_familia_hasta, id_modelo_desde, id_modelo_hasta, id_marca_desde, id_marca_hasta, sucursales):
+	''' Obtiene los datos agrupado por id_producto_id
+	def obtener_datos_por_producto(self, id_deposito, id_familia_desde, id_familia_hasta, id_modelo_desde, id_modelo_hasta, id_marca_desde, id_marca_hasta, sucursales):
 		from django.db import connection
 		from collections import namedtuple
 		
@@ -2907,6 +2908,115 @@ class VLReposicionStockManager(models.Manager):
 				ps.stock < pn.minimo
 				AND pn.minimo <> 0
 				{filters}
+			ORDER by
+				p.id_familia_id, p.id_modelo_id, p.id_marca_id
+		"""
+		
+		#-- Parámetros para la consulta.
+		params = []
+		sucursal_columns = []
+		
+		#-- Subconsultas para obtener stock por sucursal.
+		for sucursal in sucursales:
+			subquery = """
+				COALESCE((
+					SELECT SUM(ps2.stock)
+					FROM producto_stock ps2
+					JOIN producto_deposito pd2 ON ps2.id_deposito_id = pd2.id_producto_deposito
+					WHERE pd2.id_sucursal_id = %s AND ps2.id_producto_id = p.id_producto
+					GROUP BY pd2.id_sucursal_id AND ps2.id_producto_id
+					HAVING SUM(ps2.stock) > 0
+				), 0) AS stock_suc_{sucursal_id}
+			""".format(sucursal_id=sucursal.id_sucursal)
+			
+			sucursal_columns.append(subquery)
+			params.append(sucursal.id_sucursal)
+		
+		#-- Filtros principales.
+		conditions = ["ps.id_deposito_id = %s"]
+		params.append(id_deposito)
+		
+		#-- Filtros por rango.
+		range_filters = [
+			('p.id_familia_id', id_familia_desde, id_familia_hasta),
+			('p.id_marca_id', id_marca_desde, id_marca_hasta),
+			('p.id_modelo_id', id_modelo_desde, id_modelo_hasta)
+		]
+		
+		for field, desde, hasta in range_filters:
+			if desde and hasta:
+				conditions.append(f"{field} BETWEEN %s AND %s")
+				params.extend([desde, hasta])
+			elif desde:
+				conditions.append(f"{field} >= %s")
+				params.append(desde)
+			elif hasta:
+				conditions.append(f"{field} <= %s")
+				params.append(hasta)
+		
+		filters = "AND " + " AND ".join(conditions) if conditions else ""
+		
+		#-- Ensamblar consulta final.
+		final_query = query.format(
+			sucursal_columns=", ".join(sucursal_columns),
+			filters=filters
+		)
+		
+		#-- Ejecutar con cursor y mapear a objetos del modelo.
+		with connection.cursor() as cursor:
+			cursor.execute(final_query, params)
+			columns = [col[0] for col in cursor.description]
+			rows = cursor.fetchall()
+		
+		#-- Crear objetos modelo simulados.
+		ModelProxy = namedtuple('ModelProxy', columns)
+		return [ModelProxy(*row) for row in rows]
+	'''
+	
+	def obtener_datos(self, id_deposito, id_familia_desde, id_familia_hasta, id_modelo_desde, id_modelo_hasta, id_marca_desde, id_marca_hasta, sucursales):
+		from django.db import connection
+		from collections import namedtuple
+		
+		#-- Construcción de la consulta base.
+		query = """
+			SELECT
+				ps.id_deposito_id,
+				pd.nombre_producto_deposito,
+				p.id_familia_id,
+				pf.nombre_producto_familia,
+				p.id_modelo_id,
+				pm.nombre_modelo,
+				p.id_marca_id,
+				px.nombre_producto_marca,
+				ps.id_producto_id,
+				p.id_cai_id,
+				pc.cai,
+				p.medida,
+				p.segmento,
+				p.nombre_producto,
+				CASE 
+					WHEN pn.minimo THEN pn.minimo ELSE 0
+				END AS minimo,
+				SUM(ps.stock) AS stock,
+				CASE
+					WHEN pn.minimo THEN pn.minimo - SUM(ps.stock) ELSE 0
+				END AS faltante,
+				{sucursal_columns}
+			FROM
+				producto_stock ps
+				JOIN producto p ON ps.id_producto_id = p.id_producto
+				JOIN producto_cai pc ON p.id_cai_id = pc.id_cai
+				JOIN producto_minimo pn ON p.id_cai_id = pn.id_cai_id AND ps.id_deposito_id = pn.id_deposito_id
+				JOIN producto_familia pf ON p.id_familia_id = pf.id_producto_familia
+				JOIN producto_modelo pm ON p.id_modelo_id = pm.id_modelo
+				JOIN producto_marca px ON p.id_marca_id = px.id_producto_marca
+				JOIN producto_deposito pd ON ps.id_deposito_id = pd.id_producto_deposito
+			WHERE
+				ps.stock < pn.minimo
+				AND pn.minimo <> 0
+				{filters}
+			GROUP by
+				pc.cai, ps.id_deposito_id
 			ORDER by
 				p.id_familia_id, p.id_modelo_id, p.id_marca_id
 		"""

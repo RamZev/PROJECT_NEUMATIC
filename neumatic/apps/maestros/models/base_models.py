@@ -1,5 +1,6 @@
 # neumatic\apps\maestros\models\base_models.py
 from django.db import models
+from django.utils.html import format_html
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.core.exceptions import ValidationError
 import re
@@ -202,12 +203,27 @@ class ProductoStock(ModeloBaseGenerico):
 
 
 class ProductoEstado(ModeloBaseGenerico):
-	id_producto_estado = models.AutoField(primary_key=True)
-	estatus_producto_estado = models.BooleanField("Estatus", default=True,
-												choices=ESTATUS_GEN)
-	estado_producto = models.CharField("Estado Producto", max_length=1, 
-										unique=True)
-	nombre_producto_estado = models.CharField("Nombre", max_length=15)
+	id_producto_estado = models.AutoField(
+		primary_key=True
+	)
+	estatus_producto_estado = models.BooleanField(
+		"Estatus", default=True,
+		choices=ESTATUS_GEN
+	)
+	estado_producto = models.CharField(
+		"Estado Producto", max_length=1,
+		unique=True
+	)
+	nombre_producto_estado = models.CharField(
+		"Nombre",
+		max_length=15
+	)
+	color = models.CharField(
+		max_length=7,
+		default='#FFFFFF',
+		blank=True,
+		help_text='Código de color en formato hexadecimal (ej: #FFFFFF)'
+	)
 	
 	class Meta:
 		db_table = 'producto_estado'
@@ -217,6 +233,12 @@ class ProductoEstado(ModeloBaseGenerico):
 	
 	def __str__(self):
 		return self.nombre_producto_estado
+	
+	@property
+	def color_bar(self):
+		return format_html(
+			f'<div style="width:200px; height:20px; background-color:{self.color}; border: 1px solid #000;"></div>'
+		)
 	
 	def clean(self):
 		errors = {}

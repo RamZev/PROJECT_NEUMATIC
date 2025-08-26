@@ -63,10 +63,11 @@ class ConfigViews():
 
 
 class DataViewList():
-	search_fields = ['id_producto',
-					 'nombre_producto', 
-					 'medida', 
-					 'id_cai__cai', 
+	search_fields = [
+		'id_producto',
+		'nombre_producto',
+		'medida',
+		'id_cai__cai', 
 	]
 	
 	ordering = ['nombre_producto']
@@ -92,7 +93,6 @@ class DataViewList():
 	]
 
 
-# ProductoListView - Inicio
 class ProductoListView(MaestroListView):
 	model = ConfigViews.model
 	template_name = ConfigViews.template_list
@@ -113,7 +113,6 @@ class ProductoListView(MaestroListView):
 	}
 
 
-# ProductoCreateView - Inicio
 class ProductoCreateView(MaestroCreateView):
 	model = ConfigViews.model
 	list_view_name = ConfigViews.list_view_name
@@ -122,13 +121,7 @@ class ProductoCreateView(MaestroCreateView):
 	success_url = ConfigViews.success_url
 	
 	#-- Indicar el permiso que requiere para ejecutar la acción.
-	# (revisar de donde lo copiaste que tienes asignado permission_change en vez de permission_add)
 	permission_required = ConfigViews.permission_add
-	
-	# extra_context = {
-	# 	"accion": f"Crear {ConfigViews.model._meta.verbose_name}",
-	# 	"list_view_name" : ConfigViews.list_view_name
-	# }
 	
 	def form_valid(self, form):
 		response = super().form_valid(form)
@@ -162,7 +155,6 @@ class ProductoCreateView(MaestroCreateView):
 		return response
 
 
-# ProductoUpdateView
 class ProductoUpdateView(MaestroUpdateView):
 	model = ConfigViews.model
 	list_view_name = ConfigViews.list_view_name
@@ -215,15 +207,9 @@ class ProductoUpdateView(MaestroUpdateView):
 			.values('id_deposito__id_producto_deposito', 'id_deposito__nombre_producto_deposito', 'id_cai__id_cai', 'id_cai__cai', 'minimo')\
 			.order_by('id_deposito__nombre_producto_deposito')
 		
-		# #-- Agregar datos adicionales al contexto.
-		# context.update({
-		# 	"accion": f"Editar {ConfigViews.model._meta.verbose_name}",
-		# 	"list_view_name": ConfigViews.list_view_name,
-		# })
-		
 		return context
 
-# ProductoDeleteView
+
 class ProductoDeleteView (MaestroDeleteView):
 	model = ConfigViews.model
 	list_view_name = ConfigViews.list_view_name

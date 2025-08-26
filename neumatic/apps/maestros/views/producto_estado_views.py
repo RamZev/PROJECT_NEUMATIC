@@ -1,4 +1,4 @@
-# neumatic\apps\maestros\views\producto_minimo_views.py
+# apps\maestros\views\producto_estado_views.py
 from django.urls import reverse_lazy
 from ..views.cruds_views_generics import *
 from ..models.base_models import ProductoEstado
@@ -64,27 +64,25 @@ class DataViewList():
 	
 	table_headers = {
 		'estatus_producto_estado': (1, 'Estatus'),
-		# 'id_producto_estado': (1, 'ID'),
 		'estado_producto': (2, 'Estado Producto'),
-		'nombre_producto_estado': (7, 'Nombre'),
+		'nombre_producto_estado': (3, 'Nombre'),
+		'color_bar': (4, 'Color'),
 		
 		'acciones': (2, 'Acciones'),
 	}
 	
 	table_data = [
 		{'field_name': 'estatus_producto_estado', 'date_format': None},
-		# {'field_name': 'id_producto_estado', 'date_format': None},
 		{'field_name': 'estado_producto', 'date_format': None},
 		{'field_name': 'nombre_producto_estado', 'date_format': None},
+		{'field_name': 'color_bar', 'date_format': None},
 	]
 
 
-# ActividadListView - Inicio
 class ProductoestadoListView(MaestroListView):
 	model = ConfigViews.model
 	template_name = ConfigViews.template_list
 	context_object_name = ConfigViews.context_object_name
-	
 	search_fields = DataViewList.search_fields
 	ordering = DataViewList.ordering
 	
@@ -100,7 +98,6 @@ class ProductoestadoListView(MaestroListView):
 	}
 
 
-# ActividadCreateView - Inicio
 class ProductoestadoCreateView(MaestroCreateView):
 	model = ConfigViews.model
 	list_view_name = ConfigViews.list_view_name
@@ -109,16 +106,9 @@ class ProductoestadoCreateView(MaestroCreateView):
 	success_url = ConfigViews.success_url
 	
 	#-- Indicar el permiso que requiere para ejecutar la acción.
-	# (revisar de donde lo copiaste que tienes asignado permission_change en vez de permission_add)
 	permission_required = ConfigViews.permission_add
-	
-	# extra_context = {
-	# 	"accion": f"Crear {ConfigViews.model._meta.verbose_name}",
-	# 	"list_view_name" : ConfigViews.list_view_name
-	# }
 
 
-# ActividadUpdateView
 class ProductoestadoUpdateView(MaestroUpdateView):
 	model = ConfigViews.model
 	list_view_name = ConfigViews.list_view_name
@@ -128,14 +118,8 @@ class ProductoestadoUpdateView(MaestroUpdateView):
 	
 	#-- Indicar el permiso que requiere para ejecutar la acción.
 	permission_required = ConfigViews.permission_change
-	
-	# extra_context = {
-	# 	"accion": f"Editar {ConfigViews.model._meta.verbose_name}",
-	# 	"list_view_name" : ConfigViews.list_view_name
-	# }
 
 
-# ActividadDeleteView
 class ProductoestadoDeleteView (MaestroDeleteView):
 	model = ConfigViews.model
 	list_view_name = ConfigViews.list_view_name
@@ -144,9 +128,3 @@ class ProductoestadoDeleteView (MaestroDeleteView):
 	
 	#-- Indicar el permiso que requiere para ejecutar la acción.
 	permission_required = ConfigViews.permission_delete
-	
-	# extra_context = {
-	# 	"accion": f"Eliminar {ConfigViews.model._meta.verbose_name}",
-	# 	"list_view_name" : ConfigViews.list_view_name,
-	# 	"mensaje": "Estás seguro de eliminar el Registro"
-	# }
