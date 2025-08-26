@@ -19,6 +19,7 @@ from ...maestros.models.valida_models import Valida
 from ...maestros.models.cliente_models import Cliente
 # OJO: es nuevo 25/08/2025
 from ...maestros.models.empresa_models import Empresa
+from ...maestros.models.base_models import AlicuotaIva
 
 from entorno.constantes_base import TIPO_VENTA
 
@@ -376,14 +377,93 @@ class FacturaManualCreateView(MaestroDetalleCreateView):
 					# Formatear fecha comprobante
 					cbte_fch = fecha_comprobante.strftime('%Y%m%d')
 					
-					
-					
+					# Importes generales
+					imp_total = form.cleaned_data['total']
+					imp_tot_conc = form.cleaned_data['exento']
+					imp_neto = form.cleaned_data['gravado']
+					imp_op_ex = '0.00'
+					imp_trib = '0.00'
+					imp_iva = form.cleaned_data['iva']
+
+					# Fechas de Servicio y vencimiento
 					fecha_vto = fecha_comprobante + timedelta(days=30)
 					fch_vto_pago = fecha_vto.strftime('%Y%m%d')
+					
+					# Moneda, tipo de cambio y forma de pago
 					mon_id = 'PES'
 					mon_cotiz = '1.000'
 					can_mis_mon_ext = 'N'
+
+					# Condición de IVA del receptor
 					condicion_iva_receptor_id = cliente_obj.id_tipo_iva.codigo_afip_responsable
+
+					# Diccionario del IVA
+					# Obtener todas las alícuotas activas
+					alicuotas = AlicuotaIva.objects.filter(
+						estatus_alicuota_iva=True
+					).values('codigo_alicuota', 'alicuota_iva')
+					
+					# Crear diccionario {código: porcentaje}
+					diccionario_alicuotas = {}
+					for alicuota in alicuotas:
+						try:
+							codigo = int(alicuota['codigo_alicuota'])
+							diccionario_alicuotas[codigo] = alicuota['alicuota_iva']
+						except (ValueError, TypeError):
+							# Saltar códigos no válidos
+							continue
+
+					## print("diccionario_alicuotas", diccionario_alicuotas)
+					
+					# Recorrer cada alícuota del diccionario
+					datos_impuestos = []
+    
+					# Crear diccionario de mapeo: porcentaje -> código AFIP
+					mapeo_porcentaje_a_codigo = {}
+					for codigo, porcentaje in diccionario_alicuotas.items():
+						# Convertir Decimal a float para comparación
+						mapeo_porcentaje_a_codigo[float(porcentaje)] = codigo
+					
+					print("Mapeo porcentaje->código:", mapeo_porcentaje_a_codigo)
+					
+					# Diccionario para acumular por código AFIP
+					acumuladores = {}
+					
+					# Recorrer todos los items del detalle
+					for form_detalle in formset_detalle:
+						detalle_data = form_detalle.cleaned_data
+						
+						# Obtener valores del item
+						porcentaje_iva = float(detalle_data.get('alic_iva', 0))
+						gravado = float(detalle_data.get('gravado', 0) or 0)
+						iva = float(detalle_data.get('iva', 0) or 0)
+						
+						print(f"Procesando: {porcentaje_iva}% -> gravado: {gravado}, iva: {iva}")
+						
+						# Encontrar el código AFIP que corresponde a este porcentaje
+						codigo_afip = None
+						for porcentaje, codigo in mapeo_porcentaje_a_codigo.items():
+							# Comparar con tolerancia para decimales
+							if abs(porcentaje - porcentaje_iva) < 0.1:
+								codigo_afip = codigo
+								break
+						
+						if codigo_afip is not None:
+							if codigo_afip not in acumuladores:
+								acumuladores[codigo_afip] = {'iva_base_imp': 0.0, 'iva_importe': 0.0}
+							
+							acumuladores[codigo_afip]['iva_base_imp'] += gravado
+							acumuladores[codigo_afip]['iva_importe'] += iva
+					
+					# Convertir a la estructura final
+					for codigo, montos in acumuladores.items():
+						datos_impuestos.append({
+							'iva_id': str(codigo),
+							'iva_base_imp': f"{montos['iva_base_imp']:.2f}",
+							'iva_importe': f"{montos['iva_importe']:.2f}"
+						})
+					
+					print("Datos impuestos finales:", datos_impuestos)
 
 					# Datos de cabecera del comprobante por defecto
 					datos_comprobante = {
@@ -396,12 +476,12 @@ class FacturaManualCreateView(MaestroDetalleCreateView):
 						'cbte_desde': cbte_desde,
 						'cbte_hasta': cbte_hasta,
 						'cbte_fch': cbte_fch,
-						'imp_total': '100.00',
-						'imp_tot_conc': '0.00',
-						'imp_neto': '82.64',
-						'imp_op_ex': '0.00',
-						'imp_trib': '0.00',
-						'imp_iva': '17.36',
+						'imp_total': imp_total,
+						'imp_tot_conc': imp_tot_conc,
+						'imp_neto': imp_neto,
+						'imp_op_ex': imp_op_ex,
+						'imp_trib': imp_trib,
+						'imp_iva': imp_iva,
 						'fch_serv_desde': cbte_fch,
 						'fch_serv_hasta': cbte_fch,
 						'fch_vto_pago': fch_vto_pago,
@@ -419,11 +499,11 @@ class FacturaManualCreateView(MaestroDetalleCreateView):
 					}
 
 					# Si no se proporcionan impuestos, usar uno por defecto
-					datos_impuestos = [{
-							'iva_id': '5',
-							'iva_base_imp': '82.64',
-							'iva_importe': '17.36'
-						}]
+					# datos_impuestos = [{
+					# 		'iva_id': '5',
+					# 		'iva_base_imp': '82.64',
+					# 		'iva_importe': '17.36'
+					# 	}]
 
 					# Generar el XML
 					xml_content = self.generar_xml_afiparca(
