@@ -1,4 +1,4 @@
-# neumatic\apps\maestros\views\operario_views.py
+# apps\maestros\views\producto_views.py
 from django.urls import reverse_lazy
 
 from django.views.decorators.http import require_POST
@@ -218,12 +218,6 @@ class ProductoDeleteView (MaestroDeleteView):
 	
 	#-- Indicar el permiso que requiere para ejecutar la acción.
 	permission_required = ConfigViews.permission_delete
-	
-	# extra_context = {
-	# 	"accion": f"Eliminar {ConfigViews.model._meta.verbose_name}",
-	# 	"list_view_name" : ConfigViews.list_view_name,
-	# 	"mensaje": "Estás seguro de eliminar el Registro"
-	# }
 	
 	def delete(self, request, *args, **kwargs):
 		producto = self.get_object()
