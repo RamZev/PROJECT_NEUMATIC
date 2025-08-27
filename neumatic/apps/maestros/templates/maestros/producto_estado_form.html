@@ -1,3 +1,4 @@
+<!-- apps\maestros\templates\maestros\producto_estado_form.html -->
 {% extends 'maestro_form.html' %}
 {% load static %}
 <!-- -------------------------------------------------------------------- -->
@@ -31,7 +32,7 @@
 								{% csrf_token %}
 								<div class="accordion" id="accordionPanelsStayOpenExample">
 									<!-- Estructura generada -->
-
+									
 									<div class="accordion-item">
 										<h2 class="accordion-header">
 											<button 
@@ -47,7 +48,7 @@
 										<div class="accordion-collapse collapse show"
 											id="Información_Producto_Estado">
 											<div class="accordion-body bg-secondary-subtle">
-		
+												
 												<div class="row">
 													<div class="col-md-2">
 														<label class="form-label text-primary mb-0">
@@ -55,14 +56,14 @@
 														</label>
 														{{ form.estatus_producto_estado }}
 													</div>
-								
+													
 													<div class="col-md-2">
 														<label class="form-label text-primary mb-0">
 															{{ form.estado_producto.label }}
 														</label>
 														{{ form.estado_producto }}
 													</div>
-								
+													
 													<div class="col-md-3">
 														<label class="form-label text-primary mb-0">
 															{{ form.nombre_producto_estado.label }}
@@ -81,7 +82,7 @@
 											</div>
 										</div>
 									</div>
-		
+									
 								</div>
 								
 								<div class="container mt-3">
