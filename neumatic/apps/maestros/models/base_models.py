@@ -261,6 +261,7 @@ class ComprobanteVenta(ModeloBaseGenerico):
 	codigo_afip_b = models.CharField("Código AFIP B", max_length=3)
 	remito = models.BooleanField("Remito", default=False, blank=True, null=True)
 	recibo = models.BooleanField("Recibo", default=False, blank=True, null=True)
+	manual = models.BooleanField("Manual", default=False, blank=True, null=True)
 	
 	class Meta:
 		db_table = 'comprobante_venta'
