@@ -1,4 +1,4 @@
-# neumatic\apps\maestros\forms\operario_forms.py
+# apps\maestros\forms\producto_forms.py
 from django import forms
 from .crud_forms_generics import CrudGenericForm
 from ..models.producto_models import Producto
@@ -34,9 +34,10 @@ class ProductoForm(CrudGenericForm):
 			'estatus_producto': 
 				forms.Select(attrs={**formclassselect}),
 			'codigo_producto': 
-				forms.NumberInput(attrs={**formclasstext,
-							'readonly': True}),
+				forms.NumberInput(attrs={**formclasstext, 'readonly': True}),
 			'tipo_producto': 
+				forms.Select(attrs={**formclassselect}),
+			'id_producto_estado': 
 				forms.Select(attrs={**formclassselect}),
 			'id_familia': 
 				forms.Select(attrs={**formclassselect}),
@@ -53,27 +54,21 @@ class ProductoForm(CrudGenericForm):
 			'nombre_producto': 
 				forms.TextInput(attrs={**formclasstext}),
 			'unidad': 
-				forms.NumberInput(attrs={**formclasstext, 
-							'min': 0, 'max': 999}),
+				forms.NumberInput(attrs={**formclasstext, 'min': 0, 'max': 999}),
 			'fecha_fabricacion': 
 				forms.TextInput(attrs={**formclasstext}),
 			'costo': 
-				forms.NumberInput(attrs={**formclasstext,
-							'min':0.01, 'max': 9999999999999.99}),
+				forms.NumberInput(attrs={**formclasstext, 'min':0.01, 'max': 9999999999999.99}),
 			'id_alicuota_iva': 
 				forms.Select(attrs={**formclassselect}),
 			'precio': 
-				forms.NumberInput(attrs={**formclasstext,
-							'min':0.01, 'max': 9999999999999.99}),
+				forms.NumberInput(attrs={**formclasstext, 'min':0.01, 'max': 9999999999999.99}),
 			'stock': 
-				forms.NumberInput(attrs={**formclasstext,
-							'readonly': True}),
+				forms.NumberInput(attrs={**formclasstext, 'readonly': True}),
 			'minimo': 
-				forms.NumberInput(attrs={**formclasstext,
-							'min': 0, 'max': 99999}),
+				forms.NumberInput(attrs={**formclasstext, 'min': 0, 'max': 99999}),
 			'descuento': 
-				forms.NumberInput(attrs={**formclasstext,
-							'min': 0.01, 'max': 99.99}),
+				forms.NumberInput(attrs={**formclasstext, 'min': 0.01, 'max': 99.99}),
 			'despacho_1': 
 				forms.TextInput(attrs={**formclasstext}),
 			'despacho_2': 

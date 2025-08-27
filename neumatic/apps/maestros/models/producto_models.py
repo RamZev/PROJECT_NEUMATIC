@@ -51,7 +51,9 @@ class Producto(ModeloBaseGenerico):
 	carrito = models.BooleanField("Carrito")
 	iva_exento = models.BooleanField("IVA Exento", default=False)
 	obliga_operario = models.BooleanField("Obliga Operario", default=False)
-	
+	id_producto_estado = models.ForeignKey('ProductoEstado', on_delete=models.PROTECT,
+										   verbose_name="Estado", default=1,
+										   null=True, blank=True)
 	
 	class Meta:
 		db_table = 'producto'
