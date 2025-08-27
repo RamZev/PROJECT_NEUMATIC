@@ -32,6 +32,7 @@ from .views.consultas_factura_views import (buscar_agenda,
 
 from .views.crear_agenda import crear_agenda
 from .views.genera_pdf import GeneraPDFView
+from .views.fe_afiparca_views import fe_dummy
 
 urlpatterns = [
 	path('factura/listar/', FacturaListView.as_view(), name='factura_list'),
@@ -68,8 +69,7 @@ urlpatterns = [
 	path('obtener-numero-comprobante/', obtener_numero_comprobante, name='obtener_numero_comprobante'),
 	path('obtener-numero-comprobante2/', obtener_numero_comprobante2, name='obtener_numero_comprobante2'),
 	path('obtener-numero-comprobante3/', obtener_numero_comprobante3, name='obtener_numero_comprobante3'),
-	# path('<str:model_name>/pdf/<int:pk>/', GeneraPDFView.as_view(), name='generic_pdf'),
-	# path('<str:model_string>/pdf/<int:pk>/', GeneraPDFView.as_view(), name='generic_pdf'),
+	
 	path('pdf/<int:pk>/', GeneraPDFView.as_view(), name='generic_pdf'),
 	path('clientes/<int:cliente_id>/validar-vencimientos/', validar_vencimientos_cliente, name='validar_vencimientos'),
 	path('clientes/<int:cliente_id>/validar-deudas-cliente/', validar_deudas_cliente, name='validar_deudas_cliente'),
@@ -79,4 +79,8 @@ urlpatterns = [
 	path('buscar/codigo_banco/', buscar_codigo_banco, name='buscar_codigo_banco'),
 	path('obtener/libro_iva/', obtener_libro_iva, name='obtener_libro_iva'),
 	path('buscar/factura/', buscar_factura, name='buscar_factura'),
+    
+	# Vista para obtener datos de AFIPArca
+	path('obtener/estado-servidores/', fe_dummy, name='estado_servidores'),
+
 ]

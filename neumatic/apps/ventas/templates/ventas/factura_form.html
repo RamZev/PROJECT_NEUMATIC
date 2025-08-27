@@ -111,6 +111,9 @@
     {% block principalcomponent %}
     <div id="layoutSidenav_content">
 		<main>
+            <!-- Elemento HTML para almacenar el valor de tipo_comprobante -->
+            <div id="tipo-comprobante-vista" data-tipo-comprobante-vista="{{ tipo_comprobante }}"></div>
+                        
             <!-- Elemento HTML para almacenar el valor de is_edit -->
             <div id="modo-edicion" data-is-edit="{{ is_edit|yesno:'true,false' }}"></div>
 
@@ -2286,11 +2289,18 @@
             facturaForm.addEventListener('submit', function(e) {
                 const numeroComprobante = document.getElementById('id_numero_comprobante').value.trim();
                 
+                alert("Validando número de comprobante antes de enviar el formulario...");
+                
                 if (!numeroComprobante) {
                     e.preventDefault(); // Detiene el envío del formulario
                     alert("❌ Error: El número de comprobante no se ha generado.\n\nPor favor complete los datos del comprobante y verifique que se genere el número automáticamente.");
                     return false;
                 }
+
+                /////////////////////////--->
+                
+                /////////////////////////--->
+
             });
             ///
 
@@ -2577,6 +2587,13 @@
                 const electronicaDict = JSON.parse(document.getElementById('electronica-data').dataset.electronica);
                 const electronica = electronicaDict[comprobanteId] ?? false;
 
+                // Obtener el elemento
+                const tipoComprobanteElement = document.getElementById('tipo-comprobante-vista');
+                // Acceder al valor
+                const tipoComprobanteVista = tipoComprobanteElement.dataset.tipoComprobanteVista;
+                alert("Tipo de comprobante vista: " + tipoComprobanteVista);
+
+                // Definir el tipo de comprobante
                 if (tipoComprobante == "FACTURA" && !electronica){
                     alert("Factura Manual");
                     document.getElementById('id_numero_comprobante').readOnly = false;
