@@ -721,4 +721,19 @@ estructura_campos = {
 		}
 	},
 	
+	'medidas_estados': {
+		'Información Medidas Estados': {
+			'fila_1': [
+				# {'field_name': 'estatus_medida_estado', 'columna': 2, 'design': None},
+				{'field_name': 'id_cai', 'columna': 2, 'design': None},
+				{'field_name': 'medida', 'columna': 2, 'design': None},
+				{'field_name': 'descripcion', 'columna': 4, 'design': None},
+			],
+			'fila_2': [
+				{'field_name': 'stock_desde', 'columna': 2, 'design': None},
+				{'field_name': 'stock_hasta', 'columna': 2, 'design': None},
+				{'field_name': 'id_estado', 'columna': 2, 'design': None},
+			],
+		}
+	},	
 }

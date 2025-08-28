@@ -4,148 +4,38 @@ Consultas pruebas en DB Browse
 -- CONSULTA 1:
 -----------
 
---Aquí va el Query para los productos por debajo la línea de reposición o stock mínimo (original)
-
---CREATE VIEW VLSTOCKMINIMO AS
+-- Selecciona los productos por un id_cai dado.
 SELECT
-	producto_stock.id_deposito_id,
-	producto_stock.id_producto_id,
-	producto.medida,
-	producto.id_cai_id,
-	producto.cai,
-	producto.segmento,
-	producto_familia.nombre_producto_familia,
-	producto_modelo.nombre_modelo,
-	producto.nombre_producto,
-	producto_marca.nombre_producto_marca,
-	SUM(producto_stock.stock) AS stock,
-	producto_minimo.minimo
+	id_producto,
+	nombre_producto,
+	medida,
+	id_cai_id,
+	cai
 FROM
-	producto_stock
-	INNER JOIN producto on producto_stock.id_producto_id = producto.id_producto
-	INNER JOIN producto_marca on producto.id_marca_id = producto_marca.id_producto_marca
-	INNER JOIN producto_familia on producto.id_familia_id = producto_familia.id_producto_familia
-	INNER JOIN producto_modelo on producto.id_modelo_id = producto_modelo.id_modelo
-	INNER JOIN producto_minimo on producto.id_cai_id = producto_minimo.id_cai_id
+	producto
 WHERE
-	producto_stock.stock < producto_minimo.minimo
-	AND producto_minimo.minimo <> 0
-	AND producto_stock.id_deposito_id = 1
-GROUP by
-	producto.cai, producto_stock.id_deposito_id
-HAVING
-	SUM(producto_stock.stock) < producto_minimo.minimo
-ORDER by
-	producto.id_familia_id, producto.id_marca_id
+	id_cai_id =4277;
 
 
 *--------------------------
 -- CONSULTA 2:
 -----------
 
--- Definitiva
+-- Selecciona los productos agrupados por id_cai y muestra cuál es el cai y la cantidad de productos con ese cai.
 SELECT
-	ps.id_deposito_id,
-	pd.nombre_producto_deposito,
-	p.id_familia_id,
-	pf.nombre_producto_familia,
-	p.id_modelo_id,
-	pm.nombre_modelo,
-	p.id_marca_id,
-	px.nombre_producto_marca,
-	ps.id_producto_id,
-	p.id_cai_id,
-	pc.cai,
-	p.medida,
-	p.segmento,
-	p.nombre_producto,
-	ps.stock,
-	--SUM(ps.stock) AS stock,
-	CASE 
-		WHEN pn.minimo THEN pn.minimo ELSE 0
-	END AS minimo
+	p.id_producto, p.nombre_producto, p.memida, p.id_cai_id, pc.cai, count(id_cai_id)
 FROM
-	producto_stock ps
-	JOIN producto p ON ps.id_producto_id = p.id_producto
+	producto p
 	JOIN producto_cai pc ON p.id_cai_id = pc.id_cai
-	JOIN producto_minimo pn ON p.id_cai_id = pn.id_cai_id AND ps.id_deposito_id = pn.id_deposito_id
-	JOIN producto_familia pf ON p.id_familia_id = pf.id_producto_familia
-	JOIN producto_modelo pm ON p.id_modelo_id = pm.id_modelo
-	JOIN producto_marca px ON p.id_marca_id = px.id_producto_marca
-	JOIN producto_deposito pd ON ps.id_deposito_id = pd.id_producto_deposito
-WHERE
-	ps.stock < pn.minimo 
-	AND pn.minimo <> 0
-	AND ps.id_deposito_id = 4
---GROUP by
---	pc.cai, ps.id_deposito_id
---HAVING
---	SUM(ps.stock) < pn.minimo
-ORDER by
-	--pf.nombre_producto_familia, pm.nombre_modelo, px.nombre_producto_marca
-	p.id_familia_id, p.id_modelo_id, p.id_marca_id
-
-
-*--------------------------
--- CONSULTA 3:
------------
-
--- Comprobar que no se repitan los CAI en un mismo depósito.
-SELECT
-	pn.id_deposito_id,
-	pn.id_cai_id,
-	pc.cai,
-	count(pc.cai),
-	pn.minimo
-FROM
-	producto_minimo pn
-	JOIN producto_cai pc ON pn.id_cai_id = pc.id_cai
 GROUP by
-	pn.id_deposito_id, pn.id_cai_id
+	p.id_cai_id
 HAVING
-	count(pc.cai) > 1
-ORDER by
-	pn.id_deposito_id, pn.id_cai_id;
+	count(p.id_cai_id) > 1;
 
 
-*--------------------------
--- CONSULTA 4:
------------
 
--- Consulta de Stock por Sucursal y Producto.
-SELECT
-	s.id_sucursal AS 'Id. Sucursal',
-	s.nombre_sucursal AS 'Sucursal',
-	ps.id_deposito_id AS 'Id. Depósito',
-	pd.nombre_producto_deposito AS 'Depósito',
-	ps.id_producto_id AS 'Producto',
-	sum(ps.stock) AS 'Stock'
-FROM
-	producto_stock ps
-	JOIN producto_deposito pd ON ps.id_deposito_id = pd.id_producto_deposito
-	JOIN sucursal s ON pd.id_sucursal_id = s.id_sucursal
-WHERE
-	ps.stock <> 0
-GROUP by
-	s.id_sucursal, ps.id_producto_id
-ORDER by
-	--s.id_sucursal, ps.id_deposito_id
-	s.id_sucursal, ps.id_producto_id
-	--pd.nombre_producto_deposito
 
--- Simplificada
-SELECT
-	sum(ps.stock) AS 'Stock'
-FROM
-	producto_stock ps
-	JOIN producto_deposito pd ON ps.id_deposito_id = pd.id_producto_deposito
-	JOIN sucursal s ON pd.id_sucursal_id = s.id_sucursal
-WHERE
-	ps.stock <> 0
-GROUP by
-	s.id_sucursal, ps.id_producto_id
-ORDER by
-	s.id_sucursal, ps.id_producto_id;
+
 
 
 
