@@ -63,6 +63,7 @@ class FacturaListView(MaestroDetalleListView):
 		'compro': (1, 'Compro'),
 		'letra_comprobante': (1, 'Letra'),
 		'numero_comprobante': (1, 'Nro Comp'),
+		# 'numero_comprobante_formateado': (1, 'Nro Comp'),
 		'fecha_comprobante': (1, 'fecha'),
 		'cuit': (1, 'CUIT'),
 		'id_cliente': (3, 'Cliente'),
@@ -76,6 +77,7 @@ class FacturaListView(MaestroDetalleListView):
 		{'field_name': 'compro', 'date_format': None},
 		{'field_name': 'letra_comprobante', 'date_format': None},
 		{'field_name': 'numero_comprobante', 'date_format': None},
+		# {'field_name': 'numero_comprobante_formateado', 'date_format': None},
   		{'field_name': 'fecha_comprobante', 'date_format': 'd/m/Y'},
 		{'field_name': 'cuit', 'date_format': None},
 		{'field_name': 'id_cliente', 'date_format': None},
@@ -188,6 +190,10 @@ class FacturaCreateView(MaestroDetalleCreateView):
 		electronica_dict = {str(c.id_comprobante_venta): c.electronica for c in ComprobanteVenta.objects.all()}
 		data['electronica_dict'] = json.dumps(electronica_dict)
 
+		# Obtener todos los comprobantes con sus valores manual
+		manual_dict = {str(c.id_comprobante_venta): c.manual for c in ComprobanteVenta.objects.all()}
+		data['manual_dict'] = json.dumps(manual_dict)
+
 		# Obtener todos los comprobantes con sus valores tipo_comprobante
 		tipo_comprobante_dict = {str(c.id_comprobante_venta): c.tipo_comprobante for c in ComprobanteVenta.objects.all()}
 		data['tipo_comprobante_dict'] = mark_safe(json.dumps(tipo_comprobante_dict, ensure_ascii=False))
@@ -297,16 +303,14 @@ class FacturaCreateView(MaestroDetalleCreateView):
 				# Determinar el tipo de numeración basado en comprobante_data
 				if comprobante_data.electronica:
 					tipo_numeracion = 'electronica'
-				elif not comprobante_data.electronica and comprobante_data.libro_iva:
+					print("tipo_numeracion = 'electronica'")
+				elif comprobante_data.manual:
 					tipo_numeracion = 'manual'
-					print("Entró")
-				elif comprobante_data.remito:
-					tipo_numeracion = 'automatica'
+					print("tipo_numeracion = 'manual'")
 				else:
-					pass
-					# form.add_error(None, 'Tipo de numeración no válido')
-					# return self.form_invalid(form)
-
+					tipo_numeracion = 'automatica'
+					print("tipo_numeracion = 'automatica'")
+									
 				# Determinar comprobante AFIP y letra
 				codigo_afip_a = comprobante_data.codigo_afip_a
 				codigo_afip_b = comprobante_data.codigo_afip_b
@@ -966,6 +970,10 @@ class FacturaUpdateView(MaestroDetalleUpdateView):
 		# Obtener todos los comprobantes con sus valores electronica
 		electronica_dict = {str(c.id_comprobante_venta): c.electronica for c in ComprobanteVenta.objects.all()}
 		data['electronica_dict'] = json.dumps(electronica_dict)
+
+		# Obtener todos los comprobantes con sus valores manual
+		manual_dict = {str(c.id_comprobante_venta): c.manual for c in ComprobanteVenta.objects.all()}
+		data['manual_dict'] = json.dumps(manual_dict)
 
 		# Obtener todos los operarios con sus id
 		operario_dict = {str(o.id_operario): o.nombre_operario for o in Operario.objects.all()}

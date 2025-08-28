@@ -322,6 +322,10 @@ class Factura(ModeloBaseGenerico):
 		return f"{self.compro} {self.letra_comprobante} {self.numero_comprobante_formateado}"
 	
 	@property
+	def compro_letra_numero_comprobante(self):
+		return f"{self.compro} {self.letra_comprobante} {self.numero_comprobante}"
+	
+	@property
 	def numero_asociado_formateado(self):
 		numero = ""
 		if self.numero_asociado:
