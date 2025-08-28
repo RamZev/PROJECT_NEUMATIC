@@ -189,6 +189,10 @@ class PresupuestoCreateView(MaestroDetalleCreateView):
 		electronica_dict = {str(c.id_comprobante_venta): c.electronica for c in ComprobanteVenta.objects.all()}
 		data['electronica_dict'] = json.dumps(electronica_dict)
 
+		# Obtener todos los comprobantes con sus valores manual
+		manual_dict = {str(c.id_comprobante_venta): c.manual for c in ComprobanteVenta.objects.all()}
+		data['manual_dict'] = json.dumps(manual_dict)
+
 		# Obtener todos los comprobantes con sus valores tipo_comprobante
 		tipo_comprobante_dict = {str(c.id_comprobante_venta): c.tipo_comprobante for c in ComprobanteVenta.objects.all()}
 		data['tipo_comprobante_dict'] = mark_safe(json.dumps(tipo_comprobante_dict, ensure_ascii=False))
@@ -956,6 +960,10 @@ class PresupuestoUpdateView(MaestroDetalleUpdateView):
 		# Obtener todos los comprobantes con sus valores electronica
 		electronica_dict = {str(c.id_comprobante_venta): c.electronica for c in ComprobanteVenta.objects.all()}
 		data['electronica_dict'] = json.dumps(electronica_dict)
+
+		# Obtener todos los comprobantes con sus valores manual
+		manual_dict = {str(c.id_comprobante_venta): c.manual for c in ComprobanteVenta.objects.all()}
+		data['manual_dict'] = json.dumps(manual_dict)
 
 		# Obtener todos los comprobantes con sus valores tipo_comprobante
 		tipo_comprobante_dict = {str(c.id_comprobante_venta): c.tipo_comprobante for c in ComprobanteVenta.objects.all()}

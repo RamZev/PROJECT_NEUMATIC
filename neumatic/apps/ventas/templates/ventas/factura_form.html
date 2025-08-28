@@ -126,6 +126,9 @@
             <!-- Div oculto con el diccionario electronica para cada comprobante -->
             <div id="electronica-data" data-electronica='{{ electronica_dict|safe }}'></div>
 
+            <!-- Div oculto con el diccionario manual para cada comprobante -->
+            <div id="manual-data" data-manual='{{ manual_dict|safe }}'></div>
+
             <!-- Div oculto con el diccionario tipo_comprobante para cada comprobante -->
             <div id="tipocomprobante-data" data-tipocomprobante='{{ tipo_comprobante_dict|safe }}'></div>
 
@@ -2128,7 +2131,7 @@
                             
                             // Actualizar totales generales
                             actualizarTotalFactura();
-                            alert("actualizarTotalFactura!");
+                            // alert("actualizarTotalFactura!");
                         });
             
                         // Actualizar el contador de formsets
@@ -2289,8 +2292,7 @@
             facturaForm.addEventListener('submit', function(e) {
                 const numeroComprobante = document.getElementById('id_numero_comprobante').value.trim();
                 
-                alert("Validando número de comprobante antes de enviar el formulario...");
-                
+                // No se ejecuta porque numeroComprobante tiene required
                 if (!numeroComprobante) {
                     e.preventDefault(); // Detiene el envío del formulario
                     alert("❌ Error: El número de comprobante no se ha generado.\n\nPor favor complete los datos del comprobante y verifique que se genere el número automáticamente.");
@@ -2298,9 +2300,27 @@
                 }
 
                 /////////////////////////--->
+                // Evitar envío hasta obtener estados
+                // e.preventDefault();
                 
+                e.preventDefault(); // IMPORTANTE: Prevenir envío inmediato
+    
+                fetch('/ventas/obtener/estado-servidores/')
+                    .then(response => response.json())
+                    .then(data => {
+                        const puedenEmitir = data.AppServer === 'OK' && data.DbServer === 'OK' && data.AuthServer === 'OK';
+                        
+                        if (puedenEmitir) {
+                            alert(`✅ SISTEMAS AFIP OPERATIVOS\nApp: OK | DB: OK | Auth: OK\n\nEMITIENDO DOCUMENTO...`);
+                            facturaForm.submit();
+                        } else {
+                            alert(`❌ ERROR SISTEMAS AFIP\nApp: ${data.AppServer} | DB: ${data.DbServer} | Auth: ${data.AuthServer}\n\nNO SE PUEDE EMITIR`);
+                        }
+                    })
+                    .catch(error => {
+                        alert('❌ ERROR: No se pudo conectar con AFIP');
+                    });
                 /////////////////////////--->
-
             });
             ///
 
@@ -2587,15 +2607,17 @@
                 const electronicaDict = JSON.parse(document.getElementById('electronica-data').dataset.electronica);
                 const electronica = electronicaDict[comprobanteId] ?? false;
 
+                const manualDict = JSON.parse(document.getElementById('manual-data').dataset.manual);
+                const manual = manualDict[comprobanteId] ?? false;
+
                 // Obtener el elemento
                 const tipoComprobanteElement = document.getElementById('tipo-comprobante-vista');
                 // Acceder al valor
                 const tipoComprobanteVista = tipoComprobanteElement.dataset.tipoComprobanteVista;
-                alert("Tipo de comprobante vista: " + tipoComprobanteVista);
+                // alert("Tipo de comprobante vista: " + tipoComprobanteVista);
 
-                // Definir el tipo de comprobante
-                if (tipoComprobante == "FACTURA" && !electronica){
-                    alert("Factura Manual");
+                if (manual){
+                    // alert("Factura Manual");
                     document.getElementById('id_numero_comprobante').readOnly = false;
                     // document.getElementById('id_numero_comprobante').setAttribute('autocomplete', 'new-password');
                     
@@ -2647,7 +2669,7 @@
             // Función original calcularNumeroComprobante
             function calcularNumeroComprobante_ini() {
                 // Obtener datos necesarios para numeración
-                alert("calcularNumeroComprobante")
+                // alert("calcularNumeroComprobante")
                 const libroIvaDict = JSON.parse(document.getElementById('libroiva-data').dataset.libroiva);
                 const comprobanteId = document.getElementById('id_id_comprobante_venta').value;
                 const libroIva = libroIvaDict[comprobanteId] ?? false;

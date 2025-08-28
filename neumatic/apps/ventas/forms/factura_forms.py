@@ -177,13 +177,16 @@ class FacturaForm(forms.ModelForm):
                 Q(electronica=True) | Q(remito=True),
                 recibo=False,
                 presupuesto=False,
+                manual=False,
                 estatus_comprobante_venta=True  # Solo comprobantes activos
             ).order_by('nombre_comprobante_venta')
         elif tipo_comprobante == 'manual':
             self.fields['id_comprobante_venta'].queryset = ComprobanteVenta.objects.filter(
+                manual=True,
                 recibo=False,
-                presupuesto=False
             ).order_by('nombre_comprobante_venta')
+
+            print("Tipo de comprobante: Manual***")
         elif tipo_comprobante == 'presupuesto':
             self.fields['id_comprobante_venta'].queryset = ComprobanteVenta.objects.filter(
                 presupuesto=True
