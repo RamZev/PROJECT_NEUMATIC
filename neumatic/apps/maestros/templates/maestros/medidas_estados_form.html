@@ -1,0 +1,222 @@
+<!-- apps\maestros\templates\maestros\medidas_estados_form.html -->
+{% extends 'maestro_form.html' %}
+{% load static %}
+<!-- -------------------------------------------------------------------- -->
+{% block maincomponent %}
+	{% block principalcomponent %}
+		<div id="layoutSidenav_content">
+			<main>
+				<div class="container-fluid">
+					
+					<div class="card border-light mb-3 mt-2">
+						<div class="card-header text-white bg-primary opacity-75 d-flex 
+									justify-content-between">
+							{{ accion }}
+							<div class="flex align-items-center">
+								<a 
+									class="me-2 text-white" 
+									data-bs-toggle="modal" 
+									data-bs-target="#helpModal" 
+									style="cursor: pointer;">
+									<i class="bi bi-question-lg"></i></a>
+								
+								<button type="button" class="btn-close btn-close-white" 
+									aria-label="Close"
+									onclick="window.location.href='{% url list_view_name %}'">
+								</button>
+							</div>
+						</div>
+						
+						<div class="card-body bg-body-secondary">
+							<form method="post" enctype="multipart/form-data" novalidate>
+								{% csrf_token %}
+								<div class="accordion" id="accordionPanelsStayOpenExample">
+									<!-- Estructura generada -->
+									
+									<div class="accordion-item">
+										<h2 class="accordion-header">
+											<button 
+												class="accordion-button py-2 " 
+												type="button" 
+												data-bs-toggle="collapse" 
+												data-bs-target="#Información_Medidas_Estados" 
+												aria-expanded="true" 
+												aria-controls="Información_Medidas_Estados">
+												<strong>Información Medidas Estados</strong>
+											</button>
+										</h2>
+										<div class="accordion-collapse collapse show"
+											id="Información_Medidas_Estados">
+											<div class="accordion-body bg-secondary-subtle">
+												
+												<div class="row">
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0">
+															{{ form.id_cai.label }}
+														</label>
+														{{ form.id_cai }}
+													</div>
+													
+													<!-- Campos de solo lectura que se llenarán con JavaScript --> {% comment %} 'form-control form-control-sm border border-primary mb-2' {% endcomment %}
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0">
+															Medida
+														</label>
+														<input type="text" class="form-control form-control-sm border border-primary mb-2" 
+															id="medida-display" readonly 
+															style="background-color: #f8f9fa;">
+													</div>
+													
+													<div class="col-md-4">
+														<label class="form-label text-primary mb-0">
+															Descripción Producto
+														</label>
+														<input type="text" class="form-control form-control-sm border border-primary mb-2" 
+															id="nombre-producto-display" readonly 
+															style="background-color: #f8f9fa;">
+													</div>
+												</div>
+													
+												<div class="row">
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0">
+															{{ form.stock_desde.label }}
+														</label>
+														{{ form.stock_desde }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0">
+															{{ form.stock_hasta.label }}
+														</label>
+														{{ form.stock_hasta }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0">
+															{{ form.id_estado.label }}
+														</label>
+														{{ form.id_estado }}
+													</div>
+												</div>
+													
+												<div class="row">
+													
+													<div class="col-md-2">
+														Menos de
+													</div>
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0">
+															{{ form.stock_desde.label }}
+														</label>
+														{{ form.stock_desde }}
+													</div>
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0">
+															{{ form.id_estado.label }}
+														</label>
+														{{ form.id_estado }}
+													</div>
+													
+												</div>
+												
+												<div class="row">
+													
+													<div class="col-md-2">
+														Más de
+													</div>
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0">
+															{{ form.stock_hasta.label }}
+														</label>
+														{{ form.stock_hasta }}
+													</div>
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0">
+															{{ form.id_estado.label }}
+														</label>
+														{{ form.id_estado }}
+													</div>
+													
+												</div>
+												
+											</div>
+										</div>
+									</div>
+								
+								</div>
+								
+								<div class="container mt-3">
+									<button class="btn btn-primary" type="submit" id="guardarBtn">
+										Guardar
+									</button>
+									<a class="btn btn-secondary" href="{% url list_view_name %}">
+										Cancelar
+									</a>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+			</main>
+		</div>
+	{% endblock principalcomponent %}
+{% endblock maincomponent %}
+<!-- -------------------------------------------------------------------- -->
+{% block modals %}
+	<!-- Modal para mostrar errores -->
+	{% include 'maestros/modal_errors.html' %}
+	
+	<!-- Modal para mostrar los requerimientos de los campos -->
+	{% include 'maestros/modal_fields_requirements.html' %}
+{% endblock modals %}
+<!-- -------------------------------------------------------------------- -->
+{% block script %}
+	{{ block.super }}
+	
+	<script>
+		document.addEventListener('DOMContentLoaded', function() {
+			const caiSelect = document.getElementById('id_id_cai');
+			const medidaDisplay = document.getElementById('medida-display');
+			const nombreProductoDisplay = document.getElementById('nombre-producto-display');
+			
+			// Función para cargar los datos del CAI seleccionado.
+			function cargarDatosCAI() {
+				const caiId = caiSelect.value;
+				
+				if (caiId) {
+					// Hacer una petición AJAX para obtener los datos del CAI.
+					fetch(`{% url 'cai-datos-api' 0 %}`.replace('0', caiId))
+						.then(response => {
+							if (!response.ok) {
+								throw new Error('Error en la respuesta del servidor');
+							}
+							return response.json();
+						})
+						.then(data => {
+							medidaDisplay.value = data.medida || '';
+							nombreProductoDisplay.value = data.nombre_producto || '';
+						})
+						.catch(error => {
+							console.error('Error al cargar datos del CAI:', error);
+							medidaDisplay.value = '';
+							nombreProductoDisplay.value = '';
+						});
+				} else {
+					medidaDisplay.value = '';
+					nombreProductoDisplay.value = '';
+				}
+			}
+			
+			// Cargar datos cuando cambia la selección.
+			caiSelect.addEventListener('change', cargarDatosCAI);
+			
+			// Cargar datos inicialmente si ya hay un valor seleccionado (en modo edición).
+			if (caiSelect.value) {
+				cargarDatosCAI();
+			}
+		});
+	</script>
+{% endblock script %}

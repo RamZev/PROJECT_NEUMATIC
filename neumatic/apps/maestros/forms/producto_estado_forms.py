@@ -18,7 +18,7 @@ class ProductoEstadoForm(CrudGenericForm):
 				forms.TextInput(attrs={**formclasstext, 'oninput': 'this.value = this.value.toUpperCase()'}),
 			'nombre_producto_estado': 
 				forms.TextInput(attrs={**formclasstext, 'oninput': 'this.value = this.value.toUpperCase()'}),
-		'color':
+			'color':
 				forms.TextInput(attrs={**formclasstext, 'type': 'color'}),
 		}
 		

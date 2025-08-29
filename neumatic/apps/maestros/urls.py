@@ -30,6 +30,7 @@ from .views.tarjeta_views import *
 from .views.codigo_retencion_views import *
 from .views.concepto_banco_views import *
 from .views.marketing_origen_views import *
+from .views.medidas_estados_views import *
 
 #-- Catálogos
 from .views.cliente_views import *
@@ -273,6 +274,12 @@ urlpatterns = [
 	path('marketing_origen/<int:pk>/editar/', MarketingOrigenUpdateView.as_view(), name='marketing_origen_update'),
 	path('marketing_origen/<int:pk>/eliminar/', MarketingOrigenDeleteView.as_view(), name='marketing_origen_delete'),
 	
+	#-- Medidas Estados.
+	path('medidas_estados/', MedidasEstadosListView.as_view(), name='medidas_estados_list'),
+	path('medidas_estados/nueva/', MedidasEstadosCreateView.as_view(), name='medidas_estados_create'),
+	path('medidas_estados/<int:pk>/editar/', MedidasEstadosUpdateView.as_view(), name='medidas_estados_update'),
+	path('medidas_estados/<int:pk>/eliminar/', MedidasEstadosDeleteView.as_view(), name='medidas_estados_delete'),
+	
 	
 	
 	#-- Otras rutas.
@@ -282,5 +289,7 @@ urlpatterns = [
 	path('actualizar_minimo/', actualizar_minimo, name='actualizar_minimo'),
 	path('buscar-cuit/', buscar_cuit_view, name='buscar_cuit'),
 	path('buscar-cliente-id/', buscar_cliente_id_view, name='buscar_cliente_id'),
+	
+	path('api/cai/<int:pk>/datos/', CAIDatosAPIView.as_view(), name='cai-datos-api'),
 
 ]

@@ -1,6 +1,7 @@
 # neumatic\apps\maestros\models\base_models.py
 from django.db import models
 from django.utils.html import format_html
+from django.utils.functional import cached_property
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.core.exceptions import ValidationError
 import re
@@ -160,6 +161,24 @@ class ProductoCai(ModeloBaseGenerico):
 	
 	def __str__(self):
 		return self.cai
+	
+	@cached_property
+	def nombre_producto(self):
+		"""
+		Retorna el nombre_producto de la primera coincidencia en el modelo Producto
+		asociado al ProductoCai.
+		"""
+		producto = self.producto_set.first() if hasattr(self, 'producto_set') else None
+		return producto.nombre_producto if producto else ''
+	
+	@cached_property
+	def medida(self):
+		"""
+		Retorna la medida de la primera coincidencia en el modelo Producto
+		asociado al ProductoCai.
+		"""
+		producto = self.producto_set.first() if hasattr(self, 'producto_set') else None
+		return producto.medida if producto else ''
 
 
 class ProductoMinimo(ModeloBaseGenerico):
@@ -969,7 +988,7 @@ class MedidasEstados(ModeloBaseGenerico):
 	id_cai = models.ForeignKey(
 		ProductoCai,
 		on_delete=models.PROTECT,
-		verbose_name="Moneda",
+		verbose_name="CAI",
 		null=True,
 		blank=True
 	)
@@ -998,3 +1017,30 @@ class MedidasEstados(ModeloBaseGenerico):
 		verbose_name = 'Estado por Medida'
 		verbose_name_plural = 'Estados por Medidas'
 	
+	def clean(self):
+		errors = {}
+		
+		if not self.id_cai:
+			errors.update({'id_cai': "Debe indicar un CAI."})
+		
+		# if self.factor != -1 and self.factor != 0 and self.factor != 1:
+		# 	errors.update({'factor': "Los valores permitidos son: -1, 0 y 1"})
+		
+		if errors:
+			raise ValidationError(errors)
+		
+		return super().clean()
+	
+	@property
+	def nombre_producto(self):
+		"""
+		Retorna el nombre_producto del ProductoCai asociado
+		"""
+		return self.id_cai.nombre_producto if self.id_cai else ''
+	
+	@property
+	def medida(self):
+		"""
+		Retorna la medida del ProductoCai asociado
+		"""
+		return self.id_cai.medida if self.id_cai else ''

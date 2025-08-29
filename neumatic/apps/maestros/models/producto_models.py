@@ -23,7 +23,7 @@ class Producto(ModeloBaseGenerico):
 								  verbose_name="Modelo")
 	id_cai = models.ForeignKey(ProductoCai, on_delete=models.PROTECT,
 								null=True, blank=True, verbose_name="CAI")
-	cai = models.CharField("Medida", max_length=21, null=True, blank=True)
+	cai = models.CharField("CAI.", max_length=21, null=True, blank=True)
 	medida = models.CharField("Medida", max_length=15)
 	segmento = models.CharField("Segmento", max_length=3)
 	nombre_producto = models.CharField("Nombre producto", max_length=50)
