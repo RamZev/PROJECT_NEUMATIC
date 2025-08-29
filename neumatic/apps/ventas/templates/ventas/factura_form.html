@@ -2304,22 +2304,32 @@
                 // e.preventDefault();
                 
                 e.preventDefault(); // IMPORTANTE: Prevenir envío inmediato
-    
-                fetch('/ventas/obtener/estado-servidores/')
-                    .then(response => response.json())
-                    .then(data => {
-                        const puedenEmitir = data.AppServer === 'OK' && data.DbServer === 'OK' && data.AuthServer === 'OK';
-                        
-                        if (puedenEmitir) {
-                            alert(`✅ SISTEMAS AFIP OPERATIVOS\nApp: OK | DB: OK | Auth: OK\n\nEMITIENDO DOCUMENTO...`);
-                            facturaForm.submit();
-                        } else {
-                            alert(`❌ ERROR SISTEMAS AFIP\nApp: ${data.AppServer} | DB: ${data.DbServer} | Auth: ${data.AuthServer}\n\nNO SE PUEDE EMITIR`);
-                        }
-                    })
-                    .catch(error => {
-                        alert('❌ ERROR: No se pudo conectar con AFIP');
-                    });
+
+                const comprobanteSelect = document.getElementById('id_id_comprobante_venta');
+                const comprobanteId = comprobanteSelect.value;
+                const electronicaDict = JSON.parse(document.getElementById('electronica-data').dataset.electronica);
+                const electronica = electronicaDict[comprobanteId] ?? false;
+
+                if (electronica) {
+                    fetch('/ventas/obtener/estado-servidores/')
+                        .then(response => response.json())
+                        .then(data => {
+                            const puedenEmitir = data.AppServer === 'OK' && data.DbServer === 'OK' && data.AuthServer === 'OK';
+                            
+                            if (puedenEmitir) {
+                                alert(`✅ SISTEMAS AFIP OPERATIVOS\nApp: OK | DB: OK | Auth: OK\n\nEMITIENDO DOCUMENTO...`);
+                                facturaForm.submit();
+                            } else {
+                                alert(`❌ ERROR SISTEMAS AFIP\nApp: ${data.AppServer} | DB: ${data.DbServer} | Auth: ${data.AuthServer}\n\nNO SE PUEDE EMITIR`);
+                            }
+                        })
+                        .catch(error => {
+                            alert('❌ ERROR: No se pudo conectar con AFIP');
+                        });
+                } else {
+                    // No es electrónico, enviar directamente
+                    facturaForm.submit();
+                }
                 /////////////////////////--->
             });
             ///
