@@ -65,8 +65,6 @@ class DataViewList():
 	table_headers = {
 		# 'estatus_medida_estado': (1, 'Estatus'),
 		'id_cai': (2, 'CAI'),
-		# 'medida': (2, 'Medida'),
-		# 'nombre_producto': (4, 'Descripción Producto'),
 		'medida': (2, 'Medida'),
 		'nombre_producto': (4, 'Descripción Producto'),
 		'stock_desde': (1, 'Stock Desde'),
@@ -79,8 +77,6 @@ class DataViewList():
 	table_data = [
 		# {'field_name': 'estatus_medida_estado', 'date_format': None},
 		{'field_name': 'id_cai', 'date_format': None},
-		# {'field_name': 'medida', 'date_format': None},
-		# {'field_name': 'nombre_producto', 'date_format': None},
 		{'field_name': 'medida', 'date_format': None},
 		{'field_name': 'nombre_producto', 'date_format': None},
 		{'field_name': 'stock_desde', 'date_format': None},
@@ -97,21 +93,21 @@ class MedidasEstadosListView(MaestroListView):
 	search_fields = DataViewList.search_fields
 	ordering = DataViewList.ordering
 	
-	# extra_context = {
-	# 	"master_title": ConfigViews.model._meta.verbose_name_plural,
-	# 	"home_view_name": ConfigViews.home_view_name,
-	# 	"list_view_name": ConfigViews.list_view_name,
-	# 	"create_view_name": ConfigViews.create_view_name,
-	# 	"update_view_name": ConfigViews.update_view_name,
-	# 	"delete_view_name": ConfigViews.delete_view_name,
-	# 	"table_headers": DataViewList.table_headers,
-	# 	"table_data": DataViewList.table_data,
-	# }
-	# 
-	# def get_queryset(self):
-	# 	queryset = super().get_queryset()
-	# 	#-- Optimiza las consultas relacionadas.
-	# 	return queryset.select_related('id_cai', 'id_estado')
+	extra_context = {
+		"master_title": ConfigViews.model._meta.verbose_name_plural,
+		"home_view_name": ConfigViews.home_view_name,
+		"list_view_name": ConfigViews.list_view_name,
+		"create_view_name": ConfigViews.create_view_name,
+		"update_view_name": ConfigViews.update_view_name,
+		"delete_view_name": ConfigViews.delete_view_name,
+		"table_headers": DataViewList.table_headers,
+		"table_data": DataViewList.table_data,
+	}
+	
+	def get_queryset(self):
+		queryset = super().get_queryset()
+		#-- Optimiza las consultas relacionadas.
+		return queryset.select_related('id_cai', 'id_estado')
 
 
 class MedidasEstadosCreateView(MaestroCreateView):
@@ -123,17 +119,6 @@ class MedidasEstadosCreateView(MaestroCreateView):
 	
 	#-- Indicar el permiso que requiere para ejecutar la acción.
 	permission_required = ConfigViews.permission_add
-	
-	# def get_context_data(self, **kwargs):
-	# 	context = super().get_context_data(**kwargs)
-	# 	#-- Obtener los colores de los estados.
-	# 	from ..models.base_models import ProductoEstado
-	# 	context['colores_estados'] = {
-	# 		'POCAS': ProductoEstado.objects.get(nombre_producto_estado="POCAS").color,
-	# 		'FALTANTES': ProductoEstado.objects.get(nombre_producto_estado="FALTANTES").color,
-	# 		'DISPONIBLES': ProductoEstado.objects.get(nombre_producto_estado="DISPONIBLES").color,
-	# 	}
-	# 	return context
 
 
 class MedidasEstadosUpdateView(MaestroUpdateView):
@@ -145,17 +130,6 @@ class MedidasEstadosUpdateView(MaestroUpdateView):
 	
 	#-- Indicar el permiso que requiere para ejecutar la acción.
 	permission_required = ConfigViews.permission_change
-	
-	def get_context_data(self, **kwargs):
-		context = super().get_context_data(**kwargs)
-		#-- Obtener los colores de los estados.
-		from ..models.base_models import ProductoEstado
-		context['colores_estados'] = {
-			'POCAS': ProductoEstado.objects.get(nombre_producto_estado="POCAS").color,
-			'FALTANTES': ProductoEstado.objects.get(nombre_producto_estado="FALTANTES").color,
-			'DISPONIBLES': ProductoEstado.objects.get(nombre_producto_estado="DISPONIBLES").color,
-		}
-		return context
 
 
 class MedidasEstadosDeleteView (MaestroDeleteView):

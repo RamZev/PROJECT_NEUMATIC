@@ -104,12 +104,9 @@
 														<label class="form-label text-primary mb-0">
 															Estado
 														</label>
-														<!--
-														<input type="text" class="form-control form-control-sm border border-primary mb-2" 
+														<input type="text" class="form-control form-control-sm border border-primary mb-2 estado-color fw-bold" 
 															value="POCAS" readonly 
-															style="background-color: #d4eaff;">
-														-->
-														<input type="text" value="POCAS" readonly style="background-color: {% get_color_estado 'POCAS' %};">
+															style="background-color: {% get_color_estado 'POCAS' %};">
 													</div>
 													
 												</div>
@@ -131,7 +128,10 @@
 														<label class="form-label text-primary mb-0">
 																Estado
 														</label>
-														<input type="text" value="FALTANTES" readonly class="form-control form-control-sm border border-primary mb-2" style="background-color: #d4eaff;">
+														{% comment %} <input type="text" value="FALTANTES" readonly class="form-control form-control-sm border border-primary mb-2" style="background-color: #d4eaff;"> {% endcomment %}
+														<input type="text" class="form-control form-control-sm border border-primary mb-2 estado-color fw-bold"
+															value="FALTANTES" readonly  
+															style="background-color: {% get_color_estado 'FALTANTES' %};">
 													</div>
 														
 												</div>
@@ -153,7 +153,10 @@
 														<label class="form-label text-primary mb-0">
 															Estado
 														</label>
-														<input type="text" value="DISPONIBLES" readonly class="form-control form-control-sm border border-primary mb-2" style="background-color: #d4eaff;">
+														{% comment %} <input type="text" value="DISPONIBLES" readonly class="form-control form-control-sm border border-primary mb-2" style="background-color: #d4eaff;"> {% endcomment %}
+														<input type="text" class="form-control form-control-sm border border-primary mb-2 estado-color fw-bold" 
+															value="DISPONIBLES" readonly  
+															style="background-color: {% get_color_estado 'DISPONIBLES' %};">
 													</div>
 												</div>
 													
