@@ -1,11 +1,18 @@
 # apps\maestros\forms\medidas_estados_forms.py
 from django import forms
 from .crud_forms_generics import CrudGenericForm
-from ..models.base_models import MedidasEstados
+from ..models.base_models import MedidasEstados, ProductoEstado
 from diseno_base.diseno_bootstrap import formclasstext, formclassselect
 
 
 class MedidasEstadosForm(CrudGenericForm):
+	
+	#-- Campo oculto para el estado (siempre será POCAS).
+	id_estado = forms.ModelChoiceField(
+		queryset=ProductoEstado.objects.filter(nombre_producto_estado="POCAS"),
+		widget=forms.HiddenInput(),
+		initial=3  # ID del estado POCAS según tus datos
+	)
 	
 	class Meta:
 		model = MedidasEstados

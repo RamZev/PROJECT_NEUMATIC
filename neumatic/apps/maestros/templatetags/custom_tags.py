@@ -2,9 +2,10 @@
 from django import template
 from decimal import Decimal
 import locale
-
+from ..models.base_models import ProductoEstado
 
 register = template.Library()
+
 
 @register.filter(name='get_attribute')
 def get_attribute(value, arg):
@@ -15,20 +16,24 @@ def get_attribute(value, arg):
 		return getattr(value, arg)
 	except AttributeError:
 		return None
+
 	
 @register.filter(name='get_item')
 def get_item(dictionary, key):
 	return dictionary.get(key, None)
+
 
 @register.filter(name='get_columna')
 def get_columna(field, field_name):
 	extra_attrs = field.widget.attrs.get('extra_attrs', {})
 	return extra_attrs.get('columna', 12)  # Si no se encuentra, se devuelve 12 por defecto
 
+
 @register.filter
 def get_type(value):
 	""" Devuelve el tipo de valor en formato string."""
 	return type(value).__name__
+
 
 @register.filter
 def formato_es_ar(value):
@@ -51,6 +56,7 @@ def formato_es_ar(value):
 	except (ValueError, TypeError):
 		#-- Devuelve el valor sin formatear si no es un número válido.
 		return value
+
 
 @register.filter
 def formato_es_ar_entero(value):
@@ -75,3 +81,11 @@ def formato_es_ar_entero(value):
     except (ValueError, TypeError):
         # Devuelve el valor sin formatear si no es un número válido
         return value
+
+
+@register.simple_tag
+def get_color_estado(nombre_estado):
+    try:
+        return ProductoEstado.objects.get(nombre_producto_estado=nombre_estado).color
+    except ProductoEstado.DoesNotExist:
+        return '#FFFFFF'  # Color por defecto si no existe

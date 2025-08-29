@@ -97,21 +97,21 @@ class MedidasEstadosListView(MaestroListView):
 	search_fields = DataViewList.search_fields
 	ordering = DataViewList.ordering
 	
-	extra_context = {
-		"master_title": ConfigViews.model._meta.verbose_name_plural,
-		"home_view_name": ConfigViews.home_view_name,
-		"list_view_name": ConfigViews.list_view_name,
-		"create_view_name": ConfigViews.create_view_name,
-		"update_view_name": ConfigViews.update_view_name,
-		"delete_view_name": ConfigViews.delete_view_name,
-		"table_headers": DataViewList.table_headers,
-		"table_data": DataViewList.table_data,
-	}
-	
-	def get_queryset(self):
-		queryset = super().get_queryset()
-		# Optimiza las consultas relacionadas
-		return queryset.select_related('id_cai', 'id_estado')
+	# extra_context = {
+	# 	"master_title": ConfigViews.model._meta.verbose_name_plural,
+	# 	"home_view_name": ConfigViews.home_view_name,
+	# 	"list_view_name": ConfigViews.list_view_name,
+	# 	"create_view_name": ConfigViews.create_view_name,
+	# 	"update_view_name": ConfigViews.update_view_name,
+	# 	"delete_view_name": ConfigViews.delete_view_name,
+	# 	"table_headers": DataViewList.table_headers,
+	# 	"table_data": DataViewList.table_data,
+	# }
+	# 
+	# def get_queryset(self):
+	# 	queryset = super().get_queryset()
+	# 	#-- Optimiza las consultas relacionadas.
+	# 	return queryset.select_related('id_cai', 'id_estado')
 
 
 class MedidasEstadosCreateView(MaestroCreateView):
@@ -123,6 +123,17 @@ class MedidasEstadosCreateView(MaestroCreateView):
 	
 	#-- Indicar el permiso que requiere para ejecutar la acción.
 	permission_required = ConfigViews.permission_add
+	
+	# def get_context_data(self, **kwargs):
+	# 	context = super().get_context_data(**kwargs)
+	# 	#-- Obtener los colores de los estados.
+	# 	from ..models.base_models import ProductoEstado
+	# 	context['colores_estados'] = {
+	# 		'POCAS': ProductoEstado.objects.get(nombre_producto_estado="POCAS").color,
+	# 		'FALTANTES': ProductoEstado.objects.get(nombre_producto_estado="FALTANTES").color,
+	# 		'DISPONIBLES': ProductoEstado.objects.get(nombre_producto_estado="DISPONIBLES").color,
+	# 	}
+	# 	return context
 
 
 class MedidasEstadosUpdateView(MaestroUpdateView):
@@ -134,6 +145,17 @@ class MedidasEstadosUpdateView(MaestroUpdateView):
 	
 	#-- Indicar el permiso que requiere para ejecutar la acción.
 	permission_required = ConfigViews.permission_change
+	
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
+		#-- Obtener los colores de los estados.
+		from ..models.base_models import ProductoEstado
+		context['colores_estados'] = {
+			'POCAS': ProductoEstado.objects.get(nombre_producto_estado="POCAS").color,
+			'FALTANTES': ProductoEstado.objects.get(nombre_producto_estado="FALTANTES").color,
+			'DISPONIBLES': ProductoEstado.objects.get(nombre_producto_estado="DISPONIBLES").color,
+		}
+		return context
 
 
 class MedidasEstadosDeleteView (MaestroDeleteView):

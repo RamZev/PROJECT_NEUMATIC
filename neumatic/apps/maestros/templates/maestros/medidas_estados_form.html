@@ -1,6 +1,7 @@
 <!-- apps\maestros\templates\maestros\medidas_estados_form.html -->
 {% extends 'maestro_form.html' %}
 {% load static %}
+{% load custom_tags %}
 <!-- -------------------------------------------------------------------- -->
 {% block maincomponent %}
 	{% block principalcomponent %}
@@ -58,14 +59,14 @@
 														{{ form.id_cai }}
 													</div>
 													
-													<!-- Campos de solo lectura que se llenarán con JavaScript --> {% comment %} 'form-control form-control-sm border border-primary mb-2' {% endcomment %}
+													<!-- Campos de solo lectura que se llenarán con JavaScript -->
 													<div class="col-md-2">
 														<label class="form-label text-primary mb-0">
 															Medida
 														</label>
 														<input type="text" class="form-control form-control-sm border border-primary mb-2" 
 															id="medida-display" readonly 
-															style="background-color: #f8f9fa;">
+															style="background-color: #d4eaff;">
 													</div>
 													
 													<div class="col-md-4">
@@ -74,7 +75,8 @@
 														</label>
 														<input type="text" class="form-control form-control-sm border border-primary mb-2" 
 															id="nombre-producto-display" readonly 
-															style="background-color: #f8f9fa;">
+															style="background-color: #d4eaff;">
+															<!-- style="background-color: #f8f9fa;"> -->
 													</div>
 												</div>
 													
@@ -94,58 +96,71 @@
 														{{ form.stock_hasta }}
 													</div>
 													
+													<!-- Campo oculto para el estado (siempre será POCAS) -->
+													{{ form.id_estado }}
+													
+													<!-- Mostrar el estado como campo de solo lectura -->
 													<div class="col-md-2">
 														<label class="form-label text-primary mb-0">
-															{{ form.id_estado.label }}
+															Estado
 														</label>
-														{{ form.id_estado }}
+														<!--
+														<input type="text" class="form-control form-control-sm border border-primary mb-2" 
+															value="POCAS" readonly 
+															style="background-color: #d4eaff;">
+														-->
+														<input type="text" value="POCAS" readonly style="background-color: {% get_color_estado 'POCAS' %};">
 													</div>
+													
 												</div>
+												<!-- "Menos de" Estado FALTANTES -->
+												<div class="row align-items-center">
 													
-												<div class="row">
-													
-													<div class="col-md-2">
-														Menos de
+													<div class="col-md-2 text-end">
+														<label class="form-label text-primary mb-0 mt-3">
+															<b>Menos de :</b>
+														</label>
 													</div>
 													<div class="col-md-2">
 														<label class="form-label text-primary mb-0">
 															{{ form.stock_desde.label }}
 														</label>
-														{{ form.stock_desde }}
+														<input type="number" id="stock_desde_display" readonly class="form-control form-control-sm border border-primary mb-2" style="background-color: #d4eaff;">
 													</div>
 													<div class="col-md-2">
 														<label class="form-label text-primary mb-0">
-															{{ form.id_estado.label }}
+																Estado
 														</label>
-														{{ form.id_estado }}
+														<input type="text" value="FALTANTES" readonly class="form-control form-control-sm border border-primary mb-2" style="background-color: #d4eaff;">
 													</div>
-													
+														
 												</div>
-												
-												<div class="row">
+												<!-- "Más de" Estado DISPONIBLES -->
+												<div class="row align-items-center">
 													
-													<div class="col-md-2">
-														Más de
+													<div class="col-md-2 text-end">
+														<label class="form-label text-primary mb-0 mt-3">
+															<b>Más de :</b>
+														</label>
 													</div>
 													<div class="col-md-2">
 														<label class="form-label text-primary mb-0">
 															{{ form.stock_hasta.label }}
 														</label>
-														{{ form.stock_hasta }}
+														<input type="number" id="stock_hasta_display" readonly class="form-control form-control-sm border border-primary mb-2" style="background-color: #d4eaff;">
 													</div>
 													<div class="col-md-2">
 														<label class="form-label text-primary mb-0">
-															{{ form.id_estado.label }}
+															Estado
 														</label>
-														{{ form.id_estado }}
+														<input type="text" value="DISPONIBLES" readonly class="form-control form-control-sm border border-primary mb-2" style="background-color: #d4eaff;">
 													</div>
-													
 												</div>
-												
+													
 											</div>
+												
 										</div>
 									</div>
-								
 								</div>
 								
 								<div class="container mt-3">
@@ -156,9 +171,12 @@
 										Cancelar
 									</a>
 								</div>
+								
 							</form>
 						</div>
+						
 					</div>
+					
 				</div>
 			</main>
 		</div>
@@ -217,6 +235,31 @@
 			if (caiSelect.value) {
 				cargarDatosCAI();
 			}
+			
+			//-- Función para actualizar los campos de solo lectura. ------------------------------------------
+			function actualizarCamposSoloLectura() {
+				const stockDesde = document.getElementById('id_stock_desde');
+				const stockHasta = document.getElementById('id_stock_hasta');
+				const stockDesdeDisplay = document.getElementById('stock_desde_display');
+				const stockHastaDisplay = document.getElementById('stock_hasta_display');
+				
+				if (stockDesde && stockDesdeDisplay) {
+					stockDesdeDisplay.value = stockDesde.value;
+				}
+				
+				if (stockHasta && stockHastaDisplay) {
+					stockHastaDisplay.value = stockHasta.value;
+				}
+			}
+
+			// Actualizar cuando cambien los valores
+			document.getElementById('id_stock_desde').addEventListener('input', actualizarCamposSoloLectura);
+			document.getElementById('id_stock_hasta').addEventListener('input', actualizarCamposSoloLectura);
+
+			// Actualizar al cargar la página (para modo edición).
+			actualizarCamposSoloLectura();
+			//-------------------------------------------------------------------------------------------------
+			
 		});
 	</script>
 {% endblock script %}
