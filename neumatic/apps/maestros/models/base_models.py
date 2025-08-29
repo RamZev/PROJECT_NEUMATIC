@@ -303,6 +303,7 @@ class ComprobanteVenta(ModeloBaseGenerico):
 	remito = models.BooleanField("Remito", default=False, blank=True, null=True)
 	recibo = models.BooleanField("Recibo", default=False, blank=True, null=True)
 	manual = models.BooleanField("Manual", default=False, blank=True, null=True)
+	mipyme = models.BooleanField("Manual", default=False, blank=True, null=True)
 	
 	class Meta:
 		db_table = 'comprobante_venta'
