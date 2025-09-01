@@ -51,6 +51,10 @@ class ComprobanteVentaForm(CrudGenericForm):
 				forms.CheckboxInput(attrs={**formclasscheck}),
 			'manual': 
 				forms.CheckboxInput(attrs={**formclasscheck}),
+			'mipyme': 
+				forms.CheckboxInput(attrs={**formclasscheck}),
+			'ncr_ndb': 
+				forms.CheckboxInput(attrs={**formclasscheck}),
 			'info_michelin_auto': 
 				forms.CheckboxInput(attrs={**formclasscheck}),
 			'info_michelin_camion': 
@@ -60,7 +64,7 @@ class ComprobanteVentaForm(CrudGenericForm):
 			'codigo_afip_b': 
 				forms.TextInput(attrs={**formclasstext, 'oninput': 'this.value = this.value.toUpperCase()'}),
 			'compro_asociado': 
-				forms.TextInput(attrs={**formclasstext}),
+				forms.TextInput(attrs={**formclasstext, 'oninput': 'this.value = this.value.toUpperCase()'}),
 		}
 		
 		error_messages = {

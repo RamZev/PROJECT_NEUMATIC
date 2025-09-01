@@ -1,7 +1,7 @@
 # apps\maestros\forms\medidas_estados_forms.py
 from django import forms
 from .crud_forms_generics import CrudGenericForm
-from ..models.base_models import MedidasEstados, ProductoEstado
+from ..models.base_models import MedidasEstados, ProductoEstado, ProductoCai
 from diseno_base.diseno_bootstrap import formclasstext, formclassselect
 
 
@@ -11,7 +11,7 @@ class MedidasEstadosForm(CrudGenericForm):
 	id_estado = forms.ModelChoiceField(
 		queryset=ProductoEstado.objects.filter(nombre_producto_estado="POCAS"),
 		widget=forms.HiddenInput(),
-		initial=3  # ID del estado POCAS según tus datos
+		initial=3,  #-- ID del estado "POCAS"
 	)
 	
 	class Meta:
@@ -39,3 +39,19 @@ class MedidasEstadosForm(CrudGenericForm):
 		# 		# 'invalid': 'Ingrese un valor válido.'
 		# 	},
 		# }
+		
+	def __init__(self, *args, **kwargs):
+		super().__init__(*args, **kwargs)
+		
+		#-- Filtrar CAIs que NO están registrados en medidas_estados.
+		cais_registrados = MedidasEstados.objects.values_list('id_cai', flat=True)
+		
+		#-- Si estamos en modo edición, excluimos el CAI actual del filtro.
+		instance = getattr(self, 'instance', None)
+		if instance and instance.pk:
+			cais_registrados = cais_registrados.exclude(id_cai=instance.id_cai_id)
+		
+		#-- Actualizar el queryset del campo id_cai.
+		self.fields['id_cai'].queryset = ProductoCai.objects.exclude(
+			id_cai__in=cais_registrados
+		)

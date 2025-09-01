@@ -77,6 +77,7 @@
 														{{ form.tipo_comprobante }}
 													</div>
 												</div>
+												
 												<div class="row">
 													<div class="col-md-2">
 														<label class="form-label text-primary mb-0">
@@ -120,6 +121,7 @@
 														{{ form.mult_estadistica }}
 													</div>
 												</div>
+												
 												<div class="row">
 													<div class="col-md-2 d-flex align-items-center">
 														<div class="form-check mt-lg-3">
@@ -166,6 +168,9 @@
 														</div>
 													</div>
 													
+												</div>
+												
+												<div class="row">
 													<div class="col-md-2 d-flex align-items-center">
 														<div class="form-check mt-lg-3">
 															<label class="form-check-label form-label text-primary">
@@ -174,7 +179,44 @@
 															</label>
 														</div>
 													</div>
+													
+													<div class="col-md-2 d-flex align-items-center">
+														<div class="form-check mt-lg-3">
+															<label class="form-check-label form-label text-primary">
+																{{ form.recibo }}
+																{{ form.recibo.label }}
+															</label>
+														</div>
+													</div>
+													
+													<div class="col-md-2 d-flex align-items-center">
+														<div class="form-check mt-lg-3">
+															<label class="form-check-label form-label text-primary">
+																{{ form.manual }}
+																{{ form.manual.label }}
+															</label>
+														</div>
+													</div>
+													
+													<div class="col-md-2 d-flex align-items-center">
+														<div class="form-check mt-lg-3">
+															<label class="form-check-label form-label text-primary">
+																{{ form.mipyme }}
+																{{ form.mipyme.label }}
+															</label>
+														</div>
+													</div>
+													
+													<div class="col-md-2 d-flex align-items-center">
+														<div class="form-check mt-lg-3">
+															<label class="form-check-label form-label text-primary">
+																{{ form.ncr_ndb }}
+																{{ form.ncr_ndb.label }}
+															</label>
+														</div>
+													</div>
 												</div>
+												
 												<div class="row">
 													<div class="col-md-2">
 														<label class="form-label text-primary mb-0">
@@ -197,24 +239,8 @@
 														{{ form.compro_asociado }}
 													</div>
 													
-													<div class="col-md-2 d-flex align-items-center">
-														<div class="form-check mt-lg-3">
-															<label class="form-check-label form-label text-primary">
-																{{ form.recibo }}
-																{{ form.recibo.label }}
-															</label>
-														</div>
-													</div>
-													
-													<div class="col-md-2 d-flex align-items-center">
-														<div class="form-check mt-lg-3">
-															<label class="form-check-label form-label text-primary">
-																{{ form.manual }}
-																{{ form.manual.label }}
-															</label>
-														</div>
-													</div>
 												</div>
+												
 												<div class="row">
 													<div class="col-md-2 d-flex align-items-center">
 														<div class="form-check mt-lg-3">
@@ -234,6 +260,7 @@
 														</div>
 													</div>
 												</div>
+												
 											</div>
 										</div>
 									</div>
@@ -297,6 +324,7 @@
 					codigoAfipB.value = codigoAfipA.value;
 				}
 			});
+			
 		});
 	</script>
 {% endblock script %}

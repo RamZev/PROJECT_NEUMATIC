@@ -302,7 +302,7 @@ class ComprobanteVenta(ModeloBaseGenerico):
 	codigo_afip_b = models.CharField("Código AFIP B", max_length=3)
 	remito = models.BooleanField("Remito", default=False, blank=True, null=True)
 	recibo = models.BooleanField("Recibo", default=False, blank=True, null=True)
-	ncr_ndb = models.BooleanField("NCR_NDB", default=False, blank=True, null=True)
+	ncr_ndb = models.BooleanField("NCR/NDB", default=False, blank=True, null=True)
 	manual = models.BooleanField("Manual", default=False, blank=True, null=True)
 	mipyme = models.BooleanField("MYPIME", default=False, blank=True, null=True)
 	
@@ -342,7 +342,7 @@ class ComprobanteVenta(ModeloBaseGenerico):
 		if self.mult_estadistica != -1 and self.mult_estadistica != 0 and self.mult_estadistica != 1:
 			errors.update({'mult_estadistica': "Los valores permitidos son: -1, 0 y 1"})
 		
-		# --- NUEVA VALIDACIÓN PARA CÓDIGOS AFIP ---
+		#-- VALIDACIÓN PARA CÓDIGOS AFIP.
 		if self.libro_iva:
 			#-- Si libro_iva está activado, validar que los códigos sean diferentes.
 			if self.codigo_afip_a == self.codigo_afip_b:
@@ -350,6 +350,22 @@ class ComprobanteVenta(ModeloBaseGenerico):
 		else:
 			#-- Si libro_iva NO está activado, forzar que codigo_afip_b sea igual a codigo_afip_a.
 			self.codigo_afip_b = self.codigo_afip_a
+		
+		#-- VALIDACIÓN PARA COMPROBANTES ASOCIADOS.
+		if self.compro_asociado:
+			#-- Separar los códigos por coma y eliminar espacios.
+			codigos = [codigo.strip() for codigo in self.compro_asociado.split(',')]
+			
+			#-- Verificar que cada código exista en la base de datos.
+			for codigo in codigos:
+				if codigo:
+					if not ComprobanteVenta.objects.filter(
+						codigo_comprobante_venta=codigo
+					).exists():
+						errors.update({
+							'compro_asociado': f'El código "{codigo}" no existe en los comprobantes de venta. Debe indicar valores separados por una coma (,).'
+						})
+						break
 		
 		if errors:
 			raise ValidationError(errors)
@@ -1025,8 +1041,14 @@ class MedidasEstados(ModeloBaseGenerico):
 		if not self.id_cai:
 			errors.update({'id_cai': "Debe indicar un CAI."})
 		
-		# if self.factor != -1 and self.factor != 0 and self.factor != 1:
-		# 	errors.update({'factor': "Los valores permitidos son: -1, 0 y 1"})
+		if self.stock_desde and self.stock_desde < 0:
+			errors.update({'stock_desde': "El valor no puedes ser negativo."})
+		
+		if self.stock_hasta and self.stock_hasta < 0:
+			errors.update({'stock_hasta': "El valor no puedes ser negativo."})
+		
+		if self.stock_desde and self.stock_hasta and self.stock_hasta < self.stock_desde:
+			errors.update({'stock_hasta': "La cantidad del Hasta Stock no puede ser menor que la del Desde Stock."})
 		
 		if errors:
 			raise ValidationError(errors)
