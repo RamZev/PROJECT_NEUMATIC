@@ -132,6 +132,12 @@
             <!-- Div oculto con el diccionario tipo_comprobante para cada comprobante -->
             <div id="tipocomprobante-data" data-tipocomprobante='{{ tipo_comprobante_dict|safe }}'></div>
 
+            <!-- Div oculto con el diccionario de mipyme -->
+            <div id="mipyme-data" data-mipyme='{{ mipyme_dict|safe }}'></div>
+
+            <!-- Div oculto con el diccionario de ncr_ndb -->
+            <div id="ncr-ndb-data" data-ncr-ndb='{{ ncr_ndb_dict|safe }}'></div>
+
             <!-- Div oculto con el diccionario de operarios -->
             <div id="operario-data" data-operario='{{ operario_dict|safe }}'></div>
 
@@ -1826,11 +1832,16 @@
                 // 4. habilitar o inhabilitar el input Factura Asociada
                 const numeroAsociadoInput = document.getElementById('id_numero_asociado');
 
-                // Analiza si es Nota de Crédito
-                const multVentaDict = JSON.parse(document.getElementById('multventa-data').dataset.multventa);
-                const multVenta = multVentaDict[comprobanteId] ?? false;
-                
-                if (multVenta < 0){
+                // Analiza si el comprobante es mipyme
+                const mipymeDict = JSON.parse(document.getElementById('mipyme-data').dataset.mipyme);
+                const mipyme = mipymeDict[comprobanteId] ?? false;
+
+                // Analiza si el comprobante es NCR o NDB
+                const ncrNdbDict = JSON.parse(document.getElementById('ncr-ndb-data').dataset.ncrNdb);
+                const ncrNdb = ncrNdbDict[comprobanteId] ?? false;
+
+                if (ncrNdb){
+                    alert("ncrNdb***");
                     document.getElementById('id_numero_asociado').readOnly = false;
                     numeroAsociadoInput.setAttribute('required', 'required');
                 } else {
@@ -1840,18 +1851,18 @@
                 }
 
                 // Analiza si es Nota de Débito
-                const tipoComprobanteDict = JSON.parse(document.getElementById('tipocomprobante-data').dataset.tipocomprobante);
-                const tipoComprobante = tipoComprobanteDict[comprobanteId] ?? false;
+                // const tipoComprobanteDict = JSON.parse(document.getElementById('tipocomprobante-data').dataset.tipocomprobante);
+                // const tipoComprobante = tipoComprobanteDict[comprobanteId] ?? false;
 
-                if (tipoComprobante == "NOTA DE DÉBITO"){
-                    alert(tipoComprobante);
-                    document.getElementById('id_numero_asociado').readOnly = false;
-                    numeroAsociadoInput.setAttribute('required', 'required');
-                } else {
-                    document.getElementById('id_numero_asociado').value = '';
-                    document.getElementById('id_numero_asociado').readOnly = true;
-                    numeroAsociadoInput.required = false;  // Quitar requerimiento
-                }
+                // if (tipoComprobante == "NOTA DE DÉBITO"){
+                //     alert(tipoComprobante);
+                //     document.getElementById('id_numero_asociado').readOnly = false;
+                //     numeroAsociadoInput.setAttribute('required', 'required');
+                // } else {
+                //     document.getElementById('id_numero_asociado').value = '';
+                //     document.getElementById('id_numero_asociado').readOnly = true;
+                //     numeroAsociadoInput.required = false;  // Quitar requerimiento
+                // }
 
                 // 5. Habilitar la fecha si no es un documento electrónico
                 const electronicaDict = JSON.parse(document.getElementById('electronica-data').dataset.electronica);

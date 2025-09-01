@@ -201,6 +201,14 @@ class FacturaManualCreateView(MaestroDetalleCreateView):
 		# Obtener todos los comprobantes con sus valores tipo_comprobante
 		tipo_comprobante_dict = {str(c.id_comprobante_venta): c.tipo_comprobante for c in ComprobanteVenta.objects.all()}
 		data['tipo_comprobante_dict'] = mark_safe(json.dumps(tipo_comprobante_dict, ensure_ascii=False))
+
+		# Obtener todos los comprobantes con sus valores mipyme
+		mipyme_dict = {str(c.id_comprobante_venta): c.mipyme for c in ComprobanteVenta.objects.all()}
+		data['mipyme_dict'] = json.dumps(mipyme_dict)
+
+		# Obtener todos los comprobantes con sus valores ncr_ndb
+		ncr_ndb_dict = {str(c.id_comprobante_venta): c.ncr_ndb for c in ComprobanteVenta.objects.all()}
+		data['ncr_ndb_dict'] = json.dumps(ncr_ndb_dict)
 		
 		# Obtener todos los operarios con sus id
 		operario_dict = {str(o.id_operario): o.nombre_operario for o in Operario.objects.all()}
@@ -982,6 +990,14 @@ class FacturaManualUpdateView(MaestroDetalleUpdateView):
 		# Obtener todos los comprobantes con sus valores tipo_comprobante
 		tipo_comprobante_dict = {str(c.id_comprobante_venta): c.tipo_comprobante for c in ComprobanteVenta.objects.all()}
 		data['tipo_comprobante_dict'] = mark_safe(json.dumps(tipo_comprobante_dict, ensure_ascii=False))
+		
+		# Obtener todos los comprobantes con sus valores mipyme
+		mipyme_dict = {str(c.id_comprobante_venta): c.mipyme for c in ComprobanteVenta.objects.all()}
+		data['mipyme_dict'] = json.dumps(mipyme_dict)
+
+		# Obtener todos los comprobantes con sus valores ncr_ndb
+		ncr_ndb_dict = {str(c.id_comprobante_venta): c.ncr_ndb for c in ComprobanteVenta.objects.all()}
+		data['ncr_ndb_dict'] = json.dumps(ncr_ndb_dict)
 		
 		# Obtener todos los operarios con sus id
 		operario_dict = {str(o.id_operario): o.nombre_operario for o in Operario.objects.all()}
