@@ -44,14 +44,13 @@ class MedidasEstadosForm(CrudGenericForm):
 		super().__init__(*args, **kwargs)
 		
 		#-- Filtrar CAIs que NO están registrados en medidas_estados.
-		cais_registrados = MedidasEstados.objects.values_list('id_cai', flat=True)
+		cais_registrados = MedidasEstados.objects.values_list('id_cai_id', flat=True)
 		
-		#-- Si estamos en modo edición, excluimos el CAI actual del filtro.
-		instance = getattr(self, 'instance', None)
-		if instance and instance.pk:
-			cais_registrados = cais_registrados.exclude(id_cai=instance.id_cai_id)
+		#-- Si estamos en modo edición, excluir el CAI actual.
+		if self.instance and self.instance.pk:
+			cais_registrados = cais_registrados.exclude(id_cai_id=self.instance.id_cai_id)
 		
-		#-- Actualizar el queryset del campo id_cai.
+		#-- Filtrar queryset.
 		self.fields['id_cai'].queryset = ProductoCai.objects.exclude(
 			id_cai__in=cais_registrados
 		)

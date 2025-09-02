@@ -53,6 +53,9 @@ class ConfigViews():
 	
 	# Nombre de la url 
 	success_url = reverse_lazy(list_view_name)
+	
+	# Registros protegidos (no se pueden modificar ni eliminar).
+	REGISTROS_PROTEGIDOS = [1, 2, 3]  #-- IDs de los estados "DISPONIBLES", "FALTANTES", "POCAS".
 
 
 class DataViewList():
@@ -107,6 +110,12 @@ class ProductoestadoCreateView(MaestroCreateView):
 	
 	#-- Indicar el permiso que requiere para ejecutar la acción.
 	permission_required = ConfigViews.permission_add
+	
+	def get_form_kwargs(self):
+		"""Pasar los registros protegidos al formulario"""
+		kwargs = super().get_form_kwargs()
+		kwargs['registros_protegidos'] = ConfigViews.REGISTROS_PROTEGIDOS
+		return kwargs
 
 
 class ProductoestadoUpdateView(MaestroUpdateView):
@@ -118,6 +127,12 @@ class ProductoestadoUpdateView(MaestroUpdateView):
 	
 	#-- Indicar el permiso que requiere para ejecutar la acción.
 	permission_required = ConfigViews.permission_change
+	
+	def get_form_kwargs(self):
+		"""Pasar los registros protegidos al formulario"""
+		kwargs = super().get_form_kwargs()
+		kwargs['registros_protegidos'] = ConfigViews.REGISTROS_PROTEGIDOS
+		return kwargs
 
 
 class ProductoestadoDeleteView (MaestroDeleteView):
@@ -128,3 +143,15 @@ class ProductoestadoDeleteView (MaestroDeleteView):
 	
 	#-- Indicar el permiso que requiere para ejecutar la acción.
 	permission_required = ConfigViews.permission_delete
+	
+	def post(self, request, *args, **kwargs):
+		self.object = self.get_object()
+		
+		#--- Verificar si es un registro protegido.
+		if self.object.pk in ConfigViews.REGISTROS_PROTEGIDOS:
+			mensaje = f"No se puede eliminar el estado {self.object.nombre_producto_estado} porque está protegido."
+			messages.error(request, mensaje)
+			return redirect(self.success_url)
+		
+		#-- Si no está protegido, proceder con la eliminación normal.
+		return super().post(request, *args, **kwargs)
