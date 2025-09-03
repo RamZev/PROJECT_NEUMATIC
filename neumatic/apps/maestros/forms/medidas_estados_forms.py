@@ -11,7 +11,7 @@ class MedidasEstadosForm(CrudGenericForm):
 	id_estado = forms.ModelChoiceField(
 		queryset=ProductoEstado.objects.filter(nombre_producto_estado="POCAS"),
 		widget=forms.HiddenInput(),
-		initial=3,  #-- ID del estado "POCAS"
+		initial=5,  #-- ID del estado "POCAS"
 	)
 	
 	class Meta:

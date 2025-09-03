@@ -1293,7 +1293,6 @@ CREATE VIEW "VLLista" AS
 		ROW_NUMBER() OVER() AS id,
 		p.id_producto,
 		p.id_cai_id,
-	--	p.cai,
 		pc.cai,
 		p.tipo_producto,
 		p.medida,
@@ -1314,13 +1313,16 @@ CREATE VIEW "VLLista" AS
 		p.minimo,
 		p.despacho_1,
 		p.despacho_2,
-		p.fecha_fabricacion
+		p.fecha_fabricacion,
+		p.id_producto_estado_id,
+		pe.nombre_producto_estado
 	FROM 
 		producto p
 		LEFT JOIN producto_marca px ON p.id_marca_id = px.id_producto_marca
 		LEFT JOIN producto_familia pf ON p.id_familia_id = pf.id_producto_familia
 		LEFT JOIN producto_modelo pm ON p.id_modelo_id = pm.id_modelo
 		LEFT JOIN producto_cai pc ON p.id_cai_id = pc.id_cai
+		LEFT JOIN producto_estado pe ON p.id_producto_estado_id = pe.id_producto_estado
 	ORDER by
 		p.id_familia_id, p.id_marca_id;
 

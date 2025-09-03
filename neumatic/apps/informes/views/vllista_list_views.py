@@ -231,6 +231,20 @@ class ConfigViews:
 			"excel": True,
 			"csv": True
 		},
+		"id_producto_estado_id": {
+			"label": "Id Estado",
+			"col_width_pdf": 0,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+		"nombre_producto_estado": {
+			"label": "Estado",
+			"col_width_pdf": 0,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
 	}
 
 
