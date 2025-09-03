@@ -36,7 +36,8 @@ def cargar_tipo_iva_desde_json(ruta_json):
             estatus_tipo_iva=bool(item["estatus_tipo_iva"]),
             codigo_iva=item["codigo_iva"],
             nombre_iva=item["nombre_iva"],
-            discrimina_iva=bool(item["discrimina_iva"])
+            discrimina_iva=bool(item["discrimina_iva"]),
+            codigo_afip_responsable=item["codigo_afip_responsable"]
         )
 
     print(f"Se han migrado {len(tipos_iva)} tipos de IVA con sus ID explícitos.")

@@ -74,3 +74,16 @@ RESUMEN FINAL:
 2025-08-15 09:49:28,483 - INFO - Enteros inválidos (NUMERO): 0
 2025-08-15 09:49:28,483 - INFO - Otros errores: 1
 2025-08-15 09:49:28,483 - INFO - Tasa de éxito: 99.99%
+2025-09-02 18:27:51,790 - INFO - Eliminados 0 registros existentes
+2025-09-02 18:27:51,792 - INFO - Cargando cache de relaciones...
+2025-09-02 18:27:52,190 - INFO - 
+RESUMEN FINAL:
+2025-09-02 18:27:52,190 - INFO - Total registros procesados: 13946
+2025-09-02 18:27:52,191 - INFO - Registros migrados exitosamente: 0
+2025-09-02 18:27:52,191 - INFO - Facturas no encontradas: 13946
+2025-09-02 18:27:52,191 - INFO - Productos no encontrados: 0
+2025-09-02 18:27:52,191 - INFO - Decimales inválidos (RETIRADO): 0
+2025-09-02 18:27:52,192 - INFO - Fechas inválidas: 0
+2025-09-02 18:27:52,192 - INFO - Enteros inválidos (NUMERO): 0
+2025-09-02 18:27:52,192 - INFO - Otros errores: 0
+2025-09-02 18:27:52,192 - INFO - Tasa de éxito: 0.00%

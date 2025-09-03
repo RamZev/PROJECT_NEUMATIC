@@ -138,6 +138,12 @@
             <!-- Div oculto con el diccionario de ncr_ndb -->
             <div id="ncr-ndb-data" data-ncr-ndb='{{ ncr_ndb_dict|safe }}'></div>
 
+            <!-- Div oculto con el diccionario de remito -->
+            <div id="remito-data" data-remito='{{ remito_dict|safe }}'></div>
+
+            <!-- Div oculto con el diccionario de compro_asociado -->
+            <div id="compro-asociado-data" data-compro-asociado='{{ compro_asociado_dict|safe }}'></div>
+
             <!-- Div oculto con el diccionario de operarios -->
             <div id="operario-data" data-operario='{{ operario_dict|safe }}'></div>
 
@@ -362,14 +368,30 @@
                                                 {{ form.condicion_comprobante }}
                                             </div>
 
-                                            <div class="col-md-3">
+                                            <div class="col-md-4">
                                                 {{ form.no_estadist }}
                                                 <label class="form-check-label" for="{{ form.no_estadist.id_for_label }}">
                                                     No Estadísticas
                                                 </label>
                                             </div>
 
+                                        </div>
+
+                                        <div class="row my-1">
+                                            <div class="col-md-3">
+                                                <label for="{{ form.numero_asociado.id_for_label }}">Comp. Asoc.</label>
+                                            </div>
+
                                             <div class="col-md-2">
+                                                {{ form.id_comprobante_asociado}}
+                                                {{ form.comprobante_asociado }}
+                                            </div>
+
+                                            <div class="col-md-4">
+                                                {{ form.numero_asociado }}
+                                            </div>
+
+                                            <div class="col-md-3">
                                                 {{ form.stock_clie }}
                                                 <label class="form-check-label" for="{{ form.stock_clie.id_for_label }}">
                                                     StockCli
@@ -380,31 +402,15 @@
 
                                         <div class="row my-1">
                                             <div class="col-md-3">
-                                                <label for="{{ form.movil_factura.id_for_label }}">Móvil</label>
+                                                <label for="{{ form.email_factura.id_for_label }}">Email/Móvil</label>
                                             </div>
-                                        
+
+                                            <div class="col-md-6">
+                                                {{ form.email_factura }}
+                                            </div>
+
                                             <div class="col-md-3">
                                                 {{ form.movil_factura }}
-                                            </div>
-
-                                            <div class="col-md-3">
-                                                <label for="{{ form.numero_asociado.id_for_label }}">Factura Asociada</label>
-                                            </div>
-
-                                            <div class="col-md-3">
-                                                {{ form.id_comprobante_asociado }}
-                                                {{ form.numero_asociado }}
-                                            </div>
-                                            
-                                        </div>
-
-                                        <div class="row my-1">
-                                            <div class="col-md-3">
-                                                <label for="{{ form.email_factura.id_for_label }}">Email</label>
-                                            </div>
-
-                                            <div class="col-md-9">
-                                                {{ form.email_factura }}
                                             </div>
 
                                         </div>
@@ -1841,9 +1847,33 @@
                 const ncrNdb = ncrNdbDict[comprobanteId] ?? false;
 
                 if (ncrNdb){
-                    alert("ncrNdb***");
-                    document.getElementById('id_numero_asociado').readOnly = false;
+                    numeroAsociadoInput.readOnly = false;
                     numeroAsociadoInput.setAttribute('required', 'required');
+                    numeroAsociadoInput.value = '';
+
+                    // Llenar el select id_comprobante_asociado id="compro-asociado-data"
+                    const comproAsociadoDict = JSON.parse(document.getElementById('compro-asociado-data').dataset.comproAsociado);
+                    const comproAsociado = comproAsociadoDict[comprobanteId] ?? "";
+                    
+                    /////
+                    const selectElement = document.getElementById('id_comprobante_asociado');
+
+                    // Limpiar opciones existentes
+                    selectElement.innerHTML = '';
+
+                    if (comproAsociado) {
+                        // Dividir el string por comas y crear las opciones
+                        const opciones = comproAsociado.split(',').map(item => item.trim());
+                        
+                        opciones.forEach(opcion => {
+                            const optionElement = document.createElement('option');
+                            optionElement.value = opcion;
+                            optionElement.textContent = opcion;
+                            selectElement.appendChild(optionElement);
+                        });
+                    }
+                    /////
+
                 } else {
                     document.getElementById('id_numero_asociado').value = '';
                     document.getElementById('id_numero_asociado').readOnly = true;
@@ -1924,18 +1954,14 @@
                             }
                         }
 
-                        // Revisar si existe un comprobante asociado
-                        if (data.compro_asociado) {
-                            // alert(data.compro_asociado);
-                        }
-
+                        
                         ////
                         // ---- Nuevo: Llenar el select comprobante_remito ----
                         const selectRemito = document.getElementById('id_comprobante_remito');
                         const selectIdRemito = document.getElementById('id_remito');
-                        if (selectRemito && data.compro_asociado) {
+                        if (!ncrNdb && data.compro_asociado) {
                             selectIdRemito.removeAttribute('readonly');
-                            
+
                             // Limpiar opciones existentes
                             selectRemito.innerHTML = '';
                             
@@ -2162,11 +2188,12 @@
 
             });
 
-            //
+            // Buscar documentos asociados a NCR y NDB
             document.getElementById('id_numero_asociado').addEventListener('blur', function() {
                 // 1. Obtener valores del formulario
                 const inputElement = this; // Guardar referencia al input
                 const idCliente = document.getElementById('id_id_cliente').value;
+                const idComprobanteAsociado = document.getElementById('id_comprobante_asociado').value;
                 const numeroComprobante = inputElement.value.trim();
                 
                 // 2. Validación temprana - Si el número está vacío, salir sin hacer nada
@@ -2183,6 +2210,7 @@
                 // 4. Configurar la URL de búsqueda
                 const url = new URL('/ventas/buscar/factura/', window.location.origin);
                 url.searchParams.append('id_cliente', idCliente);
+                url.searchParams.append('id_comprobante_asociado', idComprobanteAsociado);
                 url.searchParams.append('numero_comprobante', numeroComprobante);
 
                 // 5. Cambiar estilo durante la carga

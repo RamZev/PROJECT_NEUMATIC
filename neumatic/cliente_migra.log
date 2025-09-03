@@ -138,3 +138,37 @@
 2025-05-10 21:21:08,763 - ERROR - Error procesando registro: invalid literal for int() with base 10: '309990000000.0'
 2025-05-10 21:21:09,459 - INFO - Último lote guardado: 930 registros
 2025-05-10 21:21:09,459 - INFO - Migración completada. Total registros: 123930. Tiempo: 79.94 segundos
+2025-09-02 18:16:57,778 - INFO - Iniciando migración de clientes
+2025-09-02 18:16:57,888 - INFO - Precargando relaciones en memoria...
+2025-09-02 18:16:58,574 - INFO - Relaciones precargadas en memoria
+2025-09-02 18:17:04,389 - INFO - DBF cargado en memoria. Total registros: 127206
+2025-09-02 18:17:13,527 - ERROR - Error procesando registro 69025: invalid literal for int() with base 10: '201000000000.0'
+2025-09-02 18:17:30,327 - ERROR - Error procesando registro 119962: invalid literal for int() with base 10: '307190000000.0'
+2025-09-02 18:17:35,240 - ERROR - Error procesando registro 132780: invalid literal for int() with base 10: '270000000000.0'
+2025-09-02 18:17:36,607 - ERROR - Error procesando registro 136688: invalid literal for int() with base 10: '270000000000.0'
+2025-09-02 18:17:38,408 - ERROR - Error procesando registro 142170: invalid literal for int() with base 10: '270000000000.0'
+2025-09-02 18:17:39,109 - ERROR - Error procesando registro 144339: invalid literal for int() with base 10: '2255500000000.0'
+2025-09-02 18:17:39,400 - ERROR - Error procesando registro 145266: invalid literal for int() with base 10: '101010000000.0'
+2025-09-02 18:17:40,130 - ERROR - Error procesando registro 147762: invalid literal for int() with base 10: '343430000000.0'
+2025-09-02 18:17:40,130 - ERROR - Error procesando registro 147763: invalid literal for int() with base 10: '121210000000000.0'
+2025-09-02 18:17:41,635 - ERROR - Error procesando registro 152471: invalid literal for int() with base 10: '27000000000000.0'
+2025-09-02 18:17:44,182 - ERROR - Error procesando registro 160291: invalid literal for int() with base 10: '2700000000000.0'
+2025-09-02 18:17:44,816 - ERROR - Error procesando registro 162911: invalid literal for int() with base 10: '309990000000.0'
+2025-09-02 18:17:46,065 - ERROR - Error crítico en cargar_datos: NOT NULL constraint failed: cliente.id_tipo_iva_id
+2025-09-02 18:23:22,414 - INFO - Iniciando migración de clientes
+2025-09-02 18:23:22,429 - INFO - Precargando relaciones en memoria...
+2025-09-02 18:23:22,963 - INFO - Relaciones precargadas en memoria
+2025-09-02 18:23:28,691 - INFO - DBF cargado en memoria. Total registros: 127202
+2025-09-02 18:23:37,735 - ERROR - Error procesando registro 69025: invalid literal for int() with base 10: '201000000000.0'
+2025-09-02 18:23:53,518 - ERROR - Error procesando registro 119962: invalid literal for int() with base 10: '307190000000.0'
+2025-09-02 18:23:57,838 - ERROR - Error procesando registro 132780: invalid literal for int() with base 10: '270000000000.0'
+2025-09-02 18:23:59,222 - ERROR - Error procesando registro 136688: invalid literal for int() with base 10: '270000000000.0'
+2025-09-02 18:24:01,152 - ERROR - Error procesando registro 142170: invalid literal for int() with base 10: '270000000000.0'
+2025-09-02 18:24:01,899 - ERROR - Error procesando registro 144339: invalid literal for int() with base 10: '2255500000000.0'
+2025-09-02 18:24:02,189 - ERROR - Error procesando registro 145266: invalid literal for int() with base 10: '101010000000.0'
+2025-09-02 18:24:02,911 - ERROR - Error procesando registro 147762: invalid literal for int() with base 10: '343430000000.0'
+2025-09-02 18:24:02,911 - ERROR - Error procesando registro 147763: invalid literal for int() with base 10: '121210000000000.0'
+2025-09-02 18:24:04,447 - ERROR - Error procesando registro 152471: invalid literal for int() with base 10: '27000000000000.0'
+2025-09-02 18:24:07,006 - ERROR - Error procesando registro 160291: invalid literal for int() with base 10: '2700000000000.0'
+2025-09-02 18:24:07,673 - ERROR - Error procesando registro 162911: invalid literal for int() with base 10: '309990000000.0'
+2025-09-02 18:24:09,471 - INFO - Migración completada. Total registros procesados: 127190/127202. Tiempo: 47.06 segundos

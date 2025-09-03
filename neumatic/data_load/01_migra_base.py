@@ -24,7 +24,8 @@ SCRIPTS = [
     'tipo_documento_identidad_migra.py',
     'sucursal_migra.py',
     'punto_venta_migra.py',
-    
+    'leyenda_migra.py',
+    'marketing_origen_migra.py',
 ]
 
 def configurar_entorno():

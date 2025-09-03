@@ -90,6 +90,13 @@ class Factura(ModeloBaseGenerico):
 		null=True,
 		blank=True
 	)
+	comprobante_asociado = models.CharField(
+		verbose_name="Comprobante Asociado",
+		max_length=2,
+		default="",
+		null=True,
+		blank=True
+	)
 	numero_asociado = models.CharField(
 		verbose_name="Número Asoc.",
 		max_length=15,

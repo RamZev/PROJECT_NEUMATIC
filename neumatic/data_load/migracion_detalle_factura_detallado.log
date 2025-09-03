@@ -1196,3 +1196,145 @@ Productos no encontrados (1):
 2025-07-31 18:32:03,837 - WARNING -  - Código convertido: 0 | Valor original: 0
 2025-07-31 18:32:03,837 - INFO - 
 Tiempo total: 1 minutos 11 segundos
+2025-09-02 18:48:12,584 - INFO - Iniciando migración. Total registros: 219016
+2025-09-02 18:48:12,584 - INFO - Cargando cachés de referencia...
+2025-09-02 18:48:21,017 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:48:21,713 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:48:22,361 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:48:22,939 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:48:23,533 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:48:23,533 - INFO - Progreso: 10000 registros procesados
+2025-09-02 18:48:24,155 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:48:24,731 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:48:25,477 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:48:26,039 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:48:26,617 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:48:26,617 - INFO - Progreso: 20000 registros procesados
+2025-09-02 18:48:27,148 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:48:27,711 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:48:28,273 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:48:28,820 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:48:29,539 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:48:29,539 - INFO - Progreso: 30000 registros procesados
+2025-09-02 18:48:30,086 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:48:30,648 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:48:31,195 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:48:31,820 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:48:32,367 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:48:32,367 - INFO - Progreso: 40000 registros procesados
+2025-09-02 18:48:33,210 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:48:33,835 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:48:34,491 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:48:35,109 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:48:35,725 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:48:35,740 - INFO - Progreso: 50000 registros procesados
+2025-09-02 18:48:36,807 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:48:37,463 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:48:38,166 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:48:38,791 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:48:39,338 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:48:39,338 - INFO - Progreso: 60000 registros procesados
+2025-09-02 18:48:39,948 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:48:40,534 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:48:41,300 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:48:41,862 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:48:42,440 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:48:42,440 - INFO - Progreso: 70000 registros procesados
+2025-09-02 18:48:43,019 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:48:43,565 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:48:44,179 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:48:44,937 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:48:45,537 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:48:45,539 - INFO - Progreso: 80000 registros procesados
+2025-09-02 18:48:46,125 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:48:46,718 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:48:47,312 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:48:47,933 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:48:48,698 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:48:48,698 - INFO - Progreso: 90000 registros procesados
+2025-09-02 18:48:49,276 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:48:49,839 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:48:50,423 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:48:51,001 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:48:51,716 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:48:51,716 - INFO - Progreso: 100000 registros procesados
+2025-09-02 18:48:52,588 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:48:53,494 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:48:54,088 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:48:54,666 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:48:55,244 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:48:55,244 - INFO - Progreso: 110000 registros procesados
+2025-09-02 18:48:55,807 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:48:56,572 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:48:57,166 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:48:57,796 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:48:58,362 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:48:58,377 - INFO - Progreso: 120000 registros procesados
+2025-09-02 18:48:58,963 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:48:59,532 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:49:00,373 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:49:00,966 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:49:01,544 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:49:01,546 - INFO - Progreso: 130000 registros procesados
+2025-09-02 18:49:02,128 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:49:02,739 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:49:03,362 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:49:04,104 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:49:04,863 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:49:04,880 - INFO - Progreso: 140000 registros procesados
+2025-09-02 18:49:05,482 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:49:06,084 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:49:06,670 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:49:07,255 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:49:08,024 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:49:08,024 - INFO - Progreso: 150000 registros procesados
+2025-09-02 18:49:08,610 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:49:09,195 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:49:09,797 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:49:10,382 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:49:10,984 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:49:10,984 - INFO - Progreso: 160000 registros procesados
+2025-09-02 18:49:11,570 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:49:12,339 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:49:12,974 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:49:13,623 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:49:14,228 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:49:14,228 - INFO - Progreso: 170000 registros procesados
+2025-09-02 18:49:14,789 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:49:15,406 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:49:16,149 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:49:16,733 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:49:17,323 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:49:17,325 - INFO - Progreso: 180000 registros procesados
+2025-09-02 18:49:17,889 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:49:18,459 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:49:19,028 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:49:19,814 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:49:20,421 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:49:20,421 - INFO - Progreso: 190000 registros procesados
+2025-09-02 18:49:21,052 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:49:21,638 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:49:22,223 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:49:22,842 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:49:23,449 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:49:23,451 - INFO - Progreso: 200000 registros procesados
+2025-09-02 18:49:24,238 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:49:24,833 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:49:25,468 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:49:26,097 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:49:26,722 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:49:26,725 - INFO - Progreso: 210000 registros procesados
+2025-09-02 18:49:27,542 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:49:28,140 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:49:28,779 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:49:29,398 - INFO - Lote guardado: 2000 registros
+2025-09-02 18:49:29,716 - INFO - Último lote guardado: 1003 registros
+2025-09-02 18:49:29,716 - INFO - 
+=== REPORTE FINAL ===
+2025-09-02 18:49:29,716 - INFO - Total registros procesados: 219003
+2025-09-02 18:49:29,716 - INFO - Total errores: 0
+2025-09-02 18:49:29,716 - WARNING - 
+Productos no encontrados (1):
+2025-09-02 18:49:29,716 - WARNING -  - Código convertido: 0 | Valor original: 0
+2025-09-02 18:49:29,716 - INFO - 
+Tiempo total: 1 minutos 17 segundos

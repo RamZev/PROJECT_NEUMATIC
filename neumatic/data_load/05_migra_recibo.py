@@ -15,8 +15,7 @@ SCRIPTS = [
     'tarjeta_migra.py',
     'codigo_retencion_migra.py',
     'concepto_banco_migra.py',
-    'marketing_origen_migra.py',
-    'leyenda_migra.py',
+    
 ]
 
 def configurar_entorno():

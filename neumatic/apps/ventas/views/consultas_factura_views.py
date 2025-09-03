@@ -838,6 +838,7 @@ def obtener_libro_iva(request):
 def buscar_factura(request):
     try:
         id_cliente = request.GET.get('id_cliente')
+        compro = request.GET.get('id_comprobante_asociado')
         numero = request.GET.get('numero_comprobante')
 
         # Validación más explícita
@@ -857,7 +858,8 @@ def buscar_factura(request):
 
         facturas = Factura.objects.filter(
             id_cliente_id=id_cliente,
-            numero_comprobante__iexact=numero.strip(),  # Limpieza adicional
+            numero_comprobante__iexact=numero.strip(),
+            compro = compro.strip(),
             id_comprobante_venta__libro_iva=True
         ).select_related('id_comprobante_venta')
 

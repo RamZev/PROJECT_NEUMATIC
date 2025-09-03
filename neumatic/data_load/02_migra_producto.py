@@ -15,9 +15,12 @@ SCRIPTS = [
     'producto_deposito_migra.py',
     'producto_marca_migra.py',
     'producto_cai_migra.py',
+    'producto_estado_migra.py',
+    'medidas_estados_migra.py',
     'producto_migra.py',
     'producto_stock_migra.py',
     'producto_minimo_migra.py',
+    
 ]
 
 def configurar_entorno():

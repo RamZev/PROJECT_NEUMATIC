@@ -1,68 +1,72 @@
+# neumatic\data_load\comprobante_venta_migra.py
+import json
 import os
 import sys
 import django
-from dbfread import DBF
 from django.db import connection
+from django.core.exceptions import ValidationError
 
-# Añadir el directorio base del proyecto al sys.path
+# Configuración del entorno Django
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(BASE_DIR)
-
-# Configurar Django
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'neumatic.settings')
 django.setup()
 
-from apps.maestros.models.base_models import ComprobanteVenta  # Asegúrate de que esta ruta sea la correcta
+from apps.maestros.models.base_models import ComprobanteVenta
 
-def cargar_comprobantes_desde_dbf(archivo_dbf):
-    """Carga los datos de comprobantes desde un archivo DBF y los migra al modelo ComprobanteVenta."""
-    
-    # Abrir la tabla DBF y leer su contenido
-    dbf_table = DBF(archivo_dbf, load=True)
-
-    # Resetear la tabla ComprobanteVenta (eliminar los datos existentes)
-    reset_comprobantes()
-
-    # Iterar sobre cada registro de la tabla DBF
-    for record in dbf_table:
-        # Crear el registro en la base de datos
-        ComprobanteVenta.objects.create(
-            estatus_comprobante_venta=True,  # Asignar True por defecto
-            codigo_comprobante_venta=record['CODIGO'].strip(),
-            nombre_comprobante_venta=record['NOMBRE'].strip(),
-            mult_venta=record['MULT_VEN'] if record['MULT_VEN'] is not None else 0,
-            mult_saldo=record['MULT_CLI'] if record['MULT_CLI'] is not None else 0,
-            mult_stock=record['MULT_STO'] if record['MULT_STO'] is not None else 0,
-            mult_comision=record['MULT_COM'] if record['MULT_COM'] is not None else 0,
-            mult_caja=record['MULT_CAJA'] if record['MULT_CAJA'] is not None else 0,
-            mult_estadistica=record['MULT_STAD'] if record['MULT_STAD'] is not None else 0,
-            libro_iva=record['LIBROIVA'] if record['LIBROIVA'] is not None else False,
-            estadistica=record['ESTADISTIC'] if record['ESTADISTIC'] is not None else False,
-            electronica=record['ELECTRONIC'] if record['ELECTRONIC'] is not None else False,
-            presupuesto=record['PRESUPUEST'] if record['PRESUPUEST'] is not None else False,
-            pendiente=record['PENDIENTE'] if record['PENDIENTE'] is not None else False,
-            info_michelin_auto=record['XTRAXTORA'] if record['XTRAXTORA'] is not None else False,
-            info_michelin_camion=record['XTRAXTORC'] if record['XTRAXTORC'] is not None else False,
-            codigo_afip_a=record['CODCITIA'].strip() if record['CODCITIA'] is not None else '',
-            codigo_afip_b=record['CODCITIB'].strip() if record['CODCITIB'] is not None else '',
-        )
-
-    print(f"Se han migrado {len(dbf_table)} comprobantes de forma exitosa.")
-
-def reset_comprobantes():
-    """Elimina los datos existentes en la tabla ComprobanteVenta y resetea su ID."""
-    # Eliminar los datos existentes en la tabla
+def reset_comprobante_venta():
+    """Elimina los datos existentes en la tabla ComprobanteVenta y resetea su ID en SQLite."""
     ComprobanteVenta.objects.all().delete()
+    print("Tabla ComprobanteVenta limpiada.")
 
-    # Reiniciar el autoincremento en la base de datos
     with connection.cursor() as cursor:
         cursor.execute("DELETE FROM sqlite_sequence WHERE name='comprobante_venta';")
+    
+    print("Secuencia de ID reseteada.")
 
-    print("Datos de la tabla ComprobanteVenta eliminados y autoincremento reseteado.")
+def cargar_comprobantes_desde_json(ruta_json):
+    """Carga los comprobantes de venta desde un archivo JSON."""
+    with open(ruta_json, 'r', encoding='utf-8') as file:
+        comprobantes = json.load(file)
+
+    for item in comprobantes:
+        try:
+            ComprobanteVenta.objects.create(
+                usuario="admin",
+                estatus_comprobante_venta=bool(item.get("estatus_comprobante_venta", True)),
+                codigo_comprobante_venta=item.get("codigo_comprobante_venta", ""),
+                nombre_comprobante_venta=item.get("nombre_comprobante_venta", ""),
+                tipo_comprobante=item.get("tipo_comprobante"),
+                compro_asociado=item.get("compro_asociado"),
+                mult_venta=int(item.get("mult_venta", 0)),
+                mult_saldo=int(item.get("mult_saldo", 0)),
+                mult_stock=int(item.get("mult_stock", 0)),
+                mult_comision=int(item.get("mult_comision", 0)),
+                mult_caja=int(item.get("mult_caja", 0)),
+                mult_estadistica=int(item.get("mult_estadistica", 0)),
+                libro_iva=bool(item.get("libro_iva", False)),
+                estadistica=bool(item.get("estadistica", False)),
+                electronica=bool(item.get("electronica", False)),
+                presupuesto=bool(item.get("presupuesto", False)),
+                pendiente=bool(item.get("pendiente", False)),
+                info_michelin_auto=bool(item.get("info_michelin_auto", False)),
+                info_michelin_camion=bool(item.get("info_michelin_camion", False)),
+                codigo_afip_a=item.get("codigo_afip_a", ""),
+                codigo_afip_b=item.get("codigo_afip_b", ""),
+                remito=bool(item.get("remito", False)),
+                recibo=bool(item.get("recibo", False)),
+                ncr_ndb=bool(item.get("ncr_ndb", False)),
+                manual=bool(item.get("manual", False)),
+                mipyme=bool(item.get("mipyme", False))
+            )
+        except ValidationError as e:
+            print(f"Error validando comprobante {item.get('nombre_comprobante_venta', 'Desconocido')}: {e}")
+        except Exception as e:
+            print(f"Error creando comprobante {item.get('nombre_comprobante_venta', 'Desconocido')}: {e}")
+
+    print(f"Se han migrado {ComprobanteVenta.objects.count()} comprobantes de venta.")
 
 if __name__ == '__main__':
-    # Ruta del archivo DBF
-    archivo_dbf = os.path.join(BASE_DIR, 'data_load', 'datavfox', 'codven.dbf')
-
-    # Ejecutar la migración
-    cargar_comprobantes_desde_dbf(archivo_dbf)
+    ruta_json = os.path.join(BASE_DIR, 'data_load', 'comprobante_venta.json')
+    reset_comprobante_venta()
+    cargar_comprobantes_desde_json(ruta_json)
