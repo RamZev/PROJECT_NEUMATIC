@@ -20,6 +20,7 @@ SCRIPTS = [
     'producto_migra.py',
     'producto_stock_migra.py',
     'producto_minimo_migra.py',
+    'actualiza_producto_cai.py',
     
 ]
 
