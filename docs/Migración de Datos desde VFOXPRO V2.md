@@ -8,8 +8,6 @@
 
 Eliminar los archivos de migraciones de las carpetas migrations de todas la aplicaciones, para ello ubíquese desde la ventana terminal en la carpeta neumatic\data_load y ejecute:
 
-
-
 python 00_limpiar_migraciones.py
 
 ## 3. Aplicar las migraciones
@@ -262,10 +260,6 @@ python 02_migra_producto.py
 python 03_migra_cliente.py  
 python 04_migra_factura.py  
 python 05_migra_recibo.py
-
-
-
-
 
 **Al finalizar las migraciones:**
 
