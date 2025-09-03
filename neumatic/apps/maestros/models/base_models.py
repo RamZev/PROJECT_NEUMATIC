@@ -304,7 +304,7 @@ class ComprobanteVenta(ModeloBaseGenerico):
 	recibo = models.BooleanField("Recibo", default=False, blank=True, null=True)
 	ncr_ndb = models.BooleanField("NCR/NDB", default=False, blank=True, null=True)
 	manual = models.BooleanField("Manual", default=False, blank=True, null=True)
-	mipyme = models.BooleanField("MYPIME", default=False, blank=True, null=True)
+	mipyme = models.BooleanField("MiPyME", default=False, blank=True, null=True)
 	
 	class Meta:
 		db_table = 'comprobante_venta'
