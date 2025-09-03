@@ -2349,6 +2349,8 @@ class VLLista(models.Model):
 	despacho_1 = models.CharField(max_length=16)
 	despacho_2 = models.CharField(max_length=16)
 	fecha_fabricacion = models.CharField(max_length=6)
+	id_producto_estado = models.IntegerField()
+	nombre_producto_estado = models.CharField(max_length=15)
 	
 	objects = VLListaManager()
 	
