@@ -62,7 +62,7 @@ def migrar_producto_stock():
                 deposito_obj = ProductoDeposito.objects.filter(id_producto_deposito=deposito).first()
                 
                 if not producto or not deposito_obj:
-                    print(f"Registro {idx}: Producto ({codigo}) o Depósito ({deposito}) no encontrados")
+                    print(f"Registro {idx} Código ({codigo}) o Depósito ({deposito}) no encontrados")
                     errores += 1
                     continue
                 
@@ -84,7 +84,7 @@ def migrar_producto_stock():
                     print(f"Procesados {registros_creados} registros...")
                     
             except Exception as e:
-                print(f"Registro {idx}: Error - {str(e)}")
+                print(f"Registro {idx} Código {codigo} - : Error - {str(e)}")
                 errores += 1
                 continue
         
