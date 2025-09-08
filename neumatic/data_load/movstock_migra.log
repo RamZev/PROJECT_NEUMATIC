@@ -1,0 +1,10 @@
+2025-09-06 22:06:20,447 - WARNING - Depósito ID=0 no encontrado en registro 422
+2025-09-06 22:06:20,621 - WARNING - No se encontró PuntoVenta para Sucursal ID=12 en registro 649
+2025-09-06 22:06:21,285 - INFO - Lote final guardado: 663 registros
+2025-09-06 22:06:21,285 - INFO - Migración completada. Registros: 663, Errores: 0
+2025-09-06 22:06:21,285 - INFO - Tiempo total: 1.24 segundos
+2025-09-06 23:14:47,815 - WARNING - Depósito ID=0 no encontrado en registro 422
+2025-09-06 23:14:47,960 - WARNING - No se encontró PuntoVenta para Sucursal ID=12 en registro 649
+2025-09-06 23:14:48,861 - INFO - Lote final guardado: 663 registros
+2025-09-06 23:14:48,861 - INFO - Migración completada. Registros: 663, Errores: 0
+2025-09-06 23:14:48,862 - INFO - Tiempo total: 1.37 segundos

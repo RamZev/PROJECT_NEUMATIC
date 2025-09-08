@@ -1,0 +1,24 @@
+2025-09-06 22:41:38,496 - INFO - Iniciando migración desde movstockdetalle.DBF. Total registros: 4287
+2025-09-06 22:41:38,497 - INFO - Cargando cachés de referencia...
+2025-09-06 22:41:48,236 - INFO - Lote guardado: 2000 registros
+2025-09-06 22:41:48,889 - INFO - Lote guardado: 2000 registros
+2025-09-06 22:41:48,910 - WARNING - Factura no encontrada ID: 11370
+2025-09-06 22:41:48,974 - INFO - Último lote guardado: 286 registros
+2025-09-06 22:41:48,974 - INFO - 
+=== REPORTE FINAL ===
+2025-09-06 22:41:48,975 - INFO - Total registros procesados: 4286
+2025-09-06 22:41:48,975 - INFO - Total errores: 0
+2025-09-06 22:41:48,975 - INFO - 
+Tiempo total: 0 minutos 10 segundos
+2025-09-06 23:14:50,719 - INFO - Iniciando migración desde movstockdetalle.DBF. Total registros: 4287
+2025-09-06 23:14:50,719 - INFO - Cargando cachés de referencia...
+2025-09-06 23:14:59,413 - INFO - Lote guardado: 2000 registros
+2025-09-06 23:15:00,033 - INFO - Lote guardado: 2000 registros
+2025-09-06 23:15:00,052 - WARNING - Factura no encontrada ID: 11370
+2025-09-06 23:15:00,109 - INFO - Último lote guardado: 286 registros
+2025-09-06 23:15:00,109 - INFO - 
+=== REPORTE FINAL ===
+2025-09-06 23:15:00,110 - INFO - Total registros procesados: 4286
+2025-09-06 23:15:00,110 - INFO - Total errores: 0
+2025-09-06 23:15:00,110 - INFO - 
+Tiempo total: 0 minutos 9 segundos

@@ -92,9 +92,9 @@ def cargar_datos():
         try:
             numero_obj.full_clean()  # Validar los campos según las reglas del modelo
             numero_obj.save()
-            print(f"Guardado: {numero_obj}")
+            print(f"Guardado: {numero_obj} comprobante {comprobante} numero {numero}")
         except ValidationError as e:
-            print(f"Error de validación para la fila {idx}: {e}")
+            print(f"Error de validación para la fila {idx} comprobante {comprobante} numero {numero}: {e}")
 
         # Mostrar mensaje cada 1000 registros procesados
         if (idx + 1) % 1000 == 0:

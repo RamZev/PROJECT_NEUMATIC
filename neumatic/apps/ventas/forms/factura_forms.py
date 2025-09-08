@@ -192,6 +192,10 @@ class FacturaForm(forms.ModelForm):
             self.fields['id_comprobante_venta'].queryset = ComprobanteVenta.objects.filter(
                 presupuesto=True
             ).order_by('nombre_comprobante_venta')
+        elif tipo_comprobante == 'interno':
+            self.fields['id_comprobante_venta'].queryset = ComprobanteVenta.objects.filter(
+                interno=True
+            ).order_by('nombre_comprobante_venta')
 
     def clean_discrimina_iva(self):
         # Siempre retorna True o False, incluso si el checkbox está deshabilitado

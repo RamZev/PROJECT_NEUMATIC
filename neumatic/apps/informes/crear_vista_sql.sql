@@ -17,7 +17,7 @@ CREATE VIEW "VLSaldosClientes" AS
 		c.telefono_cliente, 
 		c.sub_cuenta, 
 		c.id_vendedor_id, 
-		f.total, 
+		f.total,
 		f.entrega, 
 		f.condicion_comprobante,
 		cv.mult_saldo
