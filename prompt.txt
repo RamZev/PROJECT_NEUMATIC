@@ -1,51 +1,3 @@
-==================================================================
-Consultas pruebas en DB Browse
-==================================================================
--- CONSULTA 1:
------------
-
--- Selecciona los productos por un id_cai dado.
-SELECT
-	id_producto,
-	nombre_producto,
-	medida,
-	id_cai_id,
-	cai
-FROM
-	producto
-WHERE
-	id_cai_id =4277;
-
-
-*--------------------------
--- CONSULTA 2:
------------
-
--- Selecciona los productos agrupados por id_cai y muestra cuál es el cai y la cantidad de productos con ese cai.
-SELECT
-	p.id_producto, p.nombre_producto, p.memida, p.id_cai_id, pc.cai, count(id_cai_id)
-FROM
-	producto p
-	JOIN producto_cai pc ON p.id_cai_id = pc.id_cai
-GROUP by
-	p.id_cai_id
-HAVING
-	count(p.id_cai_id) > 1;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ===============================================
 Sanear la tabla producto
 ===============================================
@@ -67,3 +19,25 @@ Sanear la tabla producto
 *.- Eliminar el campo "cai".
 	Este cai es el que ya estaba en la tabla producto y se dejó para poder asignarle el id correspondiente de la tabla producto_cai.
 
+
+
+==================================================================================================================================
+
+Qué me puedes sugerir para lo siguiente:
+
+En mi proyecto Django tengo una opción que me permite consultar los datos de mi modelo Producto y exportarlos a un archivo Excel, 
+luego el usuario modifica los datos que requiere modificar en ese archivo Excel y por  último, debe cargar ese archivo Excel para 
+actualizar los registros modificados en la base de datos.
+
+Ya tengo hecha la primera parte que consulta y genera el archivo Excel, ahora necesito hacer la funcionalidad que me permita ubicar
+y cargar el archivo Excel ya modificado, que me muestren esos registros del archivo Excel en pantalla en una tabla y me muestre en un 
+panel derecho los campos (títulos de las columnas) precedidos de un check para marcar, indicando así, los campos que se deben actualizar
+en la base de datos.
+
+Esta funcionalidad me gustaría que se implemente empleando Vistas Basadas en Clases de ser posible, porque así he venido trabajando en
+mi proyecto. Deseable también, crear un formulario (que herede del formulario base que te comparto: CrudGenericForm en el 
+módulo: crud_forms_generics.p) para poder validar la entrada de datos (archivo Excel y campos a actualizar). 
+
+Vamos por partes, primero dame la implementación solo hasta mostrar el fromulario para ubicar y cargar el archivo Excel y mostrar los 
+registros en la tabla, luego que eso funcione te digo para implementar la funcionalidad de actualizar los datos en la base de datos.
+Qué me puedes sugerir?

@@ -1,12 +1,13 @@
 # neumatic\utils\helpers\export_helpers.py
-
+from os import getenv
+from dotenv import load_dotenv
 from io import BytesIO, TextIOWrapper
 from reportlab.platypus import BaseDocTemplate, SimpleDocTemplate, Frame, PageTemplate, LongTable, TableStyle, Paragraph, Spacer
 from reportlab.lib.pagesizes import A4, portrait
 from reportlab.lib.enums import TA_LEFT, TA_RIGHT
 from reportlab.pdfgen.canvas import Canvas
 from reportlab.lib import colors
-from openpyxl import Workbook
+from openpyxl import Workbook, styles
 import csv
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from datetime import datetime
@@ -15,6 +16,8 @@ from functools import partial
 from apps.maestros.templatetags.custom_tags import formato_es_ar
 from utils.utils import format_date
 
+#-- Cargar las variables de entorno del archivo .env
+load_dotenv()
 
 class ExportHelper:
 	
@@ -22,7 +25,7 @@ class ExportHelper:
 		self.queryset = queryset
 		self.table_info = table_info
 		self.report_title = report_title
-		self.total_columns = total_columns if total_columns else {}  # Diccionario con texto y columnas a totalizar
+		self.total_columns = total_columns if total_columns else {}  #-- Diccionario con texto y columnas a totalizar.
 	
 	def _safe_str(self, value):
 		return str(value) if value is not None else ""
@@ -31,10 +34,11 @@ class ExportHelper:
 		"""Obtener nombres de encabezados y los campos correspondientes del diccionario table_info."""
 		
 		headers = [field['label'] for field in self.table_info.values()]
-		# fields = [ field for field in self.table_info.keys()]   #-- Menos ficiente que el siguiente método.
+		# fields = [ field for field in self.table_info.keys()]   #-- Menos eficiente que el siguiente método.
 		fields = list(self.table_info.keys())   #-- Más eficiente por ser más directo.
+		protected = [field for field in self.table_info if self.table_info[field].get('protected', False)]
 		
-		return headers, fields
+		return headers, fields, protected
 	
 	def _resolve_field(self, obj, field_name, frmto=None):
 		"""
@@ -162,7 +166,7 @@ class ExportHelper:
 		elements.append(Spacer(1, 12))
 		
 		#-- Obtener encabezados y campos dinámicos.
-		headers, fields = self._get_headers_and_fields()
+		headers, fields, protected = self._get_headers_and_fields()
 		
 		cols_widths = [field['col_width_pdf'] for field in self.table_info.values()]
 		
@@ -190,7 +194,6 @@ class ExportHelper:
 			totals_row = self._calculate_totals(fields)
 			table_data.append(totals_row)
 		
-		# table = Table(table_data)
 		table = LongTable(table_data, colWidths=cols_widths)
 		
 		table_style = TableStyle([
@@ -261,7 +264,7 @@ class ExportHelper:
 		
 		elements.append(table)
 		
-		# Pasar los márgenes a CustomCanvas usando partial
+		#-- Pasar los márgenes a CustomCanvas usando partial.
 		canvas_with_margins = partial(
 			CustomCanvas, 
 			margins=(left_margin, right_margin, top_margin, bottom_margin)
@@ -277,13 +280,18 @@ class ExportHelper:
 		
 		wb = Workbook()
 		ws = wb.active
-		ws.title = self.report_title[:31]  # Limitar a 31 caracteres (restricción de Excel)
+		ws.title = self.report_title[:31]  #-- Limitar a 31 caracteres (restricción de Excel).
 		
 		#-- Obtener encabezados y campos dinámicos.
-		headers, fields = self._get_headers_and_fields()
+		headers, fields, protected = self._get_headers_and_fields()
 		
 		#-- Encabezados.
 		ws.append(headers)
+		
+		#-- Identificar índices de campos a proteger
+		protected_indices = []
+		if protected:
+			protected_indices = [fields.index(field) for field in protected if field in fields]
 		
 		#-- Procesar datos según el tipo de queryset.
 		if isinstance(self.queryset, dict):
@@ -315,6 +323,21 @@ class ExportHelper:
 				row = [self._resolve_field(obj, field, frmto='excel') for field in fields]
 				ws.append(row)
 		
+		#-- Proteger campos específicos si hay campos a proteger.
+		if protected_indices:
+			#-- Bloquear solo las celdas específicas que necesitan protección
+			for row_idx, row in enumerate(ws.iter_rows(min_row=2), 2):  #-- Empezar desde la fila 2 (datos) omitiendo encabezados.
+				for col_idx, cell in enumerate(row, 1):
+					if (col_idx - 1) in protected_indices:  #-- -1 porque las columnas empiezan en 1 pero los índices en 0.
+						cell.protection = styles.Protection(locked=True)
+					else:
+						cell.protection = styles.Protection(locked=False)
+			
+			#-- Proteger la hoja
+			ws.protection.sheet = True
+			if getenv('EXCEL_KEY'):
+				ws.protection.password = getenv('EXCEL_KEY')
+		
 		buffer = BytesIO()
 		wb.save(buffer)
 		buffer.seek(0)
@@ -336,7 +359,7 @@ class ExportHelper:
 		writer = csv.writer(text_buffer)
 		
 		#-- Obtener encabezados y campos.
-		headers, fields = self._get_headers_and_fields()
+		headers, fields, protected = self._get_headers_and_fields()
 		
 		#-- Encabezados.
 		writer.writerow(headers)  #-- Escribir encabezados.

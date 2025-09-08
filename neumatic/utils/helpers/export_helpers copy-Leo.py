@@ -1,25 +1,26 @@
 # neumatic\utils\helpers\export_helpers.py
 
 from io import BytesIO, TextIOWrapper
-from reportlab.platypus import BaseDocTemplate, SimpleDocTemplate, Frame, PageTemplate, Table, TableStyle, Paragraph, Spacer
+from reportlab.platypus import BaseDocTemplate, SimpleDocTemplate, Frame, PageTemplate, LongTable, TableStyle, Paragraph, Spacer
 from reportlab.lib.pagesizes import A4, portrait
 from reportlab.lib.enums import TA_LEFT, TA_RIGHT
 from reportlab.pdfgen.canvas import Canvas
 from reportlab.lib import colors
-from openpyxl import Workbook
+from openpyxl import Workbook, styles
 import csv
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from datetime import datetime
 from decimal import Decimal
 from functools import partial
 from apps.maestros.templatetags.custom_tags import formato_es_ar
+from utils.utils import format_date
 
 
 class ExportHelper:
 	
-	def __init__(self, queryset, table_headers, report_title, total_columns=None):
+	def __init__(self, queryset, table_info, report_title, total_columns=None):
 		self.queryset = queryset
-		self.table_headers = table_headers
+		self.table_info = table_info
 		self.report_title = report_title
 		self.total_columns = total_columns if total_columns else {}  # Diccionario con texto y columnas a totalizar
 	
@@ -27,10 +28,11 @@ class ExportHelper:
 		return str(value) if value is not None else ""
 	
 	def _get_headers_and_fields(self):
-		"""Obtener nombres de encabezados y los campos correspondientes del diccionario table_headers."""
+		"""Obtener nombres de encabezados y los campos correspondientes del diccionario table_info."""
 		
-		headers = [header[1] for header in self.table_headers.values()]
-		fields = list(self.table_headers.keys())
+		headers = [field['label'] for field in self.table_info.values()]
+		# fields = [ field for field in self.table_info.keys()]   #-- Menos eficiente que el siguiente método.
+		fields = list(self.table_info.keys())   #-- Más eficiente por ser más directo.
 		
 		return headers, fields
 	
@@ -129,6 +131,22 @@ class ExportHelper:
 		left_margin, right_margin, top_margin, bottom_margin = margins
 		buffer = BytesIO()
 		
+		#-- Estilo de párrafo para los datos en la tabla del reporte.
+		styles = getSampleStyleSheet()
+		styles.add(ParagraphStyle(
+			name='CellStyle',
+			parent=styles["BodyText"],
+			fontSize=body_font_size,
+			leading=8,
+			spaceBefore=0,
+			spaceAfter=0,
+			leftIndent=0,
+			rightIndent=0,
+			firstLineIndent=0,
+		))
+		
+		paragraph_style = styles['CellStyle']
+		
 		doc = SimpleDocTemplate(
 			buffer,
 			pagesize=pagesize,
@@ -146,19 +164,35 @@ class ExportHelper:
 		#-- Obtener encabezados y campos dinámicos.
 		headers, fields = self._get_headers_and_fields()
 		
+		cols_widths = [field['col_width_pdf'] for field in self.table_info.values()]
+		
+		paragraph_fields = [field for field in self.table_info.keys() if self.table_info[field]['pdf_paragraph']]
+		
 		#-- Crear la tabla de datos.
 		table_data = [headers]  #-- Primera fila con los encabezados.
 		
 		#-- Agregar los datos desde el queryset.
 		for obj in self.queryset:
-			table_data.append([self._resolve_field(obj, field, frmto='pdf') for field in fields])
+			row = []
+			for field in fields:
+				value = self._resolve_field(obj, field, frmto='pdf')
+				if field in paragraph_fields and value:
+					row.append(Paragraph(value, paragraph_style))
+				else:
+					if self.table_info[field]['date_format']:
+						row.append(format_date(value))
+					else:
+						row.append(value)
+			table_data.append(row)
 		
 		#-- Calcular y agregar la fila de totales.
 		if self.total_columns:
 			totals_row = self._calculate_totals(fields)
 			table_data.append(totals_row)
 		
-		table = Table(table_data)
+		# table = Table(table_data)
+		table = LongTable(table_data, colWidths=cols_widths)
+		
 		table_style = TableStyle([
 			#-- Estilos comunes toda la tabla.
 			('FONTNAME', (0,0), (-1,-1), 'Helvetica'),
@@ -184,10 +218,24 @@ class ExportHelper:
 			# ('TEXTCOLOR', (0,0), (-1,0), colors.black),
 		])
 			
-		#-- Identificar las columnas que contienen números para alinear a la derecha.
+		#-- Identificar las columnas numericas y/o booleanas para alinear a la derecha o al centro el dato y el header.
+		cols_headers_right = []
+		cols_headers_center = []
 		for col_idx, field in enumerate(fields):
 			if any(isinstance(getattr(obj, field.split('.')[0], None), (int, float, Decimal)) for obj in self.queryset):
 				table_style.add('ALIGN', (col_idx, 1), (col_idx, -1), 'RIGHT')
+				cols_headers_right.append(col_idx)
+			if isinstance(self._resolve_field(obj, field, frmto='excel'), bool):
+				table_style.add('ALIGN', (col_idx, 0), (col_idx, -1), 'CENTER')
+				cols_headers_center.append(col_idx)
+		
+		#-- Alinear a la derecha los headers de las columnas numéricas.
+		for col in cols_headers_right:
+			table_style.add('ALIGN', (col,0), (col,0), 'RIGHT')
+		
+		#-- Alinear al contro los headers de las columnas booleanas.
+		for col in cols_headers_center:
+			table_style.add('ALIGN', (col,0), (col,0), 'CENTER')
 		
 		#-- Alinear la fila de totales y aplicar negritas.
 		if self.total_columns:
@@ -219,7 +267,6 @@ class ExportHelper:
 			margins=(left_margin, right_margin, top_margin, bottom_margin)
 		)
 		
-		# doc.build(elements, canvasmaker=CustomCanvas)
 		doc.build(elements, canvasmaker=canvas_with_margins)
 		buffer.seek(0)
 		
@@ -290,6 +337,8 @@ class ExportHelper:
 		
 		#-- Obtener encabezados y campos.
 		headers, fields = self._get_headers_and_fields()
+		
+		#-- Encabezados.
 		writer.writerow(headers)  #-- Escribir encabezados.
 		
 		#-- Procesar datos según el tipo de queryset.
@@ -389,8 +438,8 @@ class CustomCanvas(Canvas):
 class PDFGenerator:
 	def __init__(self, context, pagesize=portrait(A4), margins=(10, 10, 0, 40), body_font_size=6, header_font_size=9):
 		#-- Dimensiones formato A4:
-		#-- portrait:	595 pts. (210x297mm) vertical
-		#-- landscape:	842 pts. (297x210mm) horizontal
+		#-- portrait:	595.27x841.88 pts. (210x297mm) vertical
+		#-- landscape:	841.88x595.27 pts. (297x210mm) horizontal
 		
 		self.buffer = BytesIO()
 		self.context = context
@@ -652,7 +701,7 @@ class PDFGenerator:
 	
 	def _create_table(self, data, col_widths, style_config, repeat_rows=1):
 		"""Crea una tabla con los datos y estilos proporcionados"""
-		table = Table(data, colWidths=col_widths, repeatRows=repeat_rows)
+		table = LongTable(data, colWidths=col_widths, repeatRows=repeat_rows)
 		
 		#-- Estilo base.
 		table_style = TableStyle([

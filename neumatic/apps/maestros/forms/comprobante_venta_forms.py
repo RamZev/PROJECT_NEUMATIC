@@ -55,6 +55,8 @@ class ComprobanteVentaForm(CrudGenericForm):
 				forms.CheckboxInput(attrs={**formclasscheck}),
 			'ncr_ndb': 
 				forms.CheckboxInput(attrs={**formclasscheck}),
+			'interno': 
+				forms.CheckboxInput(attrs={**formclasscheck}),
 			'info_michelin_auto': 
 				forms.CheckboxInput(attrs={**formclasscheck}),
 			'info_michelin_camion': 
