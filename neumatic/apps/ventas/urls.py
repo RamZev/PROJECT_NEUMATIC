@@ -9,6 +9,9 @@ from .views.factura2_views import (FacturaManualListView, FacturaManualCreateVie
 from .views.factura3_views import (PresupuestoListView, PresupuestoCreateView, 
 								  PresupuestoUpdateView, PresupuestoDeleteView)
 
+from .views.factura4_views import (MovimientoInternoListView, MovimientoInternoCreateView, 
+								  MovimientoInternoUpdateView, MovimientoInternoDeleteView)	
+
 from .views.recibo_views import (ReciboListView, ReciboCreateView, 
 								ReciboUpdateView, ReciboDeleteView)
 
@@ -51,8 +54,14 @@ urlpatterns = [
 	path('presupeusto/crear/', PresupuestoCreateView.as_view(), name='presupuesto_create'),
 	path('presupuesto/editar/<int:pk>/', PresupuestoUpdateView.as_view(), name='presupuesto_update'),
 	path('presupuesto/eliminar/<int:pk>/', PresupuestoDeleteView.as_view(), name='presupuesto_delete'),
-	###
-	
+
+	#-- Opción 4: Movimiento Interno.
+    path('movimientointerno/listar/', MovimientoInternoListView.as_view(), name='movimiento_interno_list'),
+    path('movimientointerno/crear/', MovimientoInternoCreateView.as_view(), name='movimiento_interno_create'),
+	path('movimientointerno/editar/<int:pk>/', MovimientoInternoUpdateView.as_view(), name='movimiento_interno_update'),
+	path('movimientointerno/eliminar/<int:pk>/', MovimientoInternoDeleteView.as_view(), name='movimiento_interno_delete'),
+    ###
+
 	path('recibo/listar/', ReciboListView.as_view(), name='recibo_list'),
 	path('recibo/crear/', ReciboCreateView.as_view(), name='recibo_create'),
 	path('recibo/editar/<int:pk>/', ReciboUpdateView.as_view(), name='recibo_update'),
