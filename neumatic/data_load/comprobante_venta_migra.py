@@ -57,7 +57,8 @@ def cargar_comprobantes_desde_json(ruta_json):
                 recibo=bool(item.get("recibo", False)),
                 ncr_ndb=bool(item.get("ncr_ndb", False)),
                 manual=bool(item.get("manual", False)),
-                mipyme=bool(item.get("mipyme", False))
+                mipyme=bool(item.get("mipyme", False)),
+                interno=bool(item.get("interno", False))
             )
         except ValidationError as e:
             print(f"Error validando comprobante {item.get('nombre_comprobante_venta', 'Desconocido')}: {e}")
