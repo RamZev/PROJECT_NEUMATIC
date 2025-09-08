@@ -4,8 +4,8 @@
     <soap:Body>
         <FECAESolicitar xmlns="http://ar.gov.afip.dif.FEV1/">
             <Auth>
-                <Token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgZHN0PSJDTj13c2ZlLCBPPUFGSVAsIEM9QVIiIHVuaXF1ZV9pZD0iMTc1NjYwMTU4OCIgZ2VuX3RpbWU9IjE3NTYzMTM5MTgiIGV4cF90aW1lPSIxNzU2MzU3MTc4Ii8+CiAgICA8b3BlcmF0aW9uIHR5cGU9ImxvZ2luIiB2YWx1ZT0iZ3JhbnRlZCI+CiAgICAgICAgPGxvZ2luIGVudGl0eT0iMzM2OTM0NTAyMzkiIHNlcnZpY2U9IndzZmUiIHVpZD0iU0VSSUFMTlVNQkVSPUNVSVQgMjAyMDc4ODI5NTAsIENOPW1hYXNvZnRkZW1vIiBhdXRobWV0aG9kPSJjbXMiIHJlZ21ldGhvZD0iMjIiPgogICAgICAgICAgICA8cmVsYXRpb25zPgogICAgICAgICAgICAgICAgPHJlbGF0aW9uIGtleT0iMjAyMDc4ODI5NTAiIHJlbHR5cGU9IjQiLz4KICAgICAgICAgICAgPC9yZWxhdGlvbnM+CiAgICAgICAgPC9sb2dpbj4KICAgIDwvb3BlcmF0aW9uPgo8L3Nzbz4K</Token>
-                <Sign>kJh0x0Ps8pspS2PaBbDOC4wB5WvTPFbLiBAAUbEp+mbrXIAng/stM6eSJmw8l9iuOspGqZJjY8P90XstYBy6Qm/l67PrFC32Q6FTP7pKEAHmkhWBFOzXVZXPXETfJunu1ivwUTAmN+4SJ+U1KJgjVggz+6lpr3EHRXyDqvv4NAs=</Sign>
+                <Token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgZHN0PSJDTj13c2ZlLCBPPUFGSVAsIEM9QVIiIHVuaXF1ZV9pZD0iNzAyMjQ4OTM4IiBnZW5fdGltZT0iMTc1NzM1MTQyOSIgZXhwX3RpbWU9IjE3NTczOTQ2ODkiLz4KICAgIDxvcGVyYXRpb24gdHlwZT0ibG9naW4iIHZhbHVlPSJncmFudGVkIj4KICAgICAgICA8bG9naW4gZW50aXR5PSIzMzY5MzQ1MDIzOSIgc2VydmljZT0id3NmZSIgdWlkPSJTRVJJQUxOVU1CRVI9Q1VJVCAyMDIwNzg4Mjk1MCwgQ049bWFhc29mdGRlbW8iIGF1dGhtZXRob2Q9ImNtcyIgcmVnbWV0aG9kPSIyMiI+CiAgICAgICAgICAgIDxyZWxhdGlvbnM+CiAgICAgICAgICAgICAgICA8cmVsYXRpb24ga2V5PSIyMDIwNzg4Mjk1MCIgcmVsdHlwZT0iNCIvPgogICAgICAgICAgICA8L3JlbGF0aW9ucz4KICAgICAgICA8L2xvZ2luPgogICAgPC9vcGVyYXRpb24+Cjwvc3NvPgo=</Token>
+                <Sign>dTj5rfkiZNL/3sekb6qzLs5vOa++q3NzdeitFAHqqG1YEV3/lbVIx8Ckj0YB9CvOnq85IVrPhGs0KbRPl5kgsXlNXW9UfNMThU29T7xQr/qhA5pgAy06nazj7XUGnhMZi+h9t4OActoFsBzE7a7u4ZE008//Kz1ow3pLXku0lXs=</Sign>
                 <Cuit>30692402363</Cuit>
             </Auth>
             <FeCAEReq>
@@ -21,25 +21,25 @@
                         <DocNro>20207882950</DocNro>
                         <CbteDesde>00000001</CbteDesde>
                         <CbteHasta>00000001</CbteHasta>
-                        <CbteFch>20250827</CbteFch>
-                        <ImpTotal>21619000</ImpTotal>
-                        <ImpTotConc>0</ImpTotConc>
-                        <ImpNeto>17866942</ImpNeto>
+                        <CbteFch>20250908</CbteFch>
+                        <ImpTotal>221595.00</ImpTotal>
+                        <ImpTotConc>0.00</ImpTotConc>
+                        <ImpNeto>183136.36</ImpNeto>
                         <ImpOpEx>0.00</ImpOpEx>
                         <ImpTrib>0.00</ImpTrib>
-                        <ImpIVA>3752058</ImpIVA>
-                        <FchServDesde>20250827</FchServDesde>
-                        <FchServHasta>20250827</FchServHasta>
-                        <FchVtoPago>20250926</FchVtoPago>
+                        <ImpIVA>38458.64</ImpIVA>
+                        <FchServDesde>20250908</FchServDesde>
+                        <FchServHasta>20250908</FchServHasta>
+                        <FchVtoPago>20251008</FchVtoPago>
                         <MonId>PES</MonId>
                         <MonCotiz>1.000</MonCotiz>
                         <CanMisMonExt>N</CanMisMonExt>
                         <CondicionIVAReceptorId>1</CondicionIVAReceptorId>
                         <Iva>
                             <AlicIva>
-                                <Id>5</Id>
-                                <BaseImp>178669.42</BaseImp>
-                                <Importe>37520.58</Importe>
+                                <Id>3</Id>
+                                <BaseImp>183136.36</BaseImp>
+                                <Importe>38458.64</Importe>
                             </AlicIva>
                         </Iva>
                     </FECAEDetRequest>
