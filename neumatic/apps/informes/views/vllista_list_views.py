@@ -75,7 +75,8 @@ class ConfigViews:
 			"col_width_pdf": 40,
 			"pdf": True,
 			"excel": True,
-			"csv": True
+			"csv": True,
+			"protected": True  #-- No se pueda editar en el Excel.
 		},
 		"id_cai_id": {
 			"label": "Id CAI",

@@ -1,0 +1,211 @@
+<!-- apps\datatools\templates\datatools\excel_preview.html -->
+{% extends 'base.html' %}
+{% load static %}
+{% load custom_tags %}  <!-- Agrega esta línea -->
+
+{% block title %}Previsualización de Excel{% endblock %}
+
+{% block style %}
+	<style>
+		/* Tus estilos CSS existentes */
+		.table-responsive {
+			overflow-x: auto;
+			max-height: 70vh;
+		}
+		
+		.table-fit {
+			width: auto !important;
+			min-width: 100%;
+			border-collapse: separate;
+			border-spacing: 0;
+		}
+		
+		.table-fit th,
+		.table-fit td {
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			max-width: 400px;
+			padding: 4px 8px;
+			font-size: 0.9rem;
+			border: 1px solid #dee2e6;
+			vertical-align: middle;
+		}
+		
+		.table-fit th {
+			background-color: #f8f9fa;
+			font-weight: 600;
+			position: sticky;
+			top: 0;
+			z-index: 10;
+		}
+		
+		.table-fit td {
+			position: relative;
+		}
+		
+		.table-fit td:hover::before {
+			content: attr(data-content);
+			position: absolute;
+			left: 0;
+			top: 100%;
+			background: #fff;
+			border: 1px solid #ccc;
+			padding: 8px;
+			z-index: 1000;
+			white-space: normal;
+			width: auto;
+			max-width: 400px;
+			box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+			font-size: 0.85rem;
+			line-height: 1.4;
+		}
+		
+		.card-body {
+			padding: 1rem;
+		}
+		
+		.badge-count {
+			font-size: 0.8rem;
+			vertical-align: middle;
+		}
+		
+		/* Estilo para números alineados a la derecha */
+		.number-cell {
+			text-align: right;
+			font-family: monospace;
+		}
+	</style>
+{% endblock %}
+
+{% block header %}
+	{% include 'top_nav.html' %}
+{% endblock %}
+
+{% block main %}
+	<div id="layoutSidenav">
+		<div id="layoutSidenav_nav">
+			{% include 'sidebar.html' %}
+		</div>
+		
+		<div id="layoutSidenav_content">
+			<main>
+				<div class="container-fluid px-4">
+					<h1 class="mt-4">Previsualización del Archivo</h1>
+					<ol class="breadcrumb mb-4">
+						<li class="breadcrumb-item"><a href="{% url 'home' %}">Panel</a></li>
+						<li class="breadcrumb-item"><a href="{% url 'cargar_excel' %}">Cargar Excel</a></li>
+						<li class="breadcrumb-item active">Previsualización</li>
+					</ol>
+					
+					<div class="card mb-4">
+						<div class="card-header d-flex align-items-center">
+							<div class="d-flex align-items-center">
+								<i class="fas fa-table me-2"></i>
+								<span>Archivo: <strong>{{ nombre_archivo }}</strong></span>
+								<span class="badge bg-primary badge-count ms-2">{{ datos|length }} registros</span>
+							</div>
+						</div>
+						<div class="card-body p-0">
+							<div class="table-responsive">
+								<table class="table table-fit mb-0">
+									<thead>
+										<tr>
+											{% for columna in columnas %}
+												<th>{{ columna }}</th>
+											{% endfor %}
+										</tr>
+									</thead>
+									<tbody>
+										{% for fila in datos %}
+											<tr>
+												{% for key, valor in fila.items %}
+													{% with valor_tipo=valor|get_type %}
+													<td data-content="{{ valor|default:'' }}" 
+														title="{{ valor|default:'' }}"
+														{% comment %} {% if valor_tipo == 'int' or valor_tipo == 'float' or valor_tipo == 'Decimal' %}class="number-cell"{% endif %}> {% endcomment %}
+														{% if valor_tipo == 'float' or valor_tipo == 'Decimal' %}class="number-cell"{% endif %}>
+														{% comment %}
+														{% if valor_tipo == 'int' %}
+															{{ valor|formato_es_ar_entero }}
+														{% elif valor_tipo == 'float' or valor_tipo == 'Decimal' %}
+															{{ valor|formato_es_ar }}
+														{% else %}
+															{{ valor|default:'' }}
+														{% endif %}
+														{% endcomment %}
+														{% if valor_tipo == 'float' or valor_tipo == 'Decimal' %}
+															{{ valor|formato_es_ar }}
+														{% else %}
+															{{ valor|default:'' }}
+														{% endif %}
+													</td>
+													{% endwith %}
+												{% endfor %}
+											</tr>
+										{% endfor %}
+									</tbody>
+								</table>
+							</div>
+						</div>
+						<div class="card-footer">
+							{% comment %} <form method="post" action="{% url 'procesar_actualizacion' %}"> {% endcomment %}
+							<form method="post">
+								{% csrf_token %}
+								<input type="hidden" name="nombre_archivo" value="{{ nombre_archivo }}">
+								
+								<div class="text-center">
+									<button type="submit" class="btn btn-success">
+										<i class="fas fa-sync-alt me-1"></i>
+										Continuar con la Actualización
+									</button>
+									<a href="{% url 'cargar_excel' %}" class="btn btn-secondary">
+										<i class="fas fa-arrow-left me-1"></i>
+										Volver a Cargar
+									</a>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+			</main>
+		</div>
+	</div>
+{% endblock %}
+
+{% block script %}
+	<script>
+		document.addEventListener('DOMContentLoaded', function() {
+			function adjustColumnWidths() {
+				const table = document.querySelector('.table-fit');
+				if (!table) return;
+				
+				const headers = table.querySelectorAll('th');
+				const firstRow = table.querySelector('tbody tr');
+				
+				if (!firstRow) return;
+				
+				const cells = firstRow.querySelectorAll('td');
+				
+				headers.forEach((header, index) => {
+					if (cells[index]) {
+						const headerWidth = header.scrollWidth;
+						const cellWidth = cells[index].scrollWidth;
+						const maxWidth = Math.max(headerWidth, cellWidth) + 20;
+						
+						header.style.minWidth = maxWidth + 'px';
+						cells[index].style.minWidth = maxWidth + 'px';
+						
+						const allCells = table.querySelectorAll(`tbody tr td:nth-child(${index + 1})`);
+						allCells.forEach(cell => {
+							cell.style.minWidth = maxWidth + 'px';
+						});
+					}
+				});
+			}
+			
+			setTimeout(adjustColumnWidths, 100);
+			window.addEventListener('resize', adjustColumnWidths);
+		});
+	</script>
+{% endblock %}
