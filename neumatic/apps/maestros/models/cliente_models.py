@@ -12,8 +12,7 @@ from .vendedor_models import Vendedor
 from .sucursal_models import Sucursal
 from entorno.constantes_base import (
 	ESTATUS_GEN, CONDICION_VENTA, SEXO, 
-	CLIENTE_VIP, CLIENTE_MAYORISTA,
-	TIPO_PERSONA, BLACK_LIST)
+	TIPO_PERSONA, SI_NO)
 
 
 class Cliente(ModeloBaseGenerico):
@@ -78,22 +77,22 @@ class Cliente(ModeloBaseGenerico):
 	numero_ib = models.CharField("Número IB", max_length=15, null=True, blank=True)
 	vip = models.BooleanField("Cliente VIP*", 
 							  default=False,
-							  choices=CLIENTE_VIP)
+							  choices=SI_NO)
 	mayorista = models.BooleanField("Mayorista*", 
 									default=False,
-									choices=CLIENTE_MAYORISTA)
+									choices=SI_NO)
 	sub_cuenta = models.IntegerField("Código", null=True, blank=True)
 	observaciones_cliente = models.TextField("Observaciones", 
 											 blank=True, null=True)
 	black_list = models.BooleanField("Black List", default=False, 
-										  choices=BLACK_LIST)
+										  choices=SI_NO)
 	black_list_motivo = models.CharField("Motivo Black List", max_length=50, 
 										   null=True, blank=True)
 	black_list_usuario = models.CharField("Usuario Black List", 
 										  max_length=20, null=True, blank=True)
 	fecha_baja = models.DateField("Fecha de Baja", null=True, blank=True)
 	cliente_empresa = models.BooleanField("Cliente Empresa", default=False, 
-										  blank=True, null=True)
+										  blank=True, null=True, choices=SI_NO)
 	
 	class Meta:
 		db_table = 'cliente'
@@ -123,6 +122,16 @@ class Cliente(ModeloBaseGenerico):
 				except ValidationError as e:
 					#-- Agrego el error al dicciobario errors.
 					errors['cuit'] = e.messages
+		
+		#-- Validación para cliente_empresa.
+		if self.cliente_empresa:
+			#-- Buscar si ya existe otro cliente con cliente_empresa = True.
+			cliente_empresa_existente = Cliente.objects.filter(
+				cliente_empresa=True
+			).exclude(pk=self.pk).first()
+			
+			if cliente_empresa_existente:
+				errors['cliente_empresa'] = f'Ya existe un cliente marcado como empresa: {cliente_empresa_existente.nombre_cliente}. Solo puede haber un cliente empresa a la vez.'
 		
 		if not self.cuit:
 			errors.update({'cuit': 'Debe indicar un Número de Documento de Identidad.'})

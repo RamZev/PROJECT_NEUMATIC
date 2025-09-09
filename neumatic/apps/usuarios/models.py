@@ -4,7 +4,7 @@ from django.contrib.auth.models import AbstractUser
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
-from entorno.constantes_base import JERARQUIA, PRECIO_DESCRIPCION
+from entorno.constantes_base import JERARQUIA, SI_NO
 
 
 class User(AbstractUser):
@@ -33,7 +33,7 @@ class User(AbstractUser):
 	cambia_precio_descripcion = models.BooleanField("Cambia Precio y Descripción", 
 												 default=False,
 												 null=True, blank=True,
-												 choices=PRECIO_DESCRIPCION)
+												 choices=SI_NO)
 
 
 # -- Al crear un nuevo usuario este quede activo por defecto.

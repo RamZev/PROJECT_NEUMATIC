@@ -1,13 +1,12 @@
 <!-- apps\datatools\templates\datatools\excel_preview.html -->
 {% extends 'base.html' %}
 {% load static %}
-{% load custom_tags %}  <!-- Agrega esta línea -->
+{% load custom_tags %}
 
 {% block title %}Previsualización de Excel{% endblock %}
 
 {% block style %}
 	<style>
-		/* Tus estilos CSS existentes */
 		.table-responsive {
 			overflow-x: auto;
 			max-height: 70vh;
@@ -75,6 +74,84 @@
 			text-align: right;
 			font-family: monospace;
 		}
+		
+		/* Estilos para el panel de la derecha */
+		.container-main {
+			display: flex;
+			gap: 20px;
+		}
+		
+		.table-container {
+			flex: 3;
+		}
+		
+		.form-container {
+			flex: 1;
+			min-width: 300px;
+		}
+		
+		.campos-form {
+			background: #f8f9fa;
+			padding: 20px;
+			border-radius: 5px;
+			border: 1px solid #dee2e6;
+		}
+		
+		.campo-item {
+			margin-bottom: 10px;
+			padding: 8px;
+			border-bottom: 1px solid #e9ecef;
+		}
+		
+		.campo-item:last-child {
+			border-bottom: none;
+		}
+		
+		.form-check-label {
+			font-size: 0.9rem;
+			margin-left: 5px;
+		}
+		
+		.btn-toggle-all {
+			margin-bottom: 15px;
+		}		
+		
+		/* Estilos para la paginación*/
+		.pagination-container {
+			display: flex;
+			justify-content: center;
+			margin: 20px 0;
+		}
+		
+		.pagination {
+			margin: 0;
+		}
+		
+		.page-info {
+			/*text-align: center;*/
+			text-align: left;
+			/*margin: 10px 0;*/
+			margin: 10px;
+			font-size: 0.9rem;
+			color: #6c757d;
+		}
+		
+		.loading-overlay {
+			display: none;
+			position: absolute;
+			top: 0;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			background: rgba(255, 255, 255, 0.8);
+			z-index: 1000;
+			justify-content: center;
+			align-items: center;
+		}
+		
+		.table-container {
+			position: relative;
+		}		
 	</style>
 {% endblock %}
 
@@ -98,114 +175,230 @@
 						<li class="breadcrumb-item active">Previsualización</li>
 					</ol>
 					
-					<div class="card mb-4">
-						<div class="card-header d-flex align-items-center">
-							<div class="d-flex align-items-center">
-								<i class="fas fa-table me-2"></i>
-								<span>Archivo: <strong>{{ nombre_archivo }}</strong></span>
-								<span class="badge bg-primary badge-count ms-2">{{ datos|length }} registros</span>
-							</div>
-						</div>
-						<div class="card-body p-0">
-							<div class="table-responsive">
-								<table class="table table-fit mb-0">
-									<thead>
-										<tr>
-											{% for columna in columnas %}
-												<th>{{ columna }}</th>
-											{% endfor %}
-										</tr>
-									</thead>
-									<tbody>
-										{% for fila in datos %}
-											<tr>
-												{% for key, valor in fila.items %}
-													{% with valor_tipo=valor|get_type %}
-													<td data-content="{{ valor|default:'' }}" 
-														title="{{ valor|default:'' }}"
-														{% comment %} {% if valor_tipo == 'int' or valor_tipo == 'float' or valor_tipo == 'Decimal' %}class="number-cell"{% endif %}> {% endcomment %}
-														{% if valor_tipo == 'float' or valor_tipo == 'Decimal' %}class="number-cell"{% endif %}>
-														{% comment %}
-														{% if valor_tipo == 'int' %}
-															{{ valor|formato_es_ar_entero }}
-														{% elif valor_tipo == 'float' or valor_tipo == 'Decimal' %}
-															{{ valor|formato_es_ar }}
-														{% else %}
-															{{ valor|default:'' }}
-														{% endif %}
-														{% endcomment %}
-														{% if valor_tipo == 'float' or valor_tipo == 'Decimal' %}
-															{{ valor|formato_es_ar }}
-														{% else %}
-															{{ valor|default:'' }}
-														{% endif %}
-													</td>
-													{% endwith %}
-												{% endfor %}
-											</tr>
-										{% endfor %}
-									</tbody>
-								</table>
-							</div>
-						</div>
-						<div class="card-footer">
-							{% comment %} <form method="post" action="{% url 'procesar_actualizacion' %}"> {% endcomment %}
-							<form method="post">
-								{% csrf_token %}
-								<input type="hidden" name="nombre_archivo" value="{{ nombre_archivo }}">
-								
-								<div class="text-center">
-									<button type="submit" class="btn btn-success">
-										<i class="fas fa-sync-alt me-1"></i>
-										Continuar con la Actualización
-									</button>
-									<a href="{% url 'cargar_excel' %}" class="btn btn-secondary">
-										<i class="fas fa-arrow-left me-1"></i>
-										Volver a Cargar
-									</a>
+					<div class="container-main">
+						<!-- Panel izquierdo: Tabla de datos -->
+						<div class="table-container">
+							<div class="card mb-4">
+								<div class="card-header d-flex align-items-center">
+									<div class="d-flex align-items-center">
+										<i class="fas fa-table me-2"></i>
+										<span>Archivo: <strong>{{ nombre_archivo }}</strong></span>
+										<span class="badge bg-primary badge-count ms-2">{{ total_filas }} registros</span>
+									</div>
 								</div>
-							</form>
+								
+								<!-- Información de paginación -->
+								<div class="page-info">
+									Mostrando página {{ pagina_actual }} de {{ total_paginas }} 
+									(registros {{ page_start }} a {{ page_end }} de {{ total_filas }})
+								</div>
+								
+								<div class="card-body p-0 position-relative">
+									<div class="loading-overlay" id="loadingOverlay">
+										<div class="spinner-border text-primary" role="status">
+											<span class="visually-hidden">Cargando...</span>
+										</div>
+									</div>
+									
+									<div class="table-responsive">
+										<table class="table table-fit mb-0">
+											<thead>
+												<tr>
+													{% for columna in columnas %}
+														<th>{{ columna }}</th>
+													{% endfor %}
+												</tr>
+											</thead>
+											<tbody>
+												{% for fila in datos %}
+													<tr>
+														{% for key, valor in fila.items %}
+															{% with valor_tipo=valor|get_type %}
+																<td data-content="{{ valor|default:'' }}" 
+																	title="{{ valor|default:'' }}"
+																	{% if valor_tipo == 'float' or valor_tipo == 'Decimal' %}class="number-cell"{% endif %}>
+																	{% if valor_tipo == 'float' or valor_tipo == 'Decimal' %}
+																		{{ valor|formato_es_ar }}
+																	{% else %}
+																		{{ valor|default:'' }}
+																	{% endif %}
+																</td>
+															{% endwith %}
+														{% endfor %}
+													</tr>
+												{% endfor %}
+											</tbody>
+										</table>
+									</div>
+									
+									<!-- Paginación -->
+									<div class="pagination-container">
+										<nav>
+											<ul class="pagination">
+												<li class="page-item {% if pagina_actual == 1 %}disabled{% endif %}">
+													<a class="page-link" href="#" onclick="cambiarPagina(1)">Primera</a>
+												</li>
+												<li class="page-item {% if pagina_actual == 1 %}disabled{% endif %}">
+													<a class="page-link" href="#" onclick="cambiarPagina({{ pagina_actual|add:'-1' }})">Anterior</a>
+												</li>
+												
+												{% for page in page_range %}
+													<li class="page-item {% if page == pagina_actual %}active{% endif %}">
+														<a class="page-link" href="#" onclick="cambiarPagina({{ page }})">{{ page }}</a>
+													</li>
+												{% endfor %}
+												
+												<li class="page-item {% if pagina_actual == total_paginas %}disabled{% endif %}">
+													<a class="page-link" href="#" onclick="cambiarPagina({{ pagina_actual|add:'1' }})">Siguiente</a>
+												</li>
+												<li class="page-item {% if pagina_actual == total_paginas %}disabled{% endif %}">
+													<a class="page-link" href="#" onclick="cambiarPagina({{ total_paginas }})">Última</a>
+												</li>
+											</ul>
+										</nav>
+									</div>
+									
+								</div>
+							</div>
 						</div>
+						
+						<!--***********************************-->
+						<!-- Panel derecho: Selección de campos (se mantiene igual) -->
+						<div class="form-container">
+							<div class="card">
+								<div class="card-header">
+									<i class="fas fa-cogs me-1"></i>
+									Campos a Actualizar
+								</div>
+								<div class="card-body">
+									<form method="post" id="formActualizacion">
+										{% csrf_token %}
+										<input type="hidden" name="nombre_archivo" value="{{ nombre_archivo }}">
+										
+										<div class="mb-3">
+											<button type="button" class="btn btn-outline-primary btn-sm btn-toggle-all" onclick="toggleAllCheckboxes()">
+												<i class="fas fa-check-square"></i> Seleccionar/Deseleccionar Todos
+											</button>
+										</div>
+										
+										<div class="campos-form">
+											{% for field in form_campos %}
+												<div class="form-check campo-item">
+													{{ field }}
+													<label class="form-check-label" for="{{ field.id_for_label }}">
+														{{ field.label }}
+													</label>
+												</div>
+											{% endfor %}
+										</div>
+										
+										<div class="text-center mt-3">
+											<button type="submit" class="btn btn-success">
+												<i class="fas fa-sync-alt me-1"></i>
+												Actualizar Datos Seleccionados
+											</button>
+											<a href="{% url 'cargar_excel' %}" class="btn btn-secondary">
+												<i class="fas fa-arrow-left me-1"></i>
+												Volver a Cargar
+											</a>
+										</div>
+									</form>
+								</div>
+							</div>
+						</div>
+						<!--***********************************-->
 					</div>
 				</div>
 			</main>
 		</div>
 	</div>
-{% endblock %}
+{% endblock main %}
 
 {% block script %}
 	<script>
-		document.addEventListener('DOMContentLoaded', function() {
-			function adjustColumnWidths() {
-				const table = document.querySelector('.table-fit');
-				if (!table) return;
-				
-				const headers = table.querySelectorAll('th');
-				const firstRow = table.querySelector('tbody tr');
-				
-				if (!firstRow) return;
-				
-				const cells = firstRow.querySelectorAll('td');
-				
-				headers.forEach((header, index) => {
-					if (cells[index]) {
-						const headerWidth = header.scrollWidth;
-						const cellWidth = cells[index].scrollWidth;
-						const maxWidth = Math.max(headerWidth, cellWidth) + 20;
-						
-						header.style.minWidth = maxWidth + 'px';
-						cells[index].style.minWidth = maxWidth + 'px';
-						
-						const allCells = table.querySelectorAll(`tbody tr td:nth-child(${index + 1})`);
-						allCells.forEach(cell => {
-							cell.style.minWidth = maxWidth + 'px';
-						});
-					}
-				});
-			}
+		//-- Función para seleccionar/deseleccionar todos los checkboxes.
+		function toggleAllCheckboxes() {
+			const checkboxes = document.querySelectorAll('.form-check-input');
+			const allChecked = Array.from(checkboxes).every(checkbox => checkbox.checked);
 			
+			checkboxes.forEach(checkbox => {
+				checkbox.checked = !allChecked;
+			});
+		}
+		
+		//-- Función para cambiar de página.
+		function cambiarPagina(pagina) {
+			if (pagina < 1 || pagina > {{ total_paginas }}) return;
+			
+			//-- Mostrar loading.
+			document.getElementById('loadingOverlay').style.display = 'flex';
+			
+			//-- Hacer petición AJAX.
+			fetch(`{% url 'cargar_pagina_excel' %}?pagina=${pagina}`, {
+				method: 'GET',
+				headers: {
+					'X-Requested-With': 'XMLHttpRequest',
+				}
+			})
+			.then(response => response.json())
+			.then(data => {
+				if (data.success) {
+					//-- Recargar la página para mostrar los nuevos datos.
+					window.location.reload();
+				} else {
+					alert('Error al cargar la página: ' + data.error);
+				}
+			})
+			.catch(error => {
+				alert('Error de conexión');
+			})
+			.finally(() => {
+				document.getElementById('loadingOverlay').style.display = 'none';
+			});
+		}
+		
+		//-- Ajustar automáticamente el ancho de las columnas.
+		function adjustColumnWidths() {
+			const table = document.querySelector('.table-fit');
+			if (!table) return;
+			
+			const headers = table.querySelectorAll('th');
+			const firstRow = table.querySelector('tbody tr');
+			
+			if (!firstRow) return;
+			
+			const cells = firstRow.querySelectorAll('td');
+			
+			headers.forEach((header, index) => {
+				if (cells[index]) {
+					const headerWidth = header.scrollWidth;
+					const cellWidth = cells[index].scrollWidth;
+					const maxWidth = Math.max(headerWidth, cellWidth) + 20;
+					
+					header.style.minWidth = maxWidth + 'px';
+					cells[index].style.minWidth = maxWidth + 'px';
+					
+					const allCells = table.querySelectorAll(`tbody tr td:nth-child(${index + 1})`);
+					allCells.forEach(cell => {
+						cell.style.minWidth = maxWidth + 'px';
+					});
+				}
+			});
+		}
+		
+		//-- Inicializar cuando el DOM esté cargado.
+		document.addEventListener('DOMContentLoaded', function() {
+			//-- Ajustar columnas.
 			setTimeout(adjustColumnWidths, 100);
+			
+			//-- Reajustar cuando la ventana cambie de tamaño.
 			window.addEventListener('resize', adjustColumnWidths);
+			
+			//-- Inicializar tooltips de Bootstrap si los usas.
+			var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+			var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+				return new bootstrap.Tooltip(tooltipTriggerEl);
+			});
 		});
 	</script>
 {% endblock %}

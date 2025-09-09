@@ -89,8 +89,8 @@ class ConfigViews:
 			"label": "CAI",
 			"col_width_pdf": 40,
 			"pdf": True,
-			"excel": True,
-			"csv": True
+			"excel": False,
+			"csv": False
 		},
 		"tipo_producto": {
 			"label": "Tipo Producto",
@@ -131,8 +131,8 @@ class ConfigViews:
 			"label": "Familia",
 			"col_width_pdf": 0,
 			"pdf": False,
-			"excel": True,
-			"csv": True
+			"excel": False,
+			"csv": False
 		},
 		"id_modelo_id": {
 			"label": "Id Modelo",
@@ -145,8 +145,8 @@ class ConfigViews:
 			"label": "Modelo",
 			"col_width_pdf": 0,
 			"pdf": False,
-			"excel": True,
-			"csv": True
+			"excel": False,
+			"csv": False
 		},
 		"nombre_producto": {
 			"label": "Descripción",
@@ -166,8 +166,8 @@ class ConfigViews:
 			"label": "Marca",
 			"col_width_pdf": 140,
 			"pdf": True,
-			"excel": True,
-			"csv": True
+			"excel": False,
+			"csv": False
 		},
 		"precio": {
 			"label": "Precio",
@@ -201,8 +201,8 @@ class ConfigViews:
 			"label": "Alic. IVA",
 			"col_width_pdf": 0,
 			"pdf": False,
-			"excel": True,
-			"csv": True
+			"excel": False,
+			"csv": False
 		},
 		"minimo": {
 			"label": "Mínimo",
@@ -243,8 +243,8 @@ class ConfigViews:
 			"label": "Estado",
 			"col_width_pdf": 0,
 			"pdf": False,
-			"excel": True,
-			"csv": True
+			"excel": False,
+			"csv": False
 		},
 	}
 
