@@ -1894,15 +1894,24 @@
                 //     numeroAsociadoInput.required = false;  // Quitar requerimiento
                 // }
 
-                // 5. Habilitar la fecha si no es un documento electrónico
-                const electronicaDict = JSON.parse(document.getElementById('electronica-data').dataset.electronica);
-                const electronica = electronicaDict[comprobanteId] ?? false;
+                // 5. Habilitar la fecha si es un documento manual
+                const manualDict = JSON.parse(document.getElementById('manual-data').dataset.manual);
+                const manual = manualDict[comprobanteId] ?? false;
 
-                if (electronica){
-                    document.getElementById('id_fecha_comprobante').readOnly = true;
-                } else {
+                if (manual){
                     document.getElementById('id_fecha_comprobante').readOnly = false;
+                } else {
+                    document.getElementById('id_fecha_comprobante').readOnly = true;
                 }
+
+                // const electronicaDict = JSON.parse(document.getElementById('electronica-data').dataset.electronica);
+                // const electronica = electronicaDict[comprobanteId] ?? false;
+
+                // if (electronica){
+                //     document.getElementById('id_fecha_comprobante').readOnly = true;
+                // } else {
+                //     document.getElementById('id_fecha_comprobante').readOnly = false;
+                // }
 
                 // Habilitar el número de comprobante y asignarle valor en blanco
                 // if (tipoComprobante == "FACTURA" && !electronica){

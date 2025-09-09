@@ -8,11 +8,12 @@
         "estacion": "ESTACION03",
         "estadistica": 1,
         "estatus_comprobante_venta": 1,
-        "fcontrol": "2025-07-31 18:17:18",
+        "fcontrol": "2025-09-06 22:55:33",
         "id_comprobante_venta": 1,
         "id_user_id": 1,
         "info_michelin_auto": 1,
         "info_michelin_camion": 1,
+        "interno": 0,
         "libro_iva": 1,
         "manual": 1,
         "mipyme": 0,
@@ -29,7 +30,7 @@
         "recibo": 0,
         "remito": 0,
         "tipo_comprobante": "FACTURA",
-        "usuario": null
+        "usuario": "admin"
     },
     {
         "codigo_afip_a": "003",
@@ -40,11 +41,12 @@
         "estacion": "ESTACION03",
         "estadistica": 1,
         "estatus_comprobante_venta": 1,
-        "fcontrol": "2025-07-31 18:17:18",
+        "fcontrol": "2025-09-06 22:55:34",
         "id_comprobante_venta": 2,
         "id_user_id": 1,
         "info_michelin_auto": 1,
         "info_michelin_camion": 1,
+        "interno": 0,
         "libro_iva": 1,
         "manual": 1,
         "mipyme": 0,
@@ -61,7 +63,7 @@
         "recibo": 0,
         "remito": 0,
         "tipo_comprobante": "NOTA DE CRÉDITO",
-        "usuario": null
+        "usuario": "admin"
     },
     {
         "codigo_afip_a": "002",
@@ -72,11 +74,12 @@
         "estacion": "ESTACION03",
         "estadistica": 0,
         "estatus_comprobante_venta": 1,
-        "fcontrol": "2025-07-31 18:17:18",
+        "fcontrol": "2025-09-06 22:55:34",
         "id_comprobante_venta": 3,
         "id_user_id": 1,
         "info_michelin_auto": 1,
         "info_michelin_camion": 1,
+        "interno": 0,
         "libro_iva": 1,
         "manual": 1,
         "mipyme": 0,
@@ -93,7 +96,7 @@
         "recibo": 0,
         "remito": 0,
         "tipo_comprobante": "NOTA DE DÉBITO",
-        "usuario": null
+        "usuario": "admin"
     },
     {
         "codigo_afip_a": "RB",
@@ -104,11 +107,12 @@
         "estacion": "ESTACION03",
         "estadistica": 0,
         "estatus_comprobante_venta": 1,
-        "fcontrol": "2025-07-31 18:17:18",
+        "fcontrol": "2025-09-06 22:55:34",
         "id_comprobante_venta": 4,
         "id_user_id": 1,
         "info_michelin_auto": 0,
         "info_michelin_camion": 0,
+        "interno": 0,
         "libro_iva": 0,
         "manual": 0,
         "mipyme": 0,
@@ -125,7 +129,7 @@
         "recibo": 1,
         "remito": 0,
         "tipo_comprobante": "RECIBO",
-        "usuario": ""
+        "usuario": "admin"
     },
     {
         "codigo_afip_a": "AJ",
@@ -136,11 +140,12 @@
         "estacion": "ESTACION03",
         "estadistica": 0,
         "estatus_comprobante_venta": 1,
-        "fcontrol": "2025-07-31 18:17:18",
+        "fcontrol": "2025-09-06 22:55:34",
         "id_comprobante_venta": 5,
         "id_user_id": 1,
         "info_michelin_auto": 0,
         "info_michelin_camion": 0,
+        "interno": 0,
         "libro_iva": 0,
         "manual": 0,
         "mipyme": 0,
@@ -157,7 +162,7 @@
         "recibo": 0,
         "remito": 0,
         "tipo_comprobante": "AJUSTE",
-        "usuario": null
+        "usuario": "admin"
     },
     {
         "codigo_afip_a": "MI",
@@ -168,11 +173,12 @@
         "estacion": "ESTACION03",
         "estadistica": 0,
         "estatus_comprobante_venta": 1,
-        "fcontrol": "2025-07-31 18:17:19",
+        "fcontrol": "2025-09-06 22:55:34",
         "id_comprobante_venta": 6,
         "id_user_id": 1,
         "info_michelin_auto": 0,
         "info_michelin_camion": 0,
+        "interno": 1,
         "libro_iva": 0,
         "manual": 0,
         "mipyme": 0,
@@ -189,7 +195,7 @@
         "recibo": 0,
         "remito": 0,
         "tipo_comprobante": "MOVIMIENTO INTERNO",
-        "usuario": null
+        "usuario": "admin"
     },
     {
         "codigo_afip_a": "PR",
@@ -200,11 +206,12 @@
         "estacion": "ESTACION03",
         "estadistica": 0,
         "estatus_comprobante_venta": 1,
-        "fcontrol": "2025-07-31 18:17:19",
+        "fcontrol": "2025-09-06 22:55:34",
         "id_comprobante_venta": 7,
         "id_user_id": 1,
         "info_michelin_auto": 0,
         "info_michelin_camion": 0,
+        "interno": 0,
         "libro_iva": 0,
         "manual": 0,
         "mipyme": 0,
@@ -221,7 +228,7 @@
         "recibo": 0,
         "remito": 0,
         "tipo_comprobante": "PRESUPUESTO",
-        "usuario": null
+        "usuario": "admin"
     },
     {
         "codigo_afip_a": "001",
@@ -232,11 +239,12 @@
         "estacion": "ESTACION03",
         "estadistica": 1,
         "estatus_comprobante_venta": 1,
-        "fcontrol": "2025-07-31 18:17:19",
+        "fcontrol": "2025-09-06 22:55:34",
         "id_comprobante_venta": 8,
         "id_user_id": 1,
         "info_michelin_auto": 1,
         "info_michelin_camion": 1,
+        "interno": 0,
         "libro_iva": 1,
         "manual": 0,
         "mipyme": 0,
@@ -253,7 +261,7 @@
         "recibo": 0,
         "remito": 0,
         "tipo_comprobante": "FACTURA",
-        "usuario": null
+        "usuario": "admin"
     },
     {
         "codigo_afip_a": "003",
@@ -264,11 +272,12 @@
         "estacion": "ESTACION03",
         "estadistica": 1,
         "estatus_comprobante_venta": 1,
-        "fcontrol": "2025-07-31 18:17:19",
+        "fcontrol": "2025-09-06 22:55:34",
         "id_comprobante_venta": 9,
         "id_user_id": 1,
         "info_michelin_auto": 1,
         "info_michelin_camion": 1,
+        "interno": 0,
         "libro_iva": 1,
         "manual": 0,
         "mipyme": 0,
@@ -285,7 +294,7 @@
         "recibo": 0,
         "remito": 0,
         "tipo_comprobante": "NOTA DE CRÉDITO",
-        "usuario": null
+        "usuario": "admin"
     },
     {
         "codigo_afip_a": "002",
@@ -296,11 +305,12 @@
         "estacion": "ESTACION03",
         "estadistica": 0,
         "estatus_comprobante_venta": 1,
-        "fcontrol": "2025-07-31 18:17:19",
+        "fcontrol": "2025-09-06 22:55:34",
         "id_comprobante_venta": 10,
         "id_user_id": 1,
         "info_michelin_auto": 1,
         "info_michelin_camion": 1,
+        "interno": 0,
         "libro_iva": 1,
         "manual": 0,
         "mipyme": 0,
@@ -317,7 +327,7 @@
         "recibo": 0,
         "remito": 0,
         "tipo_comprobante": "NOTA DE DÉBITO",
-        "usuario": null
+        "usuario": "admin"
     },
     {
         "codigo_afip_a": "091",
@@ -328,11 +338,12 @@
         "estacion": "ESTACION03",
         "estadistica": 1,
         "estatus_comprobante_venta": 1,
-        "fcontrol": "2025-07-31 18:17:19",
+        "fcontrol": "2025-09-06 22:55:35",
         "id_comprobante_venta": 11,
         "id_user_id": 1,
         "info_michelin_auto": 1,
         "info_michelin_camion": 1,
+        "interno": 0,
         "libro_iva": 0,
         "manual": 0,
         "mipyme": 0,
@@ -349,7 +360,7 @@
         "recibo": 0,
         "remito": 1,
         "tipo_comprobante": "REMITO",
-        "usuario": null
+        "usuario": "admin"
     },
     {
         "codigo_afip_a": "091",
@@ -360,11 +371,12 @@
         "estacion": "ESTACION03",
         "estadistica": 1,
         "estatus_comprobante_venta": 1,
-        "fcontrol": "2025-07-31 18:17:19",
+        "fcontrol": "2025-09-06 22:55:35",
         "id_comprobante_venta": 12,
         "id_user_id": 1,
         "info_michelin_auto": 1,
         "info_michelin_camion": 1,
+        "interno": 0,
         "libro_iva": 0,
         "manual": 0,
         "mipyme": 0,
@@ -381,7 +393,7 @@
         "recibo": 0,
         "remito": 1,
         "tipo_comprobante": "REMITO",
-        "usuario": null
+        "usuario": "admin"
     },
     {
         "codigo_afip_a": "001",
@@ -392,11 +404,12 @@
         "estacion": "ESTACION03",
         "estadistica": 0,
         "estatus_comprobante_venta": 1,
-        "fcontrol": "2025-07-31 18:17:19",
+        "fcontrol": "2025-09-06 22:55:35",
         "id_comprobante_venta": 13,
         "id_user_id": 1,
         "info_michelin_auto": 0,
         "info_michelin_camion": 0,
+        "interno": 0,
         "libro_iva": 1,
         "manual": 0,
         "mipyme": 0,
@@ -413,7 +426,7 @@
         "recibo": 0,
         "remito": 0,
         "tipo_comprobante": "FACTURA",
-        "usuario": null
+        "usuario": "admin"
     },
     {
         "codigo_afip_a": "091",
@@ -424,11 +437,12 @@
         "estacion": "ESTACION03",
         "estadistica": 1,
         "estatus_comprobante_venta": 1,
-        "fcontrol": "2025-07-31 18:17:20",
+        "fcontrol": "2025-09-06 22:55:35",
         "id_comprobante_venta": 14,
         "id_user_id": 1,
         "info_michelin_auto": 1,
         "info_michelin_camion": 1,
+        "interno": 0,
         "libro_iva": 0,
         "manual": 1,
         "mipyme": 0,
@@ -445,7 +459,7 @@
         "recibo": 0,
         "remito": 1,
         "tipo_comprobante": "REMITO",
-        "usuario": null
+        "usuario": "admin"
     },
     {
         "codigo_afip_a": "RB",
@@ -456,11 +470,12 @@
         "estacion": "ESTACION03",
         "estadistica": 0,
         "estatus_comprobante_venta": 1,
-        "fcontrol": "2025-07-31 18:17:20",
+        "fcontrol": "2025-09-06 22:55:35",
         "id_comprobante_venta": 15,
         "id_user_id": 1,
         "info_michelin_auto": 0,
         "info_michelin_camion": 0,
+        "interno": 0,
         "libro_iva": 0,
         "manual": 0,
         "mipyme": 0,
@@ -477,7 +492,7 @@
         "recibo": 1,
         "remito": 0,
         "tipo_comprobante": "RECIBO",
-        "usuario": null
+        "usuario": "admin"
     },
     {
         "codigo_afip_a": "091",
@@ -488,11 +503,12 @@
         "estacion": "ESTACION03",
         "estadistica": 0,
         "estatus_comprobante_venta": 1,
-        "fcontrol": "2025-07-31 18:17:20",
+        "fcontrol": "2025-09-06 22:55:35",
         "id_comprobante_venta": 16,
         "id_user_id": 1,
         "info_michelin_auto": 0,
         "info_michelin_camion": 0,
+        "interno": 0,
         "libro_iva": 0,
         "manual": 0,
         "mipyme": 0,
@@ -509,7 +525,7 @@
         "recibo": 0,
         "remito": 1,
         "tipo_comprobante": "REMITO",
-        "usuario": null
+        "usuario": "admin"
     },
     {
         "codigo_afip_a": "091",
@@ -520,11 +536,12 @@
         "estacion": "ESTACION03",
         "estadistica": 0,
         "estatus_comprobante_venta": 1,
-        "fcontrol": "2025-07-31 18:17:20",
+        "fcontrol": "2025-09-06 22:55:35",
         "id_comprobante_venta": 17,
         "id_user_id": 1,
         "info_michelin_auto": 0,
         "info_michelin_camion": 0,
+        "interno": 0,
         "libro_iva": 0,
         "manual": 0,
         "mipyme": 0,
@@ -541,7 +558,7 @@
         "recibo": 0,
         "remito": 1,
         "tipo_comprobante": "REMITO",
-        "usuario": null
+        "usuario": "admin"
     },
     {
         "codigo_afip_a": "091",
@@ -552,11 +569,12 @@
         "estacion": "ESTACION03",
         "estadistica": 0,
         "estatus_comprobante_venta": 1,
-        "fcontrol": "2025-07-31 18:17:20",
+        "fcontrol": "2025-09-06 22:55:35",
         "id_comprobante_venta": 18,
         "id_user_id": 1,
         "info_michelin_auto": 0,
         "info_michelin_camion": 0,
+        "interno": 0,
         "libro_iva": 0,
         "manual": 1,
         "mipyme": 0,
@@ -573,7 +591,7 @@
         "recibo": 0,
         "remito": 1,
         "tipo_comprobante": "REMITO",
-        "usuario": ""
+        "usuario": "admin"
     },
     {
         "codigo_afip_a": "091",
@@ -584,11 +602,12 @@
         "estacion": "ESTACION03",
         "estadistica": 0,
         "estatus_comprobante_venta": 1,
-        "fcontrol": "2025-07-31 18:17:20",
+        "fcontrol": "2025-09-06 22:55:35",
         "id_comprobante_venta": 19,
         "id_user_id": 1,
         "info_michelin_auto": 1,
         "info_michelin_camion": 1,
+        "interno": 0,
         "libro_iva": 0,
         "manual": 1,
         "mipyme": 0,
@@ -605,7 +624,7 @@
         "recibo": 0,
         "remito": 1,
         "tipo_comprobante": "REMITO",
-        "usuario": null
+        "usuario": "admin"
     },
     {
         "codigo_afip_a": "001",
@@ -616,11 +635,12 @@
         "estacion": "ESTACION03",
         "estadistica": 0,
         "estatus_comprobante_venta": 1,
-        "fcontrol": "2025-07-31 18:17:20",
+        "fcontrol": "2025-09-06 22:55:35",
         "id_comprobante_venta": 20,
         "id_user_id": 1,
         "info_michelin_auto": 0,
         "info_michelin_camion": 0,
+        "interno": 0,
         "libro_iva": 1,
         "manual": 1,
         "mipyme": 0,
@@ -637,7 +657,7 @@
         "recibo": 0,
         "remito": 0,
         "tipo_comprobante": "FACTURA",
-        "usuario": null
+        "usuario": "admin"
     },
     {
         "codigo_afip_a": "RB",
@@ -648,11 +668,12 @@
         "estacion": "ESTACION03",
         "estadistica": 0,
         "estatus_comprobante_venta": 1,
-        "fcontrol": "2025-07-31 18:17:20",
+        "fcontrol": "2025-09-06 22:55:36",
         "id_comprobante_venta": 21,
         "id_user_id": 1,
         "info_michelin_auto": 0,
         "info_michelin_camion": 0,
+        "interno": 0,
         "libro_iva": 0,
         "manual": 0,
         "mipyme": 0,
@@ -669,7 +690,7 @@
         "recibo": 1,
         "remito": 0,
         "tipo_comprobante": "RECIBO",
-        "usuario": null
+        "usuario": "admin"
     },
     {
         "codigo_afip_a": "091",
@@ -680,11 +701,12 @@
         "estacion": "ESTACION03",
         "estadistica": 0,
         "estatus_comprobante_venta": 1,
-        "fcontrol": "2025-07-31 18:17:21",
+        "fcontrol": "2025-09-06 22:55:36",
         "id_comprobante_venta": 22,
         "id_user_id": 1,
         "info_michelin_auto": 0,
         "info_michelin_camion": 0,
+        "interno": 0,
         "libro_iva": 0,
         "manual": 1,
         "mipyme": 0,
@@ -701,7 +723,7 @@
         "recibo": 0,
         "remito": 1,
         "tipo_comprobante": "REMITO",
-        "usuario": null
+        "usuario": "admin"
     },
     {
         "codigo_afip_a": "EG",
@@ -712,11 +734,12 @@
         "estacion": "ESTACION03",
         "estadistica": 0,
         "estatus_comprobante_venta": 1,
-        "fcontrol": "2025-07-31 18:17:21",
+        "fcontrol": "2025-09-06 22:55:36",
         "id_comprobante_venta": 23,
         "id_user_id": 1,
         "info_michelin_auto": 0,
         "info_michelin_camion": 0,
+        "interno": 0,
         "libro_iva": 0,
         "manual": 0,
         "mipyme": 0,
@@ -733,7 +756,7 @@
         "recibo": 0,
         "remito": 0,
         "tipo_comprobante": "EGRESOS DE CAJA",
-        "usuario": null
+        "usuario": "admin"
     },
     {
         "codigo_afip_a": "RE",
@@ -744,11 +767,12 @@
         "estacion": "ESTACION03",
         "estadistica": 0,
         "estatus_comprobante_venta": 1,
-        "fcontrol": "2025-07-31 18:17:21",
+        "fcontrol": "2025-09-06 22:55:36",
         "id_comprobante_venta": 24,
         "id_user_id": 1,
         "info_michelin_auto": 0,
         "info_michelin_camion": 0,
+        "interno": 0,
         "libro_iva": 0,
         "manual": 1,
         "mipyme": 0,
@@ -765,7 +789,7 @@
         "recibo": 1,
         "remito": 0,
         "tipo_comprobante": "RECIBO",
-        "usuario": null
+        "usuario": "admin"
     },
     {
         "codigo_afip_a": "IN",
@@ -776,11 +800,12 @@
         "estacion": "ESTACION03",
         "estadistica": 0,
         "estatus_comprobante_venta": 1,
-        "fcontrol": "2025-07-31 18:17:21",
+        "fcontrol": "2025-09-06 22:55:36",
         "id_comprobante_venta": 25,
         "id_user_id": 1,
         "info_michelin_auto": 0,
         "info_michelin_camion": 0,
+        "interno": 0,
         "libro_iva": 0,
         "manual": 0,
         "mipyme": 0,
@@ -797,7 +822,7 @@
         "recibo": 0,
         "remito": 0,
         "tipo_comprobante": "INGRESO DE CAJA",
-        "usuario": null
+        "usuario": "admin"
     },
     {
         "codigo_afip_a": "RE",
@@ -808,11 +833,12 @@
         "estacion": "ESTACION03",
         "estadistica": 0,
         "estatus_comprobante_venta": 1,
-        "fcontrol": "2025-07-31 18:17:21",
+        "fcontrol": "2025-09-06 22:55:36",
         "id_comprobante_venta": 26,
         "id_user_id": 1,
         "info_michelin_auto": 0,
         "info_michelin_camion": 0,
+        "interno": 0,
         "libro_iva": 0,
         "manual": 1,
         "mipyme": 0,
@@ -829,7 +855,7 @@
         "recibo": 1,
         "remito": 0,
         "tipo_comprobante": "RECIBO",
-        "usuario": ""
+        "usuario": "admin"
     },
     {
         "codigo_afip_a": "201",
@@ -840,11 +866,12 @@
         "estacion": "ESTACION03",
         "estadistica": 1,
         "estatus_comprobante_venta": 1,
-        "fcontrol": "2025-07-31 18:17:21",
+        "fcontrol": "2025-09-06 22:55:36",
         "id_comprobante_venta": 27,
         "id_user_id": 1,
         "info_michelin_auto": 0,
         "info_michelin_camion": 0,
+        "interno": 0,
         "libro_iva": 1,
         "manual": 0,
         "mipyme": 1,
@@ -861,7 +888,7 @@
         "recibo": 0,
         "remito": 0,
         "tipo_comprobante": "FACTURA",
-        "usuario": null
+        "usuario": "admin"
     },
     {
         "codigo_afip_a": "203",
@@ -872,11 +899,12 @@
         "estacion": "ESTACION03",
         "estadistica": 1,
         "estatus_comprobante_venta": 1,
-        "fcontrol": "2025-09-01 15:30:51",
+        "fcontrol": "2025-09-06 22:55:36",
         "id_comprobante_venta": 28,
         "id_user_id": 1,
         "info_michelin_auto": 0,
         "info_michelin_camion": 0,
+        "interno": 0,
         "libro_iva": 1,
         "manual": 0,
         "mipyme": 1,
@@ -904,11 +932,12 @@
         "estacion": "ESTACION03",
         "estadistica": 0,
         "estatus_comprobante_venta": 1,
-        "fcontrol": "2025-09-01 15:31:11",
+        "fcontrol": "2025-09-06 22:55:36",
         "id_comprobante_venta": 29,
         "id_user_id": 1,
         "info_michelin_auto": 0,
         "info_michelin_camion": 0,
+        "interno": 0,
         "libro_iva": 1,
         "manual": 0,
         "mipyme": 1,
@@ -936,11 +965,12 @@
         "estacion": "ESTACION03",
         "estadistica": 0,
         "estatus_comprobante_venta": 1,
-        "fcontrol": "2025-07-31 18:17:21",
+        "fcontrol": "2025-09-06 22:55:37",
         "id_comprobante_venta": 30,
         "id_user_id": 1,
         "info_michelin_auto": 0,
         "info_michelin_camion": 0,
+        "interno": 0,
         "libro_iva": 1,
         "manual": 0,
         "mipyme": 1,
@@ -957,7 +987,7 @@
         "recibo": 0,
         "remito": 0,
         "tipo_comprobante": "FACTURA",
-        "usuario": null
+        "usuario": "admin"
     },
     {
         "codigo_afip_a": "091",
@@ -968,11 +998,12 @@
         "estacion": "ESTACION03",
         "estadistica": 0,
         "estatus_comprobante_venta": 1,
-        "fcontrol": "2025-07-31 18:17:22",
+        "fcontrol": "2025-09-06 22:55:37",
         "id_comprobante_venta": 31,
         "id_user_id": 1,
         "info_michelin_auto": 0,
         "info_michelin_camion": 0,
+        "interno": 0,
         "libro_iva": 0,
         "manual": 0,
         "mipyme": 0,
@@ -989,7 +1020,7 @@
         "recibo": 0,
         "remito": 1,
         "tipo_comprobante": "REMITO",
-        "usuario": null
+        "usuario": "admin"
     },
     {
         "codigo_afip_a": "RE",
@@ -1000,11 +1031,12 @@
         "estacion": "ESTACION03",
         "estadistica": 0,
         "estatus_comprobante_venta": 1,
-        "fcontrol": "2025-07-31 18:17:22",
+        "fcontrol": "2025-09-06 22:55:37",
         "id_comprobante_venta": 32,
         "id_user_id": 1,
         "info_michelin_auto": 0,
         "info_michelin_camion": 0,
+        "interno": 0,
         "libro_iva": 0,
         "manual": 1,
         "mipyme": 0,
@@ -1021,7 +1053,7 @@
         "recibo": 1,
         "remito": 0,
         "tipo_comprobante": "RECIBO",
-        "usuario": null
+        "usuario": "admin"
     },
     {
         "codigo_afip_a": "ZZZ",
@@ -1029,14 +1061,15 @@
         "codigo_comprobante_venta": "XXX",
         "compro_asociado": null,
         "electronica": 0,
-        "estacion": "Leoncio",
+        "estacion": "ESTACION03",
         "estadistica": 0,
         "estatus_comprobante_venta": 1,
-        "fcontrol": "2025-08-22 11:09:36",
+        "fcontrol": "2025-09-06 22:55:37",
         "id_comprobante_venta": 33,
         "id_user_id": 1,
         "info_michelin_auto": 0,
         "info_michelin_camion": 0,
+        "interno": 0,
         "libro_iva": 0,
         "manual": 0,
         "mipyme": 0,
