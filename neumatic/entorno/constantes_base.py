@@ -31,20 +31,25 @@ TIPO_PRODUCTO_SERVICIO = [
 	('S', 'Servicio')
 ]
 
-CLIENTE_VIP = [
+SI_NO = [
 	(True, 'SI'),
 	(False, 'NO')
 ]
 
-CLIENTE_MAYORISTA = [
-	(True, 'SI'),
-	(False, 'NO')
-]
+# CLIENTE_VIP = [
+# 	(True, 'SI'),
+# 	(False, 'NO')
+# ]
 
-BLACK_LIST = [
-	(True, 'Si'),
-	(False, 'No'),
-]
+# CLIENTE_MAYORISTA = [
+# 	(True, 'SI'),
+# 	(False, 'NO')
+# ]
+
+# BLACK_LIST = [
+# 	(True, 'Si'),
+# 	(False, 'No'),
+# ]
 
 TIPO_VENTA = [
 	('M', 'Mostrador'),
@@ -103,10 +108,10 @@ ORDEN_CHOICES = [
 	('codigo', 'Código'), 
 ]
 
-PRECIO_DESCRIPCION = [
-	(True, 'SI'),
-	(False, 'NO')
-]
+# PRECIO_DESCRIPCION = [
+# 	(True, 'SI'),
+# 	(False, 'NO')
+# ]
 
 MESES = [
 		('01', 'Enero'),

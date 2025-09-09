@@ -10,9 +10,7 @@ from apps.usuarios.models import User
 from diseno_base.diseno_bootstrap import (
 	formclasstext, formclassselect, formclasscheck)
 
-from entorno.constantes_base import PRECIO_DESCRIPCION
 
-# -- Registrar Usuario 
 class RegistroUsuarioForm(UserCreationForm):
 	
 	password1 = forms.CharField(
@@ -23,7 +21,6 @@ class RegistroUsuarioForm(UserCreationForm):
 		label="Confirmar Contraseña",
 		widget=forms.PasswordInput(attrs={**formclasstext})
 	)
-	
 	
 	class Meta:
 		model = User
@@ -76,6 +73,7 @@ class RegistroUsuarioForm(UserCreationForm):
 			'cambia_precio_descripcion':
 				forms.Select(attrs={**formclassselect}),
 		}
+
 
 class EditarUsuarioForm(UserChangeForm):
 	
@@ -130,6 +128,7 @@ class EditarUsuarioForm(UserChangeForm):
 			'cambia_precio_descripcion':
 				forms.Select(attrs={**formclassselect}),
 		}
+
 
 class GroupForm(forms.ModelForm):
 	class Meta:

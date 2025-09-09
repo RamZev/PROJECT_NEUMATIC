@@ -82,7 +82,8 @@ class ClienteForm(CrudGenericForm):
 				forms.TextInput(attrs={**formclasstext, 'readonly': True}),
 			'fecha_baja': 
 				forms.TextInput(attrs={'type':'date', **formclassdate, 'readonly': True}),
-	
+			'cliente_empresa': 
+				forms.Select(attrs={**formclassselect}),
 		}
 	
 	def __init__(self, *args, **kwargs):

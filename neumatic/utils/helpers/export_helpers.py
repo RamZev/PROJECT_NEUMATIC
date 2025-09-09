@@ -333,8 +333,28 @@ class ExportHelper:
 					else:
 						cell.protection = styles.Protection(locked=False)
 			
-			#-- Proteger la hoja
+			#-- Proteger la hoja.
+			ws.protection.enable()
 			ws.protection.sheet = True
+			
+			#-- PERMISOS ESPECÍFICOS - Permitir estas acciones (False = permitido, True = no permitido).
+			ws.protection.formatCells = False          # Permitir formato de celdas.
+			ws.protection.formatColumns = False        # Permitir formato de columnas.
+			ws.protection.formatRows = False           # Permitir formato de filas.
+			ws.protection.sort = False                 # Permitir ordenar.
+			
+			# #-- Restringir otras acciones (opcional, según necesites).
+			# ws.protection.selectLockedCells = True     # No permitir seleccionar celdas bloqueadas.
+			# ws.protection.selectUnlockedCells = False  # Permitir seleccionar celdas desbloqueadas.
+			# ws.protection.insertRows = False           # No permitir insertar filas.
+			# ws.protection.insertColumns = False        # No permitir insertar columnas.
+			# ws.protection.deleteRows = False           # No permitir eliminar filas.
+			# ws.protection.deleteColumns = False        # No permitir eliminar columnas.
+			# ws.protection.objects = False              # No permitir editar objetos.
+			# ws.protection.scenarios = False            # No permitir escenarios.
+			# ws.protection.autoFilter = False           # No permitir filtros automáticos.
+			# ws.protection.pivotTables = False          # No permitir tablas dinámicas.
+			
 			if getenv('EXCEL_KEY'):
 				ws.protection.password = getenv('EXCEL_KEY')
 		
