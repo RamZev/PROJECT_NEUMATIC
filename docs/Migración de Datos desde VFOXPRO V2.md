@@ -284,3 +284,11 @@ python 05_migra_recibo.py
    3.1. Asignar los documentos relacionados a Facturas Remito
    
    3.2. Marcar los Recibos y Remitos el checkbox y grupo correspondiente
+   
+   3.3. Revisar los comprobantes NCR y NDB que tienen documentos asociados
+
+4. En DB Browse abrir la tabla empresa. En los campos:  
+   
+   ws_archivo_crt2: asignar el contenido del certificado digital
+   
+   ws_archivo_key2: asignar el contenido de la clave privada

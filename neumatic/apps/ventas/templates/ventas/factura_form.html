@@ -138,6 +138,12 @@
             <!-- Div oculto con el diccionario de ncr_ndb -->
             <div id="ncr-ndb-data" data-ncr-ndb='{{ ncr_ndb_dict|safe }}'></div>
 
+            <!-- Div oculto con el diccionario de interno -->
+            <div id="interno-data" data-interno='{{ interno_dict|safe }}'></div>
+
+            <!-- Div oculto con el id del cliente_empresa -->
+            <div id="cliente-empresa-data" data-cliente-empresa="{{ cliente_empresa_id }}"></div>
+
             <!-- Div oculto con el diccionario de remito -->
             <div id="remito-data" data-remito='{{ remito_dict|safe }}'></div>
 
@@ -1817,6 +1823,34 @@
                     return;
                 }
 
+                
+                // Verficar si es comprobante interno
+                const internoDict = JSON.parse(document.getElementById('interno-data').dataset.interno);
+                const interno = internoDict[comprobanteId] ?? false;
+                
+                if (interno){
+                    // Obtener el id del cliente de cliente-empresa-data
+                    const el = document.getElementById('cliente-empresa-data');
+                    const clienteEmpresaId = el?.dataset?.clienteEmpresa || '';
+
+                    if (clienteEmpresaId){
+                        // Si el cliente-empresa está definido, asignarlo al campo id_cliente
+                        const clienteInput = document.getElementById('buscar_cliente');
+                        if (clienteInput) {
+                            clienteInput.value = clienteEmpresaId;
+                            // Disparar evento de cambio si es necesario
+                            const event = new Event('blur');
+                            clienteInput.dispatchEvent(event);
+                        }
+                    } else {
+                        alert("⚠️ El Comprobante Interno requiere que el Cliente sea una Empresa. Por favor, seleccione un Cliente válido.");
+                    }
+                } else {
+                    // Si no es interno, restaurar el título original
+                    alert("Comprobante Interno NO Seleccionado");
+                }
+                
+                //////
                 // 1. Campo de búsqueda de cliente
                 const buscarCliente = document.getElementById('buscar_cliente');
                 if (buscarCliente) {
@@ -1837,6 +1871,7 @@
 
                 // 4. habilitar o inhabilitar el input Factura Asociada
                 const numeroAsociadoInput = document.getElementById('id_numero_asociado');
+                //////
 
                 // Analiza si el comprobante es mipyme
                 const mipymeDict = JSON.parse(document.getElementById('mipyme-data').dataset.mipyme);

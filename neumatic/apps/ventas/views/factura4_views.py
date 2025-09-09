@@ -49,7 +49,7 @@ class MovimientoInternoListView(MaestroDetalleListView):
 	model = modelo
 	template_name = f"ventas/maestro_detalle_list.html"
 	context_object_name = 'objetos'
-	tipo_comprobante = 'presupuesto'  # Nuevo atributo de clase
+	tipo_comprobante = 'interno'  # Nuevo atributo de clase
 
 	search_fields = [
 	 'id_factura',
@@ -89,7 +89,7 @@ class MovimientoInternoListView(MaestroDetalleListView):
 	#cadena_filtro = "Q(nombre_color__icontains=text)"
 	extra_context = {
 		#"master_title": model._meta.verbose_name_plural,
-		"master_title": "Presupuestos",
+		"master_title": "Movimiento Interno",
 		"home_view_name": home_view_name,
 		"list_view_name": list_view_name,
 		"create_view_name": create_view_name,
@@ -205,6 +205,14 @@ class MovimientoInternoCreateView(MaestroDetalleCreateView):
 		ncr_ndb_dict = {str(c.id_comprobante_venta): c.ncr_ndb for c in ComprobanteVenta.objects.all()}
 		data['ncr_ndb_dict'] = json.dumps(ncr_ndb_dict)
 
+		# Obtener todos los comprobantes con sus valores interno
+		interno_dict = {str(c.id_comprobante_venta): c.interno for c in ComprobanteVenta.objects.all()}
+		data['interno_dict'] = json.dumps(interno_dict)
+
+		# Obtener id_cliente del primer cliente con el filtro cliente_empresa=True
+		first_id = Cliente.objects.filter(cliente_empresa=True).values_list('id_cliente', flat=True).first()
+		data['cliente_empresa_id'] = str(first_id) if first_id is not None else ''
+
 		# Obtener todos los comprobantes con sus valores compro_asociado
 		compro_asociado_dict = {str(c.id_comprobante_venta): c.compro_asociado for c in ComprobanteVenta.objects.all()}
 		data['compro_asociado_dict'] = json.dumps(compro_asociado_dict)
@@ -318,6 +326,8 @@ class MovimientoInternoCreateView(MaestroDetalleCreateView):
 					tipo_numeracion = 'manual'
 					print("Entró")
 				elif comprobante_data.remito:
+					tipo_numeracion = 'automatica'
+				elif comprobante_data.interno:
 					tipo_numeracion = 'automatica'
 				else:
 					pass
