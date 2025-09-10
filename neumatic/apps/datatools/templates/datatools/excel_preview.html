@@ -175,6 +175,19 @@
 						<li class="breadcrumb-item active">Previsualización</li>
 					</ol>
 					
+					<!--///////////////////////////////////////////////-->
+					{% if messages %}
+					<div class="alert-messages">
+						{% for message in messages %}
+						<div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show">
+							{{ message }}
+							<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+						</div>
+						{% endfor %}
+					</div>
+					{% endif %}
+					<!--///////////////////////////////////////////////-->
+					
 					<div class="container-main">
 						<!-- Panel izquierdo: Tabla de datos -->
 						<div class="table-container">
@@ -263,7 +276,7 @@
 						</div>
 						
 						<!--***********************************-->
-						<!-- Panel derecho: Selección de campos (se mantiene igual) -->
+						<!-- Panel derecho: Selección de campos -->
 						<div class="form-container">
 							<div class="card">
 								<div class="card-header">
@@ -271,7 +284,7 @@
 									Campos a Actualizar
 								</div>
 								<div class="card-body">
-									<form method="post" id="formActualizacion">
+									<form method="post" id="formActualizacion" action="{% url 'procesar_actualizacion' %}">
 										{% csrf_token %}
 										<input type="hidden" name="nombre_archivo" value="{{ nombre_archivo }}">
 										
