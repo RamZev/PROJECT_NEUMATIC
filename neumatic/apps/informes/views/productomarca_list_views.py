@@ -73,9 +73,20 @@ class DataViewList:
 			"excel": True,
 			"csv": True
 		},
+		"id_producto_marca": {
+			"label": "ID",
+			"col_width_table": 1,
+			"col_width_pdf": 30,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"table": True,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
 		"nombre_producto_marca": {
 			"label": "Nombre Producto Marca",
-			"col_width_table": 6,
+			"col_width_table": 5,
 			"col_width_pdf": 200,
 			"pdf_paragraph": False,
 			"date_format": None,

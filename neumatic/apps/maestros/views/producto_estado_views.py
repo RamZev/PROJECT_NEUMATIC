@@ -15,10 +15,6 @@ class ConfigViews():
 	# Aplicación asociada al modelo
 	app_label = model._meta.app_label
 	
-	#-- Deshabilitado por redundancia:
-	# # Título del listado del modelo
-	# master_title = model._meta.verbose_name_plural
-	
 	#-- Usar esta forma cuando el modelo esté compuesto de una sola palabra: Ej. Color.
 	# model_string = model.__name__.lower()  #-- Usar esta forma cuando el modelo esté compuesto de una sola palabra: Ej. Color.
 	
@@ -67,15 +63,17 @@ class DataViewList():
 	
 	table_headers = {
 		'estatus_producto_estado': (1, 'Estatus'),
+		'id_producto_estado': (1, 'ID'),
 		'estado_producto': (2, 'Estado Producto'),
 		'nombre_producto_estado': (3, 'Nombre'),
-		'color_bar': (4, 'Color'),
+		'color_bar': (3, 'Color'),
 		
 		'acciones': (2, 'Acciones'),
 	}
 	
 	table_data = [
 		{'field_name': 'estatus_producto_estado', 'date_format': None},
+		{'field_name': 'id_producto_estado', 'date_format': None},
 		{'field_name': 'estado_producto', 'date_format': None},
 		{'field_name': 'nombre_producto_estado', 'date_format': None},
 		{'field_name': 'color_bar', 'date_format': None},

@@ -1,4 +1,4 @@
-# neumatic\apps\maestros\views\producto_stock_views.py
+# apps\maestros\views\producto_marca_views.py
 from django.urls import reverse_lazy
 from ..views.cruds_views_generics import *
 from ..models.base_models import ProductoMarca
@@ -14,10 +14,6 @@ class ConfigViews():
 	
 	# Aplicación asociada al modelo
 	app_label = model._meta.app_label
-	
-	#-- Deshabilitado por redundancia:
-	# # Título del listado del modelo
-	# master_title = model._meta.verbose_name_plural
 	
 	#-- Usar esta forma cuando el modelo esté compuesto de una sola palabra: Ej. Color.
 	# model_string = model.__name__.lower()  #-- Usar esta forma cuando el modelo esté compuesto de una sola palabra: Ej. Color.
@@ -64,8 +60,8 @@ class DataViewList():
 	
 	table_headers = {
 		'estatus_producto_marca': (1, 'Estatus'),
-		# 'id_producto_marca': (1, 'ID'),
-		'nombre_producto_marca': (5, 'Marca'),
+		'id_producto_marca': (1, 'ID'),
+		'nombre_producto_marca': (4, 'Marca'),
 		'id_moneda': (3, 'Moneda'),
 		'principal': (1, 'Principal'),
 		
@@ -74,14 +70,13 @@ class DataViewList():
 	
 	table_data = [
 		{'field_name': 'estatus_producto_marca', 'date_format': None},
-		# {'field_name': 'id_producto_marca', 'date_format': None},
+		{'field_name': 'id_producto_marca', 'date_format': None},
 		{'field_name': 'nombre_producto_marca', 'date_format': None},
 		{'field_name': 'id_moneda', 'date_format': None},
 		{'field_name': 'principal', 'date_format': None},
 	]
 
 
-# ActividadListView - Inicio
 class ProductoMarcaListView(MaestroListView):
 	model = ConfigViews.model
 	template_name = ConfigViews.template_list
@@ -102,7 +97,6 @@ class ProductoMarcaListView(MaestroListView):
 	}
 
 
-# ActividadCreateView - Inicio
 class ProductoMarcaCreateView(MaestroCreateView):
 	model = ConfigViews.model
 	list_view_name = ConfigViews.list_view_name
@@ -111,16 +105,9 @@ class ProductoMarcaCreateView(MaestroCreateView):
 	success_url = ConfigViews.success_url
 	
 	#-- Indicar el permiso que requiere para ejecutar la acción.
-	# (revisar de donde lo copiaste que tienes asignado permission_change en vez de permission_add)
 	permission_required = ConfigViews.permission_add
-	
-	# extra_context = {
-	# 	"accion": f"Crear {ConfigViews.model._meta.verbose_name}",
-	# 	"list_view_name" : ConfigViews.list_view_name
-	# }
 
 
-# ActividadUpdateView
 class ProductoMarcaUpdateView(MaestroUpdateView):
 	model = ConfigViews.model
 	list_view_name = ConfigViews.list_view_name
@@ -130,14 +117,8 @@ class ProductoMarcaUpdateView(MaestroUpdateView):
 	
 	#-- Indicar el permiso que requiere para ejecutar la acción.
 	permission_required = ConfigViews.permission_change
-	
-	# extra_context = {
-	# 	"accion": f"Editar {ConfigViews.model._meta.verbose_name}",
-	# 	"list_view_name" : ConfigViews.list_view_name
-	# }
 
 
-# ActividadDeleteView
 class ProductoMarcaDeleteView (MaestroDeleteView):
 	model = ConfigViews.model
 	list_view_name = ConfigViews.list_view_name
@@ -146,9 +127,3 @@ class ProductoMarcaDeleteView (MaestroDeleteView):
 	
 	#-- Indicar el permiso que requiere para ejecutar la acción.
 	permission_required = ConfigViews.permission_delete
-	
-	# extra_context = {
-	# 	"accion": f"Eliminar {ConfigViews.model._meta.verbose_name}",
-	# 	"list_view_name" : ConfigViews.list_view_name,
-	# 	"mensaje": "Estás seguro de eliminar el Registro"
-	# }

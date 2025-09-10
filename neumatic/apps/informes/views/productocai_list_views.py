@@ -73,6 +73,17 @@ class DataViewList:
 			"excel": True,
 			"csv": True
 		},
+		"id_cai": {
+			"label": "ID",
+			"col_width_table": 1,
+			"col_width_pdf": 30,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"table": True,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
 		"cai": {
 			"label": "CAI",
 			"col_width_table": 2,
