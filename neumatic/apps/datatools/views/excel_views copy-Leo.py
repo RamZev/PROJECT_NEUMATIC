@@ -8,7 +8,6 @@ from django.shortcuts import redirect
 from django.utils import timezone
 from django.contrib import messages
 from django.http import JsonResponse
-from django.db.models import DecimalField, FloatField, IntegerField, BooleanField
 from ..forms.excel_forms import ExcelUploadForm, CamposActualizacionForm
 
 
@@ -140,17 +139,9 @@ class ProcesarActualizacionView(TemplateView):
 		columns_dict = {key: value['label'] for key, value in ConfigViews.table_info.items() if value['label'] in columnas_excel}
 		# print("columns_dict:", columns_dict)
 		
-		#-- Crear mapeo inverso: label_excel -> campo_db
-		label_to_field_map = {label: field for field, label in columns_dict.items()}
-		print("label_to_field_map:", label_to_field_map)
-		
-		#-- Obtener campos seleccionados por el usuario
-		for columna_label in columnas_excel:
-			campo_post = f'actualizar_{columna_label}'
-			if request.POST.get(campo_post) and columna_label in label_to_field_map:
-				campo_modelo = label_to_field_map[columna_label]
-				campos_seleccionados.append((columna_label, campo_modelo))
-		
+		for columna in columns_dict.values():
+			if request.POST.get(f'actualizar_{columna}'):
+				campos_seleccionados.append(columna)
 		print("campos_seleccionados:", campos_seleccionados)
 		
 		if not campos_seleccionados:
@@ -168,9 +159,6 @@ class ProcesarActualizacionView(TemplateView):
 		actualizados = 0
 		errores = []
 		
-		#-- Campos que no deben ser actualizados (campos protegidos o identificadores)
-		campos_protegidos = ['id_producto', 'codigo_producto', 'Código']
-		
 		for index, fila in enumerate(todos_los_datos, 1):
 			try:
 				codigo = fila.get('Código')
@@ -180,72 +168,22 @@ class ProcesarActualizacionView(TemplateView):
 				
 				#-- Buscar el producto por código.
 				try:
-					producto = Producto.objects.get(codigo_producto=codigo)
+					producto = Producto.objects.get(codigo=codigo)
 				except Producto.DoesNotExist:
 					errores.append(f"Fila {index}: Producto con código '{codigo}' no existe")
 					continue
 				
 				#-- Actualizar los campos seleccionados.
-				cambios_realizados = False
-				for columna_label, campo_modelo in campos_seleccionados:
-					#-- Saltar campos protegidos
-					if campo_modelo in campos_protegidos or columna_label in campos_protegidos:
-						continue
-					
-					if columna_label in fila:
-						valor = fila[columna_label]
-						
-						#-- Convertir valores vacíos a None/valor por defecto
-						if valor in ['', None, 'NULL', 'null', 'NaN', 'nan']:
-							#-- Para campos numéricos, establecer 0 en lugar de None
-							campo_obj = Producto._meta.get_field(campo_modelo)
-							if isinstance(campo_obj, (DecimalField, FloatField, IntegerField)):
-								valor = 0
-							else:
+				for campo in campos_seleccionados:
+					if campo in fila and campo != 'Código':
+						valor = fila[campo]
+						if hasattr(producto, campo):
+							if valor in ['', None]:
 								valor = None
-						
-						#-- Conversión de tipos para campos específicos
-						campo_obj = Producto._meta.get_field(campo_modelo)
-						
-						if isinstance(campo_obj, (DecimalField, FloatField)):
-							try:
-								valor = float(valor) if valor is not None else 0.0
-							except (ValueError, TypeError):
-								errores.append(f"Fila {index}: Valor inválido para {columna_label}: {valor}")
-								continue
-						
-						elif isinstance(campo_obj, IntegerField):
-							try:
-								valor = int(valor) if valor is not None else 0
-							except (ValueError, TypeError):
-								errores.append(f"Fila {index}: Valor inválido para {columna_label}: {valor}")
-								continue
-						
-						elif isinstance(campo_obj, BooleanField):
-							if isinstance(valor, str):
-								valor = valor.lower() in ['true', '1', 'yes', 'sí', 'si', 'verdadero', 'x', '✔']
-							else:
-								valor = bool(valor)
-						
-						#-- Verificar si el valor realmente cambió
-						valor_actual = getattr(producto, campo_modelo)
-						
-						#-- Comparación segura para tipos numéricos
-						if isinstance(valor, (int, float)) and isinstance(valor_actual, (int, float)):
-							valor_cambio = abs(valor - valor_actual) > 0.001
-						else:
-							valor_cambio = valor != valor_actual
-						
-						if valor_cambio:
-							setattr(producto, campo_modelo, valor)
-							cambios_realizados = True
+							setattr(producto, campo, valor)
 				
-				if cambios_realizados:
-					try:
-						producto.save()
-						actualizados += 1
-					except Exception as e:
-						errores.append(f"Fila {index}: Error al guardar cambios - {str(e)}")
+				producto.save()
+				actualizados += 1
 				
 			except Exception as e:
 				errores.append(f"Fila {index}: Error al procesar - {str(e)}")
@@ -255,15 +193,14 @@ class ProcesarActualizacionView(TemplateView):
 		context['total_registros'] = len(todos_los_datos)
 		context['actualizados'] = actualizados
 		context['errores'] = errores
-		context['campos_actualizados'] = [columna for columna, _ in campos_seleccionados]
+		context['campos_actualizados'] = campos_seleccionados
 		
 		#-- Limpiar sesión.
 		keys_to_remove = ['excel_data', 'pagina_actual']
 		for key in keys_to_remove:
-			if key in request.session:
-				del request.session[key]
+			request.session.pop(key, None)
 		
-		return self.render_to_response(context)	
+		return self.render_to_response(context)
 	
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
