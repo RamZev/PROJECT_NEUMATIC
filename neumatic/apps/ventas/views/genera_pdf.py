@@ -37,7 +37,7 @@ class GeneraPDFView(View):
 		
 		facturas = electronicos + manuales + presupuestos
 		recibos = ("RB", "RR", "RC", "RE", "RS", "RN")
-		remitos = ("RF", "RD", "RT", "RM", "DM", "MR", "MD", "MS", "MM")
+		remitos = ("RF", "RD", "RT", "RM", "DM", "MR", "MD", "MS", "MM", "MI")
 		
 		if comprobante.compro in facturas:
 			return self.generar_pdf_factura(comprobante)
