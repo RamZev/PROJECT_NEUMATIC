@@ -73,6 +73,17 @@ class DataViewList:
 			"excel": True,
 			"csv": True
 		},
+		"id_alicuota_iva": {
+			"label": "ID",
+			"col_width_table": 1,
+			"col_width_pdf": 30,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"table": True,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
 		"codigo_alicuota": {
 			"label": "Cód. Alíc. IVA",
 			"col_width_table": 2,
@@ -97,7 +108,7 @@ class DataViewList:
 		},
 		"descripcion_alicuota_iva": {
 			"label": "Descripción Alíc. IVA",
-			"col_width_table": 9,
+			"col_width_table": 6,
 			"col_width_pdf": 180,
 			"pdf_paragraph": False,
 			"date_format": None,

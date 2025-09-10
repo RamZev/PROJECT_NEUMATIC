@@ -15,10 +15,6 @@ class ConfigViews():
 	# Aplicación asociada al modelo
 	app_label = model._meta.app_label
 	
-	#-- Deshabilitado por redundancia:
-	# # Título del listado del modelo
-	# master_title = model._meta.verbose_name_plural
-	
 	#-- Usar esta forma cuando el modelo esté compuesto de una sola palabra: Ej. Color.
 	# model_string = model.__name__.lower()  #-- Usar esta forma cuando el modelo esté compuesto de una sola palabra: Ej. Color.
 	
@@ -64,22 +60,21 @@ class DataViewList():
 	  
 	table_headers = {
 		'estatus_cai': (1, 'Estatus'),
-		# 'id_cai': (1, 'ID'),
+		'id_cai': (1, 'ID'),
 		'cai': (3, 'CAI'),
-		'descripcion_cai': (6, 'Descripción CAI'),
+		'descripcion_cai': (5, 'Descripción CAI'),
 		
 		'acciones': (2, 'Acciones'),
 	}
 	
 	table_data = [
 		{'field_name': 'estatus_cai', 'date_format': None},
-		# {'field_name': 'id_cai', 'date_format': None},
+		{'field_name': 'id_cai', 'date_format': None},
 		{'field_name': 'cai', 'date_format': None},
 		{'field_name': 'descripcion_cai', 'date_format': None},
 	]
 
 
-# ActividadListView - Inicio
 class ProductoCaiListView(MaestroListView):
 	model = ConfigViews.model
 	template_name = ConfigViews.template_list
@@ -100,7 +95,6 @@ class ProductoCaiListView(MaestroListView):
 	}
 
 
-# ActividadCreateView - Inicio
 class ProductoCaiCreateView(MaestroCreateView):
 	model = ConfigViews.model
 	list_view_name = ConfigViews.list_view_name
@@ -109,16 +103,9 @@ class ProductoCaiCreateView(MaestroCreateView):
 	success_url = ConfigViews.success_url
 	
 	#-- Indicar el permiso que requiere para ejecutar la acción.
-	# (revisar de donde lo copiaste que tienes asignado permission_change en vez de permission_add)
 	permission_required = ConfigViews.permission_add
-	
-	# extra_context = {
-	# 	"accion": f"Crear {ConfigViews.model._meta.verbose_name}",
-	# 	"list_view_name" : ConfigViews.list_view_name
-	# }
 
 
-# ActividadUpdateView
 class ProductoCaiUpdateView(MaestroUpdateView):
 	model = ConfigViews.model
 	list_view_name = ConfigViews.list_view_name
@@ -128,14 +115,8 @@ class ProductoCaiUpdateView(MaestroUpdateView):
 	
 	#-- Indicar el permiso que requiere para ejecutar la acción.
 	permission_required = ConfigViews.permission_change
-	
-	# extra_context = {
-	# 	"accion": f"Editar {ConfigViews.model._meta.verbose_name}",
-	# 	"list_view_name" : ConfigViews.list_view_name
-	# }
 
 
-# ActividadDeleteView
 class ProductoCaiDeleteView (MaestroDeleteView):
 	model = ConfigViews.model
 	list_view_name = ConfigViews.list_view_name
@@ -144,9 +125,3 @@ class ProductoCaiDeleteView (MaestroDeleteView):
 	
 	#-- Indicar el permiso que requiere para ejecutar la acción.
 	permission_required = ConfigViews.permission_delete
-	
-	# extra_context = {
-	# 	"accion": f"Eliminar {ConfigViews.model._meta.verbose_name}",
-	# 	"list_view_name" : ConfigViews.list_view_name,
-	# 	"mensaje": "Estás seguro de eliminar el Registro"
-	# }

@@ -1,4 +1,4 @@
-# nneumatic\apps\informes\views\productomodelo_list_views.py
+# apps\informes\views\productomodelo_list_views.py
 from django.urls import reverse_lazy
 from django.http import HttpResponse, JsonResponse
 from django.views import View
@@ -66,6 +66,17 @@ class DataViewList:
 			"label": "Estatus",
 			"col_width_table": 1,
 			"col_width_pdf": 40,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"table": True,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
+		"id_modelo": {
+			"label": "ID",
+			"col_width_table": 1,
+			"col_width_pdf": 30,
 			"pdf_paragraph": False,
 			"date_format": None,
 			"table": True,

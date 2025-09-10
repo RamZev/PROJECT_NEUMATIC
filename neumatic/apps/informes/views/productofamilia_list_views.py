@@ -73,9 +73,20 @@ class DataViewList:
 			"excel": True,
 			"csv": True
 		},
+		"id_producto_familia": {
+			"label": "ID",
+			"col_width_table": 1,
+			"col_width_pdf": 30,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"table": True,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
 		"nombre_producto_familia": {
 			"label": "Nombre Producto Familia",
-			"col_width_table": 10,
+			"col_width_table": 8,
 			"col_width_pdf": 200,
 			"pdf_paragraph": False,
 			"date_format": None,
@@ -86,7 +97,7 @@ class DataViewList:
 		},
 		"comision_operario": {
 			"label": "Comisión Operario(%)",
-			"col_width_table": 5,
+			"col_width_table": 2,
 			"col_width_pdf": 95,
 			"pdf_paragraph": False,
 			"date_format": None,
