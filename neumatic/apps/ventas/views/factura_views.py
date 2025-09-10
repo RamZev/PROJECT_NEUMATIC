@@ -214,6 +214,14 @@ class FacturaCreateView(MaestroDetalleCreateView):
 		compro_asociado_dict = {str(c.id_comprobante_venta): c.compro_asociado for c in ComprobanteVenta.objects.all()}
 		data['compro_asociado_dict'] = json.dumps(compro_asociado_dict)
 
+		# Obtener todos los comprobantes con sus valores interno
+		interno_dict = {str(c.id_comprobante_venta): c.interno for c in ComprobanteVenta.objects.all()}
+		data['interno_dict'] = json.dumps(interno_dict)
+
+		# Obtener id_cliente del primer cliente con el filtro cliente_empresa=True
+		first_id = Cliente.objects.filter(cliente_empresa=True).values_list('id_cliente', flat=True).first()
+		data['cliente_empresa_id'] = str(first_id) if first_id is not None else ''
+
 		# Obtener todos los operarios con sus id
 		operario_dict = {str(o.id_operario): o.nombre_operario for o in Operario.objects.all()}
 		data['operario_dict'] = json.dumps(operario_dict)
@@ -1010,6 +1018,14 @@ class FacturaUpdateView(MaestroDetalleUpdateView):
 		# Obtener todos los comprobantes con sus valores compro_asociado
 		compro_asociado_dict = {str(c.id_comprobante_venta): c.compro_asociado for c in ComprobanteVenta.objects.all()}
 		data['compro_asociado_dict'] = json.dumps(compro_asociado_dict)
+
+		# Obtener todos los comprobantes con sus valores interno
+		interno_dict = {str(c.id_comprobante_venta): c.interno for c in ComprobanteVenta.objects.all()}
+		data['interno_dict'] = json.dumps(interno_dict)
+
+		# Obtener id_cliente del primer cliente con el filtro cliente_empresa=True
+		first_id = Cliente.objects.filter(cliente_empresa=True).values_list('id_cliente', flat=True).first()
+		data['cliente_empresa_id'] = str(first_id) if first_id is not None else ''
 
 		# Obtener todos los operarios con sus id
 		operario_dict = {str(o.id_operario): o.nombre_operario for o in Operario.objects.all()}
