@@ -124,7 +124,8 @@ class MaestroCreateView(PermissionRequiredMixin, CreateView):
 		
 		except Exception as e:
 			#-- Captura el error de transacción.
-			context = self.get_context_data(form)
+			# context = self.get_context_data(form)
+			context = self.get_context_data(form=form)
 			context['data_has_erors'] = True
 			context['transaction_error'] = str(e)
 			return self.render_to_response(context)

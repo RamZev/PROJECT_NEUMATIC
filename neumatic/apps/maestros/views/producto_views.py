@@ -22,10 +22,6 @@ class ConfigViews():
 	# Aplicación asociada al modelo
 	app_label = model._meta.app_label
 	
-	#-- Deshabilitado por redundancia:
-	# # Título del listado del modelo
-	# master_title = model._meta.verbose_name_plural
-	
 	#-- Usar esta forma cuando el modelo esté compuesto de una sola palabra: Ej. Color.
 	model_string = model.__name__.lower()  #-- Usar esta forma cuando el modelo esté compuesto de una sola palabra: Ej. Color.
 	
@@ -124,35 +120,7 @@ class ProductoCreateView(MaestroCreateView):
 	permission_required = ConfigViews.permission_add
 	
 	def form_valid(self, form):
-		response = super().form_valid(form)
-		producto = self.object
-		
-		if producto.tipo_producto.lower() == 'p':
-			#-- Obtener todos los depósitos.
-			depositos = ProductoDeposito.objects.all()
-			
-			#-- Registrar en ProductoStock para cada depósito.
-			for deposito in depositos:
-				ProductoStock.objects.create(
-					id_producto=producto,
-					id_deposito=deposito,
-					stock=0,
-					minimo=0,
-					fecha_producto_stock=timezone.now()
-				)
-			
-			#-- Registrar en ProductoMinimo si el CAI existe y no está ya en ProductoMinimo.
-			if producto.id_cai:
-				for deposito in depositos:
-					#-- Registrar solo si el CAI no existe ya en ProductoMinimo.
-					if not ProductoMinimo.objects.filter(id_cai=producto.id_cai, id_deposito=deposito).exists():
-						ProductoMinimo.objects.create(
-							id_deposito=deposito,
-							id_cai=producto.id_cai,
-							minimo=producto.minimo
-						)
-			
-		return response
+		return super().form_valid(form)
 
 
 class ProductoUpdateView(MaestroUpdateView):
@@ -166,33 +134,45 @@ class ProductoUpdateView(MaestroUpdateView):
 	permission_required = ConfigViews.permission_change
 	
 	def form_valid(self, form):
-		producto = form.save(commit=False)
-		old_cai = Producto.objects.get(pk=producto.pk).id_cai
-		new_cai = producto.id_cai
+		#-- Obtener el producto antes de guardar para comparar el CAI antiguo.
+		producto_antes = Producto.objects.get(pk=self.object.pk)
+		old_cai = producto_antes.id_cai
 		
+		#-- Guardar primero el formulario.
 		response = super().form_valid(form)
 		
-		depositos = ProductoDeposito.objects.all()
+		#-- Obtener el producto después de guardar.
+		producto = self.object
+		new_cai = producto.id_cai
 		
-		#-- Manejar cambios en el CAI.
-		if new_cai:
+		#-- Solo procesar si es producto (no servicio).
+		if producto.tipo_producto == 'P':
+			#-- Obtener todos os depósitos.
+			depositos = ProductoDeposito.objects.all()
+			
+			#-- Manejar cambios en el CAI.
 			if old_cai != new_cai:
-				#-- Solo elimina el CAI anterior en ProductoMinimo si no existen otros productos asociados a ese CAI.
-				if not Producto.objects.filter(id_cai=old_cai).exclude(pk=producto.pk).exists():
-					ProductoMinimo.objects.filter(id_cai=old_cai).delete()
-				for deposito in depositos:
-					if not ProductoMinimo.objects.filter(id_cai=new_cai, id_deposito=deposito).exists():
-						ProductoMinimo.objects.create(
-							id_deposito=deposito,
-							id_cai=new_cai,
-							minimo=producto.minimo
-						)
-		else:
-			#-- Si el nuevo CAI es None.
-			#-- Solo elimina el CAI anterior en ProductoMinimo si no existen otros productos asociados a ese CAI.
-			if old_cai and not Producto.objects.filter(id_cai=old_cai).exclude(pk=producto.pk).exists():
-				ProductoMinimo.objects.filter(id_cai=old_cai).delete()
+				#-- 1. Si tenía CAI y ahora no tiene, o cambió de CAI.
+				if old_cai:
+					#-- Solo elimina el CAI anterior si no existen otros productos asociados.
+					if not Producto.objects.filter(id_cai=old_cai).exclude(pk=producto.pk).exists():
+						ProductoMinimo.objects.filter(id_cai=old_cai).delete()
 				
+				#-- 2. Si ahora tiene un CAI (nuevo o cambiado).
+				if new_cai:
+					#-- Crear registros para el nuevo CAI en cada depósito si no existen.
+					for deposito in depositos:
+						ProductoMinimo.objects.get_or_create(
+							id_cai=new_cai,
+							id_deposito=deposito,
+							defaults={'minimo': producto.minimo or 0}
+						)
+			
+			#-- 3. Si el CAI no cambió pero el mínimo podría haber cambiado.
+			elif old_cai == new_cai and new_cai:
+				#-- Actualizar el mínimo en todos los registros existentes de ProductoMinimo para este CAI.
+				ProductoMinimo.objects.filter(id_cai=new_cai).update(minimo=producto.minimo or 0)
+		
 		return response
 	
 	def get_context_data(self, **kwargs):

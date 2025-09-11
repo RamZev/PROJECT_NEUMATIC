@@ -17,7 +17,10 @@ Sanear la tabla producto
 	El campo alicuota_iva tiene la alícuota pero el campo id_alicuota_iva tiene el id 1 en todos los registros.
 	
 *.- Eliminar el campo "cai".
-	Este cai es el que ya estaba en la tabla producto y se dejó para poder asignarle el id correspondiente de la tabla producto_cai.
+	Este dato ya estaba en la tabla producto y se dejó para poder asignarle el id correspondiente de la tabla producto_cai.
+
+*.- Eliminar el campo "alicuota_iva".
+	Este dato ya estaba en la tabla producto y se dejó para poder asignarle el id correspondiente de la tabla alicuota_iva.
 
 
 
@@ -42,3 +45,23 @@ Id	| Estado
 3	| FALANTES
 4	| OFERTAS
 5	| POCAS
+
+
+
+
+
+========================================================================================================================================
+
+
+Ok, cuando creo un nuevo producto de tipo "Producto" con o sin CAI, todo funciona perfectamente, pero está fallando lo siguiente:
+- Si modifico un producto existente y no tenía CAI asignado y ahora le asigno un CAI, debería registrar este producto en 
+  ProductoMinimo por cada depósito existente en ProductoDeposito si no existe en ProductoMinimo.
+
+- Si modifico un producto existente y tiene un CAI asignado pero lo cambio por otro CAI, debería registrar este producto en 
+  ProductoMinimo por cada depósito existente en ProductoDeposito si no existe ese CAI en ProductoMinimo. Y los registros en 
+  ProductoMinimo de ese producto con el CAI viejo se deberían eliminar si no existe algún otro producto que tenga asignado ese mismo CAI.
+
+- Si modifico un producto existente y tiene un CAI asignado pero le quito el CAI, debería eliminar los registro de este producto de
+  ProductoMinimo si no existe algún otro producto que tenga asignado ese mismo CAI.
+
+Te recuerdo que un CAI puede estar asignado a uno, más de uno o ningún producto.
