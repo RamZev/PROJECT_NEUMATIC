@@ -1,0 +1,6 @@
+2025-09-15 17:18:31,933 - INFO - Iniciando migración de proveedores
+2025-09-15 17:18:31,953 - INFO - Eliminados 3 registros existentes de Proveedor
+2025-09-15 17:18:32,092 - INFO - Precargando relaciones en memoria...
+2025-09-15 17:18:32,696 - INFO - Relaciones precargadas en memoria
+2025-09-15 17:18:32,709 - INFO - DBF cargado en memoria. Total registros: 175
+2025-09-15 17:18:32,859 - INFO - Migración completada. Total registros procesados: 175/175. Tiempo: 0.93 segundos
