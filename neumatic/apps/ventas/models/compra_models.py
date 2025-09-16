@@ -15,7 +15,7 @@ from apps.maestros.models.valida_models import Valida
 
 
 class Compra(ModeloBaseGenerico):
-    id_comprovante = models.AutoField(
+    id_compra = models.AutoField(
         primary_key=True
     )
     estatus_comprabante = models.BooleanField(
@@ -236,3 +236,59 @@ class Compra(ModeloBaseGenerico):
     def __str__(self):
         numero = str(self.numero_comprobante).strip().zfill(12)
         return f"{self.id_comprobante_compra.codigo_comprobante_compra} {self.letra_comprobante} {numero[:4]}-{numero[4:]}"
+
+
+class DetalleCompra(ModeloBaseGenerico):
+	id_detalle_compra = models.AutoField(
+		primary_key=True
+	)
+	id_compra = models.ForeignKey(
+		Compra,
+		on_delete=models.CASCADE,
+		verbose_name="Factura",
+		null=True,
+		blank=True
+	)
+	id_producto = models.ForeignKey(
+		Producto,
+		on_delete=models.PROTECT,
+		verbose_name="Producto",
+		null=True,
+		blank=True
+	)
+	cantidad = models.DecimalField(
+		verbose_name="Cantidad",
+		max_digits=7,
+		decimal_places=2,
+		null=True,
+		blank=True
+	)
+	precio = models.DecimalField(
+		verbose_name="Precio",
+		max_digits=12,
+		decimal_places=2,
+		null=True,
+		blank=True
+	)
+	total = models.DecimalField(
+		verbose_name="Total",
+		max_digits=12,
+		decimal_places=2,
+		null=True,
+		blank=True
+	)
+	despacho = models.CharField(
+		verbose_name="Despacho",
+		max_length=16,
+		null=True,
+		blank=True
+	)
+
+
+	class Meta:
+		db_table = "detalle_compra"
+		verbose_name = ('Detalle Compra')
+		verbose_name_plural = ('Detalles Compra')
+	
+	def __str__(self):
+		return self.id_detalle_compra
