@@ -82,14 +82,15 @@ class ConfigViews:
 			"label": "Id CAI",
 			"col_width_pdf": 0,
 			"pdf": False,
-			"excel": True,
-			"csv": True
+			"excel": False,
+			"csv": True,
+			"protected": True
 		},
 		"cai": {
 			"label": "CAI",
 			"col_width_pdf": 40,
 			"pdf": True,
-			"excel": False,
+			"excel": True,
 			"csv": False
 		},
 		"tipo_producto": {
@@ -97,7 +98,8 @@ class ConfigViews:
 			"col_width_pdf": 0,
 			"pdf": False,
 			"excel": True,
-			"csv": True
+			"csv": True,
+			"protected": True
 		},
 		"medida": {
 			"label": "Medida",

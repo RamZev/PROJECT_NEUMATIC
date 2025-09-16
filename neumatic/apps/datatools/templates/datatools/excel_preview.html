@@ -38,6 +38,10 @@
 			top: 0;
 			z-index: 10;
 		}
+		.table-fit thead th {
+			background-color: #b6d4fe;
+			/*color: white;*/
+		}
 		
 		.table-fit td {
 			position: relative;
@@ -69,13 +73,13 @@
 			vertical-align: middle;
 		}
 		
-		/* Estilo para números alineados a la derecha */
+		/*--- Estilo para números alineados a la derecha ---*/
 		.number-cell {
 			text-align: right;
 			font-family: monospace;
 		}
 		
-		/* Estilos para el panel de la derecha */
+		/*--- Estilos para el panel de la derecha ---*/
 		.container-main {
 			display: flex;
 			gap: 20px;
@@ -94,7 +98,8 @@
 			background: #f8f9fa;
 			padding: 20px;
 			border-radius: 5px;
-			border: 1px solid #dee2e6;
+			/*border: 1px solid #dee2e6;*/
+			border: 1px solid #0d6efd;
 		}
 		
 		.campo-item {
@@ -116,24 +121,33 @@
 			margin-bottom: 15px;
 		}		
 		
-		/* Estilos para la paginación*/
+		/*--- Estilos para la paginación ---*/
 		.pagination-container {
 			display: flex;
-			justify-content: center;
-			margin: 20px 0;
+			/*justify-content: center;*/
+			justify-content: left;
+			/*margin: 20px 0;*/
+			/*margin: 10px;*/
 		}
 		
 		.pagination {
-			margin: 0;
+			margin: 10px 10px;
 		}
 		
+		.pagination .page-link {
+			/*border: 1px solid #0d6efd !important;*/
+			border: 1px solid #757575ff !important;
+		}
+				
 		.page-info {
 			/*text-align: center;*/
 			text-align: left;
 			/*margin: 10px 0;*/
-			margin: 10px;
+			/*margin: 10px 0px;*/
 			font-size: 0.9rem;
 			color: #6c757d;
+			display: flex;
+			align-items: center;
 		}
 		
 		.loading-overlay {
@@ -151,7 +165,20 @@
 		
 		.table-container {
 			position: relative;
-		}		
+		}
+		
+		/*--- Estilo para campos deshabilitados ---*/
+		.campo-item.text-muted .form-check-input:disabled {
+			background-color: #f8f9fa;
+			/*border-color: #dee2e6;*/
+			border-color: #3a3a3aff;
+			cursor: not-allowed;
+		}
+		
+		.campo-item.text-muted .form-check-label {
+			/*color: #6c757d;*/
+			color: #000000ff;
+		}
 	</style>
 {% endblock %}
 
@@ -202,6 +229,7 @@
 								
 								<!-- Información de paginación -->
 								<div class="page-info">
+									{% include 'datatools/paginacion.html' %}
 									Mostrando página {{ pagina_actual }} de {{ total_paginas }} 
 									(registros {{ page_start }} a {{ page_end }} de {{ total_filas }})
 								</div>
@@ -245,30 +273,15 @@
 									</div>
 									
 									<!-- Paginación -->
+									{% comment %}
 									<div class="pagination-container">
-										<nav>
-											<ul class="pagination">
-												<li class="page-item {% if pagina_actual == 1 %}disabled{% endif %}">
-													<a class="page-link" href="#" onclick="cambiarPagina(1)">Primera</a>
-												</li>
-												<li class="page-item {% if pagina_actual == 1 %}disabled{% endif %}">
-													<a class="page-link" href="#" onclick="cambiarPagina({{ pagina_actual|add:'-1' }})">Anterior</a>
-												</li>
-												
-												{% for page in page_range %}
-													<li class="page-item {% if page == pagina_actual %}active{% endif %}">
-														<a class="page-link" href="#" onclick="cambiarPagina({{ page }})">{{ page }}</a>
-													</li>
-												{% endfor %}
-												
-												<li class="page-item {% if pagina_actual == total_paginas %}disabled{% endif %}">
-													<a class="page-link" href="#" onclick="cambiarPagina({{ pagina_actual|add:'1' }})">Siguiente</a>
-												</li>
-												<li class="page-item {% if pagina_actual == total_paginas %}disabled{% endif %}">
-													<a class="page-link" href="#" onclick="cambiarPagina({{ total_paginas }})">Última</a>
-												</li>
-											</ul>
-										</nav>
+										{% include 'datatools/paginacion.html' %}
+									</div>
+									{% endcomment %}
+									<div class="page-info">
+										{% include 'datatools/paginacion.html' %}
+										Mostrando página {{ pagina_actual }} de {{ total_paginas }} 
+										(registros {{ page_start }} a {{ page_end }} de {{ total_filas }})
 									</div>
 									
 								</div>
@@ -289,11 +302,13 @@
 										<input type="hidden" name="nombre_archivo" value="{{ nombre_archivo }}">
 										
 										<div class="mb-3">
-											<button type="button" class="btn btn-outline-primary btn-sm btn-toggle-all" onclick="toggleAllCheckboxes()">
+											<button type="button" class="btn btn-outline-primary btn-sm btn-toggle-all w-100" onclick="toggleAllCheckboxes()">
 												<i class="fas fa-check-square"></i> Seleccionar/Deseleccionar Todos
 											</button>
 										</div>
 										
+										<!-- ##################### -->
+										{% comment %}
 										<div class="campos-form">
 											{% for field in form_campos %}
 												<div class="form-check campo-item">
@@ -304,6 +319,23 @@
 												</div>
 											{% endfor %}
 										</div>
+										{% endcomment %}
+										<div class="campos-form">
+											{% for field in form_campos %}
+												{% with field_name=field.label %}
+												<div class="form-check campo-item {% if field.field.disabled %}text-muted{% endif %}">
+													{{ field }}
+													<label class="form-check-label" for="{{ field.id_for_label }}">
+														{{ field_name }}
+														{% if field.field.disabled %}
+															<small class="text-muted">(solo lectura)</small>
+														{% endif %}
+													</label>
+												</div>
+												{% endwith %}
+											{% endfor %}
+										</div>
+										<!-- ##################### -->
 										
 										<div class="text-center mt-3">
 											<button type="submit" class="btn btn-success">
