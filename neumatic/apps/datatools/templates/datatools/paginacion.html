@@ -1,0 +1,26 @@
+<!-- neumatic\apps\datatools\templates\datatools\paginacion.html -->
+<!-- <div class="pagination-container"> -->
+	<nav>
+		<ul class="pagination">
+			<li class="page-item {% if pagina_actual == 1 %}disabled{% endif %}">
+				<a class="page-link" href="#" onclick="cambiarPagina(1)">Primera</a>
+			</li>
+			<li class="page-item {% if pagina_actual == 1 %}disabled{% endif %}">
+				<a class="page-link" href="#" onclick="cambiarPagina({{ pagina_actual|add:'-1' }})">Anterior</a>
+			</li>
+			
+			{% for page in page_range %}
+				<li class="page-item {% if page == pagina_actual %}active{% endif %}">
+					<a class="page-link" href="#" onclick="cambiarPagina({{ page }})">{{ page }}</a>
+				</li>
+			{% endfor %}
+			
+			<li class="page-item {% if pagina_actual == total_paginas %}disabled{% endif %}">
+				<a class="page-link" href="#" onclick="cambiarPagina({{ pagina_actual|add:'1' }})">Siguiente</a>
+			</li>
+			<li class="page-item {% if pagina_actual == total_paginas %}disabled{% endif %}">
+				<a class="page-link" href="#" onclick="cambiarPagina({{ total_paginas }})">Última</a>
+			</li>
+		</ul>
+	</nav>
+<!--</div>-->

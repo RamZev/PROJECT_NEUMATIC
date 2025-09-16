@@ -8,7 +8,6 @@ from django.shortcuts import redirect
 from django.utils import timezone
 from django.contrib import messages
 from django.http import JsonResponse
-from django.db.models import DecimalField, FloatField, IntegerField, BooleanField
 from ..forms.excel_forms import ExcelUploadForm, CamposActualizacionForm
 
 
@@ -23,16 +22,33 @@ class ExcelUploadView(FormView):
 		return context
 	
 	def form_valid(self, form):
+		from apps.informes.views.vllista_list_views import ConfigViews
+		
 		archivo = form.cleaned_data['archivo_excel']
 		
 		try:
 			if archivo.name.endswith('.xlsx') or archivo.name.endswith('.xls'):
-				#-- Leer el archivo directamente desde el upload (sin guardar temporalmente).
+				#-- Leer el archivo directamente desde el upload.
 				df = pd.read_excel(archivo, na_filter=False)
 				
+				#-- Verificar si el DataFrame está vacío.
 				if df.empty:
 					form.add_error('archivo_excel', 'El archivo Excel está vacío.')
 					return self.form_invalid(form)
+				
+				#-- Verificar que las columnas coincidan con las esperadas.
+				columnas_esperadas = [value['label'] for value in ConfigViews.table_info.values() if value['excel'] ]
+				columnas_excel = df.columns.tolist()
+				if set(columnas_esperadas) != set(columnas_excel):
+					form.add_error('archivo_excel', f'Las columnas del archivo no coinciden con las esperadas. ')
+					return self.form_invalid(form)
+				
+				#-- Generar lista de campos protegidos
+				campos_portegidos = [campo for campo, info in ConfigViews.table_info.items() if info.get('protected', False)]
+				etiquetas_portegidas = [info['label'] for info in ConfigViews.table_info.values() if info.get('protected', False)]
+				
+				#-- Mapear Columnas del Excel a nombres de campos {"label": producto.campo}.
+				label_to_field_map = {value['label']: key for key, value in ConfigViews.table_info.items() if value['label'] in columnas_excel}
 				
 				#-- Limpiar datos.
 				df = df.replace(['nan', 'NaN', 'NAN', '', 'NULL', 'null'], None)
@@ -49,7 +65,10 @@ class ExcelUploadView(FormView):
 					'columnas': list(df.columns),
 					'todos_los_datos': todos_los_datos,
 					'total_filas': total_filas,
-					'nombre_archivo': archivo.name
+					'nombre_archivo': archivo.name,
+					'campos_protegidos': campos_portegidos,
+					'etiquetas_protegidas': etiquetas_portegidas,
+					'etiquetas_a_campos_map': label_to_field_map
 				}
 				
 				#-- Guardar solo la primera página inicialmente.
@@ -100,6 +119,8 @@ class ExcelPreviewView(TemplateView):
 		context['columnas'] = excel_data.get('columnas', [])
 		context['datos'] = pagina_actual.get('datos', [])
 		context['total_filas'] = excel_data.get('total_filas', 0)
+		context['campos_protegidos'] = excel_data.get('campos_protegidos', [])
+		context['etiquetas_protegidas'] = excel_data.get('etiquetas_protegidas', [])
 		context['fecha'] = timezone.now()
 		context['pagina_actual'] = pagina_actual.get('numero', 1)
 		context['total_paginas'] = pagina_actual.get('total_paginas', 1)
@@ -118,7 +139,10 @@ class ExcelPreviewView(TemplateView):
 		context['page_end'] = min(pagina_actual_num * 100, context['total_filas'])
 		
 		#-- Formulario para selección de campos.
-		form_campos = CamposActualizacionForm(columnas=context['columnas'])
+		form_campos = CamposActualizacionForm(
+			columnas=context['columnas'],
+			etiquetas_protegidas=context['etiquetas_protegidas']
+		)
 		context['form_campos'] = form_campos
 		
 		return context
@@ -129,20 +153,18 @@ class ProcesarActualizacionView(TemplateView):
 	
 	def post(self, request, *args, **kwargs):
 		from apps.maestros.models.producto_models import Producto
-		from apps.informes.views.vllista_list_views import ConfigViews
+		from django.db.models import DecimalField, FloatField, IntegerField, BooleanField, NOT_PROVIDED
 		
 		#-- Obtener campos seleccionados del formulario.
 		campos_seleccionados = []
 		excel_data = request.session.get('excel_data', {})
 		columnas_excel = excel_data.get('columnas', [])
+		protected_fields = excel_data.get('campos_protegidos', [])
+		protected_labels = excel_data.get('etiquetas_protegidas', [])
+		label_to_field_map = excel_data.get('etiquetas_a_campos_map', {})
 		
-		#-- Mapear etiquetas a nombres de campos (producto.campo: "Label").
-		columns_dict = {key: value['label'] for key, value in ConfigViews.table_info.items() if value['label'] in columnas_excel}
-		# print("columns_dict:", columns_dict)
-		
-		#-- Crear mapeo inverso: label_excel -> campo_db
-		label_to_field_map = {label: field for field, label in columns_dict.items()}
-		print("label_to_field_map:", label_to_field_map)
+		campos_protegidos = protected_fields + protected_labels
+		campos_protegidos = list(set(campos_protegidos))  # Eliminar duplicados
 		
 		#-- Obtener campos seleccionados por el usuario
 		for columna_label in columnas_excel:
@@ -150,8 +172,6 @@ class ProcesarActualizacionView(TemplateView):
 			if request.POST.get(campo_post) and columna_label in label_to_field_map:
 				campo_modelo = label_to_field_map[columna_label]
 				campos_seleccionados.append((columna_label, campo_modelo))
-		
-		print("campos_seleccionados:", campos_seleccionados)
 		
 		if not campos_seleccionados:
 			messages.error(request, 'Debe seleccionar al menos un campo para actualizar.')
@@ -168,9 +188,6 @@ class ProcesarActualizacionView(TemplateView):
 		actualizados = 0
 		errores = []
 		
-		#-- Campos que no deben ser actualizados (campos protegidos o identificadores)
-		campos_protegidos = ['id_producto', 'codigo_producto', 'Código']
-		
 		for index, fila in enumerate(todos_los_datos, 1):
 			try:
 				codigo = fila.get('Código')
@@ -180,7 +197,7 @@ class ProcesarActualizacionView(TemplateView):
 				
 				#-- Buscar el producto por código.
 				try:
-					producto = Producto.objects.get(codigo_producto=codigo)
+					producto = Producto.objects.get(id_producto=codigo)
 				except Producto.DoesNotExist:
 					errores.append(f"Fila {index}: Producto con código '{codigo}' no existe")
 					continue
@@ -192,31 +209,46 @@ class ProcesarActualizacionView(TemplateView):
 					if campo_modelo in campos_protegidos or columna_label in campos_protegidos:
 						continue
 					
+					#-- Comprobar si la columna existe en la fila.
 					if columna_label in fila:
+						#-- Obtener el valor de la celda.
 						valor = fila[columna_label]
 						
-						#-- Convertir valores vacíos a None/valor por defecto
+						#-- Obtener el tipo de campo del modelo.
+						campo_obj = Producto._meta.get_field(campo_modelo)
+						
+						#-- USAR EL VALOR POR DEFECTO DEL MODELO PARA VALORES VACÍOS
 						if valor in ['', None, 'NULL', 'null', 'NaN', 'nan']:
-							#-- Para campos numéricos, establecer 0 en lugar de None
-							campo_obj = Producto._meta.get_field(campo_modelo)
-							if isinstance(campo_obj, (DecimalField, FloatField, IntegerField)):
+							if campo_obj.default is not NOT_PROVIDED:
+								#-- Usar el valor por defecto definido en el modelo.
+								valor = campo_obj.default
+							elif isinstance(campo_obj, (DecimalField, FloatField, IntegerField)):
+								#-- Si no hay valor por defecto definido, usar 0 para numéricos.
 								valor = 0
 							else:
 								valor = None
 						
-						#-- Conversión de tipos para campos específicos
-						campo_obj = Producto._meta.get_field(campo_modelo)
-						
+						#-- Conversión de tipos.
 						if isinstance(campo_obj, (DecimalField, FloatField)):
 							try:
-								valor = float(valor) if valor is not None else 0.0
+								if valor is not None:
+									valor = float(valor)
+								elif campo_obj.default is not NOT_PROVIDED:
+									valor = campo_obj.default
+								else:
+									valor = 0.0
 							except (ValueError, TypeError):
 								errores.append(f"Fila {index}: Valor inválido para {columna_label}: {valor}")
 								continue
 						
 						elif isinstance(campo_obj, IntegerField):
 							try:
-								valor = int(valor) if valor is not None else 0
+								if valor is not None:
+									valor = int(valor)
+								elif campo_obj.default is not NOT_PROVIDED:
+									valor = campo_obj.default
+								else:
+									valor = 0
 							except (ValueError, TypeError):
 								errores.append(f"Fila {index}: Valor inválido para {columna_label}: {valor}")
 								continue
@@ -227,10 +259,10 @@ class ProcesarActualizacionView(TemplateView):
 							else:
 								valor = bool(valor)
 						
-						#-- Verificar si el valor realmente cambió
+						#-- Verificar si el valor realmente cambió.
 						valor_actual = getattr(producto, campo_modelo)
 						
-						#-- Comparación segura para tipos numéricos
+						#-- Comparación segura para tipos numéricos.
 						if isinstance(valor, (int, float)) and isinstance(valor_actual, (int, float)):
 							valor_cambio = abs(valor - valor_actual) > 0.001
 						else:
