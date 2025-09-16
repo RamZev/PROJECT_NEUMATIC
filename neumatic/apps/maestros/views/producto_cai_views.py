@@ -52,7 +52,11 @@ class ConfigViews():
 
 
 class DataViewList():
-	search_fields = ['cai', 'descripcion_cai']
+	search_fields = [
+		'id_cai',
+		'cai',
+		'descripcion_cai'
+	]
 	
 	ordering = ['cai']
 	

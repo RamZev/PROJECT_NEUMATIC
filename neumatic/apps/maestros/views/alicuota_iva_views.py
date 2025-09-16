@@ -53,6 +53,7 @@ class ConfigViews():
 
 class DataViewList():
 	search_fields = [
+		'id_alicuota_iva',
 		'codigo_alicuota',
 		'alicuota_iva',
 		'descripcion_alicuota_iva'

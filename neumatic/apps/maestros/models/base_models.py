@@ -195,6 +195,7 @@ class ProductoMinimo(ModeloBaseGenerico):
 		verbose_name = 'Producto Mínimo'
 		verbose_name_plural = 'Productos Mínimos'
 		ordering = ['id_producto_minimo']
+		# unique_together = ['id_cai', 'id_deposito']
 	
 	def __str__(self):
 		return f'{self.id_cai} - Min: {self.minimo}'
