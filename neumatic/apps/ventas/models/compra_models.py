@@ -236,4 +236,3 @@ class Compra(ModeloBaseGenerico):
     def __str__(self):
         numero = str(self.numero_comprobante).strip().zfill(12)
         return f"{self.id_comprobante_compra.codigo_comprobante_compra} {self.letra_comprobante} {numero[:4]}-{numero[4:]}"
-	
