@@ -209,7 +209,9 @@ class ProcesarActualizacionView(TemplateView):
 					if campo_modelo in campos_protegidos or columna_label in campos_protegidos:
 						continue
 					
+					#-- Comprobar si la columna existe en la fila.
 					if columna_label in fila:
+						#-- Obtener el valor de la celda.
 						valor = fila[columna_label]
 						
 						#-- Obtener el tipo de campo del modelo.

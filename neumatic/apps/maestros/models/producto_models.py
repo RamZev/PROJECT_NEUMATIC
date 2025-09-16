@@ -123,7 +123,7 @@ class Producto(ModeloBaseGenerico):
 			errors.update({'obliga_operario': 'El campo obliga operario solo puede estar marcado para servicios.'})
 		
 		if not re.match(r'^$|^20\d{2}(0[1-9]|1[0-2])$', fecha_fabricacion_str):
-			errors.update({'fecha_fabricacion': 'Debe indicar el dato en el formato AAAAMM (AAAA para el año, MM para el mes). Indicar año y mes válidos. El año debe iniciar en 20'})
+			errors.update({'fecha_fabricacion': 'Debe indicar el dato en el formato AAAAMM (AAAA para el año, MM para el mes). Indicar año y mes válidos. El año debe iniciar en 20 o puede dejar el dato vacío.'})
 		
 		if not re.match(r'^[1-9]\d{0,2}$|^0$|^$', unidad_str):
 			errors.update({'unidad': 'El valor debe ser un número entero positivo, con hasta 3 dígitos, o estar en blanco o cero.'})
