@@ -325,6 +325,10 @@ class ExportHelper:
 		
 		#-- Proteger campos específicos si hay campos a proteger.
 		if protected_indices:
+			#-- Bloquear los títulos de columnas (fila 1 - encabezados).
+			for col_idx, cell in enumerate(ws[1], 1):  #-- ws[1] es la primera fila (encabezados).
+				cell.protection = styles.Protection(locked=True)
+			
 			#-- Bloquear solo las celdas específicas que necesitan protección
 			for row_idx, row in enumerate(ws.iter_rows(min_row=2), 2):  #-- Empezar desde la fila 2 (datos) omitiendo encabezados.
 				for col_idx, cell in enumerate(row, 1):
