@@ -53,15 +53,20 @@ Id	| Estado
 ========================================================================================================================================
 
 
-Ok, cuando creo un nuevo producto de tipo "Producto" con o sin CAI, todo funciona perfectamente, pero está fallando lo siguiente:
-- Si modifico un producto existente y no tenía CAI asignado y ahora le asigno un CAI, debería registrar este producto en 
-  ProductoMinimo por cada depósito existente en ProductoDeposito si no existe en ProductoMinimo.
+Te comparto parte de mi código.
+En resumen, lo que hago es generar una lista de los productos en Excel según la estructura(diccionario) table_info en 
+la clase ConfigView del módulo vllista_list_views.py para que el usuario pueda modificar los datos manualmente en este 
+Excel y luego actualizar los respectivos registros en la tabla productos en la base de datos mediante la opción de carga 
+de ese Excel.
 
-- Si modifico un producto existente y tiene un CAI asignado pero lo cambio por otro CAI, debería registrar este producto en 
-  ProductoMinimo por cada depósito existente en ProductoDeposito si no existe ese CAI en ProductoMinimo. Y los registros en 
-  ProductoMinimo de ese producto con el CAI viejo se deberían eliminar si no existe algún otro producto que tenga asignado ese mismo CAI.
+Todo está funcionando correctamente hasta ahora, solo necesito dos cosas:
 
-- Si modifico un producto existente y tiene un CAI asignado pero le quito el CAI, debería eliminar los registro de este producto de
-  ProductoMinimo si no existe algún otro producto que tenga asignado ese mismo CAI.
+1.- Necesito que la actualización de los registros en la base de datos se haga si no ocurre ningún error, es decir,
+implementar atomicidad mediante una transacción, supongo. Si todos los datos están bien que se actualice la base de datos,
+de lo contrario, no se haga ninguna actualización.
 
-Te recuerdo que un CAI puede estar asignado a uno, más de uno o ningún producto.
+2.- De haber algun error y no actualizar la base de datos, quiero que se muestre una plantilla como la plantilla que seutiliza 
+para la previsualización de los datos una vez cargado el Excel (apps\datatools\templates\datatools\excel_preview.html) con 
+paginación, tal como lo maneja esta plantilla pero que en ella se rendericen las filas que han tenido errores y que se resalte
+cada campo con error con un color, quizá rojo con transparencia, y al posar el cursor sobre el campo con error muestre el 
+error en cuestión. Tomando como referencia los errores que se comunican en la vista que procesa la actualización (ProcesarActualizacionView).
