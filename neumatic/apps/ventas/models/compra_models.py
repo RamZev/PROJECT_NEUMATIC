@@ -3,7 +3,7 @@ from django.db import models
 
 from apps.maestros.models.base_gen_models import ModeloBaseGenerico
 from entorno.constantes_base import ESTATUS_GEN, CONDICION_VENTA
-from apps.maestros.models.base_models import (ComprobanteVenta, 
+from apps.maestros.models.base_models import (ComprobanteCompra, 
 											  ProductoDeposito, 
 											  Provincia, 
 											  PuntoVenta,)
@@ -45,7 +45,7 @@ class Compra(ModeloBaseGenerico):
         blank=True
     )
     id_comprobante_compra = models.ForeignKey(
-		ComprobanteVenta,
+		ComprobanteCompra,
 		on_delete=models.PROTECT,
 		verbose_name="Comprobante",
 		null=True,
@@ -273,6 +273,13 @@ class DetalleCompra(ModeloBaseGenerico):
 	total = models.DecimalField(
 		verbose_name="Total",
 		max_digits=12,
+		decimal_places=2,
+		null=True,
+		blank=True
+	)
+	stock = models.DecimalField(
+		verbose_name="Stock",
+		max_digits=10,
 		decimal_places=2,
 		null=True,
 		blank=True

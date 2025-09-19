@@ -15,6 +15,12 @@ from .views.factura4_views import (MovimientoInternoListView, MovimientoInternoC
 from .views.recibo_views import (ReciboListView, ReciboCreateView, 
 								ReciboUpdateView, ReciboDeleteView)
 
+from .views.compra_views import (
+    CompraListView,
+    CompraCreateView,
+    CompraUpdateView,
+    CompraDeleteView)
+
 from .views.consultas_factura_views import (buscar_agenda, 
 											buscar_producto,
 											buscar_cliente,
@@ -66,6 +72,11 @@ urlpatterns = [
 	path('recibo/crear/', ReciboCreateView.as_view(), name='recibo_create'),
 	path('recibo/editar/<int:pk>/', ReciboUpdateView.as_view(), name='recibo_update'),
 	path('recibo/eliminar/<int:pk>/', ReciboDeleteView.as_view(), name='recibo_delete'),
+    
+	path('compra/listar/', CompraListView.as_view(), name='compra_list'),
+    path('compra/crear/', CompraCreateView.as_view(), name='compra_create'),
+    path('compra/editar/<int:pk>/', CompraUpdateView.as_view(), name='compra_update'),
+    path('compra/eliminar/<int:pk>/', CompraDeleteView.as_view(), name='compra_delete'),
 	
 	path('buscar/producto/', buscar_producto, name='buscar_producto'),
 	path('validar/documento/', validar_documento, name='validar_documento'),
