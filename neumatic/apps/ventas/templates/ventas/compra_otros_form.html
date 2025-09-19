@@ -1,0 +1,241 @@
+<!-- neumatic\apps\ventas\templates\ventas\compra_otros_form.html -->
+{% extends 'maestro_form.html' %}
+{% load static %}
+<!-- -------------------------------------------------------------------- -->
+{% block maincomponent %}
+	{% block principalcomponent %}
+		<div id="layoutSidenav_content">
+			<main>
+				<div class="container-fluid">
+					
+					<div class="card border-light mb-3 mt-2">
+						<div class="card-header text-white bg-primary opacity-75 d-flex 
+									justify-content-between">
+							{{ accion }}
+							<div class="flex align-items-center">
+								<a 
+									class="me-2 text-white" 
+									data-bs-toggle="modal" 
+									data-bs-target="#helpModal" 
+									style="cursor: pointer;">
+									<i class="bi bi-question-lg"></i></a>
+								
+								<button type="button" class="btn-close btn-close-white" 
+									aria-label="Close"
+									onclick="window.location.href='{% url list_view_name %}'">
+								</button>
+							</div>
+						</div>
+						
+						<div class="card-body bg-body-secondary">
+							<form method="post" enctype="multipart/form-data" novalidate>
+								{% csrf_token %}
+								<div class="accordion" id="accordionPanelsStayOpenExample">
+									<!-- Estructura generada -->
+									
+									<div class="accordion-item">
+										<h2 class="accordion-header">
+											<button 
+												class="accordion-button py-2 " 
+												type="button" 
+												data-bs-toggle="collapse" 
+												data-bs-target="#Información_Compras_Otros" 
+												aria-expanded="true" 
+												aria-controls="Información_Compras_Otros">
+												<strong>Información Compras - Otros</strong>
+											</button>
+										</h2>
+										<div class="accordion-collapse collapse show" id="Información_Compras_Otros">
+											<div class="accordion-body bg-secondary-subtle">
+												<!-- Fila 1 -->
+												<div class="row">
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0">
+															{{ form.estatus_comprabante.label }}
+														</label>
+														{{ form.estatus_comprabante }}
+													</div>
+													
+													<div class="col-md-4">
+														<label class="form-label text-primary mb-0">
+															{{ form.id_sucursal.label }}
+														</label>
+														{{ form.id_sucursal }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0">
+															{{ form.id_punto_venta.label }}
+														</label>
+														{{ form.id_punto_venta }}
+													</div>
+													
+													<div class="col-md-4">
+														<label class="form-label text-primary mb-0">
+															{{ form.id_deposito.label }}
+														</label>
+														{{ form.id_deposito }}
+													</div>
+												</div>
+												
+												<!-- Fila 2 -->
+												<div class="row">
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0">
+															{{ form.id_comprobante_compra.label }}
+														</label>
+														{{ form.id_comprobante_compra }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0">
+															{{ form.compro.label }}
+														</label>
+														{{ form.compro }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0">
+															{{ form.letra_comprobante.label }}
+														</label>
+														{{ form.letra_comprobante }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0">
+															{{ form.numero_comprobante.label }}
+														</label>
+														{{ form.numero_comprobante }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0">
+															{{ form.fecha_comprobante.label }}
+														</label>
+														{{ form.fecha_comprobante }}
+													</div>
+												</div>
+												
+												<!-- Fila 3 -->
+												<div class="row">
+													<div class="col-md-4">
+														<label class="form-label text-primary mb-0">
+															{{ form.id_proveedor.label }}
+														</label>
+														{{ form.id_proveedor }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0">
+															{{ form.condicion_comprobante.label }}
+														</label>
+														{{ form.condicion_comprobante }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0">
+															{{ form.fecha_registro.label }}
+														</label>
+														{{ form.fecha_registro }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0">
+															{{ form.fecha_vencimiento.label }}
+														</label>
+														{{ form.fecha_vencimiento }}
+													</div>
+												</div>
+												
+												<!-- Fila 4 -->
+												<div class="row">
+													<div class="col-md-4">
+														<label class="form-label text-primary mb-0">
+															{{ form.id_comprobante_venta.label }}
+														</label>
+														{{ form.id_comprobante_venta }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0">
+															{{ form.numero_comprobante_venta.label }}
+														</label>
+														{{ form.numero_comprobante_venta }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0">
+															{{ form.fecha_comprobante_venta.label }}
+														</label>
+														{{ form.fecha_comprobante_venta }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0">
+															{{ form.total_comprobante_venta.label }}
+														</label>
+														{{ form.total_comprobante_venta }}
+													</div>
+												</div>
+												
+												<!-- Fila 5 -->
+												<div class="row">
+													
+													<div class="col-md-4">
+														<label class="form-label text-primary mb-0">
+															{{ form.exento.label }}
+														</label>
+														{{ form.exento }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0">
+															{{ form.alicuota_iva.label }}
+														</label>
+														{{ form.alicuota_iva }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0">
+															{{ form.retencion_ingreso_bruto.label }}
+														</label>
+														{{ form.retencion_ingreso_bruto }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0">
+															{{ form.total.label }}
+														</label>
+														{{ form.total }}
+													</div>
+												</div>
+												
+											</div>
+										</div>
+									</div>
+								
+								</div>
+								
+								<div class="container mt-3">
+									<button class="btn btn-primary" type="submit" id="guardarBtn">
+										Guardar
+									</button>
+									<a class="btn btn-secondary" href="{% url list_view_name %}">
+										Cancelar
+									</a>
+								</div>
+								
+							</form>
+						</div>
+					</div>
+				</div>
+			</main>
+		</div>
+	{% endblock principalcomponent %}
+{% endblock maincomponent %}
+<!-- -------------------------------------------------------------------- -->
+{% block modals %}
+	<!-- Modal para mostrar errores -->
+	{% include 'maestros/modal_errors.html' %}
+{% endblock modals %}
+<!-- -------------------------------------------------------------------- -->

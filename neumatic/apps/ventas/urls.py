@@ -43,6 +43,11 @@ from .views.crear_agenda import crear_agenda
 from .views.genera_pdf import GeneraPDFView
 from .views.fe_afiparca_views import fe_dummy
 
+from .views.compra_otros_views import (
+	CompraOtrosListView, CompraOtrosCreateView,
+	CompraOtrosUpdateView, CompraOtrosDeleteView
+)
+
 urlpatterns = [
 	path('factura/listar/', FacturaListView.as_view(), name='factura_list'),
 	path('factura/crear/', FacturaCreateView.as_view(), name='factura_create'),
@@ -102,5 +107,12 @@ urlpatterns = [
     
 	# Vista para obtener datos de AFIPArca
 	path('obtener/estado-servidores/', fe_dummy, name='estado_servidores'),
+	
+	#-- Compra - Otros.
+	path('compra-otros/', CompraOtrosListView.as_view(), name='compra_otros_list'),
+	path('compra-otros/nueva/', CompraOtrosCreateView.as_view(), name='compra_otros_create'),
+	path('compra-otros/<int:pk>/editar/', CompraOtrosUpdateView.as_view(), name='compra_otros_update'),
+	path('compra-otros/<int:pk>/eliminar/', CompraOtrosDeleteView.as_view(), name='compra_otros_delete'),
+	
 
 ]

@@ -3,7 +3,8 @@ from django.db import models
 
 from apps.maestros.models.base_gen_models import ModeloBaseGenerico
 from entorno.constantes_base import ESTATUS_GEN, CONDICION_VENTA
-from apps.maestros.models.base_models import (ComprobanteCompra, 
+from apps.maestros.models.base_models import (ComprobanteCompra,
+											  ComprobanteVenta, 
 											  ProductoDeposito, 
 											  Provincia, 
 											  PuntoVenta,)
@@ -15,94 +16,119 @@ from apps.maestros.models.valida_models import Valida
 
 
 class Compra(ModeloBaseGenerico):
-    id_compra = models.AutoField(
-        primary_key=True
-    )
-    estatus_comprabante = models.BooleanField(
-        verbose_name="Estatus",
-        default=True,
-        choices=ESTATUS_GEN
-    )
-    id_sucursal = models.ForeignKey(
-        Sucursal,
-        on_delete=models.PROTECT,
-        verbose_name="Sucursal",
-        null=True,
-        blank=True
-    )
-    id_punto_venta = models.ForeignKey(
+	id_compra = models.AutoField(
+		primary_key=True
+	)
+	estatus_comprabante = models.BooleanField(
+		verbose_name="Estatus",
+		default=True,
+		choices=ESTATUS_GEN
+	)
+	id_sucursal = models.ForeignKey(
+		Sucursal,
+		on_delete=models.PROTECT,
+		verbose_name="Sucursal",
+		null=True,
+		blank=True
+	)
+	id_punto_venta = models.ForeignKey(
 		PuntoVenta,
 		on_delete=models.PROTECT,
 		verbose_name="Punto de Venta",
 		null=True,
 		blank=True
 	)
-    id_deposito = models.ForeignKey(
-        ProductoDeposito,
-        on_delete=models.PROTECT,
-        verbose_name="Depósito",
-        null=True,
-        blank=True
-    )
-    id_comprobante_compra = models.ForeignKey(
-		ComprobanteCompra,
+	id_deposito = models.ForeignKey(
+		ProductoDeposito,
 		on_delete=models.PROTECT,
-		verbose_name="Comprobante",
+		verbose_name="Depósito",
 		null=True,
 		blank=True
 	)
-    compro = models.CharField(
+	id_comprobante_compra = models.ForeignKey(
+		ComprobanteCompra,
+		on_delete=models.PROTECT,
+		verbose_name="Comprobante",
+		# null=True,
+		# blank=True
+	)
+	compro = models.CharField(
 		verbose_name="Compro",
 		max_length=3,
 		null=True,
 		blank=True
 	) 
-    letra_comprobante = models.CharField(
-        verbose_name="Letra",
-        max_length=1,
-        null=True,
-        blank=True
-    )
-    numero_comprobante = models.IntegerField(
+	letra_comprobante = models.CharField(
+		verbose_name="Letra",
+		max_length=1,
+		null=True,
+		blank=True
+	)
+	numero_comprobante = models.IntegerField(
 		verbose_name="Número",
 		null=True,
 		blank=True
 	)
-    fecha_comprobante = models.DateField(
-        verbose_name="Fecha Emisión",
-        null=True,
-        blank=True
-    )
-    id_proveedor = models.ForeignKey(
-        Proveedor,
-        on_delete=models.PROTECT,
-        verbose_name="Proveedor",
-        null=True,
-        blank=True
-    )
-    id_provincia = models.ForeignKey(
-        Provincia,
-        on_delete=models.PROTECT,
-        verbose_name="Provincia",
-        null=True,
-        blank=True
-    )
-    condicion_comprobante = models.IntegerField(
+	fecha_comprobante = models.DateField(
+		verbose_name="Fecha Emisión",
+		null=True,
+		blank=True
+	)
+	id_proveedor = models.ForeignKey(
+		Proveedor,
+		on_delete=models.PROTECT,
+		verbose_name="Proveedor",
+		null=True,
+		blank=True
+	)
+	id_provincia = models.ForeignKey(
+		Provincia,
+		on_delete=models.PROTECT,
+		verbose_name="Provincia",
+		null=True,
+		blank=True
+	)
+	condicion_comprobante = models.IntegerField(
 		verbose_name="Condición de Compra",
 		default=1,
 		choices=CONDICION_VENTA
 	)
-    fecha_registro = models.DateField(
-        verbose_name="Fecha Registro",
-        null=True,
-        blank=True
-    )
-    fecha_vencimiento = models.DateField(
-        verbose_name="Fecha Vencimiento",
-        null=True,
-        blank=True
-    )
-    gravado = models.DecimalField(
+	id_comprobante_venta = models.ForeignKey(
+		ComprobanteVenta,
+		on_delete=models.PROTECT,
+		verbose_name="Comp. Compra",
+		null=True,
+		blank=True
+	)
+	numero_comprobante_venta = models.IntegerField(
+		verbose_name="Número C/Compra",
+		null=True,
+		blank=True
+	)
+	fecha_comprobante_venta = models.DateField(
+		verbose_name="Fecha C/Compra",
+		null=True,
+		blank=True
+	)
+	total_comprobante_venta = models.DecimalField(
+		verbose_name="Total C/Compra",
+		max_digits=14,
+		decimal_places=2,
+		null=True,
+		blank=True,
+		default=0.0
+	)
+	fecha_registro = models.DateField(
+		verbose_name="Fecha Registro",
+		null=True,
+		blank=True
+	)
+	fecha_vencimiento = models.DateField(
+		verbose_name="Fecha Vencimiento",
+		null=True,
+		blank=True
+	)
+	gravado = models.DecimalField(
 		verbose_name="Gravado",
 		max_digits=14,
 		decimal_places=2,
@@ -110,7 +136,7 @@ class Compra(ModeloBaseGenerico):
 		blank=True,
 		default=0.0
 	)
-    no_gravado = models.DecimalField(
+	no_gravado = models.DecimalField(
 		verbose_name="No Gravado",
 		max_digits=14,
 		decimal_places=2,
@@ -118,7 +144,7 @@ class Compra(ModeloBaseGenerico):
 		blank=True,
 		default=0.0
 	)
-    no_inscripto = models.DecimalField(
+	no_inscripto = models.DecimalField(
 		verbose_name="No Inscripto",
 		max_digits=14,
 		decimal_places=2,
@@ -126,7 +152,7 @@ class Compra(ModeloBaseGenerico):
 		blank=True,
 		default=0.0
 	)
-    exento = models.DecimalField(
+	exento = models.DecimalField(
 		verbose_name="Exento",
 		max_digits=14,
 		decimal_places=2,
@@ -134,7 +160,7 @@ class Compra(ModeloBaseGenerico):
 		blank=True,
 		default=0.0
 	)
-    retencion_iva = models.DecimalField(
+	retencion_iva = models.DecimalField(
 		verbose_name="Retención IVA",
 		max_digits=14,
 		decimal_places=2,
@@ -142,7 +168,7 @@ class Compra(ModeloBaseGenerico):
 		blank=True,
 		default=0.0
 	)
-    retencion_ganancia = models.DecimalField(
+	retencion_ganancia = models.DecimalField(
 		verbose_name="Retención Ganancia",
 		max_digits=14,
 		decimal_places=2,
@@ -150,7 +176,7 @@ class Compra(ModeloBaseGenerico):
 		blank=True,
 		default=0.0
 	)
-    retencion_ingreso_bruto = models.DecimalField(
+	retencion_ingreso_bruto = models.DecimalField(
 		verbose_name="Retención Ingreso Bruto",
 		max_digits=14,
 		decimal_places=2,
@@ -158,7 +184,7 @@ class Compra(ModeloBaseGenerico):
 		blank=True,
 		default=0.0
 	)
-    sellado = models.DecimalField(
+	sellado = models.DecimalField(
 		verbose_name="Sellado",
 		max_digits=14,
 		decimal_places=2,
@@ -166,7 +192,7 @@ class Compra(ModeloBaseGenerico):
 		blank=True,
 		default=0.0
 	)
-    percepcion_iva = models.DecimalField(
+	percepcion_iva = models.DecimalField(
 		verbose_name="Percepción IVA",
 		max_digits=14,
 		decimal_places=2,
@@ -174,7 +200,7 @@ class Compra(ModeloBaseGenerico):
 		blank=True,
 		default=0.0
 	)
-    percepcion_ingreso_bruto = models.DecimalField(
+	percepcion_ingreso_bruto = models.DecimalField(
 		verbose_name="Percepción Ingreso Bruto",
 		max_digits=14,
 		decimal_places=2,
@@ -182,7 +208,7 @@ class Compra(ModeloBaseGenerico):
 		blank=True,
 		default=0.0
 	)
-    iva = models.DecimalField(
+	iva = models.DecimalField(
 		verbose_name="Iva",
 		max_digits=14,
 		decimal_places=2,
@@ -190,7 +216,7 @@ class Compra(ModeloBaseGenerico):
 		blank=True,
 		default=0.0
 	)
-    total = models.DecimalField(
+	total = models.DecimalField(
 		verbose_name="Total",
 		max_digits=14,
 		decimal_places=2,
@@ -198,7 +224,7 @@ class Compra(ModeloBaseGenerico):
 		blank=True,
 		default=0.0
 	)
-    entrega = models.DecimalField(
+	entrega = models.DecimalField(
 		verbose_name="Entrega",
 		max_digits=14,
 		decimal_places=2,
@@ -206,36 +232,36 @@ class Compra(ModeloBaseGenerico):
 		blank=True,
 		default=0.0
 	)
-    documento_asociado = models.CharField(
+	documento_asociado = models.CharField(
 		verbose_name="Documento Asociado",
 		max_length=2,
 		default="",
 		null=True,
 		blank=True
 	)
-    alicuota_iva = models.DecimalField(
+	alicuota_iva = models.DecimalField(
 		verbose_name="Alicuota IVA",
-		max_digits=14,
+		max_digits=4,
 		decimal_places=2,
 		null=True,
 		blank=True,
 		default=0.0
 	)
-    observa_comprobante = models.TextField(
+	observa_comprobante = models.TextField(
 		verbose_name="Observaciones",
 		null=True,
 		blank=True
 	)
 
 
-    class Meta:
-        db_table = "compra"
-        verbose_name = ('Compra')
-        verbose_name_plural = ('Compras')
+	class Meta:
+		db_table = "compra"
+		verbose_name = ('Compra')
+		verbose_name_plural = ('Compras')
 
-    def __str__(self):
-        numero = str(self.numero_comprobante).strip().zfill(12)
-        return f"{self.id_comprobante_compra.codigo_comprobante_compra} {self.letra_comprobante} {numero[:4]}-{numero[4:]}"
+	def __str__(self):
+		numero = str(self.numero_comprobante).strip().zfill(12)
+		return f"{self.id_comprobante_compra.codigo_comprobante_compra} {self.letra_comprobante} {numero[:4]}-{numero[4:]}"
 
 
 class DetalleCompra(ModeloBaseGenerico):
