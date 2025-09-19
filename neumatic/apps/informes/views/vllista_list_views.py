@@ -79,7 +79,7 @@ class ConfigViews:
 			"protected": True  #-- No se pueda editar en el Excel.
 		},
 		"id_cai_id": {
-			"label": "Id CAI",
+			"label": "Id CAI",  #-- Cuidado! Si se cambia el label se debe cambiar también en el método post() de la vista ProcesarActualizacionView.
 			"col_width_pdf": 0,
 			"pdf": False,
 			"excel": False,
