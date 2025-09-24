@@ -273,11 +273,6 @@
 									</div>
 									
 									<!-- Paginación -->
-									{% comment %}
-									<div class="pagination-container">
-										{% include 'datatools/paginacion.html' %}
-									</div>
-									{% endcomment %}
 									<div class="page-info">
 										{% include 'datatools/paginacion.html' %}
 										Mostrando página {{ pagina_actual }} de {{ total_paginas }} 
@@ -297,8 +292,9 @@
 									Campos a Actualizar
 								</div>
 								<div class="card-body">
-									<form method="post" id="formActualizacion" action="{% url 'procesar_actualizacion' %}">
+									<form method="post" id="formActualizacion" action="{% url 'procesar_actualizacion' %}?pagina={{ pagina_actual }}">
 										{% csrf_token %}
+										<input type="hidden" name="pagina_actual" value="{{ pagina_actual }}">
 										<input type="hidden" name="nombre_archivo" value="{{ nombre_archivo }}">
 										
 										<div class="mb-3">
@@ -307,19 +303,6 @@
 											</button>
 										</div>
 										
-										<!-- ##################### -->
-										{% comment %}
-										<div class="campos-form">
-											{% for field in form_campos %}
-												<div class="form-check campo-item">
-													{{ field }}
-													<label class="form-check-label" for="{{ field.id_for_label }}">
-														{{ field.label }}
-													</label>
-												</div>
-											{% endfor %}
-										</div>
-										{% endcomment %}
 										<div class="campos-form">
 											{% for field in form_campos %}
 												{% with field_name=field.label %}
@@ -335,7 +318,6 @@
 												{% endwith %}
 											{% endfor %}
 										</div>
-										<!-- ##################### -->
 										
 										<div class="text-center mt-3">
 											<button type="submit" class="btn btn-success">
@@ -368,37 +350,6 @@
 			
 			checkboxes.forEach(checkbox => {
 				checkbox.checked = !allChecked;
-			});
-		}
-		
-		//-- Función para cambiar de página.
-		function cambiarPagina(pagina) {
-			if (pagina < 1 || pagina > {{ total_paginas }}) return;
-			
-			//-- Mostrar loading.
-			document.getElementById('loadingOverlay').style.display = 'flex';
-			
-			//-- Hacer petición AJAX.
-			fetch(`{% url 'cargar_pagina_excel' %}?pagina=${pagina}`, {
-				method: 'GET',
-				headers: {
-					'X-Requested-With': 'XMLHttpRequest',
-				}
-			})
-			.then(response => response.json())
-			.then(data => {
-				if (data.success) {
-					//-- Recargar la página para mostrar los nuevos datos.
-					window.location.reload();
-				} else {
-					alert('Error al cargar la página: ' + data.error);
-				}
-			})
-			.catch(error => {
-				alert('Error de conexión');
-			})
-			.finally(() => {
-				document.getElementById('loadingOverlay').style.display = 'none';
 			});
 		}
 		
@@ -446,4 +397,4 @@
 			});
 		});
 	</script>
-{% endblock %}
+{% endblock script %}

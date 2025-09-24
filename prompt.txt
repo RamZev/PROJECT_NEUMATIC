@@ -57,16 +57,11 @@ Te comparto parte de mi código.
 En resumen, lo que hago es generar una lista de los productos en Excel según la estructura(diccionario) table_info en 
 la clase ConfigView del módulo vllista_list_views.py para que el usuario pueda modificar los datos manualmente en este 
 Excel y luego actualizar los respectivos registros en la tabla productos en la base de datos mediante la opción de carga 
-de ese Excel.
+de ese Excel. Si no hay errores en los datos del Excel se actualiza la base de datos y muestra una plantilla con el resúmen
+pero si existe algún error no se actualiza ningún registro y se muestra una plantilla con el detalle de los registros con
+errores.
 
-Todo está funcionando correctamente hasta ahora, solo necesito dos cosas:
-
-1.- Necesito que la actualización de los registros en la base de datos se haga si no ocurre ningún error, es decir,
-implementar atomicidad mediante una transacción, supongo. Si todos los datos están bien que se actualice la base de datos,
-de lo contrario, no se haga ninguna actualización.
-
-2.- De haber algun error y no actualizar la base de datos, quiero que se muestre una plantilla como la plantilla que seutiliza 
-para la previsualización de los datos una vez cargado el Excel (apps\datatools\templates\datatools\excel_preview.html) con 
-paginación, tal como lo maneja esta plantilla pero que en ella se rendericen las filas que han tenido errores y que se resalte
-cada campo con error con un color, quizá rojo con transparencia, y al posar el cursor sobre el campo con error muestre el 
-error en cuestión. Tomando como referencia los errores que se comunican en la vista que procesa la actualización (ProcesarActualizacionView).
+Todo está funcionando correctamente hasta ahora, solo que si un campo como el campo medida que es obligatorio se deja vacío
+en el Excel, el error es captado, este se indica en la plantilla resúmen pero a partir de ese registro en adelante indica que
+todos los registros tienen un error (y no los tienen) mostrando en la fila correspondiente un mensaje como este: 
+"Fila 52: Error al procesar - An error occurred in …"

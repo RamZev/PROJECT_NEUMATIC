@@ -32,19 +32,6 @@
 							<form method="post" enctype="multipart/form-data" novalidate>
 								{% csrf_token %}
 								
-								{% comment %}
-								<div class="form-group mb-3">
-									<label for="{{ form.archivo_excel.id_for_label }}">{{ form.archivo_excel.label }}</label>
-									{{ form.archivo_excel }}
-									{% if form.archivo_excel.errors %}
-										<div class="invalid-feedback d-block">
-											{{ form.archivo_excel.errors }}
-										</div>
-									{% endif %}
-									<small class="form-text text-muted">{{ form.archivo_excel.help_text }}</small>
-								</div>
-								{% endcomment %}
-								<!-- ************ -->
 								<div class="form-group mb-3">
 									<label for="{{ form.archivo_excel.id_for_label }}">{{ form.archivo_excel.label }}</label>
 									{{ form.archivo_excel }}
@@ -57,7 +44,7 @@
 										{{ form.archivo_excel.errors }}
 									</div>
 								{% endif %}
-								<!-- ************ -->
+								
 								<button type="submit" class="btn btn-primary">
 									<i class="fas fa-upload me-1"></i>
 									Cargar y Previsualizar

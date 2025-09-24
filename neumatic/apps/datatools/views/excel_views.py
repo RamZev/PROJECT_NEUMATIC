@@ -11,6 +11,7 @@ from django.contrib import messages
 from django.http import JsonResponse
 from django.core.exceptions import ValidationError, FieldDoesNotExist
 from decimal import Decimal, InvalidOperation
+from django.db import transaction
 from django.db.models import (
 	CharField, TextField, IntegerField, BigIntegerField, 
 	DecimalField, FloatField, BooleanField, DateField, 
@@ -26,6 +27,15 @@ class ExcelUploadView(FormView):
 	form_class = ExcelUploadForm
 	success_url = reverse_lazy('excel_preview')
 	
+	def get(self, request, *args, **kwargs):
+		#-- Limpiar datos anteriores al mostrar el formulario
+		keys_to_remove = ['excel_data', 'errores_procesamiento']
+		for key in keys_to_remove:
+			if key in self.request.session:
+				del self.request.session[key]
+		
+		return super().get(request, *args, **kwargs)
+	
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
 		context['fecha'] = timezone.now()
@@ -33,6 +43,12 @@ class ExcelUploadView(FormView):
 	
 	def form_valid(self, form):
 		from apps.informes.views.vllista_list_views import ConfigViews
+		
+		#-- LIMPIAR datos anteriores antes de guardar nuevos.
+		keys_to_remove = ['excel_data', 'errores_procesamiento']
+		for key in keys_to_remove:
+			if key in self.request.session:
+				del self.request.session[key]
 		
 		archivo = form.cleaned_data['archivo_excel']
 		
@@ -55,8 +71,7 @@ class ExcelUploadView(FormView):
 				
 				#-- SEGUNDO: Leer Excel forzando las columnas string como texto.
 				dtype_dict = {col: str for col in columnas_como_texto}
-				df = pd.read_excel(archivo, na_filter=False, dtype=dtype_dict, 
-								keep_default_na=False)
+				df = pd.read_excel(archivo, na_filter=False, dtype=dtype_dict, keep_default_na=False)
 				
 				#-- Verificar si el DataFrame está vacío.
 				if df.empty:
@@ -98,16 +113,6 @@ class ExcelUploadView(FormView):
 					'campos_protegidos': campos_portegidos,
 					'etiquetas_protegidas': etiquetas_portegidas,
 					'etiquetas_a_campos_map': label_to_field_map
-				}
-				
-				#-- Guardar solo la primera página inicialmente.
-				paginator = Paginator(todos_los_datos, 100)
-				primera_pagina = paginator.page(1).object_list
-				
-				self.request.session['pagina_actual'] = {
-					'numero': 1,
-					'datos': primera_pagina,
-					'total_paginas': paginator.num_pages
 				}
 				
 				return super().form_valid(form)
@@ -171,17 +176,33 @@ class ExcelPreviewView(TemplateView):
 		
 		#-- Recuperar datos de la sesión.
 		excel_data = self.request.session.get('excel_data', {})
-		pagina_actual = self.request.session.get('pagina_actual', {})
+		todos_los_datos = excel_data.get('todos_los_datos', [])
+		
+		#-- Obtener número de página del request.
+		pagina_num = self.request.GET.get('pagina', 1)
+		try:
+			pagina_num = int(pagina_num)
+		except (ValueError, TypeError):
+			pagina_num = 1
+		
+		#-- Paginar los datos.
+		paginator = Paginator(todos_los_datos, 100)
+		
+		try:
+			pagina_datos = paginator.page(pagina_num)
+		except:
+			pagina_datos = paginator.page(1)
+			pagina_num = 1
 		
 		context['nombre_archivo'] = excel_data.get('nombre_archivo', '')
 		context['columnas'] = excel_data.get('columnas', [])
-		context['datos'] = pagina_actual.get('datos', [])
+		context['datos'] = pagina_datos.object_list
 		context['total_filas'] = excel_data.get('total_filas', 0)
 		context['campos_protegidos'] = excel_data.get('campos_protegidos', [])
 		context['etiquetas_protegidas'] = excel_data.get('etiquetas_protegidas', [])
 		context['fecha'] = timezone.now()
-		context['pagina_actual'] = pagina_actual.get('numero', 1)
-		context['total_paginas'] = pagina_actual.get('total_paginas', 1)
+		context['pagina_actual'] = pagina_num
+		context['total_paginas'] = paginator.num_pages
 		
 		#-- Calcular rango de páginas.
 		pagina_actual_num = context['pagina_actual']
@@ -212,6 +233,12 @@ class ProcesarActualizacionView(TemplateView):
 	def post(self, request, *args, **kwargs):
 		#-- Obtener datos de la sesión.
 		excel_data = request.session.get('excel_data', {})
+		
+        #-- Verificar que hay datos en la sesión.
+		if not excel_data:
+			messages.error(request, 'No hay datos para procesar. Por favor, cargue un archivo Excel primero.')
+			return redirect('cargar_excel')
+		
 		columnas_excel = excel_data.get('columnas', [])
 		protected_fields = excel_data.get('campos_protegidos', [])
 		protected_labels = excel_data.get('etiquetas_protegidas', [])
@@ -250,134 +277,232 @@ class ProcesarActualizacionView(TemplateView):
 			'foreign_key': self._validar_foreign_key,
 		}
 		
-		#-- Procesar los datos.
-		actualizados = 0
-		errores = []
-		
-		for index, fila in enumerate(todos_los_datos, 1):
-			try:
-				codigo = fila.get('Código')
-				if not codigo:
-					errores.append(f"Fila {index}: No se especificó código de producto")
-					continue
+		#-- Procesar los datos dentro de una transacción.
+		try:
+			with transaction.atomic():
+				actualizados = 0
+				errores = []
+				filas_con_errores = []
 				
-				#-- Buscar el producto por código.
-				try:
-					producto = Producto.objects.get(id_producto=codigo)
-				except Producto.DoesNotExist:
-					errores.append(f"Fila {index}: Producto con código '{codigo}' no existe")
-					continue
-				
-				#-- Actualizar los campos seleccionados.
-				cambios_realizados = False
-				
-				for columna_label, campo_modelo in campos_seleccionados:
-					#-- Saltar campos protegidos
-					if campo_modelo in campos_protegidos or columna_label in campos_protegidos:
-						continue
-					
-					#-- Comprobar si la columna existe en la fila.
-					if columna_label in fila:
-						#-- Obtener el valor de la celda.
-						valor = fila[columna_label]
-						
-						#----------------------------------------------------
-						
-						#-- MANEJO ESPECIAL PARA EL CAMPO CAI.
-						if columna_label == "CAI":
-							#-- Buscar el ProductoCai por el valor del campo cai.
-							try:
-								if valor in ['', None, 'NULL', 'null', 'NaN', 'nan']:
-									#-- Si el valor está vacío, establecer id_cai como None.
-									valor_final = None
-								else:
-									#-- Buscar el ProductoCai por el valor cai.
-									productocai = ProductoCai.objects.get(cai=valor)
-									valor_final = productocai.id_cai
-								
-								#-- Verificar si el valor cambió.
-								if producto.id_cai_id != valor_final:
-									producto.id_cai_id = valor_final
-									cambios_realizados = True
-								
-								#-- Saltar el procesamiento normal para el campo CAI.
-								continue
-								
-							except ProductoCai.DoesNotExist:
-								errores.append(f"Fila {index}: CAI '{valor}' no existe en la base de datos")
-								continue
-							except Exception as e:
-								errores.append(f"Fila {index}: Error al procesar CAI '{valor}' - {str(e)}")
-								continue
-						
-						#----------------------------------------------------
-						#-- Obtener el tipo de campo del modelo.
-						campo_obj = Producto._meta.get_field(campo_modelo)
-						# tipo_dato = campo_obj.get_internal_type()
-						
-						#-- Determinar tipo de dato dinámicamente.
-						tipo_dato = self._obtener_tipo_campo_desde_modelo(campo_obj)
-						especificaciones = self._obtener_especificaciones_campo(campo_obj)
-						
-						#-- USAR EL VALOR POR DEFECTO DEL MODELO PARA VALORES VACÍOS
-						if valor in ['', None, 'NULL', 'null', 'NaN', 'nan']:
-							if campo_obj.default is not NOT_PROVIDED:
-								#-- Usar el valor por defecto definido en el modelo.
-								valor = campo_obj.default
-							elif isinstance(campo_obj, (DecimalField, FloatField, IntegerField)):
-								#-- Si no hay valor por defecto definido, usar 0 para numéricos.
-								valor = 0
-							else:
-								valor = None
-						else:
-							#-- VALIDAR Y CONVERTIR EL VALOR SEGÚN EL TIPO DE CAMPO.
-							try:
-								if tipo_dato in tipo_validaciones:
-									valor = tipo_validaciones[tipo_dato](valor, campo_obj, especificaciones)
-								else:
-									valor = self._validar_generico(valor, campo_obj, especificaciones)
-							except ValidationError as e:
-								errores.append(f"Fila {index}: {columna_label} - {str(e)}")
-								continue
-						
-						#-- Verificar si el valor realmente cambió.
-						valor_actual = getattr(producto, campo_modelo)
-						
-						#-- Comparación segura para tipos numéricos.
-						if isinstance(valor, (int, float, Decimal)) and isinstance(valor_actual, (int, float, Decimal)):
-							valor_cambio = abs(float(valor) - float(valor_actual)) > 0.001
-						else:
-							valor_cambio = valor != valor_actual
-						
-						#-- Asignar el nuevo valor si cambió.
-						if valor_cambio:
-							setattr(producto, campo_modelo, valor)
-							cambios_realizados = True
-				
-				if cambios_realizados:
+				for index, fila in enumerate(todos_los_datos, 1):
+					index +=1  #-- Ajustar índice para que coincida con fila Excel.
 					try:
-						producto.save()
-						actualizados += 1
+						codigo = fila.get('Código')
+						if not codigo:
+							error_msg = f"No se especificó código de producto"
+							errores.append(error_msg)
+							#-- Guardar información de la fila con error.
+							fila_con_error = fila.copy()
+							fila_con_error['error_message'] = error_msg
+							fila_con_error['row_index'] = index
+							filas_con_errores.append(fila_con_error)
+							continue
+						
+						#-- Buscar el producto por código.
+						try:
+							producto = Producto.objects.get(id_producto=codigo)
+						except Producto.DoesNotExist:
+							error_msg = f"Producto con código '{codigo}' no existe"
+							errores.append(error_msg)
+							#-- Guardar información de la fila con error.
+							fila_con_error = fila.copy()
+							fila_con_error['error_message'] = error_msg
+							fila_con_error['row_index'] = index
+							filas_con_errores.append(fila_con_error)
+							continue
+						
+						#-- Actualizar los campos seleccionados.
+						cambios_realizados = False
+						errores_en_fila = []
+						
+						for columna_label, campo_modelo in campos_seleccionados:
+							#-- Saltar campos protegidos
+							if campo_modelo in campos_protegidos or columna_label in campos_protegidos:
+								continue
+							
+							#-- Comprobar si la columna existe en la fila.
+							if columna_label in fila:
+								#-- Obtener el valor de la celda.
+								valor = fila[columna_label]
+								
+								#----------------------------------------------------
+								
+								#-- MANEJO ESPECIAL PARA EL CAMPO CAI.
+								if columna_label == "CAI":
+									#-- Buscar el ProductoCai por el valor del campo cai.
+									try:
+										if valor in ['', None, 'NULL', 'null', 'NaN', 'nan']:
+											#-- Si el valor está vacío, establecer id_cai como None.
+											valor_final = None
+										else:
+											#-- Buscar el ProductoCai por el valor cai.
+											productocai = ProductoCai.objects.get(cai=valor)
+											valor_final = productocai.id_cai
+										
+										#-- Verificar si el valor cambió.
+										if producto.id_cai_id != valor_final:
+											producto.id_cai_id = valor_final
+											cambios_realizados = True
+										
+										#-- Saltar el procesamiento normal para el campo CAI.
+										continue
+										
+									except ProductoCai.DoesNotExist:
+										error_msg = f"CAI - '{valor}' no existe en la base de datos"
+										errores.append(error_msg)
+										errores_en_fila.append(error_msg)
+										
+										continue
+									
+									except Exception as e:
+										error_msg = f"Error al procesar CAI '{valor}' - {str(e)}"
+										errores.append(error_msg)
+										errores_en_fila.append(error_msg)
+										continue
+								
+								#----------------------------------------------------
+								#-- Obtener el tipo de campo del modelo.
+								try:
+									campo_obj = Producto._meta.get_field(campo_modelo)
+									# tipo_dato = campo_obj.get_internal_type()
+									
+									#-- Determinar tipo de dato dinámicamente.
+									tipo_dato = self._obtener_tipo_campo_desde_modelo(campo_obj)
+									especificaciones = self._obtener_especificaciones_campo(campo_obj)
+									
+									#-- Validar campos obligatorios.
+									if campo_obj.blank is False and campo_obj.null is False:
+										#-- Campo es obligatorio en el modelo.
+										if valor in ['', None, 'NULL', 'null', 'NaN', 'nan']:
+											error_msg = f"{columna_label} - Es obligatorio y no puede estar vacío"
+											errores.append(error_msg)
+											errores_en_fila.append(error_msg)
+											continue
+									
+									#-- Usar el valor por defecto del modelo para valores vacíos.
+									if valor in ['', None, 'NULL', 'null', 'NaN', 'nan']:
+										if campo_obj.default is not NOT_PROVIDED:
+											#-- Usar el valor por defecto definido en el modelo.
+											valor = campo_obj.default
+										elif isinstance(campo_obj, (DecimalField, FloatField, IntegerField)):
+											#-- Si no hay valor por defecto definido, usar 0 para numéricos.
+											valor = 0
+										else:
+											valor = None
+									else:
+										#-- Validar y convertir el valor según el tipo de campo.
+										try:
+											if tipo_dato in tipo_validaciones:
+												valor = tipo_validaciones[tipo_dato](valor, campo_obj, especificaciones)
+											else:
+												valor = self._validar_generico(valor, campo_obj, especificaciones)
+										except ValidationError as e:
+											#-- Extraer solo el mensaje sin los corchetes.
+											error_clean = str(e).replace("['", "").replace("']", "").replace("'", "")
+											error_msg = f"{columna_label} - {error_clean}"
+											errores.append(error_msg)
+											errores_en_fila.append(error_msg)
+											continue
+									
+									#-- Verificar si el valor realmente cambió.
+									valor_actual = getattr(producto, campo_modelo)
+									
+									#-- Comparación segura para tipos numéricos.
+									if isinstance(valor, (int, float, Decimal)) and isinstance(valor_actual, (int, float, Decimal)):
+										valor_cambio = abs(float(valor) - float(valor_actual)) > 0.001
+									else:
+										valor_cambio = valor != valor_actual
+									
+									#-- Asignar el nuevo valor si cambió.
+									if valor_cambio:
+										setattr(producto, campo_modelo, valor)
+										cambios_realizados = True
+								
+								except FieldDoesNotExist:
+									error_msg = f"El campo: '{campo_modelo}' no existe en el modelo."
+									errores.append(error_msg)
+									errores_en_fila.append(error_msg)
+									
+									continue
+						
+						#-- Si hubo errores en esta fila, guardarla completa.
+						if errores_en_fila:
+							fila_con_error = fila.copy()
+							fila_con_error['error_message'] = "; ".join(errores_en_fila)
+							fila_con_error['error_list'] = errores_en_fila
+							fila_con_error['row_index'] = index
+							filas_con_errores.append(fila_con_error)
+						
+						#-- Solo guardar si no hay errores y hay cambios.
+						if cambios_realizados and not errores_en_fila:
+							try:
+								producto.save()
+								actualizados += 1
+								
+							except Exception as e:
+								#-- Guardar información de la fila con error.
+								#-- Limpiar el mensaje de error si tiene corchetes.
+								error_clean = str(e).replace("['", "").replace("']", "").replace("'", "")
+								error_msg = f"Error al guardar cambios - {error_clean}"
+								errores.append(error_msg)
+								fila_con_error = fila.copy()
+								fila_con_error['error_message'] = error_msg
+								fila_con_error['row_index'] = index
+								filas_con_errores.append(fila_con_error)
+						
 					except Exception as e:
-						errores.append(f"Fila {index}: Error al guardar cambios - {str(e)}")
+						#-- Capturar cualquier error inesperado en la fila.
+						#-- Limpiar el mensaje de error si tiene corchetes.
+						error_clean = str(e).replace("['", "").replace("']", "").replace("'", "")
+						error_msg = f"Error al procesar - {error_clean}"
+						errores.append(error_msg)
+						
+						#-- Guardar información de la fila con error.
+						fila_con_error = fila.copy()
+						fila_con_error['error_message'] = error_msg
+						fila_con_error['row_index'] = index
+						filas_con_errores.append(fila_con_error)
+						
+						continue #-- Continuar con la siguiente fila.
 				
-			except Exception as e:
-				errores.append(f"Fila {index}: Error al procesar - {str(e)}")
+				#-- Si hay errores, lanzar excepción para revertir la transacción.
+				if errores:
+					#-- Guardar información de errores en la sesión antes de lanzar la excepción.
+					request.session['errores_procesamiento'] = {
+						'errores': errores,
+						'filas_con_errores': filas_con_errores,
+						'columnas': columnas_excel,
+						'total_registros': len(todos_los_datos),
+						'campos_seleccionados': [columna for columna, _ in campos_seleccionados],
+						'nombre_archivo': excel_data.get('nombre_archivo', '')
+					}
+					request.session.modified = True  #-- Asegurar que la sesión se guarde.
+					raise ValidationError("Errores encontrados durante el procesamiento")
+				
+				#-- Preparar contexto para mostrar resultados (éxito).
+				context = self.get_context_data()
+				context['total_registros'] = len(todos_los_datos)
+				context['actualizados'] = actualizados
+				context['errores'] = []
+				context['campos_actualizados'] = [columna for columna, _ in campos_seleccionados]
+				
+				#-- Limpiar sesión.
+				keys_to_remove = ['excel_data']
+				for key in keys_to_remove:
+					if key in request.session:
+						del request.session[key]
+				
+				return self.render_to_response(context)
 		
-		#-- Preparar contexto para mostrar resultados.
-		context = self.get_context_data()
-		context['total_registros'] = len(todos_los_datos)
-		context['actualizados'] = actualizados
-		context['errores'] = errores
-		context['campos_actualizados'] = [columna for columna, _ in campos_seleccionados]
+		except ValidationError as e:
+			#-- Redirigir a la vista de errores.
+			return redirect('mostrar_errores_excel')
 		
-		#-- Limpiar sesión.
-		keys_to_remove = ['excel_data', 'pagina_actual']
-		for key in keys_to_remove:
-			if key in request.session:
-				del request.session[key]
+		except Exception as e:
+			#-- Error inesperado
+			messages.error(request, f'Error inesperado durante el procesamiento: {str(e)}')
+			return redirect('excel_preview')
 		
-		return self.render_to_response(context)	
 	
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
@@ -440,6 +565,11 @@ class ProcesarActualizacionView(TemplateView):
 		"""Validar campo string preservando formato exacto"""
 		#-- El valor ya viene preservado desde la carga del Excel.
 		#-- Solo necesitamos validar, no convertir.
+		
+		#-- Validar campo obligatorio.
+		if campo_obj.blank is False and campo_obj.null is False:
+			if valor is None or valor == '':
+				raise ValidationError("Este campo es obligatorio y no puede estar vacío")
 		
 		if valor is None:
 			return None
@@ -594,39 +724,75 @@ class ProcesarActualizacionView(TemplateView):
 			raise ValidationError("Valor inválido para el campo")
 
 
-def cargar_pagina_excel(request):
-	"""Vista AJAX para cargar páginas específicas - OPTIMIZADA"""
-	if request.method == 'GET' and request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-		pagina = int(request.GET.get('pagina', 1))
+class MostrarErroresExcelView(TemplateView):
+	template_name = 'datatools/errores_excel.html'
+	
+	def get(self, request, *args, **kwargs):
+		#-- Verificar que hay datos de errores en la sesión.
+		if 'errores_procesamiento' not in request.session:
+			messages.error(request, 'No hay datos de errores para mostrar.')
+			return redirect('cargar_excel')
 		
-		#-- Obtener todos los datos de la sesión (ya procesados).
-		excel_data = request.session.get('excel_data', {})
-		todos_los_datos = excel_data.get('todos_los_datos', [])
+		#-- Obtener los datos.
+		errores_data = request.session.get('errores_procesamiento', {})
 		
-		if not todos_los_datos:
-			return JsonResponse({'error': 'Datos no disponibles'}, status=400)
+		#-- Verificar si hay errores en lugar de filas_con_errores.
+		if not errores_data.get('errores'):
+			messages.error(request, 'No hay errores para mostrar.')
+			return redirect('cargar_excel')
+			
+		return super().get(request, *args, **kwargs)
+	
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
 		
-		#-- Paginar los datos que ya están en memoria.
-		paginator = Paginator(todos_los_datos, 100)
+		#-- Recuperar datos de errores de la sesión.
+		errores_data = self.request.session.get('errores_procesamiento', {})
+		
+		context['errores'] = errores_data.get('errores', [])
+		context['columnas'] = errores_data.get('columnas', [])
+		context['total_registros'] = errores_data.get('total_registros', 0)
+		context['campos_seleccionados'] = errores_data.get('campos_seleccionados', [])
+		context['nombre_archivo'] = errores_data.get('nombre_archivo', '')
+		context['fecha'] = timezone.now()
+		
+		#-- Obtener número de página del request.
+		pagina_num = self.request.GET.get('pagina', 1)
+		try:
+			pagina_num = int(pagina_num)
+		except (ValueError, TypeError):
+			pagina_num = 1
+		
+		#-- Configurar paginación - SI filas_con_errores está vacío, usar datos alternativos.
+		filas_con_errores = errores_data.get('filas_con_errores', [])
+		if not filas_con_errores:
+			#-- Si no hay filas con errores, crear una estructura básica para mostrar los errores.
+			filas_con_errores = [{'row_index': i+1, 'error_message': error} for i, error in enumerate(context['errores'])]
+		
+		context['filas_con_errores'] = filas_con_errores
+		
+		#-- Paginar los datos.
+		paginator = Paginator(filas_con_errores, 100)
 		
 		try:
-			pagina_datos = paginator.page(pagina).object_list
-			
-			#-- Actualizar solo la página actual en sesión.
-			request.session['pagina_actual'] = {
-				'numero': pagina,
-				'datos': pagina_datos,
-				'total_paginas': paginator.num_pages
-			}
-			
-			return JsonResponse({
-				'success': True,
-				'pagina_actual': pagina,
-				'total_paginas': paginator.num_pages,
-				'total_filas': len(todos_los_datos)
-			})
-			
-		except Exception as e:
-			return JsonResponse({'error': str(e)}, status=500)
-	
-	return JsonResponse({'error': 'Método no permitido'}, status=405)
+			pagina_datos = paginator.page(pagina_num)
+		except:
+			pagina_datos = paginator.page(1)
+			pagina_num = 1
+		
+		context['datos'] = pagina_datos.object_list
+		context['pagina_actual'] = pagina_num
+		context['total_paginas'] = paginator.num_pages
+		context['page_start'] = (pagina_num - 1) * 100 + 1
+		context['page_end'] = min(pagina_num * 100, len(filas_con_errores))
+		
+		#-- Calcular rango de páginas.
+		start_page = max(1, pagina_num - 2)
+		end_page = min(context['total_paginas'], start_page + 4)
+		
+		if end_page - start_page < 4:
+			start_page = max(1, end_page - 4)
+		
+		context['page_range'] = range(start_page, end_page + 1)
+		
+		return context
