@@ -49,8 +49,8 @@ class Compra(ModeloBaseGenerico):
 		ComprobanteCompra,
 		on_delete=models.PROTECT,
 		verbose_name="Comprobante",
-		# null=True,
-		# blank=True
+		null=True,
+		blank=True
 	)
 	compro = models.CharField(
 		verbose_name="Compro",

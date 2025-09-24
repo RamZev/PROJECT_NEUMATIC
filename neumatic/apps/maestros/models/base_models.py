@@ -393,6 +393,8 @@ class ComprobanteCompra(ModeloBaseGenerico):
 	codigo_afip_b = models.CharField("Código AFIP B", max_length=3)
 	codigo_afip_c = models.CharField("Código AFIP C", max_length=3)
 	codigo_afip_m = models.CharField("Código AFIP M", max_length=3)
+	remito = models.BooleanField("Remito", default=False, blank=True, null=True)
+	retencion = models.BooleanField("Retención", default=False, blank=True, null=True)
 	
 	class Meta:
 		db_table = 'comprobante_compra'
