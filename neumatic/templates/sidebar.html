@@ -286,7 +286,9 @@
 							</nav>
 						</div>
 						-->
-						<a class="nav-link" href="{% url 'cargar_excel' %}">Actualizar precios de Productos (Excel)</a>
+						{% comment %} <a class="nav-link" href="{% url 'cargar_excel_actualizar' %}">Actualizar precios de Productos (Excel)</a> {% endcomment %}
+						<a class="nav-link" href="{% url 'cargar_excel' %}?proceso=actualizar">Actualizar Productos (Excel)</a>
+						<a class="nav-link" href="{% url 'cargar_excel' %}?proceso=agregar">Agregar nuevos Productos (Excel)</a>
 						
 					</nav>
 				</div>

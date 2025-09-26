@@ -42,6 +42,7 @@
 		
 		.table-fit thead th {
 			background-color: #b6d4fe;
+			color: #000;
 		}
 		
 		.table-fit td {
@@ -69,11 +70,6 @@
 			padding: 1rem;
 		}
 		
-		.badge-count {
-			font-size: 0.8rem;
-			vertical-align: middle;
-		}
-		
 		/*--- Estilo para números alineados a la derecha ---*/
 		.number-cell {
 			text-align: right;
@@ -82,8 +78,8 @@
 		
 		/*--- Estilos para celdas con error ---*/
 		.error-cell {
-			background-color: rgba(255, 0, 0, 0.1) !important;
-			border: 1px solid #dc3545 !important;
+			/*background-color: rgba(255, 0, 0, 0.1) !important;*/
+			/*border: 1px solid #dc3545 !important;*/
 			position: relative;
 		}
 		
@@ -106,8 +102,21 @@
 		}
 		
 		.error-row {
-			/*background-color: rgba(255, 0, 0, 0.05);*/
-			background-color: rgba(0, 255, 21, 0.05);
+			/*background-color: rgba(255, 0, 0, 0.03);*/
+		}
+		.error-row:hover {
+			background-color: rgba(255, 0, 0, 0.08);
+		}
+		
+		/* Estilo especial para la celda de error/expand */
+		td.error-cell.expand-button {
+			background-color: rgba(255, 182, 193, 0.3); /* Rosa pálido */
+			cursor: pointer;
+			transition: all 0.2s;
+		}
+		td.error-cell.expand-button:hover {
+			background-color: rgba(255, 182, 193, 0.3); /* Rosa más intenso */
+			border: 1px solid #ffb6c1 !important; /* Borde rosa al hover */
 		}
 		
 		.alert-danger {
@@ -116,15 +125,7 @@
 			color: #721c24;
 		}
 		
-		.error-badge {
-			background-color: #dc3545;
-			color: white;
-			padding: 2px 6px;
-			border-radius: 3px;
-			font-size: 0.8rem;
-			margin-left: 5px;
-		}
-		
+		/*--- Estilos para la paginación ---*/
 		.pagination-container {
 			display: flex;
 			justify-content: left;
@@ -141,8 +142,7 @@
 				
 		.page-info {
 			text-align: left;
-			/*margin: 10px 0;*/
-			margin: 10px;
+			/*margin: 10px;*/
 			font-size: 0.9rem;
 			color: #6c757d;
 			display: flex;
@@ -177,6 +177,12 @@
 		.error-details .p-3 {
 			padding: 1rem !important;
 		}
+		
+		.error-details h6 {
+			color: #dc3545; /* Rojo Bootstrap para errores */
+			font-size: 0.9rem;
+			margin-bottom: 0.5rem;
+		}
 	</style>
 {% endblock %}
 
@@ -196,7 +202,7 @@
 					<h1 class="mt-4">Errores en Procesamiento de Excel</h1>
 					<ol class="breadcrumb mb-4">
 						<li class="breadcrumb-item"><a href="{% url 'home' %}">Panel</a></li>
-						<li class="breadcrumb-item"><a href="{% url 'cargar_excel' %}">Cargar Excel</a></li>
+						<li class="breadcrumb-item"><a href="{% url 'cargar_excel' %}?proceso={{proceso}}">Cargar Excel</a></li>
 						<li class="breadcrumb-item active">Errores</li>
 					</ol>
 					
@@ -362,7 +368,7 @@
 					{% endif %} <!-- Cierre del if filas_con_errores -->
 					
 					<div class="text-center mt-4">
-						<a href="{% url 'cargar_excel' %}" class="btn btn-primary me-2">
+						<a href="{% url 'cargar_excel' %}?proceso={{proceso}}" class="btn btn-primary me-2">
 							<i class="fas fa-upload me-1"></i>
 							Volver a Cargar Archivo
 						</a>

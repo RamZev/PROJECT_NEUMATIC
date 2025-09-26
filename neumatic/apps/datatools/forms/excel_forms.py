@@ -2,6 +2,7 @@
 from django import forms
 from .forms_generics import GenericForm
 
+
 class ExcelUploadForm(GenericForm):
 	archivo_excel = forms.FileField(
 		label="Seleccione el archivo Excel",
