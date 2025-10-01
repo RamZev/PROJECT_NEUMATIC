@@ -63,13 +63,6 @@
 														{{ form.id_sucursal }}
 													</div>
 													
-													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
-															{{ form.id_punto_venta.label }}
-														</label>
-														{{ form.id_punto_venta }}
-													</div>
-													
 													<div class="col-md-4">
 														<label class="form-label text-primary mb-0">
 															{{ form.id_deposito.label }}
@@ -80,21 +73,21 @@
 												
 												<!-- Fila 2 -->
 												<div class="row">
-													<div class="col-md-2">
+													<div class="col-md-4">
 														<label class="form-label text-primary mb-0">
 															{{ form.id_comprobante_compra.label }}
 														</label>
 														{{ form.id_comprobante_compra }}
 													</div>
 													
-													<div class="col-md-2">
+													<div class="col-md-1">
 														<label class="form-label text-primary mb-0">
 															{{ form.compro.label }}
 														</label>
 														{{ form.compro }}
 													</div>
 													
-													<div class="col-md-2">
+													<div class="col-md-1">
 														<label class="form-label text-primary mb-0">
 															{{ form.letra_comprobante.label }}
 														</label>
@@ -125,7 +118,7 @@
 														{{ form.id_proveedor }}
 													</div>
 													
-													<div class="col-md-2">
+													<div class="col-md-3">
 														<label class="form-label text-primary mb-0">
 															{{ form.condicion_comprobante.label }}
 														</label>
@@ -163,25 +156,18 @@
 														{{ form.numero_comprobante_venta }}
 													</div>
 													
-													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
-															{{ form.fecha_comprobante_venta.label }}
-														</label>
-														{{ form.fecha_comprobante_venta }}
-													</div>
-													
+												</div>
+												
+												<!-- Fila 5 -->
+												<div class="row">
 													<div class="col-md-2">
 														<label class="form-label text-primary mb-0">
 															{{ form.total_comprobante_venta.label }}
 														</label>
 														{{ form.total_comprobante_venta }}
 													</div>
-												</div>
-												
-												<!-- Fila 5 -->
-												<div class="row">
 													
-													<div class="col-md-4">
+													<div class="col-md-2">
 														<label class="form-label text-primary mb-0">
 															{{ form.exento.label }}
 														</label>
@@ -195,14 +181,14 @@
 														{{ form.alicuota_iva }}
 													</div>
 													
-													<div class="col-md-2">
+													<div class="col-md-3">
 														<label class="form-label text-primary mb-0">
 															{{ form.retencion_ingreso_bruto.label }}
 														</label>
 														{{ form.retencion_ingreso_bruto }}
 													</div>
 													
-													<div class="col-md-2">
+													<div class="col-md-3">
 														<label class="form-label text-primary mb-0">
 															{{ form.total.label }}
 														</label>
@@ -239,3 +225,104 @@
 	{% include 'maestros/modal_errors.html' %}
 {% endblock modals %}
 <!-- -------------------------------------------------------------------- -->
+
+{% block script %}
+<script>
+	document.addEventListener('DOMContentLoaded', function () {
+		// ---------- Comprobante Compra -> Número automático ----------		
+		const selectComprobante = document.getElementById('id_id_comprobante_compra');
+		const inputNumero = document.getElementById('id_numero_comprobante');
+		const inputCompro = document.getElementById('id_compro');
+		const inputLetra = document.getElementById('id_letra_comprobante');
+
+		if (!selectComprobante) return;
+
+		selectComprobante.addEventListener('change', function () {
+			// alert("Cambio en el select de Comprobante Compra");
+			// Obtener el ID del comprobante seleccionado
+			const idComprobante = this.value;
+			urlObtenerNumero = "{% url 'obtener_numero_compra' %}";
+
+			if (idComprobante) {
+				const url = `${urlObtenerNumero}?id_comprobante=${encodeURIComponent(idComprobante)}`;
+				
+				fetch(url)
+					.then(response => response.json())
+					.then(data => {
+						if (data.error) {
+							console.error('Error:', data.error);
+							alert('Error al obtener el número de comprobante: ' + data.error);
+							return;
+						}
+
+						if (inputCompro) inputCompro.value = data.compro;
+						if (inputLetra) inputLetra.value = data.letra;
+						if (inputNumero) inputNumero.value = data.numero_comprobante;
+					})
+					.catch(error => {
+						console.error('Error en la solicitud AJAX:', error);
+						alert('No se pudo obtener el número de comprobante.');
+					});
+			} else {
+				// Limpiar campos si se deselecciona
+				if (inputCompro) inputCompro.value = '';
+				if (inputLetra) inputLetra.value = '';
+				if (inputNumero) inputNumero.value = '';
+			}
+		});
+
+		// ---------- Proveedor -> Alicuota IVA ----------
+		const selectProveedor = document.getElementById('id_id_proveedor');
+		const inputAlicuota = document.getElementById('id_alicuota_iva');
+
+		if (selectProveedor && inputAlicuota) {
+			selectProveedor.addEventListener('change', function () {
+				const idProveedor = this.value;
+
+				if (idProveedor) {
+					const url = "{% url 'obtener_alicuota_proveedor' %}?id_proveedor=" + encodeURIComponent(idProveedor);
+					fetch(url)
+						.then(response => response.json())
+						.then(data => {
+							if (data.error) {
+								console.error('Error:', data.error);
+								// Opcional: no limpiar, o mostrar advertencia
+								inputAlicuota.value = '';
+								return;
+							}
+							inputAlicuota.value = data.alicuota_iva;
+						})
+						.catch(error => {
+							console.error('Error al obtener alícuota:', error);
+							inputAlicuota.value = '';
+						});
+				} else {
+					inputAlicuota.value = '';
+				}
+			});
+		}
+
+		// --->>>
+		function calcularTotal() {
+			const inputExento = document.getElementById('id_exento');
+			const inputAlicuota = document.getElementById('id_alicuota_iva');
+			const inputRetencion = document.getElementById('id_retencion_ingreso_bruto');
+			const inputTotal = document.getElementById('id_total');
+
+			const exento = parseFloat(inputExento?.value) || 0;
+			const alicuota = parseFloat(inputAlicuota?.value) || 0;
+
+			const retencion = exento * alicuota / 100;
+			const total = retencion;
+
+			if (inputRetencion) inputRetencion.value = retencion.toFixed(2);
+			if (inputTotal) inputTotal.value = total.toFixed(2);
+		}
+
+		// Activar el evento blur
+		document.getElementById('id_exento')?.addEventListener('blur', calcularTotal);
+		// --->>>
+
+	});
+</script>
+{% endblock script %}

@@ -39,6 +39,9 @@ from .views.consultas_factura_views import (buscar_agenda,
 											obtener_libro_iva,
 											buscar_factura)
 
+from .views.consultas_compra_views import (obtener_numero_compra, 
+										  obtener_alicuota_proveedor)
+
 from .views.crear_agenda import crear_agenda
 from .views.genera_pdf import GeneraPDFView
 from .views.fe_afiparca_views import fe_dummy
@@ -113,6 +116,8 @@ urlpatterns = [
 	path('compra-otros/nueva/', CompraOtrosCreateView.as_view(), name='compra_otros_create'),
 	path('compra-otros/<int:pk>/editar/', CompraOtrosUpdateView.as_view(), name='compra_otros_update'),
 	path('compra-otros/<int:pk>/eliminar/', CompraOtrosDeleteView.as_view(), name='compra_otros_delete'),
+    
+	path('obtener-numero-compra/', obtener_numero_compra, name='obtener_numero_compra'),
+    path('obtener-alicuota-proveedor/', obtener_alicuota_proveedor, name='obtener_alicuota_proveedor'),
 	
-
 ]

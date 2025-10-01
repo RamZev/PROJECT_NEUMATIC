@@ -105,11 +105,6 @@ class Compra(ModeloBaseGenerico):
 		null=True,
 		blank=True
 	)
-	fecha_comprobante_venta = models.DateField(
-		verbose_name="Fecha C/Compra",
-		null=True,
-		blank=True
-	)
 	total_comprobante_venta = models.DecimalField(
 		verbose_name="Total C/Compra",
 		max_digits=14,
@@ -240,7 +235,7 @@ class Compra(ModeloBaseGenerico):
 		blank=True
 	)
 	alicuota_iva = models.DecimalField(
-		verbose_name="Alicuota IVA",
+		verbose_name="Alicuota",
 		max_digits=4,
 		decimal_places=2,
 		null=True,
