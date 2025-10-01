@@ -60,26 +60,30 @@ class ConfigViews():
 class DataViewList():
 	search_fields = ['numero_comprobante']
 	
-	ordering = ['numero_comprobante']
+	ordering = ['-id_compra']
 	
 	paginate_by = 8
 	  
 	table_headers = {
-		# 'estatus_cliente': (1, 'Estatus'),
-		'id_comprobante_compra': (4, 'Comprobante'),
-		'compro': (2, 'Compro'),
-		'letra_comprobante': (2, 'Letra'),
-		'numero_comprobante': (2, 'Número'),
-		
+		'id_compra': (1, 'ID'),
+		'compro': (1, 'Compro'),
+		'letra_comprobante': (1, 'Letra'),
+		'numero_comprobante': (1, 'Número'),
+		'fecha_comprobante': (1, 'Fecha'),
+		'id_proveedor': (3, 'Proveedor'),
+		'total': (2, 'Total'),
 		'acciones': (2, 'Acciones'),
 	}
 	
 	table_data = [
-		# {'field_name': 'estatus_cliente', 'date_format': None},
-		{'field_name': 'id_comprobante_compra', 'date_format': None},
+		{'field_name': 'id_compra', 'date_format': None},
 		{'field_name': 'compro', 'date_format': None},
 		{'field_name': 'letra_comprobante', 'date_format': None},
 		{'field_name': 'numero_comprobante', 'date_format': None},
+		{'field_name': 'fecha_comprobante', 'date_format': 'd/m/Y'},
+		{'field_name': 'id_proveedor', 'date_format': None},
+		{'field_name': 'total', 'date_format': None, 'decimal_places': 2},
+		
 	]
 
 
@@ -101,6 +105,12 @@ class CompraOtrosListView(MaestroListView):
 		"table_headers": DataViewList.table_headers,
 		"table_data": DataViewList.table_data,
 	}
+
+	def get_queryset(self):
+		# Filtrar Compra por comprobantes con código en ["IB", "RG", "RI"]
+		return Compra.objects.filter(
+			id_comprobante_compra__codigo_comprobante_compra__in=["IB", "RG", "RI"]
+		).order_by(*self.ordering)
 
 
 class CompraOtrosCreateView(MaestroCreateView):

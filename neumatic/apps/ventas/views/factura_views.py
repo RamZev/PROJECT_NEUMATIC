@@ -798,7 +798,7 @@ class FacturaCreateView(MaestroDetalleCreateView):
 		# CUIT del certificado (Mario)
 		# Es temporal porque los certificados 
 		# Son de mario y no de Debona
-		tax_id = 20207882950
+		# tax_id = 20207882950 # CUIT de Mario
 
 		# Instanciamos la clase Afip con las credenciales
 		afip = Afip({
