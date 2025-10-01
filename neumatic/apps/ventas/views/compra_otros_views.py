@@ -123,11 +123,11 @@ class CompraOtrosCreateView(MaestroCreateView):
 	#-- Indicar el permiso que requiere para ejecutar la acción.
 	permission_required = ConfigViews.permission_add
 	
-	# def get_initial(self):
-	# 	initial = super().get_initial()
-	# 	#-- Asignar la sucursal del usuario autenticado como valor inicial.
-	# 	initial['id_sucursal'] = self.request.user.id_sucursal
-	# 	return initial
+	def get_initial(self):
+		initial = super().get_initial()
+		#-- Asignar la sucursal del usuario autenticado como valor inicial.
+		initial['id_sucursal'] = self.request.user.id_sucursal
+		return initial
 
 
 class CompraOtrosUpdateView(MaestroUpdateView):
