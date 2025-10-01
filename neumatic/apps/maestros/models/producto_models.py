@@ -48,7 +48,7 @@ class Producto(ModeloBaseGenerico):
 	despacho_2 = models.CharField("Despacho 2", max_length=16, 
 							   null=True, blank=True)
 	descripcion_producto = models.CharField("Descripción", max_length=50)
-	carrito = models.BooleanField("Carrito")
+	carrito = models.BooleanField("Carrito", default=False)
 	iva_exento = models.BooleanField("IVA Exento", default=False)
 	obliga_operario = models.BooleanField("Obliga Operario", default=False)
 	id_producto_estado = models.ForeignKey('ProductoEstado', on_delete=models.PROTECT,
@@ -76,7 +76,7 @@ class Producto(ModeloBaseGenerico):
 			self.codigo_producto = f'{self.id_producto:07d}'  # 7 dígitos con ceros a la izquierda
 		
 		#-- Solo procesar stock y mínimo si es nuevo y es producto.
-		if es_nuevo and self.tipo_producto == 'P':
+		if es_nuevo and self.tipo_producto.upper() == 'P':
 			self._crear_registros_stock_y_minimo()		
 		
 	def _crear_registros_stock_y_minimo(self):

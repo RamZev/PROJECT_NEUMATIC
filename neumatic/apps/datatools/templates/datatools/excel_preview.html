@@ -263,12 +263,14 @@
 									</div>
 									
 									<!-- Paginación -->
-									<div class="page-info">
-										{% include 'datatools/paginacion.html' %}
-										Mostrando página {{ pagina_actual }} de {{ total_paginas }} 
-										(registros {{ page_start }} a {{ page_end }} de {{ total_filas }})
-									</div>
-									
+									{% if datos and total_paginas > 1 %}
+										<div class="page-info">
+											{% include 'datatools/paginacion.html' %}
+											Mostrando página {{ pagina_actual }} de {{ total_paginas }} 
+											(registros {{ page_start }} a {{ page_end }} de {{ total_filas }})
+										</div>
+									{% endif %}
+							
 								</div>
 							</div>
 						</div>
@@ -283,12 +285,8 @@
 										Campos a Actualizar
 									</div>
 									<div class="card-body">
-										<form method="post" id="formActualizacion" action="{% url 'procesar_actualizacion' %}?pagina={{ pagina_actual }}">
+										<form method="post" id="formActualizacion" action="{% url 'actualizar_productos' %}?pagina={{ pagina_actual }}">
 											{% csrf_token %}
-											{% comment %}
-											<input type="hidden" name="pagina_actual" value="{{ pagina_actual }}">
-											<input type="hidden" name="nombre_archivo" value="{{ nombre_archivo }}">
-											{% endcomment %}
 											
 											<div>
 												<button type="button" class="btn btn-outline-primary btn-sm btn-toggle-all w-100" onclick="toggleAllCheckboxes()">
@@ -327,24 +325,13 @@
 								</div>
 							</div>
 						{% else %}
-							{% comment %} <form method="post" id="formActualizacion" action="{% url 'procesar_actualizacion' %}?pagina={{ pagina_actual }}"> {% endcomment %}
-							<form method="post" id="formAgregar">
+							<form method="post" id="formAgregar" action="{% url 'agregar_productos' %}?pagina={{ pagina_actual }}">
 								{% csrf_token %}
 								<div class="text-center">
-									{% comment %}
-									<a href="{% url 'cargar_excel' %}?proceso={{proceso}}" class="btn btn-primary">
-										<i class="fas fa-upload me-1"></i>
-										Cargar otro archivo
-									</a>
-									<a href="{% url 'home' %}" class="btn btn-secondary">
-										<i class="fas fa-home me-1"></i>
-										Volver al Panel
-									</a>
-									{% endcomment %}
 									
 									<button type="submit" class="btn btn-success">
-										<i class="fas fa-sync-alt me-1"></i>
-										Actualizar
+										<i class="bi bi-database-add me-1"></i>
+										Agregar
 									</button>
 									<a href="{% url 'cargar_excel' %}?proceso={{proceso}}" class="btn btn-secondary">
 										<i class="fas fa-arrow-left me-1"></i>

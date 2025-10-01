@@ -1315,7 +1315,11 @@ CREATE VIEW "VLLista" AS
 		p.despacho_2,
 		p.fecha_fabricacion,
 		p.id_producto_estado_id,
-		pe.nombre_producto_estado
+		pe.nombre_producto_estado,
+		p.descripcion_producto,
+		p.carrito,
+		p.obliga_operario,
+		p.iva_exento
 	FROM 
 		producto p
 		LEFT JOIN producto_marca px ON p.id_marca_id = px.id_producto_marca

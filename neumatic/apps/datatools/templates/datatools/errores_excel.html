@@ -199,7 +199,7 @@
 		<div id="layoutSidenav_content">
 			<main>
 				<div class="container-fluid px-4">
-					<h1 class="mt-4">Errores en Procesamiento de Excel</h1>
+					<h1 class="mt-4">Errores en Procesamiento del Excel ({{proceso}})</h1>
 					<ol class="breadcrumb mb-4">
 						<li class="breadcrumb-item"><a href="{% url 'home' %}">Panel</a></li>
 						<li class="breadcrumb-item"><a href="{% url 'cargar_excel' %}?proceso={{proceso}}">Cargar Excel</a></li>
@@ -229,7 +229,7 @@
 						<!-- Contenido principal (SOLO si hay datos) -->
 						<div class="alert alert-danger">
 							<h5><i class="fas fa-exclamation-triangle me-2"></i>Se encontraron errores durante el procesamiento</h5>
-							<p>La actualización se ha revertido debido a errores en los datos. Por favor, corrija los errores y vuelva a intentar.</p>
+							<p>El proceso se ha revertido debido a errores en los datos. Por favor, corrija los errores y vuelva a intentar.</p>
 						</div>
 						
 						<div class="card mb-4">
@@ -357,11 +357,11 @@
 							
 							<!-- Paginación (SOLO si hay datos) -->
 							{% if datos and total_paginas > 1 %}
-							<div class="page-info">
-								{% include 'datatools/paginacion.html' %}
-								Mostrando página {{ pagina_actual|default:1 }} de {{ total_paginas|default:1 }} 
-								(registros {{ page_start|default:1 }} a {{ page_end|default:0 }} de {{ filas_con_errores|length }})
-							</div>
+								<div class="page-info">
+									{% include 'datatools/paginacion.html' %}
+									Mostrando página {{ pagina_actual|default:1 }} de {{ total_paginas|default:1 }} 
+									(registros {{ page_start|default:1 }} a {{ page_end|default:0 }} de {{ filas_con_errores|length }})
+								</div>
 							{% endif %}
 						</div>
 						

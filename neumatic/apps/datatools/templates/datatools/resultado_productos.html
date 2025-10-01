@@ -1,8 +1,8 @@
-<!-- apps\datatools\templates\datatools\procesar_actualizacion.html -->
+<!-- neumatic\apps\datatools\templates\datatools\resultado_productos.html -->
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Procesamiento Completado{% endblock %}
+{% block title %}Procesamiento Exitoso Completado{% endblock %}
 
 {% block header %}
 	{% include 'top_nav.html' %}
@@ -17,7 +17,7 @@
 		<div id="layoutSidenav_content">
 			<main>
 				<div class="container-fluid px-4">
-					<h1 class="mt-4">Procesamiento Completado</h1>
+					<h1 class="mt-4">Procesamiento Exitoso Completado</h1>
 					<ol class="breadcrumb mb-4">
 						<li class="breadcrumb-item"><a href="{% url 'home' %}">Panel</a></li>
 						<li class="breadcrumb-item"><a href="{% url 'cargar_excel' %}?proceso={{proceso}}">Cargar Excel</a></li>
@@ -28,31 +28,20 @@
 						
 						<div class="card-header bg-success text-white">
 							<i class="fas fa-check-circle me-1"></i>
-							Procesamiento Finalizado
+							Procesamiento Finalizado Exitosamente
 						</div>
 						<div class="card-body">
 							
 							<div class="alert alert-info">
-								<h5>Resumen de la actualización:</h5>
+								{% comment %} <h5>Resumen de la actualización:</h5> {% endcomment %}
+								<h5>Resumen del Procesamiento ({{proceso}}):</h5>
 								<ul>
 									<li>Total de registros procesados: {{ total_registros }}</li>
-									<li>Productos actualizados correctamente: {{ actualizados }}</li>
+									{% comment %} <li>Productos actualizados correctamente: {{ actualizados }}</li> {% endcomment %}
+									<li>Productos <b>{% if proceso == 'agregar' %} agregados {% else %} actualizados {% endif %}</b> correctamente: {{ actualizados }}</li>
 									<li>Errores encontrados: {{ errores|length }}</li>
 								</ul>
 							</div>
-							
-							{% if errores %}
-								<div class="alert alert-warning">
-									<h5>Errores durante el procesamiento:</h5>
-									<div style="max-height: 300px; overflow-y: auto;">
-										<ul>
-											{% for error in errores %}
-												<li>{{ error }}</li>
-											{% endfor %}
-										</ul>
-									</div>
-								</div>
-							{% endif %}
 							
 							<div class="text-center">
 								<a href="{% url 'cargar_excel' %}?proceso={{proceso}}" class="btn btn-primary">

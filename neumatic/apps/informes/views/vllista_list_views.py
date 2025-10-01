@@ -248,6 +248,35 @@ class ConfigViews:
 			"excel": False,
 			"csv": False
 		},
+		#---------------------------
+		"descripcion_producto": {
+			"label": "Descripción Producto",
+			"col_width_pdf": 0,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+		"carrito": {
+			"label": "Carrito",
+			"col_width_pdf": 0,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+		"obliga_operario": {
+			"label": "Obliga Operario",
+			"col_width_pdf": 0,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+		"iva_exento": {
+			"label": "IVA Exento",
+			"col_width_pdf": 0,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
 	}
 
 
