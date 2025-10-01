@@ -196,14 +196,14 @@ class ConfigViews:
 			"label": "Id Alíc. IVA",
 			"col_width_pdf": 0,
 			"pdf": False,
-			"excel": True,
+			"excel": False,
 			"csv": True
 		},
 		"alicuota_iva": {
 			"label": "Alic. IVA",
 			"col_width_pdf": 0,
 			"pdf": False,
-			"excel": False,
+			"excel": True,
 			"csv": False
 		},
 		"minimo": {

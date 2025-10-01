@@ -1309,7 +1309,7 @@ CREATE VIEW "VLLista" AS
 		p.costo,
 		p.descuento,
 		p.id_alicuota_iva_id,
-		p.alicuota_iva,
+		ca.alicuota_iva,
 		p.minimo,
 		p.despacho_1,
 		p.despacho_2,
@@ -1327,6 +1327,7 @@ CREATE VIEW "VLLista" AS
 		LEFT JOIN producto_modelo pm ON p.id_modelo_id = pm.id_modelo
 		LEFT JOIN producto_cai pc ON p.id_cai_id = pc.id_cai
 		LEFT JOIN producto_estado pe ON p.id_producto_estado_id = pe.id_producto_estado
+		LEFT JOIN codigo_alicuota ca ON p.id_alicuota_iva_id = ca.id_alicuota_iva
 	ORDER by
 		p.id_familia_id, p.id_marca_id;
 
