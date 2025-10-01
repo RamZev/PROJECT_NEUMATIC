@@ -40,7 +40,7 @@
 		}
 		.table-fit thead th {
 			background-color: #b6d4fe;
-			/*color: white;*/
+			color: #000;
 		}
 		
 		.table-fit td {
@@ -87,6 +87,7 @@
 		
 		.table-container {
 			flex: 3;
+			position: relative;
 		}
 		
 		.form-container {
@@ -98,7 +99,6 @@
 			background: #f8f9fa;
 			padding: 20px;
 			border-radius: 5px;
-			/*border: 1px solid #dee2e6;*/
 			border: 1px solid #0d6efd;
 		}
 		
@@ -124,10 +124,8 @@
 		/*--- Estilos para la paginación ---*/
 		.pagination-container {
 			display: flex;
-			/*justify-content: center;*/
 			justify-content: left;
-			/*margin: 20px 0;*/
-			/*margin: 10px;*/
+			margin: 10px;
 		}
 		
 		.pagination {
@@ -135,15 +133,12 @@
 		}
 		
 		.pagination .page-link {
-			/*border: 1px solid #0d6efd !important;*/
 			border: 1px solid #757575ff !important;
 		}
 				
 		.page-info {
-			/*text-align: center;*/
 			text-align: left;
 			/*margin: 10px 0;*/
-			/*margin: 10px 0px;*/
 			font-size: 0.9rem;
 			color: #6c757d;
 			display: flex;
@@ -163,20 +158,14 @@
 			align-items: center;
 		}
 		
-		.table-container {
-			position: relative;
-		}
-		
 		/*--- Estilo para campos deshabilitados ---*/
 		.campo-item.text-muted .form-check-input:disabled {
 			background-color: #f8f9fa;
-			/*border-color: #dee2e6;*/
 			border-color: #3a3a3aff;
 			cursor: not-allowed;
 		}
 		
 		.campo-item.text-muted .form-check-label {
-			/*color: #6c757d;*/
 			color: #000000ff;
 		}
 	</style>
@@ -195,27 +184,28 @@
 		<div id="layoutSidenav_content">
 			<main>
 				<div class="container-fluid px-4">
-					<h1 class="mt-4">Previsualización del Archivo</h1>
+					<h1 class="mt-4">Previsualización del Archivo ({{proceso}})</h1>
 					<ol class="breadcrumb mb-4">
 						<li class="breadcrumb-item"><a href="{% url 'home' %}">Panel</a></li>
-						<li class="breadcrumb-item"><a href="{% url 'cargar_excel' %}">Cargar Excel</a></li>
+						<li class="breadcrumb-item"><a href="{% url 'cargar_excel' %}?proceso={{proceso}}">Cargar Excel</a></li>
 						<li class="breadcrumb-item active">Previsualización</li>
 					</ol>
 					
 					<!--///////////////////////////////////////////////-->
 					{% if messages %}
-					<div class="alert-messages">
-						{% for message in messages %}
-						<div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show">
-							{{ message }}
-							<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+						<div class="alert-messages">
+							{% for message in messages %}
+								<div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show">
+									{{ message }}
+									<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+								</div>
+							{% endfor %}
 						</div>
-						{% endfor %}
-					</div>
 					{% endif %}
 					<!--///////////////////////////////////////////////-->
 					
-					<div class="container-main">
+					{% comment %} <div class="container-main"> {% endcomment %}
+					<div class="container-main"{% if proceso == 'agregar' %} style="display: block;"{% endif %}>
 						<!-- Panel izquierdo: Tabla de datos -->
 						<div class="table-container">
 							<div class="card mb-4">
@@ -285,54 +275,85 @@
 						
 						<!--***********************************-->
 						<!-- Panel derecho: Selección de campos -->
-						<div class="form-container">
-							<div class="card">
-								<div class="card-header">
-									<i class="fas fa-cogs me-1"></i>
-									Campos a Actualizar
-								</div>
-								<div class="card-body">
-									<form method="post" id="formActualizacion" action="{% url 'procesar_actualizacion' %}?pagina={{ pagina_actual }}">
-										{% csrf_token %}
-										<input type="hidden" name="pagina_actual" value="{{ pagina_actual }}">
-										<input type="hidden" name="nombre_archivo" value="{{ nombre_archivo }}">
-										
-										<div class="mb-3">
-											<button type="button" class="btn btn-outline-primary btn-sm btn-toggle-all w-100" onclick="toggleAllCheckboxes()">
-												<i class="fas fa-check-square"></i> Seleccionar/Deseleccionar Todos
-											</button>
-										</div>
-										
-										<div class="campos-form">
-											{% for field in form_campos %}
-												{% with field_name=field.label %}
-												<div class="form-check campo-item {% if field.field.disabled %}text-muted{% endif %}">
-													{{ field }}
-													<label class="form-check-label" for="{{ field.id_for_label }}">
-														{{ field_name }}
-														{% if field.field.disabled %}
-															<small class="text-muted">(solo lectura)</small>
-														{% endif %}
-													</label>
-												</div>
-												{% endwith %}
-											{% endfor %}
-										</div>
-										
-										<div class="text-center mt-3">
-											<button type="submit" class="btn btn-success">
-												<i class="fas fa-sync-alt me-1"></i>
-												Actualizar Datos Seleccionados
-											</button>
-											<a href="{% url 'cargar_excel' %}" class="btn btn-secondary">
-												<i class="fas fa-arrow-left me-1"></i>
-												Volver a Cargar
-											</a>
-										</div>
-									</form>
+						{% if proceso == 'actualizar' %}
+							<div class="form-container">
+								<div class="card">
+									<div class="card-header">
+										<i class="fas fa-cogs me-1"></i>
+										Campos a Actualizar
+									</div>
+									<div class="card-body">
+										<form method="post" id="formActualizacion" action="{% url 'procesar_actualizacion' %}?pagina={{ pagina_actual }}">
+											{% csrf_token %}
+											{% comment %}
+											<input type="hidden" name="pagina_actual" value="{{ pagina_actual }}">
+											<input type="hidden" name="nombre_archivo" value="{{ nombre_archivo }}">
+											{% endcomment %}
+											
+											<div>
+												<button type="button" class="btn btn-outline-primary btn-sm btn-toggle-all w-100" onclick="toggleAllCheckboxes()">
+													<i class="fas fa-check-square"></i> Seleccionar/Deseleccionar Todos
+												</button>
+											</div>
+											
+											<div class="campos-form">
+												{% for field in form_campos %}
+													{% with field_name=field.label %}
+													<div class="form-check campo-item {% if field.field.disabled %}text-muted{% endif %}">
+														{{ field }}
+														<label class="form-check-label" for="{{ field.id_for_label }}">
+															{{ field_name }}
+															{% if field.field.disabled %}
+																<small class="text-muted">(solo lectura)</small>
+															{% endif %}
+														</label>
+													</div>
+													{% endwith %}
+												{% endfor %}
+											</div>
+											
+											<div class="text-center mt-3">
+												<button type="submit" class="btn btn-success w-100 mb-3">
+													<i class="fas fa-sync-alt me-1"></i>
+													Actualizar
+												</button>
+												<a href="{% url 'cargar_excel' %}?proceso={{proceso}}" class="btn btn-secondary w-100">
+													<i class="fas fa-arrow-left me-1"></i>
+													Volver a Cargar
+												</a>
+											</div>
+										</form>
+									</div>
 								</div>
 							</div>
-						</div>
+						{% else %}
+							{% comment %} <form method="post" id="formActualizacion" action="{% url 'procesar_actualizacion' %}?pagina={{ pagina_actual }}"> {% endcomment %}
+							<form method="post" id="formAgregar">
+								{% csrf_token %}
+								<div class="text-center">
+									{% comment %}
+									<a href="{% url 'cargar_excel' %}?proceso={{proceso}}" class="btn btn-primary">
+										<i class="fas fa-upload me-1"></i>
+										Cargar otro archivo
+									</a>
+									<a href="{% url 'home' %}" class="btn btn-secondary">
+										<i class="fas fa-home me-1"></i>
+										Volver al Panel
+									</a>
+									{% endcomment %}
+									
+									<button type="submit" class="btn btn-success">
+										<i class="fas fa-sync-alt me-1"></i>
+										Actualizar
+									</button>
+									<a href="{% url 'cargar_excel' %}?proceso={{proceso}}" class="btn btn-secondary">
+										<i class="fas fa-arrow-left me-1"></i>
+										Volver a Cargar
+									</a>
+									
+								</div>
+							</form>
+						{% endif %}
 						<!--***********************************-->
 					</div>
 				</div>

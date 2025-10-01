@@ -39,6 +39,7 @@ class ExcelUploadView(FormView):
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
 		context['fecha'] = timezone.now()
+		context['proceso'] = self.request.GET.get('proceso', 'actualizar')
 		return context
 	
 	def form_valid(self, form):
@@ -112,7 +113,8 @@ class ExcelUploadView(FormView):
 					'nombre_archivo': archivo.name,
 					'campos_protegidos': campos_portegidos,
 					'etiquetas_protegidas': etiquetas_portegidas,
-					'etiquetas_a_campos_map': label_to_field_map
+					'etiquetas_a_campos_map': label_to_field_map,
+					'proceso': self.request.GET.get('proceso', 'actualizar')
 				}
 				
 				return super().form_valid(form)
@@ -203,6 +205,7 @@ class ExcelPreviewView(TemplateView):
 		context['fecha'] = timezone.now()
 		context['pagina_actual'] = pagina_num
 		context['total_paginas'] = paginator.num_pages
+		context['proceso'] = excel_data.get('proceso', 'actualizar')
 		
 		#-- Calcular rango de páginas.
 		pagina_actual_num = context['pagina_actual']
@@ -502,7 +505,6 @@ class ProcesarActualizacionView(TemplateView):
 			#-- Error inesperado
 			messages.error(request, f'Error inesperado durante el procesamiento: {str(e)}')
 			return redirect('excel_preview')
-		
 	
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
@@ -545,7 +547,7 @@ class ProcesarActualizacionView(TemplateView):
 		if campo_obj.name == 'fecha_fabricacion':
 			especificaciones.update({
 				'pattern': r'^$|^20\d{2}(0[1-9]|1[0-2])$',
-				'mensaje': 'Formato AAAAMM (AAAA año, MM mes válido)'
+				'mensaje': 'Formato correcto AAAAMM (AAAA año, MM mes)'
 			})
 		elif campo_obj.name == 'unidad':
 			especificaciones.update({

@@ -13,10 +13,12 @@ urlpatterns = [
     path('facturas-cliente/', ConsultaFacturasClienteView.as_view(), name='consulta_facturas_cliente'),
     path('productos/', ConsultaProductosView.as_view(), name='consulta_productos_stock'),
 	
-	#-- Rutas para manejo de Excel.
+	#-- Actualizar Productos (Excel).
 	path('cargar-excel/', ExcelUploadView.as_view(), name='cargar_excel'),
 	path('previsualizar-excel/', ExcelPreviewView.as_view(), name='excel_preview'),
 	path('procesar-actualizacion/', ProcesarActualizacionView.as_view(), name='procesar_actualizacion'),
-	
 	path('mostrar-errores-excel/', MostrarErroresExcelView.as_view(), name='mostrar_errores_excel'),
+	
+	#-- Agregar Productos (Excel).
+	
 ]
