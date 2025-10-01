@@ -19,7 +19,7 @@ from django.db.models import (
 )
 
 from ..forms.excel_forms import ExcelUploadForm, CamposActualizacionForm
-from apps.maestros.models.producto_models import Producto, ProductoCai
+from apps.maestros.models.producto_models import Producto, ProductoCai, AlicuotaIva
 
 
 class ExcelUploadView(FormView):
@@ -497,6 +497,44 @@ class ActualizarProductosView(TemplateView):
 										errores_en_fila.append(error_msg)
 										continue
 								
+								#-- MANEJO ESPECIAL PARA EL CAMPO ALICUOTA IVA
+								if columna_label == "Alic. IVA":
+									#-- Buscar la AlicuotaIva por el valor del campo alicuota_iva.
+									try:
+										if valor in ['', None, 'NULL', 'null', 'NaN', 'nan']:
+											valor_final = None
+										else:
+											try:
+												if isinstance(valor, str):
+													valor = valor.replace(',', '.').strip()
+												
+												alicuota = AlicuotaIva.objects.get(alicuota_iva=Decimal(str(valor)))
+												valor_final = alicuota.id_alicuota_iva
+												
+											except AlicuotaIva.DoesNotExist:
+												error_msg = f"Alic. IVA - En la Base de Datos no está registrada una alícuota con valor '{valor}'"
+												errores.append(error_msg)
+												errores_en_fila.append(error_msg)
+												continue
+											except (ValueError, InvalidOperation) as e:
+												error_msg = f"Alic. IVA - Valor inválido: '{valor}'"
+												errores.append(error_msg)
+												errores_en_fila.append(error_msg)
+												continue
+										
+										#-- Verificar si el valor cambió
+										if producto.id_alicuota_iva_id != valor_final:
+											producto.id_alicuota_iva_id = valor_final
+											cambios_realizados = True
+										
+										continue
+										
+									except Exception as e:
+										error_msg = f"Alic. IVA - Error al procesar '{valor}' - {str(e)}"
+										errores.append(error_msg)
+										errores_en_fila.append(error_msg)
+										continue
+								
 								#----------------------------------------------------
 								#-- Obtener el tipo de campo del modelo.
 								try:
@@ -753,6 +791,46 @@ class AgregarProductosView(TemplateView):
 									#-- Asignar el valor validado
 									producto.tipo_producto = valor
 									continue  #-- Saltar el procesamiento normal para este campo
+								
+								#-- MANEJO ESPECIAL PARA EL CAMPO ALICUOTA IVA
+								if columna_label == "Alic. IVA":
+									#-- Buscar la AlicuotaIva por el valor del campo alicuota_iva
+									try:
+										if valor in ['', None, 'NULL', 'null', 'NaN', 'nan']:
+											#-- Si el valor está vacío, usar valor por defecto o None
+											#-- Depende de si el campo es obligatorio en tu modelo
+											valor_final = None
+										else:
+											#-- Convertir a decimal para la búsqueda
+											try:
+												#-- Limpiar y convertir el valor
+												if isinstance(valor, str):
+													valor = valor.replace(',', '.').strip()
+												
+												#-- Buscar la AlicuotaIva por el valor de alicuota_iva
+												alicuota = AlicuotaIva.objects.get(alicuota_iva=Decimal(str(valor)))
+												valor_final = alicuota.id_alicuota_iva
+												
+											except AlicuotaIva.DoesNotExist:
+												error_msg = f"Alic. IVA - En la Base de Datos no está registrada una alícuota con valor '{valor}'"
+												errores.append(error_msg)
+												errores_en_fila.append(error_msg)
+												continue
+											except (ValueError, InvalidOperation) as e:
+												error_msg = f"Alic. IVA - Valor inválido: '{valor}'"
+												errores.append(error_msg)
+												errores_en_fila.append(error_msg)
+												continue
+										
+										#-- Asignar el ID de la alícuota encontrada
+										producto.id_alicuota_iva_id = valor_final
+										continue  #-- Saltar el procesamiento normal para este campo
+										
+									except Exception as e:
+										error_msg = f"Alic. IVA - Error al procesar '{valor}' - {str(e)}"
+										errores.append(error_msg)
+										errores_en_fila.append(error_msg)
+										continue
 								
 								#-- Obtener el tipo de campo del modelo.
 								try:

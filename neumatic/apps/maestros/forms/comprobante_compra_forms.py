@@ -39,6 +39,10 @@ class ComprobanteCompraForm(CrudGenericForm):
 				forms.TextInput(attrs={**formclasstext}),
 			'codigo_afip_m': 
 				forms.TextInput(attrs={**formclasstext}),
+			'remito': 
+				forms.CheckboxInput(attrs={**formclasscheck}),
+			'retencion': 
+				forms.CheckboxInput(attrs={**formclasscheck}),
 		}
 		
 		error_messages = {

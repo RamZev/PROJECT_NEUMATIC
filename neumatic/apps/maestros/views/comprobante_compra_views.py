@@ -56,8 +56,9 @@ class ConfigViews():
 
 
 class DataViewList():
-	search_fields = ['codigo_comprobante_compra', 
-					 'nombre_comprobante_compra'
+	search_fields = [
+		'codigo_comprobante_compra',
+		'nombre_comprobante_compra'
 	]
 	
 	ordering = ['nombre_comprobante_compra']
@@ -66,8 +67,13 @@ class DataViewList():
 	
 	table_headers = {
 		'estatus_comprobante_compra': (1, 'Estatus'),
-		'nombre_comprobante_compra': (5, 'Nombre Comprobante'),
-		'codigo_comprobante_compra': (4, 'Código Comprobante'),
+		'nombre_comprobante_compra': (3, 'Nombre Comprobante'),
+		'codigo_comprobante_compra': (1, 'Cód. Comprobante'),
+		'codigo_afip_a': (1, 'Cód. AFIP A'),
+		'codigo_afip_b': (1, 'Cód. AFIP B'),
+		'libro_iva': (1, 'Libro IVA'),
+		'remito': (1, 'Remito'),
+		'retencion': (1, 'Retención'),
 		
 		'acciones': (2, 'Acciones'),
 	}
@@ -76,10 +82,14 @@ class DataViewList():
 		{'field_name': 'estatus_comprobante_compra', 'date_format': None},
 		{'field_name': 'nombre_comprobante_compra', 'date_format': None},
 		{'field_name': 'codigo_comprobante_compra', 'date_format': None},
+		{'field_name': 'codigo_afip_a', 'date_format': None},
+		{'field_name': 'codigo_afip_b', 'date_format': None},
+		{'field_name': 'libro_iva', 'date_format': None},
+		{'field_name': 'remito', 'date_format': None},
+		{'field_name': 'retencion', 'date_format': None},
 	]
 
 
-# ProvinciaListView - Inicio
 class ComprobantecompraListView(MaestroListView):
 	model = ConfigViews.model
 	template_name = ConfigViews.template_list
@@ -100,7 +110,6 @@ class ComprobantecompraListView(MaestroListView):
 	}
 
 
-# ProvinciaCreateView - Inicio
 class ComprobantecompraCreateView(MaestroCreateView):
 	model = ConfigViews.model
 	list_view_name = ConfigViews.list_view_name
@@ -109,16 +118,9 @@ class ComprobantecompraCreateView(MaestroCreateView):
 	success_url = ConfigViews.success_url
 	
 	#-- Indicar el permiso que requiere para ejecutar la acción.
-	# (revisar de donde lo copiaste que tienes asignado permission_change en vez de permission_add)
 	permission_required = ConfigViews.permission_add
-	
-	# extra_context = {
-	# 	"accion": f"Crear {ConfigViews.model._meta.verbose_name}",
-	# 	"list_view_name" : ConfigViews.list_view_name
-	# }
 
 
-# ProvinciaUpdateView
 class ComprobantecompraUpdateView(MaestroUpdateView):
 	model = ConfigViews.model
 	list_view_name = ConfigViews.list_view_name
@@ -128,14 +130,8 @@ class ComprobantecompraUpdateView(MaestroUpdateView):
 	
 	#-- Indicar el permiso que requiere para ejecutar la acción.
 	permission_required = ConfigViews.permission_change
-	
-	# extra_context = {
-	# 	"accion": f"Editar {ConfigViews.model._meta.verbose_name}",
-	# 	"list_view_name" : ConfigViews.list_view_name
-	# }
 
 
-# ProvinciaDeleteView
 class ComprobantecompraDeleteView (MaestroDeleteView):
 	model = ConfigViews.model
 	list_view_name = ConfigViews.list_view_name
@@ -144,9 +140,3 @@ class ComprobantecompraDeleteView (MaestroDeleteView):
 	
 	#-- Indicar el permiso que requiere para ejecutar la acción.
 	permission_required = ConfigViews.permission_delete
-	
-	# extra_context = {
-	# 	"accion": f"Eliminar {ConfigViews.model._meta.verbose_name}",
-	# 	"list_view_name" : ConfigViews.list_view_name,
-	# 	"mensaje": "Estás seguro de eliminar el Registro"
-	# }

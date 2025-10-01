@@ -3,7 +3,6 @@ from django.urls import reverse_lazy
 from ..views.views_generics import *
 from ..models.compra_models import Compra
 from ..forms.compra_otros_forms import CompraOtrosForm
-# from django.utils import timezone
 
 
 class ConfigViews():
@@ -96,7 +95,8 @@ class CompraOtrosListView(MaestroListView):
 	ordering = DataViewList.ordering
 	
 	extra_context = {
-		"master_title": ConfigViews.model._meta.verbose_name_plural,
+		# "master_title": ConfigViews.model._meta.verbose_name_plural,
+		"master_title": "Compras - Retención",
 		"home_view_name": ConfigViews.home_view_name,
 		"list_view_name": ConfigViews.list_view_name,
 		"create_view_name": ConfigViews.create_view_name,
