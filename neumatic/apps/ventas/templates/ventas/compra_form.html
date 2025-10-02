@@ -103,39 +103,19 @@
                                         </div>
                                         <div class="row my-1">
                                             <div class="col-md-3">
-                                                <label>Buscar Proveedor</label>
+                                                <label>{{form.id_proveedor.label}}</label>
                                             </div>
-                                            <div class="col-md-6">
-                                                {{ form.buscar_proveedor }}
+                                            <div class="col-md-7">
+                                                {{ form.id_proveedor }}
                                             </div>
-                                            <div class="col-md-3">
+                                            
+                                            <div class="col-md-2">
                                                 <a href="{% url 'proveedor_create' %}" target="_blank" class="btn btn-outline-primary btn-sm">
-                                                    <i class="bi bi-building-add"></i> Crear
+                                                    <i class="bi bi-building-add"></i>
                                                 </a>
                                             </div>
                                         </div>
-                                        <div class="row my-1">
-                                            <div class="col-md-3">
-                                                <label>ID Proveedor</label>
-                                            </div>
-                                            <div class="col-md-3">
-                                                {{ form.id_proveedor }}
-                                            </div>
-                                            <div class="col-md-2">
-                                                <label>CUIT</label>
-                                            </div>
-                                            <div class="col-md-4">
-                                                {{ form.cuit }}
-                                            </div>
-                                        </div>
-                                        <div class="row my-1">
-                                            <div class="col-md-3">
-                                                <label>Nombre</label>
-                                            </div>
-                                            <div class="col-md-9">
-                                                {{ form.proveedor_nombre }}
-                                            </div>
-                                        </div>
+                                        
                                     </div>
 
                                     <!-- Columna Derecha -->
