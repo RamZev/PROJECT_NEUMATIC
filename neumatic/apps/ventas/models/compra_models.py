@@ -69,8 +69,8 @@ class Compra(ModeloBaseGenerico):
 		null=True,
 		blank=True
 	)
-	fecha_comprobante = models.DateField(
-		verbose_name="Fecha Emisión",
+	fecha_registro = models.DateField(
+		verbose_name="Fecha Registro",
 		null=True,
 		blank=True
 	)
@@ -113,8 +113,8 @@ class Compra(ModeloBaseGenerico):
 		blank=True,
 		default=0.0
 	)
-	fecha_registro = models.DateField(
-		verbose_name="Fecha Registro",
+	fecha_comprobante = models.DateField(
+		verbose_name="Fecha Emisión",
 		null=True,
 		blank=True
 	)

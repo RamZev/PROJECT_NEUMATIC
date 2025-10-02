@@ -147,12 +147,25 @@
 														<i class="fa fa-trash-alt"></i>
 													</button>
 													
+													{% comment %}
 													<!-- Botón Ver -->
 													<button type="button" class="btn btn-outline-success btn-sm btn-view boton-oculto"
 															data-bs-toggle="tooltip" data-bs-placement="top" title="Ver Registro"
 															style="font-size: 80%; padding: 0.3rem 0.6rem;">
 														<i class="fa fa-eye"></i>
 													</button>
+													{% endcomment %}
+													
+													<!-- Botón Imprimir PDF -->
+													<a href="{% url 'pdf_retencion' pk=objeto.pk %}" 
+														target="_blank"
+														class="btn btn-outline-secondary btn-sm btn-print boton-oculto"
+														data-bs-toggle="tooltip" 
+														data-bs-placement="top" 
+														title="Generar PDF"
+														style="font-size: 70%; padding: 0.1rem 0.3rem;">
+															<i class="bi bi-printer"></i>
+													</a>
 													
 												</td>
 											</tr>
