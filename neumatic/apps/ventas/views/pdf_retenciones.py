@@ -157,8 +157,7 @@ class PDFRetencionView(View):
 		c.setFont("Helvetica", 9)
 		
 		nombre_proveedor = f"Apellido y Nombre o Denominación: {proveedor.nombre_proveedor}"
-		# cuit_proveedor = f"C.U.I.T. Nº: {proveedor.cuit_formateado}"
-		cuit_proveedor = f"C.U.I.T. Nº: {proveedor.cuit}"
+		cuit_proveedor = f"C.U.I.T. Nº: {proveedor.cuit_formateado}"
 		domicilio_proveedor = f"Domicilio: {proveedor.domicilio_proveedor} C.P.: {proveedor.codigo_postal} - {proveedor.id_localidad} - {proveedor.id_provincia}"
 		numero_inscripcion = f"Nº DE INSCRIPCIÓN: {proveedor.ib_numero}"
 		
@@ -171,6 +170,7 @@ class PDFRetencionView(View):
 		
 		y_text_left -= 5*mm
 		c.drawString(x_text_left, y_text_left, domicilio_proveedor)
+		
 		
 		
 		
