@@ -68,6 +68,8 @@ class CompraForm(forms.ModelForm):
                 'required': 'required',
                 'step': 'any'
             }),
+            'id_proveedor': 
+				forms.Select(attrs={**formclassselect}),
 
             # Fechas
             "fecha_comprobante": forms.TextInput(attrs={
@@ -86,11 +88,6 @@ class CompraForm(forms.ModelForm):
             }),
 
             # Proveedor y provincia
-            "id_proveedor": forms.TextInput(attrs={
-                **formclasstext,
-                'type': 'number',
-                'readonly': 'readonly'
-            }),
             "id_provincia": forms.Select(attrs={**formclassselect}),
 
             # Condición

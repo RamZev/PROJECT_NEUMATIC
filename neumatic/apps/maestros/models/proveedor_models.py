@@ -56,7 +56,7 @@ class Proveedor(ModeloBaseGenerico):
 		ordering = ['nombre_proveedor']
 	
 	def __str__(self):
-		return self.nombre_proveedor
+		return f'{self.nombre_proveedor} - {self.cuit}'
 	
 	def clean(self):
 		super().clean()
