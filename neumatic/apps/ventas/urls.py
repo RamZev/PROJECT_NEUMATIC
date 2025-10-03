@@ -1,25 +1,25 @@
 # neumatic\apps\ventas\urls.py
 from django.urls import path
 from .views.factura_views import (FacturaListView, FacturaCreateView, 
-								  FacturaUpdateView, FacturaDeleteView)
+								FacturaUpdateView, FacturaDeleteView)
 
 from .views.factura2_views import (FacturaManualListView, FacturaManualCreateView, 
-								  FacturaManualUpdateView, FacturaManualDeleteView)
+								FacturaManualUpdateView, FacturaManualDeleteView)
 
 from .views.factura3_views import (PresupuestoListView, PresupuestoCreateView, 
-								  PresupuestoUpdateView, PresupuestoDeleteView)
+								PresupuestoUpdateView, PresupuestoDeleteView)
 
 from .views.factura4_views import (MovimientoInternoListView, MovimientoInternoCreateView, 
-								  MovimientoInternoUpdateView, MovimientoInternoDeleteView)	
+								MovimientoInternoUpdateView, MovimientoInternoDeleteView)	
 
 from .views.recibo_views import (ReciboListView, ReciboCreateView, 
 								ReciboUpdateView, ReciboDeleteView)
 
 from .views.compra_views import (
-    CompraListView,
-    CompraCreateView,
-    CompraUpdateView,
-    CompraDeleteView)
+	CompraListView,
+	CompraCreateView,
+	CompraUpdateView,
+	CompraDeleteView)
 
 from .views.consultas_factura_views import (buscar_agenda, 
 											buscar_producto,
@@ -40,16 +40,17 @@ from .views.consultas_factura_views import (buscar_agenda,
 											buscar_factura)
 
 from .views.consultas_compra_views import (obtener_numero_compra, 
-										  obtener_alicuota_proveedor)
+										obtener_alicuota_proveedor)
 
 from .views.crear_agenda import crear_agenda
 from .views.genera_pdf import GeneraPDFView
 from .views.fe_afiparca_views import fe_dummy
 
-from .views.compra_otros_views import (
-	CompraOtrosListView, CompraOtrosCreateView,
-	CompraOtrosUpdateView, CompraOtrosDeleteView
+from .views.compra_retencion_views import (
+	CompraRetencionListView, CompraRetencionCreateView,
+	CompraRetencionUpdateView, CompraRetencionDeleteView
 )
+from .views.pdf_retenciones import PDFRetencionView
 
 urlpatterns = [
 	path('factura/listar/', FacturaListView.as_view(), name='factura_list'),
@@ -70,21 +71,21 @@ urlpatterns = [
 	path('presupuesto/eliminar/<int:pk>/', PresupuestoDeleteView.as_view(), name='presupuesto_delete'),
 
 	#-- Opción 4: Movimiento Interno.
-    path('movimientointerno/listar/', MovimientoInternoListView.as_view(), name='movimiento_interno_list'),
-    path('movimientointerno/crear/', MovimientoInternoCreateView.as_view(), name='movimiento_interno_create'),
+	path('movimientointerno/listar/', MovimientoInternoListView.as_view(), name='movimiento_interno_list'),
+	path('movimientointerno/crear/', MovimientoInternoCreateView.as_view(), name='movimiento_interno_create'),
 	path('movimientointerno/editar/<int:pk>/', MovimientoInternoUpdateView.as_view(), name='movimiento_interno_update'),
 	path('movimientointerno/eliminar/<int:pk>/', MovimientoInternoDeleteView.as_view(), name='movimiento_interno_delete'),
-    ###
+	###
 
 	path('recibo/listar/', ReciboListView.as_view(), name='recibo_list'),
 	path('recibo/crear/', ReciboCreateView.as_view(), name='recibo_create'),
 	path('recibo/editar/<int:pk>/', ReciboUpdateView.as_view(), name='recibo_update'),
 	path('recibo/eliminar/<int:pk>/', ReciboDeleteView.as_view(), name='recibo_delete'),
-    
+	
 	path('compra/listar/', CompraListView.as_view(), name='compra_list'),
-    path('compra/crear/', CompraCreateView.as_view(), name='compra_create'),
-    path('compra/editar/<int:pk>/', CompraUpdateView.as_view(), name='compra_update'),
-    path('compra/eliminar/<int:pk>/', CompraDeleteView.as_view(), name='compra_delete'),
+	path('compra/crear/', CompraCreateView.as_view(), name='compra_create'),
+	path('compra/editar/<int:pk>/', CompraUpdateView.as_view(), name='compra_update'),
+	path('compra/eliminar/<int:pk>/', CompraDeleteView.as_view(), name='compra_delete'),
 	
 	path('buscar/producto/', buscar_producto, name='buscar_producto'),
 	path('validar/documento/', validar_documento, name='validar_documento'),
@@ -107,17 +108,18 @@ urlpatterns = [
 	path('buscar/codigo_banco/', buscar_codigo_banco, name='buscar_codigo_banco'),
 	path('obtener/libro_iva/', obtener_libro_iva, name='obtener_libro_iva'),
 	path('buscar/factura/', buscar_factura, name='buscar_factura'),
-    
-	# Vista para obtener datos de AFIPArca
+	
+	#-- Vista para obtener datos de AFIPArca.
 	path('obtener/estado-servidores/', fe_dummy, name='estado_servidores'),
 	
-	#-- Compra - Otros.
-	path('compra-otros/', CompraOtrosListView.as_view(), name='compra_otros_list'),
-	path('compra-otros/nueva/', CompraOtrosCreateView.as_view(), name='compra_otros_create'),
-	path('compra-otros/<int:pk>/editar/', CompraOtrosUpdateView.as_view(), name='compra_otros_update'),
-	path('compra-otros/<int:pk>/eliminar/', CompraOtrosDeleteView.as_view(), name='compra_otros_delete'),
-    
+	#-- Compra - Retención.
+	path('compra-retencion/', CompraRetencionListView.as_view(), name='compra_retencion_list'),
+	path('compra-retencion/nueva/', CompraRetencionCreateView.as_view(), name='compra_retencion_create'),
+	path('compra-retencion/<int:pk>/editar/', CompraRetencionUpdateView.as_view(), name='compra_retencion_update'),
+	path('compra-retencion/<int:pk>/eliminar/', CompraRetencionDeleteView.as_view(), name='compra_retencion_delete'),
+	path('compra-retencion/pdf/<int:pk>/', PDFRetencionView.as_view(), name='pdf_retencion'),
+	
 	path('obtener-numero-compra/', obtener_numero_compra, name='obtener_numero_compra'),
-    path('obtener-alicuota-proveedor/', obtener_alicuota_proveedor, name='obtener_alicuota_proveedor'),
+	path('obtener-alicuota-proveedor/', obtener_alicuota_proveedor, name='obtener_alicuota_proveedor'),
 	
 ]

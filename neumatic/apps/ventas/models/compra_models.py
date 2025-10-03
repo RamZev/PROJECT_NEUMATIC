@@ -1,5 +1,6 @@
 # neumatic\apps\ventas\models\compra_models.py
 from django.db import models
+from datetime import date
 
 from apps.maestros.models.base_gen_models import ModeloBaseGenerico
 from entorno.constantes_base import ESTATUS_GEN, CONDICION_VENTA
@@ -69,8 +70,8 @@ class Compra(ModeloBaseGenerico):
 		null=True,
 		blank=True
 	)
-	fecha_comprobante = models.DateField(
-		verbose_name="Fecha Emisión",
+	fecha_registro = models.DateField(
+		verbose_name="Fecha Registro",
 		null=True,
 		blank=True
 	)
@@ -113,8 +114,8 @@ class Compra(ModeloBaseGenerico):
 		blank=True,
 		default=0.0
 	)
-	fecha_registro = models.DateField(
-		verbose_name="Fecha Registro",
+	fecha_comprobante = models.DateField(
+		verbose_name="Fecha Emisión",
 		null=True,
 		blank=True
 	)
@@ -247,8 +248,17 @@ class Compra(ModeloBaseGenerico):
 		null=True,
 		blank=True
 	)
-
-
+	
+	@property
+	def numero_comprobante_formateado(self):
+		numero = str(self.numero_comprobante).strip().zfill(12)
+		return f"{numero[:4]}-{numero[4:]}"
+	
+	@property
+	def numero_comprobante_venta_formateado(self):
+		numero = str(self.numero_comprobante_venta).strip().zfill(12)
+		return f"{numero[:4]}-{numero[4:]}"
+	
 	class Meta:
 		db_table = "compra"
 		verbose_name = ('Compra')
@@ -257,6 +267,51 @@ class Compra(ModeloBaseGenerico):
 	def __str__(self):
 		numero = str(self.numero_comprobante).strip().zfill(12)
 		return f"{self.id_comprobante_compra.codigo_comprobante_compra} {self.letra_comprobante} {numero[:4]}-{numero[4:]}"
+	
+	def clean(self):
+		super().clean()
+		
+		errors = {}
+		
+		if not self.id_comprobante_compra:
+			errors['id_comprobante_compra'] = "El campo 'Comprobante' es obligatorio."
+		
+		if not self.compro:
+			errors['compro'] = "El campo 'Compro' es obligatorio."
+		
+		if not self.letra_comprobante:
+			errors['letra_comprobante'] = "El campo 'Letra' es obligatorio."
+		
+		if not self.numero_comprobante:
+			errors['numero_comprobante'] = "El campo 'Número' es obligatorio."
+		
+		# if self.numero_comprobante < 1 or self.numero_comprobante > 99999999:
+		# 	errors['numero_comprobante'] = "El número de comprobante debe estar entre 1 y 99999999."
+		
+		if not self.fecha_registro:
+			errors['fecha_registro'] = "El campo 'Fecha Registro' es obligatorio."
+		
+		if not self.numero_comprobante_venta:
+			errors['numero_comprobante_venta'] = "El campo 'Número C/Compra' es obligatorio."
+		
+		# if self.numero_comprobante_venta < 1 or self.numero_comprobante_venta > 99999999:
+		# 	errors['numero_comprobante_venta'] = "El número de comprobante de compra debe estar entre 1 y 99999999."
+		
+		if not self.fecha_comprobante:
+			errors['fecha_comprobante'] = "El campo 'Fecha Emisión' es obligatorio."
+		
+		
+		
+		
+		if not self.id_comprobante_venta:
+			errors['id_comprobante_venta'] = "El campo 'Comp. Compra' es obligatorio."
+		
+		if self.fecha_vencimiento and self.fecha_vencimiento < self.fecha_comprobante:
+			errors['fecha_vencimiento'] = "La fecha de vencimiento no puede ser anterior a la fecha de emisión."
+		
+		if errors:
+			from django.core.exceptions import ValidationError
+			raise ValidationError(errors)
 
 
 class DetalleCompra(ModeloBaseGenerico):

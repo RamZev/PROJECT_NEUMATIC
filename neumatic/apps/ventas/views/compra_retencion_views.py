@@ -1,18 +1,18 @@
-# neumatic\apps\ventas\views\compra_otros_views.py
+# neumatic\apps\ventas\views\compra_retencion_views.py
 from django.urls import reverse_lazy
-from ..views.views_generics import *
+from .views_generics import *
 from ..models.compra_models import Compra
-from ..forms.compra_otros_forms import CompraOtrosForm
+from ..forms.compra_retencion_forms import CompraRetencionForm
 
 
 class ConfigViews():
-	# Modelo
+	#-- Modelo.
 	model = Compra
 	
-	# Formulario asociado al modelo
-	form_class = CompraOtrosForm
+	#-- Formulario asociado al modelo.
+	form_class = CompraRetencionForm
 	
-	# Aplicación asociada al modelo
+	#-- Aplicación asociada al modelo.
 	app_label = model._meta.app_label
 	
 	#-- Usar esta forma cuando el modelo esté compuesto de una sola palabra: Ej. Color.
@@ -21,38 +21,33 @@ class ConfigViews():
 	#-- Usar esta forma cuando el modelo esté compuesto por más de una palabra: Ej. TipoCambio colocar "tipo_cambio".
 	#model_string = "tipo_cambio"
 	
-	# Permisos
+	#-- Permisos.
 	permission_add = f"{app_label}.add_{model.__name__.lower()}"
 	permission_change = f"{app_label}.change_{model.__name__.lower()}"
 	permission_delete = f"{app_label}.delete_{model.__name__.lower()}"
 	
-	# Vistas del CRUD del modelo
-	# list_view_name = f"{model_string}_list"
-	# create_view_name = f"{model_string}_create"
-	# update_view_name = f"{model_string}_update"
-	# delete_view_name = f"{model_string}_delete"
-	list_view_name = f"{model_string}_otros_list"
-	create_view_name = f"{model_string}_otros_create"
-	update_view_name = f"{model_string}_otros_update"
-	delete_view_name = f"{model_string}_otros_delete"
+	#-- Vistas del CRUD del modelo.
+	list_view_name = f"{model_string}_retencion_list"
+	create_view_name = f"{model_string}_retencion_create"
+	update_view_name = f"{model_string}_retencion_update"
+	delete_view_name = f"{model_string}_retencion_delete"
 	
-	# Plantilla para crear o actualizar el modelo
-	# template_form = f"{app_label}/{model_string}_form.html"
-	template_form = f"{app_label}/{model_string}_otros_form.html"
+	#-- Plantilla para crear o actualizar el modelo.
+	template_form = f"{app_label}/{model_string}_retencion_form.html"
 	
-	# Plantilla para confirmar eliminación de un registro
+	#-- Plantilla para confirmar eliminación de un registro.
 	template_delete = "base_confirm_delete.html"
 	
-	# Plantilla de la lista del CRUD
+	#-- Plantilla de la lista del CRUD.
 	template_list = f'{app_label}/maestro_list.html'
 	
-	# Contexto de los datos de la lista
+	#-- Contexto de los datos de la lista.
 	context_object_name	= 'objetos'
 	
 	# Vista del home del proyecto
 	home_view_name = "home"
 	
-	# Nombre de la url 
+	#-- Nombre de la url.
 	success_url = reverse_lazy(list_view_name)
 
 
@@ -86,7 +81,7 @@ class DataViewList():
 	]
 
 
-class CompraOtrosListView(MaestroListView):
+class CompraRetencionListView(MaestroListView):
 	model = ConfigViews.model
 	template_name = ConfigViews.template_list
 	context_object_name = ConfigViews.context_object_name
@@ -107,13 +102,13 @@ class CompraOtrosListView(MaestroListView):
 	}
 
 	def get_queryset(self):
-		# Filtrar Compra por comprobantes con código en ["IB", "RG", "RI"]
+		#-- Filtrar Compra por comprobantes con código en ["IB", "RG", "RI"].
 		return Compra.objects.filter(
 			id_comprobante_compra__codigo_comprobante_compra__in=["IB", "RG", "RI"]
 		).order_by(*self.ordering)
 
 
-class CompraOtrosCreateView(MaestroCreateView):
+class CompraRetencionCreateView(MaestroCreateView):
 	model = ConfigViews.model
 	list_view_name = ConfigViews.list_view_name
 	form_class = ConfigViews.form_class
@@ -130,7 +125,7 @@ class CompraOtrosCreateView(MaestroCreateView):
 		return initial
 
 
-class CompraOtrosUpdateView(MaestroUpdateView):
+class CompraRetencionUpdateView(MaestroUpdateView):
 	model = ConfigViews.model
 	list_view_name = ConfigViews.list_view_name
 	form_class = ConfigViews.form_class
@@ -141,7 +136,7 @@ class CompraOtrosUpdateView(MaestroUpdateView):
 	permission_required = ConfigViews.permission_change
 
 
-class CompraOtrosDeleteView (MaestroDeleteView):
+class CompraRetencionDeleteView (MaestroDeleteView):
 	model = ConfigViews.model
 	list_view_name = ConfigViews.list_view_name
 	template_name = ConfigViews.template_delete
