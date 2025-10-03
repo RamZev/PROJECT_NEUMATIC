@@ -84,6 +84,9 @@ class CompraListView(MaestroDetalleListView):
         queryset = super().get_queryset()
         user = self.request.user
 
+        # 🔥 FILTRAR POR COMPROBANTES CON REMITO = TRUE
+        queryset = queryset.filter(id_comprobante_compra__remito=True)
+
         # Filtrar por sucursal si no es superusuario
         if not user.is_superuser:
             queryset = queryset.filter(id_sucursal=user.id_sucursal)

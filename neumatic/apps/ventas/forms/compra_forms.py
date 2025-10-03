@@ -149,9 +149,10 @@ class CompraForm(forms.ModelForm):
         #         self.instance.condicion_comprobante, "No definido"
         #     )
 
-        # Filtrar comprobantes de compra (ajusta según tu lógica real)
+        # 🔥 FILTRAR COMPROBANTES DE COMPRA POR REMITO = TRUE
         self.fields['id_comprobante_compra'].queryset = ComprobanteCompra.objects.filter(
-            estatus_comprobante_compra=True
+            estatus_comprobante_compra=True,
+            remito=True  # 🔥 SOLO COMPROBANTES CON REMITO
         ).order_by('nombre_comprobante_compra')
 
 

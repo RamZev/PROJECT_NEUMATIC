@@ -66,3 +66,4 @@ def obtener_alicuota_proveedor(request):
         return JsonResponse({"error": "Proveedor no encontrado"}, status=404)
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)
+
