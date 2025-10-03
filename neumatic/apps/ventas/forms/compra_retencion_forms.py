@@ -1,4 +1,4 @@
-# neumatic\apps\ventas\forms\compra_otros_forms.py
+# neumatic\apps\ventas\forms\compra_retencion_forms.py
 from django import forms
 from .forms_generics import GenericForm
 from ..models.compra_models import Compra
@@ -7,10 +7,10 @@ from datetime import date
 
 from apps.maestros.models.base_models import ComprobanteCompra
 from diseno_base.diseno_bootstrap import (
-	formclasstext, formclassselect, formclasscheck, formclassdate)
+	formclasstext, formclassselect, formclassdate)
 
 
-class CompraOtrosForm(GenericForm):
+class CompraRetencionForm(GenericForm):
 	
 	class Meta:
 		model = Compra

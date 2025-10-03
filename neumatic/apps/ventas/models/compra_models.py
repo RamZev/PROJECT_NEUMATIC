@@ -49,37 +49,37 @@ class Compra(ModeloBaseGenerico):
 		ComprobanteCompra,
 		on_delete=models.PROTECT,
 		verbose_name="Comprobante",
-		null=True,
-		blank=True
+		# null=True,
+		# blank=True
 	)
 	compro = models.CharField(
 		verbose_name="Compro",
 		max_length=3,
-		null=True,
-		blank=True
+		# null=True,
+		# blank=True
 	) 
 	letra_comprobante = models.CharField(
 		verbose_name="Letra",
 		max_length=1,
-		null=True,
-		blank=True
+		# null=True,
+		# blank=True
 	)
 	numero_comprobante = models.IntegerField(
 		verbose_name="Número",
-		null=True,
-		blank=True
+		# null=True,
+		# blank=True
 	)
 	fecha_registro = models.DateField(
 		verbose_name="Fecha Registro",
-		null=True,
-		blank=True
+		# null=True,
+		# blank=True
 	)
 	id_proveedor = models.ForeignKey(
 		Proveedor,
 		on_delete=models.PROTECT,
 		verbose_name="Proveedor",
-		null=True,
-		blank=True
+		# null=True,
+		# blank=True
 	)
 	id_provincia = models.ForeignKey(
 		Provincia,
@@ -97,26 +97,26 @@ class Compra(ModeloBaseGenerico):
 		ComprobanteVenta,
 		on_delete=models.PROTECT,
 		verbose_name="Comp. Compra",
-		null=True,
-		blank=True
+		# null=True,
+		# blank=True
 	)
 	numero_comprobante_venta = models.IntegerField(
 		verbose_name="Número C/Compra",
-		null=True,
-		blank=True
+		# null=True,
+		# blank=True
 	)
 	total_comprobante_venta = models.DecimalField(
 		verbose_name="Total C/Compra",
 		max_digits=14,
 		decimal_places=2,
-		null=True,
-		blank=True,
+		# null=True,
+		# blank=True,
 		default=0.0
 	)
 	fecha_comprobante = models.DateField(
 		verbose_name="Fecha Emisión",
-		null=True,
-		blank=True
+		# null=True,
+		# blank=True
 	)
 	fecha_vencimiento = models.DateField(
 		verbose_name="Fecha Vencimiento",
@@ -247,8 +247,17 @@ class Compra(ModeloBaseGenerico):
 		null=True,
 		blank=True
 	)
-
-
+	
+	@property
+	def numero_comprobante_formateado(self):
+		numero = str(self.numero_comprobante).strip().zfill(12)
+		return f"{numero[:4]}-{numero[4:]}"
+	
+	@property
+	def numero_comprobante_venta_formateado(self):
+		numero = str(self.numero_comprobante_venta).strip().zfill(12)
+		return f"{numero[:4]}-{numero[4:]}"
+	
 	class Meta:
 		db_table = "compra"
 		verbose_name = ('Compra')

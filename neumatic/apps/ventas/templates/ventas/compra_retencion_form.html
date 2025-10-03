@@ -1,4 +1,4 @@
-<!-- neumatic\apps\ventas\templates\ventas\compra_otros_form.html -->
+<!-- neumatic\apps\ventas\templates\ventas\compra_retencion_form.html -->
 {% extends 'maestro_form.html' %}
 {% load static %}
 <!-- -------------------------------------------------------------------- -->
@@ -39,13 +39,13 @@
 												class="accordion-button py-2 " 
 												type="button" 
 												data-bs-toggle="collapse" 
-												data-bs-target="#Información_Compras_Otros" 
+												data-bs-target="#Información_Compras_Retención" 
 												aria-expanded="true" 
-												aria-controls="Información_Compras_Otros">
-												<strong>Información Compras - Otros</strong>
+												aria-controls="Información_Compras_Retención">
+												<strong>Información Compras - Retención</strong>
 											</button>
 										</h2>
-										<div class="accordion-collapse collapse show" id="Información_Compras_Otros">
+										<div class="accordion-collapse collapse show" id="Información_Compras_Retención">
 											<div class="accordion-body bg-secondary-subtle">
 												<!-- Fila 1 -->
 												<div class="row">
@@ -221,102 +221,104 @@
 <!-- -------------------------------------------------------------------- -->
 
 {% block script %}
-<script>
-	document.addEventListener('DOMContentLoaded', function () {
-		// ---------- Comprobante Compra -> Número automático ----------		
-		const selectComprobante = document.getElementById('id_id_comprobante_compra');
-		const inputNumero = document.getElementById('id_numero_comprobante');
-		const inputCompro = document.getElementById('id_compro');
-		const inputLetra = document.getElementById('id_letra_comprobante');
+	{{ block.super }}
 
-		if (!selectComprobante) return;
-
-		selectComprobante.addEventListener('change', function () {
-			// alert("Cambio en el select de Comprobante Compra");
-			// Obtener el ID del comprobante seleccionado
-			const idComprobante = this.value;
-			urlObtenerNumero = "{% url 'obtener_numero_compra' %}";
-
-			if (idComprobante) {
-				const url = `${urlObtenerNumero}?id_comprobante=${encodeURIComponent(idComprobante)}`;
+	<script>
+		document.addEventListener('DOMContentLoaded', function () {
+			// ---------- Comprobante Compra -> Número automático ----------		
+			const selectComprobante = document.getElementById('id_id_comprobante_compra');
+			const inputNumero = document.getElementById('id_numero_comprobante');
+			const inputCompro = document.getElementById('id_compro');
+			const inputLetra = document.getElementById('id_letra_comprobante');
+			
+			if (!selectComprobante) return;
+			
+			selectComprobante.addEventListener('change', function () {
+				// alert("Cambio en el select de Comprobante Compra");
+				// Obtener el ID del comprobante seleccionado
+				const idComprobante = this.value;
+				urlObtenerNumero = "{% url 'obtener_numero_compra' %}";
 				
-				fetch(url)
-					.then(response => response.json())
-					.then(data => {
-						if (data.error) {
-							console.error('Error:', data.error);
-							alert('Error al obtener el número de comprobante: ' + data.error);
-							return;
-						}
-
-						if (inputCompro) inputCompro.value = data.compro;
-						if (inputLetra) inputLetra.value = data.letra;
-						if (inputNumero) inputNumero.value = data.numero_comprobante;
-					})
-					.catch(error => {
-						console.error('Error en la solicitud AJAX:', error);
-						alert('No se pudo obtener el número de comprobante.');
-					});
-			} else {
-				// Limpiar campos si se deselecciona
-				if (inputCompro) inputCompro.value = '';
-				if (inputLetra) inputLetra.value = '';
-				if (inputNumero) inputNumero.value = '';
-			}
-		});
-
-		// ---------- Proveedor -> Alicuota IVA ----------
-		const selectProveedor = document.getElementById('id_id_proveedor');
-		const inputAlicuota = document.getElementById('id_alicuota_iva');
-
-		if (selectProveedor && inputAlicuota) {
-			selectProveedor.addEventListener('change', function () {
-				const idProveedor = this.value;
-
-				if (idProveedor) {
-					const url = "{% url 'obtener_alicuota_proveedor' %}?id_proveedor=" + encodeURIComponent(idProveedor);
+				if (idComprobante) {
+					const url = `${urlObtenerNumero}?id_comprobante=${encodeURIComponent(idComprobante)}`;
+					
 					fetch(url)
 						.then(response => response.json())
 						.then(data => {
 							if (data.error) {
 								console.error('Error:', data.error);
-								// Opcional: no limpiar, o mostrar advertencia
-								inputAlicuota.value = '';
+								alert('Error al obtener el número de comprobante: ' + data.error);
 								return;
 							}
-							inputAlicuota.value = data.alicuota_iva;
+							
+							if (inputCompro) inputCompro.value = data.compro;
+							if (inputLetra) inputLetra.value = data.letra;
+							if (inputNumero) inputNumero.value = data.numero_comprobante;
 						})
 						.catch(error => {
-							console.error('Error al obtener alícuota:', error);
-							inputAlicuota.value = '';
+							console.error('Error en la solicitud AJAX:', error);
+							alert('No se pudo obtener el número de comprobante.');
 						});
 				} else {
-					inputAlicuota.value = '';
+					// Limpiar campos si se deselecciona
+					if (inputCompro) inputCompro.value = '';
+					if (inputLetra) inputLetra.value = '';
+					if (inputNumero) inputNumero.value = '';
 				}
 			});
-		}
-
-		// --->>>
-		function calcularTotal() {
-			const inputExento = document.getElementById('id_exento');
+			
+			// ---------- Proveedor -> Alicuota IVA ----------
+			const selectProveedor = document.getElementById('id_id_proveedor');
 			const inputAlicuota = document.getElementById('id_alicuota_iva');
-			const inputRetencion = document.getElementById('id_retencion_ingreso_bruto');
-			const inputTotal = document.getElementById('id_total');
+			
+			if (selectProveedor && inputAlicuota) {
+				selectProveedor.addEventListener('change', function () {
+					const idProveedor = this.value;
+					
+					if (idProveedor) {
+						const url = "{% url 'obtener_alicuota_proveedor' %}?id_proveedor=" + encodeURIComponent(idProveedor);
+						fetch(url)
+							.then(response => response.json())
+							.then(data => {
+								if (data.error) {
+									console.error('Error:', data.error);
+									// Opcional: no limpiar, o mostrar advertencia
+									inputAlicuota.value = '';
+									return;
+								}
+								inputAlicuota.value = data.alicuota_iva;
+							})
+							.catch(error => {
+								console.error('Error al obtener alícuota:', error);
+								inputAlicuota.value = '';
+							});
+					} else {
+						inputAlicuota.value = '';
+					}
+				});
+			}
+			
+			// --->>>
+			function calcularTotal() {
+				const inputExento = document.getElementById('id_exento');
+				const inputAlicuota = document.getElementById('id_alicuota_iva');
+				const inputRetencion = document.getElementById('id_retencion_ingreso_bruto');
+				const inputTotal = document.getElementById('id_total');
 
-			const exento = parseFloat(inputExento?.value) || 0;
-			const alicuota = parseFloat(inputAlicuota?.value) || 0;
+				const exento = parseFloat(inputExento?.value) || 0;
+				const alicuota = parseFloat(inputAlicuota?.value) || 0;
 
-			const retencion = exento * alicuota / 100;
-			const total = retencion;
+				const retencion = exento * alicuota / 100;
+				const total = retencion;
 
-			if (inputRetencion) inputRetencion.value = retencion.toFixed(2);
-			if (inputTotal) inputTotal.value = total.toFixed(2);
-		}
-
-		// Activar el evento blur
-		document.getElementById('id_exento')?.addEventListener('blur', calcularTotal);
-		// --->>>
-
-	});
-</script>
+				if (inputRetencion) inputRetencion.value = retencion.toFixed(2);
+				if (inputTotal) inputTotal.value = total.toFixed(2);
+			}
+			
+			// Activar el evento blur
+			document.getElementById('id_exento')?.addEventListener('blur', calcularTotal);
+			// --->>>
+			
+		});
+	</script>
 {% endblock script %}

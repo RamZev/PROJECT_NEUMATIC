@@ -46,9 +46,9 @@ from .views.crear_agenda import crear_agenda
 from .views.genera_pdf import GeneraPDFView
 from .views.fe_afiparca_views import fe_dummy
 
-from .views.compra_otros_views import (
-	CompraOtrosListView, CompraOtrosCreateView,
-	CompraOtrosUpdateView, CompraOtrosDeleteView
+from .views.compra_retencion_views import (
+	CompraRetencionListView, CompraRetencionCreateView,
+	CompraRetencionUpdateView, CompraRetencionDeleteView
 )
 from .views.pdf_retenciones import PDFRetencionView
 
@@ -109,15 +109,15 @@ urlpatterns = [
 	path('obtener/libro_iva/', obtener_libro_iva, name='obtener_libro_iva'),
 	path('buscar/factura/', buscar_factura, name='buscar_factura'),
 	
-	# Vista para obtener datos de AFIPArca
+	#-- Vista para obtener datos de AFIPArca.
 	path('obtener/estado-servidores/', fe_dummy, name='estado_servidores'),
 	
-	#-- Compra - Otros.
-	path('compra-otros/', CompraOtrosListView.as_view(), name='compra_otros_list'),
-	path('compra-otros/nueva/', CompraOtrosCreateView.as_view(), name='compra_otros_create'),
-	path('compra-otros/<int:pk>/editar/', CompraOtrosUpdateView.as_view(), name='compra_otros_update'),
-	path('compra-otros/<int:pk>/eliminar/', CompraOtrosDeleteView.as_view(), name='compra_otros_delete'),
-	path('pdf-retencion/<int:pk>/', PDFRetencionView.as_view(), name='pdf_retencion'),
+	#-- Compra - Retención.
+	path('compra-retencion/', CompraRetencionListView.as_view(), name='compra_retencion_list'),
+	path('compra-retencion/nueva/', CompraRetencionCreateView.as_view(), name='compra_retencion_create'),
+	path('compra-retencion/<int:pk>/editar/', CompraRetencionUpdateView.as_view(), name='compra_retencion_update'),
+	path('compra-retencion/<int:pk>/eliminar/', CompraRetencionDeleteView.as_view(), name='compra_retencion_delete'),
+	path('compra-retencion/pdf/<int:pk>/', PDFRetencionView.as_view(), name='pdf_retencion'),
 	
 	path('obtener-numero-compra/', obtener_numero_compra, name='obtener_numero_compra'),
 	path('obtener-alicuota-proveedor/', obtener_alicuota_proveedor, name='obtener_alicuota_proveedor'),
