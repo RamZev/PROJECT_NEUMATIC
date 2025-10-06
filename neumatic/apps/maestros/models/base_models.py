@@ -254,13 +254,9 @@ class ProductoEstado(ModeloBaseGenerico):
 	def __str__(self):
 		return self.nombre_producto_estado
 	
-	@property
-	def color_bar(self):
-		return format_html(
-			f'<div style="width:200px; height:20px; background-color:{self.color}; border: 1px solid #000;"></div>'
-		)
-	
 	def clean(self):
+		super().clean()
+		
 		errors = {}
 		
 		if not self.estado_producto.isupper():
@@ -268,9 +264,13 @@ class ProductoEstado(ModeloBaseGenerico):
 		
 		if errors:
 			raise ValidationError(errors)
-		
-		return super().clean()
-
+	
+	@property
+	def color_bar(self):
+		return format_html(
+			f'<div style="width:200px; height:20px; background-color:{self.color}; border: 1px solid #000;"></div>'
+		)
+	
 
 class ComprobanteVenta(ModeloBaseGenerico):
 	id_comprobante_venta = models.AutoField(primary_key=True)
@@ -318,6 +318,8 @@ class ComprobanteVenta(ModeloBaseGenerico):
 		return self.nombre_comprobante_venta
 	
 	def clean(self):
+		super().clean()
+		
 		errors = {}
 		
 		if not self.codigo_comprobante_venta.isupper():
@@ -371,8 +373,6 @@ class ComprobanteVenta(ModeloBaseGenerico):
 		
 		if errors:
 			raise ValidationError(errors)
-		
-		return super().clean()
 
 
 class ComprobanteCompra(ModeloBaseGenerico):
@@ -406,6 +406,8 @@ class ComprobanteCompra(ModeloBaseGenerico):
 		return self.nombre_comprobante_compra
 	
 	def clean(self):
+		super().clean()
+		
 		errors = {}
 		
 		if not self.codigo_comprobante_compra.isupper():
@@ -425,8 +427,6 @@ class ComprobanteCompra(ModeloBaseGenerico):
 		
 		if errors:
 			raise ValidationError(errors)
-		
-		return super().clean()
 
 
 class Provincia(ModeloBaseGenerico):
@@ -508,6 +508,8 @@ class TipoIva(ModeloBaseGenerico):
 		return self.nombre_iva
 	
 	def clean(self):
+		super().clean()
+		
 		errors = {}
 		
 		if not self.codigo_iva.isupper():
@@ -515,8 +517,6 @@ class TipoIva(ModeloBaseGenerico):
 		
 		if errors:
 			raise ValidationError(errors)
-		
-		return super().clean()
 
 
 class TipoPercepcionIb(ModeloBaseGenerico):
@@ -680,6 +680,8 @@ class PuntoVenta(ModeloBaseGenerico):
 		return f'{self.id_sucursal} {self.punto_venta}'
 	
 	def clean(self):
+		super().clean()
+		
 		errors = {}
 		
 		#-- Limpiar y formatear el valor de `punto_venta` con ceros a la izquierda.
@@ -696,8 +698,6 @@ class PuntoVenta(ModeloBaseGenerico):
 		
 		if errors:
 			raise ValidationError(errors)
-		
-		return super().clean()
 
 
 class AlicuotaIva(ModeloBaseGenerico):
@@ -722,6 +722,8 @@ class AlicuotaIva(ModeloBaseGenerico):
 		return f"{self.alicuota_iva:3.2f}%"
 	
 	def clean(self):
+		super().clean()
+		
 		errors = {}
 		
 		#-- Limpiar y formatear el valor de `codigo_alicuota` con ceros a la izquierda.
@@ -738,8 +740,6 @@ class AlicuotaIva(ModeloBaseGenerico):
 		
 		if errors:
 			raise ValidationError(errors)
-		
-		return super().clean()
 
 
 class Banco(ModeloBaseGenerico):
@@ -864,6 +864,8 @@ class Tarjeta(ModeloBaseGenerico):
 		return self.nombre_tarjeta
 	
 	def clean(self):
+		super().clean()
+		
 		errors = {}
 		
 		if not self.nombre_tarjeta:
@@ -871,8 +873,6 @@ class Tarjeta(ModeloBaseGenerico):
 		
 		if errors:
 			raise ValidationError(errors)
-		
-		return super().clean()
 
 
 class CodigoRetencion(ModeloBaseGenerico):
@@ -895,6 +895,8 @@ class CodigoRetencion(ModeloBaseGenerico):
 		return self.nombre_codigo_retencion
 	
 	def clean(self):
+		super().clean()
+		
 		errors = {}
 		
 		if not self.nombre_codigo_retencion:
@@ -902,8 +904,6 @@ class CodigoRetencion(ModeloBaseGenerico):
 		
 		if errors:
 			raise ValidationError(errors)
-		
-		return super().clean()
 
 
 class ConceptoBanco(ModeloBaseGenerico):
@@ -924,6 +924,8 @@ class ConceptoBanco(ModeloBaseGenerico):
 		return self.nombre_concepto_banco
 	
 	def clean(self):
+		super().clean()
+		
 		errors = {}
 		
 		if not self.nombre_concepto_banco:
@@ -934,8 +936,6 @@ class ConceptoBanco(ModeloBaseGenerico):
 		
 		if errors:
 			raise ValidationError(errors)
-		
-		return super().clean()
 
 
 class MarketingOrigen(ModeloBaseGenerico):
@@ -955,6 +955,8 @@ class MarketingOrigen(ModeloBaseGenerico):
 		return self.nombre_marketing_origen
 	
 	def clean(self):
+		super().clean()
+		
 		errors = {}
 		
 		if not self.nombre_marketing_origen:
@@ -962,8 +964,6 @@ class MarketingOrigen(ModeloBaseGenerico):
 		
 		if errors:
 			raise ValidationError(errors)
-		
-		return super().clean()
 
 
 class Leyenda(ModeloBaseGenerico):
@@ -1040,6 +1040,8 @@ class MedidasEstados(ModeloBaseGenerico):
 		verbose_name_plural = 'Estados por Medidas'
 	
 	def clean(self):
+		super().clean()
+		
 		errors = {}
 		
 		if not self.id_cai:
@@ -1056,8 +1058,6 @@ class MedidasEstados(ModeloBaseGenerico):
 		
 		if errors:
 			raise ValidationError(errors)
-		
-		return super().clean()
 	
 	@property
 	def nombre_producto(self):

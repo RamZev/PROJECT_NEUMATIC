@@ -49,12 +49,6 @@ class Proveedor(ModeloBaseGenerico):
 	observacion_proveedor = models.TextField("Observaciones", blank=True, 
 											null=True)
 	
-	@property
-	def cuit_formateado(self):
-		cuit = str(self.cuit)
-		return f"{cuit[:2]}-{cuit[2:-1]}-{cuit[-1:]}"
-	
-	
 	class Meta:
 		db_table = 'proveedor'
 		verbose_name = 'Proveedor'
@@ -87,3 +81,8 @@ class Proveedor(ModeloBaseGenerico):
 		
 		if errors:
 			raise ValidationError(errors)
+	
+	@property
+	def cuit_formateado(self):
+		cuit = str(self.cuit)
+		return f"{cuit[:2]}-{cuit[2:-1]}-{cuit[-1:]}"
