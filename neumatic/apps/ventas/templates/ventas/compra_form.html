@@ -51,6 +51,10 @@
 {% block maincomponent %}
 <div id="layoutSidenav_content">
     <main>
+         <!-- DIV OCULTO CON DATOS DE COMPROBANTES -->
+        <div id="comprobante-codigos-data" data-codigos='{{ comprobante_codigos|safe }}'></div>
+
+
         <div class="container-fluid tbl-container">
             <form method="post" id="compra-form" enctype="multipart/form-data">
                 {% csrf_token %}
@@ -200,7 +204,8 @@
                             <div class="accordion-body">
                                 <div class="row tbl-fixed my-2 mx-1" id="formset-container">
                                     {{ formset_detalle.management_form }}
-                                    <table class="table table-striped table-hover" style="width: 100%;">
+                                    
+                                    <table class="detalle-form table table-striped table-hover table-responsive" style="width: 100%;">
                                         <thead class="table-primary small-font">
                                             <tr>
                                                 <th style="width: 10%;">Medida</th>
@@ -524,12 +529,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // 6. ACTUALIZAR CONTADOR DE FORMSETS
     function actualizarContadorFormsets() {
-        const allRows = document.querySelectorAll('.table tbody tr:not([style*="display: none"])').length;
-        const totalFormsInput = document.getElementById('id_detallecompra_set-TOTAL_FORMS');
-        if (totalFormsInput) {
-            totalFormsInput.value = allRows;
-            console.log('Total forms actualizado a:', allRows);
-        }
+        const allRows = document.querySelectorAll('.detalle-form tbody tr').length;
+        document.getElementById('id_detallecompra_set-TOTAL_FORMS').value = allRows;
     }
 
     // 7. ABRIR MODAL DE PRODUCTOS
@@ -743,6 +744,53 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     });
+
+    ////
+    // 11. MANEJO DEL CAMBIO DE COMPROBANTE DE COMPRA (VERSIÓN SIMPLIFICADA)
+    const comprobanteSelect = document.getElementById('id_id_comprobante_compra');
+    const comproInput = document.getElementById('id_compro');
+    const letraInput = document.getElementById('id_letra_comprobante');
+    const numeroInput = document.getElementById('id_numero_comprobante');
+
+    // Obtener datos del div oculto
+    const comprobanteCodigosElement = document.getElementById('comprobante-codigos-data');
+    const comprobanteCodigos = comprobanteCodigosElement ? 
+        JSON.parse(comprobanteCodigosElement.dataset.codigos) : {};
+
+    console.log('Comprobantes cargados:', comprobanteCodigos);
+
+    function actualizarDatosComprobante() {
+        const comprobanteId = comprobanteSelect.value;
+        
+        if (!comprobanteId) {
+            // Limpiar campos si no hay comprobante seleccionado
+            comproInput.value = '';
+            letraInput.value = '';
+            return;
+        }
+
+        // Obtener código del comprobante seleccionado
+        const codigo = comprobanteCodigos[comprobanteId] || '';
+        comproInput.value = codigo;
+
+        // Habilitar campos de letra y número
+        letraInput.value = "R";
+        letraInput.readOnly = false;
+        numeroInput.readOnly = false;
+
+        console.log(`Comprobante seleccionado: ${comprobanteId}, Código: ${codigo}`);
+    }
+
+    if (comprobanteSelect) {
+        // Asignar el event listener
+        comprobanteSelect.addEventListener('change', actualizarDatosComprobante);
+        
+        // Ejecutar al cargar si ya hay un valor seleccionado
+        if (comprobanteSelect.value) {
+            actualizarDatosComprobante();
+        }
+    }
+    ////
 
     // Inicializar
     manageInputs();

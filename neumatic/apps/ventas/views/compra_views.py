@@ -14,6 +14,7 @@ from ...maestros.models.numero_models import Numero
 from ..forms.compra_forms import CompraForm, DetalleCompraFormSet
 from ...maestros.models.base_models import ProductoStock, ComprobanteCompra
 from ...maestros.models.proveedor_models import Proveedor
+from ...maestros.models.producto_models import Producto
 
 # Configuración del modelo
 modelo = Compra
@@ -41,7 +42,7 @@ class CompraListView(MaestroDetalleListView):
         'compro',
         'numero_comprobante',
         'id_proveedor__nombre_proveedor',
-        'cuit',
+
     ]
     ordering = ['-id_compra']
 
@@ -142,6 +143,13 @@ class CompraCreateView(MaestroDetalleCreateView):
         mult_compra_dict = {str(c.id_comprobante_compra): c.mult_compra for c in ComprobanteCompra.objects.all()}
         data['mult_compra_dict'] = json.dumps(mult_compra_dict)
 
+        # DICCIONARIO DE CÓDIGOS DE COMPROBANTES
+        comprobante_codigos = {
+            str(c.id_comprobante_compra): c.codigo_comprobante_compra 
+            for c in ComprobanteCompra.objects.all()
+        }
+        data['comprobante_codigos'] = json.dumps(comprobante_codigos)
+
 
         # Si necesitas datos de ComprobanteCompra, descomenta:
         # tipo_comp_compra_dict = {str(c.id_comprobante_compra): c.nombre_comprobante_compra for c in ComprobanteCompra.objects.all()}
@@ -149,6 +157,7 @@ class CompraCreateView(MaestroDetalleCreateView):
 
         return data
 
+    ######
     def form_valid(self, form):
         context = self.get_context_data()
         formset_detalle = context['formset_detalle']
@@ -158,98 +167,54 @@ class CompraCreateView(MaestroDetalleCreateView):
 
         try:
             with transaction.atomic():
-                # 1. Validación mínima
+                # 1. Validación básica de depósito
                 deposito = form.cleaned_data.get('id_deposito')
                 if not deposito:
                     form.add_error('id_deposito', 'Debe seleccionar un depósito')
                     return self.form_invalid(form)
 
-                # 2. Proveedor: actualizar datos si cambian
-                proveedor_obj = form.cleaned_data['id_proveedor']
-                if proveedor_obj:
-                    try:
-                        proveedor = Proveedor.objects.get(id_proveedor=proveedor_obj.id_proveedor)
-                        # Aquí podrías agregar lógica similar a la de cliente en factura
-                        # (actualizar teléfono, email, etc. si cambian)
-                        pass
-                    except Proveedor.DoesNotExist:
-                        pass
-
-                # 3. Numeración
-                sucursal = form.cleaned_data['id_sucursal']
-                punto_venta = form.cleaned_data['id_punto_venta']
-                comprobante = form.cleaned_data['compro']
-                fecha_comprobante = form.cleaned_data['fecha_comprobante']
-                numero_plantilla = form.cleaned_data['numero_comprobante']
-
-                # Obtener configuración del comprobante
-                comprobante_data = ComprobanteCompra.objects.filter(
-                    codigo_comprobante_compra=comprobante
-                ).first()
-
-                if not comprobante_data:
-                    form.add_error(None, 'No se encontró la configuración para este comprobante')
-                    return self.form_invalid(form)
-
-                # Determinar tipo de numeración (ajusta según tu lógica real)
-                if comprobante_data.electronica:
-                    tipo_numeracion = 'electronica'
-                elif comprobante_data.manual:
-                    tipo_numeracion = 'manual'
-                else:
-                    tipo_numeracion = 'automatica'
-
-                # Determinar letra (simplificado, ajusta según necesidad)
-                letra = "X"  # O tu lógica real
-
-                # Manejar numeración
-                if tipo_numeracion == 'manual':
-                    nuevo_numero = numero_plantilla
-                elif tipo_numeracion == 'automatica':
-                    numero_obj, created = Numero.objects.select_for_update(nowait=True).get_or_create(
-                        id_sucursal=sucursal,
-                        id_punto_venta=punto_venta,
-                        comprobante=comprobante,
-                        letra=letra,
-                        defaults={'numero': 0}
-                    )
-                    nuevo_numero = numero_obj.numero + 1
-                    Numero.objects.filter(pk=numero_obj.pk).update(numero=F('numero') + 1)
-                else:  # electronica (simulado)
-                    nuevo_numero = numero_plantilla
-
-                # Asignar valores
-                form.instance.numero_comprobante = nuevo_numero
-                form.instance.letra_comprobante = letra
-                form.instance.compro = comprobante
-                form.instance.full_clean()
-
-                # 4. Guardar Compra
+                # 🔥 ELIMINAR TODA LA LÓGICA DE NUMERACIÓN COMPLEJA
+                # Los campos vienen directamente del formulario
+                
+                # 2. Guardar Compra
                 self.object = form.save()
 
-                # 5. Guardar Detalles
+                # 3. Guardar Detalles
                 formset_detalle.instance = self.object
                 detalles = formset_detalle.save()
 
-                # 6. Actualizar Stock
+                # 4. Actualizar Stock
                 for detalle in detalles:
                     if (hasattr(detalle.id_producto, 'tipo_producto') and
                         detalle.id_producto.tipo_producto == "P" and
                         detalle.cantidad):
+                        
+                        # A. ACTUALIZAR INVENTARIO (EXISTENTE)
                         ProductoStock.objects.select_for_update().filter(
                             id_producto=detalle.id_producto,
                             id_deposito=deposito
                         ).update(
                             stock=F('stock') + (detalle.cantidad * self.object.id_comprobante_compra.mult_stock),
-                            fecha_producto_stock=fecha_comprobante
+                            fecha_producto_stock=form.cleaned_data['fecha_comprobante']
                         )
 
-                messages.success(self.request, f"Compra {nuevo_numero} creada correctamente")
+                        # B. NUEVO: ACTUALIZAR DESPACHOS EN PRODUCTO
+                        if hasattr(detalle, 'despacho') and detalle.despacho:
+                            producto_obj = detalle.id_producto
+                            
+                            # Actualizar campos de despacho según la lógica requerida
+                            Producto.objects.filter(id_producto=producto_obj.id_producto).update(
+                                despacho_2=producto_obj.despacho_1,  # 1. Pasar despacho_1 a despacho_2
+                                despacho_1=detalle.despacho          # 2. Reemplazar despacho_1 por despacho del detalle
+                            )
+
+                messages.success(self.request, f"Compra {self.object.numero_comprobante} creada correctamente")
                 return redirect(self.get_success_url())
 
         except Exception as e:
             messages.error(self.request, f"Error inesperado: {str(e)}")
             return self.form_invalid(form)
+    ######
 
     def form_invalid(self, form):
         print("Errores del formulario principal:", form.errors)
@@ -311,6 +276,13 @@ class CompraUpdateView(MaestroDetalleUpdateView):
 
         mult_compra_dict = {str(c.id_comprobante_compra): c.mult_compra for c in ComprobanteCompra.objects.all()}
         data['mult_compra_dict'] = json.dumps(mult_compra_dict)
+
+        # DICCIONARIO DE CÓDIGOS DE COMPROBANTES
+        comprobante_codigos = {
+            str(c.id_comprobante_compra): c.codigo_comprobante_compra 
+            for c in ComprobanteCompra.objects.all()
+        }
+        data['comprobante_codigos'] = json.dumps(comprobante_codigos)
 
         return data
 

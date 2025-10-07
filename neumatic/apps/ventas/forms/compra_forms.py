@@ -167,6 +167,16 @@ class DetalleCompraForm(forms.ModelForm):
         })
     )
 
+    producto_venta = forms.CharField(
+        label="Nombre producto", 
+        required=False,
+        widget=forms.TextInput(attrs={
+            'readonly': 'readonly',
+            'class': 'form-control form-control-sm border border-primary',
+            'style': 'font-size: 0.8rem; padding: 0.25rem; margin-left: 0px; margin-right: 0px;'
+        })
+    )
+
     class Meta:
         model = DetalleCompra
         fields = "__all__"
@@ -207,6 +217,7 @@ class DetalleCompraForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         if self.instance and self.instance.id_producto:
             self.fields['medida'].initial = self.instance.id_producto.medida
+            self.fields['producto_venta'].initial = self.instance.id_producto.nombre_producto
 
 
 # Formsets — listos para usar en vistas

@@ -291,8 +291,8 @@ class Compra(ModeloBaseGenerico):
 		if not self.fecha_registro:
 			errors['fecha_registro'] = "El campo 'Fecha Registro' es obligatorio."
 		
-		if not self.numero_comprobante_venta:
-			errors['numero_comprobante_venta'] = "El campo 'Número C/Compra' es obligatorio."
+		# if not self.numero_comprobante_venta:
+		# 	errors['numero_comprobante_venta'] = "El campo 'Número C/Compra' es obligatorio."
 		
 		# if self.numero_comprobante_venta < 1 or self.numero_comprobante_venta > 99999999:
 		# 	errors['numero_comprobante_venta'] = "El número de comprobante de compra debe estar entre 1 y 99999999."
@@ -300,11 +300,8 @@ class Compra(ModeloBaseGenerico):
 		if not self.fecha_comprobante:
 			errors['fecha_comprobante'] = "El campo 'Fecha Emisión' es obligatorio."
 		
-		
-		
-		
-		if not self.id_comprobante_venta:
-			errors['id_comprobante_venta'] = "El campo 'Comp. Compra' es obligatorio."
+		# if not self.id_comprobante_venta:
+		# 	errors['id_comprobante_venta'] = "El campo 'Comp. Compra' es obligatorio."
 		
 		if self.fecha_vencimiento and self.fecha_vencimiento < self.fecha_comprobante:
 			errors['fecha_vencimiento'] = "La fecha de vencimiento no puede ser anterior a la fecha de emisión."
