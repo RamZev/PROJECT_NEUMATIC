@@ -58,7 +58,7 @@ class Compra(ModeloBaseGenerico):
 		max_length=3,
 		null=True,
 		blank=True
-	) 
+	)
 	letra_comprobante = models.CharField(
 		verbose_name="Letra",
 		max_length=1,
@@ -249,25 +249,16 @@ class Compra(ModeloBaseGenerico):
 		blank=True
 	)
 	
-	@property
-	def numero_comprobante_formateado(self):
-		numero = str(self.numero_comprobante).strip().zfill(12)
-		return f"{numero[:4]}-{numero[4:]}"
-	
-	@property
-	def numero_comprobante_venta_formateado(self):
-		numero = str(self.numero_comprobante_venta).strip().zfill(12)
-		return f"{numero[:4]}-{numero[4:]}"
-	
 	class Meta:
 		db_table = "compra"
 		verbose_name = ('Compra')
 		verbose_name_plural = ('Compras')
-
+	
 	def __str__(self):
 		numero = str(self.numero_comprobante).strip().zfill(12)
 		return f"{self.id_comprobante_compra.codigo_comprobante_compra} {self.letra_comprobante} {numero[:4]}-{numero[4:]}"
 	
+	''' Validaciones mudadas al formulario.
 	def clean(self):
 		super().clean()
 		
@@ -300,8 +291,8 @@ class Compra(ModeloBaseGenerico):
 		if not self.fecha_comprobante:
 			errors['fecha_comprobante'] = "El campo 'Fecha Emisión' es obligatorio."
 		
-		# if not self.id_comprobante_venta:
-		# 	errors['id_comprobante_venta'] = "El campo 'Comp. Compra' es obligatorio."
+		if not self.id_comprobante_venta:
+			errors['id_comprobante_venta'] = "El campo 'Comp. Compra' es obligatorio."
 		
 		if self.fecha_vencimiento and self.fecha_vencimiento < self.fecha_comprobante:
 			errors['fecha_vencimiento'] = "La fecha de vencimiento no puede ser anterior a la fecha de emisión."
@@ -309,6 +300,17 @@ class Compra(ModeloBaseGenerico):
 		if errors:
 			from django.core.exceptions import ValidationError
 			raise ValidationError(errors)
+	'''
+	
+	@property
+	def numero_comprobante_formateado(self):
+		numero = str(self.numero_comprobante).strip().zfill(12)
+		return f"{numero[:4]}-{numero[4:]}"
+	
+	@property
+	def numero_comprobante_venta_formateado(self):
+		numero = str(self.numero_comprobante_venta).strip().zfill(12)
+		return f"{numero[:4]}-{numero[4:]}"
 
 
 class DetalleCompra(ModeloBaseGenerico):
@@ -363,8 +365,7 @@ class DetalleCompra(ModeloBaseGenerico):
 		null=True,
 		blank=True
 	)
-
-
+	
 	class Meta:
 		db_table = "detalle_compra"
 		verbose_name = ('Detalle Compra')

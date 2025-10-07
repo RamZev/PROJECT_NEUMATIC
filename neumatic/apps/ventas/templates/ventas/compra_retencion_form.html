@@ -90,9 +90,11 @@
 													
 													<div class="col-md-2">
 														<label class="form-label text-primary mb-0">
-															{{ form.numero_comprobante.label }}
+															{% comment %} {{ form.numero_comprobante.label }} {% endcomment %}
+															{{ form.numero_comprobante_formateado.label }}
 														</label>
 														{{ form.numero_comprobante }}
+														{{ form.numero_comprobante_formateado }}
 													</div>
 													
 													<div class="col-md-2">
@@ -230,14 +232,22 @@
 			const inputNumero = document.getElementById('id_numero_comprobante');
 			const inputCompro = document.getElementById('id_compro');
 			const inputLetra = document.getElementById('id_letra_comprobante');
+			const inputNumeroFormateado = document.getElementById('id_numero_comprobante_formateado');
 			
 			if (!selectComprobante) return;
+			
+			//-- Función para formatear el número.
+			function formatearNumeroComprobante(numero) {
+				if (!numero) return '';
+				const numeroStr = numero.toString().padStart(12, '0');
+				return `${numeroStr.substring(0, 4)}-${numeroStr.substring(4)}`;
+			}
 			
 			selectComprobante.addEventListener('change', function () {
 				// alert("Cambio en el select de Comprobante Compra");
 				// Obtener el ID del comprobante seleccionado
 				const idComprobante = this.value;
-				urlObtenerNumero = "{% url 'obtener_numero_compra' %}";
+				const urlObtenerNumero = "{% url 'obtener_numero_compra' %}";
 				
 				if (idComprobante) {
 					const url = `${urlObtenerNumero}?id_comprobante=${encodeURIComponent(idComprobante)}`;
@@ -254,6 +264,12 @@
 							if (inputCompro) inputCompro.value = data.compro;
 							if (inputLetra) inputLetra.value = data.letra;
 							if (inputNumero) inputNumero.value = data.numero_comprobante;
+							
+							//-- ACTUALIZACIÓN DIRECTA del campo formateado.
+							if (inputNumeroFormateado && data.numero_comprobante) {
+								const numeroFormateado = formatearNumeroComprobante(data.numero_comprobante);
+								inputNumeroFormateado.value = numeroFormateado;
+							}
 						})
 						.catch(error => {
 							console.error('Error en la solicitud AJAX:', error);
@@ -264,8 +280,15 @@
 					if (inputCompro) inputCompro.value = '';
 					if (inputLetra) inputLetra.value = '';
 					if (inputNumero) inputNumero.value = '';
+					if (inputNumeroFormateado) inputNumeroFormateado.value = '';
 				}
 			});
+			
+			//-- Actualizar el campo formateado al cargar la página si ya hay un número
+			if (inputNumero && inputNumero.value && inputNumeroFormateado) {
+				const numeroFormateado = formatearNumeroComprobante(inputNumero.value);
+				inputNumeroFormateado.value = numeroFormateado;
+			}
 			
 			// ---------- Proveedor -> Alicuota IVA ----------
 			const selectProveedor = document.getElementById('id_id_proveedor');
