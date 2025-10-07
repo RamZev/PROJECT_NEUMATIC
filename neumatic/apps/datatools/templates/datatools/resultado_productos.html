@@ -17,7 +17,7 @@
 		<div id="layoutSidenav_content">
 			<main>
 				<div class="container-fluid px-4">
-					<h1 class="mt-4">Procesamiento Exitoso Completado</h1>
+					<h2 class="mt-4">Procesamiento Exitoso Completado</h2>
 					<ol class="breadcrumb mb-4">
 						<li class="breadcrumb-item"><a href="{% url 'home' %}">Panel</a></li>
 						<li class="breadcrumb-item"><a href="{% url 'cargar_excel' %}?proceso={{proceso}}">Cargar Excel</a></li>
@@ -33,11 +33,9 @@
 						<div class="card-body">
 							
 							<div class="alert alert-info">
-								{% comment %} <h5>Resumen de la actualización:</h5> {% endcomment %}
 								<h5>Resumen del Procesamiento ({{proceso}}):</h5>
 								<ul>
 									<li>Total de registros procesados: {{ total_registros }}</li>
-									{% comment %} <li>Productos actualizados correctamente: {{ actualizados }}</li> {% endcomment %}
 									<li>Productos <b>{% if proceso == 'agregar' %} agregados {% else %} actualizados {% endif %}</b> correctamente: {{ actualizados }}</li>
 									<li>Errores encontrados: {{ errores|length }}</li>
 								</ul>

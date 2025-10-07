@@ -184,14 +184,13 @@
 		<div id="layoutSidenav_content">
 			<main>
 				<div class="container-fluid px-4">
-					<h1 class="mt-4">Previsualización del Archivo ({{proceso}})</h1>
+					<h2 class="mt-4">Previsualización del Archivo ({{proceso}})</h2>
 					<ol class="breadcrumb mb-4">
 						<li class="breadcrumb-item"><a href="{% url 'home' %}">Panel</a></li>
 						<li class="breadcrumb-item"><a href="{% url 'cargar_excel' %}?proceso={{proceso}}">Cargar Excel</a></li>
 						<li class="breadcrumb-item active">Previsualización</li>
 					</ol>
 					
-					<!--///////////////////////////////////////////////-->
 					{% if messages %}
 						<div class="alert-messages">
 							{% for message in messages %}
@@ -202,9 +201,7 @@
 							{% endfor %}
 						</div>
 					{% endif %}
-					<!--///////////////////////////////////////////////-->
 					
-					{% comment %} <div class="container-main"> {% endcomment %}
 					<div class="container-main"{% if proceso == 'agregar' %} style="display: block;"{% endif %}>
 						<!-- Panel izquierdo: Tabla de datos -->
 						<div class="table-container">

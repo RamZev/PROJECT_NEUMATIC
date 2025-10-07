@@ -8,7 +8,6 @@ from django.shortcuts import redirect
 from django.utils import timezone
 from datetime import datetime
 from django.contrib import messages
-from django.http import JsonResponse
 from django.core.exceptions import ValidationError, FieldDoesNotExist
 from decimal import Decimal, InvalidOperation
 from django.db import transaction
@@ -59,11 +58,10 @@ class ExcelUploadView(FormView):
 				df_headers = pd.read_excel(archivo, nrows=0)
 				columnas_excel = df_headers.columns.tolist()
 				
-				#-- Identificar qué columnas deben leerse como texto (strings)
+				#-- Identificar tipos de campos
 				columnas_como_texto = []
-				
-				#-- Identificar qué columnas son booleanas.
 				columnas_booleanas = []
+				columnas_decimales = []
 				
 				for key, value in ConfigViews.table_info.items():
 					if value.get('excel') and value['label'] in columnas_excel:
@@ -73,11 +71,19 @@ class ExcelUploadView(FormView):
 								columnas_como_texto.append(value['label'])
 							elif isinstance(campo_obj, BooleanField):
 								columnas_booleanas.append(value['label'])
+							elif isinstance(campo_obj, (DecimalField, FloatField)):
+								columnas_decimales.append(value['label'])
 						except FieldDoesNotExist:
 							continue
 				
 				#-- SEGUNDO: Leer Excel forzando las columnas string como texto.
 				dtype_dict = {col: str for col in columnas_como_texto}
+				
+				#-- Para decimales, leer como float para preservar formato numérico.
+				for columna in columnas_decimales:
+					if columna in df_headers.columns:
+						dtype_dict[columna] = float
+				
 				df = pd.read_excel(archivo, na_filter=False, dtype=dtype_dict, keep_default_na=False)
 				
 				#-- Verificar si el DataFrame está vacío.
@@ -102,7 +108,12 @@ class ExcelUploadView(FormView):
 					if columna in df.columns:
 						df[columna] = df[columna].apply(lambda x: self._convertir_booleano_a_si_no(x))
 				
-				#-- QUINTO: Convertir campos específicos a mayúsculas.
+				#-- QUINTO: Procesar campos decimales para preservar formato
+				for columna in columnas_decimales:
+					if columna in df.columns:
+						df[columna] = df[columna].apply(lambda x: self._preservar_formato_decimal(x))
+				
+				#-- SEXTO: Convertir campos específicos a mayúsculas.
 				campos_a_mayusculas = ['Tipo Producto']
 				
 				for columna in campos_a_mayusculas:
@@ -212,6 +223,39 @@ class ExcelUploadView(FormView):
 		
 		#-- Para cualquier otro tipo, devolver "No" por defecto
 		return "No"
+	
+	def _preservar_formato_decimal(self, valor):
+		"""
+		Preserva el formato de campos decimales, manejando valores vacíos y conversiones.
+		"""
+		if valor is None or pd.isna(valor) or valor == '':
+			return None
+		
+		#-- Si ya es numérico (float, int, Decimal), mantener como está.
+		if isinstance(valor, (int, float, Decimal)):
+			return valor
+		
+		#-- Si es string, intentar convertir a numérico
+		if isinstance(valor, str):
+			#-- Manejar casos especiales
+			if valor in ['nan', 'NaN', 'NAN', 'NULL', 'null']:
+				return None
+			
+			#-- Limpiar el string: reemplazar coma por punto y eliminar espacios.
+			valor_limpio = valor.replace(',', '.').strip()
+			
+			#-- Intentar convertir a float
+			try:
+				return float(valor_limpio)
+			except (ValueError, TypeError):
+				#-- Si no se puede convertir, devolver el valor original.
+				return valor
+		
+		#-- Para cualquier otro tipo, intentar convertir a float.
+		try:
+			return float(valor)
+		except (ValueError, TypeError):
+			return valor
 
 
 class ExcelPreviewView(TemplateView):

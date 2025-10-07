@@ -13,7 +13,8 @@ class ExcelUploadForm(GenericForm):
 			'invalid': 'El archivo seleccionado no es válido.',
 		}
 	)
-	
+
+
 class CamposActualizacionForm(forms.Form):
 	def __init__(self, *args, **kwargs):
 		columnas = kwargs.pop('columnas', [])
