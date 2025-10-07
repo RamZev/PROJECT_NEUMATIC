@@ -1,6 +1,7 @@
 from django import forms
 from django.forms import inlineformset_factory
 from datetime import date
+from django.core.exceptions import ValidationError
 
 from ..models.compra_models import Compra, DetalleCompra
 from ...maestros.models.base_models import ComprobanteCompra, ProductoDeposito
@@ -11,9 +12,10 @@ from diseno_base.diseno_bootstrap import (
     formclassdate,
     formclasscheck
 )
+from .forms_generics import GenericForm
 
 
-class CompraForm(forms.ModelForm):
+class CompraForm(GenericForm):
     buscar_proveedor = forms.CharField(
         required=False,
         widget=forms.TextInput(attrs={
@@ -154,6 +156,37 @@ class CompraForm(forms.ModelForm):
             estatus_comprobante_compra=True,
             remito=True  # 🔥 SOLO COMPROBANTES CON REMITO
         ).order_by('nombre_comprobante_compra')
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        print("--- Validando duplicados en CompraForm ---")
+        
+        compro = cleaned_data.get('compro')
+        letra = cleaned_data.get('letra_comprobante')
+        numero = cleaned_data.get('numero_comprobante')
+        
+        # Validación de duplicados
+        if compro and letra and numero:
+            queryset = Compra.objects.filter(
+                compro=compro,
+                letra_comprobante=letra,
+                numero_comprobante=numero
+            )
+            
+            
+            errors = {}
+
+            if queryset.exists():
+                # existente = queryset.first()
+                print(f"***El Número de comprobante ya existe: {numero}")
+                errors['numero_comprobante'] = "El Número de comprobante ya existe."
+
+            if errors:
+                raise ValidationError(errors)
+                
+        
+        return cleaned_data
 
 
 class DetalleCompraForm(forms.ModelForm):

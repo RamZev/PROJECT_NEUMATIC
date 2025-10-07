@@ -19,10 +19,85 @@
 {% endblock main %}
 
 {% block modals %}
+	<!-- Modal para mostrar errores -->
+	{% include 'maestros/modal_errors.html' %}
+
+	<!-- Modal para confirmar eliminación -->
+	<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+		<div class="modal-dialog d-flex align-items-center">
+			<div class="modal-content border border-white">
+				<div class="modal-header bg-primary bg-opacity-25">
+					<h1 class="modal-title fs-5" id="deleteModalLabel">Confirmar Eliminación</h1>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<p>Se eliminará: <strong id="deleteItemName"></strong></p>
+					¿Estás seguro que eliminar el registro?
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+					<form id="deleteForm" method="post" class="d-inline">
+						{% csrf_token %}
+						<button type="submit" class="btn btn-danger">Sí, eliminar</button>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<!-- Modal para mensajes de error on_delete=models.PROTECT -->
+	<div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header bg-danger bg-opacity-25">
+					<h5 class="modal-title" id="errorModalLabel">Error</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body" id="errorModalBody">
+					<!-- Aquí se mostrará el mensaje de error -->
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+				</div>
+			</div>
+		</div>
+	</div>
 {% endblock modals %}
 
 {% block footer %}
 {% endblock footer %}
 
 {% block script %}
+	<script>
+		console.log("Carga el JS para el modal de ERRORES")
+		var exampleModal = document.getElementById('deleteModal')
+		if (!exampleModal) {
+			alert("No se encontró el modal deleteModal");
+		}
+		exampleModal.addEventListener('show.bs.modal', function (event) {
+			var button = event.relatedTarget
+			var recipient = button.getAttribute('data-bs-whatever-name')
+			var url = button.getAttribute('data-bs-whatever-url')
+			
+			var modalTitle = exampleModal.querySelector('.modal-title')
+			var modalBodyInput = exampleModal.querySelector('.modal-body strong')
+			var form = exampleModal.querySelector('#deleteForm')
+			
+			modalTitle.textContent = 'Eliminar ' + recipient
+			modalBodyInput.textContent = recipient
+			form.action = url
+		})
+		
+		// Obtener el mensaje de error de la cola de mensajes de Django
+		const errorMessage = "{% if messages %}{% for message in messages %}{{ message }}{% if not forloop.last %}<br>{% endif %}{% endfor %}{% else %} {% endif %}";
+		console.log("Mensaje de error recibido:", errorMessage);
+		// Verificar si hay un mensaje de error
+		if (errorMessage.trim() !== '') {
+			// Mostrar el modal con el mensaje de error
+			const modal = new bootstrap.Modal(document.getElementById('errorModal'));
+			console.log("!!!!!Mostrando modal de error con mensaje:", errorMessage);
+			document.getElementById('errorModalBody').innerText = errorMessage;
+			modal.show();
+		}
+	</script>
 {% endblock script %}
