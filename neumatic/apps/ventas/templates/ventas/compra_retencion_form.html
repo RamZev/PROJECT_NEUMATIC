@@ -1,4 +1,5 @@
 <!-- neumatic\apps\ventas\templates\ventas\compra_retencion_form.html -->
+ 
 {% extends 'maestro_form.html' %}
 {% load static %}
 <!-- -------------------------------------------------------------------- -->
@@ -208,6 +209,12 @@
 								</div>
 								
 							</form>
+							<div>
+								<p>Errores form.errors:</p>
+								<p>{% if form.errors%} HAY Errores {% else %} NO HAY Errores {% endif %}</p>
+								<p>{{ form.errors }}</p>
+								
+							</div>
 						</div>
 					</div>
 				</div>
@@ -216,12 +223,6 @@
 	{% endblock principalcomponent %}
 {% endblock maincomponent %}
 <!-- -------------------------------------------------------------------- -->
-{% block modals %}
-	<!-- Modal para mostrar errores -->
-	{% include 'maestros/modal_errors.html' %}
-{% endblock modals %}
-<!-- -------------------------------------------------------------------- -->
-
 {% block script %}
 	{{ block.super }}
 

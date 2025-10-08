@@ -396,9 +396,13 @@
 		</div>
 	{% endblock principalcomponent %}
 {% endblock maincomponent %}
-<!-- -------------------------------------------------------------------- -->
+
+<!-- Block Modals -------------------------------------------------------- -->
 {% block modals %}
 	{{ block.super }}
+	
+	<!-- Modal para mostrar los requerimientos de los campos -->
+	{% include 'maestros/modal_fields_requirements.html' %}
 	
 	<!-- Modal para editar Producto Mínimo -->
 	<div class="modal fade" id="editMinimoModal" tabindex="-1" aria-labelledby="editMinimoModalLabel" aria-hidden="true">
@@ -437,7 +441,8 @@
 		</div>
 	</div>	
 {% endblock modals %}
-<!-- -------------------------------------------------------------------- -->
+
+<!-- Block Script -------------------------------------------------------- -->
 {% block script %}
 	{{ block.super }}
 	
@@ -553,5 +558,4 @@
 			
 		});
 	</script>	
-	
 {% endblock script %}
