@@ -5,7 +5,6 @@ from django.http import JsonResponse
 from django.db import transaction
 from django.db.models import ProtectedError
 
-
 #-- Recursos necesarios para proteger las rutas.
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
@@ -126,19 +125,9 @@ class MaestroCreateView(PermissionRequiredMixin, CreateView):
 			#-- Captura el error de transacción.
 			# context = self.get_context_data(form)
 			context = self.get_context_data(form=form)
-			context['data_has_erors'] = True
+			# context['data_has_errors'] = True
 			context['transaction_error'] = str(e)
 			return self.render_to_response(context)
-	
-	def form_invalid(self, form):
-		"""
-		Si el formulario no es válido, renderiza el formulario con los errores.
-		"""
-		
-		context = self.get_context_data(form=form)
-		context['data_has_errors'] = True
-		
-		return self.render_to_response(context)
 	
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
@@ -149,13 +138,8 @@ class MaestroCreateView(PermissionRequiredMixin, CreateView):
 			"list_view_name": self.list_view_name,
 		})		
 		
-		#-- Controlar mostrar o no el modal con los errors de validación.
-		#-- Inicialmente, no hay errores.
-		context['data_has_errors'] = False
-		
 		#-- Asegurarse de que el formulario en el contexto sea el mismo que se validó
 		context['form'] = self.get_form()
-		# context['requerimientos'] = obtener_requerimientos_modelo(self.model)
 		
 		#-- Para pasar la fecha a la lista del maestro.
 		context['fecha'] = timezone.now()
@@ -194,18 +178,6 @@ class MaestroUpdateView(PermissionRequiredMixin, UpdateView):
 		
 		return super().form_valid(form)
 	
-	def form_invalid(self, form):
-		"""
-		Si el formulario no es válido, renderiza el formulario con los errores.
-		"""
-		
-		#-- Establecer el contexto con la información sobre errores.
-		context = self.get_context_data(form=form)
-		#-- Indicar que hay errores.
-		context['data_has_errors'] = True
-		
-		return self.render_to_response(context)
-	
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
 		
@@ -218,13 +190,8 @@ class MaestroUpdateView(PermissionRequiredMixin, UpdateView):
 			"list_view_name": self.list_view_name,
 		})
 		
-		#-- Controlar mostrar o no el modal con los errors de validación.
-		#-- Inicialmente, no hay errores.
-		context['data_has_errors'] = False
-		
 		#-- Asegurarse de que el formulario en el contexto sea el mismo que se validó
 		context['form'] = self.get_form()
-		# context['requerimientos'] = obtener_requerimientos_modelo(self.model)
 		
 		#-- Para pasar la fecha a la lista del maestro.
 		context['fecha'] = timezone.now()
@@ -257,8 +224,6 @@ class MaestroDeleteView(PermissionRequiredMixin, DeleteView):
 			messages.error(request, f'Ocurrió un error inesperado al intentar eliminar: {str(e)}')
 			return redirect(self.success_url)
 
-# ------------------------------------------------------------------------------------
-
 
 @method_decorator(login_required, name='dispatch')
 class GenericDetailView(DetailView):
@@ -273,26 +238,3 @@ class GenericDetailView(DetailView):
 		obj = self.get_object()
 		data = self.get_data(obj)
 		return JsonResponse(data)
-# ------------------------------------------------------------------------------------
-
-
-# def obtener_requerimientos_modelo(modelo):
-# 	requerimientos = {}
-# 	
-# 	for field in modelo._meta.fields:
-# 		exclud_fields = ['usuario', 'estacion', 'fcontrol']
-# 		field_info = []
-# 		
-# 		if not field.primary_key and field.name not in exclud_fields:
-# 			if not field.blank:
-# 				field_info.append("Este campo es obligatorio")
-# 			
-# 			if hasattr(field, "max_length") and field.max_length is not None:
-# 				field_info.append(f"Debe tener un máximo de {field.max_length} caracteres")
-# 			
-# 			if field.unique:
-# 				field_info.append("Debe ser único")
-# 			
-# 			requerimientos[field.verbose_name] = field_info
-# 	
-# 	return requerimientos

@@ -49,272 +49,270 @@
 {% endblock style %}
 
 {% block maincomponent %}
-<div id="layoutSidenav_content">
-    <main>
-         <!-- DIV OCULTO CON DATOS DE COMPROBANTES -->
-        <div id="comprobante-codigos-data" data-codigos='{{ comprobante_codigos|safe }}'></div>
+	<div id="layoutSidenav_content">
+		<main>
+			<!-- DIV OCULTO CON DATOS DE COMPROBANTES -->
+			<div id="comprobante-codigos-data" data-codigos='{{ comprobante_codigos|safe }}'></div>
 
 
-        <div class="container-fluid tbl-container">
-            <form method="post" id="compra-form" enctype="multipart/form-data">
-                {% csrf_token %}
+			<div class="container-fluid tbl-container">
+				<form method="post" id="compra-form" enctype="multipart/form-data">
+					{% csrf_token %}
 
-                <!-- Acordeón: Encabezado de Compra -->
-                <div class="accordion mt-2" id="accordionCompra">
-                    <div class="accordion-item">
-                        <h2 class="accordion-header">
-                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseEncabezado" aria-expanded="true">
-                                Encabezado de Compra
-                            </button>
-                        </h2>
-                        <div id="collapseEncabezado" class="accordion-collapse collapse show">
-                            <div class="accordion-body">
-                                <div class="row">
-                                    <!-- Columna Izquierda -->
-                                    <div class="col-md-6">
-                                        <div class="row my-1">
-                                            <div class="col-md-3">
-                                                <label>Estatus</label>
-                                            </div>
-                                            <div class="col-md-9">
-                                                {{ form.estatus_comprabante }}
-                                            </div>
-                                        </div>
-                                        <div class="row my-1">
-                                            <div class="col-md-3">
-                                                <label>Sucursal</label>
-                                            </div>
-                                            <div class="col-md-9">
-                                                {{ form.nombre_sucursal }}
-                                                {{ form.id_sucursal }}
-                                            </div>
-                                        </div>
-                                        <div class="row my-1">
-                                            <div class="col-md-3">
-                                                <label>Depósito</label>
-                                            </div>
-                                            <div class="col-md-9">
-                                                {{ form.id_deposito }}
-                                            </div>
-                                        </div>
-                                        <div class="row my-1">
-                                            <div class="col-md-3">
-                                                <label>Comprobante</label>
-                                            </div>
-                                            <div class="col-md-9">
-                                                {{ form.id_comprobante_compra }}
-                                            </div>
-                                        </div>
-                                        <div class="row my-1">
-                                            <div class="col-md-3">
-                                                <label>{{form.id_proveedor.label}}</label>
-                                            </div>
-                                            <div class="col-md-7">
-                                                {{ form.id_proveedor }}
-                                            </div>
-                                            
-                                            <div class="col-md-2">
-                                                <a href="{% url 'proveedor_create' %}" target="_blank" class="btn btn-outline-primary btn-sm">
-                                                    <i class="bi bi-building-add"></i>
-                                                </a>
-                                            </div>
-                                        </div>
-                                        
-                                    </div>
+					<!-- Acordeón: Encabezado de Compra -->
+					<div class="accordion mt-2" id="accordionCompra">
+						<div class="accordion-item">
+							<h2 class="accordion-header">
+								<button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseEncabezado" aria-expanded="true">
+									Encabezado de Compra
+								</button>
+							</h2>
+							<div id="collapseEncabezado" class="accordion-collapse collapse show">
+								<div class="accordion-body">
+									<div class="row">
+										<!-- Columna Izquierda -->
+										<div class="col-md-6">
+											<div class="row my-1">
+												<div class="col-md-3">
+													<label>Estatus</label>
+												</div>
+												<div class="col-md-9">
+													{{ form.estatus_comprabante }}
+												</div>
+											</div>
+											<div class="row my-1">
+												<div class="col-md-3">
+													<label>Sucursal</label>
+												</div>
+												<div class="col-md-9">
+													{{ form.nombre_sucursal }}
+													{{ form.id_sucursal }}
+												</div>
+											</div>
+											<div class="row my-1">
+												<div class="col-md-3">
+													<label>Depósito</label>
+												</div>
+												<div class="col-md-9">
+													{{ form.id_deposito }}
+												</div>
+											</div>
+											<div class="row my-1">
+												<div class="col-md-3">
+													<label>Comprobante</label>
+												</div>
+												<div class="col-md-9">
+													{{ form.id_comprobante_compra }}
+												</div>
+											</div>
+											<div class="row my-1">
+												<div class="col-md-3">
+													<label>{{form.id_proveedor.label}}</label>
+												</div>
+												<div class="col-md-7">
+													{{ form.id_proveedor }}
+												</div>
+												
+												<div class="col-md-2">
+													<a href="{% url 'proveedor_create' %}" target="_blank" class="btn btn-outline-primary btn-sm">
+														<i class="bi bi-building-add"></i>
+													</a>
+												</div>
+											</div>
+											
+										</div>
 
-                                    <!-- Columna Derecha -->
-                                    <div class="col-md-6">
-                                        <div class="row my-1">
-                                            <div class="col-md-3">
-                                                <label>Fecha Emisión</label>
-                                            </div>
-                                            <div class="col-md-4">
-                                                {{ form.fecha_comprobante }}
-                                            </div>
-                                            <div class="col-md-5">
-                                                {{ form.condicion_compra_display }}
-                                            </div>
-                                        </div>
-                                        <div class="row my-1">
-                                            <div class="col-md-3">
-                                                <label>Comprobante</label>
-                                            </div>
-                                            <div class="col-md-2">
-                                                {{ form.compro }}
-                                            </div>
-                                            <div class="col-md-2">
-                                                {{ form.letra_comprobante }}
-                                            </div>
-                                            <div class="col-md-5">
-                                                {{ form.numero_comprobante }}
-                                            </div>
-                                        </div>
-                                        <div class="row my-1">
-                                            <div class="col-md-3">
-                                                <label>Condición</label>
-                                            </div>
-                                            <div class="col-md-4">
-                                                {{ form.condicion_comprobante }}
-                                            </div>
-                                            <div class="col-md-5">
-                                                {{ form.documento_asociado }}
-                                            </div>
-                                        </div>
-                                        <div class="row my-1">
-                                            <div class="col-md-3">
-                                                <label>Fecha Registro</label>
-                                            </div>
-                                            <div class="col-md-4">
-                                                {{ form.fecha_registro }}
-                                            </div>
-                                            
-                                        </div>
-                                        <div class="row my-1">
-                                            <div class="col-md-3">
-                                                <label>Vencimiento</label>
-                                            </div>
-                                            <div class="col-md-4">
-                                                {{ form.fecha_registro }}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+										<!-- Columna Derecha -->
+										<div class="col-md-6">
+											<div class="row my-1">
+												<div class="col-md-3">
+													<label>Fecha Emisión</label>
+												</div>
+												<div class="col-md-4">
+													{{ form.fecha_comprobante }}
+												</div>
+												<div class="col-md-5">
+													{{ form.condicion_compra_display }}
+												</div>
+											</div>
+											<div class="row my-1">
+												<div class="col-md-3">
+													<label>Comprobante</label>
+												</div>
+												<div class="col-md-2">
+													{{ form.compro }}
+												</div>
+												<div class="col-md-2">
+													{{ form.letra_comprobante }}
+												</div>
+												<div class="col-md-5">
+													{{ form.numero_comprobante }}
+												</div>
+											</div>
+											<div class="row my-1">
+												<div class="col-md-3">
+													<label>Condición</label>
+												</div>
+												<div class="col-md-4">
+													{{ form.condicion_comprobante }}
+												</div>
+												<div class="col-md-5">
+													{{ form.documento_asociado }}
+												</div>
+											</div>
+											<div class="row my-1">
+												<div class="col-md-3">
+													<label>Fecha Registro</label>
+												</div>
+												<div class="col-md-4">
+													{{ form.fecha_registro }}
+												</div>
+												
+											</div>
+											<div class="row my-1">
+												<div class="col-md-3">
+													<label>Vencimiento</label>
+												</div>
+												<div class="col-md-4">
+													{{ form.fecha_registro }}
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
 
-                    <!-- Botón para agregar detalle -->
-                    <div class="container my-3">
-                        <div class="d-flex justify-content-end">
-                            <button type="button" class="btn btn-outline-primary btn-sm me-2" id="btnAgregarDetalle">
-                                Agregar Detalle
-                                <i class="bi bi-file-earmark-plus"></i>
-                            </button>
-                        </div>
-                    </div>
+						<!-- Botón para agregar detalle -->
+						<div class="container my-3">
+							<div class="d-flex justify-content-end">
+								<button type="button" class="btn btn-outline-primary btn-sm me-2" id="btnAgregarDetalle">
+									Agregar Detalle
+									<i class="bi bi-file-earmark-plus"></i>
+								</button>
+							</div>
+						</div>
 
-                    <!-- Acordeón: Detalle de Compra -->
-                    <div class="accordion-item">
-                        <h2 class="accordion-header">
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseDetalle" aria-expanded="false">
-                                Detalle de la Compra
-                            </button>
-                        </h2>
-                        <div id="collapseDetalle" class="accordion-collapse collapse">
-                            <div class="accordion-body">
-                                <div class="row tbl-fixed my-2 mx-1" id="formset-container">
-                                    {{ formset_detalle.management_form }}
-                                    
-                                    <table class="detalle-form table table-striped table-hover table-responsive" style="width: 100%;">
-                                        <thead class="table-primary small-font">
-                                            <tr>
-                                                <th style="width: 10%;">Medida</th>
-                                                <th style="width: 30%;">Producto</th>
-                                                <th style="width: 10%;">Despacho</th>
-                                                <th style="width: 10%;">Cantidad</th>
-                                                <th style="width: 15%;">Precio</th>
-                                                <th style="width: 15%;">Total</th>
-                                                <th style="width: 10%;">Elim</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {% for formdet in formset_detalle %}
-                                            <tr data-form-index="{{ forloop.counter0 }}">
-                                                <td>
-                                                    {% if formdet.instance.pk %}
-                                                        {{ formdet.id_detalle_compra }}
-                                                        {{ formdet.id_compra }}
-                                                        {{ formdet.id_producto }}
-                                                    {% endif %}
-                                                    {{ formdet.medida }}
-                                                </td>
-                                                <td>{{ formdet.producto_venta }}</td>
-                                                <td>{{ formdet.despacho }}</td>  <!-- Despacho ahora va aquí -->
-                                                <td>{{ formdet.cantidad }}</td>
-                                                <td>{{ formdet.precio }}</td>
-                                                <td>{{ formdet.total }}</td>
-                                                <td>
-                                                    <button type="button" class="btn btn-danger btn-sm btn-delete" data-form-index="{{ forloop.counter0 }}">
-                                                        <i class="bi bi-trash"></i>
-                                                    </button>
-                                                    <input type="checkbox" name="detallecompra_set-{{ forloop.counter0 }}-DELETE" style="display: none;">
-                                                </td>
-                                            </tr>
-                                            {% endfor %}
-                                        </tbody>
-                                        <tfoot>
-                                            <tr>
-                                                <td colspan="100%">
-                                                    <div class="row align-items-center g-2 py-2" style="background-color: #f8f9fa; border-top: 2px solid #dee2e6;">
-                                                        <div class="col-md-2">
-                                                            <div class="d-flex flex-column gap-2">
-                                                                <button type="submit" class="btn btn-outline-success btn-sm">
-                                                                    {% if is_edit %}Actualizar{% else %}Guardar{% endif %}
-                                                                    <i class="bi bi-floppy"></i>
-                                                                </button>
-                                                                <a href="{% url 'compra_list' %}" class="btn btn-outline-secondary btn-sm">
-                                                                    Cancelar
-                                                                    <i class="bi bi-x-circle"></i>
-                                                                </a>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-md-2">
-                                                            <div class="text-center">
-                                                                <label class="form-label mb-0 text-primary"><strong>Gravado</strong></label>
-                                                                <div>
-                                                                    {{ form.gravado }}
-                                                                    <span class="formatted-number">{{ form.gravado.value|default:"0.00" }}</span>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-md-2">
-                                                            <div class="text-center">
-                                                                <label class="form-label mb-0 text-primary"><strong>Exento</strong></label>
-                                                                <div>
-                                                                    {{ form.exento }}
-                                                                    <span class="formatted-number">{{ form.exento.value|default:"0.00" }}</span>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-md-2">
-                                                            <div class="text-center">
-                                                                <label class="form-label mb-0 text-primary"><strong>IVA</strong></label>
-                                                                <div>
-                                                                    {{ form.iva }}
-                                                                    <span class="formatted-number">{{ form.iva.value|default:"0.00" }}</span>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-md-2">
-                                                            <div class="text-center">
-                                                                <label class="form-label mb-0 text-primary"><strong>Total</strong></label>
-                                                                <div>
-                                                                    {{ form.total }}
-                                                                    <span class="formatted-number">{{ form.total.value|default:"0.00" }}</span>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        </tfoot>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </form>
-            <div>
-            Mensaes de error: {{ message}}
-            </div>
-
-        </div>
-    </main>
-</div>
+						<!-- Acordeón: Detalle de Compra -->
+						<div class="accordion-item">
+							<h2 class="accordion-header">
+								<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseDetalle" aria-expanded="false">
+									Detalle de la Compra
+								</button>
+							</h2>
+							<div id="collapseDetalle" class="accordion-collapse collapse">
+								<div class="accordion-body">
+									<div class="row tbl-fixed my-2 mx-1" id="formset-container">
+										{{ formset_detalle.management_form }}
+										
+										<table class="detalle-form table table-striped table-hover table-responsive" style="width: 100%;">
+											<thead class="table-primary small-font">
+												<tr>
+													<th style="width: 10%;">Medida</th>
+													<th style="width: 30%;">Producto</th>
+													<th style="width: 10%;">Despacho</th>
+													<th style="width: 10%;">Cantidad</th>
+													<th style="width: 15%;">Precio</th>
+													<th style="width: 15%;">Total</th>
+													<th style="width: 10%;">Elim</th>
+												</tr>
+											</thead>
+											<tbody>
+												{% for formdet in formset_detalle %}
+												<tr data-form-index="{{ forloop.counter0 }}">
+													<td>
+														{% if formdet.instance.pk %}
+															{{ formdet.id_detalle_compra }}
+															{{ formdet.id_compra }}
+															{{ formdet.id_producto }}
+														{% endif %}
+														{{ formdet.medida }}
+													</td>
+													<td>{{ formdet.producto_venta }}</td>
+													<td>{{ formdet.despacho }}</td>  <!-- Despacho ahora va aquí -->
+													<td>{{ formdet.cantidad }}</td>
+													<td>{{ formdet.precio }}</td>
+													<td>{{ formdet.total }}</td>
+													<td>
+														<button type="button" class="btn btn-danger btn-sm btn-delete" data-form-index="{{ forloop.counter0 }}">
+															<i class="bi bi-trash"></i>
+														</button>
+														<input type="checkbox" name="detallecompra_set-{{ forloop.counter0 }}-DELETE" style="display: none;">
+													</td>
+												</tr>
+												{% endfor %}
+											</tbody>
+											<tfoot>
+												<tr>
+													<td colspan="100%">
+														<div class="row align-items-center g-2 py-2" style="background-color: #f8f9fa; border-top: 2px solid #dee2e6;">
+															<div class="col-md-2">
+																<div class="d-flex flex-column gap-2">
+																	<button type="submit" class="btn btn-outline-success btn-sm">
+																		{% if is_edit %}Actualizar{% else %}Guardar{% endif %}
+																		<i class="bi bi-floppy"></i>
+																	</button>
+																	<a href="{% url 'compra_list' %}" class="btn btn-outline-secondary btn-sm">
+																		Cancelar
+																		<i class="bi bi-x-circle"></i>
+																	</a>
+																</div>
+															</div>
+															<div class="col-md-2">
+																<div class="text-center">
+																	<label class="form-label mb-0 text-primary"><strong>Gravado</strong></label>
+																	<div>
+																		{{ form.gravado }}
+																		<span class="formatted-number">{{ form.gravado.value|default:"0.00" }}</span>
+																	</div>
+																</div>
+															</div>
+															<div class="col-md-2">
+																<div class="text-center">
+																	<label class="form-label mb-0 text-primary"><strong>Exento</strong></label>
+																	<div>
+																		{{ form.exento }}
+																		<span class="formatted-number">{{ form.exento.value|default:"0.00" }}</span>
+																	</div>
+																</div>
+															</div>
+															<div class="col-md-2">
+																<div class="text-center">
+																	<label class="form-label mb-0 text-primary"><strong>IVA</strong></label>
+																	<div>
+																		{{ form.iva }}
+																		<span class="formatted-number">{{ form.iva.value|default:"0.00" }}</span>
+																	</div>
+																</div>
+															</div>
+															<div class="col-md-2">
+																<div class="text-center">
+																	<label class="form-label mb-0 text-primary"><strong>Total</strong></label>
+																	<div>
+																		{{ form.total }}
+																		<span class="formatted-number">{{ form.total.value|default:"0.00" }}</span>
+																	</div>
+																</div>
+															</div>
+														</div>
+													</td>
+												</tr>
+											</tfoot>
+										</table>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</form>
+			</div>
+		</main>
+	</div>
 {% endblock maincomponent %}
 
 {% block modals %}
+    {{ block.super }}
+	
     <!-- Modal para Buscar Producto -->
     <div class="modal fade" id="detalleModal" tabindex="-1" aria-labelledby="detalleModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl" style="max-width: 90%;">

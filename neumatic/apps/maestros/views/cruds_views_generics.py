@@ -124,21 +124,9 @@ class MaestroCreateView(PermissionRequiredMixin, CreateView):
 		
 		except Exception as e:
 			#-- Captura el error de transacción.
-			# context = self.get_context_data(form)
 			context = self.get_context_data(form=form)
-			context['data_has_erors'] = True
 			context['transaction_error'] = str(e)
 			return self.render_to_response(context)
-	
-	def form_invalid(self, form):
-		"""
-		Si el formulario no es válido, renderiza el formulario con los errores.
-		"""
-		
-		context = self.get_context_data(form=form)
-		context['data_has_errors'] = True
-		
-		return self.render_to_response(context)
 	
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
@@ -148,10 +136,6 @@ class MaestroCreateView(PermissionRequiredMixin, CreateView):
 			"accion": f"Crear {self.model._meta.verbose_name}",
 			"list_view_name": self.list_view_name,
 		})		
-		
-		#-- Controlar mostrar o no el modal con los errors de validación.
-		#-- Inicialmente, no hay errores.
-		context['data_has_errors'] = False
 		
 		#-- Asegurarse de que el formulario en el contexto sea el mismo que se validó
 		context['form'] = self.get_form()
@@ -194,18 +178,6 @@ class MaestroUpdateView(PermissionRequiredMixin, UpdateView):
 		
 		return super().form_valid(form)
 	
-	def form_invalid(self, form):
-		"""
-		Si el formulario no es válido, renderiza el formulario con los errores.
-		"""
-		
-		#-- Establecer el contexto con la información sobre errores.
-		context = self.get_context_data(form=form)
-		#-- Indicar que hay errores.
-		context['data_has_errors'] = True
-		
-		return self.render_to_response(context)
-	
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
 		
@@ -217,10 +189,6 @@ class MaestroUpdateView(PermissionRequiredMixin, UpdateView):
 			"accion": f"Editar {self.model._meta.verbose_name} - {registro.pk}",
 			"list_view_name": self.list_view_name,
 		})
-		
-		#-- Controlar mostrar o no el modal con los errors de validación.
-		#-- Inicialmente, no hay errores.
-		context['data_has_errors'] = False
 		
 		#-- Asegurarse de que el formulario en el contexto sea el mismo que se validó
 		context['form'] = self.get_form()

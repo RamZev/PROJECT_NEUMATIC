@@ -1,3 +1,4 @@
+<!-- neumatic\apps\maestros\templates\maestros\cliente_form.html -->
 {% extends 'maestro_form.html' %}
 {% load static %}
 <!-- -------------------------------------------------------------------- -->
@@ -354,9 +355,12 @@
 	{% endblock principalcomponent %}
 {% endblock maincomponent %}
 
-<!-- Block ModalS -------------------------------------------------------- -->
+<!-- Block Modals -------------------------------------------------------- -->
 {% block modals %}
 	{{ block.super }}
+	
+	<!-- Modal para mostrar los requerimientos de los campos -->
+	{% include 'maestros/modal_fields_requirements.html' %}
 	
 	<!-- Modal que muestra aviso de CUIT encontrado -->
 	<div class="modal fade" id="alertModal" tabindex="-1" aria-labelledby="alertModalLabel" aria-hidden="true">
@@ -377,6 +381,7 @@
 	</div>
 {% endblock modals %}
 
+<!-- Block script -------------------------------------------------------- -->
 {% block script %}
 	{{ block.super }}
 	<script>

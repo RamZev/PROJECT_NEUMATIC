@@ -1,3 +1,4 @@
+<!-- neumatic\apps\maestros\templates\maestros\empresa_form.html -->
 {% extends 'maestro_form.html' %}
 {% load static %}
 <!-- -------------------------------------------------------------------- -->
@@ -322,6 +323,15 @@
 	{% endblock principalcomponent %}
 {% endblock maincomponent %}
 
+<!-- Block Modals -------------------------------------------------------- -->
+{% block modals %}
+	{{ block.super }}
+	
+	<!-- Modal para mostrar los requerimientos de los campos -->
+	{% include 'maestros/modal_fields_requirements.html' %}
+{% endblock modals %}
+
+<!-- Block script -------------------------------------------------------- -->
 {% block script %}
 	{{ block.super }}
 	<script>
