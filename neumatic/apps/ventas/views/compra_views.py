@@ -149,7 +149,6 @@ class CompraCreateView(MaestroDetalleCreateView):
             for c in ComprobanteCompra.objects.all()
         }
         data['comprobante_codigos'] = json.dumps(comprobante_codigos)
-        data['data_has_erors'] = False
 
 
         # Si necesitas datos de ComprobanteCompra, descomenta:
@@ -225,8 +224,6 @@ class CompraCreateView(MaestroDetalleCreateView):
             print("Errores del formset detalle:")
             for i, form_d in enumerate(formset_detalle):
                 print(f"Form {i}:", form_d.errors)
-
-        context['data_has_erors'] = True
 
         return super().form_invalid(form)
 
