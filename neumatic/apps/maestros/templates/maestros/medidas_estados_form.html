@@ -196,17 +196,18 @@
 	{{ block.super }}
 	
 	<script>
+		//== Funcionalidad para mostrar buscar y mostrar los datos dle CAI seleccionado. ==
 		document.addEventListener('DOMContentLoaded', function() {
 			const caiSelect = document.getElementById('id_id_cai');
 			const medidaDisplay = document.getElementById('medida-display');
 			const nombreProductoDisplay = document.getElementById('nombre-producto-display');
 			
-			// Función para cargar los datos del CAI seleccionado.
+			//-- Función para cargar los datos del CAI seleccionado.
 			function cargarDatosCAI() {
 				const caiId = caiSelect.value;
 				
 				if (caiId) {
-					// Hacer una petición AJAX para obtener los datos del CAI.
+					//-- Hacer una petición AJAX para obtener los datos del CAI.
 					fetch(`{% url 'cai-datos-api' 0 %}`.replace('0', caiId))
 						.then(response => {
 							if (!response.ok) {
@@ -229,15 +230,15 @@
 				}
 			}
 			
-			// Cargar datos cuando cambia la selección.
+			//-- Cargar datos cuando cambia la selección.
 			caiSelect.addEventListener('change', cargarDatosCAI);
 			
-			// Cargar datos inicialmente si ya hay un valor seleccionado (en modo edición).
+			//-- Cargar datos inicialmente si ya hay un valor seleccionado (en modo edición).
 			if (caiSelect.value) {
 				cargarDatosCAI();
 			}
 			
-			//-- Función para actualizar los campos de solo lectura. ------------------------------------------
+			//-- Función para actualizar los campos de solo lectura.
 			function actualizarCamposSoloLectura() {
 				const stockDesde = document.getElementById('id_stock_desde');
 				const stockHasta = document.getElementById('id_stock_hasta');
@@ -252,15 +253,14 @@
 					stockHastaDisplay.value = stockHasta.value;
 				}
 			}
-
-			// Actualizar cuando cambien los valores
+			
+			//-- Actualizar cuando cambien los valores.
 			document.getElementById('id_stock_desde').addEventListener('input', actualizarCamposSoloLectura);
 			document.getElementById('id_stock_hasta').addEventListener('input', actualizarCamposSoloLectura);
-
-			// Actualizar al cargar la página (para modo edición).
-			actualizarCamposSoloLectura();
-			//-------------------------------------------------------------------------------------------------
 			
+			//-- Actualizar al cargar la página (para modo edición).
+			actualizarCamposSoloLectura();
+			//=================================================================================
 		});
 	</script>
 {% endblock script %}

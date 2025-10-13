@@ -1039,6 +1039,9 @@ class MedidasEstados(ModeloBaseGenerico):
 		verbose_name = 'Estado por Medida'
 		verbose_name_plural = 'Estados por Medidas'
 	
+	def __str__(self):
+		return f"{self.id_cai} - {self.medida} - {self.nombre_producto}"
+	
 	def clean(self):
 		super().clean()
 		

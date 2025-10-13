@@ -1,3 +1,4 @@
+<!-- neumatic\apps\maestros\templates\maestros\maestro_list.html -->
 {% extends 'base.html' %}
 {% load static %}
 
@@ -39,8 +40,6 @@
 	}
 {% endblock style %}
 
-{% debug %}
-
 <!-- Block Header -->
 {% block header %}
 	{% include 'top_nav.html' %}
@@ -56,7 +55,7 @@
 	
 	{% block maincomponent %}
 	<!-- Main Component Start -->
-			
+		
 		<!-- Main principalcomponent Start -->
 		{% block principalcomponent %}
 		<div id="layoutSidenav_content">
@@ -179,7 +178,7 @@
 {% block modals %}
 	<!-- Modal para confirmar eliminación -->
 	<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
-		<div class="modal-dialog d-flex align-items-center">
+		<div class="modal-dialog modal-lg d-flex align-items-center">
 			<div class="modal-content border border-white">
 				<div class="modal-header bg-primary bg-opacity-25">
 					<h1 class="modal-title fs-5" id="deleteModalLabel">Confirmar Eliminación</h1>
@@ -205,10 +204,10 @@
 		<div class="modal-dialog">
 			<div class="modal-content">
 				<div class="modal-header bg-danger bg-opacity-25">
-					<h5 class="modal-title" id="errorModalLabel">Error</h5>
+					<h5 class="modal-title text-danger" id="errorModalLabel">Atención!</h5>
 					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 				</div>
-				<div class="modal-body" id="errorModalBody">
+				<div class="modal-body text-danger" id="errorModalBody">
 					<!-- Aquí se mostrará el mensaje de error -->
 				</div>
 				<div class="modal-footer">
@@ -221,30 +220,30 @@
 
 {% block script %}
 	<script>
-		var exampleModal = document.getElementById('deleteModal')
+		//== Funcionalidad para mostrar el modal de confirmación de eliminación en la lista. ==
+		const exampleModal = document.getElementById('deleteModal')
 		exampleModal.addEventListener('show.bs.modal', function (event) {
-			var button = event.relatedTarget
-			var recipient = button.getAttribute('data-bs-whatever-name')
-			var url = button.getAttribute('data-bs-whatever-url')
+			const button = event.relatedTarget
+			const recipient = button.getAttribute('data-bs-whatever-name')
+			const url = button.getAttribute('data-bs-whatever-url')
+			const modalBodyInput = exampleModal.querySelector('.modal-body strong')
+			const form = exampleModal.querySelector('#deleteForm')
 			
-			var modalTitle = exampleModal.querySelector('.modal-title')
-			var modalBodyInput = exampleModal.querySelector('.modal-body strong')
-			var form = exampleModal.querySelector('#deleteForm')
-			
-			modalTitle.textContent = 'Eliminar ' + recipient
 			modalBodyInput.textContent = recipient
 			form.action = url
 		})
 		
-		// Obtener el mensaje de error de la cola de mensajes de Django
+		//-- Mostrar modal errorModal si el usuario no tiene los permisos para la acción. 
+		//-- Obtener el mensaje de error de la cola de mensajes de Django.
 		const errorMessage = "{% if messages %}{% for message in messages %}{{ message }}{% if not forloop.last %}<br>{% endif %}{% endfor %}{% else %} {% endif %}";
-		// Verificar si hay un mensaje de error
+		//-- Verificar si hay un mensaje de error.
 		if (errorMessage.trim() !== '') {
-			// Mostrar el modal con el mensaje de error
+			//-- Mostrar el modal con el mensaje de error.
 			const modal = new bootstrap.Modal(document.getElementById('errorModal'));
 			document.getElementById('errorModalBody').innerText = errorMessage;
 			modal.show();
 		}
+		//=====================================================================================
 	</script>
 	
 {% endblock script %}
