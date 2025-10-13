@@ -187,10 +187,19 @@ class CompraForm(GenericForm):
 			)
 			
 			if queryset.exists():
-				# existente = queryset.first()
-				print(f"***El Número de comprobante ya existe: {numero}")
-				errors['numero_comprobante'] = "El Número de comprobante ya existe."
-				
+				comprobante_existente = queryset.first()
+				print(f"***Comprobante duplicado: {compro} {letra} {numero}")
+
+				 # ✅ Error general (no asociado a campo específico)
+				if '__all__' not in errors:
+					errors['__all__'] = []
+
+				errors['__all__'].append(
+					f"Comprobante {compro} {letra} {numero} ya existe. "
+					f"Proveedor: {comprobante_existente.id_proveedor} - "
+					f"Fecha: {comprobante_existente.fecha_comprobante.strftime('%d/%m/%Y')}"
+				)
+
 		
 		#-- Si hay errores de validación, lanzar la excepción para que se agreguen al contexto.
 		if errors:

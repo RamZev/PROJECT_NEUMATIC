@@ -126,3 +126,71 @@ RESUMEN FINAL:
 2025-09-06 23:08:26,735 - INFO - Enteros inválidos (NUMERO): 0
 2025-09-06 23:08:26,735 - INFO - Otros errores: 0
 2025-09-06 23:08:26,736 - INFO - Tasa de éxito: 0.00%
+2025-10-13 11:55:32,608 - INFO - Eliminados 0 registros existentes
+2025-10-13 11:55:56,279 - INFO - Eliminados 0 registros existentes
+2025-10-13 11:55:56,282 - INFO - Cargando cache de relaciones...
+2025-10-13 11:56:04,920 - INFO - Lote guardado: 1000 registros
+2025-10-13 11:56:05,161 - INFO - Lote guardado: 1000 registros
+2025-10-13 11:56:05,394 - INFO - Lote guardado: 1000 registros
+2025-10-13 11:56:05,611 - INFO - Lote guardado: 1000 registros
+2025-10-13 11:56:05,844 - INFO - Lote guardado: 1000 registros
+2025-10-13 11:56:06,078 - INFO - Lote guardado: 1000 registros
+2025-10-13 11:56:06,133 - ERROR - Error en lote: [<class 'decimal.InvalidOperation'>]
+2025-10-13 11:56:55,269 - INFO - Eliminados 6421 registros existentes
+2025-10-13 11:56:55,378 - INFO - Cargando cache de relaciones...
+2025-10-13 11:57:03,759 - INFO - Lote guardado: 1000 registros
+2025-10-13 11:57:03,992 - INFO - Lote guardado: 1000 registros
+2025-10-13 11:57:04,243 - INFO - Lote guardado: 1000 registros
+2025-10-13 11:57:04,493 - INFO - Lote guardado: 1000 registros
+2025-10-13 11:57:04,709 - INFO - Lote guardado: 1000 registros
+2025-10-13 11:57:04,942 - INFO - Lote guardado: 1000 registros
+2025-10-13 11:57:04,999 - ERROR - Error en lote: [<class 'decimal.InvalidOperation'>]
+2025-10-13 12:03:45,309 - INFO - Eliminados 6300 registros existentes
+2025-10-13 12:03:45,445 - INFO - Cargando cache de relaciones...
+2025-10-13 12:03:53,810 - INFO - Lote guardado: 1000 registros
+2025-10-13 12:03:54,035 - INFO - Lote guardado: 1000 registros
+2025-10-13 12:03:54,268 - INFO - Lote guardado: 1000 registros
+2025-10-13 12:03:54,498 - INFO - Lote guardado: 1000 registros
+2025-10-13 12:03:54,735 - INFO - Lote guardado: 1000 registros
+2025-10-13 12:03:54,969 - INFO - Lote guardado: 1000 registros
+2025-10-13 12:03:54,971 - WARNING - CANTIDAD excede límites: 131756 en registro ID 1569043
+2025-10-13 12:03:54,971 - WARNING - RETIRADO excede límites: 131756 en registro ID 1569043
+2025-10-13 12:03:55,023 - ERROR - Error en lote de 1000 registros: [<class 'decimal.InvalidOperation'>]
+2025-10-13 12:03:55,023 - ERROR - Último registro procesado: ID=1579734, CODIGO=140600
+2025-10-13 12:03:55,034 - INFO - Identificando registro problemático...
+2025-10-13 12:03:56,122 - ERROR - Registro problemático encontrado en posición 11:
+2025-10-13 12:03:56,122 - ERROR -   ID Factura: 1569043
+2025-10-13 12:03:56,122 - ERROR -   ID Producto: 180000
+2025-10-13 12:03:56,122 - ERROR -   Cantidad: 131756
+2025-10-13 12:03:56,122 - ERROR -   Retirado: 131756
+2025-10-13 12:03:56,122 - ERROR -   Fecha: 2024-11-25
+2025-10-13 12:03:56,122 - ERROR -   Número: 400003669
+2025-10-13 12:03:56,122 - ERROR -   Comentario: None
+2025-10-13 12:03:56,122 - ERROR -   Error específico: [<class 'decimal.InvalidOperation'>]
+2025-10-13 12:13:55,783 - INFO - Eliminados 6385 registros existentes
+2025-10-13 12:13:55,923 - INFO - Cargando cache de relaciones...
+2025-10-13 12:14:04,491 - INFO - Lote guardado: 1000 registros
+2025-10-13 12:14:04,738 - INFO - Lote guardado: 1000 registros
+2025-10-13 12:14:04,963 - INFO - Lote guardado: 1000 registros
+2025-10-13 12:14:05,253 - INFO - Lote guardado: 1000 registros
+2025-10-13 12:14:05,488 - INFO - Lote guardado: 1000 registros
+2025-10-13 12:14:05,754 - INFO - Lote guardado: 1000 registros
+2025-10-13 12:14:06,001 - INFO - Lote guardado: 1000 registros
+2025-10-13 12:14:06,254 - INFO - Lote guardado: 1000 registros
+2025-10-13 12:14:06,523 - INFO - Lote guardado: 1000 registros
+2025-10-13 12:14:06,770 - INFO - Lote guardado: 1000 registros
+2025-10-13 12:14:07,008 - INFO - Lote guardado: 1000 registros
+2025-10-13 12:14:07,254 - INFO - Lote guardado: 1000 registros
+2025-10-13 12:14:07,687 - INFO - Lote guardado: 1000 registros
+2025-10-13 12:14:07,921 - INFO - Último lote guardado: 961 registros
+2025-10-13 12:14:07,921 - INFO - 
+RESUMEN FINAL:
+2025-10-13 12:14:07,922 - INFO - Total registros procesados: 13961
+2025-10-13 12:14:07,922 - INFO - Registros migrados exitosamente: 13961
+2025-10-13 12:14:07,922 - INFO - Facturas no encontradas: 0
+2025-10-13 12:14:07,922 - INFO - Productos no encontrados: 0
+2025-10-13 12:14:07,922 - INFO - Decimales inválidos (RETIRADO): 0
+2025-10-13 12:14:07,923 - INFO - Fechas inválidas: 0
+2025-10-13 12:14:07,923 - INFO - Enteros inválidos (NUMERO): 0
+2025-10-13 12:14:07,923 - INFO - Otros errores: 0
+2025-10-13 12:14:07,923 - INFO - Tasa de éxito: 100.00%

@@ -116,9 +116,11 @@ def cargar_datos():
             
             if not factura:
                 counters['facturas_no_encontradas'] += 1
+                logger.warning(f"Factura no encontrada: ID {record['ID']}")
                 continue
             if not producto:
                 counters['productos_no_encontrados'] += 1
+                logger.warning(f"Producto no encontrado: CODIGO {record['CODIGO']}")
                 continue
             
             # Convertir valores con manejo de nulos
@@ -135,8 +137,8 @@ def cargar_datos():
             if numero is None and record.get('NUMERO') not in [None, '']:
                 counters['enteros_invalidos'] += 1
             
-            # Preparar registro
-            batch.append(StockCliente(
+            # Crear instancia y validar antes de agregar al batch
+            stock_item = StockCliente(
                 id_factura=factura,
                 id_producto=producto,
                 cantidad=cantidad,
@@ -144,7 +146,22 @@ def cargar_datos():
                 fecha_retiro=fecha,
                 numero=numero,
                 comentario=record.get('COMENTARIO', '').strip() or None
-            ))
+            )
+            
+            # Validación adicional: verificar que los valores Decimal estén dentro de los límites del modelo
+            if cantidad is not None:
+                # Validar que no exceda max_digits=7, decimal_places=2
+                if abs(cantidad) > Decimal('99999.99'):
+                    logger.warning(f"CANTIDAD excede límites: {cantidad} en registro ID {record_id}")
+                    cantidad = None
+            
+            if retirado is not None:
+                # Validar que no exceda max_digits=7, decimal_places=2
+                if abs(retirado) > Decimal('99999.99'):
+                    logger.warning(f"RETIRADO excede límites: {retirado} en registro ID {record_id}")
+                    retirado = None
+            
+            batch.append(stock_item)
             
             # Procesar lote completo
             if len(batch) >= batch_size:
@@ -155,20 +172,37 @@ def cargar_datos():
                     logger.info(f"Lote guardado: {len(batch)} registros")
                     batch = []
                 except Exception as e:
-                    logger.error(f"Error en lote: {str(e)}")
-                    # Reintentar registro por registro
-                    for item in batch:
+                    logger.error(f"Error en lote de {len(batch)} registros: {str(e)}")
+                    logger.error(f"Último registro procesado: ID={record_id}, CODIGO={record.get('CODIGO')}")
+                    
+                    # Probar registro por registro para identificar el problema
+                    logger.info("Identificando registro problemático...")
+                    problematic_record = None
+                    for i, item in enumerate(batch):
                         try:
+                            # Intentar guardar individualmente
                             with transaction.atomic():
                                 item.save()
                             counters['exitosos'] += 1
-                        except Exception:
+                        except Exception as individual_error:
+                            problematic_record = i
+                            logger.error(f"Registro problemático encontrado en posición {i}:")
+                            logger.error(f"  ID Factura: {item.id_factura.id_factura if item.id_factura else 'None'}")
+                            logger.error(f"  ID Producto: {item.id_producto.id_producto if item.id_producto else 'None'}")
+                            logger.error(f"  Cantidad: {item.cantidad}")
+                            logger.error(f"  Retirado: {item.retirado}")
+                            logger.error(f"  Fecha: {item.fecha_retiro}")
+                            logger.error(f"  Número: {item.numero}")
+                            logger.error(f"  Comentario: {item.comentario}")
+                            logger.error(f"  Error específico: {str(individual_error)}")
                             counters['otros_errores'] += 1
-                    batch = []
+                    
+                    batch = []  # Limpiar el lote después del error
                     
         except Exception as e:
             counters['otros_errores'] += 1
             logger.error(f"Error procesando registro {record_id}: {str(e)}")
+            logger.error(f"Datos del registro: {record}")
             continue
 
     # Procesar último lote
@@ -177,14 +211,21 @@ def cargar_datos():
             with transaction.atomic():
                 StockCliente.objects.bulk_create(batch)
             counters['exitosos'] += len(batch)
-        except Exception:
+            logger.info(f"Último lote guardado: {len(batch)} registros")
+        except Exception as e:
+            logger.error(f"Error en último lote: {str(e)}")
+            # Guardar individualmente los registros restantes
             for item in batch:
                 try:
                     with transaction.atomic():
                         item.save()
                     counters['exitosos'] += 1
-                except Exception:
+                except Exception as individual_error:
                     counters['otros_errores'] += 1
+                    logger.error(f"Error guardando registro individual:")
+                    logger.error(f"  ID Factura: {item.id_factura.id_factura if item.id_factura else 'None'}")
+                    logger.error(f"  ID Producto: {item.id_producto.id_producto if item.id_producto else 'None'}")
+                    logger.error(f"  Error: {str(individual_error)}")
 
     # Resumen final
     logger.info("\nRESUMEN FINAL:")
@@ -196,7 +237,11 @@ def cargar_datos():
     logger.info(f"Fechas inválidas: {counters['fechas_invalidas']}")
     logger.info(f"Enteros inválidos (NUMERO): {counters['enteros_invalidos']}")
     logger.info(f"Otros errores: {counters['otros_errores']}")
-    logger.info(f"Tasa de éxito: {counters['exitosos']/counters['total']*100:.2f}%")
+    
+    if counters['total'] > 0:
+        logger.info(f"Tasa de éxito: {counters['exitosos']/counters['total']*100:.2f}%")
+    else:
+        logger.info("Tasa de éxito: 0%")
 
 if __name__ == '__main__':
     cargar_datos()
