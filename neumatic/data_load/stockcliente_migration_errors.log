@@ -194,3 +194,51 @@ RESUMEN FINAL:
 2025-10-13 12:14:07,923 - INFO - Enteros inválidos (NUMERO): 0
 2025-10-13 12:14:07,923 - INFO - Otros errores: 0
 2025-10-13 12:14:07,923 - INFO - Tasa de éxito: 100.00%
+2025-10-13 13:23:39,130 - INFO - Eliminados 0 registros existentes
+2025-10-13 13:23:39,148 - INFO - Cargando cache de relaciones...
+2025-10-13 13:23:48,660 - INFO - Lote guardado: 1000 registros
+2025-10-13 13:23:48,997 - INFO - Lote guardado: 1000 registros
+2025-10-13 13:23:49,336 - INFO - Lote guardado: 1000 registros
+2025-10-13 13:23:49,702 - INFO - Lote guardado: 1000 registros
+2025-10-13 13:23:50,036 - INFO - Lote guardado: 1000 registros
+2025-10-13 13:23:50,398 - INFO - Lote guardado: 1000 registros
+2025-10-13 13:23:50,398 - WARNING - CANTIDAD excede límites: 131756 en registro ID 1569043
+2025-10-13 13:23:50,398 - WARNING - RETIRADO excede límites: 131756 en registro ID 1569043
+2025-10-13 13:23:50,462 - ERROR - Error en lote de 1000 registros: [<class 'decimal.InvalidOperation'>]
+2025-10-13 13:23:50,463 - ERROR - Último registro procesado: ID=1579734, CODIGO=140600
+2025-10-13 13:23:50,463 - INFO - Identificando registro problemático...
+2025-10-13 13:23:52,276 - ERROR - Registro problemático encontrado en posición 11:
+2025-10-13 13:23:52,276 - ERROR -   ID Factura: 1569043
+2025-10-13 13:23:52,276 - ERROR -   ID Producto: 180000
+2025-10-13 13:23:52,276 - ERROR -   Cantidad: 131756
+2025-10-13 13:23:52,276 - ERROR -   Retirado: 131756
+2025-10-13 13:23:52,276 - ERROR -   Fecha: 2024-11-25
+2025-10-13 13:23:52,276 - ERROR -   Número: 400003669
+2025-10-13 13:23:52,276 - ERROR -   Comentario: None
+2025-10-13 13:23:52,276 - ERROR -   Error específico: [<class 'decimal.InvalidOperation'>]
+2025-10-13 13:28:24,050 - INFO - Eliminados 6303 registros existentes
+2025-10-13 13:28:24,219 - INFO - Cargando cache de relaciones...
+2025-10-13 13:28:33,801 - INFO - Lote guardado: 1000 registros
+2025-10-13 13:28:34,162 - INFO - Lote guardado: 1000 registros
+2025-10-13 13:28:34,499 - INFO - Lote guardado: 1000 registros
+2025-10-13 13:28:34,822 - INFO - Lote guardado: 1000 registros
+2025-10-13 13:28:35,152 - INFO - Lote guardado: 1000 registros
+2025-10-13 13:28:35,517 - INFO - Lote guardado: 1000 registros
+2025-10-13 13:28:35,867 - INFO - Lote guardado: 1000 registros
+2025-10-13 13:28:36,262 - INFO - Lote guardado: 1000 registros
+2025-10-13 13:28:36,642 - INFO - Lote guardado: 1000 registros
+2025-10-13 13:28:37,002 - INFO - Lote guardado: 1000 registros
+2025-10-13 13:28:37,402 - INFO - Lote guardado: 1000 registros
+2025-10-13 13:28:37,791 - INFO - Lote guardado: 1000 registros
+2025-10-13 13:28:38,511 - INFO - Último lote guardado: 943 registros
+2025-10-13 13:28:38,511 - INFO - 
+RESUMEN FINAL:
+2025-10-13 13:28:38,511 - INFO - Total registros procesados: 12943
+2025-10-13 13:28:38,511 - INFO - Registros migrados exitosamente: 12943
+2025-10-13 13:28:38,511 - INFO - Facturas no encontradas: 0
+2025-10-13 13:28:38,520 - INFO - Productos no encontrados: 0
+2025-10-13 13:28:38,520 - INFO - Decimales inválidos (RETIRADO): 0
+2025-10-13 13:28:38,522 - INFO - Fechas inválidas: 0
+2025-10-13 13:28:38,522 - INFO - Enteros inválidos (NUMERO): 0
+2025-10-13 13:28:38,522 - INFO - Otros errores: 0
+2025-10-13 13:28:38,524 - INFO - Tasa de éxito: 100.00%

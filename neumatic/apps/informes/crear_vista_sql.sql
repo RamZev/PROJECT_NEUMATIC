@@ -1501,4 +1501,35 @@ CREATE VIEW VLReposicionStock AS
 	SELECT 1 AS dummy;
 
 
+-- ---------------------------------------------------------------------------
+-- Movimiento Interno de Stock.
+-- Modelo: VLMovimientoInternoStock
+-- ---------------------------------------------------------------------------
+DROP VIEW IF EXISTS "main"."VLMovimientoInternoStock";
+CREATE VIEW VLMovimientoInternoStock AS
+	SELECT
+		ROW_NUMBER() OVER() AS id,
+		f.fecha_comprobante,
+		f.numero_comprobante,
+		--(SUBSTR(printf('%012d', f.numero_comprobante), 1, 4) || '-' || SUBSTR(printf('%012d', f.numero_comprobante), 5)) AS comprobante, 
+		(f.compro || '  ' || f.letra_comprobante || '  ' || SUBSTR(printf('%012d', f.numero_comprobante), 1, 4) || '-' || SUBSTR(printf('%012d', f.numero_comprobante), 5)) AS comprobante,
+		f.observa_comprobante,
+		df.id_producto_id,
+		p.medida,
+		p.id_marca_id,
+		pm.nombre_producto_marca,
+		p.nombre_producto,
+		df.cantidad,
+		f.id_deposito_id
+	FROM
+		detalle_factura df
+		INNER JOIN factura f ON df.id_factura_id = f.id_factura
+		INNER JOIN producto p ON df.id_producto_id = p.id_producto
+		INNER JOIN producto_marca pm ON p.id_marca_id = pm.id_producto_marca
+		INNER JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
+	WHERE
+		cv.interno = 1
+	ORDER by
+		f.fecha_comprobante, f.numero_comprobante;
+
 

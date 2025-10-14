@@ -87,6 +87,7 @@ from apps.informes.views.vlstockgeneralsucursal_list_views import *
 # from apps.informes.views.vlstockfecha_list_views import *
 from apps.informes.views.vlstockunico_list_views import *
 from apps.informes.views.vlreposicionstock_list_views import *
+from apps.informes.views.vlmovimientointernostock_list_views import *
 
 
 
@@ -848,6 +849,18 @@ urlpatterns = [
 		 name="vlreposicionstock_vista_excel"),
 	path("vlreposicionstock/vista-csv/", vlreposicionstock_vista_csv, 
 		 name="vlreposicionstock_vista_csv"),
+	
+	#-- VL Movimiento Interno de Stock.
+	path('vlmovimientointernostock_informe/', VLMovimientoInternoStockInformeView.as_view(), 
+		 name='vlmovimientointernostock_informe_list'),
+	path('vlmovimientointernostock/vista-preliminar/', vlmovimientointernostock_vista_pantalla, 
+		 name="vlmovimientointernostock_vista_pantalla"),
+	path("vlmovimientointernostock/vista-pdf/", vlmovimientointernostock_vista_pdf, 
+		 name="vlmovimientointernostock_vista_pdf"),
+	path("vlmovimientointernostock/vista-excel/", vlmovimientointernostock_vista_excel, 
+		 name="vlmovimientointernostock_vista_excel"),
+	path("vlmovimientointernostock/vista-csv/", vlmovimientointernostock_vista_csv, 
+		 name="vlmovimientointernostock_vista_csv"),
 	
 	
 	
