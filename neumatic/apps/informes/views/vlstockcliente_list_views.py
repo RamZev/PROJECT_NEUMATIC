@@ -1,4 +1,4 @@
-# neumatic\apps\informes\views\vlmovimientointernostock_list_views.py
+# neumatic\apps\informes\views\vlstockcliente_list_views.py
 
 from django.urls import reverse_lazy
 from django.shortcuts import render
@@ -11,22 +11,22 @@ from reportlab.lib.pagesizes import A4, landscape, portrait
 from reportlab.platypus import Paragraph
 
 from .report_views_generics import *
-from apps.informes.models import VLMovimientoInternoStock
-from ..forms.buscador_vlmovimientointernostock_forms import BuscadorMovimientoInternoStockForm
-from utils.utils import deserializar_datos, formato_argentino, normalizar
+from apps.informes.models import VLStockCliente
+from ..forms.buscador_vlstockcliente_forms import BuscadorStockClienteForm
+from utils.utils import deserializar_datos, formato_argentino, formato_argentino_entero, normalizar
 from utils.helpers.export_helpers import ExportHelper, PDFGenerator
 
 
 class ConfigViews:
 	
 	#-- Título del reporte.
-	report_title = "Movimiento Interno de Stock"
+	report_title = "Stock por Clientes en Depósitos"
 	
 	#-- Modelo.
-	model = VLMovimientoInternoStock
+	model = VLStockCliente
 	
 	#-- Formulario asociado al modelo.
-	form_class = BuscadorMovimientoInternoStockForm
+	form_class = BuscadorStockClienteForm
 	
 	#-- Aplicación asociada al modelo.
 	app_label = "informes"
@@ -69,23 +69,16 @@ class ConfigViews:
 	
 	#-- Establecer las columnas del reporte y sus atributos.
 	table_info = {
-		"fecha_comprobante": {
-			"label": "Fecha",
-			"col_width_pdf": 0,
+		"id_cliente_id": {
+			"label": "Cliente",
+			"col_width_pdf": 30,
 			"pdf": False,
 			"excel": True,
 			"csv": True
 		},
-		"comprobante": {
-			"label": "Comprobante",
-			"col_width_pdf": 0,
-			"pdf": False,
-			"excel": True,
-			"csv": True
-		},
-		"observa_comprobante": {
-			"label": "Observaciones",
-			"col_width_pdf": 0,
+		"nombre_cliente": {
+			"label": "Nombre",
+			"col_width_pdf": 180,
 			"pdf": False,
 			"excel": True,
 			"csv": True
@@ -99,28 +92,14 @@ class ConfigViews:
 		},
 		"medida": {
 			"label": "Medida",
-			"col_width_pdf": 50,
+			"col_width_pdf": 70,
 			"pdf": True,
 			"excel": True,
 			"csv": True
 		},
-		"id_marca_id": {
-			"label": "Id Marca",
-			"col_width_pdf": 0,
-			"pdf": False,
-			"excel": True,
-			"csv": True
-		},
-		"nombre_producto_marca": {
-			"label": "Marca",
-			"col_width_pdf": 180,
-			"pdf": True,
-			"excel": True,
-			"csv": True
-		},
-		"nombre_producto": {
-			"label": "Descripción",
-			"col_width_pdf": 200,
+		"cai": {
+			"label": "CAI",
+			"col_width_pdf": 100,
 			"pdf": True,
 			"excel": True,
 			"csv": True
@@ -132,10 +111,31 @@ class ConfigViews:
 			"excel": True,
 			"csv": True
 		},
+		"retirado": {
+			"label": "Retirado",
+			"col_width_pdf": 50,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
+		"stock": {
+			"label": "En Stock",
+			"col_width_pdf": 50,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
+		"comprobante": {
+			"label": "Comprobante",
+			"col_width_pdf": 120,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
 	}
 
 
-class VLMovimientoInternoStockInformeView(InformeFormView):
+class VLStockClienteInformeView(InformeFormView):
 	config = ConfigViews  #-- Ahora la configuración estará disponible en self.config.
 	form_class = ConfigViews.form_class
 	template_name = ConfigViews.template_list
@@ -151,13 +151,13 @@ class VLMovimientoInternoStockInformeView(InformeFormView):
 	}
 	
 	def obtener_queryset(self, cleaned_data):
-		deposito = cleaned_data.get("deposito", None)
-		fecha_desde = cleaned_data.get("fecha_desde")
-		fecha_hasta = cleaned_data.get("fecha_hasta")
+		sucursal = cleaned_data.get("sucursal", None)
+		vendedor = cleaned_data.get("vendedor", None)
 		
-		id_deposito = deposito.id_producto_deposito if deposito else None
+		id_sucursal = sucursal.id_sucursal if sucursal else None
+		id_vendedor = vendedor.id_vendedor if vendedor else None
 		
-		return VLMovimientoInternoStock.objects.obtener_datos(fecha_desde, fecha_hasta, id_deposito)
+		return VLStockCliente.objects.obtener_datos(id_sucursal, id_vendedor)
 	
 	def obtener_contexto_reporte(self, queryset, cleaned_data):
 		"""
@@ -166,14 +166,12 @@ class VLMovimientoInternoStockInformeView(InformeFormView):
 		"""
 		
 		#-- Parámetros del listado.
-		deposito = cleaned_data.get("deposito", None)
-		fecha_desde = cleaned_data.get("fecha_desde")
-		fecha_hasta = cleaned_data.get("fecha_hasta")
+		sucursal = cleaned_data.get("sucursal", None)
+		vendedor = cleaned_data.get("vendedor", None)
 		
 		param = {
-			"Depósito": deposito.nombre_producto_deposito if deposito else "Todos",
-			"Desde": fecha_desde.strftime("%d/%m/%Y"),
-			"Hasta": fecha_hasta.strftime("%d/%m/%Y"),
+			"Sucursal": sucursal.nombre_sucursal if sucursal else "Todas",
+			"Vendedor": vendedor.nombre_vendedor if vendedor else "Todos",
 		}
 		
 		fecha_hora_reporte = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
@@ -184,20 +182,18 @@ class VLMovimientoInternoStockInformeView(InformeFormView):
 		# **************************************************
 		#-- Estructura para agrupar datos por número de comprobante (optimizado).
 		#-- (Sin necesidad de serializar).
-		datos_por_comprobante = {}
+		datos_por_cliente = {}
 		
 		for obj in queryset:
-			#-- Identificar al comprobante.
-			comprobante = obj.comprobante
-			fecha = obj.fecha_comprobante
-			observacion = obj.observa_comprobante
+			#-- Identificar al Cliente.
+			id_cliente = obj.id_cliente_id
+			cliente = obj.nombre_cliente
 			
-			#-- Si el comprobante aún no está en el diccionario, se inicializa.
-			if comprobante not in datos_por_comprobante:
-				datos_por_comprobante[comprobante] = {
-					"comprobante": comprobante,
-					"fecha": fecha.strftime("%d/%m/%Y"),
-					"observacion": observacion,
+			#-- Si el cliente no está en el diccionario, se inicializa.
+			if id_cliente not in datos_por_cliente:
+				datos_por_cliente[id_cliente] = {
+					"id_cliente": id_cliente,
+					"cliente": cliente,
 					"detalle": [],
 				}
 			
@@ -205,18 +201,20 @@ class VLMovimientoInternoStockInformeView(InformeFormView):
 			detalle_data = {
 				"codigo": obj.id_producto_id,
 				"medida": obj.medida,
-				"marca": obj.nombre_producto_marca,
-				"descripcion": obj.nombre_producto,
+				"cai": obj.cai,
 				"cantidad": obj.cantidad,
+				"retirado": obj.retirado,
+				"stock": obj.stock,
+				"comprobante": obj.comprobante,
 			}
 			
 			#-- Agregar el detalle a la lista del comprobante.
-			datos_por_comprobante[comprobante]["detalle"].append(detalle_data)
+			datos_por_cliente[id_cliente]["detalle"].append(detalle_data)
 		# **************************************************
 		
 		#-- Se retorna un contexto que será consumido tanto para la vista en pantalla como para la generación del PDF.
 		return {
-			"objetos": datos_por_comprobante,
+			"objetos": datos_por_cliente,
 			"parametros": param,
 			'fecha_hora_reporte': fecha_hora_reporte,
 			'titulo': ConfigViews.report_title,
@@ -232,7 +230,7 @@ class VLMovimientoInternoStockInformeView(InformeFormView):
 		return context
 
 
-def vlmovimientointernostock_vista_pantalla(request):
+def vlstockcliente_vista_pantalla(request):
 	#-- Obtener el token de la querystring.
 	token = request.GET.get("token")
 	
@@ -249,7 +247,7 @@ def vlmovimientointernostock_vista_pantalla(request):
 	return render(request, ConfigViews.reporte_pantalla, contexto_reporte)
 
 
-def vlmovimientointernostock_vista_pdf(request):
+def vlstockcliente_vista_pdf(request):
 	#-- Obtener el token de la querystring.
 	token = request.GET.get("token")
 	
@@ -271,6 +269,7 @@ def vlmovimientointernostock_vista_pdf(request):
 	response["Content-Disposition"] = f'inline; filename="{normalizar(ConfigViews.report_title)}.pdf"'
 	
 	return response
+
 
 class CustomPDFGenerator(PDFGenerator):
 	#-- Método que se puede sobreescribir/extender según requerimientos.
@@ -305,6 +304,7 @@ class CustomPDFGenerator(PDFGenerator):
 	# 	"""
 	pass
 
+
 def generar_pdf(contexto_reporte):
 	#-- Crear instancia del generador personalizado.
 	generator = CustomPDFGenerator(contexto_reporte, pagesize=portrait(A4), body_font_size=7)
@@ -321,7 +321,7 @@ def generar_pdf(contexto_reporte):
 	
 	#-- Estilos específicos adicionales iniciales de la tabla.
 	table_style_config = [
-		('ALIGN', (4,0), (-1,-1), 'RIGHT'),
+		('ALIGN', (3,0), (5,-1), 'RIGHT'),
 	]
 	
 	#-- Contador de filas (empezamos en 1 porque la 0 es el header).
@@ -332,10 +332,10 @@ def generar_pdf(contexto_reporte):
 	objetos = contexto_reporte.get("objetos", {})
 	
 	for datos in objetos.values():
-		#-- Datos agrupado por.
+		#-- Datos agrupado por Cliente.
 		table_data.append([
-			f"{datos['fecha']} - {datos['comprobante']} - {datos['observacion']}",
-			"", "", "", ""
+			f"Cliente: [{datos['id_cliente']}] - {datos['cliente']}",
+			"", "", "", "", "", ""
 		])
 		
 		#-- Aplicar estilos a la fila de agrupación (fila actual).
@@ -352,16 +352,18 @@ def generar_pdf(contexto_reporte):
 			table_data.append([
 				detalle['codigo'],
 				detalle['medida'],
-				Paragraph(str(detalle['marca']), generator.styles['CellStyle']),
-				Paragraph(str(detalle['descripcion']), generator.styles['CellStyle']),
-				formato_argentino(detalle['cantidad']),
+				detalle['cai'],
+				formato_argentino_entero(detalle['cantidad']),
+				formato_argentino_entero(detalle['retirado']),
+				formato_argentino_entero(detalle['stock']),
+				detalle['comprobante'],
 			])
 			current_row += 1
 	
 	return generator.generate(table_data, col_widths, table_style_config)		
 
 
-def vlmovimientointernostock_vista_excel(request):
+def vlstockcliente_vista_excel(request):
 	token = request.GET.get("token")
 	if not token:
 		return HttpResponse("Token no proporcionado", status=400)
@@ -375,7 +377,7 @@ def vlmovimientointernostock_vista_excel(request):
 	# ---------------------------------------------
 	
 	#-- Instanciar la vista y obtener el queryset.
-	view_instance = VLMovimientoInternoStockInformeView()
+	view_instance = VLStockClienteInformeView()
 	view_instance.request = request
 	queryset = view_instance.obtener_queryset(cleaned_data)
 	
@@ -399,7 +401,7 @@ def vlmovimientointernostock_vista_excel(request):
 	return response
 
 
-def vlmovimientointernostock_vista_csv(request):
+def vlstockcliente_vista_csv(request):
 	token = request.GET.get("token")
 	if not token:
 		return HttpResponse("Token no proporcionado", status=400)
@@ -412,7 +414,7 @@ def vlmovimientointernostock_vista_csv(request):
 	cleaned_data = data["cleaned_data"]
 	
 	#-- Instanciar la vista para reejecutar la consulta y obtener el queryset.
-	view_instance = VLMovimientoInternoStockInformeView()
+	view_instance = VLStockClienteInformeView()
 	view_instance.request = request
 	queryset = view_instance.obtener_queryset(cleaned_data)
 	

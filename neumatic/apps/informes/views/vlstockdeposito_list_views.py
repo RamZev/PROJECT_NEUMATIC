@@ -1,11 +1,10 @@
-# neumatic\apps\informes\views\vlestadisticasventasmarca_list_views.py
+# neumatic\apps\informes\views\vlstockdeposito_list_views.py
 
 from django.urls import reverse_lazy
 from django.shortcuts import render
 from django.http import HttpResponse
 from datetime import datetime
 from django.templatetags.static import static
-from decimal import Decimal
 
 #-- ReportLab:
 from reportlab.lib import colors
@@ -13,23 +12,22 @@ from reportlab.lib.pagesizes import A4, landscape, portrait
 from reportlab.platypus import Paragraph
 
 from .report_views_generics import *
-from apps.informes.models import VLEstadisticasVentasMarca
-from apps.maestros.models.base_models import ProductoMarca
-from ..forms.buscador_vlestadisticasventasmarca_forms import BuscadorEstadisticasVentasMarcaForm
-from utils.utils import deserializar_datos, formato_argentino, normalizar, format_date
+from apps.informes.models import VLStockDeposito
+from ..forms.buscador_vlstockdeposito_forms import BuscadorStockDepositoForm
+from utils.utils import deserializar_datos, formato_argentino, formato_argentino_entero, normalizar
 from utils.helpers.export_helpers import ExportHelper, PDFGenerator
 
 
 class ConfigViews:
 	
 	#-- Título del reporte.
-	report_title = "Estadísticas de Ventas por Marca y Familia"
+	report_title = "Stock en Depósitos de Clientes"
 	
 	#-- Modelo.
-	model = VLEstadisticasVentasMarca
+	model = VLStockDeposito
 	
 	#-- Formulario asociado al modelo.
-	form_class = BuscadorEstadisticasVentasMarcaForm
+	form_class = BuscadorStockDepositoForm
 	
 	#-- Aplicación asociada al modelo.
 	app_label = "informes"
@@ -38,7 +36,7 @@ class ConfigViews:
 	model_string = model.__name__.lower()
 	
 	#-- Vistas del CRUD del modelo.
-	list_view_name = f"{model_string}_list"  # <== vlventacompro_list
+	list_view_name = f"{model_string}_list"
 	
 	#-- Plantilla base.
 	template_list = f'{app_label}/maestro_informe.html'
@@ -72,45 +70,31 @@ class ConfigViews:
 	
 	#-- Establecer las columnas del reporte y sus atributos.
 	table_info = {
-		"nombre_producto_marca": {
-			"label": "Marca",
-			"col_width_pdf": 75,
+		"id_familia_id": {
+			"label": "Id Familia",
+			"col_width_pdf": 0,
 			"pdf": False,
 			"excel": True,
 			"csv": True
 		},
 		"nombre_producto_familia": {
 			"label": "Familia",
-			"col_width_pdf": 75,
+			"col_width_pdf": 0,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+		"id_modelo_id": {
+			"label": "Id Modelo",
+			"col_width_pdf": 0,
 			"pdf": False,
 			"excel": True,
 			"csv": True
 		},
 		"nombre_modelo": {
 			"label": "Modelo",
-			"col_width_pdf": 75,
+			"col_width_pdf": 0,
 			"pdf": False,
-			"excel": True,
-			"csv": True
-		},
-		"comprobante": {
-			"label": "Comprobante",
-			"col_width_pdf": 80,
-			"pdf": True,
-			"excel": True,
-			"csv": True
-		},
-		"fecha_comprobante": {
-			"label": "Fecha",
-			"col_width_pdf": 50,
-			"pdf": True,
-			"excel": True,
-			"csv": True
-		},
-		"id_cliente_id": {
-			"label": "Cliente",
-			"col_width_pdf": 40,
-			"pdf": True,
 			"excel": True,
 			"csv": True
 		},
@@ -121,51 +105,44 @@ class ConfigViews:
 			"excel": True,
 			"csv": True
 		},
-		"nombre_producto": {
-			"label": "Descripción",
-			"col_width_pdf": 200,
-			"pdf": True,
-			"excel": True,
-			"csv": True
-		},
 		"medida": {
 			"label": "Medida",
+			"col_width_pdf": 70,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
+		"cai": {
+			"label": "CAI",
+			"col_width_pdf": 105,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
+		"nombre_producto": {
+			"label": "Descripción",
+			"col_width_pdf": 220,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
+		"id_marca_id": {
+			"label": "Id Marca",
+			"col_width_pdf": 0,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+		"nombre_producto_marca": {
+			"label": "Marca",
+			"col_width_pdf": 80,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
+		"stock": {
+			"label": "En Stock",
 			"col_width_pdf": 50,
-			"pdf": True,
-			"excel": True,
-			"csv": True
-		},
-		"cantidad": {
-			"label": "Cantidad",
-			"col_width_pdf": 50,
-			"pdf": True,
-			"excel": True,
-			"csv": True
-		},
-		"precio": {
-			"label": "Precio",
-			"col_width_pdf": 75,
-			"pdf": True,
-			"excel": True,
-			"csv": True
-		},
-		"descuento": {
-			"label": "Desc.",
-			"col_width_pdf": 50,
-			"pdf": True,
-			"excel": True,
-			"csv": True
-		},
-		"total": {
-			"label": "Total",
-			"col_width_pdf": 75,
-			"pdf": True,
-			"excel": True,
-			"csv": True
-		},
-		"compra": {
-			"label": "Compra",
-			"col_width_pdf": 75,
 			"pdf": True,
 			"excel": True,
 			"csv": True
@@ -173,7 +150,7 @@ class ConfigViews:
 	}
 
 
-class VLEstadisticasVentasMarcaInformeView(InformeFormView):
+class VLStockDepositoInformeView(InformeFormView):
 	config = ConfigViews  #-- Ahora la configuración estará disponible en self.config.
 	form_class = ConfigViews.form_class
 	template_name = ConfigViews.template_list
@@ -189,125 +166,81 @@ class VLEstadisticasVentasMarcaInformeView(InformeFormView):
 	}
 	
 	def obtener_queryset(self, cleaned_data):
-		sucursal = cleaned_data.get('sucursal', None)
-		marca = cleaned_data.get('marca', None)
-		fecha_desde = cleaned_data.get('fecha_desde')
-		fecha_hasta = cleaned_data.get('fecha_hasta')
+		sucursal = cleaned_data.get("sucursal", None)
 		
 		id_sucursal = sucursal.id_sucursal if sucursal else None
-		id_marca = marca.id_producto_marca if marca else None
 		
-		queryset = VLEstadisticasVentasMarca.objects.obtener_datos(
-			id_marca,
-			fecha_desde,
-			fecha_hasta,
-			id_sucursal=id_sucursal
-		)
-		
-		return queryset
+		return VLStockDeposito.objects.obtener_datos(id_sucursal)
 	
 	def obtener_contexto_reporte(self, queryset, cleaned_data):
 		"""
-		Aquí se estructura el contexto para el reporte, agrupando los comprobantes,
-		calculando subtotales y totales generales, tal como se requiere para el listado.
+		Aquí se estructura el contexto para el reporte, agrupando, calculando subtotales y totales generales, etc,
+		tal como se requiere para el listado.
 		"""
 		
 		#-- Parámetros del listado.
-		sucursal = cleaned_data.get('sucursal', None)
-		marca = cleaned_data.get('marca', None)
-		fecha_desde = cleaned_data.get('fecha_desde')
-		fecha_hasta = cleaned_data.get('fecha_hasta')
+		sucursal = cleaned_data.get("sucursal", None)
 		
-		marca = ProductoMarca.objects.filter(pk=marca.id_producto_marca).first() if marca else None
+		param_left = {}
+		param_right = {
+			"Sucursal": sucursal.nombre_sucursal if sucursal else "Todas",
+		}
 		
 		fecha_hora_reporte = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
 		
 		dominio = f"http://{self.request.get_host()}"
 		
-		param_left = {
-			"Sucursal": sucursal.nombre_sucursal if sucursal else "Todas",
-			"Marca": marca.nombre_producto_marca if marca else "Todas",
-		}
-		param_right = {
-			"Desde": fecha_desde.strftime("%d/%m/%Y"),
-			"Hasta": fecha_hasta.strftime("%d/%m/%Y")
-		}
 		
 		# **************************************************
-		
-		#-- Convertir QUERYSET a LISTA DE DICCIONARIOS al inicio (optimización clave).
-		queryset_list = [raw_to_dict(obj) for obj in queryset]
-		
-		grouped_data = {}
-		tg_cantidad = 0
-		tg_total = Decimal('0')
-		tg_compra = Decimal('0')
-		
-		for obj in queryset_list:
+		#-- Estructura para agrupar datos por número de comprobante (optimizado).
+		#-- (Sin necesidad de serializar).
+		datos_por_familia = {}
+		tg_stock = 0
+		for obj in queryset:
 			#-- Agrupar los objetos por Familia.
-			id_familia = obj['id_familia_id']
-			if id_familia not in grouped_data:
-				grouped_data[id_familia] = {
-					'familia': obj['nombre_producto_familia'],
+			id_familia = obj.id_familia_id
+			if id_familia not in datos_por_familia:
+				datos_por_familia[id_familia] = {
+					'familia': obj.nombre_producto_familia,
 					'modelos': {},
-					'stf_cantidad': 0,
-					'stf_total': Decimal('0'),
-					'stf_compra': Decimal('0')
+					'stf_stock': 0,
 				}
 			
 			#-- Agrupar los objetos por Modelos de la Familia.
-			id_modelo = obj['id_modelo_id']
-			if id_modelo not in grouped_data[id_familia]['modelos']:
-				grouped_data[id_familia]['modelos'][id_modelo] = {
-					'modelo': obj['nombre_modelo'],
+			id_modelo = obj.id_modelo_id
+			if id_modelo not in datos_por_familia[id_familia]['modelos']:
+				datos_por_familia[id_familia]['modelos'][id_modelo] = {
+					'modelo': obj.nombre_modelo,
 					'detalle': [],
-					'stm_cantidad': 0,
-					'stm_total': Decimal('0'),
-					'stm_compra': Decimal('0')
+					'stm_stock': 0,
 				}
 			
-			#-- Añadir el detalle al grupo.
-			grouped_data[id_familia]["modelos"][id_modelo]["detalle"].append(obj)
+			#-- Crear el diccionario con los datos del detalle.
+			detalle_data = {
+				"codigo": obj.id_producto_id,
+				"medida": obj.medida,
+				"cai": obj.cai,
+				"descripcion": obj.nombre_producto,
+				"marca": obj.nombre_producto_marca,
+				"stock": obj.stock,
+			}
+			#-- Agregar el detalle a la lista del comprobante.
+			datos_por_familia[id_familia]['modelos'][id_modelo]["detalle"].append(detalle_data)
 			
 			#-- Acumular totales por Familia.
-			#-- Conversión directa a Decimal (optimización).
-			cantidad = obj['cantidad']
-			total = Decimal(str(obj['total']))
-			compra = Decimal(str(obj['compra']))
-			
-			grouped_data[id_familia]['stf_cantidad'] += cantidad
-			grouped_data[id_familia]['stf_total'] += total
-			grouped_data[id_familia]['stf_compra'] += compra
+			datos_por_familia[id_familia]['stf_stock'] += obj.stock
 			
 			#-- Acumular totales por Modelo.
-			grouped_data[id_familia]['modelos'][id_modelo]['stm_cantidad'] += cantidad
-			grouped_data[id_familia]['modelos'][id_modelo]['stm_total'] += total
-			grouped_data[id_familia]['modelos'][id_modelo]['stm_compra'] += compra
+			datos_por_familia[id_familia]['modelos'][id_modelo]['stm_stock'] += obj.stock
 			
 			#-- Acumular totales generales.
-			tg_cantidad += cantidad
-			tg_total += total
-			tg_compra += compra
-		
-		#-- Convertir los datos agrupados a un formato serializable:
-		for familia_data in grouped_data.values():
-			#-- Convertir totales por Familia a float.
-			familia_data['stf_total'] = float(familia_data['stf_total'])
-			familia_data['stf_compra'] = float(familia_data['stf_compra'])
-			
-			for modelo_data in familia_data['modelos'].values():
-				#-- Convertir totales por Modelo a float.
-				modelo_data['stm_total'] = float(modelo_data['stm_total'])
-				modelo_data['stm_compra'] = float(modelo_data['stm_compra'])
-		
+			tg_stock += obj.stock
 		# **************************************************
 		
 		#-- Se retorna un contexto que será consumido tanto para la vista en pantalla como para la generación del PDF.
 		return {
-			"objetos": grouped_data,
-			"tg_cantidad": tg_cantidad,
-			"tg_total": float(tg_total),
-			"tg_compra": float(tg_compra),
+			"objetos": datos_por_familia,
+			"tg_stock": tg_stock,
 			"parametros_i": param_left,
 			"parametros_d": param_right,
 			'fecha_hora_reporte': fecha_hora_reporte,
@@ -319,20 +252,12 @@ class VLEstadisticasVentasMarcaInformeView(InformeFormView):
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
 		form = kwargs.get("form") or self.get_form()
-		
 		context["form"] = form
-		if form.errors:
-			context["data_has_errors"] = True
+		
 		return context
 
-def raw_to_dict(instance):
-	"""Convierte una instancia de una consulta raw a un diccionario, eliminando claves internas."""
-	data = instance.__dict__.copy()
-	data.pop('_state', None)
-	return data
 
-
-def vlestadisticasventasmarca_vista_pantalla(request):
+def vlstockdeposito_vista_pantalla(request):
 	#-- Obtener el token de la querystring.
 	token = request.GET.get("token")
 	
@@ -349,7 +274,7 @@ def vlestadisticasventasmarca_vista_pantalla(request):
 	return render(request, ConfigViews.reporte_pantalla, contexto_reporte)
 
 
-def vlestadisticasventasmarca_vista_pdf(request):
+def vlstockdeposito_vista_pdf(request):
 	#-- Obtener el token de la querystring.
 	token = request.GET.get("token")
 	
@@ -391,31 +316,33 @@ class CustomPDFGenerator(PDFGenerator):
 
 def generar_pdf(contexto_reporte):
 	#-- Crear instancia del generador personalizado.
-	generator = CustomPDFGenerator(contexto_reporte, pagesize=landscape(A4), body_font_size=7)
+	generator = CustomPDFGenerator(contexto_reporte, pagesize=portrait(A4), body_font_size=7)
 	
 	#-- Construir datos de la tabla:
 	
-	#-- Títulos de las columnas de la tabla (headers) filtrados.
+	#-- Obtener los títulos de las columnas (headers).
 	headers_titles = [value['label'] for value in ConfigViews.table_info.values() if value['pdf']]
 	headers_titles.insert(0, "")
 	
-	#-- Extraer Ancho de las columnas de la tabla filtrados.
+	#-- Extrae los anchos de las columnas de la estructura ConfigViews.table_info.
 	col_widths = [value['col_width_pdf'] for value in ConfigViews.table_info.values() if value['pdf']]
 	col_widths.insert(0, 10)
-	blank_cols = [""] * 10
+	blank_cols = [""] * 5
 	
 	table_data = [headers_titles]
 	
 	#-- Estilos específicos adicionales iniciales de la tabla.
 	table_style_config = [
-		('ALIGN', (7,0), (-1,-1), 'RIGHT'),
+		('ALIGN', (6,0), (-1,-1), 'RIGHT'),
 	]
 	
 	#-- Contador de filas (empezamos en 1 porque la 0 es el header).
 	current_row = 1
 	
 	#-- Agregar los datos a la tabla.
-	for familia_data in contexto_reporte.get("objetos", {}).values():
+	objetos = contexto_reporte.get("objetos", {})
+	
+	for familia_data in objetos.values():
 		
 		#-- Datos agrupado por Familia.
 		table_data.append([f"Familia: {familia_data['familia']}", ""] + blank_cols)
@@ -430,7 +357,7 @@ def generar_pdf(contexto_reporte):
 		#---------------------
 		
 		for modelo_data in familia_data["modelos"].values():
-		
+			
 			#-- Datos agrupado por Modelo.
 			table_data.append(["", f"Modelo: {modelo_data['modelo']}"] + blank_cols)
 			
@@ -444,33 +371,23 @@ def generar_pdf(contexto_reporte):
 			
 			#-- Agregar filas del detalle.
 			for obj in modelo_data['detalle']:
-				
 				table_data.append([
 					"",
-					obj['comprobante'],
-					format_date(obj['fecha_comprobante']),
-					obj['id_cliente_id'],
-					obj['id_producto_id'],
-					Paragraph(str(obj['nombre_producto']), generator.styles['CellStyle']),
+					obj['codigo'],
 					obj['medida'],
-					formato_argentino(obj['cantidad']),
-					formato_argentino(obj['precio']),
-					f"{formato_argentino(obj['descuento'])}%" if obj['descuento'] != 0 else "",
-					formato_argentino(obj['total']),
-					formato_argentino(obj['compra'])
+					obj['cai'],
+					Paragraph(str(obj['descripcion']), generator.styles['CellStyle']),
+					Paragraph(str(obj['marca']), generator.styles['CellStyle']),
+					formato_argentino_entero(obj['stock']),
 				])
-				
 				current_row += 1
 			
 			#-- Fila subtotal por Modelo.
 			table_data.append(
-				[""]*6 + 
+				[""]*5 + 
 				[
-					"Total por Modelo:", 
-					formato_argentino(modelo_data["stm_cantidad"]), 
-					"", "", 
-					formato_argentino(modelo_data["stm_total"]), 
-					formato_argentino(modelo_data["stm_compra"])
+					"Sub Total Modelo:", 
+					formato_argentino_entero(modelo_data["stm_stock"]), 
 				]
 			)
 			#-- Aplicar estilos a la fila de total (fila actual).
@@ -483,13 +400,10 @@ def generar_pdf(contexto_reporte):
 		
 		#-- Fila subtotal por Familia.
 		table_data.append(
-			[""]*6 + 
+			[""]*5 + 
 			[
-				"Total por Familia:", 
-				formato_argentino(familia_data["stf_cantidad"]), 
-				"", "", 
-				formato_argentino(familia_data["stf_total"]), 
-				formato_argentino(familia_data["stf_compra"])
+				"Sub Total Familia:", 
+				formato_argentino_entero(familia_data["stf_stock"]), 
 			]
 		)
 		#-- Aplicar estilos a la fila de total (fila actual).
@@ -508,18 +422,13 @@ def generar_pdf(contexto_reporte):
 		current_row += 1
 	
 	#-- Fila Total General.
-	tg_cantidad = contexto_reporte.get("tg_cantidad", 0)
-	tg_total = contexto_reporte.get("tg_total", 0)
-	tg_compra = contexto_reporte.get("tg_compra", 0)
+	tg_stock = contexto_reporte.get("tg_stock", 0)
 	
 	table_data.append(
-		[""]*6 + 
+		[""]*5 + 
 		[
-			"Total por Marca:", 
-			formato_argentino(tg_cantidad), 
-			"", "", 
-			formato_argentino(tg_total), 
-			formato_argentino(tg_compra)
+			"Total General:", 
+			formato_argentino_entero(tg_stock), 
 		]
 	)
 	
@@ -534,7 +443,7 @@ def generar_pdf(contexto_reporte):
 	return generator.generate(table_data, col_widths, table_style_config)		
 
 
-def vlestadisticasventasmarca_vista_excel(request):
+def vlstockdeposito_vista_excel(request):
 	token = request.GET.get("token")
 	if not token:
 		return HttpResponse("Token no proporcionado", status=400)
@@ -548,16 +457,16 @@ def vlestadisticasventasmarca_vista_excel(request):
 	# ---------------------------------------------
 	
 	#-- Instanciar la vista y obtener el queryset.
-	view_instance = VLEstadisticasVentasMarcaInformeView()
+	view_instance = VLStockDepositoInformeView()
 	view_instance.request = request
 	queryset = view_instance.obtener_queryset(cleaned_data)
 	
-	#-- Filtrar los headers de las columnas.
-	headers_titles = {field: ConfigViews.table_info[field] for field in ConfigViews.table_info if ConfigViews.table_info[field]['excel']}
+	#-- Extraer Títulos de las columnas (headers).
+	headers = {field: ConfigViews.table_info[field] for field in ConfigViews.table_info if ConfigViews.table_info[field]['excel'] }
 	
 	helper = ExportHelper(
 		queryset=queryset,
-		table_info=headers_titles,
+		table_info=headers,
 		report_title=ConfigViews.report_title
 	)
 	excel_data = helper.export_to_excel()
@@ -572,7 +481,7 @@ def vlestadisticasventasmarca_vista_excel(request):
 	return response
 
 
-def vlestadisticasventasmarca_vista_csv(request):
+def vlstockdeposito_vista_csv(request):
 	token = request.GET.get("token")
 	if not token:
 		return HttpResponse("Token no proporcionado", status=400)
@@ -585,17 +494,17 @@ def vlestadisticasventasmarca_vista_csv(request):
 	cleaned_data = data["cleaned_data"]
 	
 	#-- Instanciar la vista para reejecutar la consulta y obtener el queryset.
-	view_instance = VLEstadisticasVentasMarcaInformeView()
+	view_instance = VLStockDepositoInformeView()
 	view_instance.request = request
 	queryset = view_instance.obtener_queryset(cleaned_data)
 	
-	#-- Filtrar los headers de las columnas.
-	headers_titles = {field: ConfigViews.table_info[field] for field in ConfigViews.table_info if ConfigViews.table_info[field]['csv']}
+	#-- Extraer Títulos de las columnas (headers).
+	headers = {field: ConfigViews.table_info[field] for field in ConfigViews.table_info if ConfigViews.table_info[field]['csv'] }
 	
 	#-- Usar el helper para exportar a CSV.
 	helper = ExportHelper(
 		queryset=queryset,
-		table_info=headers_titles,
+		table_info=headers,
 		report_title=ConfigViews.report_title
 	)
 	csv_data = helper.export_to_csv()

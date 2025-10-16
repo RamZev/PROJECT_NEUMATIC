@@ -88,6 +88,8 @@ from apps.informes.views.vlstockgeneralsucursal_list_views import *
 from apps.informes.views.vlstockunico_list_views import *
 from apps.informes.views.vlreposicionstock_list_views import *
 from apps.informes.views.vlmovimientointernostock_list_views import *
+from apps.informes.views.vlstockcliente_list_views import *
+from apps.informes.views.vlstockdeposito_list_views import *
 
 
 
@@ -861,6 +863,30 @@ urlpatterns = [
 		 name="vlmovimientointernostock_vista_excel"),
 	path("vlmovimientointernostock/vista-csv/", vlmovimientointernostock_vista_csv, 
 		 name="vlmovimientointernostock_vista_csv"),
+	
+	#-- VL Stock por Cliente en Depósito.
+	path('vlstockcliente_informe/', VLStockClienteInformeView.as_view(), 
+		 name='vlstockcliente_informe_list'),
+	path('vlstockcliente/vista-preliminar/', vlstockcliente_vista_pantalla, 
+		 name="vlstockcliente_vista_pantalla"),
+	path("vlstockcliente/vista-pdf/", vlstockcliente_vista_pdf, 
+		 name="vlstockcliente_vista_pdf"),
+	path("vlstockcliente/vista-excel/", vlstockcliente_vista_excel, 
+		 name="vlstockcliente_vista_excel"),
+	path("vlstockcliente/vista-csv/", vlstockcliente_vista_csv, 
+		 name="vlstockcliente_vista_csv"),
+	
+	#-- VL Stock en Depósitos de Clientes.
+	path('vlstockdeposito_informe/', VLStockDepositoInformeView.as_view(), 
+		 name='vlstockdeposito_informe_list'),
+	path('vlstockdeposito/vista-preliminar/', vlstockdeposito_vista_pantalla, 
+		 name="vlstockdeposito_vista_pantalla"),
+	path("vlstockdeposito/vista-pdf/", vlstockdeposito_vista_pdf, 
+		 name="vlstockdeposito_vista_pdf"),
+	path("vlstockdeposito/vista-excel/", vlstockdeposito_vista_excel, 
+		 name="vlstockdeposito_vista_excel"),
+	path("vlstockdeposito/vista-csv/", vlstockdeposito_vista_csv, 
+		 name="vlstockdeposito_vista_csv"),
 	
 	
 	

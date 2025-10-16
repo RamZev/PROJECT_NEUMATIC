@@ -3052,3 +3052,115 @@ class VLMovimientoInternoStock(models.Model):
 		db_table = 'VLMovimientoInternoStock'
 		verbose_name = ('Movimiento Interno de Stock')
 		verbose_name_plural = ('Movimiento Interno de Stock')
+
+
+#-----------------------------------------------------------------------------
+# Stock por Clientes en Depósitos.
+#-----------------------------------------------------------------------------
+class VLStockClienteManager(models.Manager):
+	
+	def obtener_datos(self, id_sucursal=None, id_vendedor=None):
+		
+		#-- La consulta SQL.
+		query = """
+			SELECT
+				*
+			FROM
+				VLStockCliente
+		"""
+		
+		#-- Filtros y parámetros adicionales.
+		params = []
+		condicion = []
+		
+		if id_sucursal:
+			condicion.append("id_sucursal_id = %s")
+			params.append(id_sucursal)
+		
+		if id_vendedor:
+			condicion.append("id_vendedor_id = %s")
+			params.append(id_vendedor)
+		
+		if condicion:
+			query += " WHERE " + " AND ".join(condicion)
+		
+		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
+		return self.raw(query, params)
+
+
+class VLStockCliente(models.Model):
+	id = models.AutoField(primary_key=True)
+	id_cliente_id = models.IntegerField()
+	nombre_cliente = models.CharField(max_length=50)
+	id_producto_id = models.IntegerField()
+	medida = models.CharField(max_length=15)
+	cai = models.CharField(max_length=20)
+	cantidad = models.DecimalField(max_digits=7, decimal_places=2)
+	retirado = models.DecimalField(max_digits=7, decimal_places=2)
+	stock = models.DecimalField(max_digits=7, decimal_places=2)
+	comprobante = models.CharField(max_length=19)
+	id_sucursal_id = models.IntegerField()
+	id_vendedor_id = models.IntegerField()
+	
+	objects = VLStockClienteManager()
+	
+	class Meta:
+		managed = False
+		db_table = 'VLStockCliente'
+		verbose_name = ('Stock por Clientes en Depósitos')
+		verbose_name_plural = ('Stock por Clientes en Depósitos')
+
+
+#-----------------------------------------------------------------------------
+# Stock en Depósitos de Clientes.
+#-----------------------------------------------------------------------------
+class VLStockDepositoManager(models.Manager):
+	
+	def obtener_datos(self, id_sucursal=None):
+		
+		#-- La consulta SQL.
+		query = """
+			SELECT
+				*
+			FROM
+				VLStockDeposito
+		"""
+		
+		#-- Filtros y parámetros adicionales.
+		params = []
+		condicion = []
+		
+		if id_sucursal:
+			condicion.append("id_sucursal_id = %s")
+			params.append(id_sucursal)
+		
+		if condicion:
+			query += " WHERE " + " AND ".join(condicion)
+		
+		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
+		return self.raw(query, params)
+
+
+class VLStockDeposito(models.Model):
+	id = models.AutoField(primary_key=True)
+	id_familia_id = models.IntegerField()
+	nombre_producto_familia = models.CharField(max_length=50)
+	id_modelo_id = models.IntegerField()
+	nombre_modelo = models.CharField(max_length=50)
+	id_marca_id = models.IntegerField()
+	nombre_producto_marca = models.CharField(max_length=50)
+	id_producto_id = models.IntegerField()
+	medida = models.CharField(max_length=15)
+	cai = models.CharField(max_length=20)
+	nombre_producto = models.CharField(max_length=50)
+	cantidad = models.DecimalField(max_digits=7, decimal_places=2)
+	stock = models.DecimalField(max_digits=7, decimal_places=2)
+	id_sucursal_id = models.IntegerField()
+	
+	objects = VLStockDepositoManager()
+	
+	class Meta:
+		managed = False
+		db_table = 'VLStockDeposito'
+		verbose_name = ('Stock en Depósitos de Clientes')
+		verbose_name_plural = ('Stock en Depósitos de Clientes')

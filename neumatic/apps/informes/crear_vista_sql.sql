@@ -1533,3 +1533,74 @@ CREATE VIEW VLMovimientoInternoStock AS
 		f.fecha_comprobante, f.numero_comprobante;
 
 
+-- ---------------------------------------------------------------------------
+-- Stock por Cliente en Depósito.
+-- Modelo: VLStockCliente
+-- ---------------------------------------------------------------------------
+DROP VIEW IF EXISTS "main"."VLStockCliente";
+CREATE VIEW VLStockCliente AS 
+	SELECT
+		ROW_NUMBER() OVER() AS id,
+		f.id_cliente_id,
+		c.nombre_cliente,
+		sc.id_producto_id,
+		p.medida,
+		pc.cai,
+		sc.cantidad,
+		sc.retirado,
+		(sc.cantidad - sc.retirado) AS stock,
+		--f.compro,
+		--f.letra_comprobante,
+		--f.numero_comprobante,
+		--f.fecha_comprobante,
+		(f.compro || '  ' || f.letra_comprobante || '  ' || SUBSTR(printf('%012d', f.numero_comprobante), 1, 4) || '-' || SUBSTR(printf('%012d', f.numero_comprobante), 5) || '  ' || strftime('%d/%m/%Y', f.fecha_comprobante)) AS comprobante,
+		f.id_sucursal_id,
+		f.id_vendedor_id
+	FROM
+		stock_cliente sc
+		INNER JOIN factura f ON sc.id_factura_id = f.id_factura
+		INNER JOIN producto p ON sc.id_producto_id = p.id_producto
+		LEFT JOIN producto_cai pc ON p.id_cai_id = pc.id_cai
+		INNER JOIN cliente c ON f.id_cliente_id = c.id_cliente
+	WHERE
+		sc.cantidad <> sc.retirado
+	ORDER by
+		f.id_cliente_id, sc.id_stock_cliente;
+
+
+-- ---------------------------------------------------------------------------
+-- Stock en Depósitos de Clientes.
+-- Modelo: VLStockDeposito
+-- ---------------------------------------------------------------------------
+DROP VIEW IF EXISTS "main"."VLStockDeposito";
+CREATE VIEW VLStockDeposito AS
+	SELECT
+		ROW_NUMBER() OVER() AS id,
+		p.id_familia_id,
+		pf.nombre_producto_familia,
+		p.id_modelo_id,
+		pm.nombre_modelo,
+		p.id_marca_id,
+		px.nombre_producto_marca,
+		sc.id_producto_id,
+		p.medida,
+		pc.cai,
+		p.nombre_producto,
+		SUM(sc.cantidad-sc.retirado) AS stock,
+		f.id_sucursal_id
+	FROM
+		stock_cliente sc
+		INNER JOIN producto p ON sc.id_producto_id = p.id_producto
+		INNER JOIN producto_familia pf ON p.id_familia_id = pf.id_producto_familia
+		INNER JOIN producto_modelo pm ON p.id_modelo_id = pm.id_modelo
+		INNER JOIN producto_marca px ON p.id_marca_id = px.id_producto_marca
+		LEFT JOIN producto_cai pc ON p.id_cai_id = pc.id_cai
+		INNER JOIN factura f ON sc.id_factura_id = f.id_factura
+	WHERE
+		sc.cantidad <> sc.retirado
+	GROUP by
+		sc.id_producto_id
+	HAVING
+		SUM(sc.cantidad - sc.retirado) <> 0
+	ORDER by
+		p.id_familia_id, p.id_modelo_id, p.id_marca_id, p.medida;
