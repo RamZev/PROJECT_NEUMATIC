@@ -13,6 +13,7 @@ urlpatterns = [
     path('ventas/', include('apps.ventas.urls')),
     path('informes/', include('apps.informes.urls')),
     path('datatools/', include('apps.datatools.urls')),
+    path('menu/', include('apps.menu.urls')),
 ]
 
 #-- Manejo de archivos estáticos en modo DEBUG.

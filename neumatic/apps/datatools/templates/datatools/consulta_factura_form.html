@@ -81,9 +81,31 @@
 							<td>{{ factura.nombre_factura }}</td>
 							<td class="decimal"><strong>{{ factura.total|formato_es_ar }}</strong></td>
 							<td>
-							<button class="btn btn-sm btn-outline-info" type="button" data-bs-toggle="collapse" data-bs-target="#detalles{{ factura.id_factura }}">
-								<i class="bi bi-eye"></i> Ver
-							</button>
+								<button class="btn btn-sm btn-outline-info" type="button" data-bs-toggle="collapse" data-bs-target="#detalles{{ factura.id_factura }}">
+									<i class="bi bi-eye"></i> Ver
+								</button>
+								
+								<!-- Botón: Crear Stock Cliente -->
+								{% if not factura.tiene_stock_cliente %}
+									<form method="post" action="{% url 'crear_stock_cliente' factura.id_factura %}" style="display:inline;" class="ms-1">
+									{% csrf_token %}
+									<input type="hidden" name="buscar_por" value="{{ buscar_por }}">
+									<input type="hidden" name="page" value="{{ page_obj.number }}">
+									<button type="submit" class="btn btn-sm btn-success" 
+											onclick="return confirm('¿Desea generar el stock del cliente a partir de los productos de esta factura?');">
+										<i class="bi bi-box-seam"></i> Crear Stock
+									</button>
+									</form>
+								{% else %}
+									<span class="badge bg-warning text-dark ms-1">Stock creado</span>
+								{% endif %}
+
+								<!-- Botón: Gestionar Stock Cliente (NUEVA VISTA) -->
+								<a href="{% url 'stock_cliente_detalle' factura.id_factura %}" 
+									class="btn btn-sm btn-info ms-1">
+									<i class="bi bi-box-seam"></i> Gestionar Stock
+								</a>
+								
 							</td>
 						</tr>
 						<tr class="collapse" id="detalles{{ factura.id_factura }}">

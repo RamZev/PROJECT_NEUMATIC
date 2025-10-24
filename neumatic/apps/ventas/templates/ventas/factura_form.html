@@ -2684,6 +2684,7 @@
             
             // Mantener las funciones completarSeleccionCliente y getCookie exactamente igual que en tu versión original
             function calcularNumeroComprobante() {
+                // alert('obtener-numero-comprobante3');
                 // Obtener datos necesarios para numeración
                 const id_sucursal = document.getElementById('id_id_sucursal').value;
                 const id_punto_venta = document.getElementById('id_id_punto_venta').value;
@@ -2729,6 +2730,7 @@
 
                 if (id_sucursal && id_punto_venta && compro) {
                     ///
+                    // alert('obtener-numero-comprobante3***');
                     const url = new URL('/ventas/obtener-numero-comprobante3/', window.location.origin);
                     url.searchParams.append('id_sucursal', id_sucursal);
                     url.searchParams.append('id_punto_venta', id_punto_venta);

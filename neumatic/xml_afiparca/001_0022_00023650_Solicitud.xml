@@ -1,0 +1,50 @@
+<?xml version="1.0" ?>
+<ns0:Envelope xmlns:ns0="http://schemas.xmlsoap.org/soap/envelope/" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" soap:encodingStyle="http://schemas.xmlsoap.org/soap/envelope/encoding/">
+    <soap:Header/>
+    <soap:Body>
+        <FECAESolicitar xmlns="http://ar.gov.afip.dif.FEV1/">
+            <Auth>
+                <Token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgZHN0PSJDTj13c2ZlLCBPPUFGSVAsIEM9QVIiIHVuaXF1ZV9pZD0iNDI4MTA1NzQ3NyIgZ2VuX3RpbWU9IjE3NjExNjc0NzQiIGV4cF90aW1lPSIxNzYxMjEwNzM0Ii8+CiAgICA8b3BlcmF0aW9uIHR5cGU9ImxvZ2luIiB2YWx1ZT0iZ3JhbnRlZCI+CiAgICAgICAgPGxvZ2luIGVudGl0eT0iMzM2OTM0NTAyMzkiIHNlcnZpY2U9IndzZmUiIHVpZD0iU0VSSUFMTlVNQkVSPUNVSVQgMjAxNzM2MTE5ODcsIENOPWRlYm9uYXNoZGVtb25ldyIgYXV0aG1ldGhvZD0iY21zIiByZWdtZXRob2Q9IjIyIj4KICAgICAgICAgICAgPHJlbGF0aW9ucz4KICAgICAgICAgICAgICAgIDxyZWxhdGlvbiBrZXk9IjMwNjkyNDAyMzYzIiByZWx0eXBlPSI0Ii8+CiAgICAgICAgICAgIDwvcmVsYXRpb25zPgogICAgICAgIDwvbG9naW4+CiAgICA8L29wZXJhdGlvbj4KPC9zc28+Cg==</Token>
+                <Sign>MSgfN6hWMqpoyGgv6li9DzjyHgRJs1TdC6JaBYsOPq32yFhNP+E3R1BCEcDD66zjDYtGIxsUozr0wRZeRfd0EpnuMzds/gvIDmm6TVM/ZO9p3RMY+aQ1+kPxt+axvchz/V8oXMtQ0aBRsI/DvEukbaFgPgkW4oGppfMT9p1+we0=</Sign>
+                <Cuit>30692402363</Cuit>
+            </Auth>
+            <FeCAEReq>
+                <FeCabReq>
+                    <CantReg>1</CantReg>
+                    <PtoVta>0022</PtoVta>
+                    <CbteTipo>001</CbteTipo>
+                </FeCabReq>
+                <FeDetReq>
+                    <FECAEDetRequest>
+                        <Concepto>3</Concepto>
+                        <DocTipo>80</DocTipo>
+                        <DocNro>30692379841</DocNro>
+                        <CbteDesde>00023650</CbteDesde>
+                        <CbteHasta>00023650</CbteHasta>
+                        <CbteFch>20251022</CbteFch>
+                        <ImpTotal>494971.00</ImpTotal>
+                        <ImpTotConc>0.00</ImpTotConc>
+                        <ImpNeto>409066.94</ImpNeto>
+                        <ImpOpEx>0.00</ImpOpEx>
+                        <ImpTrib>0.00</ImpTrib>
+                        <ImpIVA>85904.06</ImpIVA>
+                        <FchServDesde>20251022</FchServDesde>
+                        <FchServHasta>20251022</FchServHasta>
+                        <FchVtoPago>20251121</FchVtoPago>
+                        <MonId>PES</MonId>
+                        <MonCotiz>1.000</MonCotiz>
+                        <CanMisMonExt>N</CanMisMonExt>
+                        <CondicionIVAReceptorId>1</CondicionIVAReceptorId>
+                        <Iva>
+                            <AlicIva>
+                                <Id>5</Id>
+                                <BaseImp>409066.94</BaseImp>
+                                <Importe>85904.06</Importe>
+                            </AlicIva>
+                        </Iva>
+                    </FECAEDetRequest>
+                </FeDetReq>
+            </FeCAEReq>
+        </FECAESolicitar>
+    </soap:Body>
+</ns0:Envelope>

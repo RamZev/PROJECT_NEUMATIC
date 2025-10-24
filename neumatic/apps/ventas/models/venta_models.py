@@ -1,3 +1,4 @@
+# neumatic\apps\ventas\models\venta_models.py
 from django.db import models
 from apps.maestros.models.base_models import ModeloBaseGenerico
 
