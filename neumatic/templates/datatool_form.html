@@ -1,3 +1,4 @@
+<!-- neumatic\templates\datatool_form.html -->
 {% extends 'base.html' %}
 {% load static %}
 
@@ -6,7 +7,6 @@
 	{% include 'top_nav.html' %}
 {% endblock header %}
 
-{% comment %} Block Main {% endcomment %}
 {% block main %}
 	{% block sidebar %}
 		{% include 'sidebar.html' %}
@@ -18,13 +18,10 @@
 	{% endblock maincomponent %}
 {% endblock main %}
 
-<!-- Block ModalS -------------------------------------------------------- -->
+<!-- Block Modals -------------------------------------------------------- -->
 {% block modals %}
 	<!-- Modal para mostrar errores -->
-	{% include 'maestros/modal_errors.html' %}
-	
-	<!-- Modal para mostrar los requerimientos de los campos -->
-	{% include 'maestros/modal_fields_requirements.html' %}
+	{% include 'modal_errors.html' %}
 {% endblock modals %}
 
 <!-- Block Footer -------------------------------------------------------- -->
