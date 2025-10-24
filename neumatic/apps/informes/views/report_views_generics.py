@@ -64,10 +64,9 @@ class InformeFormView(FormView):
 	
 	def form_invalid(self, form):
 		context = self.get_context_data(form=form)
-		context["data_has_errors"] = True
 		if self.request.headers.get("X-Requested-With") == "XMLHttpRequest":
 			#-- Renderizar el modal con los errores de validación y enviado en la respuesta JSON.
-			html = render_to_string("informes/modal_errors.html", context, request=self.request)
+			html = render_to_string("modal_errors.html", context, request=self.request)
 			return JsonResponse({"success": False, "html": html})
 		else:
 			return super().render_to_response(context)

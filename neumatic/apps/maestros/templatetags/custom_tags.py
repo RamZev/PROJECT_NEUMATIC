@@ -17,7 +17,8 @@ def get_attribute(value, arg):
 	except AttributeError:
 		return None
 
-	
+
+@register.filter(name='get_item')
 def get_item(dictionary, key):
 	"""
 	Obtiene un valor de un diccionario dada una clave.

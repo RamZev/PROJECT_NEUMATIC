@@ -15,7 +15,7 @@ from reportlab.platypus import Paragraph
 from .report_views_generics import *
 from apps.informes.models import VLTablaDinamicaVentas
 from ..forms.buscador_vltabladinamicaventas_forms import BuscadorTablaDinamicaVentasForm
-from utils.utils import deserializar_datos, formato_argentino, normalizar, format_date
+from utils.utils import deserializar_datos, formato_argentino, normalizar, format_date, raw_to_dict
 from utils.helpers.export_helpers import ExportHelper, PDFGenerator
 
 
@@ -340,33 +340,10 @@ class VLTablaDinamicaVentasInformeView(InformeFormView):
 		}
 		
 		# **************************************************
-		# #-- Estructura para agrupar datos por cliente.
-		# datos_por_cliente = {}
-		# total_general = float(0)
-		# 
-		# for obj in queryset:
-		# 	#-- Identificar al cliente.
-		# 	cliente_id = obj.id_cliente_id
-		# 	
-		# 	#-- Si el cliente aún no está en el diccionario, se inicializa.
-		# 	if cliente_id not in datos_por_cliente:
-		# 		datos_por_cliente[cliente_id] = {
-		# 			"comprobantes": [],
-		# 			"total_cliente": float(0),
-		# 		}
-		# 	
-		# 	#-- Añadir el detalle al grupo.
-		# 	datos_por_cliente[cliente_id]["comprobantes"].append(raw_to_dict(obj))
-		# 	
-		# 	#-- Acumular totales.
-		# 	datos_por_cliente[cliente_id]["total_cliente"] += float(obj.total)
-		# 	total_general += float(obj.total)
-		
 		# **************************************************
 		
 		#-- Convertir cada objeto del queryset a un diccionario.
 		objetos_serializables = [raw_to_dict(item) for item in queryset]
-		
 		
 		#-- Se retorna un contexto que será consumido tanto para la vista en pantalla como para la generación del PDF.
 		return {
@@ -386,13 +363,6 @@ class VLTablaDinamicaVentasInformeView(InformeFormView):
 		if form.errors:
 			context["data_has_errors"] = True
 		return context
-
-
-def raw_to_dict(instance):
-	"""Convierte una instancia de una consulta raw a un diccionario, eliminando claves internas."""
-	data = instance.__dict__.copy()
-	data.pop('_state', None)
-	return data
 
 
 def vltabladinamicaventas_vista_pantalla(request):
@@ -501,6 +471,7 @@ def generar_pdf(contexto_reporte):
 		current_row += 1
 	
 	return generator.generate(table_data, col_widths, table_style_config)		
+
 
 def vltabladinamicaventas_vista_excel(request):
 	token = request.GET.get("token")

@@ -2867,114 +2867,6 @@ class VLStockUnico(models.Model):
 #-----------------------------------------------------------------------------
 class VLReposicionStockManager(models.Manager):
 	
-	''' Obtiene los datos agrupado por id_producto_id
-	def obtener_datos_por_producto(self, id_deposito, id_familia_desde, id_familia_hasta, id_modelo_desde, id_modelo_hasta, id_marca_desde, id_marca_hasta, sucursales):
-		from django.db import connection
-		from collections import namedtuple
-		
-		#-- Construcción de la consulta base.
-		query = """
-			SELECT
-				ps.id_deposito_id,
-				pd.nombre_producto_deposito,
-				p.id_familia_id,
-				pf.nombre_producto_familia,
-				p.id_modelo_id,
-				pm.nombre_modelo,
-				p.id_marca_id,
-				px.nombre_producto_marca,
-				ps.id_producto_id,
-				p.id_cai_id,
-				pc.cai,
-				p.medida,
-				p.segmento,
-				p.nombre_producto,
-				CASE 
-					WHEN pn.minimo THEN pn.minimo ELSE 0
-				END AS minimo,
-				ps.stock,
-				CASE
-					WHEN pn.minimo THEN pn.minimo - ps.stock ELSE 0
-				END AS faltante,
-				{sucursal_columns}
-			FROM
-				producto_stock ps
-				JOIN producto p ON ps.id_producto_id = p.id_producto
-				JOIN producto_cai pc ON p.id_cai_id = pc.id_cai
-				JOIN producto_minimo pn ON p.id_cai_id = pn.id_cai_id AND ps.id_deposito_id = pn.id_deposito_id
-				JOIN producto_familia pf ON p.id_familia_id = pf.id_producto_familia
-				JOIN producto_modelo pm ON p.id_modelo_id = pm.id_modelo
-				JOIN producto_marca px ON p.id_marca_id = px.id_producto_marca
-				JOIN producto_deposito pd ON ps.id_deposito_id = pd.id_producto_deposito
-			WHERE
-				ps.stock < pn.minimo
-				AND pn.minimo <> 0
-				{filters}
-			ORDER by
-				p.id_familia_id, p.id_modelo_id, p.id_marca_id
-		"""
-		
-		#-- Parámetros para la consulta.
-		params = []
-		sucursal_columns = []
-		
-		#-- Subconsultas para obtener stock por sucursal.
-		for sucursal in sucursales:
-			subquery = """
-				COALESCE((
-					SELECT SUM(ps2.stock)
-					FROM producto_stock ps2
-					JOIN producto_deposito pd2 ON ps2.id_deposito_id = pd2.id_producto_deposito
-					WHERE pd2.id_sucursal_id = %s AND ps2.id_producto_id = p.id_producto
-					GROUP BY pd2.id_sucursal_id AND ps2.id_producto_id
-					HAVING SUM(ps2.stock) > 0
-				), 0) AS stock_suc_{sucursal_id}
-			""".format(sucursal_id=sucursal.id_sucursal)
-			
-			sucursal_columns.append(subquery)
-			params.append(sucursal.id_sucursal)
-		
-		#-- Filtros principales.
-		conditions = ["ps.id_deposito_id = %s"]
-		params.append(id_deposito)
-		
-		#-- Filtros por rango.
-		range_filters = [
-			('p.id_familia_id', id_familia_desde, id_familia_hasta),
-			('p.id_marca_id', id_marca_desde, id_marca_hasta),
-			('p.id_modelo_id', id_modelo_desde, id_modelo_hasta)
-		]
-		
-		for field, desde, hasta in range_filters:
-			if desde and hasta:
-				conditions.append(f"{field} BETWEEN %s AND %s")
-				params.extend([desde, hasta])
-			elif desde:
-				conditions.append(f"{field} >= %s")
-				params.append(desde)
-			elif hasta:
-				conditions.append(f"{field} <= %s")
-				params.append(hasta)
-		
-		filters = "AND " + " AND ".join(conditions) if conditions else ""
-		
-		#-- Ensamblar consulta final.
-		final_query = query.format(
-			sucursal_columns=", ".join(sucursal_columns),
-			filters=filters
-		)
-		
-		#-- Ejecutar con cursor y mapear a objetos del modelo.
-		with connection.cursor() as cursor:
-			cursor.execute(final_query, params)
-			columns = [col[0] for col in cursor.description]
-			rows = cursor.fetchall()
-		
-		#-- Crear objetos modelo simulados.
-		ModelProxy = namedtuple('ModelProxy', columns)
-		return [ModelProxy(*row) for row in rows]
-	'''
-	
 	def obtener_datos(self, id_deposito, id_familia_desde, id_familia_hasta, id_modelo_desde, id_modelo_hasta, id_marca_desde, id_marca_hasta, sucursales):
 		from django.db import connection
 		from collections import namedtuple
@@ -3110,4 +3002,243 @@ class VLReposicionStock(models.Model):
 		verbose_name = ('Reposición de Mercadería')
 		verbose_name_plural = ('Reposición de Mercadería')
 
+
+#-----------------------------------------------------------------------------
+# Movimiento Interno de Stock.
+#-----------------------------------------------------------------------------
+class VLMovimientoInternoStockManager(models.Manager):
+	
+	def obtener_datos(self, fecha_desde, fecha_hasta, id_deposito=None):
+		
+		#-- La consulta SQL.
+		query = """
+			SELECT
+				*
+			FROM
+				VLMovimientoInternoStock
+			WHERE
+				fecha_comprobante BETWEEN %s AND %s
+		"""
+		
+		#-- Se añaden parámetros.
+		params = [fecha_desde, fecha_hasta]
+		
+		#-- Filtros adicionales.
+		if id_deposito:
+			query += " AND id_deposito_id = %s"
+			params.append(id_deposito)
+		
+		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
+		return self.raw(query, params)
+
+
+class VLMovimientoInternoStock(models.Model):
+	id = models.AutoField(primary_key=True)
+	fecha_comprobante = models.DateField()
+	numero_comprobante = models.IntegerField()
+	observa_comprobante = models.CharField(max_length=100)
+	id_producto_id = models.IntegerField()
+	nombre_producto = models.CharField(max_length=50)
+	medida = models.CharField(max_length=15)
+	id_marca_id = models.IntegerField()
+	nombre_producto_marca = models.CharField(max_length=50)
+	cantidad = models.DecimalField(max_digits=7, decimal_places=2)
+	id_deposito = models.IntegerField()
+	
+	objects = VLMovimientoInternoStockManager()
+	
+	class Meta:
+		managed = False
+		db_table = 'VLMovimientoInternoStock'
+		verbose_name = ('Movimiento Interno de Stock')
+		verbose_name_plural = ('Movimiento Interno de Stock')
+
+
+#-----------------------------------------------------------------------------
+# Stock por Clientes en Depósitos.
+#-----------------------------------------------------------------------------
+class VLStockClienteManager(models.Manager):
+	
+	def obtener_datos(self, id_sucursal=None, id_vendedor=None):
+		
+		#-- La consulta SQL.
+		query = """
+			SELECT
+				*
+			FROM
+				VLStockCliente
+		"""
+		
+		#-- Filtros y parámetros adicionales.
+		params = []
+		condicion = []
+		
+		if id_sucursal:
+			condicion.append("id_sucursal_id = %s")
+			params.append(id_sucursal)
+		
+		if id_vendedor:
+			condicion.append("id_vendedor_id = %s")
+			params.append(id_vendedor)
+		
+		if condicion:
+			query += " WHERE " + " AND ".join(condicion)
+		
+		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
+		return self.raw(query, params)
+
+
+class VLStockCliente(models.Model):
+	id = models.AutoField(primary_key=True)
+	id_cliente_id = models.IntegerField()
+	nombre_cliente = models.CharField(max_length=50)
+	id_producto_id = models.IntegerField()
+	medida = models.CharField(max_length=15)
+	cai = models.CharField(max_length=20)
+	cantidad = models.DecimalField(max_digits=7, decimal_places=2)
+	retirado = models.DecimalField(max_digits=7, decimal_places=2)
+	stock = models.DecimalField(max_digits=7, decimal_places=2)
+	comprobante = models.CharField(max_length=19)
+	id_sucursal_id = models.IntegerField()
+	id_vendedor_id = models.IntegerField()
+	
+	objects = VLStockClienteManager()
+	
+	class Meta:
+		managed = False
+		db_table = 'VLStockCliente'
+		verbose_name = ('Stock por Clientes en Depósitos')
+		verbose_name_plural = ('Stock por Clientes en Depósitos')
+
+
+#-----------------------------------------------------------------------------
+# Stock en Depósitos de Clientes.
+#-----------------------------------------------------------------------------
+class VLStockDepositoManager(models.Manager):
+	
+	def obtener_datos(self, id_sucursal=None):
+		
+		#-- La consulta SQL.
+		query = """
+			SELECT
+				*
+			FROM
+				VLStockDeposito
+		"""
+		
+		#-- Filtros y parámetros adicionales.
+		params = []
+		condicion = []
+		
+		if id_sucursal:
+			condicion.append("id_sucursal_id = %s")
+			params.append(id_sucursal)
+		
+		if condicion:
+			query += " WHERE " + " AND ".join(condicion)
+		
+		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
+		return self.raw(query, params)
+
+
+class VLStockDeposito(models.Model):
+	id = models.AutoField(primary_key=True)
+	id_familia_id = models.IntegerField()
+	nombre_producto_familia = models.CharField(max_length=50)
+	id_modelo_id = models.IntegerField()
+	nombre_modelo = models.CharField(max_length=50)
+	id_marca_id = models.IntegerField()
+	nombre_producto_marca = models.CharField(max_length=50)
+	id_producto_id = models.IntegerField()
+	medida = models.CharField(max_length=15)
+	cai = models.CharField(max_length=20)
+	nombre_producto = models.CharField(max_length=50)
+	cantidad = models.DecimalField(max_digits=7, decimal_places=2)
+	stock = models.DecimalField(max_digits=7, decimal_places=2)
+	id_sucursal_id = models.IntegerField()
+	
+	objects = VLStockDepositoManager()
+	
+	class Meta:
+		managed = False
+		db_table = 'VLStockDeposito'
+		verbose_name = ('Stock en Depósitos de Clientes')
+		verbose_name_plural = ('Stock en Depósitos de Clientes')
+
+
+#-----------------------------------------------------------------------------
+# Ficha de Seguimiento de Stock por Código o CAI.
+#-----------------------------------------------------------------------------
+class VLFichaSeguimientoStockManager(models.Manager):
+	
+	def obtener_datos(self, id_producto, id_cai, fecha_desde, fecha_hasta, id_sucursal=None):
+		
+		#-- La consulta SQL.
+		query = """
+			SELECT
+				(ROW_NUMBER() OVER(ORDER BY fecha_comprobante, comprobante, marca)) AS id,
+				*
+			FROM
+				VLFichaSeguimientoStock
+			WHERE
+				fecha_comprobante BETWEEN %s AND %s
+		"""
+		
+		#-- Se añaden parámetros.
+		params = [fecha_desde, fecha_hasta]
+		
+		#-- Filtros y parámetros adicionales.
+		condicion = []
+		
+		if id_producto:
+			condicion.append("id_producto_id = %s")
+			params.append(id_producto)
+		
+		if id_cai:
+			condicion.append("id_cai_id = %s")
+			params.append(id_cai)
+		
+		if id_sucursal:
+			condicion.append("id_sucursal_id = %s")
+			params.append(id_sucursal)
+		
+		if condicion:
+			query += " AND " + " AND ".join(condicion)
+		
+		#-- Agregar el ordenamiento acá por rendimiento en la consulta.
+		query += " ORDER BY fecha_comprobante, comprobante, marca"
+		
+		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
+		return self.raw(query, params)
+
+
+class VLFichaSeguimientoStock(models.Model):
+	# id = models.AutoField(primary_key=True)
+	id = models.IntegerField(primary_key=True)
+	id_producto_id = models.IntegerField()
+	id_cai_id = models.IntegerField()
+	cai = models.CharField(max_length=20)
+	medida = models.CharField(max_length=15)
+	nombre_producto = models.CharField(max_length=50)
+	id_marca_id = models.IntegerField()
+	nombre_producto_marca = models.CharField(max_length=50)
+	fecha_comprobante = models.DateField()
+	comprobante = models.CharField(max_length=19)
+	cantidad = models.DecimalField(max_digits=7, decimal_places=2)
+	precio = models.DecimalField(max_digits=12, decimal_places=2)
+	total = models.DecimalField(max_digits=12, decimal_places=2)
+	id_cliente_proveedor = models.IntegerField()
+	nombre_cliente_proveedor = models.CharField(max_length=50)
+	no_estadist = models.BooleanField()	
+	id_sucursal_id = models.IntegerField()
+	id_deposito = models.IntegerField()
+	marca = models.CharField(max_length=4)
+	
+	objects = VLFichaSeguimientoStockManager()
+	
+	class Meta:
+		managed = False
+		db_table = 'VLFichaSeguimientoStock'
+		verbose_name = ('Ficha de Seguimiento de Stock')
+		verbose_name_plural = ('Ficha de Seguimiento de Stock')
 

@@ -15,7 +15,7 @@ from reportlab.platypus import Paragraph
 from .report_views_generics import *
 from apps.informes.models import VLTablaDinamicaEstadistica
 from ..forms.buscador_vltabladinamicaestadistica_forms import BuscadorTablaDinamicaEstadisticaForm
-from utils.utils import deserializar_datos, formato_argentino, normalizar, format_date
+from utils.utils import deserializar_datos, formato_argentino, normalizar, format_date, raw_to_dict
 from utils.helpers.export_helpers import ExportHelper, PDFGenerator
 
 
@@ -406,6 +406,7 @@ class ConfigViews:
 		},
 	}
 
+
 class VLTablaDinamicaEstadisticaInformeView(InformeFormView):
 	config = ConfigViews  #-- Ahora la configuración estará disponible en self.config.
 	form_class = ConfigViews.form_class
@@ -456,28 +457,6 @@ class VLTablaDinamicaEstadisticaInformeView(InformeFormView):
 		}
 		
 		# **************************************************
-		# #-- Estructura para agrupar datos por cliente.
-		# datos_por_cliente = {}
-		# total_general = float(0)
-		# 
-		# for obj in queryset:
-		# 	#-- Identificar al cliente.
-		# 	cliente_id = obj.id_cliente_id
-		# 	
-		# 	#-- Si el cliente aún no está en el diccionario, se inicializa.
-		# 	if cliente_id not in datos_por_cliente:
-		# 		datos_por_cliente[cliente_id] = {
-		# 			"comprobantes": [],
-		# 			"total_cliente": float(0),
-		# 		}
-		# 	
-		# 	#-- Añadir el detalle al grupo.
-		# 	datos_por_cliente[cliente_id]["comprobantes"].append(raw_to_dict(obj))
-		# 	
-		# 	#-- Acumular totales.
-		# 	datos_por_cliente[cliente_id]["total_cliente"] += float(obj.total)
-		# 	total_general += float(obj.total)
-		
 		# **************************************************
 		
 		#-- Convertir cada objeto del queryset a un diccionario.
@@ -502,13 +481,6 @@ class VLTablaDinamicaEstadisticaInformeView(InformeFormView):
 		if form.errors:
 			context["data_has_errors"] = True
 		return context
-
-
-def raw_to_dict(instance):
-	"""Convierte una instancia de una consulta raw a un diccionario, eliminando claves internas."""
-	data = instance.__dict__.copy()
-	data.pop('_state', None)
-	return data
 
 
 def vltabladinamicaestadistica_vista_pantalla(request):
@@ -611,6 +583,7 @@ def generar_pdf(contexto_reporte):
 		table_data.append(row)
 	
 	return generator.generate(table_data, col_widths, table_style_config)		
+
 
 def vltabladinamicaestadistica_vista_excel(request):
 	token = request.GET.get("token")

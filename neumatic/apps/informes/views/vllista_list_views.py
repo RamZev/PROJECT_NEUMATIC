@@ -14,7 +14,7 @@ from reportlab.platypus import Paragraph
 from .report_views_generics import *
 from apps.informes.models import VLLista
 from ..forms.buscador_vllista_forms import BuscadorListaForm
-from utils.utils import deserializar_datos, formato_argentino, normalizar
+from utils.utils import deserializar_datos, formato_argentino, normalizar, raw_to_dict
 from utils.helpers.export_helpers import ExportHelper, PDFGenerator
 
 
@@ -402,12 +402,6 @@ class VLListaInformeView(InformeFormView):
 		if form.errors:
 			context["data_has_errors"] = True
 		return context
-
-def raw_to_dict(instance):
-	"""Convierte una instancia de una consulta raw a un diccionario, eliminando claves internas."""
-	data = instance.__dict__.copy()
-	data.pop('_state', None)
-	return data
 
 
 def vllista_vista_pantalla(request):

@@ -53,7 +53,6 @@ class ConfigViews:
 	
 	# URL de la vista que genera el .pdf.
 	url_pdf = f"{model_string}_informe_pdf"
-	
 
 
 class DataViewList:

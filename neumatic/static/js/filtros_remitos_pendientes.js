@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------------------
-// Funcionalidad Hab/Deshab según filtrar_por.
+// Funcionalidad para buscar producto por Código o CAI.
 // ---------------------------------------------------------------------------
 const filtrar_por = document.getElementById("id_filtrar_por");
 

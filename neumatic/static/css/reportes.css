@@ -182,3 +182,37 @@ table th.numeric, table td.numeric {
 	margin: 0; /* Elimina márgenes en los párrafos */
 	padding: 0; /* Elimina padding extra */
 }
+
+
+/*--- Estilos para fijar los títulos de las columnas de la tabla (Sticky) ---*/
+/* Contenedor para la tabla con scroll */
+.table-container {
+	max-height: 80vh;
+	overflow-y: auto;
+	position: relative;
+}
+
+/* Fijar el encabezado */
+table thead th {
+	position: sticky;
+	top: 0;
+	background-color: white;
+	z-index: 10;
+	box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.1);
+}
+
+/* Asegurar que la primera columna también sea sticky si es necesario */
+table thead th:first-child {
+	left: 0;
+	z-index: 20;
+}
+
+/* Opcional: estilo para el encabezado */
+table thead th {
+	background-color: #9c9c9cff;
+	font-weight: bold;
+	/* padding: 10px; */
+	padding-top: 10px;
+	padding-bottom: 10px;
+}
+/*---------------------------------------------------------------------------*/

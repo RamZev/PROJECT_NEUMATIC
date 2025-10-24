@@ -130,6 +130,7 @@ class ConfigViews:
 		},
 	}
 
+
 class VLResumenCtaCteInformeView(InformeFormView):
 	config = ConfigViews  #-- Ahora la configuración estará disponible en self.config.
 	form_class = ConfigViews.form_class
@@ -333,6 +334,7 @@ def vlresumenctacte_vista_pdf(request):
 	
 	return response
 
+
 class CustomPDFGenerator(PDFGenerator):
 	#-- Método que se puede sobreescribir/extender según requerimientos.
 	def _get_header_bottom_left(self, context):
@@ -355,6 +357,7 @@ class CustomPDFGenerator(PDFGenerator):
 	# 		<b>Total General:</b> {formato_es_ar(saldo_total)}
 	# 	"""
 	pass
+
 
 def generar_pdf(contexto_reporte):
 	resumen_pendiente = contexto_reporte.get('resumen_pendiente', None)

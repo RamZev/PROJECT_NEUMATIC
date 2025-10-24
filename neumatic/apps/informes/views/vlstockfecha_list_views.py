@@ -14,7 +14,7 @@ from reportlab.platypus import Paragraph
 from .report_views_generics import *
 from apps.informes.models import VLStockFecha
 from ..forms.buscador_vlstockfecha_forms import BuscadorStockFechaForm
-from utils.utils import deserializar_datos, formato_argentino_entero, normalizar
+from utils.utils import deserializar_datos, formato_argentino_entero, normalizar, raw_to_dict
 from utils.helpers.export_helpers import ExportHelper, PDFGenerator
 
 
@@ -276,12 +276,6 @@ class VLStockFechaInformeView(InformeFormView):
 		if form.errors:
 			context["data_has_errors"] = True
 		return context
-
-def raw_to_dict(instance):
-	"""Convierte una instancia de una consulta raw a un diccionario, eliminando claves internas."""
-	data = instance.__dict__.copy()
-	data.pop('_state', None)
-	return data
 
 
 def vlstockfecha_vista_pantalla(request):

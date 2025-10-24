@@ -87,6 +87,10 @@ from apps.informes.views.vlstockgeneralsucursal_list_views import *
 # from apps.informes.views.vlstockfecha_list_views import *
 from apps.informes.views.vlstockunico_list_views import *
 from apps.informes.views.vlreposicionstock_list_views import *
+from apps.informes.views.vlmovimientointernostock_list_views import *
+from apps.informes.views.vlstockcliente_list_views import *
+from apps.informes.views.vlstockdeposito_list_views import *
+from apps.informes.views.vlfichaseguimientostock_list_views import *
 
 
 
@@ -849,6 +853,54 @@ urlpatterns = [
 	path("vlreposicionstock/vista-csv/", vlreposicionstock_vista_csv, 
 		 name="vlreposicionstock_vista_csv"),
 	
+	#-- VL Movimiento Interno de Stock.
+	path('vlmovimientointernostock_informe/', VLMovimientoInternoStockInformeView.as_view(), 
+		 name='vlmovimientointernostock_informe_list'),
+	path('vlmovimientointernostock/vista-preliminar/', vlmovimientointernostock_vista_pantalla, 
+		 name="vlmovimientointernostock_vista_pantalla"),
+	path("vlmovimientointernostock/vista-pdf/", vlmovimientointernostock_vista_pdf, 
+		 name="vlmovimientointernostock_vista_pdf"),
+	path("vlmovimientointernostock/vista-excel/", vlmovimientointernostock_vista_excel, 
+		 name="vlmovimientointernostock_vista_excel"),
+	path("vlmovimientointernostock/vista-csv/", vlmovimientointernostock_vista_csv, 
+		 name="vlmovimientointernostock_vista_csv"),
+	
+	#-- VL Stock por Cliente en Depósito.
+	path('vlstockcliente_informe/', VLStockClienteInformeView.as_view(), 
+		 name='vlstockcliente_informe_list'),
+	path('vlstockcliente/vista-preliminar/', vlstockcliente_vista_pantalla, 
+		 name="vlstockcliente_vista_pantalla"),
+	path("vlstockcliente/vista-pdf/", vlstockcliente_vista_pdf, 
+		 name="vlstockcliente_vista_pdf"),
+	path("vlstockcliente/vista-excel/", vlstockcliente_vista_excel, 
+		 name="vlstockcliente_vista_excel"),
+	path("vlstockcliente/vista-csv/", vlstockcliente_vista_csv, 
+		 name="vlstockcliente_vista_csv"),
+	
+	#-- VL Stock en Depósitos de Clientes.
+	path('vlstockdeposito_informe/', VLStockDepositoInformeView.as_view(), 
+		 name='vlstockdeposito_informe_list'),
+	path('vlstockdeposito/vista-preliminar/', vlstockdeposito_vista_pantalla, 
+		 name="vlstockdeposito_vista_pantalla"),
+	path("vlstockdeposito/vista-pdf/", vlstockdeposito_vista_pdf, 
+		 name="vlstockdeposito_vista_pdf"),
+	path("vlstockdeposito/vista-excel/", vlstockdeposito_vista_excel, 
+		 name="vlstockdeposito_vista_excel"),
+	path("vlstockdeposito/vista-csv/", vlstockdeposito_vista_csv, 
+		 name="vlstockdeposito_vista_csv"),
+	
+	#-- VL Ficha de Seguimiento de Stock.
+	path('vlfichaseguimientostock_informe/', VLFichaSeguimientoStockInformeView.as_view(), 
+		 name='vlfichaseguimientostock_informe_list'),
+	path('vlfichaseguimientostock/vista-preliminar/', vlfichaseguimientostock_vista_pantalla, 
+		 name="vlfichaseguimientostock_vista_pantalla"),
+	path("vlfichaseguimientostock/vista-pdf/", vlfichaseguimientostock_vista_pdf, 
+		 name="vlfichaseguimientostock_vista_pdf"),
+	path("vlfichaseguimientostock/vista-excel/", vlfichaseguimientostock_vista_excel, 
+		 name="vlfichaseguimientostock_vista_excel"),
+	path("vlfichaseguimientostock/vista-csv/", vlfichaseguimientostock_vista_csv, 
+		 name="vlfichaseguimientostock_vista_csv"),
+	
 	
 	
 	#-- Otras rutas.
@@ -856,6 +908,7 @@ urlpatterns = [
 	path('buscar/cliente/id/', buscar_cliente_id, name='buscar_cliente_id'),
 	path('buscar/cliente/', buscar_cliente, name='buscar_cliente'),
 	
-	
+	path('buscar/producto/id/', buscar_producto_por_id, name='buscar_producto_por_id'),
+	path('buscar/producto/cai/', buscar_producto_por_cai, name='buscar_producto_por_cai'),
 
 ]

@@ -304,6 +304,7 @@ class CustomPDFGenerator(PDFGenerator):
 	# 	"""
 	pass
 
+
 def generar_pdf(contexto_reporte):
 	#-- Crear instancia del generador personalizado.
 	generator = CustomPDFGenerator(contexto_reporte, pagesize=landscape(A4), body_font_size=7)

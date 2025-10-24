@@ -1,6 +1,6 @@
 2025-09-18 12:37:06,185 - INFO - Eliminando 142000 registros existentes...
-2025-09-18 12:37:26,301 - INFO - Iniciando migración. Total registros: 154684
-2025-09-18 12:37:26,301 - INFO - Cargando cachés de referencia...
+2025-09-18 12:37:26,301 - INFO - Iniciando migraciï¿½n. Total registros: 154684
+2025-09-18 12:37:26,301 - INFO - Cargando cachï¿½s de referencia...
 2025-09-18 12:37:32,012 - INFO - Lote guardado: 2000 registros
 2025-09-18 12:37:32,280 - INFO - Lote guardado: 2000 registros
 2025-09-18 12:37:32,691 - INFO - Lote guardado: 2000 registros
@@ -98,89 +98,89 @@
 2025-09-18 12:37:54,793 - INFO - Lote guardado: 2000 registros
 2025-09-18 12:37:54,793 - INFO - Progreso: 150000 registros procesados
 2025-09-18 12:37:55,078 - INFO - Lote guardado: 2000 registros
-2025-09-18 12:37:55,298 - INFO - Último lote guardado: 1604 registros
+2025-09-18 12:37:55,298 - INFO - ï¿½ltimo lote guardado: 1604 registros
 2025-09-18 12:37:55,298 - INFO - 
 === REPORTE FINAL ===
 2025-09-18 12:37:55,298 - INFO - Total registros procesados: 153604
 2025-09-18 12:37:55,298 - INFO - Total errores: 0
 2025-09-18 12:37:55,298 - WARNING - 
 Productos no encontrados (66):
-2025-09-18 12:37:55,298 - WARNING -  - Código convertido: 0 | Valor original: 0
-2025-09-18 12:37:55,298 - WARNING -  - Código convertido: 4949 | Valor original: 4949
-2025-09-18 12:37:55,298 - WARNING -  - Código convertido: 8578 | Valor original: 8578
-2025-09-18 12:37:55,298 - WARNING -  - Código convertido: 8582 | Valor original: 8582
-2025-09-18 12:37:55,298 - WARNING -  - Código convertido: 33014 | Valor original: 33014
-2025-09-18 12:37:55,298 - WARNING -  - Código convertido: 35100 | Valor original: 35100
-2025-09-18 12:37:55,298 - WARNING -  - Código convertido: 50805 | Valor original: 50805
-2025-09-18 12:37:55,298 - WARNING -  - Código convertido: 60320 | Valor original: 60320
-2025-09-18 12:37:55,298 - WARNING -  - Código convertido: 100030 | Valor original: 100030
-2025-09-18 12:37:55,298 - WARNING -  - Código convertido: 100050 | Valor original: 100050
-2025-09-18 12:37:55,298 - WARNING -  - Código convertido: 100150 | Valor original: 100150
-2025-09-18 12:37:55,298 - WARNING -  - Código convertido: 100300 | Valor original: 100300
-2025-09-18 12:37:55,298 - WARNING -  - Código convertido: 100360 | Valor original: 100360
-2025-09-18 12:37:55,314 - WARNING -  - Código convertido: 100620 | Valor original: 100620
-2025-09-18 12:37:55,314 - WARNING -  - Código convertido: 100701 | Valor original: 100701
-2025-09-18 12:37:55,314 - WARNING -  - Código convertido: 100730 | Valor original: 100730
-2025-09-18 12:37:55,315 - WARNING -  - Código convertido: 100805 | Valor original: 100805
-2025-09-18 12:37:55,315 - WARNING -  - Código convertido: 102010 | Valor original: 102010
-2025-09-18 12:37:55,316 - WARNING -  - Código convertido: 102310 | Valor original: 102310
-2025-09-18 12:37:55,316 - WARNING -  - Código convertido: 102620 | Valor original: 102620
-2025-09-18 12:37:55,316 - WARNING -  - Código convertido: 102630 | Valor original: 102630
-2025-09-18 12:37:55,317 - WARNING -  - Código convertido: 102650 | Valor original: 102650
-2025-09-18 12:37:55,317 - WARNING -  - Código convertido: 102900 | Valor original: 102900
-2025-09-18 12:37:55,317 - WARNING -  - Código convertido: 102910 | Valor original: 102910
-2025-09-18 12:37:55,318 - WARNING -  - Código convertido: 103020 | Valor original: 103020
-2025-09-18 12:37:55,318 - WARNING -  - Código convertido: 103700 | Valor original: 103700
-2025-09-18 12:37:55,318 - WARNING -  - Código convertido: 104100 | Valor original: 104100
-2025-09-18 12:37:55,318 - WARNING -  - Código convertido: 104840 | Valor original: 104840
-2025-09-18 12:37:55,319 - WARNING -  - Código convertido: 105420 | Valor original: 105420
-2025-09-18 12:37:55,319 - WARNING -  - Código convertido: 105440 | Valor original: 105440
-2025-09-18 12:37:55,319 - WARNING -  - Código convertido: 106000 | Valor original: 106000
-2025-09-18 12:37:55,320 - WARNING -  - Código convertido: 106040 | Valor original: 106040
-2025-09-18 12:37:55,320 - WARNING -  - Código convertido: 106160 | Valor original: 106160
-2025-09-18 12:37:55,320 - WARNING -  - Código convertido: 106210 | Valor original: 106210
-2025-09-18 12:37:55,320 - WARNING -  - Código convertido: 106230 | Valor original: 106230
-2025-09-18 12:37:55,321 - WARNING -  - Código convertido: 106370 | Valor original: 106370
-2025-09-18 12:37:55,321 - WARNING -  - Código convertido: 106430 | Valor original: 106430
-2025-09-18 12:37:55,321 - WARNING -  - Código convertido: 107070 | Valor original: 107070
-2025-09-18 12:37:55,321 - WARNING -  - Código convertido: 107120 | Valor original: 107120
-2025-09-18 12:37:55,322 - WARNING -  - Código convertido: 107530 | Valor original: 107530
-2025-09-18 12:37:55,322 - WARNING -  - Código convertido: 107580 | Valor original: 107580
-2025-09-18 12:37:55,322 - WARNING -  - Código convertido: 107590 | Valor original: 107590
-2025-09-18 12:37:55,322 - WARNING -  - Código convertido: 107900 | Valor original: 107900
-2025-09-18 12:37:55,322 - WARNING -  - Código convertido: 107985 | Valor original: 107985
-2025-09-18 12:37:55,322 - WARNING -  - Código convertido: 108040 | Valor original: 108040
-2025-09-18 12:37:55,324 - WARNING -  - Código convertido: 108050 | Valor original: 108050
-2025-09-18 12:37:55,324 - WARNING -  - Código convertido: 109520 | Valor original: 109520
-2025-09-18 12:37:55,324 - WARNING -  - Código convertido: 109530 | Valor original: 109530
-2025-09-18 12:37:55,324 - WARNING -  - Código convertido: 109540 | Valor original: 109540
-2025-09-18 12:37:55,325 - WARNING -  - Código convertido: 109550 | Valor original: 109550
-2025-09-18 12:37:55,325 - WARNING -  - Código convertido: 114710 | Valor original: 114710
-2025-09-18 12:37:55,325 - WARNING -  - Código convertido: 119350 | Valor original: 119350
-2025-09-18 12:37:55,325 - WARNING -  - Código convertido: 120610 | Valor original: 120610
-2025-09-18 12:37:55,326 - WARNING -  - Código convertido: 122011 | Valor original: 122011
-2025-09-18 12:37:55,326 - WARNING -  - Código convertido: 135120 | Valor original: 135120
-2025-09-18 12:37:55,326 - WARNING -  - Código convertido: 137795 | Valor original: 137795
-2025-09-18 12:37:55,326 - WARNING -  - Código convertido: 137855 | Valor original: 137855
-2025-09-18 12:37:55,326 - WARNING -  - Código convertido: 137860 | Valor original: 137860
-2025-09-18 12:37:55,328 - WARNING -  - Código convertido: 139285 | Valor original: 139285
-2025-09-18 12:37:55,328 - WARNING -  - Código convertido: 190280 | Valor original: 190280
-2025-09-18 12:37:55,328 - WARNING -  - Código convertido: 190290 | Valor original: 190290
-2025-09-18 12:37:55,328 - WARNING -  - Código convertido: 190300 | Valor original: 190300
-2025-09-18 12:37:55,329 - WARNING -  - Código convertido: 190310 | Valor original: 190310
-2025-09-18 12:37:55,329 - WARNING -  - Código convertido: 190520 | Valor original: 190520
-2025-09-18 12:37:55,329 - WARNING -  - Código convertido: 190660 | Valor original: 190660
-2025-09-18 12:37:55,329 - WARNING -  - Código convertido: 336860 | Valor original: 336860
+2025-09-18 12:37:55,298 - WARNING -  - Cï¿½digo convertido: 0 | Valor original: 0
+2025-09-18 12:37:55,298 - WARNING -  - Cï¿½digo convertido: 4949 | Valor original: 4949
+2025-09-18 12:37:55,298 - WARNING -  - Cï¿½digo convertido: 8578 | Valor original: 8578
+2025-09-18 12:37:55,298 - WARNING -  - Cï¿½digo convertido: 8582 | Valor original: 8582
+2025-09-18 12:37:55,298 - WARNING -  - Cï¿½digo convertido: 33014 | Valor original: 33014
+2025-09-18 12:37:55,298 - WARNING -  - Cï¿½digo convertido: 35100 | Valor original: 35100
+2025-09-18 12:37:55,298 - WARNING -  - Cï¿½digo convertido: 50805 | Valor original: 50805
+2025-09-18 12:37:55,298 - WARNING -  - Cï¿½digo convertido: 60320 | Valor original: 60320
+2025-09-18 12:37:55,298 - WARNING -  - Cï¿½digo convertido: 100030 | Valor original: 100030
+2025-09-18 12:37:55,298 - WARNING -  - Cï¿½digo convertido: 100050 | Valor original: 100050
+2025-09-18 12:37:55,298 - WARNING -  - Cï¿½digo convertido: 100150 | Valor original: 100150
+2025-09-18 12:37:55,298 - WARNING -  - Cï¿½digo convertido: 100300 | Valor original: 100300
+2025-09-18 12:37:55,298 - WARNING -  - Cï¿½digo convertido: 100360 | Valor original: 100360
+2025-09-18 12:37:55,314 - WARNING -  - Cï¿½digo convertido: 100620 | Valor original: 100620
+2025-09-18 12:37:55,314 - WARNING -  - Cï¿½digo convertido: 100701 | Valor original: 100701
+2025-09-18 12:37:55,314 - WARNING -  - Cï¿½digo convertido: 100730 | Valor original: 100730
+2025-09-18 12:37:55,315 - WARNING -  - Cï¿½digo convertido: 100805 | Valor original: 100805
+2025-09-18 12:37:55,315 - WARNING -  - Cï¿½digo convertido: 102010 | Valor original: 102010
+2025-09-18 12:37:55,316 - WARNING -  - Cï¿½digo convertido: 102310 | Valor original: 102310
+2025-09-18 12:37:55,316 - WARNING -  - Cï¿½digo convertido: 102620 | Valor original: 102620
+2025-09-18 12:37:55,316 - WARNING -  - Cï¿½digo convertido: 102630 | Valor original: 102630
+2025-09-18 12:37:55,317 - WARNING -  - Cï¿½digo convertido: 102650 | Valor original: 102650
+2025-09-18 12:37:55,317 - WARNING -  - Cï¿½digo convertido: 102900 | Valor original: 102900
+2025-09-18 12:37:55,317 - WARNING -  - Cï¿½digo convertido: 102910 | Valor original: 102910
+2025-09-18 12:37:55,318 - WARNING -  - Cï¿½digo convertido: 103020 | Valor original: 103020
+2025-09-18 12:37:55,318 - WARNING -  - Cï¿½digo convertido: 103700 | Valor original: 103700
+2025-09-18 12:37:55,318 - WARNING -  - Cï¿½digo convertido: 104100 | Valor original: 104100
+2025-09-18 12:37:55,318 - WARNING -  - Cï¿½digo convertido: 104840 | Valor original: 104840
+2025-09-18 12:37:55,319 - WARNING -  - Cï¿½digo convertido: 105420 | Valor original: 105420
+2025-09-18 12:37:55,319 - WARNING -  - Cï¿½digo convertido: 105440 | Valor original: 105440
+2025-09-18 12:37:55,319 - WARNING -  - Cï¿½digo convertido: 106000 | Valor original: 106000
+2025-09-18 12:37:55,320 - WARNING -  - Cï¿½digo convertido: 106040 | Valor original: 106040
+2025-09-18 12:37:55,320 - WARNING -  - Cï¿½digo convertido: 106160 | Valor original: 106160
+2025-09-18 12:37:55,320 - WARNING -  - Cï¿½digo convertido: 106210 | Valor original: 106210
+2025-09-18 12:37:55,320 - WARNING -  - Cï¿½digo convertido: 106230 | Valor original: 106230
+2025-09-18 12:37:55,321 - WARNING -  - Cï¿½digo convertido: 106370 | Valor original: 106370
+2025-09-18 12:37:55,321 - WARNING -  - Cï¿½digo convertido: 106430 | Valor original: 106430
+2025-09-18 12:37:55,321 - WARNING -  - Cï¿½digo convertido: 107070 | Valor original: 107070
+2025-09-18 12:37:55,321 - WARNING -  - Cï¿½digo convertido: 107120 | Valor original: 107120
+2025-09-18 12:37:55,322 - WARNING -  - Cï¿½digo convertido: 107530 | Valor original: 107530
+2025-09-18 12:37:55,322 - WARNING -  - Cï¿½digo convertido: 107580 | Valor original: 107580
+2025-09-18 12:37:55,322 - WARNING -  - Cï¿½digo convertido: 107590 | Valor original: 107590
+2025-09-18 12:37:55,322 - WARNING -  - Cï¿½digo convertido: 107900 | Valor original: 107900
+2025-09-18 12:37:55,322 - WARNING -  - Cï¿½digo convertido: 107985 | Valor original: 107985
+2025-09-18 12:37:55,322 - WARNING -  - Cï¿½digo convertido: 108040 | Valor original: 108040
+2025-09-18 12:37:55,324 - WARNING -  - Cï¿½digo convertido: 108050 | Valor original: 108050
+2025-09-18 12:37:55,324 - WARNING -  - Cï¿½digo convertido: 109520 | Valor original: 109520
+2025-09-18 12:37:55,324 - WARNING -  - Cï¿½digo convertido: 109530 | Valor original: 109530
+2025-09-18 12:37:55,324 - WARNING -  - Cï¿½digo convertido: 109540 | Valor original: 109540
+2025-09-18 12:37:55,325 - WARNING -  - Cï¿½digo convertido: 109550 | Valor original: 109550
+2025-09-18 12:37:55,325 - WARNING -  - Cï¿½digo convertido: 114710 | Valor original: 114710
+2025-09-18 12:37:55,325 - WARNING -  - Cï¿½digo convertido: 119350 | Valor original: 119350
+2025-09-18 12:37:55,325 - WARNING -  - Cï¿½digo convertido: 120610 | Valor original: 120610
+2025-09-18 12:37:55,326 - WARNING -  - Cï¿½digo convertido: 122011 | Valor original: 122011
+2025-09-18 12:37:55,326 - WARNING -  - Cï¿½digo convertido: 135120 | Valor original: 135120
+2025-09-18 12:37:55,326 - WARNING -  - Cï¿½digo convertido: 137795 | Valor original: 137795
+2025-09-18 12:37:55,326 - WARNING -  - Cï¿½digo convertido: 137855 | Valor original: 137855
+2025-09-18 12:37:55,326 - WARNING -  - Cï¿½digo convertido: 137860 | Valor original: 137860
+2025-09-18 12:37:55,328 - WARNING -  - Cï¿½digo convertido: 139285 | Valor original: 139285
+2025-09-18 12:37:55,328 - WARNING -  - Cï¿½digo convertido: 190280 | Valor original: 190280
+2025-09-18 12:37:55,328 - WARNING -  - Cï¿½digo convertido: 190290 | Valor original: 190290
+2025-09-18 12:37:55,328 - WARNING -  - Cï¿½digo convertido: 190300 | Valor original: 190300
+2025-09-18 12:37:55,329 - WARNING -  - Cï¿½digo convertido: 190310 | Valor original: 190310
+2025-09-18 12:37:55,329 - WARNING -  - Cï¿½digo convertido: 190520 | Valor original: 190520
+2025-09-18 12:37:55,329 - WARNING -  - Cï¿½digo convertido: 190660 | Valor original: 190660
+2025-09-18 12:37:55,329 - WARNING -  - Cï¿½digo convertido: 336860 | Valor original: 336860
 2025-09-18 12:37:55,329 - INFO - 
 Tiempo total: 0 minutos 29 segundos
 2025-09-18 13:47:12,537 - INFO - Eliminando 153604 registros existentes...
-2025-09-18 14:59:31,127 - INFO - Cargando cachés de referencia...
+2025-09-18 14:59:31,127 - INFO - Cargando cachï¿½s de referencia...
 2025-09-18 14:59:36,682 - WARNING - No se pudo obtener conteo total: [Errno 13] Permission denied: 'D:\\PROJECT_NEUMATIC\\neumatic\\data_load\\datavfox\\detcom.DBF'
-2025-09-18 14:59:36,682 - INFO - Iniciando migración por bloques...
+2025-09-18 14:59:36,682 - INFO - Iniciando migraciï¿½n por bloques...
 2025-09-18 14:59:36,683 - INFO - --- Iniciando Bloque 1 (registros 0 a 159999) ---
-2025-09-18 15:00:13,256 - INFO - Cargando cachés de referencia...
+2025-09-18 15:00:13,256 - INFO - Cargando cachï¿½s de referencia...
 2025-09-18 15:00:18,830 - INFO - Total registros estimados: 316105
-2025-09-18 15:00:18,830 - INFO - Iniciando migración por bloques...
+2025-09-18 15:00:18,830 - INFO - Iniciando migraciï¿½n por bloques...
 2025-09-18 15:00:18,831 - INFO - --- Iniciando Bloque 1 (registros 0 a 159999) ---
 2025-09-18 15:00:22,356 - INFO - Bloque 1: Procesando 160000 registros...
 2025-09-18 15:00:22,419 - WARNING - Compra no encontrada ID: 0
@@ -278,9 +278,9 @@ Tiempo total: 0 minutos 29 segundos
 2025-09-18 15:00:40,561 - INFO - Progreso global: 140000 registros procesados
 2025-09-18 15:00:40,798 - INFO - Lote guardado: 2000 registros (bloque 1)
 2025-09-18 15:05:00,463 - INFO - Eliminando 142000 registros existentes...
-2025-09-18 15:05:01,999 - INFO - Cargando cachés de referencia...
+2025-09-18 15:05:01,999 - INFO - Cargando cachï¿½s de referencia...
 2025-09-18 15:05:07,586 - INFO - Total registros estimados: 316105
-2025-09-18 15:05:07,587 - INFO - Iniciando migración por bloques...
+2025-09-18 15:05:07,587 - INFO - Iniciando migraciï¿½n por bloques...
 2025-09-18 15:05:07,587 - INFO - --- Iniciando Bloque 1 (registros 0 a 159999) ---
 2025-09-18 15:05:11,200 - INFO - Bloque 1: Procesando 160000 registros...
 2025-09-18 15:05:11,266 - WARNING - Compra no encontrada ID: 0
@@ -378,9 +378,9 @@ Tiempo total: 0 minutos 29 segundos
 2025-09-18 15:05:28,974 - INFO - Progreso global: 140000 registros procesados
 2025-09-18 15:05:29,214 - INFO - Lote guardado: 2000 registros (bloque 1)
 2025-09-18 15:09:21,873 - INFO - Eliminando 142000 registros existentes...
-2025-09-18 15:09:23,406 - INFO - Cargando cachés de referencia...
+2025-09-18 15:09:23,406 - INFO - Cargando cachï¿½s de referencia...
 2025-09-18 15:09:29,002 - INFO - Total registros estimados: 316105
-2025-09-18 15:09:29,002 - INFO - Iniciando migración por bloques...
+2025-09-18 15:09:29,002 - INFO - Iniciando migraciï¿½n por bloques...
 2025-09-18 15:09:29,003 - INFO - --- Iniciando Bloque 1 (registros 0 a 149999) ---
 2025-09-18 15:09:32,449 - INFO - Bloque 1: Procesando 150000 registros...
 2025-09-18 15:09:32,523 - WARNING - Compra no encontrada ID: 0
@@ -471,7 +471,7 @@ Tiempo total: 0 minutos 29 segundos
 2025-09-18 15:09:49,084 - INFO - Lote guardado: 2000 registros (bloque 1)
 2025-09-18 15:09:49,085 - INFO - Progreso global: 130000 registros procesados
 2025-09-18 15:09:49,312 - INFO - Lote guardado: 2000 registros (bloque 1)
-2025-09-18 15:09:49,425 - INFO - Último lote del bloque 1 guardado: 886 registros
+2025-09-18 15:09:49,425 - INFO - ï¿½ltimo lote del bloque 1 guardado: 886 registros
 2025-09-18 15:09:49,425 - INFO - --- Iniciando Bloque 2 (registros 150000 a 299999) ---
 2025-09-18 15:09:55,893 - INFO - Bloque 2: Procesando 150000 registros...
 2025-09-18 15:09:56,127 - INFO - Lote guardado: 2000 registros (bloque 2)
@@ -530,7 +530,7 @@ Tiempo total: 0 minutos 29 segundos
 2025-09-18 15:10:35,867 - INFO - 
 >>> INICIANDO BLOQUE 1/3 (registros 0 a 149999) <<<
 2025-09-18 15:10:36,512 - INFO - Iniciando procesamiento del bloque: registros 0 a 149999
-2025-09-18 15:10:36,518 - INFO - Cargando cachés de referencia...
+2025-09-18 15:10:36,518 - INFO - Cargando cachï¿½s de referencia...
 2025-09-18 15:10:42,088 - WARNING - Compra no encontrada ID: 0
 2025-09-18 15:10:42,264 - INFO - Lote guardado: 2000 registros (rango 0-150000)
 2025-09-18 15:10:42,540 - INFO - Lote guardado: 2000 registros (rango 0-150000)
@@ -619,7 +619,7 @@ Tiempo total: 0 minutos 29 segundos
 2025-09-18 15:11:04,864 - INFO - Lote guardado: 2000 registros (rango 0-150000)
 2025-09-18 15:11:04,866 - INFO - Progreso en bloque: 130000 registros procesados
 2025-09-18 15:11:05,187 - INFO - Lote guardado: 2000 registros (rango 0-150000)
-2025-09-18 15:11:05,331 - INFO - Último lote guardado: 886 registros (rango 0-150000)
+2025-09-18 15:11:05,331 - INFO - ï¿½ltimo lote guardado: 886 registros (rango 0-150000)
 2025-09-18 15:11:05,331 - INFO - 
 === REPORTE BLOQUE 1 ===
 2025-09-18 15:11:05,331 - INFO - Registros procesados en bloque: 132886
@@ -629,7 +629,7 @@ Tiempo total: 0 minutos 29 segundos
 2025-09-18 15:11:05,572 - INFO - 
 >>> INICIANDO BLOQUE 2/3 (registros 150000 a 299999) <<<
 2025-09-18 15:11:06,404 - INFO - Iniciando procesamiento del bloque: registros 150000 a 299999
-2025-09-18 15:11:06,411 - INFO - Cargando cachés de referencia...
+2025-09-18 15:11:06,411 - INFO - Cargando cachï¿½s de referencia...
 2025-09-18 15:11:15,287 - INFO - Lote guardado: 2000 registros (rango 150000-300000)
 2025-09-18 15:11:15,571 - INFO - Lote guardado: 2000 registros (rango 150000-300000)
 2025-09-18 15:11:16,006 - INFO - Lote guardado: 2000 registros (rango 150000-300000)
@@ -15537,7 +15537,7 @@ Tiempo total: 0 minutos 29 segundos
 2025-09-18 16:10:32,371 - INFO - Lote guardado: 2000 registros
 2025-09-18 16:10:32,373 - INFO - Progreso en bloque: 130000 registros
 2025-09-18 16:10:32,666 - INFO - Lote guardado: 2000 registros
-2025-09-18 16:10:32,808 - INFO - Último lote guardado: 886 registros
+2025-09-18 16:10:32,808 - INFO - ï¿½ltimo lote guardado: 886 registros
 2025-09-18 16:10:32,808 - INFO - [PROCESO 15396] Bloque completado: 132886 registros, 0 errores
 2025-09-18 16:10:33,065 - INFO - Bloque 1 completado exitosamente.
 2025-09-18 16:10:33,066 - INFO - 
@@ -16156,9 +16156,9 @@ Tiempo total: 0 minutos 29 segundos
 2025-09-18 16:11:59,043 - ERROR - Error en compra ID 60808 - Registro 160885: [<class 'decimal.InvalidOperation'>]
 2025-09-18 16:11:59,174 - ERROR - Error en compra ID 60809 - Registro 160886: [<class 'decimal.InvalidOperation'>]
 2025-09-18 16:12:05,755 - INFO - Eliminando 140886 registros existentes...
-2025-09-18 16:12:06,981 - INFO - Cargando cachés de referencia...
+2025-09-18 16:12:06,981 - INFO - Cargando cachï¿½s de referencia...
 2025-09-18 16:12:12,850 - INFO - Total registros estimados: 316105
-2025-09-18 16:12:12,850 - INFO - Iniciando migración por bloques...
+2025-09-18 16:12:12,850 - INFO - Iniciando migraciï¿½n por bloques...
 2025-09-18 16:12:12,850 - INFO - --- Iniciando Bloque 1 (registros 0 a 149999) ---
 2025-09-18 16:12:16,190 - INFO - Bloque 1: Procesando 150000 registros...
 2025-09-18 16:12:16,252 - WARNING - Compra no encontrada ID: 0
@@ -16249,7 +16249,7 @@ Tiempo total: 0 minutos 29 segundos
 2025-09-18 16:12:33,133 - INFO - Lote guardado: 2000 registros (bloque 1)
 2025-09-18 16:12:33,135 - INFO - Progreso global: 130000 registros procesados
 2025-09-18 16:12:33,370 - INFO - Lote guardado: 2000 registros (bloque 1)
-2025-09-18 16:12:33,497 - INFO - Último lote del bloque 1 guardado: 886 registros
+2025-09-18 16:12:33,497 - INFO - ï¿½ltimo lote del bloque 1 guardado: 886 registros
 2025-09-18 16:12:33,497 - INFO - --- Iniciando Bloque 2 (registros 150000 a 299999) ---
 2025-09-18 16:12:40,079 - INFO - Bloque 2: Procesando 150000 registros...
 2025-09-18 16:12:40,349 - INFO - Lote guardado: 2000 registros (bloque 2)
@@ -16269,9 +16269,9 @@ Tiempo total: 0 minutos 29 segundos
 2025-09-18 16:12:42,449 - ERROR - Error en compra ID 60555 - Registro 160279: [<class 'decimal.InvalidOperation'>]
 2025-09-18 16:12:42,567 - ERROR - Error en compra ID 60556 - Registro 160280: [<class 'decimal.InvalidOperation'>]
 2025-09-18 16:12:42,680 - ERROR - Error en compra ID 60557 - Registro 160281: [<class 'decimal.InvalidOperation'>]
-2025-09-19 09:33:04,380 - INFO - Cargando cachés de referencia...
+2025-09-19 09:33:04,380 - INFO - Cargando cachï¿½s de referencia...
 2025-09-19 09:33:09,920 - INFO - Total registros estimados: 316105
-2025-09-19 09:33:09,920 - INFO - Iniciando migración por bloques...
+2025-09-19 09:33:09,920 - INFO - Iniciando migraciï¿½n por bloques...
 2025-09-19 09:33:09,920 - INFO - --- Iniciando Bloque 1 (registros 0 a 149999) ---
 2025-09-19 09:33:13,286 - INFO - Bloque 1: Procesando 150000 registros...
 2025-09-19 09:33:13,365 - WARNING - Compra no encontrada ID: 0
@@ -16362,7 +16362,7 @@ Tiempo total: 0 minutos 29 segundos
 2025-09-19 09:33:30,370 - INFO - Lote guardado: 2000 registros (bloque 1)
 2025-09-19 09:33:30,370 - INFO - Progreso global: 130000 registros procesados
 2025-09-19 09:33:30,626 - INFO - Lote guardado: 2000 registros (bloque 1)
-2025-09-19 09:33:30,728 - INFO - Último lote del bloque 1 guardado: 886 registros
+2025-09-19 09:33:30,728 - INFO - ï¿½ltimo lote del bloque 1 guardado: 886 registros
 2025-09-19 09:33:30,728 - INFO - --- Iniciando Bloque 2 (registros 150000 a 299999) ---
 2025-09-19 09:33:37,182 - INFO - Bloque 2: Procesando 150000 registros...
 2025-09-19 09:33:37,420 - INFO - Lote guardado: 2000 registros (bloque 2)
@@ -16408,9 +16408,9 @@ Tiempo total: 0 minutos 29 segundos
 2025-09-19 09:33:42,618 - ERROR - Error en compra ID 60565 - Registro 160305: [<class 'decimal.InvalidOperation'>]
 2025-09-19 09:33:42,722 - ERROR - Error en compra ID 60566 - Registro 160306: [<class 'decimal.InvalidOperation'>]
 2025-09-19 09:33:42,853 - ERROR - Error en compra ID 60567 - Registro 160307: [<class 'decimal.InvalidOperation'>]
-2025-10-17 11:02:00,566 - INFO - Cargando cachés de referencia...
+2025-10-17 11:02:00,566 - INFO - Cargando cachï¿½s de referencia...
 2025-10-17 11:02:06,331 - INFO - Total registros estimados: 316105
-2025-10-17 11:02:06,332 - INFO - Iniciando migración por bloques...
+2025-10-17 11:02:06,332 - INFO - Iniciando migraciï¿½n por bloques...
 2025-10-17 11:02:06,332 - INFO - --- Iniciando Bloque 1 (registros 0 a 149999) ---
 2025-10-17 11:02:09,698 - INFO - Bloque 1: Procesando 150000 registros...
 2025-10-17 11:02:09,771 - WARNING - Compra no encontrada ID: 0
@@ -16501,7 +16501,7 @@ Tiempo total: 0 minutos 29 segundos
 2025-10-17 11:02:26,601 - INFO - Lote guardado: 2000 registros (bloque 1)
 2025-10-17 11:02:26,603 - INFO - Progreso global: 130000 registros procesados
 2025-10-17 11:02:26,855 - INFO - Lote guardado: 2000 registros (bloque 1)
-2025-10-17 11:02:26,987 - INFO - Último lote del bloque 1 guardado: 886 registros
+2025-10-17 11:02:26,987 - INFO - ï¿½ltimo lote del bloque 1 guardado: 886 registros
 2025-10-17 11:02:26,987 - INFO - --- Iniciando Bloque 2 (registros 150000 a 299999) ---
 2025-10-17 11:02:34,414 - INFO - Bloque 2: Procesando 150000 registros...
 2025-10-17 11:02:34,646 - INFO - Lote guardado: 2000 registros (bloque 2)
@@ -16981,9 +16981,9 @@ Tiempo total: 0 minutos 29 segundos
 2025-10-17 11:03:32,689 - ERROR - Error en compra ID 60757 - Registro 160743: [<class 'decimal.InvalidOperation'>]
 2025-10-17 11:03:32,815 - ERROR - Error en compra ID 60758 - Registro 160744: [<class 'decimal.InvalidOperation'>]
 2025-10-17 11:03:32,929 - ERROR - Error en compra ID 60759 - Registro 160745: [<class 'decimal.InvalidOperation'>]
-2025-10-17 12:55:27,593 - INFO - Cargando cachés de referencia...
+2025-10-17 12:55:27,593 - INFO - Cargando cachï¿½s de referencia...
 2025-10-17 12:55:28,572 - INFO - Total registros estimados: 26533
-2025-10-17 12:55:28,572 - INFO - Iniciando migración por bloques...
+2025-10-17 12:55:28,572 - INFO - Iniciando migraciï¿½n por bloques...
 2025-10-17 12:55:28,572 - INFO - --- Iniciando Bloque 1 (registros 0 a 149999) ---
 2025-10-17 12:55:29,127 - INFO - Bloque 1: Procesando 26533 registros...
 2025-10-17 12:55:29,128 - WARNING - Compra no encontrada ID: 0
@@ -17016,9 +17016,9 @@ Tiempo total: 0 minutos 29 segundos
 2025-10-17 12:55:31,829 - INFO - Lote guardado: 2000 registros (bloque 1)
 2025-10-17 12:55:32,098 - INFO - Lote guardado: 2000 registros (bloque 1)
 2025-10-17 12:55:32,326 - INFO - Lote guardado: 2000 registros (bloque 1)
-2025-10-17 12:55:32,397 - INFO - Último lote del bloque 1 guardado: 518 registros
+2025-10-17 12:55:32,397 - INFO - ï¿½ltimo lote del bloque 1 guardado: 518 registros
 2025-10-17 12:55:32,397 - INFO - --- Iniciando Bloque 2 (registros 150000 a 299999) ---
-2025-10-17 12:55:32,922 - INFO - No se encontraron más registros. Fin del procesamiento.
+2025-10-17 12:55:32,922 - INFO - No se encontraron mï¿½s registros. Fin del procesamiento.
 2025-10-17 12:55:32,922 - INFO - 
 === REPORTE FINAL ===
 2025-10-17 12:55:32,923 - INFO - Total registros procesados: 26518

@@ -46,11 +46,26 @@ def serializar_queryset(queryset):
 	return [model_to_dict(obj) for obj in queryset]
 
 
+def raw_to_dict(instance):
+	"""Convierte una instancia de ModelProxy (namedtuple) o modelo a un diccionario."""
+	if hasattr(instance, '_asdict'):  #-- Para namedtuple (ModelProxy).
+		return instance._asdict()
+	elif hasattr(instance, '__dict__'):  #-- Para modelos normales.
+		data = instance.__dict__.copy()
+		data.pop('_state', None)
+		return data
+	else:
+		#-- Si no es ninguno de los anteriores, intentamos convertir a dict directamente.
+		return dict(instance)
+
+
 def formato_argentino(valor):
 	return locale.format_string('%.2f', valor, grouping=True)
 
+
 def formato_argentino_entero(valor):
 	return locale.format_string('%d', valor, grouping=True)
+
 
 def format_date(date_value):
 	"""Helper para formatear fechas en formato dd/mm/yyyy."""
@@ -88,6 +103,7 @@ def normalizar(nombre):
 	nombre_limpio = re.sub(r'[^\w\-.]', '', nombre_sin_acentos)
 	
 	return nombre_limpio
+
 
 def numero_a_letras(numero):
 	"""
@@ -129,6 +145,7 @@ def numero_a_letras(numero):
 	decimal_str = f"{decimal:02d}"
 	return f"{resultado_entero} con {decimal_str}/100"
 
+
 def convertir_decenas(numero):
 	"""Convierte números entre 1-99 a letras"""
 	unidades = ["", "uno", "dos", "tres", "cuatro", "cinco", 
@@ -150,6 +167,7 @@ def convertir_decenas(numero):
 		else:
 			return f"{decenas[d]} y {unidades[u]}"
 
+
 def convertir_centenas(numero):
 	"""Convierte números entre 100-999 a letras"""
 	if numero == 100:
@@ -163,6 +181,7 @@ def convertir_centenas(numero):
 		return centenas[c]
 	else:
 		return f"{centenas[c]} {convertir_decenas(resto)}"
+
 
 def convertir_miles(numero):
 	"""Convierte números entre 1000-999999 a letras"""
@@ -178,6 +197,7 @@ def convertir_miles(numero):
 		return resultado_mil
 	else:
 		return f"{resultado_mil} {convertir_decenas(resto) if resto < 100 else convertir_centenas(resto)}"
+
 
 def convertir_millones(numero):
 	"""Convierte números entre 1000000-999999999 a letras"""

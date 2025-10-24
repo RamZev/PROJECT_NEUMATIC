@@ -122,8 +122,8 @@
 2025-10-17 10:58:06,330 - INFO - Lote guardado: 1000 registros
 2025-10-17 10:58:07,012 - INFO - Lote guardado: 1000 registros
 2025-10-17 10:58:07,688 - INFO - Lote guardado: 1000 registros
-2025-10-17 10:58:07,889 - INFO - Último lote guardado: 49 registros
-2025-10-17 10:58:07,889 - INFO - Migración completada. Registros: 123049, Errores: 0
+2025-10-17 10:58:07,889 - INFO - ï¿½ltimo lote guardado: 49 registros
+2025-10-17 10:58:07,889 - INFO - Migraciï¿½n completada. Registros: 123049, Errores: 0
 2025-10-17 10:58:07,889 - INFO - Tiempo total: 78.17 segundos
 2025-10-17 12:50:52,030 - INFO - Eliminados 0 registros existentes
 2025-10-17 12:50:52,567 - INFO - Lote guardado: 1000 registros
@@ -249,8 +249,8 @@
 2025-10-17 12:52:08,123 - INFO - Lote guardado: 1000 registros
 2025-10-17 12:52:08,764 - INFO - Lote guardado: 1000 registros
 2025-10-17 12:52:09,488 - INFO - Lote guardado: 1000 registros
-2025-10-17 12:52:09,737 - INFO - Último lote guardado: 49 registros
-2025-10-17 12:52:09,737 - INFO - Migración completada. Registros: 123049, Errores: 0
+2025-10-17 12:52:09,737 - INFO - ï¿½ltimo lote guardado: 49 registros
+2025-10-17 12:52:09,737 - INFO - Migraciï¿½n completada. Registros: 123049, Errores: 0
 2025-10-17 12:52:09,738 - INFO - Tiempo total: 77.72 segundos
 2025-10-17 12:54:59,677 - INFO - Eliminados 0 registros existentes
 2025-10-17 12:55:00,283 - INFO - Lote guardado: 1000 registros
@@ -267,6 +267,6 @@
 2025-10-17 12:55:07,209 - INFO - Lote guardado: 1000 registros
 2025-10-17 12:55:07,874 - INFO - Lote guardado: 1000 registros
 2025-10-17 12:55:08,494 - INFO - Lote guardado: 1000 registros
-2025-10-17 12:55:08,999 - INFO - Último lote guardado: 706 registros
-2025-10-17 12:55:08,999 - INFO - Migración completada. Registros: 14706, Errores: 0
+2025-10-17 12:55:08,999 - INFO - ï¿½ltimo lote guardado: 706 registros
+2025-10-17 12:55:08,999 - INFO - Migraciï¿½n completada. Registros: 14706, Errores: 0
 2025-10-17 12:55:08,999 - INFO - Tiempo total: 9.33 segundos

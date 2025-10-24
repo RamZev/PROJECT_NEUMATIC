@@ -16,7 +16,7 @@ from .report_views_generics import *
 from apps.informes.models import VLEstadisticasVentasMarca
 from apps.maestros.models.base_models import ProductoMarca
 from ..forms.buscador_vlestadisticasventasmarca_forms import BuscadorEstadisticasVentasMarcaForm
-from utils.utils import deserializar_datos, formato_argentino, normalizar, format_date
+from utils.utils import deserializar_datos, formato_argentino, normalizar, format_date, raw_to_dict
 from utils.helpers.export_helpers import ExportHelper, PDFGenerator
 
 
@@ -325,12 +325,6 @@ class VLEstadisticasVentasMarcaInformeView(InformeFormView):
 			context["data_has_errors"] = True
 		return context
 
-def raw_to_dict(instance):
-	"""Convierte una instancia de una consulta raw a un diccionario, eliminando claves internas."""
-	data = instance.__dict__.copy()
-	data.pop('_state', None)
-	return data
-
 
 def vlestadisticasventasmarca_vista_pantalla(request):
 	#-- Obtener el token de la querystring.
@@ -399,8 +393,6 @@ def generar_pdf(contexto_reporte):
 	headers_titles = [value['label'] for value in ConfigViews.table_info.values() if value['pdf']]
 	headers_titles.insert(0, "")
 	
-	print(headers_titles)
-	
 	#-- Extraer Ancho de las columnas de la tabla filtrados.
 	col_widths = [value['col_width_pdf'] for value in ConfigViews.table_info.values() if value['pdf']]
 	col_widths.insert(0, 10)
@@ -417,7 +409,7 @@ def generar_pdf(contexto_reporte):
 	current_row = 1
 	
 	#-- Agregar los datos a la tabla.
-	for familia_id, familia_data in contexto_reporte.get("objetos", {}).items():
+	for familia_data in contexto_reporte.get("objetos", {}).values():
 		
 		#-- Datos agrupado por Familia.
 		table_data.append([f"Familia: {familia_data['familia']}", ""] + blank_cols)
@@ -431,7 +423,7 @@ def generar_pdf(contexto_reporte):
 		current_row += 1
 		#---------------------
 		
-		for modelo_id, modelo_data in familia_data["modelos"].items():
+		for modelo_data in familia_data["modelos"].values():
 		
 			#-- Datos agrupado por Modelo.
 			table_data.append(["", f"Modelo: {modelo_data['modelo']}"] + blank_cols)
