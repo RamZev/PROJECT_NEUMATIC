@@ -70,7 +70,7 @@
 									<!-- Botones -->
 									<div class="row mt-3">
 										<div class="col-md-12">
-											<button type="button" class="btn btn-secondary" onclick="limpiarFiltros()">Limpiar Filtros</button>
+											<button type="reset" class="btn btn-secondary">Limpiar Filtros</button>
 											<button 
 												type="submit" 
 												class="btn btn-primary" 
@@ -100,7 +100,7 @@
 
 {% block modals %}
 	<!-- Modal para mostrar errores -->
-	{% include 'informes/modal_errors.html' %}
+	{% include 'modal_errors.html' %}
 	
 	<!-- Modal para buscar y seleccionar cliente -->
 	{% include 'informes/modal_buscar_cliente.html' %}

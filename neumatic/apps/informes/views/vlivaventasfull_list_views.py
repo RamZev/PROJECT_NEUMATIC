@@ -302,6 +302,7 @@ def vlivaventasfull_vista_pdf(request):
 	
 	return response
 
+
 class CustomPDFGenerator(PDFGenerator):
 	#-- Método que se puede sobreescribir/extender según requerimientos.
 	def _get_header_bottom_left(self, context):

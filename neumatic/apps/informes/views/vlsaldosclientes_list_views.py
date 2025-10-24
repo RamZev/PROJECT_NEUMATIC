@@ -14,7 +14,7 @@ from reportlab.platypus import Paragraph
 from .report_views_generics import *
 from apps.informes.models import VLSaldosClientes
 from ..forms.buscador_vlsaldosclientes_forms import BuscadorSaldosClientesForm
-from utils.utils import deserializar_datos, format_date, normalizar
+from utils.utils import deserializar_datos, format_date, normalizar, raw_to_dict
 from apps.maestros.templatetags.custom_tags import formato_es_ar
 from utils.helpers.export_helpers import ExportHelper, PDFGenerator
 
@@ -219,13 +219,6 @@ class VLSaldosClientesInformeView(InformeFormView):
 		return context
 
 
-def raw_to_dict(instance):
-	"""Convierte una instancia de una consulta raw a un diccionario, eliminando claves internas."""
-	data = instance.__dict__.copy()
-	data.pop('_state', None)
-	return data
-
-
 def vlsaldosclientes_vista_pantalla(request):
 	#-- Obtener el token de la querystring.
 	token = request.GET.get("token")
@@ -299,6 +292,7 @@ class CustomPDFGenerator(PDFGenerator):
 	# 		<b>Total General:</b> {formato_es_ar(saldo_total)}
 	# 	"""
 	pass
+
 
 def generar_pdf(contexto_reporte):
 	#-- Crear instancia del generador personalizado.

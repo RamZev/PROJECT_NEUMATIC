@@ -16408,3 +16408,45 @@ Tiempo total: 0 minutos 29 segundos
 2025-09-19 09:33:42,618 - ERROR - Error en compra ID 60565 - Registro 160305: [<class 'decimal.InvalidOperation'>]
 2025-09-19 09:33:42,722 - ERROR - Error en compra ID 60566 - Registro 160306: [<class 'decimal.InvalidOperation'>]
 2025-09-19 09:33:42,853 - ERROR - Error en compra ID 60567 - Registro 160307: [<class 'decimal.InvalidOperation'>]
+2025-10-17 12:58:06,021 - INFO - Cargando cachés de referencia...
+2025-10-17 12:58:07,085 - INFO - Total registros estimados: 23683
+2025-10-17 12:58:07,085 - INFO - Iniciando migración por bloques...
+2025-10-17 12:58:07,085 - INFO - --- Iniciando Bloque 1 (registros 0 a 149999) ---
+2025-10-17 12:58:07,654 - INFO - Bloque 1: Procesando 23683 registros...
+2025-10-17 12:58:07,654 - WARNING - Compra no encontrada ID: 0
+2025-10-17 12:58:07,654 - WARNING - Compra no encontrada ID: 0
+2025-10-17 12:58:07,654 - WARNING - Compra no encontrada ID: 0
+2025-10-17 12:58:07,654 - WARNING - Compra no encontrada ID: 0
+2025-10-17 12:58:07,670 - WARNING - Compra no encontrada ID: 0
+2025-10-17 12:58:07,670 - WARNING - Compra no encontrada ID: 0
+2025-10-17 12:58:07,670 - WARNING - Compra no encontrada ID: 0
+2025-10-17 12:58:07,670 - WARNING - Compra no encontrada ID: 0
+2025-10-17 12:58:07,670 - WARNING - Compra no encontrada ID: 0
+2025-10-17 12:58:07,673 - WARNING - Compra no encontrada ID: 64480
+2025-10-17 12:58:07,675 - WARNING - Compra no encontrada ID: 64480
+2025-10-17 12:58:07,677 - WARNING - Compra no encontrada ID: 64480
+2025-10-17 12:58:07,677 - WARNING - Compra no encontrada ID: 64480
+2025-10-17 12:58:07,678 - WARNING - Compra no encontrada ID: 64480
+2025-10-17 12:58:07,679 - WARNING - Compra no encontrada ID: 64480
+2025-10-17 12:58:07,996 - INFO - Lote guardado: 2000 registros (bloque 1)
+2025-10-17 12:58:08,231 - INFO - Lote guardado: 2000 registros (bloque 1)
+2025-10-17 12:58:08,502 - INFO - Lote guardado: 2000 registros (bloque 1)
+2025-10-17 12:58:08,749 - INFO - Lote guardado: 2000 registros (bloque 1)
+2025-10-17 12:58:08,993 - INFO - Lote guardado: 2000 registros (bloque 1)
+2025-10-17 12:58:08,995 - INFO - Progreso global: 10000 registros procesados
+2025-10-17 12:58:09,268 - INFO - Lote guardado: 2000 registros (bloque 1)
+2025-10-17 12:58:09,503 - INFO - Lote guardado: 2000 registros (bloque 1)
+2025-10-17 12:58:09,793 - INFO - Lote guardado: 2000 registros (bloque 1)
+2025-10-17 12:58:10,066 - INFO - Lote guardado: 2000 registros (bloque 1)
+2025-10-17 12:58:10,336 - INFO - Lote guardado: 2000 registros (bloque 1)
+2025-10-17 12:58:10,336 - INFO - Progreso global: 20000 registros procesados
+2025-10-17 12:58:10,600 - INFO - Lote guardado: 2000 registros (bloque 1)
+2025-10-17 12:58:10,806 - INFO - Último lote del bloque 1 guardado: 1668 registros
+2025-10-17 12:58:10,806 - INFO - --- Iniciando Bloque 2 (registros 150000 a 299999) ---
+2025-10-17 12:58:11,318 - INFO - No se encontraron más registros. Fin del procesamiento.
+2025-10-17 12:58:11,318 - INFO - 
+=== REPORTE FINAL ===
+2025-10-17 12:58:11,318 - INFO - Total registros procesados: 23668
+2025-10-17 12:58:11,318 - INFO - Total errores: 0
+2025-10-17 12:58:11,318 - INFO - 
+Tiempo total: 0 minutos 5 segundos

@@ -1,10 +1,11 @@
-# neumatic\apps\informes\views\vlpercepibsubcuentatotales_list_views.py
+# neumatic\apps\informes\views\vlfichaseguimientostock_list_views.py
 
 from django.urls import reverse_lazy
 from django.shortcuts import render
 from django.http import HttpResponse
 from datetime import datetime
 from django.templatetags.static import static
+from django.forms.models import model_to_dict
 
 #-- ReportLab:
 from reportlab.lib import colors
@@ -12,22 +13,23 @@ from reportlab.lib.pagesizes import A4, landscape, portrait
 from reportlab.platypus import Paragraph
 
 from .report_views_generics import *
-from apps.informes.models import VLPercepIBSubcuentaTotales
-from ..forms.buscador_vlpercepibsubcuentatotales_forms import BuscadorPercepIBSubcuentaTotalesForm
-from utils.utils import deserializar_datos, serializar_queryset, formato_argentino, normalizar
+from apps.informes.models import VLFichaSeguimientoStock
+from apps.maestros.models.base_models import ProductoCai
+from ..forms.buscador_vlfichaseguimientostock_forms import BuscadorFichaSeguimientoStockForm
+from utils.utils import deserializar_datos, formato_argentino, formato_argentino_entero, normalizar, format_date, raw_to_dict
 from utils.helpers.export_helpers import ExportHelper, PDFGenerator
 
 
 class ConfigViews:
 	
 	#-- Título del reporte.
-	report_title = "Percepciones por Sub-Cuentas - Totales"
+	report_title = "Ficha de Seguimiento de Stock"
 	
 	#-- Modelo.
-	model = VLPercepIBSubcuentaTotales
+	model = VLFichaSeguimientoStock
 	
 	#-- Formulario asociado al modelo.
-	form_class = BuscadorPercepIBSubcuentaTotalesForm
+	form_class = BuscadorFichaSeguimientoStockForm
 	
 	#-- Aplicación asociada al modelo.
 	app_label = "informes"
@@ -36,7 +38,7 @@ class ConfigViews:
 	model_string = model.__name__.lower()
 	
 	# Vistas del CRUD del modelo
-	list_view_name = f"{model_string}_list"
+	list_view_name = f"{model_string}_list"  # <== vlventacompro_list
 	
 	#-- Plantilla base.
 	template_list = f'{app_label}/maestro_informe.html'
@@ -48,7 +50,7 @@ class ConfigViews:
 	success_url = reverse_lazy(list_view_name)
 	
 	#-- Archivo JavaScript específico.
-	js_file = None
+	js_file = "js/filtros_ficha_seguimiento_stock.js"
 	
 	# #-- URL de la vista que genera el .zip con los informes.
 	# url_zip = f"{model_string}_informe_generado"
@@ -68,33 +70,109 @@ class ConfigViews:
 	#-- Plantilla Vista Preliminar Pantalla.
 	reporte_pantalla = f"informes/reportes/{model_string}_list.html"
 	
-
 	#-- Establecer las columnas del reporte y sus atributos.
 	table_info = {
-		"sub_cuenta": {
+		"id_producto_id": {
+			"label": "Código",
+			"col_width_pdf": 0,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+		"id_cai_id": {
+			"label": "Id CAI",
+			"col_width_pdf": 0,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+		"cai": {
+			"label": "CAI",
+			"col_width_pdf": 0,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+		"medida": {
+			"label": "Medida",
+			"col_width_pdf": 0,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+		"nombre_producto": {
+			"label": "Descripción",
+			"col_width_pdf": 0,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+		"id_marca_id": {
+			"label": "Id Marca",
+			"col_width_pdf": 0,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+		"nombre_producto_marca": {
+			"label": "Marca",
+			"col_width_pdf": 0,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+		"fecha_comprobante": {
+			"label": "Fecha",
+			"col_width_pdf": 45,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
+		"comprobante": {
+			"label": "Comprobante",
+			"col_width_pdf": 80,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
+		"cantidad": {
+			"label": "Cantidad",
+			"col_width_pdf": 40,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
+		"precio": {
+			"label": "Precio",
+			"col_width_pdf": 60,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
+		"total": {
+			"label": "Total",
+			"col_width_pdf": 60,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
+		"marca": {
+			"label": "",
+			"col_width_pdf": 20,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
+		"id_cliente_proveedor": {
 			"label": "Código",
 			"col_width_pdf": 40,
 			"pdf": True,
 			"excel": True,
 			"csv": True
 		},
-		"nombre_cliente_padre": {
-			"label": "Sub-Cuenta",
+		"nombre_cliente_proveedor": {
+			"label": "Cliente/Proveedor",
 			"col_width_pdf": 220,
-			"pdf": True,
-			"excel": True,
-			"csv": True
-		},
-		"neto": {
-			"label": "Neto",
-			"col_width_pdf": 80,
-			"pdf": True,
-			"excel": True,
-			"csv": True
-		},
-		"percep_ib": {
-			"label": "Percepción",
-			"col_width_pdf": 80,
 			"pdf": True,
 			"excel": True,
 			"csv": True
@@ -102,7 +180,7 @@ class ConfigViews:
 	}
 
 
-class VLPercepIBSubcuentaTotalesInformeView(InformeFormView):
+class VLFichaSeguimientoStockInformeView(InformeFormView):
 	config = ConfigViews  #-- Ahora la configuración estará disponible en self.config.
 	form_class = ConfigViews.form_class
 	template_name = ConfigViews.template_list
@@ -118,10 +196,25 @@ class VLPercepIBSubcuentaTotalesInformeView(InformeFormView):
 	}
 	
 	def obtener_queryset(self, cleaned_data):
+		sucursal = cleaned_data.get('sucursal', None)
+		codigo = cleaned_data.get('codigo', None)
+		cai = cleaned_data.get('cai', None)
 		fecha_desde = cleaned_data.get('fecha_desde')
 		fecha_hasta = cleaned_data.get('fecha_hasta')
 		
-		return VLPercepIBSubcuentaTotales.objects.obtener_datos(fecha_desde, fecha_hasta)
+		id_sucursal = sucursal.id_sucursal if sucursal else None
+		
+		#-- Buscar el id_cai de forma segura.
+		id_cai = None
+		if cai:
+			id_cai = -1
+			producto_cai = ProductoCai.objects.filter(cai=cai).first()
+			if producto_cai:
+				id_cai = producto_cai.id_cai
+		
+		queryset = VLFichaSeguimientoStock.objects.obtener_datos(codigo, id_cai, fecha_desde, fecha_hasta, id_sucursal)
+		
+		return queryset
 	
 	def obtener_contexto_reporte(self, queryset, cleaned_data):
 		"""
@@ -130,28 +223,41 @@ class VLPercepIBSubcuentaTotalesInformeView(InformeFormView):
 		"""
 		
 		#-- Parámetros del listado.
+		sucursal = cleaned_data.get('sucursal', None)
+		codigo = cleaned_data.get('codigo', None)
+		cai = cleaned_data.get('cai', None)
 		fecha_desde = cleaned_data.get('fecha_desde')
 		fecha_hasta = cleaned_data.get('fecha_hasta')
 		
-		param = {
+		fecha_hora_reporte = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+		
+		dominio = f"http://{self.request.get_host()}"
+		
+		buscar = "Código" if codigo else "CAI"
+		
+		param_left = {
+			buscar: codigo if codigo else cai,
+			"Medida": queryset[0].medida if queryset else "",
+			"Producto": queryset[0].nombre_producto if queryset else "",
+			"Marca": queryset[0].nombre_producto_marca if queryset else "",
+		}
+		param_right = {
+			"Sucursal": sucursal.nombre_sucursal if sucursal else "Todas",
 			"Desde": fecha_desde.strftime("%d/%m/%Y"),
 			"Hasta": fecha_hasta.strftime("%d/%m/%Y"),
 		}
 		
-		fecha_hora_reporte = datetime.now().strftime("%d/%m/%Y %H:%M:%S")		
+		# ------------------------------------------------------------------------------
+		#-- Convertir QUERYSET a LISTA DE DICCIONARIOS al inicio (optimización clave).
+		queryset_list = [raw_to_dict(obj) for obj in queryset]
 		
-		dominio = f"http://{self.request.get_host()}"
-		
-		# **************************************************
-		# **************************************************
-		
-		#-- Serializar el queryset.
-		queryset_serializado = serializar_queryset(queryset)
+		# ------------------------------------------------------------------------------
 		
 		#-- Se retorna un contexto que será consumido tanto para la vista en pantalla como para la generación del PDF.
 		return {
-			"objetos": queryset_serializado,
-			"parametros": param,
+			"objetos": queryset_list,
+			"parametros_i": param_left,
+			"parametros_d": param_right,
 			'fecha_hora_reporte': fecha_hora_reporte,
 			'titulo': ConfigViews.report_title,
 			'logo_url': f"{dominio}{static('img/logo_01.png')}",
@@ -168,10 +274,9 @@ class VLPercepIBSubcuentaTotalesInformeView(InformeFormView):
 		return context
 
 
-def vlpercepibsubcuentatotales_vista_pantalla(request):
+def vlfichaseguimientostock_vista_pantalla(request):
 	#-- Obtener el token de la querystring.
 	token = request.GET.get("token")
-	
 	if not token:
 		return HttpResponse("Token no proporcionado", status=400)
 	
@@ -185,7 +290,7 @@ def vlpercepibsubcuentatotales_vista_pantalla(request):
 	return render(request, ConfigViews.reporte_pantalla, contexto_reporte)
 
 
-def vlpercepibsubcuentatotales_vista_pdf(request):
+def vlfichaseguimientostock_vista_pdf(request):
 	#-- Obtener el token de la querystring.
 	token = request.GET.get("token")
 	
@@ -211,32 +316,23 @@ def vlpercepibsubcuentatotales_vista_pdf(request):
 
 class CustomPDFGenerator(PDFGenerator):
 	#-- Método que se puede sobreescribir/extender según requerimientos.
-	# def _get_header_bottom_left(self, context):
-	# 	"""Personalización del Header-bottom-left"""
-	# 	# return super()._get_header_bottom_left(context)
-	# 	
-	# 	empresa = context.get('datos_empresa')
-	# 	
-	# 	return f"""{empresa['empresa']} <br/>
-	# 			   {empresa['domicilio']} <br/>
-	# 			   <strong>C.P.:</strong> {empresa['cp']} {empresa['provincia']} - {empresa['localidad']} <br/>
-	# 			   {empresa['sit_iva']}  <strong>C.U.I.T.:</strong> {empresa['cuit']}"""
+	def _get_header_bottom_left(self, context):
+		"""Personalización del Header-bottom-left"""
+		
+		params = context.get("parametros_i", {})
+		return "<br/>".join([f"<b>{k}:</b> {v}" for k, v in params.items()])
 	
 	#-- Método que se puede sobreescribir/extender según requerimientos.
-	# def _get_header_bottom_right(self, context):
-	# 	"""Añadir información adicional específica para este reporte"""
-	# 	base_content = super()._get_header_bottom_right(context)
-	# 	saldo_total = context.get("saldo_total", 0)
-	# 	return f"""
-	# 		{base_content}<br/>
-	# 		<b>Total General:</b> {formato_es_ar(saldo_total)}
-	# 	"""
-	pass
+	def _get_header_bottom_right(self, context):
+		"""Añadir información adicional específica para este reporte"""
+		
+		params = context.get("parametros_d", {})
+		return "<br/>".join([f"<b>{k}:</b> {v}" for k, v in params.items()])
 
 
 def generar_pdf(contexto_reporte):
 	#-- Crear instancia del generador personalizado.
-	generator = CustomPDFGenerator(contexto_reporte, pagesize=portrait(A4), body_font_size=8)
+	generator = CustomPDFGenerator(contexto_reporte, pagesize=portrait(A4), body_font_size=7)
 	
 	#-- Construir datos de la tabla:
 	
@@ -250,23 +346,30 @@ def generar_pdf(contexto_reporte):
 	
 	#-- Estilos específicos adicionales iniciales de la tabla.
 	table_style_config = [
-		('LEADING', (0,0), (-1,-1), 10),
-		('ALIGN', (2,0), (-1,-1), 'RIGHT'),
+		('ALIGN', (2,0), (4,-1), 'RIGHT'),
+		('ALIGN', (6,0), (6,-1), 'RIGHT'),
+		
+		('RIGHTPADDING', (0,0), (-1,-1), 2),  # valor por defecto es 6
+		('LEFTPADDING', (0,0), (-1,-1), 2),  # valor por defecto es 6
 	]
 	
 	#-- Agregar los datos a la tabla.
 	for obj in contexto_reporte.get("objetos", []):
 		table_data.append([
-			obj['sub_cuenta'] if obj['sub_cuenta'] else "N/A",
-			Paragraph(str(obj['nombre_cliente_padre']) if obj['nombre_cliente_padre'] else "N/A", generator.styles['CellStyle']),
-			formato_argentino(obj['neto']),
-			formato_argentino(obj['percep_ib']),
+			format_date(obj.get('fecha_comprobante', '')),
+			obj.get('comprobante', ''),
+			formato_argentino_entero(obj.get('cantidad', 0)),
+			formato_argentino(obj.get('precio', 0)),
+			formato_argentino(obj.get('total', 0)),
+			obj.get('marca', ''),
+			obj.get('id_cliente_proveedor', ''),
+			Paragraph(str(obj.get('nombre_cliente_proveedor', '')), generator.styles['CellStyle']),
 		])
 	
 	return generator.generate(table_data, col_widths, table_style_config)		
 
 
-def vlpercepibsubcuentatotales_vista_excel(request):
+def vlfichaseguimientostock_vista_excel(request):
 	token = request.GET.get("token")
 	if not token:
 		return HttpResponse("Token no proporcionado", status=400)
@@ -280,7 +383,7 @@ def vlpercepibsubcuentatotales_vista_excel(request):
 	# ---------------------------------------------
 	
 	#-- Instanciar la vista y obtener el queryset.
-	view_instance = VLPercepIBSubcuentaTotalesInformeView()
+	view_instance = VLFichaSeguimientoStockInformeView()
 	view_instance.request = request
 	queryset = view_instance.obtener_queryset(cleaned_data)
 	
@@ -298,13 +401,13 @@ def vlpercepibsubcuentatotales_vista_excel(request):
 		excel_data,
 		content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 	)
-	#-- Inline permite visualizarlo en el navegador si el navegador lo soporta.
+	# Inline permite visualizarlo en el navegador si el navegador lo soporta.
 	response["Content-Disposition"] = f'inline; filename="{ConfigViews.report_title}.xlsx"'
 	
 	return response
 
 
-def vlpercepibsubcuentatotales_vista_csv(request):
+def vlfichaseguimientostock_vista_csv(request):
 	token = request.GET.get("token")
 	if not token:
 		return HttpResponse("Token no proporcionado", status=400)
@@ -317,7 +420,7 @@ def vlpercepibsubcuentatotales_vista_csv(request):
 	cleaned_data = data["cleaned_data"]
 	
 	#-- Instanciar la vista para reejecutar la consulta y obtener el queryset.
-	view_instance = VLPercepIBSubcuentaTotalesInformeView()
+	view_instance = VLFichaSeguimientoStockInformeView()
 	view_instance.request = request
 	queryset = view_instance.obtener_queryset(cleaned_data)
 	

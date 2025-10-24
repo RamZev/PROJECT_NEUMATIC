@@ -1,7 +1,6 @@
 <!-- neumatic\apps\informes\templates\informes\maestro_informe_list.html -->
 <!-- Plantilla base para renderizar las plantillas para reporte de los CRUDs -->
- 
- 
+  
 {% extends 'base.html' %}
 {% load static %}
 {% load custom_tags %}
@@ -211,7 +210,7 @@
 
 {% block modals %}
 	<!-- Modal para mostrar errores -->
-	{% include 'informes/modal_errors.html' %}
+	{% include 'modal_errors.html' %}
 	
 	<!-- Modal para buscar y seleccionar cliente -->
 	{% include 'informes/modal_buscar_cliente.html' %}

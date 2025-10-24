@@ -276,6 +276,7 @@ def vlventacomprolocalidad_vista_pdf(request):
 	
 	return response
 
+
 class CustomPDFGenerator(PDFGenerator):
 	#-- Método que se puede sobreescribir/extender según requerimientos.
 	def _get_header_bottom_left(self, context):
@@ -293,6 +294,7 @@ class CustomPDFGenerator(PDFGenerator):
 		params = context.get("parametros_d", {})
 		
 		return "<br/>".join([f"<b>{k}:</b> {v}" for k, v in params.items()])
+
 
 def generar_pdf(contexto_reporte):
 	#-- Crear instancia del generador personalizado.

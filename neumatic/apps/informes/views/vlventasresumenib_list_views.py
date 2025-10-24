@@ -12,7 +12,6 @@ from django.db.models import Sum, F, FloatField, ExpressionWrapper
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import A4, portrait, landscape
 from reportlab.platypus import Paragraph
-#------------------------
 
 from .report_views_generics import *
 from apps.informes.models import VLVentasResumenIB
@@ -403,7 +402,6 @@ def vlventasresumenib_vista_pantalla(request):
 	return render(request, ConfigViews.reporte_pantalla, contexto_reporte)
 
 
-# -------------------------------------------------------------------------------------------------
 def vlventasresumenib_vista_pdf(request):
 	#-- Obtener el token de la querystring.
 	token = request.GET.get("token")
@@ -426,6 +424,7 @@ def vlventasresumenib_vista_pdf(request):
 	response["Content-Disposition"] = f'inline; filename="{normalizar(ConfigViews.report_title)}.pdf"'
 	
 	return response
+
 
 class CustomPDFGenerator(PDFGenerator):
 	#-- Método que se puede sobreescribir/extender según requerimientos.
@@ -459,6 +458,7 @@ class CustomPDFGenerator(PDFGenerator):
 	# 		<b>Total General:</b> {formato_es_ar(saldo_total)}
 	# 	"""
 	pass
+
 
 def generar_pdf(contexto_reporte):
 	#-- Crear instancia del generador personalizado.

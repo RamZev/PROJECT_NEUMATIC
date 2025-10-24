@@ -14,7 +14,7 @@ from reportlab.platypus import Paragraph
 from .report_views_generics import *
 from apps.informes.models import VLStockSucursal
 from ..forms.buscador_vlstocksucursal_forms import BuscadorStockSucursalForm
-from utils.utils import deserializar_datos, formato_argentino, normalizar
+from utils.utils import deserializar_datos, formato_argentino, normalizar, raw_to_dict
 from utils.helpers.export_helpers import ExportHelper, PDFGenerator
 
 
@@ -338,12 +338,6 @@ class VLStockSucursalInformeView(InformeFormView):
 		if form.errors:
 			context["data_has_errors"] = True
 		return context
-
-def raw_to_dict(instance):
-	"""Convierte una instancia de una consulta raw a un diccionario, eliminando claves internas."""
-	data = instance.__dict__.copy()
-	data.pop('_state', None)
-	return data
 
 
 def vlstocksucursal_vista_pantalla(request):

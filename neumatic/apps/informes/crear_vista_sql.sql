@@ -1604,3 +1604,104 @@ CREATE VIEW VLStockDeposito AS
 		SUM(sc.cantidad - sc.retirado) <> 0
 	ORDER by
 		p.id_familia_id, p.id_modelo_id, p.id_marca_id, p.medida;
+
+
+-- ---------------------------------------------------------------------------
+-- Ficha de Seguimiento de Stock por Código o CAI.
+-- Modelo: VLFichaSeguimientoStock
+-- ---------------------------------------------------------------------------
+DROP VIEW IF EXISTS "main"."VLFichaSeguimientoStock";
+CREATE VIEW VLFichaSeguimientoStock AS 
+	SELECT
+		--ROW_NUMBER() OVER(ORDER BY fecha_comprobante) AS id,
+		id_producto_id,
+		id_cai_id,
+		cai,
+		medida,
+		nombre_producto,
+		id_marca_id,
+		nombre_producto_marca,
+		fecha_comprobante,
+		comprobante,
+		cantidad,
+		precio,
+		total,
+		id_cliente_proveedor,
+		nombre_cliente_proveedor,
+		no_estadist,
+		id_sucursal_id,
+		id_deposito_id,
+		marca
+	FROM (
+		-- Consulta VENTAS.
+		SELECT
+			df.id_producto_id,
+			p.id_cai_id,
+			pc.cai,
+			p.medida,
+			p.nombre_producto,
+			p.id_marca_id,
+			pm.nombre_producto_marca,
+			f.fecha_comprobante,
+			(f.compro || ' ' || f.letra_comprobante || ' ' || SUBSTR(printf('%012d', f.numero_comprobante), 1, 4) || '-' || SUBSTR(printf('%012d', f.numero_comprobante), 5)) AS comprobante,
+			(df.cantidad * cv.mult_stock) AS cantidad,
+			--df.precio,
+			CAST(COALESCE(df.precio, 0.0) AS DECIMAL) AS precio,
+			--df.total,
+			CAST(COALESCE(df.total, 0.0) AS DECIMAL) AS total,
+			f.id_cliente_id AS id_cliente_proveedor,
+			c.nombre_cliente AS nombre_cliente_proveedor,
+			f.no_estadist,
+			f.id_sucursal_id,
+			f.id_deposito_id,
+			'Vta.' AS marca
+		FROM
+			detalle_factura df
+			INNER JOIN factura f ON df.id_factura_id = f.id_factura
+			INNER JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
+			INNER JOIN cliente c ON f.id_cliente_id = c.id_cliente
+			INNER JOIN producto p ON df.id_producto_id = p.id_producto
+			LEFT JOIN producto_marca pm ON p.id_marca_id = pm.id_producto_marca
+			LEFT JOIN producto_cai pc ON p.id_cai_id = pc.id_cai
+		WHERE
+			cv.mult_stock <> 0
+		
+		UNION ALL
+		
+		SELECT
+			-- Consulta COMPRAS.
+			dc.id_producto_id,
+			p.id_cai_id,
+			pc.cai,
+			p.medida,
+			p.nombre_producto,
+			p.id_marca_id,
+			pm.nombre_producto_marca,
+			c.fecha_comprobante,
+			(c.compro || ' ' || c.letra_comprobante || ' ' || SUBSTR(printf('%012d', c.numero_comprobante), 1, 4) || '-' || SUBSTR(printf('%012d', c.numero_comprobante), 5)) AS comprobante,
+			(dc.cantidad * cc.mult_stock) AS cantidad,
+			--dc.precio,
+			CAST(COALESCE(dc.precio, 0.0) AS DECIMAL) AS precio,
+			--dc.total,
+			CAST(COALESCE(dc.total, 0.0) AS DECIMAL) AS total, 
+			c.id_proveedor_id AS id_cliente_proveedor,
+			pr.nombre_proveedor AS nombre_cliente_proveedor,
+			False AS no_estadist,
+			c.id_sucursal_id,
+			c.id_deposito_id,
+			'Cpr.' AS marca
+		FROM detalle_compra dc
+			INNER JOIN compra c ON dc.id_compra_id = c.id_compra
+			INNER JOIN comprobante_compra cc ON c.id_comprobante_compra_id = cc.id_comprobante_compra
+			INNER JOIN proveedor pr ON c.id_proveedor_id = pr.id_proveedor
+			INNER JOIN producto p ON dc.id_producto_id = p.id_producto
+			LEFT JOIN producto_marca pm ON p.id_marca_id = pm.id_producto_marca
+			LEFT JOIN producto_cai pc ON p.id_cai_id = pc.id_cai
+		WHERE
+			cc.mult_stock <> 0
+	);
+
+
+
+
+

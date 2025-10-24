@@ -15,14 +15,14 @@ from reportlab.platypus import Paragraph
 from .report_views_generics import *
 from apps.informes.models import VLPercepIBSubcuentaDetallado
 from ..forms.buscador_vlpercepibsubcuentadetallado_forms import BuscadorPercepIBSubcuentaDetalladoForm
-from utils.utils import deserializar_datos, formato_argentino, format_date, normalizar
+from utils.utils import deserializar_datos, formato_argentino, format_date, normalizar, raw_to_dict
 from utils.helpers.export_helpers import ExportHelper, PDFGenerator
 
 
 class ConfigViews:
 	
 	#-- Título del reporte.
-	report_title = "Percepciones por Vendedores - Detallado por Comprobantes"
+	report_title = "Percepciones por Sub-Cuentas - Detallado por Comprobantes"
 	
 	#-- Modelo.
 	model = VLPercepIBSubcuentaDetallado
@@ -224,12 +224,6 @@ class VLPercepIBSubcuentaDetalladoInformeView(InformeFormView):
 			context["data_has_errors"] = True
 		return context
 
-def raw_to_dict(instance):
-	"""Convierte una instancia de una consulta raw a un diccionario, eliminando claves internas."""
-	data = instance.__dict__.copy()
-	data.pop('_state', None)
-	return data
-
 
 def vlpercepibsubcuentadetallado_vista_pantalla(request):
 	#-- Obtener el token de la querystring.
@@ -271,6 +265,7 @@ def vlpercepibsubcuentadetallado_vista_pdf(request):
 	
 	return response
 
+
 class CustomPDFGenerator(PDFGenerator):
 	#-- Método que se puede sobreescribir/extender según requerimientos.
 	# def _get_header_bottom_left(self, context):
@@ -303,6 +298,7 @@ class CustomPDFGenerator(PDFGenerator):
 	# 		<b>Total General:</b> {formato_es_ar(saldo_total)}
 	# 	"""
 	pass
+
 
 def generar_pdf(contexto_reporte):
 	#-- Crear instancia del generador personalizado.

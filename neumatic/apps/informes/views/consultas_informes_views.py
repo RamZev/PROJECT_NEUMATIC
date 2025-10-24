@@ -3,7 +3,8 @@ from django.http import JsonResponse
 from django.db.models import Q
 
 from apps.maestros.models.cliente_models import Cliente
-# from apps.maestros.models.producto_models import Producto
+from apps.maestros.models.producto_models import Producto
+from apps.maestros.models.base_models import ProductoCai
 
 
 #-- Buscar un cliente por su id.
@@ -18,6 +19,7 @@ def buscar_cliente_id(request):
 			return JsonResponse({'error': 'Cliente no encontrado'}, status=404)
 	
 	return JsonResponse({'error': 'Código del Cliente no proporcionado'}, status=400)
+
 
 #-- Búsqueda en Agenda para la ventana Modal de Informes.
 def buscar_cliente(request):
@@ -45,3 +47,63 @@ def buscar_cliente(request):
 	)
 	
 	return JsonResponse(list(resultados), safe=False)
+
+
+#-- Buscar un Producto por su id.
+def buscar_producto_por_id(request):
+    id_producto = request.GET.get('id_producto', '')
+    
+    if id_producto:
+        try:
+            producto = Producto.objects.get(id_producto=id_producto)
+            return JsonResponse({
+                'encontrado': True,
+                'id_producto': producto.id_producto,
+                'nombre_producto': producto.nombre_producto,
+                'medida': producto.medida,
+                'marca_producto': producto.id_marca.nombre_producto_marca,
+            })
+        except Producto.DoesNotExist:
+            return JsonResponse({
+                'encontrado': False,
+                'error': 'Producto no encontrado',
+            })
+    
+    return JsonResponse({'encontrado': False, 'error': 'Código del Producto no proporcionado'})
+
+
+#-- Buscar un Producto por CAI.
+def buscar_producto_por_cai(request):
+	cai = request.GET.get('cai', '')
+	
+	if cai:
+		try:
+			#-- Primero buscar el ProductoCai por el campo cai.
+			producto_cai = ProductoCai.objects.get(cai=cai)
+			
+			#-- Luego buscar el primer Producto que tenga este id_cai.
+			producto = Producto.objects.filter(id_cai=producto_cai).first()
+			
+			if producto:
+				return JsonResponse({
+					'encontrado': True,
+					'id_producto': producto.id_producto,
+					'nombre_producto': producto.nombre_producto,
+					'medida': producto.medida,
+					'marca_producto': producto.id_marca.nombre_producto_marca,
+				})
+			else:
+				return JsonResponse({
+					'encontrado': False,
+					'error': 'No se encontró producto asociado a este CAI',
+				})
+				
+		except ProductoCai.DoesNotExist:
+			return JsonResponse({
+				'encontrado': False,
+				'error': 'CAI no encontrado',
+			})
+	
+	return JsonResponse({'encontrado': False, 'error': 'CAI no proporcionado'})
+
+

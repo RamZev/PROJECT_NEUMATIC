@@ -3164,3 +3164,81 @@ class VLStockDeposito(models.Model):
 		db_table = 'VLStockDeposito'
 		verbose_name = ('Stock en Depósitos de Clientes')
 		verbose_name_plural = ('Stock en Depósitos de Clientes')
+
+
+#-----------------------------------------------------------------------------
+# Ficha de Seguimiento de Stock por Código o CAI.
+#-----------------------------------------------------------------------------
+class VLFichaSeguimientoStockManager(models.Manager):
+	
+	def obtener_datos(self, id_producto, id_cai, fecha_desde, fecha_hasta, id_sucursal=None):
+		
+		#-- La consulta SQL.
+		query = """
+			SELECT
+				(ROW_NUMBER() OVER(ORDER BY fecha_comprobante, comprobante, marca)) AS id,
+				*
+			FROM
+				VLFichaSeguimientoStock
+			WHERE
+				fecha_comprobante BETWEEN %s AND %s
+		"""
+		
+		#-- Se añaden parámetros.
+		params = [fecha_desde, fecha_hasta]
+		
+		#-- Filtros y parámetros adicionales.
+		condicion = []
+		
+		if id_producto:
+			condicion.append("id_producto_id = %s")
+			params.append(id_producto)
+		
+		if id_cai:
+			condicion.append("id_cai_id = %s")
+			params.append(id_cai)
+		
+		if id_sucursal:
+			condicion.append("id_sucursal_id = %s")
+			params.append(id_sucursal)
+		
+		if condicion:
+			query += " AND " + " AND ".join(condicion)
+		
+		#-- Agregar el ordenamiento acá por rendimiento en la consulta.
+		query += " ORDER BY fecha_comprobante, comprobante, marca"
+		
+		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
+		return self.raw(query, params)
+
+
+class VLFichaSeguimientoStock(models.Model):
+	# id = models.AutoField(primary_key=True)
+	id = models.IntegerField(primary_key=True)
+	id_producto_id = models.IntegerField()
+	id_cai_id = models.IntegerField()
+	cai = models.CharField(max_length=20)
+	medida = models.CharField(max_length=15)
+	nombre_producto = models.CharField(max_length=50)
+	id_marca_id = models.IntegerField()
+	nombre_producto_marca = models.CharField(max_length=50)
+	fecha_comprobante = models.DateField()
+	comprobante = models.CharField(max_length=19)
+	cantidad = models.DecimalField(max_digits=7, decimal_places=2)
+	precio = models.DecimalField(max_digits=12, decimal_places=2)
+	total = models.DecimalField(max_digits=12, decimal_places=2)
+	id_cliente_proveedor = models.IntegerField()
+	nombre_cliente_proveedor = models.CharField(max_length=50)
+	no_estadist = models.BooleanField()	
+	id_sucursal_id = models.IntegerField()
+	id_deposito = models.IntegerField()
+	marca = models.CharField(max_length=4)
+	
+	objects = VLFichaSeguimientoStockManager()
+	
+	class Meta:
+		managed = False
+		db_table = 'VLFichaSeguimientoStock'
+		verbose_name = ('Ficha de Seguimiento de Stock')
+		verbose_name_plural = ('Ficha de Seguimiento de Stock')
+

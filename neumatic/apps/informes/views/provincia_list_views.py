@@ -98,6 +98,7 @@ class DataViewList:
 		},
 	}
 
+
 class ProvinciaInformeListView(InformeListView):
 	model = ConfigViews.model
 	form_class = ConfigViews.form_class

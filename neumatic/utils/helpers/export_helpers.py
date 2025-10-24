@@ -756,10 +756,12 @@ class PDFGenerator:
 			('VALIGN', (0,0), (-1,-1), 'TOP'),
 			('FONTSIZE', (0,0), (-1,-1), self.body_font_size),
 			('LEADING', (0,0), (-1,-1), 8),
+			# ('RIGHTPADDING', (0,0), (-1,-1), 2),  # valor por defecto es 6
+			# ('LEFTPADDING', (0,0), (-1,-1), 2),  # valor por defecto es 6
 			
 			#-- Padding de la tabla exceptuando la primera fila (headers).
-			('TOPPADDING', (0,repeat_rows), (-1,-1), 0),
-			('BOTTOMPADDING', (0,repeat_rows), (-1,-1), 0),
+			('TOPPADDING', (0,repeat_rows), (-1,-1), 1),
+			('BOTTOMPADDING', (0,repeat_rows), (-1,-1), 1),
 			
 			#-- Estilos para la primera fila (headers).
 			('BACKGROUND', (0,0), (-1,(repeat_rows-1)), colors.gray),

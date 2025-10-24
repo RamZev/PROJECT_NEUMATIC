@@ -14,7 +14,7 @@ from reportlab.platypus import Paragraph
 from .report_views_generics import *
 from apps.informes.models import VLVentaSinEstadistica
 from ..forms.buscador_vlventasinestadistica_forms import BuscadorVentaSinEstadisticaForm
-from utils.utils import deserializar_datos, formato_argentino, normalizar, format_date
+from utils.utils import deserializar_datos, formato_argentino, normalizar, format_date, raw_to_dict
 from utils.helpers.export_helpers import ExportHelper, PDFGenerator
 
 
@@ -240,13 +240,6 @@ class VLVentaSinEstadisticaInformeView(InformeFormView):
 		return context
 
 
-def raw_to_dict(instance):
-	"""Convierte una instancia de una consulta raw a un diccionario, eliminando claves internas."""
-	data = instance.__dict__.copy()
-	data.pop('_state', None)
-	return data
-
-
 def vlventasinestadistica_vista_pantalla(request):
 	#-- Obtener el token de la querystring.
 	token = request.GET.get("token")
@@ -374,6 +367,7 @@ def generar_pdf(contexto_reporte):
 	])
 	
 	return generator.generate(table_data, col_widths, table_style_config)		
+
 
 def vlventasinestadistica_vista_excel(request):
 	token = request.GET.get("token")

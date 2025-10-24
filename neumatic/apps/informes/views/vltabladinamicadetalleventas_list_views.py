@@ -15,7 +15,7 @@ from reportlab.platypus import Paragraph
 from .report_views_generics import *
 from apps.informes.models import VLTablaDinamicaDetalleVentas
 from ..forms.buscador_vltabladinamicadetalleventas_forms import BuscadorTablaDinamicaDetalleVentasForm
-from utils.utils import deserializar_datos, formato_argentino, normalizar, format_date
+from utils.utils import deserializar_datos, formato_argentino, normalizar, format_date, raw_to_dict
 from utils.helpers.export_helpers import ExportHelper, PDFGenerator
 
 
@@ -457,27 +457,6 @@ class VLTablaDinamicaDetalleVentasInformeView(InformeFormView):
 		}
 		
 		# **************************************************
-		# #-- Estructura para agrupar datos por cliente.
-		# datos_por_cliente = {}
-		# total_general = float(0)
-		# 
-		# for obj in queryset:
-		# 	#-- Identificar al cliente.
-		# 	cliente_id = obj.id_cliente_id
-		# 	
-		# 	#-- Si el cliente aún no está en el diccionario, se inicializa.
-		# 	if cliente_id not in datos_por_cliente:
-		# 		datos_por_cliente[cliente_id] = {
-		# 			"comprobantes": [],
-		# 			"total_cliente": float(0),
-		# 		}
-		# 	
-		# 	#-- Añadir el detalle al grupo.
-		# 	datos_por_cliente[cliente_id]["comprobantes"].append(raw_to_dict(obj))
-		# 	
-		# 	#-- Acumular totales.
-		# 	datos_por_cliente[cliente_id]["total_cliente"] += float(obj.total)
-		# 	total_general += float(obj.total)
 		
 		# **************************************************
 		
@@ -503,13 +482,6 @@ class VLTablaDinamicaDetalleVentasInformeView(InformeFormView):
 		if form.errors:
 			context["data_has_errors"] = True
 		return context
-
-
-def raw_to_dict(instance):
-	"""Convierte una instancia de una consulta raw a un diccionario, eliminando claves internas."""
-	data = instance.__dict__.copy()
-	data.pop('_state', None)
-	return data
 
 
 def vltabladinamicadetalleventas_vista_pantalla(request):
@@ -612,6 +584,7 @@ def generar_pdf(contexto_reporte):
 		table_data.append(row)
 	
 	return generator.generate(table_data, col_widths, table_style_config)		
+
 
 def vltabladinamicadetalleventas_vista_excel(request):
 	token = request.GET.get("token")

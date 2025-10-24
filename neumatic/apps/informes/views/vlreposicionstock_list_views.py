@@ -15,7 +15,7 @@ from .report_views_generics import *
 from apps.informes.models import VLReposicionStock
 from apps.maestros.models.sucursal_models import Sucursal
 from ..forms.buscador_vlreposicionstock_forms import BuscadorReposicionStockForm
-from utils.utils import deserializar_datos, formato_argentino_entero, normalizar
+from utils.utils import deserializar_datos, formato_argentino_entero, normalizar, raw_to_dict
 from utils.helpers.export_helpers import ExportHelper, PDFGenerator
 
 
@@ -326,18 +326,6 @@ class VLReposicionStockInformeView(InformeFormView):
 		if form.errors:
 			context["data_has_errors"] = True
 		return context
-
-def raw_to_dict(instance):
-	"""Convierte una instancia de ModelProxy (namedtuple) o modelo a un diccionario."""
-	if hasattr(instance, '_asdict'):  #-- Para namedtuple (ModelProxy).
-		return instance._asdict()
-	elif hasattr(instance, '__dict__'):  #-- Para modelos normales.
-		data = instance.__dict__.copy()
-		data.pop('_state', None)
-		return data
-	else:
-		#-- Si no es ninguno de los anteriores, intentamos convertir a dict directamente.
-		return dict(instance)
 
 
 def vlreposicionstock_vista_pantalla(request):

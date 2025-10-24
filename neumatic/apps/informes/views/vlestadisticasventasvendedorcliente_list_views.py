@@ -16,7 +16,7 @@ from .report_views_generics import *
 from apps.informes.models import VLEstadisticasVentasVendedorCliente
 from apps.maestros.models.vendedor_models import Vendedor
 from ..forms.buscador_vlestadisticasventasvendedorcliente_forms import BuscadorEstadisticasVentasVendedorClienteForm
-from utils.utils import deserializar_datos, formato_argentino, normalizar
+from utils.utils import deserializar_datos, formato_argentino, normalizar, raw_to_dict
 from utils.helpers.export_helpers import ExportHelper, PDFGenerator
 
 
@@ -238,12 +238,6 @@ class VLEstadisticasVentasVendedorClienteInformeView(InformeFormView):
 			context["data_has_errors"] = True
 		return context
 
-def raw_to_dict(instance):
-	"""Convierte una instancia de una consulta raw a un diccionario, eliminando claves internas."""
-	data = instance.__dict__.copy()
-	data.pop('_state', None)
-	return data
-
 
 def vlestadisticasventasvendedorcliente_vista_pantalla(request):
 	#-- Obtener el token de la querystring.
@@ -311,6 +305,7 @@ class CustomPDFGenerator(PDFGenerator):
 		
 		params = context.get("parametros_d", {})
 		return "<br/>".join([f"<b>{k}:</b> {v}" for k, v in params.items()])
+
 
 def generar_pdf(contexto_reporte):
 	agrupar = contexto_reporte.get("agrupar", None)

@@ -15,7 +15,7 @@ from .report_views_generics import *
 from apps.informes.models import VLStockGeneralSucursal
 from apps.maestros.models.sucursal_models import Sucursal
 from ..forms.buscador_vlstockgeneralsucursal_forms import BuscadorStockGeneralSucursalForm
-from utils.utils import deserializar_datos, formato_argentino_entero, normalizar
+from utils.utils import deserializar_datos, formato_argentino_entero, normalizar, raw_to_dict
 from utils.helpers.export_helpers import ExportHelper, PDFGenerator
 
 
@@ -384,17 +384,6 @@ class VLStockGeneralSucursalInformeView(InformeFormView):
 			context["data_has_errors"] = True
 		return context
 
-def raw_to_dict(instance):
-	"""Convierte una instancia de ModelProxy (namedtuple) o modelo a un diccionario."""
-	if hasattr(instance, '_asdict'):  #-- Para namedtuple (ModelProxy).
-		return instance._asdict()
-	elif hasattr(instance, '__dict__'):  #-- Para modelos normales.
-		data = instance.__dict__.copy()
-		data.pop('_state', None)
-		return data
-	else:
-		#-- Si no es ninguno de los anteriores, intentamos convertir a dict directamente.
-		return dict(instance)
 
 def vlstockgeneralsucursal_vista_pantalla(request):
 	#-- Obtener el token de la querystring.
