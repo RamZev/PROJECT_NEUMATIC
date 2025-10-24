@@ -4,37 +4,37 @@
     <soap:Body>
         <FECAESolicitar xmlns="http://ar.gov.afip.dif.FEV1/">
             <Auth>
-                <Token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgZHN0PSJDTj13c2ZlLCBPPUFGSVAsIEM9QVIiIHVuaXF1ZV9pZD0iMzU2NzM4NzE4IiBnZW5fdGltZT0iMTc2MDU0MTMwMiIgZXhwX3RpbWU9IjE3NjA1ODQ1NjIiLz4KICAgIDxvcGVyYXRpb24gdHlwZT0ibG9naW4iIHZhbHVlPSJncmFudGVkIj4KICAgICAgICA8bG9naW4gZW50aXR5PSIzMzY5MzQ1MDIzOSIgc2VydmljZT0id3NmZSIgdWlkPSJTRVJJQUxOVU1CRVI9Q1VJVCAyMDE3MzYxMTk4NywgQ049ZGVib25hc2hkZW1vbmV3IiBhdXRobWV0aG9kPSJjbXMiIHJlZ21ldGhvZD0iMjIiPgogICAgICAgICAgICA8cmVsYXRpb25zPgogICAgICAgICAgICAgICAgPHJlbGF0aW9uIGtleT0iMzA2OTI0MDIzNjMiIHJlbHR5cGU9IjQiLz4KICAgICAgICAgICAgPC9yZWxhdGlvbnM+CiAgICAgICAgPC9sb2dpbj4KICAgIDwvb3BlcmF0aW9uPgo8L3Nzbz4K</Token>
-                <Sign>kwYAno0PHnqGBLk+xdNXJUp9rr7u7c80KmVzCy+eHrO5U22AjVLwW8vtBXkN3Pqs30/9xor8+sBgMVv+1flPKwSBnv1hTDJCM+pINgbjppOCTxZFls3vOt02PKuc0jS+LOt0wfvoMbXHqWCpRld1pEjY3btri6jpWvJGITaTFGA=</Sign>
+                <Token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgZHN0PSJDTj13c2ZlLCBPPUFGSVAsIEM9QVIiIHVuaXF1ZV9pZD0iNDI4MTA1NzQ3NyIgZ2VuX3RpbWU9IjE3NjExNjc0NzQiIGV4cF90aW1lPSIxNzYxMjEwNzM0Ii8+CiAgICA8b3BlcmF0aW9uIHR5cGU9ImxvZ2luIiB2YWx1ZT0iZ3JhbnRlZCI+CiAgICAgICAgPGxvZ2luIGVudGl0eT0iMzM2OTM0NTAyMzkiIHNlcnZpY2U9IndzZmUiIHVpZD0iU0VSSUFMTlVNQkVSPUNVSVQgMjAxNzM2MTE5ODcsIENOPWRlYm9uYXNoZGVtb25ldyIgYXV0aG1ldGhvZD0iY21zIiByZWdtZXRob2Q9IjIyIj4KICAgICAgICAgICAgPHJlbGF0aW9ucz4KICAgICAgICAgICAgICAgIDxyZWxhdGlvbiBrZXk9IjMwNjkyNDAyMzYzIiByZWx0eXBlPSI0Ii8+CiAgICAgICAgICAgIDwvcmVsYXRpb25zPgogICAgICAgIDwvbG9naW4+CiAgICA8L29wZXJhdGlvbj4KPC9zc28+Cg==</Token>
+                <Sign>MSgfN6hWMqpoyGgv6li9DzjyHgRJs1TdC6JaBYsOPq32yFhNP+E3R1BCEcDD66zjDYtGIxsUozr0wRZeRfd0EpnuMzds/gvIDmm6TVM/ZO9p3RMY+aQ1+kPxt+axvchz/V8oXMtQ0aBRsI/DvEukbaFgPgkW4oGppfMT9p1+we0=</Sign>
                 <Cuit>30692402363</Cuit>
             </Auth>
             <FeCAEReq>
                 <FeCabReq>
                     <CantReg>1</CantReg>
                     <PtoVta>0022</PtoVta>
-                    <CbteTipo>006</CbteTipo>
+                    <CbteTipo>001</CbteTipo>
                 </FeCabReq>
                 <FeDetReq>
                     <FECAEDetRequest>
                         <Concepto>3</Concepto>
-                        <DocTipo>96</DocTipo>
-                        <DocNro>27000000006</DocNro>
-                        <CbteDesde>00000002</CbteDesde>
-                        <CbteHasta>00000002</CbteHasta>
-                        <CbteFch>20251015</CbteFch>
+                        <DocTipo>80</DocTipo>
+                        <DocNro>30692379841</DocNro>
+                        <CbteDesde>00023649</CbteDesde>
+                        <CbteHasta>00023649</CbteHasta>
+                        <CbteFch>20251022</CbteFch>
                         <ImpTotal>227159.00</ImpTotal>
                         <ImpTotConc>0.00</ImpTotConc>
                         <ImpNeto>187734.71</ImpNeto>
                         <ImpOpEx>0.00</ImpOpEx>
                         <ImpTrib>0.00</ImpTrib>
                         <ImpIVA>39424.29</ImpIVA>
-                        <FchServDesde>20251015</FchServDesde>
-                        <FchServHasta>20251015</FchServHasta>
-                        <FchVtoPago>20251114</FchVtoPago>
+                        <FchServDesde>20251022</FchServDesde>
+                        <FchServHasta>20251022</FchServHasta>
+                        <FchVtoPago>20251121</FchVtoPago>
                         <MonId>PES</MonId>
                         <MonCotiz>1.000</MonCotiz>
                         <CanMisMonExt>N</CanMisMonExt>
-                        <CondicionIVAReceptorId>5</CondicionIVAReceptorId>
+                        <CondicionIVAReceptorId>1</CondicionIVAReceptorId>
                         <Iva>
                             <AlicIva>
                                 <Id>5</Id>

@@ -655,7 +655,11 @@
                     <input type="hidden" name="detallecompra_set-${currentIndex}-id_producto" value="${producto.id}">
                     
                     <!-- Campos visibles -->
-                    <td>${producto.medida}</td>
+                    <td>
+                        <input type="text" name="detallecompra_set-${currentIndex}-medida"
+                            class="form-control form-control-sm border border-primary" 
+                            value="${producto.medida}" readonly>
+                    </td>
                     <td>
                         <input type="text" name="detallecompra_set-${currentIndex}-producto_venta"
                             class="form-control form-control-sm border border-primary" 

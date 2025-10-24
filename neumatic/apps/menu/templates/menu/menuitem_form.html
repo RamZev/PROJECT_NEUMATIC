@@ -1,0 +1,125 @@
+{% extends 'menu/base_menu.html' %}
+
+{% block title %}{{ title }} - Sistema de Menú{% endblock %}
+{% block breadcrumb %}{{ title }}{% endblock %}
+{% block card_title %}{{ title }}{% endblock %}
+
+{% block card_content %}
+<form method="post">
+    {% csrf_token %}
+    
+    <div class="row">
+        <div class="col-md-6">
+            <div class="mb-3">
+                {{ form.heading.label_tag }}
+                {{ form.heading }}
+                {% if form.heading.errors %}
+                <div class="text-danger small">{{ form.heading.errors }}</div>
+                {% endif %}
+                <div class="form-text">Encabezado al que pertenece este item</div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="mb-3">
+                {{ form.parent.label_tag }}
+                {{ form.parent }}
+                {% if form.parent.errors %}
+                <div class="text-danger small">{{ form.parent.errors }}</div>
+                {% endif %}
+                <div class="form-text">Item padre (para submenús)</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="mb-3">
+                {{ form.name.label_tag }}
+                {{ form.name }}
+                {% if form.name.errors %}
+                <div class="text-danger small">{{ form.name.errors }}</div>
+                {% endif %}
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="mb-3">
+                {{ form.order.label_tag }}
+                {{ form.order }}
+                {% if form.order.errors %}
+                <div class="text-danger small">{{ form.order.errors }}</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="mb-3">
+                {{ form.url_name.label_tag }}
+                {{ form.url_name }}
+                {% if form.url_name.errors %}
+                <div class="text-danger small">{{ form.url_name.errors }}</div>
+                {% endif %}
+                <div class="form-text">Nombre de la URL Django (ej: 'cliente_list')</div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="mb-3">
+                {{ form.query_params.label_tag }}
+                {{ form.query_params }}
+                {% if form.query_params.errors %}
+                <div class="text-danger small">{{ form.query_params.errors }}</div>
+                {% endif %}
+                <div class="form-text">Parámetros GET (ej: '?proceso=actualizar')</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="mb-3">
+                {{ form.icon.label_tag }}
+                {{ form.icon }}
+                {% if form.icon.errors %}
+                <div class="text-danger small">{{ form.icon.errors }}</div>
+                {% endif %}
+                <div class="form-text">Clase de FontAwesome (ej: 'fas fa-home')</div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="mb-3">
+                {{ form.groups.label_tag }}
+                {{ form.groups }}
+                {% if form.groups.errors %}
+                <div class="text-danger small">{{ form.groups.errors }}</div>
+                {% endif %}
+                <div class="form-text">Grupos que pueden ver este item (opcional)</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="mb-3 form-check form-switch">
+                {{ form.is_collapse }}
+                <label class="form-check-label" for="{{ form.is_collapse.id_for_label }}">
+                    {{ form.is_collapse.label }}
+                </label>
+                {% if form.is_collapse.errors %}
+                <div class="text-danger small">{{ form.is_collapse.errors }}</div>
+                {% endif %}
+                <div class="form-text">Marcar si este item tiene sub-items</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-4 border-top pt-3">
+        <button type="submit" class="btn btn-success">
+            <i class="fas fa-save me-1"></i> Guardar
+        </button>
+        <a href="{% url 'menu:item_list' %}" class="btn btn-secondary">
+            <i class="fas fa-times me-1"></i> Cancelar
+        </a>
+    </div>
+</form>
+{% endblock %}

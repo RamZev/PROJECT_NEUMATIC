@@ -576,6 +576,9 @@ class FacturaCreateView(MaestroDetalleCreateView):
 						defaults={'numero': numero_plantilla}  # Valor inicial
 					)
 					
+					if not created:
+						print("Elnúmerto No fue actualizado")
+
 					# Si ya existe, actualizar solo si el número manual es mayor
 					if not created and numero_plantilla > numero_obj.numero:
 						Numero.objects.filter(pk=numero_obj.pk).update(numero=numero_plantilla)

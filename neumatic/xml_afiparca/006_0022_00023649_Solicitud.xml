@@ -19,15 +19,15 @@
                         <Concepto>3</Concepto>
                         <DocTipo>96</DocTipo>
                         <DocNro>27000000006</DocNro>
-                        <CbteDesde>00000002</CbteDesde>
-                        <CbteHasta>00000002</CbteHasta>
+                        <CbteDesde>00023649</CbteDesde>
+                        <CbteHasta>00023649</CbteHasta>
                         <CbteFch>20251015</CbteFch>
-                        <ImpTotal>227159.00</ImpTotal>
+                        <ImpTotal>1033913.00</ImpTotal>
                         <ImpTotConc>0.00</ImpTotConc>
-                        <ImpNeto>187734.71</ImpNeto>
+                        <ImpNeto>854473.55</ImpNeto>
                         <ImpOpEx>0.00</ImpOpEx>
                         <ImpTrib>0.00</ImpTrib>
-                        <ImpIVA>39424.29</ImpIVA>
+                        <ImpIVA>179439.45</ImpIVA>
                         <FchServDesde>20251015</FchServDesde>
                         <FchServHasta>20251015</FchServHasta>
                         <FchVtoPago>20251114</FchVtoPago>
@@ -38,8 +38,8 @@
                         <Iva>
                             <AlicIva>
                                 <Id>5</Id>
-                                <BaseImp>187734.71</BaseImp>
-                                <Importe>39424.29</Importe>
+                                <BaseImp>854473.55</BaseImp>
+                                <Importe>179439.45</Importe>
                             </AlicIva>
                         </Iva>
                     </FECAEDetRequest>

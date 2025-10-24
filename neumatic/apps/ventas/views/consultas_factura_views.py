@@ -714,6 +714,9 @@ def obtener_numero_comprobante3(request):
         codigo_afip_a = comprobante_data.codigo_afip_a
         codigo_afip_b = comprobante_data.codigo_afip_b
 
+        # print("codigo_afip_a", codigo_afip_a)
+        # print("codigo_afip_b", codigo_afip_b)
+
         # Validar que los códigos AFIP A y B no estén vacíos
         if not codigo_afip_a or not codigo_afip_b:
             return JsonResponse({
@@ -733,6 +736,10 @@ def obtener_numero_comprobante3(request):
             # Caso NO codigo_afip_a, codigo_afip_b
             comprobante = codigo_afip_a
 
+        # print("codigo_afip_definitivo", codigo_afip_a)
+        # print("id_sucusal", id_sucursal)
+        # print("id_punto_venta", id_punto_venta)
+        
         # Obtener número referencial (último número + 1)
         ultimo_numero = Numero.objects.filter(
             id_sucursal=id_sucursal,

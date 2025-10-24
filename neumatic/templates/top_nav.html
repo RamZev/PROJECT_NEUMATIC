@@ -79,6 +79,27 @@
 							<i class="fas fa-check-circle text-info me-2"></i>Validar
 						</a>
 					</li>
+
+					<!-- Línea separadora -->
+					<li><hr class="dropdown-divider"></li>
+					
+					<!-- Opciones de Gestión del Menú -->
+					<li>
+						<a class="dropdown-item" href="{% url 'menu:heading_list' %}">
+							<i class="fas fa-heading text-primary me-2"></i>Encabezados del Menú
+						</a>
+					</li>
+					<li>
+						<a class="dropdown-item" href="{% url 'menu:item_list' %}">
+							<i class="fas fa-list text-success me-2"></i>Items del Menú
+						</a>
+					</li>
+					<li>
+						<a class="dropdown-item" href="{% url 'menu:menu_tree' %}">
+							<i class="fas fa-sitemap text-info me-2"></i>Árbol del Menú
+						</a>
+					</li>
+
 				{% endif %}
 				<li><hr class="dropdown-divider" /></li>
 				<li>
