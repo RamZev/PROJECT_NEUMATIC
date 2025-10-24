@@ -255,7 +255,8 @@ class VLListaRevendedorInformeView(InformeFormView):
 			modelo = f"Hasta: {id_modelo_hasta}"
 		
 		
-		param = {
+		param_left = {}
+		param_right = {
 			"Familia": familia,
 			"Marca": marca,
 			"Modelo": modelo,
@@ -285,7 +286,8 @@ class VLListaRevendedorInformeView(InformeFormView):
 		#-- Se retorna un contexto que será consumido tanto para la vista en pantalla como para la generación del PDF.
 		return {
 			"objetos": grouped_data,
-			"parametros": param,
+			"parametros_i": param_left,
+			"parametros_d": param_right,
 			'fecha_hora_reporte': fecha_hora_reporte,
 			'titulo': ConfigViews.report_title,
 			'logo_url': f"{dominio}{static('img/logo_01.png')}",
@@ -345,17 +347,17 @@ def vllistarevendedor_vista_pdf(request):
 
 class CustomPDFGenerator(PDFGenerator):
 	#-- Método que se puede sobreescribir/extender según requerimientos.
-	# def _get_header_bottom_left(self, context):
-	# 	"""Personalización del Header-bottom-left"""
-	# 	
-	# 	params = context.get("parametros_i", {})
-	# 	return "<br/>".join([f"<b>{k}:</b> {v}" for k, v in params.items()])
+	def _get_header_bottom_left(self, context):
+		"""Personalización del Header-bottom-left"""
+		
+		params = context.get("parametros_i", {})
+		return "<br/>".join([f"<b>{k}:</b> {v}" for k, v in params.items()])
 	
 	#-- Método que se puede sobreescribir/extender según requerimientos.
 	def _get_header_bottom_right(self, context):
 		"""Añadir información adicional específica para este reporte"""
 		
-		params = context.get("parametros", {})
+		params = context.get("parametros_d", {})
 		return "<br/>".join([f"<b>{k}:</b> {v}" for k, v in params.items()])
 
 

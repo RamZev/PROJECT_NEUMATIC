@@ -148,7 +148,7 @@ html_code += """
 <!-- -------------------------------------------------------------------- -->
 {% block modals %}
 	<!-- Modal para mostrar errores -->
-	{% include 'maestros/modal_errors.html' %}
+	{% include 'modal_errors.html' %}
 	
 	<!-- Modal para mostrar los requerimientos de los campos -->
 	{% include 'maestros/modal_fields_requirements.html' %}

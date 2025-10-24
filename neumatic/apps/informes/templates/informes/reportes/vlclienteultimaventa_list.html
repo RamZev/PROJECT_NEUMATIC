@@ -4,18 +4,18 @@
 {% load static %}
 {% load custom_tags %}
 
-<!-- Blque Header -------------------------------------------------------------------------- -->
+<!-- Bloque Header ------------------------------------------------------------------------- -->
  
 <!-- Contenido Inferior Izquierdo -->
-{% comment %} {% block header_bottom_left %}
+{% block header_bottom_left %}
 	{% for param, valor in parametros_i.items %}
 		<p class="compact-line-spacing"><strong>{{ param }}:</strong> {{ valor }}</p>
 	{% endfor %}
-{% endblock %} {% endcomment %}
+{% endblock %}
 
 <!-- Contenido Inferior Derecho -->
 {% block header_bottom_right %}
-	{% for param, valor in parametros.items %}
+	{% for param, valor in parametros_d.items %}
 		<p class="compact-line-spacing"><strong>{{ param }}:</strong> {{ valor }}</p>
 	{% endfor %}
 {% endblock %}
