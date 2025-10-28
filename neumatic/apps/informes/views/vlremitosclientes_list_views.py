@@ -159,24 +159,17 @@ class VLRemitosClientesInformeView(InformeFormView):
 		fecha_desde = cleaned_data.get('fecha_desde')
 		fecha_hasta = cleaned_data.get('fecha_hasta')
 		
+		cliente = Cliente.objects.filter(pk=id_cliente).first() if id_cliente else None
+		
 		fecha_hora_reporte = datetime.now().strftime("%d/%m/%Y %H:%M:%S")		
 		
 		dominio = f"http://{self.request.get_host()}"
 		
-		param = {
+		param_left = {"Cliente": f"[{cliente.id_cliente}] {cliente}" if cliente else ""}
+		param_right = {
 			"Desde": fecha_desde.strftime("%d/%m/%Y"),
 			"Hasta": fecha_hasta.strftime("%d/%m/%Y"),
 		}
-		
-		#-- Obtener los datos el cliente.
-		cliente_data = {}
-		cliente = Cliente.objects.filter(pk=id_cliente).first() if id_cliente else None
-		
-		if cliente:
-			cliente_data = {
-				"id_cliente": cliente.id_cliente,
-				"nombre_cliente": cliente.nombre_cliente,
-			}
 		
 		# **************************************************
 		#-- Agrupar los objetos por el número de comprobante.
@@ -200,7 +193,7 @@ class VLRemitosClientesInformeView(InformeFormView):
 		#-- Convertir los datos agrupados a un formato serializable:
 		#-- Se recorre cada grupo y se convierte cada producto a diccionario usando raw_to_dict.
 		
-		for comprobante, data in grouped_data.items():
+		for data in grouped_data.values():
 			data['productos'] = [raw_to_dict(producto) for producto in data['productos']]
 			data['subtotal'] = float(data['subtotal'])
 		
@@ -209,8 +202,8 @@ class VLRemitosClientesInformeView(InformeFormView):
 		return {
 			"objetos": grouped_data,
 			"total_general": total_general,
-			'cliente': cliente_data,
-			"parametros": param,
+			"parametros_i": param_left,
+			"parametros_d": param_right,
 			'fecha_hora_reporte': fecha_hora_reporte,
 			'titulo': ConfigViews.report_title,
 			'logo_url': f"{dominio}{static('img/logo_01.png')}",
@@ -272,28 +265,16 @@ class CustomPDFGenerator(PDFGenerator):
 	#-- Método que se puede sobreescribir/extender según requerimientos.
 	def _get_header_bottom_left(self, context):
 		"""Personalización del Header-bottom-left"""
-		# return super()._get_header_bottom_left(context)
 		
-		# custom_text = context.get("texto_personalizado", "")
-		# 
-		# if custom_text:
-		# 	return f"<b>NOTA:</b> {custom_text}"
-		
-		cliente_data = context.get('cliente', '')
-		
-		return f"<strong>Cliente:</strong> <br/> [{cliente_data['id_cliente']}] {cliente_data['nombre_cliente']}"
-		
+		params = context.get("parametros_i", {})
+		return "<br/>".join([f"<b>{k}:</b> {v}" for k, v in params.items()])
 	
 	#-- Método que se puede sobreescribir/extender según requerimientos.
-	# def _get_header_bottom_right(self, context):
-	# 	"""Añadir información adicional específica para este reporte"""
-	# 	base_content = super()._get_header_bottom_right(context)
-	# 	saldo_total = context.get("saldo_total", 0)
-	# 	return f"""
-	# 		{base_content}<br/>
-	# 		<b>Total General:</b> {formato_es_ar(saldo_total)}
-	# 	"""
-	pass
+	def _get_header_bottom_right(self, context):
+		"""Añadir información adicional específica para este reporte"""
+		
+		params = context.get("parametros_d", {})
+		return "<br/>".join([f"<b>{k}:</b> {v}" for k, v in params.items()])
 
 
 def generar_pdf(contexto_reporte):

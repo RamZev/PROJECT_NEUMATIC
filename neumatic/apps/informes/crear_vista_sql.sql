@@ -1702,6 +1702,71 @@ CREATE VIEW VLFichaSeguimientoStock AS
 	);
 
 
+-- ---------------------------------------------------------------------------
+-- Detalle de Compras por Proveedor.
+-- Modelo: VLDetalleCompraProveedor
+-- ---------------------------------------------------------------------------
+DROP VIEW IF EXISTS "main"."VLDetalleCompraProveedor";
+CREATE VIEW VLDetalleCompraProveedor AS
+	SELECT
+		c.id_proveedor_id AS id_proveedor,
+		pv.nombre_proveedor AS proveedor,
+		--c.compro,
+		--c.letra_comprobante,
+		--c.numero_comprobante,
+		(c.compro || '  ' || c.letra_comprobante || '  ' || SUBSTR(printf('%012d', c.numero_comprobante), 1, 4) || '-' || SUBSTR(printf('%012d', c.numero_comprobante), 5)) AS comprobante,
+		c.fecha_comprobante,
+		dc.id_producto_id AS id_producto,
+		p.cai,
+		p.nombre_producto AS producto,
+		p.id_familia_id AS id_familia,
+		pf.nombre_producto_familia AS familia,
+		p.id_marca_id AS id_marca,
+		pm.nombre_producto_marca AS marca,
+		dc.cantidad,
+		p.unidad,
+		dc.precio,
+		dc.total,
+		c.id_sucursal_id AS id_sucursal,
+		c.id_deposito_id AS id_deposito
+	FROM
+		detalle_compra dc
+		JOIN compra c ON dc.id_compra_id = c.id_compra
+		JOIN producto p ON dc.id_producto_id = p.id_producto
+		JOIN producto_familia pf ON p.id_familia_id = pf.id_producto_familia
+		JOIN producto_marca pm ON p.id_marca_id = pm.id_producto_marca
+		JOIN proveedor pv ON c.id_proveedor_id = pv.id_proveedor
+	ORDER by
+		c.fecha_comprobante;
 
+
+-- ---------------------------------------------------------------------------
+-- Comprobantes Ingresados.
+-- Modelo: VLCompraIngresada
+-- ---------------------------------------------------------------------------
+DROP VIEW IF EXISTS "main"."VLCompraIngresada";
+CREATE VIEW VLCompraIngresada AS
+	SELECT
+		--c.compro,
+		--c.letra_comprobante,
+		--c.numero_comprobante,
+		c.fecha_comprobante,
+		--cp.codigo_comprobante_compra,
+		--c.id_comprobante_compra_id,
+		cp.nombre_comprobante_compra,
+		--(c.compro || '  ' || c.letra_comprobante || '  ' || SUBSTR(printf('%012d', c.numero_comprobante), 1, 4) || '-' || SUBSTR(printf('%012d', c.numero_comprobante), 5)) AS comprobante,
+		(cp.codigo_comprobante_compra || '  ' || c.letra_comprobante || '  ' || SUBSTR(printf('%012d', c.numero_comprobante), 1, 4) || '-' || SUBSTR(printf('%012d', c.numero_comprobante), 5)) AS comprobante,
+		c.id_proveedor_id,
+		p.nombre_proveedor,
+		c.total,
+		c.observa_comprobante
+	FROM
+		compra c
+		JOIN comprobante_compra cp ON c.id_comprobante_compra_id = cp.id_comprobante_compra
+		JOIN proveedor p ON c.id_proveedor_id = p.id_proveedor
+	WHERE
+		c.compro in ("IB")
+	ORDER by
+		c.compro;
 
 
