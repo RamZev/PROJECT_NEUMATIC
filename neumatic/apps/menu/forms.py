@@ -40,30 +40,79 @@ class MenuItemForm(forms.ModelForm):
         
         # Función para mostrar la ruta jerárquica completa
         def get_hierarchical_label(obj):
-            if obj.heading and not obj.parent:
-                # Item de nivel 2
-                return f"{obj.heading.name} → {obj.name}"
-            elif obj.parent:
-                # Item de nivel 3 o 4
-                path = obj.name
-                current = obj
-                while current.parent:
-                    path = f"{current.parent.name} → {path}"
-                    current = current.parent
-                    if current.heading:
-                        path = f"{current.heading.name} → {path}"
-                        break
-                return path
+            path_parts = [obj.name]
+            current = obj
+            
+            # Construir la ruta desde el item hasta el heading
+            while current.parent:
+                path_parts.insert(0, current.parent.name)
+                current = current.parent
+            
+            # SIEMPRE agregar el heading al principio
+            if obj.heading:
+                path_parts.insert(0, obj.heading.name)
             else:
-                # Item sin heading ni parent (raro caso)
-                return obj.name
+                # Si no tiene heading, buscar el heading del padre
+                if obj.parent and obj.parent.heading:
+                    path_parts.insert(0, obj.parent.heading.name)
+            
+            return " → ".join(path_parts)
         
         self.fields['parent'].label_from_instance = get_hierarchical_label
         
+        # Obtener solo items colapsables en el orden del árbol
+        def get_collapsable_items_ordered():
+            headings = MenuHeading.objects.order_by('order')
+            collapsable_items = []
+            
+            for heading in headings:
+                # Items de nivel 1 (sin parent) que son colapsables
+                level1_items = MenuItem.objects.filter(
+                    heading=heading, 
+                    parent=None,
+                    is_collapse=True
+                ).order_by('order')
+                
+                for level1_item in level1_items:
+                    collapsable_items.append(level1_item)
+                    
+                    # Items de nivel 2 (hijos) que son colapsables
+                    level2_items = level1_item.children.filter(
+                        is_collapse=True
+                    ).order_by('order')
+                    
+                    for level2_item in level2_items:
+                        collapsable_items.append(level2_item)
+                        
+                        # Items de nivel 3 (nietos) que son colapsables
+                        level3_items = level2_item.children.filter(
+                            is_collapse=True
+                        ).order_by('order')
+                        
+                        for level3_item in level3_items:
+                            collapsable_items.append(level3_item)
+            
+            return collapsable_items
+        
         # Filtrar items padres para evitar referencias circulares
+        collapsable_items = get_collapsable_items_ordered()
+        
+        # Crear una lista de IDs en el orden correcto
+        ordered_ids = [item.pk for item in collapsable_items]
+        
         if self.instance.pk:
-            self.fields['parent'].queryset = MenuItem.objects.exclude(
-                pk=self.instance.pk
-            ).filter(parent__isnull=True)
-        else:
-            self.fields['parent'].queryset = MenuItem.objects.filter(parent__isnull=True)
+            # Excluir el item actual y mantener el orden
+            ordered_ids = [pk for pk in ordered_ids if pk != self.instance.pk]
+        
+        # Forzar el orden usando la lista de IDs
+        from django.db.models import Case, When
+        preserved_order = Case(*[When(pk=pk, then=pos) for pos, pk in enumerate(ordered_ids)])
+        
+        queryset = MenuItem.objects.filter(pk__in=ordered_ids).order_by(preserved_order)
+        
+        self.fields['parent'].queryset = queryset
+        
+        # Debug
+        print(f"Items colapsables disponibles: {queryset.count()}")
+        for item in queryset:
+            print(f" - {get_hierarchical_label(item)}")
