@@ -45,3 +45,4 @@ DROP VIEW IF EXISTS "main"."VLMovimientoInternoStock";
 DROP VIEW IF EXISTS "main"."VLStockCliente";
 DROP VIEW IF EXISTS "main"."VLStockDeposito";
 DROP VIEW IF EXISTS "main"."VLFichaSeguimientoStock";
+DROP VIEW IF EXISTS "main"."VLDetalleCompraProveedor";

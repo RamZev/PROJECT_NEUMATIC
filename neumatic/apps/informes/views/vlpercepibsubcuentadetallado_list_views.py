@@ -168,7 +168,8 @@ class VLPercepIBSubcuentaDetalladoInformeView(InformeFormView):
 		fecha_desde = cleaned_data.get('fecha_desde')
 		fecha_hasta = cleaned_data.get('fecha_hasta')
 		
-		param = {
+		param_left = {}
+		param_right = {
 			"Desde": fecha_desde.strftime("%d/%m/%Y"),
 			"Hasta": fecha_hasta.strftime("%d/%m/%Y"),
 		}
@@ -198,7 +199,7 @@ class VLPercepIBSubcuentaDetalladoInformeView(InformeFormView):
 		
 		#-- Convertir los datos agrupados a un formato serializable:
 		#-- Se recorre cada grupo y se convierte cada comprobante a diccionario usando raw_to_dict.
-		for vendedor, data in grouped_data.items():
+		for data in grouped_data.values():
 			data['comprobantes'] = [raw_to_dict(comprobante) for comprobante in data['comprobantes']]
 			data['total_neto'] = float(data['total_neto'])
 			data['total_percep'] = float(data['total_percep'])
@@ -208,7 +209,8 @@ class VLPercepIBSubcuentaDetalladoInformeView(InformeFormView):
 		#-- Se retorna un contexto que será consumido tanto para la vista en pantalla como para la generación del PDF.
 		return {
 			"objetos": grouped_data,
-			"parametros": param,
+			"parametros_i": param_left,
+			"parametros_d": param_right,
 			'fecha_hora_reporte': fecha_hora_reporte,
 			'titulo': ConfigViews.report_title,
 			'logo_url': f"{dominio}{static('img/logo_01.png')}",
@@ -268,36 +270,18 @@ def vlpercepibsubcuentadetallado_vista_pdf(request):
 
 class CustomPDFGenerator(PDFGenerator):
 	#-- Método que se puede sobreescribir/extender según requerimientos.
-	# def _get_header_bottom_left(self, context):
-	# 	"""Personalización del Header-bottom-left"""
-	# 	
-	# 	# custom_text = context.get("texto_personalizado", "")
-	# 	# 
-	# 	# if custom_text:
-	# 	# 	return f"<b>NOTA:</b> {custom_text}"
-	# 	
-	# 	id_cliente = 10025
-	# 	cliente = "Leoncio R. Barrios H."
-	# 	domicilio = "Jr. San Pedro 1256. Surquillo, Lima."
-	# 	Telefono = "971025647"
-	# 	
-	# 	# return f"Cliente: [{id_cliente}] {cliente} <br/> {domicilio}"
-	# 	# return f"Cliente: [{id_cliente}] {cliente} <br/> {domicilio} <br/> Tel. {Telefono} <br/>"
-	# 	return f"Cliente: [{id_cliente}] {cliente} <br/> {domicilio} <br/> Tel. {Telefono} <br/> Tel. {Telefono} "
-	# 	# return f"Cliente: [{id_cliente}] {cliente} <br/> {domicilio} <br/> Tel. {Telefono} <br/> Tel. {Telefono} <br/> Tel. {Telefono}"
-	# 	
-	# 	# return super()._get_header_bottom_left(context)
+	def _get_header_bottom_left(self, context):
+		"""Personalización del Header-bottom-left"""
+		
+		params = context.get("parametros_i", {})
+		return "<br/>".join([f"<b>{k}:</b> {v}" for k, v in params.items()])
 	
 	#-- Método que se puede sobreescribir/extender según requerimientos.
-	# def _get_header_bottom_right(self, context):
-	# 	"""Añadir información adicional específica para este reporte"""
-	# 	base_content = super()._get_header_bottom_right(context)
-	# 	saldo_total = context.get("saldo_total", 0)
-	# 	return f"""
-	# 		{base_content}<br/>
-	# 		<b>Total General:</b> {formato_es_ar(saldo_total)}
-	# 	"""
-	pass
+	def _get_header_bottom_right(self, context):
+		"""Añadir información adicional específica para este reporte"""
+		
+		params = context.get("parametros_d", {})
+		return "<br/>".join([f"<b>{k}:</b> {v}" for k, v in params.items()])
 
 
 def generar_pdf(contexto_reporte):

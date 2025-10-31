@@ -188,8 +188,10 @@ class VLVentaSinEstadisticaInformeView(InformeFormView):
 		
 		dominio = f"http://{self.request.get_host()}"
 		
-		param = {
+		param_left = {
 			"Sucursal": sucursal.nombre_sucursal if sucursal else "Todas",
+		}
+		param_right = {
 			"Desde": fecha_desde.strftime("%d/%m/%Y"),
 			"Hasta": fecha_hasta.strftime("%d/%m/%Y"),
 		}
@@ -223,7 +225,8 @@ class VLVentaSinEstadisticaInformeView(InformeFormView):
 		return {
 			"objetos": datos_por_cliente,
 			"total_general": total_general,
-			"parametros": param,
+			"parametros_i": param_left,
+			"parametros_d": param_right,
 			'fecha_hora_reporte': fecha_hora_reporte,
 			'titulo': ConfigViews.report_title,
 			'logo_url': f"{dominio}{static('img/logo_01.png')}",
@@ -283,19 +286,18 @@ def vlventasinestadistica_vista_pdf(request):
 
 class CustomPDFGenerator(PDFGenerator):
 	#-- Método que se puede sobreescribir/extender según requerimientos.
-	# def _get_header_bottom_left(self, context):
-	# 	"""Personalización del Header-bottom-left"""
-	# 	
-	# 	params = context.get("parametros_i", {})
-	# 	return "<br/>".join([f"<b>{k}:</b> {v}" for k, v in params.items()])
+	def _get_header_bottom_left(self, context):
+		"""Personalización del Header-bottom-left"""
+		
+		params = context.get("parametros_i", {})
+		return "<br/>".join([f"<b>{k}:</b> {v}" for k, v in params.items()])
 	
 	#-- Método que se puede sobreescribir/extender según requerimientos.
-	# def _get_header_bottom_right(self, context):
-	# 	"""Añadir información adicional específica para este reporte"""
-	# 	
-	# 	params = context.get("parametros_d", {})
-	# 	return "<br/>".join([f"<b>{k}:</b> {v}" for k, v in params.items()])
-	pass
+	def _get_header_bottom_right(self, context):
+		"""Añadir información adicional específica para este reporte"""
+		
+		params = context.get("parametros_d", {})
+		return "<br/>".join([f"<b>{k}:</b> {v}" for k, v in params.items()])
 
 
 def generar_pdf(contexto_reporte):

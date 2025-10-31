@@ -123,7 +123,10 @@ btnGenerar.addEventListener("click", async function (e) {
 		const form = document.getElementById("formulario");
 		const formData = new FormData(form);
 		const params = new URLSearchParams(formData).toString();
-		const url = form.action + "?" + params;
+		
+		//-- Obtener la URL base sin parámetros existentes.
+		const baseUrl = form.action.split('?')[0];  //-- Tomar solo la parte antes del ?.
+		const url = baseUrl + "?" + params;
 		
 		//-- Se hace la petición AJAX, enviando el header que indica petición AJAX.
 		const response = await fetch(url, {

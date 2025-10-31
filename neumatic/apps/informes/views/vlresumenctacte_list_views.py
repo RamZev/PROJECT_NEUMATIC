@@ -181,29 +181,17 @@ class VLResumenCtaCteInformeView(InformeFormView):
 		
 		dominio = f"http://{self.request.get_host()}"
 		
-		#-- Obtener los datos el cliente.
-		cliente_data = {}
 		cliente = Cliente.objects.filter(pk=id_cliente).first() if id_cliente else None
-		vendedor = None
-		
-		if cliente:
-			cliente_data = {
-				"id_cliente": cliente.id_cliente,
-				"nombre_cliente": cliente.nombre_cliente,
-				"domicilio_cliente": cliente.domicilio_cliente,
-				"telefono_cliente": cliente.telefono_cliente,
-				"codigo_postal": cliente.codigo_postal,
-				"localidad": cliente.id_localidad.nombre_localidad if cliente.id_localidad else "",
-				"provincia": cliente.id_provincia.nombre_provincia if cliente.id_provincia else "",
-				"nombre_vendedor": cliente.id_vendedor.nombre_vendedor if cliente.id_vendedor else "",
-			}
-			vendedor = cliente.id_vendedor.nombre_vendedor if cliente.id_vendedor else None
-		# ------------------------------------------------------------------------------
 		saldo_anterior = 0
 		
-		param = {
-			# "Vendedor": cliente_data["nombre_vendedor" if cliente else ""]
-			"Vendedor": vendedor
+		param_left = {
+			"Cliente": cliente.nombre_cliente if cliente else "",
+			"Domicilio": cliente.domicilio_cliente if cliente.domicilio_cliente else "",
+			"Cód. Postal": f"{cliente.codigo_postal}  {cliente.id_localidad.nombre_localidad if cliente.id_localidad else ""} - {cliente.id_provincia.nombre_provincia if cliente.id_provincia else ""}",
+			"Teléfono": cliente.telefono_cliente if cliente.telefono_cliente else "",
+		}
+		param_right = {
+			"Vendedor": cliente.id_vendedor.nombre_vendedor if cliente.id_vendedor else None
 		}
 		if resumen_pendiente:
 			#-- Reporte Resumen de Cuenta Pendiente.
@@ -211,28 +199,23 @@ class VLResumenCtaCteInformeView(InformeFormView):
 			#-- Plantilla Vista Preliminar Pantalla.
 			ConfigViews.reporte_pantalla = 'informes/reportes/vlfacturas_pendientes_list.html'
 			
-			# #-- Plantilla Vista Preliminar PDF.
-			# ConfigViews.reporte_pdf = 'informes/reportes/facturas_pendientes_pdf.html'
-			
-			param["Tipo"] = "Resumen de Cuenta Pendiente"
+			param_right["Tipo"] = "Resumen de Cuenta Pendiente"
 		else:
 			#-- Reporte Resumen de Cuenta Corriente.
 			
 			#-- Plantilla Vista Preliminar Pantalla.
 			ConfigViews.reporte_pantalla = 'informes/reportes/vlresumenctacte_list.html'
 			
-			# #-- Plantilla Vista Preliminar PDF.
-			# ConfigViews.reporte_pdf = 'informes/reportes/vlresumenctacte_pdf.html'
-			
-			param["Desde"] = fecha_desde.strftime("%d/%m/%Y")
-			param["Hasta"] = fecha_hasta.strftime("%d/%m/%Y")
-			
 			cond_vta = {
 				"0": "Ambos",
 				"1": "Contado",
 				"2": "Cta. Cte.",
 			}
-			param["Condición"] = cond_vta[condicion_venta]
+			param_right["Condición"] = cond_vta[condicion_venta]
+			
+			param_right["Desde"] = fecha_desde.strftime("%d/%m/%Y")
+			param_right["Hasta"] = fecha_hasta.strftime("%d/%m/%Y")
+			
 			
 			#-- Determinar Saldo Anterior.
 			saldo_anterior_queryset = VLResumenCtaCte.objects.obtener_saldo_anterior(id_cliente, fecha_desde)
@@ -276,8 +259,8 @@ class VLResumenCtaCteInformeView(InformeFormView):
 			'total_general': saldo_anterior + saldo_total + intereses_total,
 			"saldo_anterior": saldo_anterior,
 			'observaciones': observaciones,
-			'cliente': cliente_data,
-			"parametros": param,
+			"parametros_i": param_left,
+			"parametros_d": param_right,
 			"resumen_pendiente": resumen_pendiente,
 			'fecha_hora_reporte': fecha_hora_reporte,
 			'titulo': ConfigViews.report_title,
@@ -340,23 +323,15 @@ class CustomPDFGenerator(PDFGenerator):
 	def _get_header_bottom_left(self, context):
 		"""Personalización del Header-bottom-left"""
 		
-		cliente = context.get('cliente', None)
-		
-		return f"""<strong>Cliente: </strong> <br/>
-				   [{cliente['id_cliente']}]  {cliente['nombre_cliente']} <br/>
-				   {cliente['domicilio_cliente']}  <strong>Tel.:</strong> {cliente['telefono_cliente']} <br/>
-				   <strong>C.P.:</strong> {cliente['codigo_postal']} {cliente['localidad']} - {cliente['provincia']} <br/>"""
+		params = context.get("parametros_i", {})
+		return "<br/>".join([f"<b>{k}:</b> {v}" for k, v in params.items()])
 	
 	#-- Método que se puede sobreescribir/extender según requerimientos.
-	# def _get_header_bottom_right(self, context):
-	# 	"""Añadir información adicional específica para este reporte"""
-	# 	base_content = super()._get_header_bottom_right(context)
-	# 	saldo_total = context.get("saldo_total", 0)
-	# 	return f"""
-	# 		{base_content}<br/>
-	# 		<b>Total General:</b> {formato_es_ar(saldo_total)}
-	# 	"""
-	pass
+	def _get_header_bottom_right(self, context):
+		"""Añadir información adicional específica para este reporte"""
+		
+		params = context.get("parametros_d", {})
+		return "<br/>".join([f"<b>{k}:</b> {v}" for k, v in params.items()])
 
 
 def generar_pdf(contexto_reporte):

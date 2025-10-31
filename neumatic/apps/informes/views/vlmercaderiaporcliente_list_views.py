@@ -187,25 +187,19 @@ class VLMercaderiaPorClienteInformeView(InformeFormView):
 		fecha_desde = cleaned_data.get('fecha_desde')
 		fecha_hasta = cleaned_data.get('fecha_hasta')
 		
+		cliente = Cliente.objects.filter(pk=id_cliente).first() if id_cliente else None
+		
 		fecha_hora_reporte = datetime.now().strftime("%d/%m/%Y %H:%M:%S")		
 		
 		dominio = f"http://{self.request.get_host()}"
 		
-		param = {
+		param_left = {
+			"Cliente": f"[{cliente.id_cliente}] {cliente}" if cliente else ""
+		}
+		param_right = {
 			"Desde": fecha_desde.strftime("%d/%m/%Y"),
 			"Hasta": fecha_hasta.strftime("%d/%m/%Y"),
 		}
-		
-		#-- Obtener los datos el cliente.
-		cliente_data = {}
-		# cliente = Cliente.objects.get(pk=id_cliente)
-		cliente = Cliente.objects.filter(pk=id_cliente).first() if id_cliente else None
-		
-		if cliente:
-			cliente_data = {
-				"id_cliente": cliente.id_cliente,
-				"nombre_cliente": cliente.nombre_cliente,
-			}
 		
 		# ------------------------------------------------------------------------------
 		#-- Agrupar los objetos por el número de comprobante.
@@ -225,8 +219,8 @@ class VLMercaderiaPorClienteInformeView(InformeFormView):
 		#-- Se retorna un contexto que será consumido tanto para la vista en pantalla como para la generación del PDF.
 		return {
 			"objetos": grouped_data,
-			'cliente': cliente_data,
-			"parametros": param,
+			"parametros_i": param_left,
+			"parametros_d": param_right,
 			'fecha_hora_reporte': fecha_hora_reporte,
 			'titulo': ConfigViews.report_title,
 			'logo_url': f"{dominio}{static('img/logo_01.png')}",
@@ -288,21 +282,15 @@ class CustomPDFGenerator(PDFGenerator):
 	def _get_header_bottom_left(self, context):
 		"""Personalización del Header-bottom-left"""
 		
-		cliente_data = context.get('cliente', '')
-		
-		return f"<strong>Cliente:</strong> <br/> [{cliente_data['id_cliente']}] {cliente_data['nombre_cliente']}"
-		
+		params = context.get("parametros_i", {})
+		return "<br/>".join([f"<b>{k}:</b> {v}" for k, v in params.items()])
 	
 	#-- Método que se puede sobreescribir/extender según requerimientos.
-	# def _get_header_bottom_right(self, context):
-	# 	"""Añadir información adicional específica para este reporte"""
-	# 	base_content = super()._get_header_bottom_right(context)
-	# 	saldo_total = context.get("saldo_total", 0)
-	# 	return f"""
-	# 		{base_content}<br/>
-	# 		<b>Total General:</b> {formato_es_ar(saldo_total)}
-	# 	"""
-	pass
+	def _get_header_bottom_right(self, context):
+		"""Añadir información adicional específica para este reporte"""
+		
+		params = context.get("parametros_d", {})
+		return "<br/>".join([f"<b>{k}:</b> {v}" for k, v in params.items()])
 
 
 def generar_pdf(contexto_reporte):

@@ -71,15 +71,15 @@ class ConfigViews:
 	reporte_pantalla = f"informes/reportes/{model_string}_list.html"
 	
 	#-- Establecer las columnas del reporte y sus atributos.
-	headers = [
-		("Comprobante", 80),
-		("Fecha", 50),
-		("Condición", 40),
-		("Cliente", 40),
-		("Nombre", 200),
-		("Contado", 70),
-		("Cta. Cte.", 70)
-	]	
+	# headers = [
+	# 	("Comprobante", 80),
+	# 	("Fecha", 50),
+	# 	("Condición", 40),
+	# 	("Cliente", 40),
+	# 	("Nombre", 200),
+	# 	("Contado", 70),
+	# 	("Cta. Cte.", 70)
+	# ]	
 	table_info = {
 		"comprobante": {
 			"label": "Comprobante",
@@ -195,8 +195,10 @@ class VLVentaComproInformeView(InformeFormView):
 		solo_totales_comprobante = cleaned_data.get("solo_totales_comprobante", False)
 		sucursal = cleaned_data.get('sucursal', None)
 		
-		param = {
+		param_left = {
 			"Sucursal": sucursal.nombre_sucursal if sucursal else "Todas",
+		}
+		param_right = {
 			"Desde": fecha_desde.strftime("%d/%m/%Y"),
 			"Hasta": fecha_hasta.strftime("%d/%m/%Y"),
 		}
@@ -247,7 +249,8 @@ class VLVentaComproInformeView(InformeFormView):
 			"objetos": datos_agrupados,
 			"total_general": totales_generales,
 			"solo_totales_comprobante": solo_totales_comprobante,
-			"parametros": param,
+			"parametros_i": param_left,
+			"parametros_d": param_right,
 			'fecha_hora_reporte': fecha_hora_reporte,
 			'titulo': ConfigViews.report_title,
 			'logo_url': f"{dominio}{static('img/logo_01.png')}",
@@ -306,36 +309,18 @@ def vlventacompro_vista_pdf(request):
 
 class CustomPDFGenerator(PDFGenerator):
 	#-- Método que se puede sobreescribir/extender según requerimientos.
-	# def _get_header_bottom_left(self, context):
-	# 	"""Personalización del Header-bottom-left"""
-	# 	
-	# 	# custom_text = context.get("texto_personalizado", "")
-	# 	# 
-	# 	# if custom_text:
-	# 	# 	return f"<b>NOTA:</b> {custom_text}"
-	# 	
-	# 	id_cliente = 10025
-	# 	cliente = "Leoncio R. Barrios H."
-	# 	domicilio = "Jr. San Pedro 1256. Surquillo, Lima."
-	# 	Telefono = "971025647"
-	# 	
-	# 	# return f"Cliente: [{id_cliente}] {cliente} <br/> {domicilio}"
-	# 	# return f"Cliente: [{id_cliente}] {cliente} <br/> {domicilio} <br/> Tel. {Telefono} <br/>"
-	# 	return f"Cliente: [{id_cliente}] {cliente} <br/> {domicilio} <br/> Tel. {Telefono} <br/> Tel. {Telefono} "
-	# 	# return f"Cliente: [{id_cliente}] {cliente} <br/> {domicilio} <br/> Tel. {Telefono} <br/> Tel. {Telefono} <br/> Tel. {Telefono}"
-	# 	
-	# 	# return super()._get_header_bottom_left(context)
+	def _get_header_bottom_left(self, context):
+		"""Personalización del Header-bottom-left"""
+		
+		params = context.get("parametros_i", {})
+		return "<br/>".join([f"<b>{k}:</b> {v}" for k, v in params.items()])
 	
 	#-- Método que se puede sobreescribir/extender según requerimientos.
-	# def _get_header_bottom_right(self, context):
-	# 	"""Añadir información adicional específica para este reporte"""
-	# 	base_content = super()._get_header_bottom_right(context)
-	# 	saldo_total = context.get("saldo_total", 0)
-	# 	return f"""
-	# 		{base_content}<br/>
-	# 		<b>Total General:</b> {formato_es_ar(saldo_total)}
-	# 	"""
-	pass
+	def _get_header_bottom_right(self, context):
+		"""Añadir información adicional específica para este reporte"""
+		
+		params = context.get("parametros_d", {})
+		return "<br/>".join([f"<b>{k}:</b> {v}" for k, v in params.items()])
 
 
 def generar_pdf(contexto_reporte):

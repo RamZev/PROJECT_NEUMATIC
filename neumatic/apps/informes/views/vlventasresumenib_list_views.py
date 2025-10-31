@@ -302,13 +302,6 @@ class VLVentasResumenIBInformeView(InformeFormView):
 		anno = cleaned_data.get("anno")
 		mes = cleaned_data.get("mes")
 		importe_max = cleaned_data.get("importe_max") or 0
-		# provincias = cleaned_data.get("provincias")
-		
-		# #-- Convertir a lista explícitamente (solo ids).
-		# ids_provincias = list(provincias.values_list('id_provincia', flat=True)) if provincias else []
-		
-		# #-- Convertir a diccionario usando dictionary comprehension {id: provincia}.
-		# ids_provincias_dict = {prov.id_provincia: prov.nombre_provincia for prov in provincias} if provincias else {}
 		
 		meses = {
 			"01": "Enero",
@@ -324,8 +317,10 @@ class VLVentasResumenIBInformeView(InformeFormView):
 			"11": "Noviembre",
 			"12": "Diciembre",
 		}
-		param = {
+		param_left = {
 			"Sucursal": sucursal.nombre_sucursal,
+		}
+		param_right = {
 			"Período": f"{meses[mes]}/{anno}",
 			"Imp. máx. P/menor": formato_argentino(importe_max),
 		}
@@ -368,7 +363,8 @@ class VLVentasResumenIBInformeView(InformeFormView):
 			"tg_gravado": tg_gravado,
 			"tg_iva": tg_iva,
 			"tg_total": tg_total,
-			"parametros": param,
+			"parametros_i": param_left,
+			"parametros_d": param_right,
 			'fecha_hora_reporte': fecha_hora_reporte,
 			'titulo': ConfigViews.report_title,
 			'logo_url': f"{dominio}{static('img/logo_01.png')}",
@@ -428,36 +424,18 @@ def vlventasresumenib_vista_pdf(request):
 
 class CustomPDFGenerator(PDFGenerator):
 	#-- Método que se puede sobreescribir/extender según requerimientos.
-	# def _get_header_bottom_left(self, context):
-	# 	"""Personalización del Header-bottom-left"""
-	# 	
-	# 	# custom_text = context.get("texto_personalizado", "")
-	# 	# 
-	# 	# if custom_text:
-	# 	# 	return f"<b>NOTA:</b> {custom_text}"
-	# 	
-	# 	id_cliente = 10025
-	# 	cliente = "Leoncio R. Barrios H."
-	# 	domicilio = "Jr. San Pedro 1256. Surquillo, Lima."
-	# 	Telefono = "971025647"
-	# 	
-	# 	# return f"Cliente: [{id_cliente}] {cliente} <br/> {domicilio}"
-	# 	# return f"Cliente: [{id_cliente}] {cliente} <br/> {domicilio} <br/> Tel. {Telefono} <br/>"
-	# 	return f"Cliente: [{id_cliente}] {cliente} <br/> {domicilio} <br/> Tel. {Telefono} <br/> Tel. {Telefono} "
-	# 	# return f"Cliente: [{id_cliente}] {cliente} <br/> {domicilio} <br/> Tel. {Telefono} <br/> Tel. {Telefono} <br/> Tel. {Telefono}"
-	# 	
-	# 	# return super()._get_header_bottom_left(context)
+	def _get_header_bottom_left(self, context):
+		"""Personalización del Header-bottom-left"""
+		
+		params = context.get("parametros_i", {})
+		return "<br/>".join([f"<b>{k}:</b> {v}" for k, v in params.items()])
 	
 	#-- Método que se puede sobreescribir/extender según requerimientos.
-	# def _get_header_bottom_right(self, context):
-	# 	"""Añadir información adicional específica para este reporte"""
-	# 	base_content = super()._get_header_bottom_right(context)
-	# 	saldo_total = context.get("saldo_total", 0)
-	# 	return f"""
-	# 		{base_content}<br/>
-	# 		<b>Total General:</b> {formato_es_ar(saldo_total)}
-	# 	"""
-	pass
+	def _get_header_bottom_right(self, context):
+		"""Añadir información adicional específica para este reporte"""
+		
+		params = context.get("parametros_d", {})
+		return "<br/>".join([f"<b>{k}:</b> {v}" for k, v in params.items()])
 
 
 def generar_pdf(contexto_reporte):

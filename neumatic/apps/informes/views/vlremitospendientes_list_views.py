@@ -173,17 +173,18 @@ class VLRemitosPendientesInformeView(InformeFormView):
 		#-- Parámetros del listado.
 		filtrar_por = cleaned_data.get("filtrar_por", "")
 		
-		param = {}
+		param_left = {}
+		param_right = {}
 		match filtrar_por:
 			case "vendedor":
-				param["Vendedor"] = cleaned_data.get("vendedor").nombre_vendedor
+				param_right["Vendedor"] = cleaned_data.get("vendedor").nombre_vendedor
 			case "clientes":
-				param["Cliente desde"] = str(cleaned_data.get("id_cli_desde", ""))
-				param["Cliente hasta"] = str(cleaned_data.get("id_cli_hasta", ""))
+				param_right["Cliente desde"] = str(cleaned_data.get("id_cli_desde", ""))
+				param_right["Cliente hasta"] = str(cleaned_data.get("id_cli_hasta", ""))
 			case "sucursal_fac":
-				param["Sucursal (fac)"] = cleaned_data.get("sucursal").nombre_sucursal
+				param_right["Sucursal (fac)"] = cleaned_data.get("sucursal").nombre_sucursal
 			case "sucursal_cli":
-				param["Sucursal (cli)"] = cleaned_data.get("sucursal").nombre_sucursal
+				param_right["Sucursal (cli)"] = cleaned_data.get("sucursal").nombre_sucursal
 		
 		fecha_hora_reporte = datetime.now().strftime("%d/%m/%Y %H:%M:%S")		
 		
@@ -260,7 +261,8 @@ class VLRemitosPendientesInformeView(InformeFormView):
 		return {
 			"objetos": datos,
 			"total_general": float(total_general),
-			"parametros": param,
+			"parametros_i": param_left,
+			"parametros_d": param_right,
 			'fecha_hora_reporte': fecha_hora_reporte,
 			'titulo': ConfigViews.report_title,
 			'logo_url': f"{dominio}{static('img/logo_01.png')}",
@@ -321,36 +323,18 @@ def vlremitospendientes_vista_pdf(request):
 
 class CustomPDFGenerator(PDFGenerator):
 	#-- Método que se puede sobreescribir/extender según requerimientos.
-	# def _get_header_bottom_left(self, context):
-	# 	"""Personalización del Header-bottom-left"""
-	# 	
-	# 	# custom_text = context.get("texto_personalizado", "")
-	# 	# 
-	# 	# if custom_text:
-	# 	# 	return f"<b>NOTA:</b> {custom_text}"
-	# 	
-	# 	id_cliente = 10025
-	# 	cliente = "Leoncio R. Barrios H."
-	# 	domicilio = "Jr. San Pedro 1256. Surquillo, Lima."
-	# 	Telefono = "971025647"
-	# 	
-	# 	# return f"Cliente: [{id_cliente}] {cliente} <br/> {domicilio}"
-	# 	# return f"Cliente: [{id_cliente}] {cliente} <br/> {domicilio} <br/> Tel. {Telefono} <br/>"
-	# 	return f"Cliente: [{id_cliente}] {cliente} <br/> {domicilio} <br/> Tel. {Telefono} <br/> Tel. {Telefono} "
-	# 	# return f"Cliente: [{id_cliente}] {cliente} <br/> {domicilio} <br/> Tel. {Telefono} <br/> Tel. {Telefono} <br/> Tel. {Telefono}"
-	# 	
-	# 	# return super()._get_header_bottom_left(context)
+	def _get_header_bottom_left(self, context):
+		"""Personalización del Header-bottom-left"""
+		
+		params = context.get("parametros_i", {})
+		return "<br/>".join([f"<b>{k}:</b> {v}" for k, v in params.items()])
 	
 	#-- Método que se puede sobreescribir/extender según requerimientos.
-	# def _get_header_bottom_right(self, context):
-	# 	"""Añadir información adicional específica para este reporte"""
-	# 	base_content = super()._get_header_bottom_right(context)
-	# 	saldo_total = context.get("saldo_total", 0)
-	# 	return f"""
-	# 		{base_content}<br/>
-	# 		<b>Total General:</b> {formato_es_ar(saldo_total)}
-	# 	"""
-	pass
+	def _get_header_bottom_right(self, context):
+		"""Añadir información adicional específica para este reporte"""
+		
+		params = context.get("parametros_d", {})
+		return "<br/>".join([f"<b>{k}:</b> {v}" for k, v in params.items()])
 
 
 def generar_pdf(contexto_reporte):
