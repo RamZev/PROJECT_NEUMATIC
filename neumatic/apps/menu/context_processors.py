@@ -6,8 +6,8 @@ def menu_context(request):
     if not request.user.is_authenticated:
         return {}
     
-    print(f"DEBUG: Usuario: {request.user}, Superusuario: {request.user.is_superuser}")
-    print(f"DEBUG: Grupos del usuario: {[g.name for g in request.user.groups.all()]}")
+    # print(f"DEBUG: Usuario: {request.user}, Superusuario: {request.user.is_superuser}")
+    # print(f"DEBUG: Grupos del usuario: {[g.name for g in request.user.groups.all()]}")
     
     headings = MenuHeading.objects.all().order_by('order')
     menu_tree = {}
@@ -38,7 +38,7 @@ def menu_context(request):
         if visible_items:
             menu_tree[heading] = visible_items
     
-    print(f"DEBUG: Headings visibles: {[h.name for h in menu_tree.keys()]}")
+    # print(f"DEBUG: Headings visibles: {[h.name for h in menu_tree.keys()]}")
     return {'menu_tree': menu_tree}
 
 
