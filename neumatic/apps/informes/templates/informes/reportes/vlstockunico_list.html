@@ -4,7 +4,7 @@
 {% load static %}
 {% load custom_tags %}
 
-<!-- Blque Header -------------------------------------------------------------------------- -->
+<!-- Bloque Header ------------------------------------------------------------------------- -->
 
 <!-- Contenido Inferior Izquierdo -->
 {% block header_bottom_left %}
@@ -63,14 +63,14 @@
 							<td>{{ det.medida }}</td>
 							<td>{{ det.nombre_producto }}</td>
 							<td>{{ det.nombre_producto_marca }}</td>
-							<td class="numeric" style="padding-right: 10px;">{{ det.stock|formato_es_ar_entero }}</td>
+							<td class="numeric">{{ det.stock|formato_es_ar_entero }}</td>
 						</tr>
 					{% endfor %}
 					
 					<!-- Sub-Totales por Modelo -->
 					<tr>
 						<td class="numeric" colspan="6"><strong>Total Modelo:</strong></td>
-						<td class="numeric" style="padding-right: 10px;"><strong>{{ modelo_data.stm_stock|default:0|formato_es_ar_entero }}</strong></td>						
+						<td class="numeric"><strong>{{ modelo_data.stm_stock|default:0|formato_es_ar_entero }}</strong></td>						
 					</tr>
 					
 				{% endfor %}
@@ -78,7 +78,7 @@
 				<!-- Sub-Totales por Familia -->
 				<tr>
 					<td class="numeric" colspan="6"><strong>Total Familia:</strong></td>
-					<td class="numeric" style="padding-right: 10px;"><strong>{{ familia_data.stf_stock|default:0|formato_es_ar_entero }}</strong></td>
+					<td class="numeric"><strong>{{ familia_data.stf_stock|default:0|formato_es_ar_entero }}</strong></td>
 				</tr>
 				
 				<tr>
@@ -90,7 +90,7 @@
 			<!-- Totales Generales -->
 			<tr>
 				<td class="numeric" colspan="6"><strong>Total General:</strong></td>
-				<td class="numeric" style="padding-right: 10px;"><strong>{{ stock_general|default:0|formato_es_ar_entero }}</strong></td>
+				<td class="numeric"><strong>{{ stock_general|default:0|formato_es_ar_entero }}</strong></td>
 			</tr>
 			
 		</tbody>

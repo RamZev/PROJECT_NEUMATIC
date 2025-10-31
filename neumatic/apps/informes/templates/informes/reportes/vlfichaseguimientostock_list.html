@@ -32,7 +32,7 @@
 				<th>Comprobante</th>
 				<th class="numeric">Cantidad</th>
 				<th class="numeric">Precio</th>
-				<th class="numeric" style="padding-right: 20px;">Total</th>
+				<th class="numeric" style="padding-right: 10px;">Total</th>
 				<th></th>
 				<th class="numeric" style="padding-right: 10px;"></th>
 				<th>Cliente/Proveedor</th>
@@ -47,7 +47,7 @@
 					<td>{{ obj.comprobante }}</td>
 					<td class="numeric">{{ obj.cantidad|formato_es_ar_entero }}</td>
 					<td class="numeric">{{ obj.precio|formato_es_ar|default_if_none:"0" }}</td>
-					<td class="numeric" style="padding-right: 20px;">{{ obj.total|formato_es_ar|default_if_none:"0" }}</td>
+					<td class="numeric" style="padding-right: 10px;">{{ obj.total|formato_es_ar|default_if_none:"0" }}</td>
 					<td>{{ obj.marca }}</td>
 					<td class="numeric" style="padding-right: 10px;">{{ obj.id_cliente_proveedor }}</td>
 					<td>{{ obj.nombre_cliente_proveedor }}</td>

@@ -33,7 +33,7 @@
 				<th class="numeric">Por Mayor</th>
 				<th class="numeric">Total Gravado</th>
 				<th class="numeric">I.V.A.</th>
-				<th class="numeric" style="padding-right: 10px;">TOTAL</th>
+				<th class="numeric">TOTAL</th>
 			</tr>
 		</thead>
 		
@@ -47,11 +47,10 @@
 					<td class="numeric">{{ obj.por_mayor|formato_es_ar }}</td>
 					<td class="numeric">{{ obj.total_gravado|formato_es_ar }}</td>
 					<td class="numeric">{{ obj.iva|formato_es_ar }}</td>
-					<td class="numeric" style="padding-right: 10px;">{{ obj.total|formato_es_ar }}</td>
+					<td class="numeric">{{ obj.total|formato_es_ar }}</td>
 				</tr>
 			{% endfor %}
 			<!-- Totales -->
-			{% comment %} <tr style="border-top: 1px solid #000; border-bottom: 1px solid #000"> {% endcomment %}
 			<tr style="border-top: 1px solid #000;">
 				<td style="text-align: right;"><strong>Totales:</strong></td>
 				<td class="numeric"><strong>{{ tg_pmenor|formato_es_ar }}</strong></td>
@@ -59,8 +58,8 @@
 				<td class="numeric"><strong>{{ tg_pmayor|formato_es_ar }}</strong></td>
 				<td class="numeric"><strong>{{ tg_gravado|formato_es_ar }}</strong></td>
 				<td class="numeric"><strong>{{ tg_iva|formato_es_ar }}</strong></td>
-				<td class="numeric" style="padding-right: 10px;"><strong>{{ tg_total|formato_es_ar }}</strong></td>
-			</tr>			
+				<td class="numeric"><strong>{{ tg_total|formato_es_ar }}</strong></td>
+			</tr>
 			
 		</tbody>
 	</table>

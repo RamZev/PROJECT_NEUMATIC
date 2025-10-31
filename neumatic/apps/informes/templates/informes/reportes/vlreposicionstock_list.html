@@ -41,8 +41,6 @@
 			{% for familia_id, familia_data in objetos.items %}
 				<!-- Fila con los datos de la Familia -->
 				<tr>
-					{% comment %} <td colspan="8" style="background-color: rgba(255,0,0,0.5);"> {% endcomment %}
-					{% comment %} <td colspan="8" style="background-color: rgba(255,0,0,1.0);"> {% endcomment %}
 					<td colspan="8">
 						<strong>Familia: {{ familia_data.familia }}</strong>
 					</td>
@@ -70,6 +68,10 @@
 							<td class="numeric">{{ det.faltante|formato_es_ar_entero }}</td>
 						</tr>
 					{% endfor %}
+					<!-- Fila separadora -->
+					<tr>
+						<td colspan="7" style="height: 5px; border: none;"></td>
+					</tr>					
 					
 				{% endfor %}
 				

@@ -5,7 +5,6 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from datetime import datetime
 from django.templatetags.static import static
-from django.forms.models import model_to_dict
 
 #-- ReportLab:
 from reportlab.lib import colors

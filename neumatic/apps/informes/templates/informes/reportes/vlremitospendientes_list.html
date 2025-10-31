@@ -65,6 +65,10 @@
 						<td colspan="6" style="text-align: right;"><strong>Total Comprobante:</strong></td>
 						<td class="numeric"><strong>{{ comprobante.total_comprobante|formato_es_ar }}</strong></td>
 					</tr>
+					<!-- Fila separadora -->
+					<tr>
+						<td colspan="7" style="height: 5px; border: none;"></td>
+					</tr>					
 				{% endfor %}
 				<!-- Total por cliente -->
 				<tr>
@@ -80,12 +84,6 @@
 				<td colspan="6" style="text-align: right;"><strong>Total General:</strong></td>
 				<td class="numeric"><strong>{{ total_general|formato_es_ar }}</strong></td>
 			</tr>			
-			
-			
-			{% comment %} <tr class="total-general" style="border-top: 1px solid #000;">
-				<td class="numeric" colspan="6"><strong>Total Pendiente:</strong></td>
-				<td class="numeric" style="padding-right: 10px;"><strong>{{ saldo_total|formato_es_ar }}</strong></td>
-			</tr> {% endcomment %}
 			
 		</tbody>
 	</table>

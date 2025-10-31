@@ -450,11 +450,12 @@ class VLTablaDinamicaDetalleVentasInformeView(InformeFormView):
 		
 		dominio = f"http://{self.request.get_host()}"
 		
-		param_left = {}
+		param_left = {
+			"Solo Comprobantes Impositivos": "Si" if comprobantes_impositivos else "No",
+		}
 		param_right = {
 			"Desde": fecha_desde.strftime("%d/%m/%Y"),
 			"Hasta": fecha_hasta.strftime("%d/%m/%Y"),
-			"Solo Comprobantes Impositivos": "Si" if comprobantes_impositivos else "No",
 		}
 		
 		# **************************************************
@@ -528,7 +529,7 @@ def vltabladinamicadetalleventas_vista_pdf(request):
 
 
 class CustomPDFGenerator(PDFGenerator):
-		#-- Método que se puede sobreescribir/extender según requerimientos.
+	#-- Método que se puede sobreescribir/extender según requerimientos.
 	def _get_header_bottom_left(self, context):
 		"""Personalización del Header-bottom-left"""
 		
