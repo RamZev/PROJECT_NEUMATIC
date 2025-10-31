@@ -15,22 +15,8 @@ def menu_context(request):
         for item in items:
             # Cargar recursivamente todos los niveles hijos
             children_tree = build_menu_tree(item)
-            
-            # DEBUG: Mostrar estructura en consola
-            # print(f"HEADING: {heading.name} - ITEM: {item.name} - is_collapse: {item.is_collapse} - children: {len(children_tree)}")
-            if children_tree:
-                for child in children_tree:
-                    # print(f"  → CHILD: {child['item'].name} - is_collapse: {child['item'].is_collapse} - url: {child['item'].url_name}")
-                    pass
-                    if child['children']:
-                        for grandchild in child['children']:
-                            # print(f"    → GRANDCHILD: {grandchild['item'].name} - is_collapse: {grandchild['item'].is_collapse} - url: {grandchild['item'].url_name}")
-                            pass
-            
-            # Solo saltar si es colapsable y no tiene hijos
             if item.is_collapse and not children_tree:
                 continue
-                
             visible_items.append({
                 'item': item, 
                 'children': children_tree

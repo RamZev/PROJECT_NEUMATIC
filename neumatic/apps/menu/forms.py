@@ -1,6 +1,8 @@
-# neumatic\apps\menu\forms.py
 from django import forms
+from django.contrib.auth.models import Group
+from django.db.models import Case, When
 from .models import MenuHeading, MenuItem
+
 
 class MenuHeadingForm(forms.ModelForm):
     class Meta:
@@ -32,7 +34,8 @@ class MenuItemForm(forms.ModelForm):
             'icon': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'fas fa-home'}),
             'is_collapse': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'order': forms.NumberInput(attrs={'class': 'form-control'}),
-            'groups': forms.SelectMultiple(attrs={'class': 'form-control'}),
+            # CheckboxSelectMultiple SIN attrs conflictivos
+            'groups': forms.CheckboxSelectMultiple(),
         }
     
     def __init__(self, *args, **kwargs):
@@ -105,12 +108,18 @@ class MenuItemForm(forms.ModelForm):
             ordered_ids = [pk for pk in ordered_ids if pk != self.instance.pk]
         
         # Forzar el orden usando la lista de IDs
-        from django.db.models import Case, When
         preserved_order = Case(*[When(pk=pk, then=pos) for pos, pk in enumerate(ordered_ids)])
         
         queryset = MenuItem.objects.filter(pk__in=ordered_ids).order_by(preserved_order)
         
         self.fields['parent'].queryset = queryset
+        
+        # CONFIGURACIÓN DEL CAMPO GROUPS (SIMPLIFICADA)
+        self.fields['groups'].help_text = 'Seleccione los grupos que pueden ver este item. Si no selecciona ninguno, solo los superusuarios podrán verlo.'
+        self.fields['groups'].required = False
+        
+        # Ordenar los grupos por nombre para mejor usabilidad
+        self.fields['groups'].queryset = Group.objects.order_by('name')
         
         # Debug
         print(f"Items colapsables disponibles: {queryset.count()}")
