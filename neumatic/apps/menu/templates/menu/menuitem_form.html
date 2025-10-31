@@ -86,16 +86,30 @@
                 <div class="form-text">Clase de FontAwesome (ej: 'fas fa-home')</div>
             </div>
         </div>
+
         <div class="col-md-6">
             <div class="mb-3">
-                {{ form.groups.label_tag }}
-                {{ form.groups }}
+                <label class="form-label">{{ form.groups.label }}</label>
+                <div class="border rounded p-3 bg-light" style="max-height: 200px; overflow-y: auto;">
+                    {% for checkbox in form.groups %}
+                    <div class="form-check">
+                        {{ checkbox.tag }}
+                        <label class="form-check-label" for="{{ checkbox.id_for_label }}">
+                            {{ checkbox.choice_label }}
+                        </label>
+                    </div>
+                    {% endfor %}
+                </div>
                 {% if form.groups.errors %}
                 <div class="text-danger small">{{ form.groups.errors }}</div>
                 {% endif %}
-                <div class="form-text">Grupos que pueden ver este item (opcional)</div>
+                <div class="form-text mt-2">
+                    <i class="fas fa-info-circle text-info me-1"></i>
+                    Seleccione los grupos que pueden ver este item. Si no selecciona ninguno, solo los superusuarios podrán verlo.
+                </div>
             </div>
         </div>
+
     </div>
 
     <div class="row">
