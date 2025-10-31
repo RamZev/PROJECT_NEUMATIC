@@ -71,15 +71,6 @@ class ConfigViews:
 	reporte_pantalla = f"informes/reportes/{model_string}_list.html"
 	
 	#-- Establecer las columnas del reporte y sus atributos.
-	# headers = [
-	# 	("Comprobante", 80),
-	# 	("Fecha", 50),
-	# 	("Condición", 40),
-	# 	("Cliente", 40),
-	# 	("Nombre", 200),
-	# 	("Contado", 70),
-	# 	("Cta. Cte.", 70)
-	# ]	
 	table_info = {
 		"comprobante": {
 			"label": "Comprobante",

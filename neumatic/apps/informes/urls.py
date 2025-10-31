@@ -79,7 +79,7 @@ from apps.informes.views.vltabladinamicaventas_list_views import *
 from apps.informes.views.vltabladinamicadetalleventas_list_views import *
 from apps.informes.views.vltabladinamicaestadistica_list_views import *
 
-#- Lote 5:
+#- Lote 5 (Stock):
 from apps.informes.views.vllista_list_views import *
 from apps.informes.views.vllistarevendedor_list_views import *
 from apps.informes.views.vlstocksucursal_list_views import *
@@ -92,6 +92,9 @@ from apps.informes.views.vlstockcliente_list_views import *
 from apps.informes.views.vlstockdeposito_list_views import *
 from apps.informes.views.vlfichaseguimientostock_list_views import *
 
+#- Lote 6 (Compras):
+from apps.informes.views.vldetallecompraproveedor_list_views import *
+from apps.informes.views.vlcompraingresada_list_views import *
 
 
 #-- Otras rutas.
@@ -767,7 +770,7 @@ urlpatterns = [
 	path("vltabladinamicaestadistica/vista-csv/", vltabladinamicaestadistica_vista_csv, 
 		 name="vltabladinamicaestadistica_vista_csv"),
 	
-	#-- 5to. Lote.
+	#-- 5to. Lote (Stock).
 	
 	#-- VL Lista de Precios.
 	path('vllista_informe/', VLListaInformeView.as_view(), 
@@ -900,6 +903,32 @@ urlpatterns = [
 		 name="vlfichaseguimientostock_vista_excel"),
 	path("vlfichaseguimientostock/vista-csv/", vlfichaseguimientostock_vista_csv, 
 		 name="vlfichaseguimientostock_vista_csv"),
+	
+	#-- 6to. Lote (Compras).
+	
+	#-- VL Detalle de Compras por Proveedor.
+	path('vldetallecompraproveedor_informe/', VLDetalleCompraProveedorInformeView.as_view(), 
+		 name='vldetallecompraproveedor_informe_list'),
+	path('vldetallecompraproveedor/vista-preliminar/', vldetallecompraproveedor_vista_pantalla, 
+		 name="vldetallecompraproveedor_vista_pantalla"),
+	path("vldetallecompraproveedor/vista-pdf/", vldetallecompraproveedor_vista_pdf, 
+		 name="vldetallecompraproveedor_vista_pdf"),
+	path("vldetallecompraproveedor/vista-excel/", vldetallecompraproveedor_vista_excel, 
+		 name="vldetallecompraproveedor_vista_excel"),
+	path("vldetallecompraproveedor/vista-csv/", vldetallecompraproveedor_vista_csv, 
+		 name="vldetallecompraproveedor_vista_csv"),
+	
+	#-- VL Compra Ingresada.
+	path('vlcompraingresada_informe/', VLCompraIngresadaInformeView.as_view(), 
+		 name='vlcompraingresada_informe_list'),
+	path('vlcompraingresada/vista-preliminar/', vlcompraingresada_vista_pantalla, 
+		 name="vlcompraingresada_vista_pantalla"),
+	path("vlcompraingresada/vista-pdf/", vlcompraingresada_vista_pdf, 
+		 name="vlcompraingresada_vista_pdf"),
+	path("vlcompraingresada/vista-excel/", vlcompraingresada_vista_excel, 
+		 name="vlcompraingresada_vista_excel"),
+	path("vlcompraingresada/vista-csv/", vlcompraingresada_vista_csv, 
+		 name="vlcompraingresada_vista_csv"),
 	
 	
 	

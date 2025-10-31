@@ -4,15 +4,10 @@
 {% load static %}
 {% load custom_tags %}
 
-<!-- Blque Header -------------------------------------------------------------------------- -->
- 
+<!-- Bloque Header ------------------------------------------------------------------------- -->
+
 <!-- Contenido Inferior Izquierdo -->
 {% block header_bottom_left %}
-	{% comment %}
-	<p><strong>Cliente:</strong> {{ cliente.nombre }}</p>
-	<p><strong>RUC:</strong> {{ cliente.ruc }}</p>
-	<p><strong>Dirección:</strong> {{ cliente.direccion|truncatechars:30 }}</p>
-	{% endcomment %}
 	{% for param, valor in parametros_i.items %}
 		<p class="compact-line-spacing"><strong>{{ param }}:</strong> {{ valor }}</p>
 	{% endfor %}

@@ -33,7 +33,7 @@
 				<th>CAI</th>
 				<th>Descripción</th>
 				<th>Marca</th>
-				<th class="numeric" style="padding-right: 10px;">Stock</th>
+				<th class="numeric">Stock</th>
 			</tr>
 		</thead>
 		
@@ -65,14 +65,14 @@
 							<td>{{ det.cai }}</td>
 							<td>{{ det.descripcion }}</td>
 							<td>{{ det.marca }}</td>
-							<td class="numeric" style="padding-right: 10px;">{{ det.stock|formato_es_ar_entero }}</td>
+							<td class="numeric">{{ det.stock|formato_es_ar_entero }}</td>
 						</tr>
 					{% endfor %}
 					
 					<!-- Sub-Totales por Modelo -->
 					<tr>
 						<td class="numeric" colspan="6"><strong>Sub Total Modelo:</strong></td>
-						<td class="numeric" style="padding-right: 10px;"><strong>{{ modelo_data.stm_stock|formato_es_ar_entero }}</strong></td>
+						<td class="numeric"><strong>{{ modelo_data.stm_stock|formato_es_ar_entero }}</strong></td>
 					</tr>
 				
 				{% endfor %}
@@ -80,7 +80,7 @@
 				<!-- Sub-Totales por Familia -->
 				<tr>
 					<td class="numeric" colspan="6"><strong>Sub Total Familia:</strong></td>
-					<td class="numeric" style="padding-right: 10px;"><strong>{{ familia_data.stf_stock|formato_es_ar_entero }}</strong></td>
+					<td class="numeric"><strong>{{ familia_data.stf_stock|formato_es_ar_entero }}</strong></td>
 				</tr>
 				
 				<tr>
@@ -90,10 +90,9 @@
 			{% endfor %}
 			
 			<!-- Totales Generales -->
-			{% comment %} <tr style="border-top: 1px solid #000;"> {% endcomment %}
 			<tr>
 				<td class="numeric" colspan="6"><strong>Total General:</strong></td>
-				<td class="numeric" style="padding-right: 10px;"><strong>{{ tg_stock|formato_es_ar_entero }}</strong></td>
+				<td class="numeric"><strong>{{ tg_stock|formato_es_ar_entero }}</strong></td>
 			</tr>
 			
 		</tbody>

@@ -2999,8 +2999,8 @@ class VLReposicionStock(models.Model):
 	class Meta:
 		managed = False
 		db_table = 'VLReposicionStock'
-		verbose_name = ('Reposición de Mercadería')
-		verbose_name_plural = ('Reposición de Mercadería')
+		verbose_name = ('Reposición de Stock')
+		verbose_name_plural = ('Reposición de Stock')
 
 
 #-----------------------------------------------------------------------------
@@ -3241,4 +3241,132 @@ class VLFichaSeguimientoStock(models.Model):
 		db_table = 'VLFichaSeguimientoStock'
 		verbose_name = ('Ficha de Seguimiento de Stock')
 		verbose_name_plural = ('Ficha de Seguimiento de Stock')
+
+
+#-----------------------------------------------------------------------------
+# Detalle de Compras por Proveedor.
+#-----------------------------------------------------------------------------
+class VLDetalleCompraProveedorManager(models.Manager):
+	
+	def obtener_datos(self, id_proveedor, fecha_desde, fecha_hasta, id_sucursal=None):
+		
+		#-- La consulta SQL.
+		query = """
+			SELECT
+				(ROW_NUMBER() OVER(ORDER BY fecha_comprobante, comprobante)) AS id,
+				*
+			FROM
+				VLDetalleCompraProveedor
+			WHERE
+				id_proveedor_id = %s
+				AND fecha_comprobante BETWEEN %s AND %s
+		"""
+		
+		#-- Se añaden parámetros.
+		params = [id_proveedor, fecha_desde, fecha_hasta]
+		
+		#-- Filtros y parámetros adicionales.
+		condicion = []
+		
+		if id_sucursal:
+			condicion.append("id_sucursal_id = %s")
+			params.append(id_sucursal)
+		
+		if condicion:
+			query += " AND " + " AND ".join(condicion)
+		
+		#-- Agregar el ordenamiento acá por rendimiento en la consulta.
+		query += " ORDER BY fecha_comprobante, comprobante"
+		
+		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
+		return self.raw(query, params)
+
+
+class VLDetalleCompraProveedor(models.Model):
+	id = models.IntegerField(primary_key=True)
+	id_proveedor_id = models.IntegerField()
+	nombre_proveedor = models.CharField(max_length=50)
+	comprobante = models.CharField(max_length=21)
+	fecha_comprobante = models.DateField()
+	id_cai_id = models.IntegerField()
+	cai = models.CharField(max_length=20)
+	id_producto_id = models.IntegerField()
+	nombre_producto = models.CharField(max_length=50)
+	id_familia_id = models.IntegerField()
+	nombre_producto_familia = models.CharField(max_length=50)
+	id_marca_id = models.IntegerField()
+	nombre_producto_marca = models.CharField(max_length=50)
+	cantidad = models.DecimalField(max_digits=7, decimal_places=2)
+	unidad = models.IntegerField()
+	precio = models.DecimalField(max_digits=12, decimal_places=2)
+	total = models.DecimalField(max_digits=12, decimal_places=2)
+	id_sucursal_id = models.IntegerField()
+	nombre_sucursal = models.CharField(max_length=50)
+	id_deposito = models.IntegerField()
+	nombre_producto_deposito = models.CharField(max_length=50)
+	
+	objects = VLDetalleCompraProveedorManager()
+	
+	class Meta:
+		managed = False
+		db_table = 'VLDetalleCompraProveedor'
+		verbose_name = ('Detalle de Compras por Proveedor')
+		verbose_name_plural = ('Detalle de Compras por Proveedor')
+
+
+#-----------------------------------------------------------------------------
+# Comprobantes Ingresados.
+#-----------------------------------------------------------------------------
+class VLCompraIngresadaManager(models.Manager):
+	
+	def obtener_datos(self, fecha_desde, fecha_hasta, tipo_compro=None):
+		
+		if tipo_compro is None or tipo_compro == []:
+			tipo_compro = ["IB"]
+		
+		#-- Determinar cantidad de marcas de parámetros para los comprobantes.
+		placeholders = ','.join(['%s'] * len(tipo_compro))
+		
+		#-- La consulta SQL.
+		query = """
+			SELECT
+				(ROW_NUMBER() OVER(ORDER BY codigo_comprobante_compra, fecha_comprobante, comprobante)) AS id,
+				*
+			FROM
+				VLCompraIngresada
+			WHERE
+				fecha_comprobante BETWEEN %s AND %s
+		"""
+		
+		#-- Se añaden parámetros.
+		params = [fecha_desde, fecha_hasta]
+		
+		#-- Añadir filtro por tipos de comprobantes.
+		query += f" AND codigo_comprobante_compra IN ({placeholders})"
+		params.extend(tipo_compro)  # Extender con los elementos de la lista
+		
+		#-- Agregar el ordenamiento acá por rendimiento en la consulta.
+		query += " ORDER BY codigo_comprobante_compra, fecha_comprobante, comprobante"
+		
+		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
+		return self.raw(query, params)
+
+
+class VLCompraIngresada(models.Model):
+	id = models.IntegerField(primary_key=True)
+	fecha_comprobante = models.DateField()
+	codigo_comprobante_compra = models.CharField(max_length=3)
+	comprobante = models.CharField(max_length=21)
+	id_proveedor_id = models.IntegerField()
+	nombre_proveedor = models.CharField(max_length=50)
+	total = models.DecimalField(max_digits=12, decimal_places=2)
+	observa_comprobante = models.CharField(max_length=50)
+	
+	objects = VLCompraIngresadaManager()
+	
+	class Meta:
+		managed = False
+		db_table = 'VLCompraIngresada'
+		verbose_name = ('Comprobantes Ingresados')
+		verbose_name_plural = ('Comprobantes Ingresados')
 

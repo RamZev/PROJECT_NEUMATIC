@@ -20,7 +20,6 @@
 	{% endfor %}
 {% endblock %}
 
-
 <!-- Bloque Content ------------------------------------------------------------------------ -->
 
 {% block content %}
@@ -38,7 +37,7 @@
 				<th class="numeric" style="padding-right: 15px;">No Gravado</th>
 				<th class="numeric" style="padding-right: 15px;">IVA</th>
 				<th class="numeric" style="padding-right: 15px;">Percepción</th>
-				<th class="numeric" style="padding-right: 15px;">Total</th>
+				<th class="numeric">Total</th>
 			</tr>
 		</thead>
 		
@@ -55,7 +54,7 @@
 					<td class="numeric" style="padding-right: 15px;">{{ obj.exento|formato_es_ar }}</td>
 					<td class="numeric" style="padding-right: 15px;">{{ obj.iva|formato_es_ar }}</td>
 					<td class="numeric" style="padding-right: 15px;">{{ obj.percepcion|formato_es_ar }}</td>
-					<td class="numeric" style="padding-right: 15px;">{{ obj.total|formato_es_ar }}</td>
+					<td class="numeric">{{ obj.total|formato_es_ar }}</td>
 				</tr>
 			{% endfor %}
 			

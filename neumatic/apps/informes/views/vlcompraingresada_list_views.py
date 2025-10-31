@@ -1,4 +1,4 @@
-# neumatic\apps\informes\views\vlstockcliente_list_views.py
+# neumatic\apps\informes\views\vlcompraingresada_list_views.py
 
 from django.urls import reverse_lazy
 from django.shortcuts import render
@@ -7,26 +7,28 @@ from datetime import datetime
 from django.templatetags.static import static
 
 #-- ReportLab:
+from reportlab.lib import colors
 from reportlab.lib.pagesizes import A4, landscape, portrait
 from reportlab.platypus import Paragraph
 
 from .report_views_generics import *
-from apps.informes.models import VLStockCliente
-from ..forms.buscador_vlstockcliente_forms import BuscadorStockClienteForm
-from utils.utils import deserializar_datos, formato_argentino, formato_argentino_entero, normalizar
+from apps.informes.models import VLCompraIngresada
+from apps.maestros.models.base_models import ComprobanteCompra
+from ..forms.buscador_vlcompraingresada_forms import BuscadorCompraIngresadaForm
+from utils.utils import deserializar_datos, formato_argentino, formato_argentino_entero, normalizar, format_date, raw_to_dict
 from utils.helpers.export_helpers import ExportHelper, PDFGenerator
 
 
 class ConfigViews:
 	
 	#-- Título del reporte.
-	report_title = "Stock por Clientes en Depósitos"
+	report_title = "Comprobantes Ingresados"
 	
 	#-- Modelo.
-	model = VLStockCliente
+	model = VLCompraIngresada
 	
 	#-- Formulario asociado al modelo.
-	form_class = BuscadorStockClienteForm
+	form_class = BuscadorCompraIngresadaForm
 	
 	#-- Aplicación asociada al modelo.
 	app_label = "informes"
@@ -35,7 +37,7 @@ class ConfigViews:
 	model_string = model.__name__.lower()
 	
 	# Vistas del CRUD del modelo
-	list_view_name = f"{model_string}_list"
+	list_view_name = f"{model_string}_list"  # <== vlventacompro_list
 	
 	#-- Plantilla base.
 	template_list = f'{app_label}/maestro_informe.html'
@@ -47,7 +49,7 @@ class ConfigViews:
 	success_url = reverse_lazy(list_view_name)
 	
 	#-- Archivo JavaScript específico.
-	js_file = None
+	js_file = "js/filtros_ficha_seguimiento_stock.js"
 	
 	# #-- URL de la vista que genera el .zip con los informes.
 	# url_zip = f"{model_string}_informe_generado"
@@ -69,65 +71,51 @@ class ConfigViews:
 	
 	#-- Establecer las columnas del reporte y sus atributos.
 	table_info = {
-		"id_cliente_id": {
-			"label": "Cliente",
-			"col_width_pdf": 30,
+		"codigo_comprobante_compra": {
+			"label": "Compro",
+			"col_width_pdf": 0,
 			"pdf": False,
 			"excel": True,
 			"csv": True
 		},
-		"nombre_cliente": {
-			"label": "Nombre",
-			"col_width_pdf": 180,
-			"pdf": False,
-			"excel": True,
-			"csv": True
-		},
-		"id_producto_id": {
-			"label": "Código",
-			"col_width_pdf": 40,
-			"pdf": True,
-			"excel": True,
-			"csv": True
-		},
-		"medida": {
-			"label": "Medida",
-			"col_width_pdf": 70,
-			"pdf": True,
-			"excel": True,
-			"csv": True
-		},
-		"cai": {
-			"label": "CAI",
-			"col_width_pdf": 100,
-			"pdf": True,
-			"excel": True,
-			"csv": True
-		},
-		"cantidad": {
-			"label": "Cantidad",
-			"col_width_pdf": 50,
-			"pdf": True,
-			"excel": True,
-			"csv": True
-		},
-		"retirado": {
-			"label": "Retirado",
-			"col_width_pdf": 50,
-			"pdf": True,
-			"excel": True,
-			"csv": True
-		},
-		"stock": {
-			"label": "En Stock",
-			"col_width_pdf": 50,
+		"fecha_comprobante": {
+			"label": "Fecha",
+			"col_width_pdf": 45,
 			"pdf": True,
 			"excel": True,
 			"csv": True
 		},
 		"comprobante": {
 			"label": "Comprobante",
-			"col_width_pdf": 120,
+			"col_width_pdf": 80,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
+		"id_proveedor_id": {
+			"label": "Proveedor",
+			"col_width_pdf": 40,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
+		"nombre_proveedor": {
+			"label": "Nombre",
+			"col_width_pdf": 260,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
+		"total": {
+			"label": "Importe",
+			"col_width_pdf": 60,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
+		"observa_comprobante": {
+			"label": "Observaciones",
+			"col_width_pdf": 200,
 			"pdf": True,
 			"excel": True,
 			"csv": True
@@ -135,7 +123,7 @@ class ConfigViews:
 	}
 
 
-class VLStockClienteInformeView(InformeFormView):
+class VLCompraIngresadaInformeView(InformeFormView):
 	config = ConfigViews  #-- Ahora la configuración estará disponible en self.config.
 	form_class = ConfigViews.form_class
 	template_name = ConfigViews.template_list
@@ -151,71 +139,81 @@ class VLStockClienteInformeView(InformeFormView):
 	}
 	
 	def obtener_queryset(self, cleaned_data):
-		sucursal = cleaned_data.get("sucursal", None)
-		vendedor = cleaned_data.get("vendedor", None)
+		fecha_desde = cleaned_data.get('fecha_desde')
+		fecha_hasta = cleaned_data.get('fecha_hasta')
 		
-		id_sucursal = sucursal.id_sucursal if sucursal else None
-		id_vendedor = vendedor.id_vendedor if vendedor else None
+		tipo_compro = list(ComprobanteCompra.objects.filter(retencion=True).values_list('codigo_comprobante_compra', flat=True))
 		
-		return VLStockCliente.objects.obtener_datos(id_sucursal, id_vendedor)
+		queryset = VLCompraIngresada.objects.obtener_datos(fecha_desde, fecha_hasta, tipo_compro)
+		
+		return queryset
 	
 	def obtener_contexto_reporte(self, queryset, cleaned_data):
 		"""
-		Aquí se estructura el contexto para el reporte, agrupando, calculando subtotales y totales generales, etc,
-		tal como se requiere para el listado.
+		Aquí se estructura el contexto para el reporte, agrupando los comprobantes,
+		calculando subtotales y totales generales, tal como se requiere para el listado.
 		"""
 		
 		#-- Parámetros del listado.
-		sucursal = cleaned_data.get("sucursal", None)
-		vendedor = cleaned_data.get("vendedor", None)
+		fecha_desde = cleaned_data.get('fecha_desde')
+		fecha_hasta = cleaned_data.get('fecha_hasta')
 		
-		param_left = {}
-		param_right = {
-			"Sucursal": sucursal.nombre_sucursal if sucursal else "Todas",
-			"Vendedor": vendedor.nombre_vendedor if vendedor else "Todos",
-		}
+		tipo_compro = list(ComprobanteCompra.objects.filter(retencion=True).values_list('codigo_comprobante_compra', flat=True))
+		
+		if tipo_compro is None or tipo_compro == []:
+			tipo_compro = ["IB"]
+		else:
+			tipo_compro.sort()
 		
 		fecha_hora_reporte = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
 		
 		dominio = f"http://{self.request.get_host()}"
 		
+		param_left = {
+			"Tipos de Comprobantes": ", ".join(tipo_compro)
+		}
+		param_right = {
+			"Desde": fecha_desde.strftime("%d/%m/%Y"),
+			"Hasta": fecha_hasta.strftime("%d/%m/%Y"),
+		}
+		
+		# ------------------------------------------------------------------------------
+		#-- Convertir QUERYSET a LISTA DE DICCIONARIOS al inicio (optimización clave).
+		queryset_list = [raw_to_dict(obj) for obj in queryset]
 		
 		# **************************************************
-		#-- Estructura para agrupar datos por número de comprobante (optimizado).
-		#-- (Sin necesidad de serializar).
-		datos_por_cliente = {}
+		#-- Agrupar los objetos por el número de comprobante.
+		grouped_data = {}
 		
-		for obj in queryset:
-			#-- Identificar al Cliente.
-			id_cliente = obj.id_cliente_id
-			cliente = obj.nombre_cliente
-			
-			#-- Si el cliente no está en el diccionario, se inicializa.
-			if id_cliente not in datos_por_cliente:
-				datos_por_cliente[id_cliente] = {
-					"id_cliente": id_cliente,
-					"cliente": cliente,
-					"detalle": [],
+		for obj in queryset_list:
+			comprobante = obj['codigo_comprobante_compra']
+			if comprobante not in grouped_data:
+				grouped_data[comprobante] = {
+					'nombre_comprobante': obj['nombre_comprobante_compra'],
+					'detalle': [],
+					'total': 0,
 				}
 			
 			#-- Crear el diccionario con los datos del detalle.
 			detalle_data = {
-				"codigo": obj.id_producto_id,
-				"medida": obj.medida,
-				"cai": obj.cai,
-				"cantidad": obj.cantidad,
-				"retirado": obj.retirado,
-				"stock": obj.stock,
-				"comprobante": obj.comprobante,
+				"fecha_comprobante": obj['fecha_comprobante'],
+				"comprobante": obj['comprobante'],
+				"id_proveedor": obj['id_proveedor_id'],
+				"nombre_proveedor": obj['nombre_proveedor'],
+				"total": obj['total'],
+				"observacion": obj['observa_comprobante'],
 			}
 			
-			#-- Agregar el detalle a la lista del comprobante.
-			datos_por_cliente[id_cliente]["detalle"].append(detalle_data)
+			#-- Añadir el producto al grupo.
+			grouped_data[comprobante]['detalle'].append(detalle_data)
+			#-- Calcular el subtotal por comprobante.
+			grouped_data[comprobante]['total'] += obj['total']
+		
 		# **************************************************
 		
 		#-- Se retorna un contexto que será consumido tanto para la vista en pantalla como para la generación del PDF.
 		return {
-			"objetos": datos_por_cliente,
+			"objetos": grouped_data,
 			"parametros_i": param_left,
 			"parametros_d": param_right,
 			'fecha_hora_reporte': fecha_hora_reporte,
@@ -227,15 +225,16 @@ class VLStockClienteInformeView(InformeFormView):
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
 		form = kwargs.get("form") or self.get_form()
-		context["form"] = form
 		
+		context["form"] = form
+		if form.errors:
+			context["data_has_errors"] = True
 		return context
 
 
-def vlstockcliente_vista_pantalla(request):
+def vlcompraingresada_vista_pantalla(request):
 	#-- Obtener el token de la querystring.
 	token = request.GET.get("token")
-	
 	if not token:
 		return HttpResponse("Token no proporcionado", status=400)
 	
@@ -249,7 +248,7 @@ def vlstockcliente_vista_pantalla(request):
 	return render(request, ConfigViews.reporte_pantalla, contexto_reporte)
 
 
-def vlstockcliente_vista_pdf(request):
+def vlcompraingresada_vista_pdf(request):
 	#-- Obtener el token de la querystring.
 	token = request.GET.get("token")
 	
@@ -291,63 +290,88 @@ class CustomPDFGenerator(PDFGenerator):
 
 def generar_pdf(contexto_reporte):
 	#-- Crear instancia del generador personalizado.
-	generator = CustomPDFGenerator(contexto_reporte, pagesize=portrait(A4), body_font_size=7)
+	generator = CustomPDFGenerator(contexto_reporte, pagesize=landscape(A4), body_font_size=7)
 	
 	#-- Construir datos de la tabla:
 	
-	#-- Obtener los títulos de las columnas (headers).
+	#-- Extraer Títulos de las columnas de la tabla (headers).
 	headers_titles = [value['label'] for value in ConfigViews.table_info.values() if value['pdf']]
 	
-	#-- Extrae los anchos de las columnas de la estructura ConfigViews.table_info.
+	#-- Extraer Ancho de las columnas de la tabla.
 	col_widths = [value['col_width_pdf'] for value in ConfigViews.table_info.values() if value['pdf']]
 	
 	table_data = [headers_titles]
 	
 	#-- Estilos específicos adicionales iniciales de la tabla.
 	table_style_config = [
-		('ALIGN', (3,0), (5,-1), 'RIGHT'),
+		('ALIGN', (2,0), (2,-1), 'RIGHT'),
+		('ALIGN', (4,0), (4,-1), 'RIGHT'),
+		
+		('RIGHTPADDING', (0,0), (-1,-1), 2),  # valor por defecto es 6
+		('LEFTPADDING', (0,0), (-1,-1), 2),  # valor por defecto es 6
 	]
 	
 	#-- Contador de filas (empezamos en 1 porque la 0 es el header).
 	current_row = 1
 	
-	#-- Agregar los datos a la tabla.
-	
 	objetos = contexto_reporte.get("objetos", {})
 	
-	for datos in objetos.values():
-		#-- Datos agrupado por Cliente.
+	for cod_compro, data in objetos.items():
+		#-- Datos agrupado por.
 		table_data.append([
-			f"Cliente: [{datos['id_cliente']}] - {datos['cliente']}",
-			"", "", "", "", "", ""
+			f"Tipos de Comprobantes: [{cod_compro}] - {data['nombre_comprobante']}",
+			"", "", "", "", "",
 		])
 		
 		#-- Aplicar estilos a la fila de agrupación (fila actual).
 		table_style_config.extend([
-			('SPAN', (0,current_row), (-1,current_row)),
-			('FONTNAME', (0,current_row), (-1,current_row), 'Helvetica-Bold'),
 			('TOPPADDING', (0,current_row), (-1,current_row), 4),
+			('SPAN', (0,current_row), (-1,current_row)),
+			('FONTNAME', (0,current_row), (-1,current_row), 'Helvetica-Bold')
 		])
 		
 		current_row += 1
 		
 		#-- Agregar filas del detalle.
-		for detalle in datos['detalle']:
+		for det in data['detalle']:
 			table_data.append([
-				detalle['codigo'],
-				detalle['medida'],
-				detalle['cai'],
-				formato_argentino_entero(detalle['cantidad']),
-				formato_argentino_entero(detalle['retirado']),
-				formato_argentino_entero(detalle['stock']),
-				detalle['comprobante'],
+				format_date(det['fecha_comprobante']),
+				det['comprobante'],
+				det['id_proveedor'],
+				Paragraph(str(det['nombre_proveedor']), generator.styles['CellStyle']),
+				formato_argentino(det['total']),
+				Paragraph(str(det['observacion']), generator.styles['CellStyle']),
 			])
 			current_row += 1
+		
+		#-- Fila Total por comprobante.
+		table_data.append([
+			"", "", "", 
+			"Total:", 
+			formato_argentino(data['total']),
+			""
+		])
+		
+		#-- Aplicar estilos a la fila de totales (fila actual).
+		table_style_config.extend([
+			('ALIGN', (3,current_row), (4,current_row), 'RIGHT'),
+			('FONTNAME', (0,current_row), (-1,current_row), 'Helvetica-Bold'),
+			('LINEABOVE', (4,current_row), (4,current_row), 0.5, colors.black),
+		])
+		
+		current_row += 1
+		
+		#-- Fila divisoria.
+		table_data.append(["", "", "", "", "", "",])
+		table_style_config.append(
+			('LINEBELOW', (0,current_row), (-1,current_row), 0.5, colors.gray),
+		)
+		current_row += 1
 	
 	return generator.generate(table_data, col_widths, table_style_config)		
 
 
-def vlstockcliente_vista_excel(request):
+def vlcompraingresada_vista_excel(request):
 	token = request.GET.get("token")
 	if not token:
 		return HttpResponse("Token no proporcionado", status=400)
@@ -361,7 +385,7 @@ def vlstockcliente_vista_excel(request):
 	# ---------------------------------------------
 	
 	#-- Instanciar la vista y obtener el queryset.
-	view_instance = VLStockClienteInformeView()
+	view_instance = VLCompraIngresadaInformeView()
 	view_instance.request = request
 	queryset = view_instance.obtener_queryset(cleaned_data)
 	
@@ -385,7 +409,7 @@ def vlstockcliente_vista_excel(request):
 	return response
 
 
-def vlstockcliente_vista_csv(request):
+def vlcompraingresada_vista_csv(request):
 	token = request.GET.get("token")
 	if not token:
 		return HttpResponse("Token no proporcionado", status=400)
@@ -398,7 +422,7 @@ def vlstockcliente_vista_csv(request):
 	cleaned_data = data["cleaned_data"]
 	
 	#-- Instanciar la vista para reejecutar la consulta y obtener el queryset.
-	view_instance = VLStockClienteInformeView()
+	view_instance = VLCompraIngresadaInformeView()
 	view_instance.request = request
 	queryset = view_instance.obtener_queryset(cleaned_data)
 	

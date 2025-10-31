@@ -4,8 +4,8 @@
 {% load static %}
 {% load custom_tags %}
 
-<!-- Blque Header -------------------------------------------------------------------------- -->
- 
+<!-- Bloque Header ------------------------------------------------------------------------- -->
+
 <!-- Contenido Inferior Izquierdo -->
 {% block header_bottom_left %}
 	{% for param, valor in parametros_i.items %}
@@ -108,7 +108,6 @@
 			{% endfor %}
 			
 			<!-- Totales Generales -->
-			{% comment %} <tr style="border-top: 1px solid #000;"> {% endcomment %}
 			<tr>
 				<td class="numeric" colspan="6"><strong>Total General:</strong></td>
 				<td class="numeric"><strong>{{ tg_cantidad|formato_es_ar }}</strong></td>

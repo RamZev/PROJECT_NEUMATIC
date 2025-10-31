@@ -1709,35 +1709,40 @@ CREATE VIEW VLFichaSeguimientoStock AS
 DROP VIEW IF EXISTS "main"."VLDetalleCompraProveedor";
 CREATE VIEW VLDetalleCompraProveedor AS
 	SELECT
-		c.id_proveedor_id AS id_proveedor,
-		pv.nombre_proveedor AS proveedor,
+		c.id_proveedor_id,
+		pv.nombre_proveedor,
 		--c.compro,
 		--c.letra_comprobante,
 		--c.numero_comprobante,
-		(c.compro || '  ' || c.letra_comprobante || '  ' || SUBSTR(printf('%012d', c.numero_comprobante), 1, 4) || '-' || SUBSTR(printf('%012d', c.numero_comprobante), 5)) AS comprobante,
+		(cc.codigo_comprobante_compra || '  ' || c.letra_comprobante || '  ' || SUBSTR(printf('%012d', c.numero_comprobante), 1, 4) || '-' || SUBSTR(printf('%012d', c.numero_comprobante), 5)) AS comprobante,
 		c.fecha_comprobante,
-		dc.id_producto_id AS id_producto,
-		p.cai,
-		p.nombre_producto AS producto,
-		p.id_familia_id AS id_familia,
-		pf.nombre_producto_familia AS familia,
-		p.id_marca_id AS id_marca,
-		pm.nombre_producto_marca AS marca,
+		p.id_cai_id,
+		pc.cai,
+		dc.id_producto_id,
+		p.nombre_producto,
+		p.id_familia_id,
+		pf.nombre_producto_familia,
+		p.id_marca_id,
+		pm.nombre_producto_marca,
 		dc.cantidad,
 		p.unidad,
 		dc.precio,
 		dc.total,
-		c.id_sucursal_id AS id_sucursal,
-		c.id_deposito_id AS id_deposito
+		c.id_sucursal_id,
+		s.nombre_sucursal,
+		c.id_deposito_id,
+		pd.nombre_producto_deposito
 	FROM
 		detalle_compra dc
-		JOIN compra c ON dc.id_compra_id = c.id_compra
-		JOIN producto p ON dc.id_producto_id = p.id_producto
-		JOIN producto_familia pf ON p.id_familia_id = pf.id_producto_familia
-		JOIN producto_marca pm ON p.id_marca_id = pm.id_producto_marca
-		JOIN proveedor pv ON c.id_proveedor_id = pv.id_proveedor
-	ORDER by
-		c.fecha_comprobante;
+		INNER JOIN compra c ON dc.id_compra_id = c.id_compra
+		INNER JOIN comprobante_compra cc ON c.id_comprobante_compra_id = cc.id_comprobante_compra
+		INNER JOIN producto p ON dc.id_producto_id = p.id_producto
+		INNER JOIN producto_familia pf ON p.id_familia_id = pf.id_producto_familia
+		INNER JOIN producto_marca pm ON p.id_marca_id = pm.id_producto_marca
+		INNER JOIN proveedor pv ON c.id_proveedor_id = pv.id_proveedor
+		INNER JOIN sucursal s ON c.id_sucursal_id = s.id_sucursal
+		INNER JOIN producto_deposito pd ON c.id_deposito_id = pd.id_producto_deposito
+		LEFT JOIN producto_cai pc ON p.id_cai_id = pc.id_cai;
 
 
 -- ---------------------------------------------------------------------------
@@ -1751,22 +1756,15 @@ CREATE VIEW VLCompraIngresada AS
 		--c.letra_comprobante,
 		--c.numero_comprobante,
 		c.fecha_comprobante,
-		--cp.codigo_comprobante_compra,
-		--c.id_comprobante_compra_id,
-		cp.nombre_comprobante_compra,
-		--(c.compro || '  ' || c.letra_comprobante || '  ' || SUBSTR(printf('%012d', c.numero_comprobante), 1, 4) || '-' || SUBSTR(printf('%012d', c.numero_comprobante), 5)) AS comprobante,
-		(cp.codigo_comprobante_compra || '  ' || c.letra_comprobante || '  ' || SUBSTR(printf('%012d', c.numero_comprobante), 1, 4) || '-' || SUBSTR(printf('%012d', c.numero_comprobante), 5)) AS comprobante,
+		cc.codigo_comprobante_compra,
+		cc.nombre_comprobante_compra,
+		(cc.codigo_comprobante_compra || '  ' || c.letra_comprobante || '  ' || SUBSTR(printf('%012d', c.numero_comprobante), 1, 4) || '-' || SUBSTR(printf('%012d', c.numero_comprobante), 5)) AS comprobante,
 		c.id_proveedor_id,
 		p.nombre_proveedor,
 		c.total,
 		c.observa_comprobante
 	FROM
 		compra c
-		JOIN comprobante_compra cp ON c.id_comprobante_compra_id = cp.id_comprobante_compra
-		JOIN proveedor p ON c.id_proveedor_id = p.id_proveedor
-	WHERE
-		c.compro in ("IB")
-	ORDER by
-		c.compro;
-
+		INNER JOIN comprobante_compra cc ON c.id_comprobante_compra_id = cc.id_comprobante_compra
+		INNER JOIN proveedor p ON c.id_proveedor_id = p.id_proveedor;
 

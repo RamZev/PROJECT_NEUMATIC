@@ -35,8 +35,6 @@
 				<th class="numeric">Total Comprobante</th>
 				<th class="numeric">Entrega a Cuenta</th>
 				<th class="numeric">Saldo Pendiente</th>
-				
-				{% comment %} <th class="numeric" style="padding-right: 10px;">Saldo</th> {% endcomment %}
 			</tr>
 		</thead>
 		<tbody>
@@ -51,15 +49,8 @@
 					<td class="numeric">{{ obj.total|formato_es_ar }}</td>
 					<td class="numeric">{{ obj.entrega|formato_es_ar }}</td>
 					<td class="numeric">{{ obj.saldo|formato_es_ar }}</td>
-					
-					{% comment %} <td class="numeric" style="padding-right: 10px;">{{ obj.saldo|formato_es_ar }}</td> {% endcomment %}
 				</tr>
 			{% endfor %}
-			
-			{% comment %} <tr class="total-general" style="border-top: 1px solid #000;">
-				<td class="numeric" colspan="6"><strong>Total Pendiente:</strong></td>
-				<td class="numeric" style="padding-right: 10px;"><strong>{{ saldo_total|formato_es_ar }}</strong></td>
-			</tr> {% endcomment %}
 			
 		</tbody>
 	</table>

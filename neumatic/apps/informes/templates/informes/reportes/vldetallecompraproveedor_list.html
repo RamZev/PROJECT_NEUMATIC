@@ -1,4 +1,4 @@
-<!-- neumatic\apps\informes\templates\informes\reportes\vlremitosclientes_list.html -->
+<!-- neumatic\apps\informes\templates\informes\reportes\vldetallecompraproveedor_list.html -->
 
 {% extends 'informes/reportes/base_reportes.html' %}
 {% load static %}
@@ -27,10 +27,11 @@
 		
 		<thead>
 			<tr>
+				<th>Comprobante</th>
 				<th>Fecha</th>
-				<th>Número</th>
-				<th>Descripción</th>
-				<th>Medida</th>
+				<th>CAI</th>
+				<th>Código</th>
+				<th>Producto</th>
 				<th class="numeric">Cantidad</th>
 				<th class="numeric">Precio</th>
 				<th class="numeric">Total</th>
@@ -38,33 +39,31 @@
 		</thead>
 		
 		<tbody>
-			{% for comprobante_num, data in objetos.items %}
-				{% for producto in data.productos %}
-					<tr class="compact-line-spacing">
-						<td>{{ producto.fecha_comprobante|date:"d/m/Y" }}</td>
-						<td>{{ producto.numero }}</td>
-						<td>{{ producto.nombre_producto }}</td>
-						<td>{{ producto.medida }}</td>
-						<td class="numeric">{{ producto.cantidad|formato_es_ar }}</td>
-						<td class="numeric">{{ producto.precio|formato_es_ar }}</td>
-						<td class="numeric">{{ producto.total|formato_es_ar }}</td>
+			{% for data in objetos.values %}
+				{% for det in data.detalle %}
+					<tr>
+						<td>{{ det.comprobante }}</td>
+						<td>{{ det.fecha_comprobante|date:"d/m/Y" }}</td>
+						<td>{{ det.cai|default_if_none:"" }}</td>
+						<td>{{ det.codigo }}</td>
+						<td>{{ det.producto }}</td>
+						<td class="numeric">{{ det.cantidad|formato_es_ar_entero }}</td>
+						<td class="numeric">{{ det.precio|formato_es_ar }}</td>
+						<td class="numeric">{{ det.total|formato_es_ar }}</td>
 					</tr>
 				{% endfor %}
 				<tr class="subtotal">
-					<td colspan="6" style="text-align: right;"><strong>Total Comprobante:</strong></td>
-					<td class="numeric"><strong>{{ data.subtotal|formato_es_ar }}</strong></td>
+					<td colspan="5" style="text-align: right; padding-bottom: 20px;"><strong>Totales:</strong></td>
+					<td class="numeric" style="border-top: 1px solid;"><strong>{{ data.cantidad|formato_es_ar_entero }}</strong></td>
+					<td style="border-top: 1px solid;"></td>
+					<td class="numeric" style="border-top: 1px solid;"><strong>{{ data.total|formato_es_ar }}</strong></td>
 				</tr>
 				
 				<tr>
-					<td colspan="7"><hr></td>
+					<td colspan="8"><hr></td>
 				</tr>
 				
 			{% endfor %}
-			
-			<tr class="total-general">
-				<td class="numeric" colspan="6"><strong>Total Remitado:</strong></td>
-				<td class="numeric"><strong>{{ total_general|formato_es_ar }}</strong></td>
-			</tr>
 			
 		</tbody>
 		
