@@ -40,26 +40,26 @@ class MenuItem(models.Model):
         return f"collapse{slugify(self.name).capitalize()}"
     
     def has_access(self, user, check_children=True):
-        print(f"MODEL DEBUG: Checking access for user '{user}' on item '{self.name}' (ID: {self.id_menu_item})")
-        print(f"MODEL DEBUG: Item groups: {[g.name for g in self.groups.all()]}")
-        print(f"MODEL DEBUG: User groups: {[g.name for g in user.groups.all()]}")
-        print(f"MODEL DEBUG: User is superuser: {user.is_superuser}")
+        # print(f"MODEL DEBUG: Checking access for user '{user}' on item '{self.name}' (ID: {self.id_menu_item})")
+        # print(f"MODEL DEBUG: Item groups: {[g.name for g in self.groups.all()]}")
+        # print(f"MODEL DEBUG: User groups: {[g.name for g in user.groups.all()]}")
+        # print(f"MODEL DEBUG: User is superuser: {user.is_superuser}")
         
         # Superusuarios tienen acceso completo
         if user.is_superuser:
-            print(f"MODEL DEBUG: Superuser - Access: True")
+            # print(f"MODEL DEBUG: Superuser - Access: True")
             return True
         
         # Si el item tiene grupos asignados, verificar acceso directo
         if self.groups.exists():
             user_has_group = user.groups.filter(pk__in=self.groups.values_list('pk', flat=True)).exists()
             result = user_has_group
-            print(f"MODEL DEBUG: Has groups - Access: {result}")
+            # print(f"MODEL DEBUG: Has groups - Access: {result}")
             return result
         
         # Si es un item final (no colapsible) y no tiene grupos, no es accesible
         if not self.is_collapse:
-            print(f"MODEL DEBUG: Final item without groups - Access: False")
+            # print(f"MODEL DEBUG: Final item without groups - Access: False")
             return False
         
         # Si es un item colapsable (padre) y no tiene grupos, verificar si tiene hijos accesibles
@@ -67,9 +67,9 @@ class MenuItem(models.Model):
             # Verificar recursivamente si algún hijo tiene acceso
             for child in self.children.all():
                 if child.has_access(user, check_children=True):
-                    print(f"MODEL DEBUG: Collapsable parent with accessible children - Access: True")
+                    # print(f"MODEL DEBUG: Collapsable parent with accessible children - Access: True")
                     return True
         
         # Si no cumple ninguna condición, no es accesible
-        print(f"MODEL DEBUG: No access conditions met - Access: False")
+        # print(f"MODEL DEBUG: No access conditions met - Access: False")
         return False

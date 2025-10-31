@@ -224,15 +224,16 @@ class MenuItemDeleteView(LoginRequiredMixin, DeleteView):
             ).order_by('order')
             
             # Debug: ver qué items se van a reordenar
-            print(f"Reordenando {items_to_reorder.count()} items")
+            # print(f"Reordenando {items_to_reorder.count()} items")
             for item in items_to_reorder:
-                print(f" - {item.name} (order={item.order})")
+                # print(f" - {item.name} (order={item.order})")
+                pass
             
             # Renumerar secuencialmente desde 0
             for index, item in enumerate(items_to_reorder):
                 item.order = index
                 item.save()
-                print(f"Actualizado: {item.name} -> order={index}")
+                # print(f"Actualizado: {item.name} -> order={index}")
             
             return response
         

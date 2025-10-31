@@ -23,7 +23,7 @@ def menu_context(request):
         for item in items:
             # VERIFICAR ACCESO CON VERIFICACIÓN RECURSIVA DE HIJOS
             has_access = item.has_access(request.user, check_children=True)
-            print(f"DEBUG: Item '{item.name}' - Grupos: {[g.name for g in item.groups.all()]} - is_collapse: {item.is_collapse} - Access: {has_access}")
+            # print(f"DEBUG: Item '{item.name}' - Grupos: {[g.name for g in item.groups.all()]} - is_collapse: {item.is_collapse} - Access: {has_access}")
             
             if not has_access:
                 continue
