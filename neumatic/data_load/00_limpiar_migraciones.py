@@ -6,7 +6,7 @@ def limpiar_migraciones():
     # Configurar el BASE_DIR del proyecto
     BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     
-    apps = ['informes', 'maestros', 'usuarios', 'ventas']
+    apps = ['informes', 'maestros', 'usuarios', 'ventas', 'menu']
     
     for app in apps:
         # Construir la ruta completa a las migraciones

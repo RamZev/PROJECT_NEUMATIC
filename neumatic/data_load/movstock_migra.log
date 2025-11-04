@@ -8,3 +8,9 @@
 2025-09-06 23:14:48,861 - INFO - Lote final guardado: 663 registros
 2025-09-06 23:14:48,861 - INFO - Migración completada. Registros: 663, Errores: 0
 2025-09-06 23:14:48,862 - INFO - Tiempo total: 1.37 segundos
+2025-11-03 20:27:04,787 - WARNING - Depósito ID=0 no encontrado en registro 422
+2025-11-03 20:27:04,947 - WARNING - No se encontró PuntoVenta para Sucursal ID=12 en registro 649
+2025-11-03 20:27:04,978 - WARNING - No se encontró PuntoVenta para Sucursal ID=12 en registro 712
+2025-11-03 20:27:05,902 - INFO - Lote final guardado: 728 registros
+2025-11-03 20:27:05,902 - INFO - Migración completada. Registros: 728, Errores: 0
+2025-11-03 20:27:05,902 - INFO - Tiempo total: 1.43 segundos

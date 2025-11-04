@@ -18,9 +18,9 @@ AND (
 -- Tercera Actualización
 UPDATE producto
 SET tipo_producto = 'P'
-WHERE (tipo_producto IS NULL OR tipo_producto = '')
+WHERE (tipo_producto IS NULL OR tipo_producto = '');
 
 -- Cuarta Actualización
 UPDATE producto
 SET tipo_producto = 'P'
-WHERE tipo_producto = 'O'
+WHERE tipo_producto = 'O';

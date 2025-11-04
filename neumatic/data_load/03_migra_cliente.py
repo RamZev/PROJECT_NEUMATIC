@@ -14,8 +14,7 @@ SCRIPTS = [
     'tipo_percepcion_ib_migra.py',
     'cliente_migra.py',
     'descuento_vendedor_migra.py',
-    'numero_migra.py',
-    'stock_cliente_migra.py'
+    'numero_migra.py'
 ]
 
 def configurar_entorno():
