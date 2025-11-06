@@ -3,7 +3,7 @@ from django import forms
 from datetime import date
 
 from .informes_generics_forms import InformesGenericForm
-from diseno_base.diseno_bootstrap import formclassselect, formclassdate
+from diseno_base.diseno_bootstrap import formclassdate
 
 
 class BuscadorCompraIngresadaForm(InformesGenericForm):
