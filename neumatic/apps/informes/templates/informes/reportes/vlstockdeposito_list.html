@@ -62,7 +62,7 @@
 							<td></td>
 							<td>{{ det.codigo }}</td>
 							<td>{{ det.medida }}</td>
-							<td>{{ det.cai }}</td>
+							<td>{{ det.cai|default_if_none:"" }}</td>
 							<td>{{ det.descripcion }}</td>
 							<td>{{ det.marca }}</td>
 							<td class="numeric">{{ det.stock|formato_es_ar_entero }}</td>

@@ -38,7 +38,7 @@
 		</thead>
 		
 		<tbody>
-			{% for comprobante_num, data in objetos.items %}
+			{% for data in objetos.values %}
 				{% for producto in data.productos %}
 					<tr class="compact-line-spacing">
 						<td>{{ producto.fecha_comprobante|date:"d/m/Y" }}</td>

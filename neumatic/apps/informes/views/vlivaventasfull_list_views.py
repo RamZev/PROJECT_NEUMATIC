@@ -46,9 +46,6 @@ class ConfigViews:
 	#-- Vista del home del proyecto.
 	home_view_name = "home"
 	
-	#-- Nombre de la url.
-	success_url = reverse_lazy(list_view_name)
-	
 	#-- Archivo JavaScript específico.
 	js_file = None
 	
@@ -149,7 +146,6 @@ class VLIVAVentasFULLInformeView(InformeFormView):
 	config = ConfigViews  #-- Ahora la configuración estará disponible en self.config.
 	form_class = ConfigViews.form_class
 	template_name = ConfigViews.template_list
-	success_url = ConfigViews.success_url
 	
 	extra_context = {
 		"master_title": f'Informes - {ConfigViews.model._meta.verbose_name_plural}',

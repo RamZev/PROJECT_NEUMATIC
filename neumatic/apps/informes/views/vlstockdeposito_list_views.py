@@ -44,9 +44,6 @@ class ConfigViews:
 	#-- Vista del home del proyecto.
 	home_view_name = "home"
 	
-	#-- Nombre de la url.
-	success_url = reverse_lazy(list_view_name)
-	
 	#-- Archivo JavaScript específico.
 	js_file = None
 	
@@ -154,7 +151,6 @@ class VLStockDepositoInformeView(InformeFormView):
 	config = ConfigViews  #-- Ahora la configuración estará disponible en self.config.
 	form_class = ConfigViews.form_class
 	template_name = ConfigViews.template_list
-	success_url = ConfigViews.success_url
 	
 	extra_context = {
 		"master_title": f'Informes - {ConfigViews.model._meta.verbose_name_plural}',
@@ -375,7 +371,7 @@ def generar_pdf(contexto_reporte):
 					"",
 					obj['codigo'],
 					obj['medida'],
-					obj['cai'],
+					obj['cai'] if obj['cai'] else "",
 					Paragraph(str(obj['descripcion']), generator.styles['CellStyle']),
 					Paragraph(str(obj['marca']), generator.styles['CellStyle']),
 					formato_argentino_entero(obj['stock']),

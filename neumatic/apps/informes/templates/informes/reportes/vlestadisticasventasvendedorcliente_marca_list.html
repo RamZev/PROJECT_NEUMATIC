@@ -38,7 +38,7 @@
 		</thead>
 		<tbody>
 			
-			{% for vendedor_id, vendedor_data in objetos.items %}
+			{% for vendedor_data in objetos.values %}
 				<!-- Fila con los datos del Vendedor -->
 				<tr>
 					<td colspan="4" style="padding-top: 5px;">
@@ -46,7 +46,7 @@
 					</td>
 				</tr>
 				
-				{% for cliente_id, cliente_data in vendedor_data.clientes.items %}
+				{% for cliente_data in vendedor_data.clientes.values %}
 					<!-- Fila con los datos del Cliente -->
 					<tr>
 						<td></td>
@@ -78,7 +78,6 @@
 			
 			{% endfor %}
 			
-			{% comment %} <tr style="border-top: 1px solid #000;"> {% endcomment %}
 			<tr>
 				<td class="numeric" colspan="2"><strong>Total General:</strong></td>
 				{% if mostrar == 'Cantidad' %}

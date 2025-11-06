@@ -46,9 +46,6 @@ class ConfigViews:
 	#-- Vista del home del proyecto.
 	home_view_name = "home"
 	
-	#-- Nombre de la url.
-	success_url = reverse_lazy(list_view_name)
-	
 	#-- Archivo JavaScript específico.
 	js_file = None
 	
@@ -81,7 +78,7 @@ class ConfigViews:
 		},
 		"numero": {
 			"label": "Número",
-			"col_width_pdf": 70,
+			"col_width_pdf": 65,
 			"pdf": True,
 			"excel": True,
 			"csv": True
@@ -95,7 +92,7 @@ class ConfigViews:
 		},
 		"medida": {
 			"label": "Medida",
-			"col_width_pdf": 50,
+			"col_width_pdf": 70,
 			"pdf": True,
 			"excel": True,
 			"csv": True
@@ -109,7 +106,7 @@ class ConfigViews:
 		},
 		"precio": {
 			"label": "Precio",
-			"col_width_pdf": 75,
+			"col_width_pdf": 70,
 			"pdf": True,
 			"excel": True,
 			"csv": True
@@ -128,7 +125,6 @@ class VLRemitosClientesInformeView(InformeFormView):
 	config = ConfigViews  #-- Ahora la configuración estará disponible en self.config.
 	form_class = ConfigViews.form_class
 	template_name = ConfigViews.template_list
-	success_url = ConfigViews.success_url
 	
 	extra_context = {
 		"master_title": f'Informes - {ConfigViews.model._meta.verbose_name_plural}',

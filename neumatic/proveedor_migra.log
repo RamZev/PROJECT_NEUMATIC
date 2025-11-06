@@ -4,3 +4,8 @@
 2025-09-15 17:18:32,696 - INFO - Relaciones precargadas en memoria
 2025-09-15 17:18:32,709 - INFO - DBF cargado en memoria. Total registros: 175
 2025-09-15 17:18:32,859 - INFO - Migración completada. Total registros procesados: 175/175. Tiempo: 0.93 segundos
+2025-11-04 15:45:13,153 - INFO - Iniciando migración de proveedores
+2025-11-04 15:45:13,290 - INFO - Precargando relaciones en memoria...
+2025-11-04 15:45:13,983 - INFO - Relaciones precargadas en memoria
+2025-11-04 15:45:14,006 - INFO - DBF cargado en memoria. Total registros: 181
+2025-11-04 15:45:14,213 - INFO - Migración completada. Total registros procesados: 181/181. Tiempo: 1.06 segundos

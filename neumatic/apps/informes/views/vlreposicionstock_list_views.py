@@ -45,9 +45,6 @@ class ConfigViews:
 	#-- Vista del home del proyecto.
 	home_view_name = "home"
 	
-	#-- Nombre de la url.
-	success_url = reverse_lazy(list_view_name)
-	
 	#-- Archivo JavaScript específico.
 	js_file = None
 	
@@ -136,7 +133,7 @@ class ConfigViews:
 		},
 		"medida": {
 			"label": "Medida",
-			"col_width_pdf": 50,
+			"col_width_pdf": 60,
 			"pdf": True,
 			"excel": True,
 			"csv": True
@@ -157,7 +154,7 @@ class ConfigViews:
 		},
 		"nombre_producto_marca": {
 			"label": "Marca",
-			"col_width_pdf": 100,
+			"col_width_pdf": 90,
 			"pdf": True,
 			"excel": True,
 			"csv": True
@@ -190,7 +187,6 @@ class VLReposicionStockInformeView(InformeFormView):
 	config = ConfigViews  #-- Ahora la configuración estará disponible en self.config.
 	form_class = ConfigViews.form_class
 	template_name = ConfigViews.template_list
-	success_url = ConfigViews.success_url
 	
 	extra_context = {
 		"master_title": f'Informes - {ConfigViews.model._meta.verbose_name_plural}',
@@ -412,7 +408,7 @@ def generar_pdf(contexto_reporte):
 	current_row = 1
 	
 	#-- Agregar los datos a la tabla.
-	for familia_id, familia_data in contexto_reporte.get("objetos", {}).items():
+	for familia_data in contexto_reporte.get("objetos", {}).values():
 		
 		#-- Datos agrupado por Familia.
 		table_data.append([f"Familia: {familia_data['familia']}"] + blank_cols)
@@ -425,7 +421,7 @@ def generar_pdf(contexto_reporte):
 		
 		current_row += 1
 		
-		for modelo_id, modelo_data in familia_data["modelos"].items():
+		for modelo_data in familia_data["modelos"].values():
 			
 			#-- Datos agrupado por Modelo.
 			table_data.append(["", f"Modelo: {modelo_data['modelo']}"] + blank_cols[:-1])
@@ -442,8 +438,8 @@ def generar_pdf(contexto_reporte):
 				
 				table_data.append([
 					"",
-					obj['cai'],
-					obj['medida'],
+					Paragraph(str(obj['cai']), generator.styles['CellStyle']) if obj['cai'] else "",
+					Paragraph(str(obj['medida']), generator.styles['CellStyle']),
 					Paragraph(str(obj['nombre_producto']), generator.styles['CellStyle']),
 					Paragraph(str(obj['nombre_producto_marca']), generator.styles['CellStyle']),
 					formato_argentino_entero(obj['minimo']),

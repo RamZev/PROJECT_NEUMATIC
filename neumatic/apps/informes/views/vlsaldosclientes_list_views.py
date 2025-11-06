@@ -45,9 +45,6 @@ class ConfigViews:
 	#-- Vista del home del proyecto.
 	home_view_name = "home"
 	
-	#-- Nombre de la url.
-	success_url = reverse_lazy(list_view_name)
-	
 	#-- Archivo JavaScript específico.
 	js_file = "js/filtros_saldos_clientes.js"
 	
@@ -148,7 +145,6 @@ class VLSaldosClientesInformeView(InformeFormView):
 	config = ConfigViews  #-- Ahora la configuración estará disponible en self.config.
 	form_class = ConfigViews.form_class
 	template_name = ConfigViews.template_list
-	success_url = ConfigViews.success_url
 	
 	extra_context = {
 		"master_title": f'Informes - {ConfigViews.model._meta.verbose_name_plural}',
@@ -178,7 +174,7 @@ class VLSaldosClientesInformeView(InformeFormView):
 		fecha_hasta = cleaned_data.get('fecha_hasta')
 		vendedor = cleaned_data.get('vendedor')
 		
-		param_left = {"Prueba": "Prueba"}
+		param_left = {}
 		param_right = {
 			"Hasta": fecha_hasta.strftime("%d/%m/%Y"),
 		}
