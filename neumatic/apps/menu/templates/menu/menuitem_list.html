@@ -2,7 +2,7 @@
 
 {% block title %}Items de Menú - Sistema de Menú{% endblock %}
 {% block breadcrumb %}Items de Menú{% endblock %}
-{% block card_title %}Lista de Items de Menú{% endblock %}
+{% block card_title %}Lista de Items de Menú***{% endblock %}
 
 {% block card_tools %}
 <div class="d-flex flex-wrap gap-2">
@@ -77,25 +77,28 @@
                 </td>
                 <td class="py-2 text-center">
                     {% if item.is_collapse %}
-                        <span class="badge bg-primary badge-sm">Grupo</span>
+                        <span class="badge bg-primary badge-sm">Grupo*</span>
                     {% else %}
-                        <span class="badge bg-light text-dark badge-sm border">Item</span>
+                        <span class="badge bg-light text-dark badge-sm border">Item*</span>
                     {% endif %}
                 </td>
                 <td class="py-2 text-center">
-                    {% if not item.is_collapse %}
-                        <div class="btn-group btn-group-sm">
-                            <a href="{% url 'menu:item_update' item.pk %}" class="btn btn-outline-warning" title="Editar">
-                                <i class="fas fa-edit"></i>
-                            </a>
+                    <div class="btn-group btn-group-sm">
+                        <a href="{% url 'menu:item_update' item.pk %}" class="btn btn-outline-warning" title="Editar">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        {% if item.is_collapse and item.children.exists %}
+                            <button class="btn btn-outline-secondary" disabled>
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        {% else %}
                             <a href="{% url 'menu:item_delete' item.pk %}" class="btn btn-outline-danger" title="Eliminar">
                                 <i class="fas fa-trash"></i>
                             </a>
-                        </div>
-                    {% else %}
-                        <span class="text-muted small">-</span>
-                    {% endif %}
+                        {% endif %}
+                    </div>
                 </td>
+
             </tr>
             {% empty %}
             <tr>

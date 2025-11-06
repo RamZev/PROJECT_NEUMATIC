@@ -19,4 +19,6 @@ urlpatterns = [
     
     # Vista para gestionar árbol completo
     path('arbol/', views.MenuTreeView.as_view(), name='menu_tree'),
+
+    path('get-children-count/', views.GetChildrenCountView.as_view(), name='get_children_count'),
 ]
