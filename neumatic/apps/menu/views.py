@@ -1,10 +1,12 @@
 # neumatic\apps\menu\views.py
 from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, TemplateView
+from django.views import View
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.db import transaction
 from django.db.models import F
 from django.shortcuts import redirect
+from django.http import JsonResponse
 
 from .models import MenuHeading, MenuItem
 from .forms import MenuHeadingForm, MenuItemForm
@@ -68,25 +70,6 @@ class MenuItemListView(LoginRequiredMixin, ListView):
     paginate_by = None  # Show all items without pagination
     
     def get_queryset(self):
-        # return MenuItem.objects.select_related('heading', 'parent').prefetch_related('groups')
-        
-        # return MenuItem.objects.select_related('heading', 'parent').prefetch_related('groups').order_by(
-        #     'heading__order',        # Primero por heading (Archivos, Ventas, etc.)
-        #     'heading__name',         # Luego por nombre del heading
-        #     'parent__order',         # Luego por orden del padre
-        #     'parent__name',          # Luego por nombre del padre  
-        #     'order',                 # Luego por orden del item
-        #     'name'                   # Finalmente por nombre del item
-        # )
-        
-        # return MenuItem.objects.select_related('heading', 'parent').prefetch_related('groups').order_by(
-        #     'heading__order',
-        #     'parent__order',         # Orden del padre
-        #     'parent__name',          # Nombre del padre para desempatar
-        #     'order',
-        #     'name'
-        # )
-
         # Obtener todos los items organizados por heading y parent
         headings = MenuHeading.objects.order_by('order')
         items_by_heading = {}
@@ -247,3 +230,23 @@ class MenuTreeView(LoginRequiredMixin, TemplateView):
         ).all()
         context['headings'] = headings
         return context
+
+
+class GetChildrenCountView(LoginRequiredMixin, View):
+    def get(self, request):
+        heading_id = request.GET.get('heading_id')
+        parent_id = request.GET.get('parent_id')
+        
+        filters = {}
+        if heading_id and heading_id != '':
+            filters['heading_id'] = heading_id
+            filters['parent__isnull'] = True  # Items de primer nivel
+        elif parent_id and parent_id != '':
+            filters['parent_id'] = parent_id  # Items hijos
+        
+        count = MenuItem.objects.filter(**filters).count()
+        
+        return JsonResponse({
+            'count': count,
+            'filters': filters
+        })

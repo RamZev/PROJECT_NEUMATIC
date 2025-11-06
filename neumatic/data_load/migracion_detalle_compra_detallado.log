@@ -30505,6 +30505,53 @@ Tiempo total: 0 minutos 5 segundos
 2025-11-03 23:21:01,231 - INFO - Total errores: 0
 2025-11-03 23:21:01,231 - INFO - 
 Tiempo total: 0 minutos 6 segundos
+<<<<<<< HEAD
+2025-11-04 15:37:32,358 - INFO - Cargando cachés de referencia...
+2025-11-04 15:37:33,489 - INFO - Total registros estimados: 29797
+2025-11-04 15:37:33,504 - INFO - Iniciando migración por bloques...
+2025-11-04 15:37:33,504 - INFO - --- Iniciando Bloque 1 (registros 0 a 149999) ---
+2025-11-04 15:37:34,177 - INFO - Bloque 1: Procesando 29797 registros...
+2025-11-04 15:37:34,177 - WARNING - Compra no encontrada ID: 0
+2025-11-04 15:37:34,177 - WARNING - Compra no encontrada ID: 0
+2025-11-04 15:37:34,177 - WARNING - Compra no encontrada ID: 0
+2025-11-04 15:37:34,178 - WARNING - Compra no encontrada ID: 0
+2025-11-04 15:37:34,178 - WARNING - Compra no encontrada ID: 0
+2025-11-04 15:37:34,178 - WARNING - Compra no encontrada ID: 0
+2025-11-04 15:37:34,178 - WARNING - Compra no encontrada ID: 0
+2025-11-04 15:37:34,179 - WARNING - Compra no encontrada ID: 0
+2025-11-04 15:37:34,179 - WARNING - Compra no encontrada ID: 0
+2025-11-04 15:37:34,179 - WARNING - Compra no encontrada ID: 64480
+2025-11-04 15:37:34,179 - WARNING - Compra no encontrada ID: 64480
+2025-11-04 15:37:34,180 - WARNING - Compra no encontrada ID: 64480
+2025-11-04 15:37:34,180 - WARNING - Compra no encontrada ID: 64480
+2025-11-04 15:37:34,180 - WARNING - Compra no encontrada ID: 64480
+2025-11-04 15:37:34,180 - WARNING - Compra no encontrada ID: 64480
+2025-11-04 15:37:34,408 - INFO - Lote guardado: 2000 registros (bloque 1)
+2025-11-04 15:37:34,615 - INFO - Lote guardado: 2000 registros (bloque 1)
+2025-11-04 15:37:34,876 - INFO - Lote guardado: 2000 registros (bloque 1)
+2025-11-04 15:37:35,118 - INFO - Lote guardado: 2000 registros (bloque 1)
+2025-11-04 15:37:35,351 - INFO - Lote guardado: 2000 registros (bloque 1)
+2025-11-04 15:37:35,352 - INFO - Progreso global: 10000 registros procesados
+2025-11-04 15:37:35,616 - INFO - Lote guardado: 2000 registros (bloque 1)
+2025-11-04 15:37:35,847 - INFO - Lote guardado: 2000 registros (bloque 1)
+2025-11-04 15:37:36,078 - INFO - Lote guardado: 2000 registros (bloque 1)
+2025-11-04 15:37:36,355 - INFO - Lote guardado: 2000 registros (bloque 1)
+2025-11-04 15:37:36,571 - INFO - Lote guardado: 2000 registros (bloque 1)
+2025-11-04 15:37:36,571 - INFO - Progreso global: 20000 registros procesados
+2025-11-04 15:37:36,790 - INFO - Lote guardado: 2000 registros (bloque 1)
+2025-11-04 15:37:37,074 - INFO - Lote guardado: 2000 registros (bloque 1)
+2025-11-04 15:37:37,291 - INFO - Lote guardado: 2000 registros (bloque 1)
+2025-11-04 15:37:37,563 - INFO - Lote guardado: 2000 registros (bloque 1)
+2025-11-04 15:37:37,761 - INFO - Último lote del bloque 1 guardado: 1782 registros
+2025-11-04 15:37:37,761 - INFO - --- Iniciando Bloque 2 (registros 150000 a 299999) ---
+2025-11-04 15:37:38,328 - INFO - No se encontraron más registros. Fin del procesamiento.
+2025-11-04 15:37:38,328 - INFO - 
+=== REPORTE FINAL ===
+2025-11-04 15:37:38,328 - INFO - Total registros procesados: 29782
+2025-11-04 15:37:38,328 - INFO - Total errores: 0
+2025-11-04 15:37:38,328 - INFO - 
+Tiempo total: 0 minutos 5 segundos
+=======
 2025-11-04 15:46:07,213 - INFO - Cargando cachés de referencia...
 2025-11-04 15:46:08,284 - INFO - Total registros estimados: 29797
 2025-11-04 15:46:08,284 - INFO - Iniciando migración por bloques...
@@ -30550,3 +30597,4 @@ Tiempo total: 0 minutos 6 segundos
 2025-11-04 15:46:13,563 - INFO - Total errores: 0
 2025-11-04 15:46:13,563 - INFO - 
 Tiempo total: 0 minutos 6 segundos
+>>>>>>> d311bbdc18e5e0e67a7fdeab07fa082aeb999f62

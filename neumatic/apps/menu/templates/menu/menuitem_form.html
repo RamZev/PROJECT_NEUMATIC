@@ -16,7 +16,7 @@
                 {% if form.heading.errors %}
                 <div class="text-danger small">{{ form.heading.errors }}</div>
                 {% endif %}
-                <div class="form-text">Encabezado al que pertenece este item</div>
+                <div class="form-text">*Encabezado al que pertenece este item</div>
             </div>
         </div>
         <div class="col-md-6">
@@ -32,7 +32,7 @@
     </div>
 
     <div class="row">
-        <div class="col-md-8">
+        <div class="col-md-6">
             <div class="mb-3">
                 {{ form.name.label_tag }}
                 {{ form.name }}
@@ -45,9 +45,18 @@
             <div class="mb-3">
                 {{ form.order.label_tag }}
                 {{ form.order }}
+                
                 {% if form.order.errors %}
                 <div class="text-danger small">{{ form.order.errors }}</div>
                 {% endif %}
+                <div class="form-text">Dejar en blanco para colocar al final automáticamente</div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="mb-3">
+                <label for="current_children_count">Último Orden</label>
+                <input type="text" id="current_children_count" class="form-control" readonly 
+                        style="max-width: 200px;" placeholder="Calculando...">
             </div>
         </div>
     </div>
@@ -137,3 +146,88 @@
     </div>
 </form>
 {% endblock %}
+
+{% block script %}
+<script>
+    
+
+    /////////////////
+// static/js/menu_form.js
+// static/js/menu_form.js
+document.addEventListener('DOMContentLoaded', function() {
+    const orderField = document.getElementById('id_order');
+    const headingField = document.getElementById('id_heading');
+    const parentField = document.getElementById('id_parent');
+    const childrenCountField = document.getElementById('current_children_count');
+    
+    // Verificación de elementos
+    if (!orderField || !headingField || !parentField || !childrenCountField) {
+        console.log('🚫 Elementos faltantes');
+        return;
+    }
+    
+    // Función para obtener el conteo REAL desde el servidor
+    async function updateChildrenInfo() {
+        const headingId = headingField.value;
+        const parentId = parentField.value;
+        
+        let selectionType = "Sin selección";
+        
+        // Determinar qué estamos contando
+        if (headingId && !parentId) {
+            selectionType = "Encabezado";
+        } else if (parentId) {
+            selectionType = "Item Padre";
+        } else {
+            selectionType = "Sin ubicación";
+            childrenCountField.value = `${selectionType} - 0 hijo(s)`;
+            if (!orderField.value) orderField.placeholder = 'Auto → 1';
+            return;
+        }
+        
+        // Mostrar "cargando..."
+        childrenCountField.value = `${selectionType} - Calculando...`;
+        
+        try {
+            // Hacer petición al servidor
+            const response = await fetch(`/menu/get-children-count/?heading_id=${headingId || ''}&parent_id=${parentId || ''}`);
+            const data = await response.json();
+            
+            const childCount = data.count;
+            
+            // Actualizar interfaz
+            childrenCountField.value = `${selectionType} - ${childCount} hijo(s)`;
+            
+            // Actualizar placeholder para orden automático
+            if (!orderField.value) {
+                orderField.placeholder = 'Auto → ' + (childCount + 1);
+            }
+            
+            console.log('Conteo actualizado:', data);
+            
+        } catch (error) {
+            console.error('Error al obtener conteo:', error);
+            childrenCountField.value = `${selectionType} - Error`;
+        }
+    }
+    
+    // INICIALIZAR - Esperar un poco para que el DOM esté completamente listo
+    setTimeout(() => {
+        updateChildrenInfo();
+    }, 100);
+    
+    // EVENT LISTENERS
+    headingField.addEventListener('change', updateChildrenInfo);
+    parentField.addEventListener('change', updateChildrenInfo);
+    
+    orderField.addEventListener('blur', function() {
+        if (this.value === '') {
+            updateChildrenInfo();
+        }
+    });
+    
+    console.log('✅ Menu Form Manager inicializado');
+});
+    /////////////////
+</script>
+{% endblock script %}
