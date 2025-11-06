@@ -44,9 +44,6 @@ class ConfigViews:
 	#-- Vista del home del proyecto.
 	home_view_name = "home"
 	
-	#-- Nombre de la url.
-	success_url = reverse_lazy(list_view_name)
-	
 	#-- Archivo JavaScript específico.
 	js_file = None
 	
@@ -175,7 +172,6 @@ class VLStockFechaInformeView(InformeFormView):
 	config = ConfigViews  #-- Ahora la configuración estará disponible en self.config.
 	form_class = ConfigViews.form_class
 	template_name = ConfigViews.template_list
-	success_url = ConfigViews.success_url
 	
 	extra_context = {
 		"master_title": f'Informes - {ConfigViews.model._meta.verbose_name_plural}',
@@ -364,7 +360,7 @@ def generar_pdf(contexto_reporte):
 	current_row = 1
 	
 	#-- Agregar los datos a la tabla.
-	for familia_id, familia_data in contexto_reporte.get("objetos", {}).items():
+	for familia_data in contexto_reporte.get("objetos", {}).values():
 		
 		#-- Datos agrupado por Familia.
 		table_data.append([f"Familia: {familia_data['familia']}"] + blank_cols)
@@ -377,7 +373,7 @@ def generar_pdf(contexto_reporte):
 		
 		current_row += 1
 		
-		for modelo_id, modelo_data in familia_data["modelos"].items():
+		for modelo_data in familia_data["modelos"].values():
 			
 			#-- Datos agrupado por Modelo.
 			table_data.append(["", f"Modelo: {modelo_data['modelo']}"] + blank_cols[:-1])
@@ -395,7 +391,7 @@ def generar_pdf(contexto_reporte):
 				table_data.append([
 					"",
 					obj['id_producto_id'],
-					obj['cai'],
+					obj['cai'] if obj['cai'] else "",
 					obj['medida'],
 					Paragraph(str(obj['nombre_producto']), generator.styles['CellStyle']),
 					Paragraph(str(obj['nombre_producto_marca']), generator.styles['CellStyle']),

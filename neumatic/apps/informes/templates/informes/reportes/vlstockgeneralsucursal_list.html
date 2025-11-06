@@ -41,7 +41,7 @@
 		</thead>
 		
 		<tbody>
-			{% for familia_id, familia_data in objetos.items %}
+			{% for familia_data in objetos.values %}
 				<!-- Fila con los datos de la Familia -->
 				<tr>
 					<td colspan="{{ sucursales_info|length|add:8 }}" style="padding-top: 5px;">
@@ -49,7 +49,7 @@
 					</td>
 				</tr>
 				
-				{% for modelo_id, modelo_data in familia_data.modelos.items %}
+				{% for modelo_data in familia_data.modelos.values %}
 					<!-- Fila con los datos del Modelo -->
 					<tr>
 						<td></td>
@@ -63,7 +63,7 @@
 						<tr>
 							<td></td>
 							<td>{{ det.id_producto_id }}</td>
-							<td>{{ det.cai }}</td>
+							<td>{{ det.cai|default_if_none:"" }}</td>
 							<td>{{ det.medida }}</td>
 							<td>{{ det.nombre_producto }}</td>
 							<td>{{ det.nombre_producto_marca }}</td>

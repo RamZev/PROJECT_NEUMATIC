@@ -44,9 +44,6 @@ class ConfigViews:
 	#-- Vista del home del proyecto.
 	home_view_name = "home"
 	
-	#-- Nombre de la url.
-	success_url = reverse_lazy(list_view_name)
-	
 	#-- Archivo JavaScript específico.
 	js_file = None
 	
@@ -88,7 +85,7 @@ class ConfigViews:
 		},
 		"cai": {
 			"label": "CAI",
-			"col_width_pdf": 40,
+			"col_width_pdf": 110,
 			"pdf": True,
 			"excel": True,
 			"csv": False
@@ -103,7 +100,7 @@ class ConfigViews:
 		},
 		"medida": {
 			"label": "Medida",
-			"col_width_pdf": 50,
+			"col_width_pdf": 70,
 			"pdf": True,
 			"excel": True,
 			"csv": True
@@ -152,7 +149,7 @@ class ConfigViews:
 		},
 		"nombre_producto": {
 			"label": "Descripción",
-			"col_width_pdf": 220,
+			"col_width_pdf": 230,
 			"pdf": True,
 			"excel": True,
 			"csv": True
@@ -166,7 +163,7 @@ class ConfigViews:
 		},
 		"nombre_producto_marca": {
 			"label": "Marca",
-			"col_width_pdf": 140,
+			"col_width_pdf": 180,
 			"pdf": True,
 			"excel": False,
 			"csv": False
@@ -284,7 +281,6 @@ class VLListaInformeView(InformeFormView):
 	config = ConfigViews  #-- Ahora la configuración estará disponible en self.config.
 	form_class = ConfigViews.form_class
 	template_name = ConfigViews.template_list
-	success_url = ConfigViews.success_url
 	
 	extra_context = {
 		"master_title": f'Informes - {ConfigViews.model._meta.verbose_name_plural}',
@@ -465,7 +461,7 @@ class CustomPDFGenerator(PDFGenerator):
 
 def generar_pdf(contexto_reporte):
 	#-- Crear instancia del generador personalizado.
-	generator = CustomPDFGenerator(contexto_reporte, pagesize=portrait(A4), body_font_size=7)
+	generator = CustomPDFGenerator(contexto_reporte, pagesize=landscape(A4), body_font_size=7)
 	
 	#-- Construir datos de la tabla:
 	
@@ -509,7 +505,7 @@ def generar_pdf(contexto_reporte):
 			table_data.append([
 				"",
 				obj['id_producto'],
-				obj['cai'],
+				obj['cai'] if obj['cai'] else "",
 				obj['medida'],
 				Paragraph(str(obj['nombre_producto']), generator.styles['CellStyle']),
 				Paragraph(str(obj['nombre_producto_marca']), generator.styles['CellStyle']),

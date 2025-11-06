@@ -306,11 +306,14 @@ class RemitosClientesManager(models.Manager):
 			WHERE
 				id_cliente_id = %s
 				AND codigo_comprobante_venta BETWEEN %s AND %s
-				AND fecha_comprobante BETWEEN %s AND %s;
+				AND fecha_comprobante BETWEEN %s AND %s
 		"""
 		
 		#-- Se añaden parámetros.
 		params = [id_cliente, "RD", "RT", fecha_desde, fecha_hasta]
+		
+		#-- Agregar el ordenamiento acá por rendimiento en la consulta.
+		query += " ORDER by fecha_comprobante, numero_comprobante"
 		
 		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
 		return self.raw(query, params)
@@ -377,8 +380,11 @@ class TotalRemitosClientesManager(models.Manager):
 			params.append(id_cliente)
 		
 		#-- Completar la consulta.
-		query += "GROUP BY id_cliente_id;"
+		query += "GROUP BY id_cliente_id"
 	
+		#-- Agregar el ordenamiento acá por rendimiento en la consulta.
+		query += " ORDER by nombre_cliente"
+		
 		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
 		return self.raw(query, params)
 
@@ -436,6 +442,9 @@ class VentaComproLocalidadManager(models.Manager):
 		if codigo_postal:
 			query += " AND codigo_postal = %s"
 			params.append(codigo_postal)
+		
+		#-- Agregar el ordenamiento acá por rendimiento en la consulta.
+		query += " ORDER by fecha_comprobante"
 		
 		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
 		return self.raw(query, params)
@@ -511,6 +520,9 @@ class VentaMostradorManager(models.Manager):
 			query += " AND tipo_producto = %s"
 			params.append(tipo_producto)		
 		
+		#-- Agregar el ordenamiento acá por rendimiento en la consulta.
+		query += " ORDER by fecha_comprobante, numero_comprobante"
+		
 		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
 		return self.raw(query, params)
 
@@ -570,6 +582,9 @@ class VentaComproManager(models.Manager):
 		if sucursal:
 			query += " AND id_sucursal_id = %s"
 			params.append(sucursal.id_sucursal)
+		
+		#-- Agregar el ordenamiento acá por rendimiento en la consulta.
+		query += " ORDER by nombre_comprobante_venta, letra_comprobante, numero_comprobante"
 		
 		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
 		return self.raw(query, params)
@@ -633,6 +648,9 @@ class ComprobantesVencidosManager(models.Manager):
 		if id_sucursal:
 			query += " AND id_sucursal_id = %s"
 			params.append(id_sucursal)
+		
+		#-- Agregar el ordenamiento acá por rendimiento en la consulta.
+		query += " ORDER by fecha_comprobante"
 		
 		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
 		return self.raw(query, params)
@@ -699,6 +717,9 @@ class RemitosPendientesManager(models.Manager):
 				query += " WHERE id_sucursal_cli = %s"
 				params = [id_sucursal]
 		
+		#-- Agregar el ordenamiento acá por rendimiento en la consulta.
+		query += " ORDER by nombre_cliente, fecha_comprobante, numero_comprobante"
+		
 		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
 		return self.raw(query, params)
 
@@ -755,6 +776,9 @@ class RemitosVendedorManager(models.Manager):
 		
 		#-- Se añaden parámetros.
 		params = [id_vendedor, fecha_desde, fecha_hasta]
+		
+		#-- Agregar el ordenamiento acá por rendimiento en la consulta.
+		query += " ORDER by nombre_cliente, fecha_comprobante, numero_comprobante"
 		
 		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
 		return self.raw(query, params)
@@ -882,6 +906,9 @@ class VLIVAVentasProvinciasManager(models.Manager):
 		#-- Se completa la consulta.
 		query += " GROUP BY nombre_provincia"
 		
+		#-- Agregar el ordenamiento acá por rendimiento en la consulta.
+		query += " ORDER by nombre_provincia"
+		
 		#-- Ejecutar la consulta y devolver los resultados.
 		return self.raw(query, params)
 
@@ -943,6 +970,9 @@ class VLIVAVentasSitribManager(models.Manager):
 		
 		#-- Se completa la consulta.
 		query += " GROUP BY codigo_iva"
+		
+		#-- Agregar el ordenamiento acá por rendimiento en la consulta.
+		query += " ORDER by codigo_iva"
 		
 		#-- Ejecutar la consulta y devolver los resultados.
 		return self.raw(query, params)
@@ -1039,6 +1069,9 @@ class VLPercepIBVendedorDetalladoManager(models.Manager):
 		
 		#-- Lista de parámetros.
 		params = [fecha_desde, fecha_hasta]
+		
+		#-- Agregar el ordenamiento acá por rendimiento en la consulta.
+		query += " ORDER by nombre_vendedor, fecha_comprobante, numero_comprobante"
 		
 		#-- Ejecutar la consulta y devolver los resultados.
 		return self.raw(query, params)
@@ -1140,6 +1173,9 @@ class VLPercepIBSubcuentaDetalladoManager(models.Manager):
 		
 		#-- Se añaden parámetros.
 		params = [fecha_desde, fecha_hasta]
+		
+		#-- Agregar el ordenamiento acá por rendimiento en la consulta.
+		query += " ORDER by sub_cuenta, fecha_comprobante, numero_comprobante"
 		
 		#-- Ejecutar la consulta y devolver los resultados.
 		return self.raw(query, params)
@@ -1271,6 +1307,9 @@ class ComisionOperarioManager(models.Manager):
 			query += " AND id_operario_id = %s"
 			params.append(id_operario)
 		
+		#-- Agregar el ordenamiento acá por rendimiento en la consulta.
+		query += " ORDER by nombre_operario, fecha_comprobante, numero_comprobante"
+		
 		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
 		return self.raw(query, params)
 
@@ -1328,6 +1367,9 @@ class PrecioDiferenteManager(models.Manager):
 		#-- Añadir filtro por comprobantes.
 		query += f" AND compro IN ({placeholders})"
 		params.extend(comprobantes)  # Extender con los elementos de la lista
+		
+		#-- Agregar el ordenamiento acá por rendimiento en la consulta.
+		query += " ORDER by nombre_vendedor, fecha_comprobante, numero_comprobante"
 		
 		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
 		return self.raw(query, params)
@@ -1582,7 +1624,7 @@ class EstadisticasVentasVendedorClienteManager(models.Manager):
 		
 		query = """
 			SELECT 
-				id,
+				ROW_NUMBER() OVER() AS id,
 				id_producto_id,
 				nombre_producto,
 				nombre_producto_familia,
@@ -1673,7 +1715,7 @@ class EstadisticasSegunCondicionManager(models.Manager):
 	def obtener_datos(self, fecha_desde, fecha_hasta, id_marca_desede, id_marca_hasta, agrupar, id_sucursal=None):
 		query = """
 			SELECT
-				id,
+				ROW_NUMBER() OVER() AS id,
 				nombre_producto_familia,
 				nombre_producto_marca,
 				nombre_modelo,
@@ -1717,12 +1759,15 @@ class EstadisticasSegunCondicionManager(models.Manager):
 			case "Marca":
 				query += " GROUP BY id_marca_id"
 		
+		#-- Agregar el ordenamiento acá por rendimiento en la consulta.
+		query += " ORDER by id_familia_id, id_marca_id, id_modelo_id, id_producto_id"
+		
 		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
 		return self.raw(query, params)
 
 
 class VLEstadisticasSegunCondicion(models.Model):
-	id = models.AutoField(primary_key=True)
+	id = models.IntegerField(primary_key=True)
 	id_familia_id = models.IntegerField()
 	nombre_producto_familia = models.CharField(max_length=50)
 	id_marca_id = models.IntegerField()
@@ -1756,6 +1801,7 @@ class EstadisticasVentasMarcaManager(models.Manager):
 		
 		query = """
 			SELECT
+				ROW_NUMBER() OVER() AS id,
 				*
 			FROM
 				VLEstadisticasVentasMarca
@@ -1772,12 +1818,15 @@ class EstadisticasVentasMarcaManager(models.Manager):
 			query += " AND id_sucursal_id = %s"
 			params.append(id_sucursal)
 		
+		#-- Agregar el ordenamiento acá por rendimiento en la consulta.
+		query += " ORDER by id_marca_id, id_familia_id, id_modelo_id, id_producto_id"
+		
 		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
 		return self.raw(query, params)
 
 
 class VLEstadisticasVentasMarca(models.Model):
-	id = models.AutoField(primary_key=True)
+	id = models.IntegerField(primary_key=True)
 	comprobante = models.CharField(max_length=19)
 	fecha_comprobante = models.DateField()
 	id_cliente_id = models.IntegerField()
@@ -1815,6 +1864,7 @@ class EstadisticasVentasMarcaVendedorManager(models.Manager):
 		
 		query = """
 			SELECT
+				ROW_NUMBER() OVER() AS id,
 				*
 			FROM
 				VLEstadisticasVentasMarcaVendedor
@@ -1832,12 +1882,15 @@ class EstadisticasVentasMarcaVendedorManager(models.Manager):
 			query += " AND id_sucursal_id = %s"
 			params.append(id_sucursal)
 		
+		#-- Agregar el ordenamiento acá por rendimiento en la consulta.
+		query += " ORDER by id_marca_id, id_familia_id, id_modelo_id, id_producto_id"
+		
 		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
 		return self.raw(query, params)
 
 
 class VLEstadisticasVentasMarcaVendedor(models.Model):
-	id = models.AutoField(primary_key=True)
+	id = models.IntegerField(primary_key=True)
 	comprobante = models.CharField(max_length=19)
 	fecha_comprobante = models.DateField()
 	id_cliente_id = models.IntegerField()
@@ -2011,9 +2064,10 @@ class VLVentaSinEstadisticaManager(models.Manager):
 		#-- La consulta SQL.
 		query = """
 			SELECT
+				ROW_NUMBER() OVER() AS id,
 				*
 			FROM
-				vlVentaSinEstadistica
+				VLVentaSinEstadistica
 			WHERE
 				fecha_comprobante BETWEEN %s AND %s
 		"""
@@ -2025,6 +2079,9 @@ class VLVentaSinEstadisticaManager(models.Manager):
 		if id_sucursal:
 			query += " AND id_sucursal_id = %s"
 			params.append(id_sucursal)
+		
+		#-- Agregar el ordenamiento acá por rendimiento en la consulta.
+		query += " ORDER by nombre_cliente, fecha_comprobante, comprobante"
 		
 		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
 		return self.raw(query, params)
@@ -2062,6 +2119,7 @@ class VLTablaDinamicaVentasManager(models.Manager):
 		#-- La consulta SQL.
 		query = """
 			SELECT
+				ROW_NUMBER() OVER() AS id,
 				*
 			FROM
 				VLTablaDinamicaVentas
@@ -2077,12 +2135,15 @@ class VLTablaDinamicaVentasManager(models.Manager):
 			query += " AND libro_iva = %s"
 			params.append(comprobantes_impositivos)
 		
+		#-- Agregar el ordenamiento acá por rendimiento en la consulta.
+		query += " ORDER by fecha_comprobante, comprobante"
+		
 		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
 		return self.raw(query, params)
 
 
 class VLTablaDinamicaVentas(models.Model):
-	id = models.AutoField(primary_key=True)
+	id = models.IntegerField(primary_key=True)
 	nombre_sucursal = models.CharField(max_length=50)
 	nombre_comprobante_venta = models.CharField(max_length=50)
 	fecha_comprobante = models.DateField()
@@ -2126,6 +2187,7 @@ class VLTablaDinamicaDetalleVentasManager(models.Manager):
 		#-- La consulta SQL.
 		query = """
 			SELECT
+				ROW_NUMBER() OVER() AS id,
 				*
 			FROM
 				VLTablaDinamicaDetalleVentas
@@ -2141,12 +2203,15 @@ class VLTablaDinamicaDetalleVentasManager(models.Manager):
 			query += " AND libro_iva = %s"
 			params.append(comprobantes_impositivos)
 		
+		#-- Agregar el ordenamiento acá por rendimiento en la consulta.
+		query += " ORDER by fecha_comprobante, comprobante"
+		
 		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
 		return self.raw(query, params)
 
 
 class VLTablaDinamicaDetalleVentas(models.Model):
-	id = models.AutoField(primary_key=True)
+	id = models.IntegerField(primary_key=True)
 	id_factura_id = models.IntegerField()
 	nombre_sucursal = models.CharField(max_length=50)
 	nombre_comprobante_venta = models.CharField(max_length=50)
@@ -2203,6 +2268,7 @@ class VLTablaDinamicaEstadisticaManager(models.Manager):
 		#-- La consulta SQL.
 		query = """
 			SELECT
+				ROW_NUMBER() OVER() AS id,
 				*
 			FROM
 				VLTablaDinamicaEstadistica
@@ -2218,12 +2284,15 @@ class VLTablaDinamicaEstadisticaManager(models.Manager):
 			query += " AND libro_iva = %s"
 			params.append(comprobantes_impositivos)
 		
+		#-- Agregar el ordenamiento acá por rendimiento en la consulta.
+		query += " ORDER by fecha_comprobante, comprobante"
+		
 		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
 		return self.raw(query, params)
 
 
 class VLTablaDinamicaEstadistica(models.Model):
-	id = models.AutoField(primary_key=True)
+	id = models.IntegerField(primary_key=True)
 	id_factura_id = models.IntegerField()
 	nombre_sucursal = models.CharField(max_length=50)
 	nombre_comprobante_venta = models.CharField(max_length=50)
@@ -2278,6 +2347,7 @@ class VLListaManager(models.Manager):
 		#-- La consulta SQL.
 		query = """
 			SELECT
+				ROW_NUMBER() OVER() AS id,
 				*
 			FROM
 				VLLista
@@ -2320,6 +2390,9 @@ class VLListaManager(models.Manager):
 		if conditions:
 			query += " WHERE "
 			query += " AND ".join(conditions)
+		
+		#-- Agregar el ordenamiento acá por rendimiento en la consulta.
+		query += " ORDER BY id_familia_id, id_marca_id"
 		
 		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
 		return self.raw(query, params)
@@ -2371,6 +2444,7 @@ class VLListaRevendedorManager(models.Manager):
 		#-- La consulta SQL.
 		query = """
 			SELECT
+				ROW_NUMBER() OVER() AS id,
 				*
 			FROM
 				VLListaRevendedor
@@ -2414,6 +2488,9 @@ class VLListaRevendedorManager(models.Manager):
 			query += " WHERE "
 			query += " AND ".join(conditions)
 		
+		#-- Agregar el ordenamiento acá por rendimiento en la consulta.
+		query += " ORDER BY id_familia_id, id_producto"
+		
 		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
 		return self.raw(query, params)
 
@@ -2449,6 +2526,7 @@ class VLStockSucursalManager(models.Manager):
 		#-- La consulta SQL.
 		query = """
 			SELECT
+				ROW_NUMBER() OVER() AS id,
 				*
 			FROM
 				VLStockSucursal
@@ -2493,6 +2571,9 @@ class VLStockSucursalManager(models.Manager):
 		if conditions:
 			query += " AND "
 			query += " AND ".join(conditions)
+		
+		#-- Agregar el ordenamiento acá por rendimiento en la consulta.
+		query += " ORDER BY id_familia_id, id_modelo_id, id_marca_id"
 		
 		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
 		return self.raw(query, params)
@@ -2830,9 +2911,12 @@ class VLStockUnicoManager(models.Manager):
 		#-- La consulta SQL.
 		query = """
 			SELECT
+				ROW_NUMBER() OVER() AS id,
 				*
 			FROM
 				VLStockUnico
+			ORDER by
+				id_familia_id, id_modelo_id, id_marca_id, id_producto_id
 		"""
 		
 		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
@@ -2840,6 +2924,7 @@ class VLStockUnicoManager(models.Manager):
 
 
 class VLStockUnico(models.Model):
+	id = models.IntegerField(primary_key=True)
 	id_familia_id = models.IntegerField()
 	nombre_producto_familia = models.CharField(max_length=50)
 	id_modelo_id = models.IntegerField()
@@ -3013,6 +3098,7 @@ class VLMovimientoInternoStockManager(models.Manager):
 		#-- La consulta SQL.
 		query = """
 			SELECT
+				ROW_NUMBER() OVER() AS id,
 				*
 			FROM
 				VLMovimientoInternoStock
@@ -3028,12 +3114,15 @@ class VLMovimientoInternoStockManager(models.Manager):
 			query += " AND id_deposito_id = %s"
 			params.append(id_deposito)
 		
+		#-- Agregar el ordenamiento acá por rendimiento en la consulta.
+		query += " ORDER BY fecha_comprobante, numero_comprobante"
+		
 		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
 		return self.raw(query, params)
 
 
 class VLMovimientoInternoStock(models.Model):
-	id = models.AutoField(primary_key=True)
+	id = models.IntegerField(primary_key=True)
 	fecha_comprobante = models.DateField()
 	numero_comprobante = models.IntegerField()
 	observa_comprobante = models.CharField(max_length=100)
@@ -3064,6 +3153,7 @@ class VLStockClienteManager(models.Manager):
 		#-- La consulta SQL.
 		query = """
 			SELECT
+				ROW_NUMBER() OVER() AS id,
 				*
 			FROM
 				VLStockCliente
@@ -3084,12 +3174,15 @@ class VLStockClienteManager(models.Manager):
 		if condicion:
 			query += " WHERE " + " AND ".join(condicion)
 		
+		#-- Agregar el ordenamiento acá por rendimiento en la consulta.
+		query += " ORDER BY id_cliente_id, id_stock_cliente"
+		
 		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
 		return self.raw(query, params)
 
 
 class VLStockCliente(models.Model):
-	id = models.AutoField(primary_key=True)
+	id = models.IntegerField(primary_key=True)
 	id_cliente_id = models.IntegerField()
 	nombre_cliente = models.CharField(max_length=50)
 	id_producto_id = models.IntegerField()
@@ -3121,6 +3214,7 @@ class VLStockDepositoManager(models.Manager):
 		#-- La consulta SQL.
 		query = """
 			SELECT
+				ROW_NUMBER() OVER() AS id,
 				*
 			FROM
 				VLStockDeposito
@@ -3137,12 +3231,15 @@ class VLStockDepositoManager(models.Manager):
 		if condicion:
 			query += " WHERE " + " AND ".join(condicion)
 		
+		#-- Agregar el ordenamiento acá por rendimiento en la consulta.
+		query += " ORDER BY id_familia_id, id_modelo_id, id_marca_id, medida"
+		
 		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
 		return self.raw(query, params)
 
 
 class VLStockDeposito(models.Model):
-	id = models.AutoField(primary_key=True)
+	id = models.IntegerField(primary_key=True)
 	id_familia_id = models.IntegerField()
 	nombre_producto_familia = models.CharField(max_length=50)
 	id_modelo_id = models.IntegerField()

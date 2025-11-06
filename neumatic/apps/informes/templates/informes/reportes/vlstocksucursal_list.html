@@ -42,7 +42,7 @@
 		</thead>
 		<tbody>
 			
-			{% for familia_id, familia_data in objetos.items %}
+			{% for familia_data in objetos.values %}
 				<!-- Fila con los datos de la Familia -->
 				<tr>
 					<td colspan="8" style="padding-top: 5px;">
@@ -50,7 +50,7 @@
 					</td>
 				</tr>
 				
-				{% for modelo_id, modelo_data in familia_data.modelos.items %}
+				{% for modelo_data in familia_data.modelos.values %}
 					<!-- Fila con los datos del Modelo -->
 					<tr>
 						<td></td>

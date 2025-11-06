@@ -46,9 +46,6 @@ class ConfigViews:
 	#-- Vista del home del proyecto.
 	home_view_name = "home"
 	
-	#-- Nombre de la url.
-	success_url = reverse_lazy(list_view_name)
-	
 	#-- Archivo JavaScript específico.
 	js_file = None
 	
@@ -128,7 +125,6 @@ class VLIVAVentasSitribInformeView(InformeFormView):
 	config = ConfigViews  #-- Ahora la configuración estará disponible en self.config.
 	form_class = ConfigViews.form_class
 	template_name = ConfigViews.template_list
-	success_url = ConfigViews.success_url
 	
 	extra_context = {
 		"master_title": f'Informes - {ConfigViews.model._meta.verbose_name_plural}',
@@ -343,13 +339,14 @@ def generar_pdf(contexto_reporte):
 	total_percep_ib = contexto_reporte.get('total_percep_ib')
 	total_total = contexto_reporte.get('total_total')
 	
-	table_data.append(["", "Totales:", 
-						formato_argentino(total_gravado),
-						formato_argentino(total_exento),
-						formato_argentino(total_iva),
-						formato_argentino(total_percep_ib),
-						formato_argentino(total_total),
-					])
+	table_data.append([
+		"", "Totales:",
+		formato_argentino(total_gravado),
+		formato_argentino(total_exento),
+		formato_argentino(total_iva),
+		formato_argentino(total_percep_ib),
+		formato_argentino(total_total),
+	])
 
 	#-- Aplicar estilos a la fila de total (fila actual).
 	table_style_config.extend([

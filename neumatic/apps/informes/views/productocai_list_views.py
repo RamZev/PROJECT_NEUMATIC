@@ -87,7 +87,7 @@ class DataViewList:
 		"cai": {
 			"label": "CAI",
 			"col_width_table": 2,
-			"col_width_pdf": 100,
+			"col_width_pdf": 120,
 			"pdf_paragraph": False,
 			"date_format": None,
 			"table": True,

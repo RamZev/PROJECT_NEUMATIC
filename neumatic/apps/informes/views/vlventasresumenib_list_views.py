@@ -48,9 +48,6 @@ class ConfigViews:
 	#-- Vista del home del proyecto.
 	home_view_name = "home"
 	
-	#-- Nombre de la url.
-	success_url = reverse_lazy(list_view_name)
-	
 	#-- Archivo JavaScript específico.
 	js_file = None
 	
@@ -130,7 +127,6 @@ class VLVentasResumenIBInformeView(InformeFormView):
 	config = ConfigViews  #-- Ahora la configuración estará disponible en self.config.
 	form_class = ConfigViews.form_class
 	template_name = ConfigViews.template_list
-	success_url = ConfigViews.success_url
 	
 	extra_context = {
 		"master_title": f'Informes - {ConfigViews.model._meta.verbose_name_plural}',
@@ -472,13 +468,14 @@ def generar_pdf(contexto_reporte):
 	tg_iva = contexto_reporte.get("tg_iva", 0)
 	tg_total = contexto_reporte.get("tg_total", 0)
 	
-	total_row = ["Totales:", 
-			  formato_es_ar(tg_pmenor),
-			  formato_es_ar(tg_reparacion),
-			  formato_es_ar(tg_pmayor),
-			  formato_es_ar(tg_gravado),
-			  formato_es_ar(tg_iva),
-			  formato_es_ar(tg_total)
+	total_row = [
+		"Totales:",
+		formato_es_ar(tg_pmenor),
+		formato_es_ar(tg_reparacion),
+		formato_es_ar(tg_pmayor),
+		formato_es_ar(tg_gravado),
+		formato_es_ar(tg_iva),
+		formato_es_ar(tg_total)
 	]
 	table_data.append(total_row)
 	
