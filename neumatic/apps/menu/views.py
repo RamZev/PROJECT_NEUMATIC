@@ -119,17 +119,76 @@ class MenuItemCreateView(LoginRequiredMixin, CreateView):
     
     def form_valid(self, form):
         with transaction.atomic():
-            # Obtener el orden deseado
+            heading = form.cleaned_data['heading']
+            parent = form.cleaned_data.get('parent')
             desired_order = form.cleaned_data.get('order', 0)
             
-            # Reordenar los items existentes
+            # COMPLEMENTO NUEVO: Calcular orden automático si está vacío
+            if not desired_order and desired_order != 0:
+                last_item = MenuItem.objects.filter(
+                    heading=heading,
+                    parent=parent
+                ).order_by('-order').first()
+                
+                desired_order = last_item.order + 1 if last_item else 0
+                form.instance.order = desired_order
+            
+            # LÓGICA ORIGINAL: Reordenar items existentes
             MenuItem.objects.filter(
-                heading=form.cleaned_data['heading'],
-                parent=form.cleaned_data.get('parent')
+                heading=heading,
+                parent=parent
             ).filter(order__gte=desired_order).update(order=F('order') + 1)
             
-            # Guardar el nuevo item
             return super().form_valid(form)
+
+# class MenuItemUpdateView(LoginRequiredMixin, UpdateView):
+#     model = MenuItem
+#     form_class = MenuItemForm
+#     template_name = 'menu/menuitem_form.html'
+#     success_url = reverse_lazy('menu:item_list')
+    
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         context['title'] = 'Editar Item de Menú'
+#         return context
+    
+#     def form_valid(self, form):
+#         with transaction.atomic():
+#             old_order = self.object.order
+#             new_order = form.cleaned_data.get('order', 0)
+#             old_heading = self.object.heading
+#             old_parent = self.object.parent
+#             new_heading = form.cleaned_data['heading']
+#             new_parent = form.cleaned_data.get('parent')
+            
+#             # Si cambió el heading o parent, tratamos como nuevo item
+#             if old_heading != new_heading or old_parent != new_parent:
+#                 # Remover del grupo antiguo
+#                 MenuItem.objects.filter(
+#                     heading=old_heading,
+#                     parent=old_parent
+#                 ).filter(order__gt=old_order).update(order=F('order') - 1)
+                
+#                 # Insertar en el nuevo grupo
+#                 MenuItem.objects.filter(
+#                     heading=new_heading,
+#                     parent=new_parent
+#                 ).filter(order__gte=new_order).update(order=F('order') + 1)
+#             else:
+#                 # Mismo grupo, solo reordenar
+#                 if new_order > old_order:
+#                     MenuItem.objects.filter(
+#                         heading=new_heading,
+#                         parent=new_parent
+#                     ).filter(order__gt=old_order, order__lte=new_order).update(order=F('order') - 1)
+#                 elif new_order < old_order:
+#                     MenuItem.objects.filter(
+#                         heading=new_heading,
+#                         parent=new_parent
+#                     ).filter(order__lt=old_order, order__gte=new_order).update(order=F('order') + 1)
+            
+#             return super().form_valid(form)
+
 
 class MenuItemUpdateView(LoginRequiredMixin, UpdateView):
     model = MenuItem
@@ -144,28 +203,75 @@ class MenuItemUpdateView(LoginRequiredMixin, UpdateView):
     
     def form_valid(self, form):
         with transaction.atomic():
+            # Obtener valores antiguos
             old_order = self.object.order
-            new_order = form.cleaned_data.get('order', 0)
             old_heading = self.object.heading
             old_parent = self.object.parent
+            
+            # Obtener valores nuevos del formulario
+            new_order_raw = form.cleaned_data.get('order')
             new_heading = form.cleaned_data['heading']
             new_parent = form.cleaned_data.get('parent')
             
-            # Si cambió el heading o parent, tratamos como nuevo item
-            if old_heading != new_heading or old_parent != new_parent:
-                # Remover del grupo antiguo
-                MenuItem.objects.filter(
-                    heading=old_heading,
-                    parent=old_parent
-                ).filter(order__gt=old_order).update(order=F('order') - 1)
+            # DEBUG: Imprimir valores para diagnóstico
+            print(f"DEBUG: old_order={old_order}, type={type(old_order)}")
+            print(f"DEBUG: new_order_raw={new_order_raw}, type={type(new_order_raw)}")
+            
+            # CORRECCIÓN ROBUSTA: Calcular new_order garantizando que sea entero
+            if new_order_raw is None or str(new_order_raw).strip() == '':
+                # Orden en blanco - calcular último orden del grupo destino
+                last_item = MenuItem.objects.filter(
+                    heading=new_heading,
+                    parent=new_parent
+                ).order_by('-order').first()
+                new_order = last_item.order + 1 if last_item else 0
+                print(f"DEBUG: Orden en blanco, calculado: {new_order}")
+            else:
+                # Orden explícito - convertir a entero seguro
+                try:
+                    new_order = int(float(new_order_raw))  # Maneja strings y floats
+                except (TypeError, ValueError):
+                    # Fallback: calcular último orden
+                    last_item = MenuItem.objects.filter(
+                        heading=new_heading,
+                        parent=new_parent
+                    ).order_by('-order').first()
+                    new_order = last_item.order + 1 if last_item else 0
+                    print(f"DEBUG: Error conversión, usando: {new_order}")
+            
+            # CORRECCIÓN CRÍTICA: Asegurar que old_order sea entero
+            if old_order is None:
+                old_order = 0
+                print(f"DEBUG: old_order era None, convertido a: {old_order}")
+            else:
+                old_order = int(old_order)
+            
+            # Asignar el orden calculado
+            form.instance.order = new_order
+            
+            moved_to_new_group = (old_heading != new_heading or old_parent != new_parent)
+            
+            print(f"DEBUG: old_order={old_order}, new_order={new_order}, moved={moved_to_new_group}")
+            
+            # Lógica de reordenamiento
+            if moved_to_new_group:
+                print("DEBUG: Movimiento entre grupos")
+                # 1. Remover del grupo antiguo (si old_order no es None)
+                if old_order is not None:
+                    MenuItem.objects.filter(
+                        heading=old_heading,
+                        parent=old_parent
+                    ).filter(order__gt=old_order).update(order=F('order') - 1)
                 
-                # Insertar en el nuevo grupo
+                # 2. Insertar en el nuevo grupo
                 MenuItem.objects.filter(
                     heading=new_heading,
                     parent=new_parent
                 ).filter(order__gte=new_order).update(order=F('order') + 1)
+                
             else:
-                # Mismo grupo, solo reordenar
+                print("DEBUG: Mismo grupo, reordenamiento local")
+                # Mismo grupo - solo reordenar si el orden cambió
                 if new_order > old_order:
                     MenuItem.objects.filter(
                         heading=new_heading,
@@ -176,9 +282,10 @@ class MenuItemUpdateView(LoginRequiredMixin, UpdateView):
                         heading=new_heading,
                         parent=new_parent
                     ).filter(order__lt=old_order, order__gte=new_order).update(order=F('order') + 1)
+                else:
+                    print("DEBUG: Orden no cambió, no se requiere reordenamiento")
             
             return super().form_valid(form)
-
 
 class MenuItemDeleteView(LoginRequiredMixin, DeleteView):
     model = MenuItem
@@ -220,6 +327,7 @@ class MenuItemDeleteView(LoginRequiredMixin, DeleteView):
             
             return response
         
+
 class MenuTreeView(LoginRequiredMixin, TemplateView):
     template_name = 'menu/menu_tree.html'
     

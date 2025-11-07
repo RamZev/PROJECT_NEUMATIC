@@ -222,22 +222,33 @@
         });
 
         ///
-        // EVENT LISTENERS DIRECTOS
-        headingField.addEventListener('change', function() {
-            if (this.value && this.value !== '') {
+        // Función para manejar la exclusividad entre heading y parent
+        function handleFieldExclusivity() {
+            const headingValue = headingField.value;
+            const parentValue = parentField.value;
+            
+            // Si se selecciona un heading (valor no vacío), limpiar parent
+            if (headingValue && headingValue !== '') {
                 parentField.value = '';
-                console.log('✅ Heading seleccionado, parent limpiado');
+                console.log('Heading seleccionado, parent limpiado');
             }
+            // Si se selecciona un parent (valor no vacío), limpiar heading  
+            else if (parentValue && parentValue !== '') {
+                headingField.value = '';
+                console.log('Parent seleccionado, heading limpiado');
+            }
+        }
+
+        // EVENT LISTENERS ÚNICOS
+        headingField.addEventListener('change', function() {
+            handleFieldExclusivity();
             updateChildrenInfo();
         });
 
         parentField.addEventListener('change', function() {
-            if (this.value && this.value !== '') {
-                headingField.value = '';
-                console.log('✅ Parent seleccionado, heading limpiado');
-            }
+            handleFieldExclusivity();
             updateChildrenInfo();
-        });        
+        });
         ///
         
         console.log('✅ Menu Form Manager inicializado');

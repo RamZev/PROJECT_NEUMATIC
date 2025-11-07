@@ -25,7 +25,7 @@ class MenuItem(models.Model):
     query_params = models.CharField(max_length=200, blank=True, verbose_name="Parámetros de query (ej: ?proceso=actualizar)")
     icon = models.CharField(max_length=50, blank=True, verbose_name="Clase del icono (ej: fas fa-book-open)")
     is_collapse = models.BooleanField(default=False, verbose_name="¿Es colapsable? (tiene subitems)")
-    order = models.IntegerField(default=0, verbose_name="Orden de aparición")
+    order = models.IntegerField(default=0, verbose_name="Orden de aparición", blank=True)
     groups = models.ManyToManyField(Group, blank=True, verbose_name="Grupos permitidos")
     
     class Meta:
