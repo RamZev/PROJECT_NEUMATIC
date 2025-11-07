@@ -1,6 +1,5 @@
 # neumatic\apps\informes\views\vlcompraingresada_list_views.py
 
-from django.urls import reverse_lazy
 from django.shortcuts import render
 from django.http import HttpResponse
 from datetime import datetime
@@ -46,7 +45,7 @@ class ConfigViews:
 	home_view_name = "home"
 	
 	#-- Archivo JavaScript específico.
-	js_file = "js/filtros_ficha_seguimiento_stock.js"
+	js_file = None
 	
 	# #-- URL de la vista que genera el .zip con los informes.
 	# url_zip = f"{model_string}_informe_generado"

@@ -1,6 +1,5 @@
 # neumatic\apps\informes\views\vlremitosclientes_list_views.py
 
-from django.urls import reverse_lazy
 from django.shortcuts import render
 from django.http import HttpResponse
 from datetime import datetime
@@ -297,7 +296,7 @@ def generar_pdf(contexto_reporte):
 	
 	#-- Agregar los datos a la tabla.
 	
-	for compro_num, data in contexto_reporte.get("objetos", {}).items():
+	for data in contexto_reporte.get("objetos", {}).values():
 		#-- Agregar filas del detalle.
 		for producto in data['productos']:
 			table_data.append([

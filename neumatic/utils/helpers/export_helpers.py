@@ -14,7 +14,7 @@ from datetime import datetime
 from decimal import Decimal
 from functools import partial
 from apps.maestros.templatetags.custom_tags import formato_es_ar
-from utils.utils import format_date
+from utils.utils import format_date, formato_argentino, formato_argentino_entero
 
 #-- Cargar las variables de entorno del archivo .env
 load_dotenv()
@@ -801,3 +801,61 @@ class PDFGenerator:
 		self.buffer.close()
 		
 		return pdf
+
+
+def add_row_table(table_data, objetos, fields, table_info, generator):
+	"""
+	Agrega filas a la lista table_data basándose en los objetos y campos proporcionados, formateando los valores según table_info para la exportación a PDF.
+	(Modelos de los CRUDs).
+	
+	Parámetros:
+		table_data (list): La lista a la cual se agregarán las nuevas filas.
+		objetos (iterable): Los objetos de datos (usualmente diccionarios) de donde extraer los valores de las filas.
+		fields (list): La lista de nombres de campos a extraer de cada objeto.
+		table_info (dict): Configuración para cada campo, incluyendo opciones de formato.
+		generator: Instancia del generador PDF que proporciona estilos para los Párrafos.
+	"""
+	for obj in objetos:
+		row = []
+		
+		for field in fields:
+			value = obj[field]
+			field_config = table_info.get(field)
+			
+			if field_config.get('pdf_paragraph'):
+				row.append(Paragraph(str(value) if value else "", generator.styles['CellStyle']))
+			else:
+				if field_config.get('date_format'):
+					row.append(format_date(value) if value else "")
+					
+				elif isinstance(obj[field], bool):
+					if 'estatus' in field:
+						row.append("Activo" if value else "Inactivo")
+					else:
+						row.append("Si" if value else "No")
+						
+				elif field_config.get('type') == "int": 
+					row.append(formato_argentino_entero(value))
+					
+				elif field_config.get('type') in ("float", "decimal"):
+					row.append(formato_argentino(value))
+					
+				else:
+					row.append(value if value else "")
+		
+		table_data.append(row)
+
+
+
+"""
+			#-- Si es booleano.
+			if isinstance(value, bool):
+				if frmto == 'pdf':
+					#-- Para PDF, se formatea según si el campo contiene "estatus".
+					if "estatus" in fields[-1]:
+						return "Activo" if value else "Inactivo"
+					else:
+						return "Sí" if value else "No"
+				else:
+					return value
+"""

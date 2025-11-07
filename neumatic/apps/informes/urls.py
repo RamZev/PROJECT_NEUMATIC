@@ -135,22 +135,30 @@ urlpatterns = [
 	path('vendedor_vista_pdf/', VendedorInformePDFView.as_view(),
 		 name='vendedor_informe_pdf'),
 	
-	#-- Sucursales.
-	path('sucursal_informe/', SucursalInformeListView.as_view(),
+	# #-- Sucursales.
+	path('sucursal_informe/', SucursalInformeView.as_view(), 
 		 name='sucursal_informe_list'),
-	path('sucursal_generado/', SucursalInformesView.as_view(),
-		 name='sucursal_informe_generado'),
-	path('sucursal_vista_pdf/', SucursalInformePDFView.as_view(),
-		 name='sucursal_informe_pdf'),
+	path('sucursal/vista-preliminar/', sucursal_vista_pantalla, 
+		 name="sucursal_vista_pantalla"),
+	path("sucursal/vista-pdf/", sucursal_vista_pdf, 
+		 name="sucursal_vista_pdf"),
+	path("sucursal/vista-excel/", sucursal_vista_excel, 
+		 name="sucursal_vista_excel"),
+	path("sucursal/vista-csv/", sucursal_vista_csv, 
+		 name="sucursal_vista_csv"),
 	
 	#-- Tablas.
-	#-- Actividades.
-	path('actividad_informe/', ActividadInformeListView.as_view(),
+	# #-- Actividades.
+	path('actividad_informe/', ActividadInformeView.as_view(), 
 		 name='actividad_informe_list'),
-	path('actividad_generado/', ActividadInformesView.as_view(),
-		 name='actividad_informe_generado'),
-	path('actividad_vista_pdf/', ActividadInformePDFView.as_view(),
-		 name='actividad_informe_pdf'),
+	path('actividad/vista-preliminar/', actividad_vista_pantalla, 
+		 name="actividad_vista_pantalla"),
+	path("actividad/vista-pdf/", actividad_vista_pdf, 
+		 name="actividad_vista_pdf"),
+	path("actividad/vista-excel/", actividad_vista_excel, 
+		 name="actividad_vista_excel"),
+	path("actividad/vista-csv/", actividad_vista_csv, 
+		 name="actividad_vista_csv"),
 	
 	#-- Producto Depósitos.
 	path('productodeposito_informe/', ProductoDepositoInformeListView.as_view(),
@@ -217,28 +225,40 @@ urlpatterns = [
 		 name='comprobantecompra_informe_pdf'),
 	
 	#-- Moneda.
-	path('moneda_informe/', MonedaInformeListView.as_view(),
+	path('moneda_informe/', MonedaInformeView.as_view(), 
 		 name='moneda_informe_list'),
-	path('moneda_generado/', MonedaInformesView.as_view(),
-		 name='moneda_informe_generado'),
-	path('moneda_vista_pdf/', MonedaInformePDFView.as_view(),
-		 name='moneda_informe_pdf'),
+	path('moneda/vista-preliminar/', moneda_vista_pantalla, 
+		 name="moneda_vista_pantalla"),
+	path("moneda/vista-pdf/", moneda_vista_pdf, 
+		 name="moneda_vista_pdf"),
+	path("moneda/vista-excel/", moneda_vista_excel, 
+		 name="moneda_vista_excel"),
+	path("moneda/vista-csv/", moneda_vista_csv, 
+		 name="moneda_vista_csv"),
 	
 	#-- Provincia.
-	path('provincia_informe/', ProvinciaInformeListView.as_view(),
+	path('provincia_informe/', ProvinciaInformeView.as_view(), 
 		 name='provincia_informe_list'),
-	path('provincia_generado/', ProvinciaInformesView.as_view(),
-		 name='provincia_informe_generado'),
-	path('provincia_vista_pdf/', ProvinciaInformePDFView.as_view(),
-		 name='provincia_informe_pdf'),
+	path('provincia/vista-preliminar/', provincia_vista_pantalla, 
+		 name="provincia_vista_pantalla"),
+	path("provincia/vista-pdf/", provincia_vista_pdf, 
+		 name="provincia_vista_pdf"),
+	path("provincia/vista-excel/", provincia_vista_excel, 
+		 name="provincia_vista_excel"),
+	path("provincia/vista-csv/", provincia_vista_csv, 
+		 name="provincia_vista_csv"),
 	
 	#-- Localidades.
-	path('localidad_informe/', LocalidadInformeListView.as_view(),
+	path('localidad_informe/', LocalidadInformeView.as_view(), 
 		 name='localidad_informe_list'),
-	path('localidad_generado/', LocalidadInformesView.as_view(),
-		 name='localidad_informe_generado'),
-	path('localidad_vista_pdf/', LocalidadInformePDFView.as_view(),
-		 name='localidad_informe_pdf'),
+	path('localidad/vista-preliminar/', localidad_vista_pantalla, 
+		 name="localidad_vista_pantalla"),
+	path("localidad/vista-pdf/", localidad_vista_pdf, 
+		 name="localidad_vista_pdf"),
+	path("localidad/vista-excel/", localidad_vista_excel, 
+		 name="localidad_vista_excel"),
+	path("localidad/vista-csv/", localidad_vista_csv, 
+		 name="localidad_vista_csv"),
 	
 	#-- Tipo Documento Identidad.
 	path('tipo_documento_identidad_informe/', TipoDocumentoIdentidadInformeListView.as_view(),

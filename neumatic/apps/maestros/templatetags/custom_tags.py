@@ -116,3 +116,13 @@ def get_color_estado(nombre_estado):
 		return ProductoEstado.objects.get(nombre_producto_estado=nombre_estado).color
 	except ProductoEstado.DoesNotExist:
 		return '#FFFFFF'  # Color por defecto si no existe
+
+
+@register.filter
+def get_estatus(estatus):
+	return "Activo" if estatus else "Inactivo"
+
+
+@register.filter
+def get_si_no(estatus):
+	return "Si" if estatus else "No"

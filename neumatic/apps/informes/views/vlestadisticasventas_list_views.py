@@ -1,6 +1,5 @@
 # neumatic\apps\informes\views\vlestadisticasventas_list_views.py
 
-from django.urls import reverse_lazy
 from django.shortcuts import render
 from django.http import HttpResponse
 from datetime import datetime
@@ -321,7 +320,7 @@ def generar_pdf(contexto_reporte):
 		#-- Construir fila según agrupamiento.
 		if agrupar == "Producto":
 			row.extend([
-				str(obj['id_producto_id']),
+				obj['id_producto_id'],
 				Paragraph(str(obj['cai']), generator.styles['CellStyle']) if obj['cai'] else "",
 				Paragraph(str(obj['nombre_producto']), generator.styles['CellStyle']),
 				Paragraph(str(obj['nombre_producto_familia']), generator.styles['CellStyle']),
