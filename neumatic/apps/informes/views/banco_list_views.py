@@ -1,96 +1,97 @@
 # neumatic\apps\informes\views\banco_list_views.py
-from django.urls import reverse_lazy
-from django.http import HttpResponse, JsonResponse
-from django.views import View
-from zipfile import ZipFile
-from io import BytesIO
-from reportlab.lib.pagesizes import A4, portrait, landscape
-from django.core.mail import EmailMessage
 
-from utils.helpers.export_helpers import ExportHelper
+from django.shortcuts import render
+from django.http import HttpResponse
+from datetime import datetime
+from django.templatetags.static import static
 
-from ..views.list_views_generics import *
+#-- ReportLab:
+from reportlab.lib import colors
+from reportlab.lib.pagesizes import A4, landscape, portrait
+from reportlab.platypus import Paragraph
+
+from .report_views_generics import *
 from apps.maestros.models.base_models import Banco
 from ..forms.buscador_banco_forms import BuscadorBancoForm
+from utils.utils import deserializar_datos, normalizar, raw_to_dict
+from utils.helpers.export_helpers import ExportHelper, PDFGenerator, add_row_table
 
 
 class ConfigViews:
-	# Modelo
-	model = Banco
 	
-	# Formulario asociado al modelo
-	form_class = BuscadorBancoForm
-	
-	# Aplicación asociada al modelo
-	app_label = "informes"
-	
-	# Nombre del modelo en minúsculas
-	model_string = model.__name__.lower()
-	
-	# Vistas del CRUD del modelo
-	list_view_name = f"{model_string}_list"
-	
-	# Plantilla de la lista del CRUD
-	template_list = f"{app_label}/maestro_informe_list.html"
-	
-	# Contexto de los datos de la lista
-	context_object_name = "objetos"
-	
-	# Vista del home del proyecto
-	home_view_name = "home"
-	
-	# Nombre de la url 
-	success_url = reverse_lazy(list_view_name)
-	
-	# Archivo JavaScript específico.
-	js_file = None
-	
-	# URL de la vista que genera el .zip con los informes.
-	url_zip = f"{model_string}_informe_generado"
-	
-	# URL de la vista que genera el .pdf.
-	url_pdf = f"{model_string}_informe_pdf"
-
-
-class DataViewList:
-	search_fields = []
-	
-	ordering = []
-	
-	paginate_by = 8
-	
+	#-- Título del reporte.
 	report_title = "Reporte de Bancos"
 	
+	#-- Modelo.
+	model = Banco
+	
+	#-- Formulario asociado al modelo.
+	form_class = BuscadorBancoForm
+	
+	#-- Aplicación asociada al modelo.
+	app_label = "informes"
+	
+	#-- Nombre del modelo en minúsculas.
+	model_string = model.__name__.lower()
+	
+	#-- Plantilla base.
+	template_list = f'{app_label}/maestro_informe.html'
+	
+	#-- Vista del home del proyecto.
+	home_view_name = "home"
+	
+	#-- Archivo JavaScript específico.
+	js_file = None
+	
+	#-- URL de la vista que genera la salida a pantalla.
+	url_pantalla = f"{model_string}_vista_pantalla"
+	
+	#-- URL de la vista que genera el .pdf.
+	url_pdf = f"{model_string}_vista_pdf"
+	
+	#-- URL de la vista que genera el Excel.
+	url_excel = f"{model_string}_vista_excel"
+	
+	#-- URL de la vista que genera el CSV.
+	url_csv = f"{model_string}_vista_csv"
+	
+	#-- Plantilla Vista Preliminar Pantalla.
+	reporte_pantalla = f"informes/reportes/{model_string}_list.html"
+	
+	#-- Establecer las columnas del reporte y sus atributos.
 	table_info = {
 		"estatus_banco": {
 			"label": "Estatus",
-			"col_width_table": 1,
 			"col_width_pdf": 40,
 			"pdf_paragraph": False,
 			"date_format": None,
-			"table": True,
 			"pdf": True,
 			"excel": True,
 			"csv": True
 		},
 		"nombre_banco": {
 			"label": "Nombre Banco",
-			"col_width_table": 4,
-			"col_width_pdf": 220,
+			"col_width_pdf": 240,
 			"pdf_paragraph": False,
 			"date_format": None,
-			"table": True,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
+		"cuit_banco": {
+			"label": "C.U.I.T.",
+			"col_width_pdf": 80,
+			"pdf_paragraph": False,
+			"date_format": None,
 			"pdf": True,
 			"excel": True,
 			"csv": True
 		},
 		"codigo_banco": {
 			"label": "Código Banco",
-			"col_width_table": 1,
 			"col_width_pdf": 80,
 			"pdf_paragraph": False,
 			"date_format": None,
-			"table": True,
 			"pdf": True,
 			"excel": True,
 			"csv": True
@@ -98,186 +99,234 @@ class DataViewList:
 	}
 
 
-class BancoInformeListView(InformeListView):
-	model = ConfigViews.model
+class BancoInformeView(InformeFormView):
+	config = ConfigViews  #-- Ahora la configuración estará disponible en self.config.
 	form_class = ConfigViews.form_class
 	template_name = ConfigViews.template_list
-	context_object_name = ConfigViews.context_object_name
-	
-	search_fields = DataViewList.search_fields
-	ordering = DataViewList.ordering
 	
 	extra_context = {
 		"master_title": f'Informes - {ConfigViews.model._meta.verbose_name_plural}',
 		"home_view_name": ConfigViews.home_view_name,
-		"list_view_name": ConfigViews.list_view_name,
-		"table_info": DataViewList.table_info,
 		"buscador_template": f"{ConfigViews.app_label}/buscador_{ConfigViews.model_string}.html",
 		"js_file": ConfigViews.js_file,
-		"url_zip": ConfigViews.url_zip,
+		"url_pantalla": ConfigViews.url_pantalla,
 		"url_pdf": ConfigViews.url_pdf,
 	}
 	
-	def get_queryset(self):
-		queryset = self.model.objects.none()
-		form = self.form_class(self.request.GET)
+	def obtener_queryset(self, cleaned_data):
+		estatus = cleaned_data.get('estatus', 'activos')
 		
-		if form.is_valid():
-			
-			estatus = form.cleaned_data.get('estatus', 'activos')
-			
-			if estatus:
-				match estatus:
-					case "activos":
-						queryset = self.model.objects.filter(estatus_banco=True)
-					case "inactivos":
-						queryset = self.model.objects.filter(estatus_banco=False)
-					case "todos":
-						queryset = self.model.objects.all()
-			
-			queryset = queryset.order_by("nombre_banco")
-			
-		else:
-			#-- Agregar clases css a los campos con errores.
-			form.add_error_classes()
-						
+		if estatus:
+			match estatus:
+				case "activos":
+					queryset = ConfigViews.model.objects.filter(estatus_banco=True)
+				case "inactivos":
+					queryset = ConfigViews.model.objects.filter(estatus_banco=False)
+				case "todos":
+					queryset = ConfigViews.model.objects.all()
+		
+		queryset = queryset.order_by("nombre_banco")
+		
 		return queryset
+	
+	def obtener_contexto_reporte(self, queryset, cleaned_data):
+		"""
+		Aquí se estructura el contexto para el reporte, agrupando los comprobantes,
+		calculando subtotales y totales generales, tal como se requiere para el listado.
+		"""
+		
+		#-- Parámetros del listado.
+		estatus = cleaned_data.get('estatus', 'activos')
+		
+		fecha_hora_reporte = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+		
+		dominio = f"http://{self.request.get_host()}"
+		
+		param_left = {}
+		param_right = {
+			"Estatus": estatus,
+		}
+		
+		# **************************************************
+		
+		#-- Convertir QUERYSET a LISTA DE DICCIONARIOS al inicio (optimización clave).
+		queryset_list = [raw_to_dict(obj) for obj in queryset]
+		
+		# **************************************************
+		
+		#-- Se retorna un contexto que será consumido tanto para la vista en pantalla como para la generación del PDF.
+		return {
+			"objetos": queryset_list,
+			"parametros_i": param_left,
+			"parametros_d": param_right,
+			'fecha_hora_reporte': fecha_hora_reporte,
+			'titulo': ConfigViews.report_title,
+			'logo_url': f"{dominio}{static('img/logo_01.png')}",
+			'css_url': f"{dominio}{static('css/reportes.css')}",
+		}
 	
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
-		form = BuscadorBancoForm(self.request.GET or None)
+		form = kwargs.get("form") or self.get_form()
 		
 		context["form"] = form
-		
-		#-- Si el formulario tiene errores, pasa los errores al contexto.
-		if form.errors:
-			context["data_has_errors"] = True
 		
 		return context
 
 
-class BancoInformesView(View):
-	"""Vista para gestionar informes de clientes, exportaciones y envíos por correo."""
+def banco_vista_pantalla(request):
+	#-- Obtener el token de la querystring.
+	token = request.GET.get("token")
 	
-	def get(self, request, *args, **kwargs):
-		"""Gestión de solicitudes GET."""
-		
-		#-- "email" o "download".
-		action = request.GET.get("action", "download")
-		
-		#-- Formatos seleccionados por el usuario.
-		formatos = request.GET.getlist("formato_envio")
-		
-		#-- Email si aplica envío.
-		email = request.GET.get("email", "")
-		
-		#-- Obtener el queryset filtrado.
-		queryset_filtrado = BancoInformeListView()
-		queryset_filtrado.request = request
-		queryset = queryset_filtrado.get_queryset()
-		
-		#-- Generar y retornar el archivo ZIP.
-		if action == "email":
-			#-- Manejar el envío por correo electrónico.
-			return self.enviar_por_email(queryset, formatos, email)
-		else:
-			#-- Manejar la generación y descarga del archivo ZIP.
-			return self.generar_archivos_zip(queryset, formatos)
+	if not token:
+		return HttpResponse("Token no proporcionado", status=400)
 	
-	def generar_archivos_zip(self, queryset, formatos):
-		"""Generar un archivo ZIP con los formatos seleccionados."""
-		
-		buffer = BytesIO()
-		with ZipFile(buffer, "w") as zip_file:
-			table = DataViewList.table_info.copy()
-			
-			#-- Generar los formatos seleccionados.
-			if "pdf" in formatos:
-				#-- Filtrar los campos que se van a exportar a PDF.
-				table_info = { field: table[field] for field in table if table[field]['pdf'] }
-				
-				#-- Generar el PDF.
-				helper = ExportHelper(queryset, table_info, DataViewList.report_title)
-				
-				pdf_content = helper.export_to_pdf(pagesize=landscape(A4))
-				zip_file.writestr(f"informe_{ConfigViews.model_string}.pdf", pdf_content)
-			
-			if "excel" in formatos:
-				#-- Filtrar los campos que se van a exportar a Excel.
-				table_info = { field: table[field] for field in table if table[field]['excel'] }
-				
-				#-- Generar el Excel.
-				helper = ExportHelper(queryset, table_info, DataViewList.report_title)
-				
-				excel_content = helper.export_to_excel()
-				zip_file.writestr(f"informe_{ConfigViews.model_string}.xlsx", excel_content)
-			
-			if "csv" in formatos:
-				#-- Filtrar los campos que se van a exportar a CSV.
-				table_info = { field: table[field] for field in table if table[field]['csv'] }
-				
-				#-- Generar el CSV.
-				helper = ExportHelper(queryset, table_info, DataViewList.report_title)
-				
-				csv_content = helper.export_to_csv()
-				zip_file.writestr(f"informe_{ConfigViews.model_string}.csv", csv_content)
-		
-		#-- Preparar respuesta para descargar el archivo ZIP.
-		buffer.seek(0)
-		response = HttpResponse(buffer, content_type="application/zip")
-		response["Content-Disposition"] = f'attachment; filename="informe_{ConfigViews.model_string}.zip"'
-		
-		return response
+	#-- Obtener el contexto(datos) previamente guardados en la sesión.
+	contexto_reporte = deserializar_datos(request.session.pop(token, None))
 	
-	def enviar_por_email(self, queryset, formatos, email):
-		"""Enviar los informes seleccionados por correo electrónico."""
-		helper = ExportHelper(queryset, DataViewList.table_info, DataViewList.report_title)
-		attachments = []
-		
-		#-- Generar los formatos seleccionados y añadirlos como adjuntos.
-		if "pdf" in formatos:
-			attachments.append((f"informe_{ConfigViews.model_string}.pdf", helper.generar_pdf(), 
-					   "application/pdf"))
-		
-		if "excel" in formatos:
-			attachments.append((f"informe_{ConfigViews.model_string}.xlsx", helper.generar_excel(), 
-					   "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
-		
-		if "csv" in formatos:
-			attachments.append((f"informe_{ConfigViews.model_string}.csv", helper.generar_csv(), 
-					   "text/csv"))
-		
-		#-- Crear y enviar el correo.
-		subject = DataViewList.report_title
-		body = "Adjunto encontrarás el informe solicitado."
-		email_message = EmailMessage(subject, body, to=[email])
-		for filename, content, mime_type in attachments:
-			email_message.attach(filename, content, mime_type)
-		
-		email_message.send()
-		
-		#-- Responder con un mensaje de éxito.
-		return JsonResponse({"success": True, "message": "Informe enviado correctamente al correo."})
+	if not contexto_reporte:
+		return HttpResponse("Contexto no encontrado o expirado", status=400)
+	
+	#-- Generar el listado a pantalla.
+	return render(request, ConfigViews.reporte_pantalla, contexto_reporte)
 
 
-class BancoInformePDFView(View):
+def banco_vista_pdf(request):
+	#-- Obtener el token de la querystring.
+	token = request.GET.get("token")
 	
-	def get(self, request, *args, **kwargs):
-		#-- Obtener el queryset (el listado de clientes) ya filtrado.
-		queryset_filtrado = BancoInformeListView()
-		queryset_filtrado.request = request
-		queryset = queryset_filtrado.get_queryset()
+	if not token:
+		return HttpResponse("Token no proporcionado", status=400)
+	
+	#-- Obtener el contexto(datos) previamente guardados en la sesión.
+	# contexto_reporte = deserializar_datos(request.session.pop(token, None))
+	contexto_reporte = deserializar_datos(request.session.get(token, None))
+	
+	if not contexto_reporte:
+		return HttpResponse("Contexto no encontrado o expirado", status=400)
+	
+	#-- Generar el PDF usando ReportLab
+	pdf_file = generar_pdf(contexto_reporte)
+	
+	#-- Preparar la respuesta HTTP.
+	response = HttpResponse(pdf_file, content_type="application/pdf")
+	response["Content-Disposition"] = f'inline; filename="{normalizar(ConfigViews.report_title)}.pdf"'
+	
+	return response
+
+
+class CustomPDFGenerator(PDFGenerator):
+	#-- Método que se puede sobreescribir/extender según requerimientos.
+	def _get_header_bottom_left(self, context):
+		"""Personalización del Header-bottom-left"""
 		
-		#-- Filtrar los campos que se van a exportar a PDF.
-		table = DataViewList.table_info.copy()
-		table_info = { field: table[field] for field in table if table[field]['pdf'] }
+		params = context.get("parametros_i", {})
+		return "<br/>".join([f"<b>{k}:</b> {v}" for k, v in params.items()])
+	
+	#-- Método que se puede sobreescribir/extender según requerimientos.
+	def _get_header_bottom_right(self, context):
+		"""Añadir información adicional específica para este reporte"""
 		
-		#-- Generar el PDF.
-		helper = ExportHelper(queryset, table_info, DataViewList.report_title)
-		buffer = helper.export_to_pdf(pagesize=landscape(A4))
-		
-		#-- Preparar la respuesta HTTP.
-		response = HttpResponse(buffer, content_type='application/pdf')
-		response['Content-Disposition'] = f'inline; filename="{ConfigViews.model_string}.pdf"'
-		
-		return response
+		params = context.get("parametros_d", {})
+		return "<br/>".join([f"<b>{k}:</b> {v}" for k, v in params.items()])
+
+
+def generar_pdf(contexto_reporte):
+	#-- Crear instancia del generador personalizado.
+	generator = CustomPDFGenerator(contexto_reporte, pagesize=portrait(A4), body_font_size=8)
+	
+	#-- Extraer los campos de las columnas de la tabla (headers).
+	table_info = ConfigViews.table_info
+	fields = [ field for field in table_info if table_info[field]['pdf']]
+	
+	#-- Extraer Títulos de las columnas de la tabla (headers).
+	headers_titles = [value['label'] for value in table_info.values() if value['pdf']]
+	
+	#-- Extraer Ancho de las columnas de la tabla.
+	col_widths = [value['col_width_pdf'] for value in table_info.values() if value['pdf']]
+	
+	table_data = [headers_titles]
+	
+	#-- Estilos específicos adicionales iniciales de la tabla.
+	table_style_config = [
+		('ALIGN', (-1,0), (-1,-1), 'RIGHT'),
+	]
+	
+	#-- Agregar los datos a la tabla.
+	objetos = contexto_reporte.get("objetos", [])
+	add_row_table(table_data, objetos, fields, table_info, generator)
+	
+	return generator.generate(table_data, col_widths, table_style_config)		
+
+
+def banco_vista_excel(request):
+	token = request.GET.get("token")
+	if not token:
+		return HttpResponse("Token no proporcionado", status=400)
+	
+	# ---------------------------------------------
+	data = cache.get(token)
+	if not data or "cleaned_data" not in data:
+		return HttpResponse("Datos no encontrados o expirados", status=400)
+	
+	cleaned_data = data["cleaned_data"]
+	# ---------------------------------------------
+	
+	#-- Instanciar la vista y obtener el queryset.
+	view_instance = BancoInformeView()
+	view_instance.request = request
+	queryset = view_instance.obtener_queryset(cleaned_data)
+	
+	#-- Filtrar los headers de las columnas.
+	headers_titles = {field: ConfigViews.table_info[field] for field in ConfigViews.table_info if ConfigViews.table_info[field]['excel']}
+	
+	helper = ExportHelper(
+		queryset=queryset,
+		table_info=headers_titles,
+		report_title=ConfigViews.report_title
+	)
+	excel_data = helper.export_to_excel()
+	
+	response = HttpResponse(
+		excel_data,
+		content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+	)
+	#-- Inline permite visualizarlo en el navegador si el navegador lo soporta.
+	response["Content-Disposition"] = f'inline; filename="{ConfigViews.report_title}.xlsx"'
+	
+	return response
+
+
+def banco_vista_csv(request):
+	token = request.GET.get("token")
+	if not token:
+		return HttpResponse("Token no proporcionado", status=400)
+	
+	#-- Recuperar los parámetros de filtrado desde la cache.
+	data = cache.get(token)
+	if not data or "cleaned_data" not in data:
+		return HttpResponse("Datos no encontrados o expirados", status=400)
+	
+	cleaned_data = data["cleaned_data"]
+	
+	#-- Instanciar la vista para reejecutar la consulta y obtener el queryset.
+	view_instance = BancoInformeView()
+	view_instance.request = request
+	queryset = view_instance.obtener_queryset(cleaned_data)
+	
+	#-- Filtrar los headers de las columnas.
+	headers_titles = {field: ConfigViews.table_info[field] for field in ConfigViews.table_info if ConfigViews.table_info[field]['csv']}
+	
+	#-- Usar el helper para exportar a CSV.
+	helper = ExportHelper(
+		queryset=queryset,
+		table_info=headers_titles,
+		report_title=ConfigViews.report_title
+	)
+	csv_data = helper.export_to_csv()
+	
+	response = HttpResponse(csv_data, content_type="text/csv; charset=utf-8")
+	response["Content-Disposition"] = f'inline; filename="{ConfigViews.report_title}.csv"'
+	
+	return response
+
