@@ -1,3 +1,4 @@
+BEGIN TRANSACTION;
 INSERT INTO "menu_menuitem_groups" VALUES (1,2,1);
 INSERT INTO "menu_menuitem_groups" VALUES (4,3,1);
 INSERT INTO "menu_menuitem_groups" VALUES (6,4,1);
@@ -241,3 +242,4 @@ INSERT INTO "menu_menuitem_groups" VALUES (248,122,1);
 INSERT INTO "menu_menuitem_groups" VALUES (249,124,1);
 INSERT INTO "menu_menuitem_groups" VALUES (250,125,1);
 INSERT INTO "menu_menuitem_groups" VALUES (251,126,1);
+COMMIT;
