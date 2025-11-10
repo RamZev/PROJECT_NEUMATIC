@@ -17,3 +17,8 @@
 2025-11-04 15:45:14,006 - INFO - DBF cargado en memoria. Total registros: 181
 2025-11-04 15:45:14,213 - INFO - Migración completada. Total registros procesados: 181/181. Tiempo: 1.06 segundos
 >>>>>>> d311bbdc18e5e0e67a7fdeab07fa082aeb999f62
+2025-11-10 14:14:36,148 - INFO - Iniciando migración de proveedores
+2025-11-10 14:14:36,306 - INFO - Precargando relaciones en memoria...
+2025-11-10 14:14:36,835 - INFO - Relaciones precargadas en memoria
+2025-11-10 14:14:36,871 - INFO - DBF cargado en memoria. Total registros: 181
+2025-11-10 14:14:37,087 - INFO - Migración completada. Total registros procesados: 181/181. Tiempo: 0.94 segundos
