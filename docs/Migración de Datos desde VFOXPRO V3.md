@@ -250,9 +250,7 @@ Running migrations:
   Applying ventas.0001_initial... OK
 ```
 
- 
-
-## 4. Crear el superuasuario
+## 4. Crear el superusuario
 
 ```shell
 (venv) PS D:\PROJECT_NEUMATIC_MIGRA\neumatic> python manage.py createsuperuser
@@ -286,8 +284,6 @@ python 05_migra_recibo.py
 
 python 06_migra_compra.py
 
-
-
 De la carpeta data_load copie y ejecute los contenidos de los scripts SQL en SQLite3, luego de abrir la BD neumatic.
 
 Cada vez que ejecute un script grabe los cambios
@@ -308,15 +304,11 @@ menu_menuitem.sql'
 
 menu_menuitem_groups.sql'
 
-
-
 **Importante:**
 
-Estos scripts los debe generar desde la base de datos SQL antes de eliminarla
+Estos scripts los debe generar desde la base de datos SQL 
 
 Cuando lo haga, en el script usuarios_user.sql, elimine el primer insert (usuario admin)  
-
-
 
 **Scripts Complementarios**
 
@@ -333,8 +325,6 @@ factura_detallefactura.sql
 producto_migra_tipo_servicio.sql
 
 cambios_medidas_estados.sql
-
-
 
 **Al finalizar las migraciones:**
 

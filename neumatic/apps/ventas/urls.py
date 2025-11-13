@@ -21,6 +21,12 @@ from .views.compra_views import (
 	CompraUpdateView,
 	CompraDeleteView)
 
+from .views.caja_views import (
+	CajaListView,
+	CajaCreateView,
+	CajaUpdateView,
+	CajaDeleteView)
+
 from .views.consultas_factura_views import (buscar_agenda, 
 											buscar_producto,
 											buscar_cliente,
@@ -118,6 +124,12 @@ urlpatterns = [
 	path('compra-retencion/<int:pk>/editar/', CompraRetencionUpdateView.as_view(), name='compra_retencion_update'),
 	path('compra-retencion/<int:pk>/eliminar/', CompraRetencionDeleteView.as_view(), name='compra_retencion_delete'),
 	path('compra-retencion/pdf/<int:pk>/', PDFRetencionView.as_view(), name='pdf_retencion'),
+    
+	#-- Caja.
+	path('caja/', CajaListView.as_view(), name='caja_list'),
+	path('caja/nueva/', CajaCreateView.as_view(), name='caja_create'),
+	path('caja/<int:pk>/editar/', CajaUpdateView.as_view(), name='caja_update'),
+	path('caja/<int:pk>/eliminar/', CajaDeleteView.as_view(), name='caja_delete'),
 	
 	path('obtener-numero-compra/', obtener_numero_compra, name='obtener_numero_compra'),
 	path('obtener-alicuota-proveedor/', obtener_alicuota_proveedor, name='obtener_alicuota_proveedor'),

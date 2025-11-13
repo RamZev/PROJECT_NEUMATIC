@@ -129,3 +129,32 @@ RESUMEN FINAL:
 2025-11-10 13:58:09,183 - INFO - Enteros inválidos (NUMERO): 0
 2025-11-10 13:58:09,183 - INFO - Otros errores: 0
 2025-11-10 13:58:09,183 - INFO - Tasa de éxito: 100.00%
+2025-11-11 09:18:42,721 - INFO - Eliminados 0 registros existentes
+2025-11-11 09:18:42,731 - INFO - Cargando cache de relaciones...
+2025-11-11 09:18:51,355 - INFO - Lote guardado: 1000 registros
+2025-11-11 09:18:51,683 - INFO - Lote guardado: 1000 registros
+2025-11-11 09:18:52,004 - INFO - Lote guardado: 1000 registros
+2025-11-11 09:18:52,308 - INFO - Lote guardado: 1000 registros
+2025-11-11 09:18:52,652 - INFO - Lote guardado: 1000 registros
+2025-11-11 09:18:52,958 - INFO - Lote guardado: 1000 registros
+2025-11-11 09:18:53,275 - INFO - Lote guardado: 1000 registros
+2025-11-11 09:18:53,576 - INFO - Lote guardado: 1000 registros
+2025-11-11 09:18:54,044 - INFO - Lote guardado: 1000 registros
+2025-11-11 09:18:54,340 - INFO - Lote guardado: 1000 registros
+2025-11-11 09:18:54,626 - INFO - Lote guardado: 1000 registros
+2025-11-11 09:18:54,918 - INFO - Lote guardado: 1000 registros
+2025-11-11 09:18:55,244 - INFO - Lote guardado: 1000 registros
+2025-11-11 09:18:55,529 - INFO - Lote guardado: 1000 registros
+2025-11-11 09:18:55,801 - INFO - Lote guardado: 1000 registros
+2025-11-11 09:18:55,979 - INFO - Último lote guardado: 208 registros
+2025-11-11 09:18:55,979 - INFO - 
+RESUMEN FINAL:
+2025-11-11 09:18:55,979 - INFO - Total registros procesados: 15208
+2025-11-11 09:18:55,980 - INFO - Registros migrados exitosamente: 15208
+2025-11-11 09:18:55,980 - INFO - Facturas no encontradas: 0
+2025-11-11 09:18:55,980 - INFO - Productos no encontrados: 0
+2025-11-11 09:18:55,980 - INFO - Decimales inválidos (RETIRADO): 0
+2025-11-11 09:18:55,981 - INFO - Fechas inválidas: 0
+2025-11-11 09:18:55,981 - INFO - Enteros inválidos (NUMERO): 0
+2025-11-11 09:18:55,981 - INFO - Otros errores: 0
+2025-11-11 09:18:55,981 - INFO - Tasa de éxito: 100.00%
