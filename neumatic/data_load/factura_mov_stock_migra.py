@@ -72,11 +72,56 @@ def reset_factura():
         logger.error(f"Error en reset_factura: {e}")
         raise
 
+def verificar_duplicados_dbf(dbf_path):
+    """Verifica si hay IDs duplicados en el archivo DBF y los lista todos"""
+    table = DBF(dbf_path, encoding='latin-1')
+    ids_vistos = set()
+    duplicados = []
+    todas_ocurrencias = {}  # Para guardar todas las ocurrencias de cada ID
+    
+    for idx, record in enumerate(table, 1):
+        codigo_origen = safe_int(record.get('ID'))
+        if codigo_origen:
+            if codigo_origen not in todas_ocurrencias:
+                todas_ocurrencias[codigo_origen] = []
+            todas_ocurrencias[codigo_origen].append(idx)
+            
+            if codigo_origen in ids_vistos:
+                duplicados.append((idx, codigo_origen))
+            else:
+                ids_vistos.add(codigo_origen)
+    
+    # Filtrar solo los IDs que tienen duplicados
+    ids_duplicados = {id_val: posiciones for id_val, posiciones in todas_ocurrencias.items() if len(posiciones) > 1}
+    
+    return duplicados, len(ids_vistos), ids_duplicados
+
 def cargar_datos_movstock():
     """Migración desde movstock.DBF al modelo Factura"""
     try:
         start_time = time.time()
         # reset_factura()
+
+        # VERIFICAR DUPLICADOS EN EL ARCHIVO DBF
+        dbf_path = os.path.join(BASE_DIR, 'data_load', 'datavfox', 'movstock.DBF')
+        duplicados_dbf, total_ids, ids_duplicados = verificar_duplicados_dbf(dbf_path)
+        
+        # LISTADO COMPLETO DE DUPLICADOS EN EL LOG
+        if ids_duplicados:
+            logger.warning("=== LISTADO COMPLETO DE DUPLICADOS EN ARCHIVO DBF ===")
+            for id_dup, posiciones in sorted(ids_duplicados.items()):
+                logger.warning(f"ID {id_dup} aparece {len(posiciones)} veces en posiciones: {posiciones}")
+            logger.warning(f"Total de IDs duplicados: {len(ids_duplicados)}")
+            logger.warning(f"Total de registros duplicados: {len(duplicados_dbf)}")
+            
+            print(f"\n=== DUPLICADOS ENCONTRADOS EN ARCHIVO DBF ===")
+            for id_dup, posiciones in sorted(ids_duplicados.items()):
+                print(f"ID {id_dup}: {len(posiciones)} ocurrencias - Posiciones: {posiciones}")
+            print(f"Total IDs duplicados: {len(ids_duplicados)}")
+            print(f"Total registros duplicados: {len(duplicados_dbf)}")
+        else:
+            logger.info("No se encontraron duplicados en el archivo DBF")
+            print("No se encontraron duplicados en el archivo DBF")
 
         # Precargar cachés
         sucursales_cache = {s.pk: s for s in Sucursal.objects.all()}
@@ -96,7 +141,6 @@ def cargar_datos_movstock():
             logger.error("Cliente con ID=30007 no existe. Migración cancelada.")
             raise
 
-        dbf_path = os.path.join(BASE_DIR, 'data_load', 'datavfox', 'movstock.DBF')
         table = DBF(dbf_path, encoding='latin-1')
 
         batch_size = 1000

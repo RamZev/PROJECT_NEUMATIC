@@ -10,4 +10,5 @@ class VentasConfig(AppConfig):
         import apps.ventas.models.recibo_models
         import apps.ventas.models.venta_models
         import apps.ventas.models.compra_models
+        import apps.ventas.models.caja_models
 

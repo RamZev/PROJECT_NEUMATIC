@@ -257,3 +257,54 @@
 2025-11-10 11:43:54,279 - ERROR - Error procesando registro 160291: invalid literal for int() with base 10: '2700000000000.0'
 2025-11-10 11:43:55,028 - ERROR - Error procesando registro 162911: invalid literal for int() with base 10: '309990000000.0'
 2025-11-10 11:43:57,178 - INFO - Migración completada. Total registros procesados: 128209/128221. Tiempo: 51.06 segundos
+2025-11-11 08:42:48,587 - INFO - Iniciando migración de clientes
+2025-11-11 08:42:48,717 - INFO - Precargando relaciones en memoria...
+2025-11-11 08:42:49,285 - INFO - Relaciones precargadas en memoria
+2025-11-11 08:42:55,652 - INFO - DBF cargado en memoria. Total registros: 128221
+2025-11-11 08:43:05,048 - ERROR - Error procesando registro 69025: invalid literal for int() with base 10: '201000000000.0'
+2025-11-11 08:43:22,052 - ERROR - Error procesando registro 119962: invalid literal for int() with base 10: '307190000000.0'
+2025-11-11 08:43:26,352 - ERROR - Error procesando registro 132780: invalid literal for int() with base 10: '270000000000.0'
+2025-11-11 08:43:27,688 - ERROR - Error procesando registro 136688: invalid literal for int() with base 10: '270000000000.0'
+2025-11-11 08:43:29,610 - ERROR - Error procesando registro 142170: invalid literal for int() with base 10: '270000000000.0'
+2025-11-11 08:43:30,331 - ERROR - Error procesando registro 144339: invalid literal for int() with base 10: '2255500000000.0'
+2025-11-11 08:43:30,632 - ERROR - Error procesando registro 145266: invalid literal for int() with base 10: '101010000000.0'
+2025-11-11 08:43:31,252 - ERROR - Error procesando registro 147762: invalid literal for int() with base 10: '343430000000.0'
+2025-11-11 08:43:31,252 - ERROR - Error procesando registro 147763: invalid literal for int() with base 10: '121210000000000.0'
+2025-11-11 08:43:32,967 - ERROR - Error procesando registro 152471: invalid literal for int() with base 10: '27000000000000.0'
+2025-11-11 08:43:35,558 - ERROR - Error procesando registro 160291: invalid literal for int() with base 10: '2700000000000.0'
+2025-11-11 08:43:36,363 - ERROR - Error procesando registro 162911: invalid literal for int() with base 10: '309990000000.0'
+2025-11-11 08:43:38,392 - INFO - Migración completada. Total registros procesados: 128209/128221. Tiempo: 49.81 segundos
+2025-11-11 09:11:56,745 - INFO - Iniciando migración de clientes
+2025-11-11 09:11:56,839 - INFO - Precargando relaciones en memoria...
+2025-11-11 09:11:57,375 - INFO - Relaciones precargadas en memoria
+2025-11-11 09:12:03,199 - INFO - DBF cargado en memoria. Total registros: 128221
+2025-11-11 09:12:12,565 - ERROR - Error procesando registro 69025: invalid literal for int() with base 10: '201000000000.0'
+2025-11-11 09:12:29,217 - ERROR - Error procesando registro 119962: invalid literal for int() with base 10: '307190000000.0'
+2025-11-11 09:12:33,360 - ERROR - Error procesando registro 132780: invalid literal for int() with base 10: '270000000000.0'
+2025-11-11 09:12:34,665 - ERROR - Error procesando registro 136688: invalid literal for int() with base 10: '270000000000.0'
+2025-11-11 09:12:36,621 - ERROR - Error procesando registro 142170: invalid literal for int() with base 10: '270000000000.0'
+2025-11-11 09:12:37,346 - ERROR - Error procesando registro 144339: invalid literal for int() with base 10: '2255500000000.0'
+2025-11-11 09:12:37,637 - ERROR - Error procesando registro 145266: invalid literal for int() with base 10: '101010000000.0'
+2025-11-11 09:12:38,279 - ERROR - Error procesando registro 147762: invalid literal for int() with base 10: '343430000000.0'
+2025-11-11 09:12:38,279 - ERROR - Error procesando registro 147763: invalid literal for int() with base 10: '121210000000000.0'
+2025-11-11 09:12:40,001 - ERROR - Error procesando registro 152471: invalid literal for int() with base 10: '27000000000000.0'
+2025-11-11 09:12:42,581 - ERROR - Error procesando registro 160291: invalid literal for int() with base 10: '2700000000000.0'
+2025-11-11 09:12:43,324 - ERROR - Error procesando registro 162911: invalid literal for int() with base 10: '309990000000.0'
+2025-11-11 09:12:45,425 - INFO - Migración completada. Total registros procesados: 128209/128221. Tiempo: 48.68 segundos
+2025-11-11 09:44:33,371 - INFO - Iniciando migración de clientes
+2025-11-11 09:44:33,487 - INFO - Precargando relaciones en memoria...
+2025-11-11 09:44:34,028 - INFO - Relaciones precargadas en memoria
+2025-11-11 09:44:39,840 - INFO - DBF cargado en memoria. Total registros: 128359
+2025-11-11 09:44:49,332 - ERROR - Error procesando registro 69025: invalid literal for int() with base 10: '201000000000.0'
+2025-11-11 09:45:06,136 - ERROR - Error procesando registro 119962: invalid literal for int() with base 10: '307190000000.0'
+2025-11-11 09:45:10,390 - ERROR - Error procesando registro 132780: invalid literal for int() with base 10: '270000000000.0'
+2025-11-11 09:45:11,749 - ERROR - Error procesando registro 136688: invalid literal for int() with base 10: '270000000000.0'
+2025-11-11 09:45:13,730 - ERROR - Error procesando registro 142170: invalid literal for int() with base 10: '270000000000.0'
+2025-11-11 09:45:14,324 - ERROR - Error procesando registro 144339: invalid literal for int() with base 10: '2255500000000.0'
+2025-11-11 09:45:14,755 - ERROR - Error procesando registro 145266: invalid literal for int() with base 10: '101010000000.0'
+2025-11-11 09:45:15,382 - ERROR - Error procesando registro 147762: invalid literal for int() with base 10: '343430000000.0'
+2025-11-11 09:45:15,382 - ERROR - Error procesando registro 147763: invalid literal for int() with base 10: '121210000000000.0'
+2025-11-11 09:45:17,034 - ERROR - Error procesando registro 152471: invalid literal for int() with base 10: '27000000000000.0'
+2025-11-11 09:45:19,544 - ERROR - Error procesando registro 160291: invalid literal for int() with base 10: '2700000000000.0'
+2025-11-11 09:45:20,163 - ERROR - Error procesando registro 162911: invalid literal for int() with base 10: '309990000000.0'
+2025-11-11 09:45:22,294 - INFO - Migración completada. Total registros procesados: 128347/128359. Tiempo: 48.92 segundos
