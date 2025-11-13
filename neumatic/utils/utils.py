@@ -7,7 +7,7 @@ from django.forms.models import model_to_dict
 
 def es_numero_valido(valor):
 	"""Verifica si un string es un número decimal válido."""
-	return bool(re.fullmatch(r"-?\d+(\.\d+)?", valor))  # Acepta "10", "-5.5", "3.14"
+	return bool(re.fullmatch(r"-?\d+(\.\d+)?", valor))  #-- Acepta "10", "-5.5", "3.14".
 
 
 def serializar_datos(datos):
@@ -26,15 +26,19 @@ def serializar_datos(datos):
 def deserializar_datos(datos):
 	"""Restaura los datos serializados desde la sesión a sus tipos originales."""
 	if isinstance(datos, str):
-		if es_numero_valido(datos):  # Verifica si es un número válido antes de convertir
+		#-- EXCEPCIÓN: Si el string tiene ceros a la izquierda, preservarlo como string (es probablemente un código).
+		if (datos.startswith('0') and len(datos) > 1 and datos != '0' and'.' not in datos):  #-- NUEVA CONDICIÓN: excluir decimales.
+			return datos  # Preservar como string (ej: "00021")
+		
+		if es_numero_valido(datos):  #-- Verifica si es un número válido antes de convertir.
 			return Decimal(datos)
 		try:
-			return datetime.fromisoformat(datos)  # Intentar convertir a datetime
+			return datetime.fromisoformat(datos)  #-- Intentar convertir a datetime.
 		except ValueError:
 			try:
-				return date.fromisoformat(datos)  # Intentar convertir a date
+				return date.fromisoformat(datos)  #-- Intentar convertir a date.
 			except ValueError:
-				return datos  # Si falla todo, devolver como string
+				return datos  #-- Si falla todo, devolver como string.
 	elif isinstance(datos, list):
 		return [deserializar_datos(item) for item in datos]
 	elif isinstance(datos, dict):

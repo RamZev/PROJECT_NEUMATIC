@@ -1,282 +1,289 @@
 # neumatic\apps\informes\views\producto_list_views.py
-from django.urls import reverse_lazy
-from django.http import HttpResponse, JsonResponse
-from django.views import View
-from zipfile import ZipFile
-from io import BytesIO
-from reportlab.lib.pagesizes import A4, portrait, landscape
-from django.core.mail import EmailMessage
-from django.db.models.functions import Lower
-from django.db.models import Q
-from utils.helpers.export_helpers import ExportHelper
 
-from ..views.list_views_generics import *
+from django.shortcuts import render
+from django.http import HttpResponse
+from datetime import datetime
+from django.templatetags.static import static
+
+#-- ReportLab:
+from reportlab.lib import colors
+from reportlab.lib.pagesizes import A4, landscape, portrait
+from reportlab.platypus import Paragraph
+
+from .report_views_generics import *
 from apps.maestros.models.producto_models import Producto
 from ..forms.buscador_producto_forms import BuscadorProductoForm
+from utils.utils import deserializar_datos, normalizar, raw_to_dict
+from utils.helpers.export_helpers import ExportHelper, PDFGenerator, add_row_table
 
 
 class ConfigViews:
-	# Modelo
+	
+	#-- Título del reporte.
+	report_title = "Reporte de Productos"
+	
+	#-- Modelo.
 	model = Producto
 	
-	# Formulario asociado al modelo
+	#-- Formulario asociado al modelo.
 	form_class = BuscadorProductoForm
 	
-	# Aplicación asociada al modelo
+	#-- Aplicación asociada al modelo.
 	app_label = "informes"
 	
-	# Nombre del modelo en minúsculas
+	#-- Nombre del modelo en minúsculas.
 	model_string = model.__name__.lower()
 	
-	# Vistas del CRUD del modelo
-	list_view_name = f"{model_string}_list"
+	#-- Plantilla base.
+	template_list = f'{app_label}/maestro_informe.html'
 	
-	# Plantilla de la lista del CRUD
-	template_list = f'{app_label}/maestro_informe_list.html'
-	
-	# Contexto de los datos de la lista
-	context_object_name = 'objetos'
-	
-	# Vista del home del proyecto
+	#-- Vista del home del proyecto.
 	home_view_name = "home"
 	
-	# Nombre de la url 
-	success_url = reverse_lazy(list_view_name)
-	
-	# Archivo JavaScript específico.
+	#-- Archivo JavaScript específico.
 	js_file = None
 	
-	# URL de la vista que genera el .zip con los informes.
-	url_zip = f"{model_string}_informe_generado"
+	#-- URL de la vista que genera la salida a pantalla.
+	url_pantalla = f"{model_string}_vista_pantalla"
 	
-	# URL de la vista que genera el .pdf.
-	url_pdf = f"{model_string}_informe_pdf"
-
-
-class DataViewList:
-	search_fields = []
-	ordering = []
-	paginate_by = 8
+	#-- URL de la vista que genera el .pdf.
+	url_pdf = f"{model_string}_vista_pdf"
 	
-	report_title = "Lista de Precios"
+	#-- URL de la vista que genera el Excel.
+	url_excel = f"{model_string}_vista_excel"
 	
+	#-- URL de la vista que genera el CSV.
+	url_csv = f"{model_string}_vista_csv"
+	
+	#-- Plantilla Vista Preliminar Pantalla.
+	reporte_pantalla = f"informes/reportes/{model_string}_list.html"
+	
+	#-- Establecer las columnas del reporte y sus atributos.
 	table_info = {
+		"estatus_producto": {
+			"label": "Estatus",
+			"col_width_pdf": 40,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
 		'id_producto': {
 			"label": "Código",
-			"col_width_table": 1,
 			"col_width_pdf": 45,
 			"pdf_paragraph": False,
 			"date_format": None,
-			"table": True,
 			"pdf": True,
 			"excel": True,
 			"csv": True
 		},
-		'medida': {
-			"label": "Medida",
-			"col_width_table": 1,
-			"col_width_pdf": 50,
-			"pdf_paragraph": False,
-			"date_format": None,
-			"table": True,
-			"pdf": True,
-			"excel": True,
-			"csv": True
-		},
-		'nombre_producto': {
-			"label": "Descripción",
-			"col_width_table": 4,
-			"col_width_pdf": 220,
-			"pdf_paragraph": True,
-			"date_format": None,
-			"table": True,
-			"pdf": True,
-			"excel": True,
-			"csv": True
-		},
-		'unidad': {
-			"label": "Unidad",
-			"col_width_table": 0,
+		"id_cai_id": {
+			"label": "Id. CAI",
 			"col_width_pdf": 0,
 			"pdf_paragraph": False,
 			"date_format": None,
-			"table": False,
-			"pdf": False,
-			"excel": True,
-			"csv": True
-		},
-		'id_marca': {
-			"label": "Marca",
-			"col_width_table": 4,
-			"col_width_pdf": 140,
-			"pdf_paragraph": True,
-			"date_format": None,
-			"table": True,
-			"pdf": True,
-			"excel": True,
-			"csv": True
-		},
-		'precio': {
-			"label": "Precio",
-			"col_width_table": 2,
-			"col_width_pdf": 70,
-			"pdf_paragraph": False,
-			"date_format": None,
-			"table": True,
-			"pdf": True,
-			"excel": True,
-			"csv": True
-		},
-		"tipo_producto": {
-			"label": "Tipo Producto",
-			"col_width_table": 0,
-			"col_width_pdf": 0,
-			"pdf_paragraph": False,
-			"date_format": None,
-			"table": False,
-			"pdf": False,
-			"excel": True,
-			"csv": True
-		},
-		"id_familia.nombre_producto_familia": {
-			"label": "Familia",
-			"col_width_table": 0,
-			"col_width_pdf": 0,
-			"pdf_paragraph": False,
-			"date_format": None,
-			"table": False,
-			"pdf": False,
-			"excel": True,
-			"csv": True
-		},
-		"segmento": {
-			"label": "Segmento",
-			"col_width_table": 0,
-			"col_width_pdf": 0,
-			"pdf_paragraph": False,
-			"date_format": None,
-			"table": False,
-			"pdf": False,
-			"excel": True,
-			"csv": True
-		},
-		"id_modelo.nombre_modelo": {
-			"label": "Modelo",
-			"col_width_table": 0,
-			"col_width_pdf": 0,
-			"pdf_paragraph": False,
-			"date_format": None,
-			"table": False,
-			"pdf": False,
-			"excel": True,
-			"csv": True
-		},
-		"fecha_fabricacion": {
-			"label": "Fecha Fabricación",
-			"col_width_table": 0,
-			"col_width_pdf": 0,
-			"pdf_paragraph": False,
-			"date_format": None,
-			"table": False,
-			"pdf": False,
-			"excel": True,
-			"csv": True
-		},
-		"costo": {
-			"label": "Costo",
-			"col_width_table": 0,
-			"col_width_pdf": 0,
-			"pdf_paragraph": False,
-			"date_format": None,
-			"table": False,
-			"pdf": False,
-			"excel": True,
-			"csv": True
-		},
-		"id_alicuota_iva.alicuota_iva": {
-			"label": "Alícuota IVA",
-			"col_width_table": 0,
-			"col_width_pdf": 0,
-			"pdf_paragraph": False,
-			"date_format": None,
-			"table": False,
 			"pdf": False,
 			"excel": True,
 			"csv": True
 		},
 		"cai": {
 			"label": "CAI",
-			"col_width_table": 0,
 			"col_width_pdf": 0,
 			"pdf_paragraph": False,
 			"date_format": None,
-			"table": False,
 			"pdf": False,
 			"excel": True,
 			"csv": True
 		},
-		# "stock": {
-		# 	"label": "Stock",
-		# 	"col_width_table": 0,
-		# 	"col_width_pdf": 0,
-		# 	"pdf_paragraph": False,
-		# 	"date_format": None,
-		# 	"table": False,
-		# 	"pdf": False,
-		# 	"excel": True,
-		# 	"csv": True
-		# },
-		"minimo": {
-			"label": "Mínimo",
-			"col_width_table": 0,
+		'medida': {
+			"label": "Medida",
+			"col_width_pdf": 50,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
+		'nombre_producto': {
+			"label": "Descripción",
+			"col_width_pdf": 220,
+			"pdf_paragraph": True,
+			"date_format": None,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
+		"id_familia_id": {
+			"label": "Id. Familia",
 			"col_width_pdf": 0,
 			"pdf_paragraph": False,
 			"date_format": None,
-			"table": False,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+		"nombre_familia": {
+			"label": "Familia",
+			"col_width_pdf": 0,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+		"id_modelo_id": {
+			"label": "Id. Modelo",
+			"col_width_pdf": 0,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+		"nombre_modelo": {
+			"label": "Modelo",
+			"col_width_pdf": 0,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+		'id_marca_id': {
+			"label": "Id. Marca",
+			"col_width_pdf": 0,
+			"pdf_paragraph": True,
+			"date_format": None,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+		'nombre_marca': {
+			"label": "Marca",
+			"col_width_pdf": 140,
+			"pdf_paragraph": True,
+			"date_format": None,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
+		'unidad': {
+			"label": "Unidad",
+			"col_width_pdf": 0,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+		'precio': {
+			"label": "Precio",
+			"col_width_pdf": 70,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"pdf": True,
+			"excel": True,
+			"csv": True,
+			"type": "decimal"
+		},
+		"tipo_producto": {
+			"label": "Tipo Producto",
+			"col_width_pdf": 0,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+		"segmento": {
+			"label": "Segmento",
+			"col_width_pdf": 0,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+		"fecha_fabricacion": {
+			"label": "Fecha Fabricación",
+			"col_width_pdf": 0,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+		"costo": {
+			"label": "Costo",
+			"col_width_pdf": 0,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"pdf": False,
+			"excel": True,
+			"csv": True,
+			"type": "decimal"
+		},
+		"id_alicuota_iva_id": {
+			"label": "Id. Alícuota IVA",
+			"col_width_pdf": 0,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+		"alicuota_iva": {
+			"label": "Alícuota IVA",
+			"col_width_pdf": 0,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"pdf": False,
+			"excel": True,
+			"csv": True,
+			"type": "decimal"
+		},
+		"minimo": {
+			"label": "Mínimo",
+			"col_width_pdf": 0,
+			"pdf_paragraph": False,
+			"date_format": None,
 			"pdf": False,
 			"excel": True,
 			"csv": True
 		},
 		"descuento": {
 			"label": "Descuento",
-			"col_width_table": 0,
 			"col_width_pdf": 0,
 			"pdf_paragraph": False,
 			"date_format": None,
-			"table": False,
 			"pdf": False,
 			"excel": True,
 			"csv": True
 		},
 		"despacho_1": {
 			"label": "Despacho 1",
-			"col_width_table": 0,
 			"col_width_pdf": 0,
 			"pdf_paragraph": False,
 			"date_format": None,
-			"table": False,
 			"pdf": False,
 			"excel": True,
 			"csv": True
 		},
 		"despacho_2": {
 			"label": "Despacho 2",
-			"col_width_table": 0,
 			"col_width_pdf": 0,
 			"pdf_paragraph": False,
 			"date_format": None,
-			"table": False,
 			"pdf": False,
 			"excel": True,
 			"csv": True
 		},
 		"carrito": {
 			"label": "Carrito",
-			"col_width_table": 0,
 			"col_width_pdf": 0,
 			"pdf_paragraph": False,
 			"date_format": None,
-			"table": False,
 			"pdf": False,
 			"excel": True,
 			"csv": True
@@ -284,223 +291,325 @@ class DataViewList:
 	}
 
 
-class ProductoInformeListView(InformeListView):
-	model = ConfigViews.model
+class ProductoInformeView(InformeFormView):
+	config = ConfigViews  #-- Ahora la configuración estará disponible en self.config.
 	form_class = ConfigViews.form_class
 	template_name = ConfigViews.template_list
-	context_object_name = ConfigViews.context_object_name
-	
-	search_fields = DataViewList.search_fields
-	ordering = DataViewList.ordering
 	
 	extra_context = {
 		"master_title": f'Informes - {ConfigViews.model._meta.verbose_name_plural}',
 		"home_view_name": ConfigViews.home_view_name,
-		"list_view_name": ConfigViews.list_view_name,
-		"table_info": DataViewList.table_info,
 		"buscador_template": f"{ConfigViews.app_label}/buscador_{ConfigViews.model_string}.html",
 		"js_file": ConfigViews.js_file,
-		"url_zip": ConfigViews.url_zip,
+		"url_pantalla": ConfigViews.url_pantalla,
 		"url_pdf": ConfigViews.url_pdf,
 	}
 	
-	def get_queryset(self):
-		queryset = self.model.objects.none()
-		form = self.form_class(self.request.GET)
+	def obtener_queryset(self, cleaned_data):
+		estatus = cleaned_data.get('estatus', 'activos')
+		id_familia_desde = cleaned_data.get('id_familia_desde')
+		id_familia_hasta = cleaned_data.get('id_familia_hasta')
+		id_marca_desde = cleaned_data.get('id_marca_desde')
+		id_marca_hasta = cleaned_data.get('id_marca_hasta')
+		id_modelo_desde = cleaned_data.get('id_modelo_desde')
+		id_modelo_hasta = cleaned_data.get('id_modelo_hasta')
 		
-		if form.is_valid():
-			estatus = form.cleaned_data.get('estatus', 'activos')
-			id_familia_desde = form.cleaned_data.get('id_familia_desde') or 0
-			id_familia_hasta = form.cleaned_data.get('id_familia_hasta') or 0
-			id_marca_desde = form.cleaned_data.get('id_marca_desde') or 0
-			id_marca_hasta = form.cleaned_data.get('id_marca_hasta') or 0
-			id_modelo_desde = form.cleaned_data.get('id_modelo_desde') or 0
-			id_modelo_hasta = form.cleaned_data.get('id_modelo_hasta') or 0
-			
-			if estatus:
-				match estatus:
-					case "activos":
-						queryset = self.model.objects.filter(estatus_producto=True)
-					case "inactivos":
-						queryset = self.model.objects.filter(estatus_producto=False)
-					case "todos":
-						queryset = self.model.objects.all()
-			
-			if id_familia_desde and id_familia_hasta:
-				#-- Filtrar por rango de familias (ambos límites).
-				familias_ids = range(id_familia_desde, id_familia_hasta + 1)
-				queryset = queryset.filter(id_familia_id__in=familias_ids)
-			elif id_familia_desde:
-				#-- Filtrar por familias desde el límite inferior.
-				queryset = queryset.filter(id_familia_id__gte=id_familia_desde)
-			elif id_familia_hasta:
-				#-- Filtrar por familias hasta el límite superior.
-				queryset = queryset.filter(id_familia_id__lte=id_familia_hasta)
-			
-			if id_marca_desde and id_marca_hasta:
-				#-- Filtrar por rango de marcas (ambos límites).
-				marcas_ids = range(id_marca_desde, id_marca_hasta + 1)
-				queryset = queryset.filter(id_marca_id__in=marcas_ids)
-			elif id_marca_desde:
-				#-- Filtrar por marcas desde el límite inferior.
-				queryset = queryset.filter(id_marca_id__gte=id_marca_desde)
-			elif id_marca_hasta:
-				#-- Filtrar por marcas hasta el límite superior.
-				queryset = queryset.filter(id_marca_id__lte=id_marca_hasta)
-			
-			if id_modelo_desde and id_modelo_hasta:
-				#-- Filtrar por rango de modelos (ambos límites).
-				modelos_ids = range(id_modelo_desde, id_modelo_hasta + 1)
-				queryset = queryset.filter(id_modelo_id__in=modelos_ids)
-			elif id_modelo_desde:
-				#-- Filtrar por modelos desde el límite inferior.
-				queryset = queryset.filter(id_modelo_id__gte=id_modelo_desde)
-			elif id_modelo_hasta:
-				#-- Filtrar por modelos hasta el límite superior.
-				queryset = queryset.filter(id_modelo_id__lte=id_modelo_hasta)
-			
-		else:
-			#-- Agregar clases css a los campos con errores.
-			form.add_error_classes()
+		if estatus:
+			match estatus:
+				case "activos":
+					queryset = ConfigViews.model.objects.filter(
+						estatus_producto=True
+					).select_related(
+						"id_cai", "id_familia", "id_modelo", "id_marca", "id_alicuota_iva"
+					)
+				case "inactivos":
+					queryset = ConfigViews.model.objects.filter(
+						estatus_producto=False
+					).select_related(
+						"id_cai", "id_familia", "id_modelo", "id_marca", "id_alicuota_iva"
+					)
+				case "todos":
+					queryset = ConfigViews.model.objects.all().select_related(
+						"id_cai", "id_familia", "id_modelo", "id_marca", "id_alicuota_iva"
+					)
 		
-		return queryset
+		if id_familia_desde and id_familia_hasta:
+			#-- Filtrar por rango de familias (ambos límites).
+			familias_ids = range(id_familia_desde, id_familia_hasta + 1)
+			queryset = queryset.filter(id_familia_id__in=familias_ids)
+		elif id_familia_desde:
+			#-- Filtrar por familias desde el límite inferior.
+			queryset = queryset.filter(id_familia_id__gte=id_familia_desde)
+		elif id_familia_hasta:
+			#-- Filtrar por familias hasta el límite superior.
+			queryset = queryset.filter(id_familia_id__lte=id_familia_hasta)
+		
+		if id_marca_desde and id_marca_hasta:
+			#-- Filtrar por rango de marcas (ambos límites).
+			marcas_ids = range(id_marca_desde, id_marca_hasta + 1)
+			queryset = queryset.filter(id_marca_id__in=marcas_ids)
+		elif id_marca_desde:
+			#-- Filtrar por marcas desde el límite inferior.
+			queryset = queryset.filter(id_marca_id__gte=id_marca_desde)
+		elif id_marca_hasta:
+			#-- Filtrar por marcas hasta el límite superior.
+			queryset = queryset.filter(id_marca_id__lte=id_marca_hasta)
+		
+		if id_modelo_desde and id_modelo_hasta:
+			#-- Filtrar por rango de modelos (ambos límites).
+			modelos_ids = range(id_modelo_desde, id_modelo_hasta + 1)
+			queryset = queryset.filter(id_modelo_id__in=modelos_ids)
+		elif id_modelo_desde:
+			#-- Filtrar por modelos desde el límite inferior.
+			queryset = queryset.filter(id_modelo_id__gte=id_modelo_desde)
+		elif id_modelo_hasta:
+			#-- Filtrar por modelos hasta el límite superior.
+			queryset = queryset.filter(id_modelo_id__lte=id_modelo_hasta)
+		
+		queryset = queryset.order_by('id_producto')
+		
+		#-- Convertir QUERYSET a LISTA DE DICCIONARIOS con los nombres de las relaciones.
+		queryset_list = []
+		for obj in queryset:
+			obj_dict = raw_to_dict(obj)
+			#-- Agregar los nombres de las relaciones.
+			obj_dict['cai'] = obj.id_cai.cai if obj.id_cai else ""
+			obj_dict['nombre_familia'] = obj.id_familia.nombre_producto_familia if obj.id_familia else ""
+			obj_dict['nombre_modelo'] = obj.id_modelo.nombre_modelo if obj.id_modelo else ""
+			obj_dict['nombre_marca'] = obj.id_marca.nombre_producto_marca if obj.id_marca else ""
+			obj_dict['alicuota_iva'] = obj.id_alicuota_iva.alicuota_iva if obj.id_alicuota_iva else ""
+			queryset_list.append(obj_dict)
+		
+		return queryset_list
+	
+	def obtener_contexto_reporte(self, queryset, cleaned_data):
+		"""
+		Aquí se estructura el contexto para el reporte, agrupando los comprobantes,
+		calculando subtotales y totales generales, tal como se requiere para el listado.
+		"""
+		
+		#-- Parámetros del listado.
+		estatus = cleaned_data.get('estatus', 'activos')
+		id_familia_desde = cleaned_data.get('id_familia_desde')
+		id_familia_hasta = cleaned_data.get('id_familia_hasta')
+		id_marca_desde = cleaned_data.get('id_marca_desde')
+		id_marca_hasta = cleaned_data.get('id_marca_hasta')
+		id_modelo_desde = cleaned_data.get('id_modelo_desde')
+		id_modelo_hasta = cleaned_data.get('id_modelo_hasta')
+		
+		familia = "Todas"
+		if id_familia_desde and id_familia_hasta:
+			familia = f"Desde: {id_familia_desde} - Hasta: {id_familia_hasta}"
+		elif id_familia_desde:
+			familia = f"Desde: {id_familia_desde}"
+		elif id_familia_hasta:
+			familia = f"Hasta: {id_familia_hasta}"
+		
+		marca = "Todas"
+		if id_marca_desde and id_marca_hasta:
+			marca = f"Desde: {id_marca_desde} - Hasta: {id_marca_hasta}"
+		elif id_marca_desde:
+			marca = f"Desde: {id_marca_desde}"
+		elif id_marca_hasta:
+			marca = f"Hasta: {id_marca_hasta}"
+		
+		modelo = "Todos"
+		if id_modelo_desde and id_modelo_hasta:
+			modelo = f"Desde: {id_modelo_desde} - Hasta: {id_modelo_hasta}"
+		elif id_modelo_desde:
+			modelo = f"Desde: {id_modelo_desde}"
+		elif id_modelo_hasta:
+			modelo = f"Hasta: {id_modelo_hasta}"
+		
+		fecha_hora_reporte = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+		
+		dominio = f"http://{self.request.get_host()}"
+		
+		param_left = {
+			"Estatus": estatus,
+		}
+		param_right = {
+			"Familia": familia,
+			"Modelo": modelo,
+			"Marca": marca,
+		}
+		
+		# **************************************************
+		# **************************************************
+		
+		#-- Se retorna un contexto que será consumido tanto para la vista en pantalla como para la generación del PDF.
+		return {
+			"objetos": queryset,
+			"parametros_i": param_left,
+			"parametros_d": param_right,
+			'fecha_hora_reporte': fecha_hora_reporte,
+			'titulo': ConfigViews.report_title,
+			'logo_url': f"{dominio}{static('img/logo_01.png')}",
+			'css_url': f"{dominio}{static('css/reportes.css')}",
+		}
 	
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
-		form = BuscadorProductoForm(self.request.GET or None)
+		form = kwargs.get("form") or self.get_form()
 		
 		context["form"] = form
-		
-		#-- Si el formulario tiene errores, pasa los errores al contexto.
-		if form.errors:
-			context["data_has_errors"] = True
 		
 		return context
 
 
-class ProductoInformesView(View):
-	"""Vista para gestionar informes de clientes, exportaciones y envíos por correo."""
+def producto_vista_pantalla(request):
+	#-- Obtener el token de la querystring.
+	token = request.GET.get("token")
 	
-	def get(self, request, *args, **kwargs):
-		"""Gestión de solicitudes GET."""
-		
-		#-- "email" o "download".
-		action = request.GET.get("action", "download")
-		
-		#-- Formatos seleccionados por el usuario.
-		formatos = request.GET.getlist("formato_envio")
-		
-		#-- Email si aplica envío.
-		email = request.GET.get("email", "")
-		
-		#-- Obtener el queryset filtrado.
-		queryset_filtrado = ProductoInformeListView()
-		queryset_filtrado.request = request
-		queryset = queryset_filtrado.get_queryset()
-		
-		#-- Generar y retornar el archivo ZIP.
-		if action == "email":
-			#-- Manejar el envío por correo electrónico.
-			return self.enviar_por_email(queryset, formatos, email)
-		else:
-			#-- Manejar la generación y descarga del archivo ZIP.
-			return self.generar_archivos_zip(queryset, formatos)
+	if not token:
+		return HttpResponse("Token no proporcionado", status=400)
 	
-	def generar_archivos_zip(self, queryset, formatos):
-		"""Generar un archivo ZIP con los formatos seleccionados."""
-		
-		buffer = BytesIO()
-		with ZipFile(buffer, "w") as zip_file:
-			table = DataViewList.table_info.copy()
-			
-			#-- Generar los formatos seleccionados.
-			if "pdf" in formatos:
-				#-- Filtrar los campos que se van a exportar a PDF.
-				table_info = { field: table[field] for field in table if table[field]['pdf'] }
-				
-				#-- Generar el PDF.
-				helper = ExportHelper(queryset, table_info, DataViewList.report_title)
-				
-				pdf_content = helper.export_to_pdf()
-				zip_file.writestr(f"informe_{ConfigViews.model_string}.pdf", pdf_content)
-			
-			if "excel" in formatos:
-				#-- Filtrar los campos que se van a exportar a Excel.
-				table_info = { field: table[field] for field in table if table[field]['excel'] }
-				
-				#-- Generar el Excel.
-				helper = ExportHelper(queryset, table_info, DataViewList.report_title)
-				
-				excel_content = helper.export_to_excel()
-				zip_file.writestr(f"informe_{ConfigViews.model_string}.xlsx", excel_content)
-			
-			if "csv" in formatos:
-				#-- Filtrar los campos que se van a exportar a CSV.
-				table_info = { field: table[field] for field in table if table[field]['csv'] }
-				
-				#-- Generar el CSV.
-				helper = ExportHelper(queryset, table_info, DataViewList.report_title)
-				
-				csv_content = helper.export_to_csv()
-				zip_file.writestr(f"informe_{ConfigViews.model_string}.csv", csv_content)
-		
-		#-- Preparar respuesta para descargar el archivo ZIP.
-		buffer.seek(0)
-		response = HttpResponse(buffer, content_type="application/zip")
-		response["Content-Disposition"] = f'attachment; filename="informe_{ConfigViews.model_string}.zip"'
-		
-		return response
+	#-- Obtener el contexto(datos) previamente guardados en la sesión.
+	contexto_reporte = deserializar_datos(request.session.pop(token, None))
 	
-	def enviar_por_email(self, queryset, formatos, email):
-		"""Enviar los informes seleccionados por correo electrónico."""
-		
-		helper = ExportHelper(queryset, DataViewList.table_info, DataViewList.report_title)
-		attachments = []
-		
-		#-- Generar los formatos seleccionados y añadirlos como adjuntos.
-		if "pdf" in formatos:
-			attachments.append((f"informe_{ConfigViews.model_string}.pdf", helper.generar_pdf(), 
-					   "application/pdf"))
-		
-		if "excel" in formatos:
-			attachments.append((f"informe_{ConfigViews.model_string}.xlsx", helper.generar_excel(), 
-					   "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
-		
-		if "csv" in formatos:
-			attachments.append((f"informe_{ConfigViews.model_string}.csv", helper.generar_csv(), 
-					   "text/csv"))
-		
-		#-- Crear y enviar el correo.
-		subject = DataViewList.report_title
-		body = "Adjunto encontrarás el informe solicitado."
-		email_message = EmailMessage(subject, body, to=[email])
-		for filename, content, mime_type in attachments:
-			email_message.attach(filename, content, mime_type)
-		
-		email_message.send()
-		
-		#-- Responder con un mensaje de éxito.
-		return JsonResponse({"success": True, "message": "Informe enviado correctamente al correo."})
+	if not contexto_reporte:
+		return HttpResponse("Contexto no encontrado o expirado", status=400)
+	
+	#-- Generar el listado a pantalla.
+	return render(request, ConfigViews.reporte_pantalla, contexto_reporte)
 
 
-class ProductoInformePDFView(View):
+def producto_vista_pdf(request):
+	#-- Obtener el token de la querystring.
+	token = request.GET.get("token")
 	
-	def get(self, request, *args, **kwargs):
-		#-- Obtener el queryset (el listado de clientes) ya filtrado.
-		queryset_filtrado = ProductoInformeListView()
-		queryset_filtrado.request = request
-		queryset = queryset_filtrado.get_queryset()
+	if not token:
+		return HttpResponse("Token no proporcionado", status=400)
+	
+	#-- Obtener el contexto(datos) previamente guardados en la sesión.
+	# contexto_reporte = deserializar_datos(request.session.pop(token, None))
+	contexto_reporte = deserializar_datos(request.session.get(token, None))
+	
+	if not contexto_reporte:
+		return HttpResponse("Contexto no encontrado o expirado", status=400)
+	
+	#-- Generar el PDF usando ReportLab
+	pdf_file = generar_pdf(contexto_reporte)
+	
+	#-- Preparar la respuesta HTTP.
+	response = HttpResponse(pdf_file, content_type="application/pdf")
+	response["Content-Disposition"] = f'inline; filename="{normalizar(ConfigViews.report_title)}.pdf"'
+	
+	return response
+
+
+class CustomPDFGenerator(PDFGenerator):
+	#-- Método que se puede sobreescribir/extender según requerimientos.
+	def _get_header_bottom_left(self, context):
+		"""Personalización del Header-bottom-left"""
 		
-		#-- Filtrar los campos que se van a exportar a PDF.
-		table = DataViewList.table_info.copy()
-		table_info = { field: table[field] for field in table if table[field]['pdf'] }
+		params = context.get("parametros_i", {})
+		return "<br/>".join([f"<b>{k}:</b> {v}" for k, v in params.items()])
+	
+	#-- Método que se puede sobreescribir/extender según requerimientos.
+	def _get_header_bottom_right(self, context):
+		"""Añadir información adicional específica para este reporte"""
 		
-		#-- Generar el PDF.
-		helper = ExportHelper(queryset, table_info, DataViewList.report_title)
-		buffer = helper.export_to_pdf(body_font_size=7)
-		
-		#-- Preparar la respuesta HTTP.
-		response = HttpResponse(buffer, content_type='application/pdf')
-		response['Content-Disposition'] = f'inline; filename="{ConfigViews.model_string}.pdf"'
-		
-		return response
+		params = context.get("parametros_d", {})
+		return "<br/>".join([f"<b>{k}:</b> {v}" for k, v in params.items()])
+
+
+def generar_pdf(contexto_reporte):
+	#-- Crear instancia del generador personalizado.
+	generator = CustomPDFGenerator(contexto_reporte, pagesize=portrait(A4), body_font_size=7)
+	
+	#-- Extraer los campos de las columnas de la tabla (headers).
+	table_info = ConfigViews.table_info
+	fields = [ field for field in table_info if table_info[field]['pdf']]
+	
+	#-- Extraer Títulos de las columnas de la tabla (headers).
+	headers_titles = [value['label'] for value in table_info.values() if value['pdf']]
+	
+	#-- Extraer Ancho de las columnas de la tabla.
+	col_widths = [value['col_width_pdf'] for value in table_info.values() if value['pdf']]
+	
+	table_data = [headers_titles]
+	
+	#-- Estilos específicos adicionales iniciales de la tabla.
+	table_style_config = [
+		('ALIGN', (1,0), (1,-1), 'RIGHT'),
+		('ALIGN', (-1,0), (-1,-1), 'RIGHT'),
+	]
+	
+	#-- Agregar los datos a la tabla.
+	objetos = contexto_reporte.get("objetos", [])
+	add_row_table(table_data, objetos, fields, table_info, generator)
+	
+	return generator.generate(table_data, col_widths, table_style_config)		
+
+
+def producto_vista_excel(request):
+	token = request.GET.get("token")
+	if not token:
+		return HttpResponse("Token no proporcionado", status=400)
+	
+	# ---------------------------------------------
+	data = cache.get(token)
+	if not data or "cleaned_data" not in data:
+		return HttpResponse("Datos no encontrados o expirados", status=400)
+	
+	cleaned_data = data["cleaned_data"]
+	# ---------------------------------------------
+	
+	#-- Instanciar la vista y obtener el queryset.
+	view_instance = ProductoInformeView()
+	view_instance.request = request
+	queryset = view_instance.obtener_queryset(cleaned_data)
+	
+	#-- Filtrar los headers de las columnas.
+	headers_titles = {field: ConfigViews.table_info[field] for field in ConfigViews.table_info if ConfigViews.table_info[field]['excel']}
+	
+	helper = ExportHelper(
+		queryset=queryset,
+		table_info=headers_titles,
+		report_title=ConfigViews.report_title
+	)
+	excel_data = helper.export_to_excel()
+	
+	response = HttpResponse(
+		excel_data,
+		content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+	)
+	#-- Inline permite visualizarlo en el navegador si el navegador lo soporta.
+	response["Content-Disposition"] = f'inline; filename="{ConfigViews.report_title}.xlsx"'
+	
+	return response
+
+
+def producto_vista_csv(request):
+	token = request.GET.get("token")
+	if not token:
+		return HttpResponse("Token no proporcionado", status=400)
+	
+	#-- Recuperar los parámetros de filtrado desde la cache.
+	data = cache.get(token)
+	if not data or "cleaned_data" not in data:
+		return HttpResponse("Datos no encontrados o expirados", status=400)
+	
+	cleaned_data = data["cleaned_data"]
+	
+	#-- Instanciar la vista para reejecutar la consulta y obtener el queryset.
+	view_instance = ProductoInformeView()
+	view_instance.request = request
+	queryset = view_instance.obtener_queryset(cleaned_data)
+	
+	#-- Filtrar los headers de las columnas.
+	headers_titles = {field: ConfigViews.table_info[field] for field in ConfigViews.table_info if ConfigViews.table_info[field]['csv']}
+	
+	#-- Usar el helper para exportar a CSV.
+	helper = ExportHelper(
+		queryset=queryset,
+		table_info=headers_titles,
+		report_title=ConfigViews.report_title
+	)
+	csv_data = helper.export_to_csv()
+	
+	response = HttpResponse(csv_data, content_type="text/csv; charset=utf-8")
+	response["Content-Disposition"] = f'inline; filename="{ConfigViews.report_title}.csv"'
+	
+	return response

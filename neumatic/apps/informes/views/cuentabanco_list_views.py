@@ -152,14 +152,6 @@ class CuentaBancoInformeView(InformeFormView):
 	def obtener_queryset(self, cleaned_data):
 		estatus = cleaned_data.get('estatus', 'activos')
 		
-		# if estatus:
-		# 	match estatus:
-		# 		case "activos":
-		# 			queryset = ConfigViews.model.objects.filter(estatus_cuenta_banco=True)
-		# 		case "inactivos":
-		# 			queryset = ConfigViews.model.objects.filter(estatus_cuenta_banco=False)
-		# 		case "todos":
-		# 			queryset = ConfigViews.model.objects.all()
 		if estatus:
 			match estatus:
 				case "activos":
@@ -170,9 +162,6 @@ class CuentaBancoInformeView(InformeFormView):
 					queryset = ConfigViews.model.objects.all().select_related("id_banco", "id_moneda")
 		
 		queryset = queryset.order_by('id_banco__nombre_banco', 'numero_cuenta')
-		
-		# #-- Optimizar la consulta con select_related si el modelo cuenta con ForeignKey.
-		# queryset_optimizado = queryset.select_related('id_provincia')
 		
 		#-- Convertir QUERYSET a LISTA DE DICCIONARIOS con los nombres de las relaciones.
 		queryset_list = []

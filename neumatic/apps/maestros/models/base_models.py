@@ -632,6 +632,17 @@ class Operario(ModeloBaseGenerico):
 	
 	def __str__(self):
 		return self.nombre_operario
+	
+	def clean(self):
+		super().clean()
+		
+		errors = {}
+		
+		if not self.nombre_operario:
+			errors.update({'nombre_operario': "Debe indicar un Nombre de Operario."})
+		
+		if errors:
+			raise ValidationError(errors)
 
 
 class MedioPago(ModeloBaseGenerico):

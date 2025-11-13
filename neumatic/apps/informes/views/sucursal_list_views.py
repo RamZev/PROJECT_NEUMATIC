@@ -147,21 +147,27 @@ class SucursalInformeView(InformeFormView):
 		if estatus:
 			match estatus:
 				case "activos":
-					queryset = ConfigViews.model.objects.filter(estatus_sucursal=True)
+					queryset = ConfigViews.model.objects.filter(
+						estatus_sucursal=True
+						).select_related(
+							'id_localidad', 'id_provincia'
+						)
 				case "inactivos":
-					queryset = ConfigViews.model.objects.filter(estatus_sucursal=False)
+					queryset = ConfigViews.model.objects.filter(
+						estatus_sucursal=False
+					).select_related(
+						'id_localidad', 'id_provincia'
+					)
 				case "todos":
-					queryset = ConfigViews.model.objects.all()
+					queryset = ConfigViews.model.objects.all().select_related(
+						'id_localidad', 'id_provincia'
+					)
 		
 		queryset = queryset.order_by("nombre_sucursal")
 		
-		
-		#-- Optimizar la consulta con select_related si el modelo cuenta con ForeignKey.
-		queryset_optimizado = queryset.select_related('id_localidad', 'id_provincia')		
-		
 		#-- Convertir QUERYSET a LISTA DE DICCIONARIOS con los nombres de las relaciones.
 		queryset_list = []
-		for obj in queryset_optimizado:
+		for obj in queryset:
 			obj_dict = raw_to_dict(obj)
 			#-- Agregar los nombres de las relaciones.
 			obj_dict['nombre_localidad'] = obj.id_localidad.nombre_localidad if obj.id_localidad else ""

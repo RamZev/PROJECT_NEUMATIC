@@ -834,6 +834,9 @@ def add_row_table(table_data, objetos, fields, table_info, generator):
 					else:
 						row.append("Si" if value else "No")
 						
+				elif field_config.get('type') == "string": 
+					row.append(str(value))
+					
 				elif field_config.get('type') == "int": 
 					row.append(formato_argentino_entero(value))
 					
@@ -844,18 +847,3 @@ def add_row_table(table_data, objetos, fields, table_info, generator):
 					row.append(value if value else "")
 		
 		table_data.append(row)
-
-
-
-"""
-			#-- Si es booleano.
-			if isinstance(value, bool):
-				if frmto == 'pdf':
-					#-- Para PDF, se formatea según si el campo contiene "estatus".
-					if "estatus" in fields[-1]:
-						return "Activo" if value else "Inactivo"
-					else:
-						return "Sí" if value else "No"
-				else:
-					return value
-"""
