@@ -56,7 +56,8 @@
 									<!-- Opciones de salida (opciones_reporte)-->
 									<!-- Opciones generales de reporte -->
 									<div class="row mb-2">
-										{% include 'informes/opciones_reporte_new.html' %}
+										{% comment %} {% include 'informes/opciones_reporte_new.html' %} {% endcomment %}
+										{% include 'informes/opciones_reporte.html' %}
 									</div>
 									
 									<!-- Formulario de parámetros de filtro del reporte (buscador_<model>) -->
