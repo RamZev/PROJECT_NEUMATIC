@@ -26,8 +26,7 @@ def actualizar_estados_productos():
 	
 	#-- Obtener productos a actualizar con prefetch_related para optimización.
 	productos = Producto.objects.filter(
-		tipo_producto='P', 
-		id_cai__isnull=False
+		tipo_producto='P'
 	).select_related('id_cai').prefetch_related('productostock_set')
 	
 	productos_actualizados = 0
