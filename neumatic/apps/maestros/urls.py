@@ -48,6 +48,7 @@ from .views.valida_views import *
 from .views.consulta_views_maestros import filtrar_localidad
 from .views.consulta_views_maestros import verificar_codigo_postal
 from utils.validator.validaciones import buscar_cuit_view, buscar_cliente_id_view
+from .views.actualizar_producto_estado_views import ActualizarEstadosProductosView
 
 urlpatterns = [
 	#-- Tablas:
@@ -285,11 +286,9 @@ urlpatterns = [
 	#-- Otras rutas.
 	path('filtrar-localidad/', filtrar_localidad, name='filtrar_localidad'),
 	path('verificar-codigo-postal/', verificar_codigo_postal, name='verificar_codigo_postal'),
-	
 	path('actualizar_minimo/', actualizar_minimo, name='actualizar_minimo'),
 	path('buscar-cuit/', buscar_cuit_view, name='buscar_cuit'),
 	path('buscar-cliente-id/', buscar_cliente_id_view, name='buscar_cliente_id'),
-	
 	path('api/cai/<int:pk>/datos/', CAIDatosAPIView.as_view(), name='cai-datos-api'),
-
+	path('actualizar-estados-productos/', ActualizarEstadosProductosView.as_view(), name='actualizar_estados_productos'),
 ]

@@ -705,7 +705,8 @@ class FacturaCreateView(MaestroDetalleCreateView):
 						
 						# Actualización segura con bloqueo
 						# print("mult_stock", self.object.id_comprobante_venta.mult_stock)
-	
+						
+						''' Código Original Ricardo
 						ProductoStock.objects.select_for_update().filter(
 								id_producto=detalle.id_producto,
 								id_deposito=deposito
@@ -714,6 +715,17 @@ class FacturaCreateView(MaestroDetalleCreateView):
 								stock=F('stock') + (detalle.cantidad * self.object.id_comprobante_venta.mult_stock),
 								fecha_producto_stock=fecha_comprobante
 						)
+						'''
+						#-- Código Modificado por Leoncio (para que se active el signal).
+						producto_stocks = ProductoStock.objects.select_for_update().filter(
+							id_producto=detalle.id_producto,
+							id_deposito=deposito
+						)
+						
+						for producto_stock in producto_stocks:
+							producto_stock.stock += (detalle.cantidad * self.object.id_comprobante_venta.mult_stock)
+							producto_stock.fecha_producto_stock = fecha_comprobante
+							producto_stock.save()
 				
 				# Mensaje de confirmación de la creación de la factura y redirección
 				messages.success(self.request, f"Documento {nuevo_numero} creado correctamente")

@@ -1,10 +1,9 @@
 # neumatic\apps\maestros\views\cruds_views_generics.py
-from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
+from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView, View
 from django.db.models import Q
 from django.http import JsonResponse
 from django.db import transaction
 from django.db.models import ProtectedError
-
 
 #-- Recursos necesarios para proteger las rutas.
 from django.utils.decorators import method_decorator
@@ -14,7 +13,6 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.contrib import messages
 from django.shortcuts import redirect
-
 from django.utils import timezone
 
 
@@ -149,7 +147,7 @@ class MaestroCreateView(PermissionRequiredMixin, CreateView):
 	#-- Método que agrega mensaje cuando no tiene permiso de crear.
 	def handle_no_permission(self):
 		messages.error(self.request, 'No tienes permiso para realizar esta acción.')
-		return redirect(self.list_view_name)	
+		return redirect(self.list_view_name or 'home')
 
 
 @method_decorator(login_required, name='dispatch')
@@ -202,7 +200,7 @@ class MaestroUpdateView(PermissionRequiredMixin, UpdateView):
 	#-- Método que agrega mensaje cuando no tiene permiso de modificar.
 	def handle_no_permission(self):
 		messages.error(self.request, 'No tienes permiso para realizar esta acción.')
-		return redirect(self.list_view_name)
+		return redirect(self.list_view_name or 'home')
 
 
 @method_decorator(login_required, name='dispatch')
@@ -212,7 +210,7 @@ class MaestroDeleteView(PermissionRequiredMixin, DeleteView):
 	#-- Método que agrega mensaje cuando no tiene permiso de eliminar.
 	def handle_no_permission(self):
 		messages.error(self.request, 'No tienes permiso para realizar esta acción.')
-		return redirect(self.list_view_name)
+		return redirect(self.list_view_name or 'home')
 	
 	def post(self, request, *args, **kwargs):
 		try:
@@ -225,9 +223,8 @@ class MaestroDeleteView(PermissionRequiredMixin, DeleteView):
 			messages.error(request, f'Ocurrió un error inesperado al intentar eliminar: {str(e)}')
 			return redirect(self.success_url)
 
+
 # ------------------------------------------------------------------------------------
-
-
 @method_decorator(login_required, name='dispatch')
 class GenericDetailView(DetailView):
 	def get_data(self, obj):
@@ -242,6 +239,32 @@ class GenericDetailView(DetailView):
 		data = self.get_data(obj)
 		return JsonResponse(data)
 # ------------------------------------------------------------------------------------
+
+
+@method_decorator(login_required, name='dispatch')
+class MaestroCustomView(PermissionRequiredMixin, View):
+	"""
+	Vista base para operaciones personalizadas que no son CRUD estándar
+	"""
+	list_view_name = None
+	template_name = None
+	success_url = None
+	
+	def get_context_data(self, **kwargs):
+		"""Proporciona contexto común para todas las vistas personalizadas"""
+		context = {
+			"accion": getattr(self, 'accion', 'Acción Personalizada'),
+			"list_view_name": self.list_view_name,
+			"master_title": getattr(self, 'master_title', 'Título'),
+			'fecha': timezone.now()
+		}
+		context.update(kwargs)
+		return context
+	
+	def handle_no_permission(self):
+		"""Maneja cuando el usuario no tiene permisos"""
+		messages.error(self.request, 'No tienes permiso para realizar esta acción.')
+		return redirect(self.list_view_name or 'home')
 
 
 def obtener_requerimientos_modelo(modelo):

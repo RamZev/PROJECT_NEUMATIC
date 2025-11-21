@@ -32,7 +32,7 @@ model_string = modelo.__name__.lower()   # Cuando el modelo es una sola palabra.
 #model_string = "color"
 
 #-- Usar esta forma para personalizar el nombre de la plantilla y las vistas
-model_string2 = "presupuesto"
+model_string2 = "movimiento_interno"
 
 formulario = FacturaForm
 
@@ -45,11 +45,11 @@ delete_view_name = f"{model_string2}_delete"
 
 
 # @method_decorator(login_required, name='dispatch')
-class PresupuestoListView(MaestroDetalleListView):
+class MovimientoInternoListView(MaestroDetalleListView):
 	model = modelo
 	template_name = f"ventas/maestro_detalle_list.html"
 	context_object_name = 'objetos'
-	tipo_comprobante = 'presupuesto'  # Nuevo atributo de clase
+	tipo_comprobante = 'interno'  # Nuevo atributo de clase
 
 	search_fields = [
 	 'id_factura',
@@ -89,7 +89,7 @@ class PresupuestoListView(MaestroDetalleListView):
 	#cadena_filtro = "Q(nombre_color__icontains=text)"
 	extra_context = {
 		#"master_title": model._meta.verbose_name_plural,
-		"master_title": "Presupuestos",
+		"master_title": "Movimiento Interno",
 		"home_view_name": home_view_name,
 		"list_view_name": list_view_name,
 		"create_view_name": create_view_name,
@@ -112,9 +112,9 @@ class PresupuestoListView(MaestroDetalleListView):
 		if not user.is_superuser:
 				queryset = queryset.filter(id_sucursal=user.id_sucursal)
 		
-		# 2. NUEVO FILTRO: Presupuestos
+		# 2. NUEVO FILTRO: Movimento Interno
 		queryset = queryset.filter(
-            id_comprobante_venta__presupuesto=True
+            id_comprobante_venta__interno=True
 		)
 
 		# Aplicar búsqueda y ordenación
@@ -142,13 +142,13 @@ class PresupuestoListView(MaestroDetalleListView):
 		return context
 
 # @method_decorator(login_required, name='dispatch')
-class PresupuestoCreateView(MaestroDetalleCreateView):
+class MovimientoInternoCreateView(MaestroDetalleCreateView):
 	model = modelo
 	list_view_name = list_view_name
 	form_class = formulario
 	template_name = f"ventas/{template_form}"
 	success_url = reverse_lazy(list_view_name) # Nombre de la url.
-	tipo_comprobante = 'presupuesto'  # Nuevo atributo de clase
+	tipo_comprobante = 'interno'  # Nuevo atributo de clase
 
 	#-- Indicar el permiso que requiere para ejecutar la acción:
 	# Obtener el nombre de la aplicación a la que pertenece el modelo.
@@ -212,7 +212,7 @@ class PresupuestoCreateView(MaestroDetalleCreateView):
 		# Obtener todos los comprobantes con sus valores compro_asociado
 		compro_asociado_dict = {str(c.id_comprobante_venta): c.compro_asociado for c in ComprobanteVenta.objects.all()}
 		data['compro_asociado_dict'] = json.dumps(compro_asociado_dict)
-
+		
 		# Obtener todos los comprobantes con sus valores interno
 		interno_dict = {str(c.id_comprobante_venta): c.interno for c in ComprobanteVenta.objects.all()}
 		data['interno_dict'] = json.dumps(interno_dict)
@@ -330,6 +330,8 @@ class PresupuestoCreateView(MaestroDetalleCreateView):
 					tipo_numeracion = 'manual'
 					print("Entró")
 				elif comprobante_data.remito:
+					tipo_numeracion = 'automatica'
+				elif comprobante_data.interno:
 					tipo_numeracion = 'automatica'
 				else:
 					pass
@@ -703,8 +705,7 @@ class PresupuestoCreateView(MaestroDetalleCreateView):
 						
 						# Actualización segura con bloqueo
 						# print("mult_stock", self.object.id_comprobante_venta.mult_stock)
-						
-						''' Código Original Ricardo
+	
 						ProductoStock.objects.select_for_update().filter(
 								id_producto=detalle.id_producto,
 								id_deposito=deposito
@@ -713,17 +714,6 @@ class PresupuestoCreateView(MaestroDetalleCreateView):
 								stock=F('stock') + (detalle.cantidad * self.object.id_comprobante_venta.mult_stock),
 								fecha_producto_stock=fecha_comprobante
 						)
-						'''
-						#-- Código Modificado por Leoncio (para que se active el signal).
-						producto_stocks = ProductoStock.objects.select_for_update().filter(
-							id_producto=detalle.id_producto,
-							id_deposito=deposito
-						)
-						
-						for producto_stock in producto_stocks:
-							producto_stock.stock += (detalle.cantidad * self.object.id_comprobante_venta.mult_stock)
-							producto_stock.fecha_producto_stock = fecha_comprobante
-							producto_stock.save()
 				
 				# Mensaje de confirmación de la creación de la factura y redirección
 				messages.success(self.request, f"Documento {nuevo_numero} creado correctamente")
@@ -955,13 +945,13 @@ class PresupuestoCreateView(MaestroDetalleCreateView):
 		return '\n'.join([line for line in parsed.toprettyxml(indent="    ").splitlines() if line.strip()])	
 
 # @method_decorator(login_required, name='dispatch')
-class PresupuestoUpdateView(MaestroDetalleUpdateView):
+class MovimientoInternoUpdateView(MaestroDetalleUpdateView):
 	model = modelo
 	list_view_name = list_view_name
 	form_class = formulario
 	template_name = f"ventas/{template_form}"
 	success_url = reverse_lazy(list_view_name) # Nombre de la url.
-	tipo_comprobante = 'presupuesto'  # Nuevo atributo de clase
+	tipo_comprobante = 'interno'  # Nuevo atributo de clase
 
 	#-- Indicar el permiso que requiere para ejecutar la acción:
 	# Obtener el nombre de la aplicación a la que pertenece el modelo.
@@ -1083,7 +1073,7 @@ class PresupuestoUpdateView(MaestroDetalleUpdateView):
 
 
 # @method_decorator(login_required, name='dispatch')
-class PresupuestoDeleteView(MaestroDetalleDeleteView):
+class MovimientoInternoDeleteView(MaestroDetalleDeleteView):
 	model = modelo
 	list_view_name = list_view_name
 	template_name = "base_confirm_delete.html"

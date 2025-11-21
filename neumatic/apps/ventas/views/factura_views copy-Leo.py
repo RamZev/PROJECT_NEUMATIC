@@ -31,25 +31,21 @@ model_string = modelo.__name__.lower()   # Cuando el modelo es una sola palabra.
 #-- Usar esta forma cuando el modelo esté compuesto por más de una palabra: Ej. TipoCambio colocar "tipo_cambio".
 #model_string = "color"
 
-#-- Usar esta forma para personalizar el nombre de la plantilla y las vistas
-model_string2 = "presupuesto"
-
 formulario = FacturaForm
 
 template_form = f"{model_string}_form.html"
 home_view_name = "home"
-list_view_name = f"{model_string2}_list"
-create_view_name = f"{model_string2}_create"
-update_view_name = f"{model_string2}_update"
-delete_view_name = f"{model_string2}_delete"
-
+list_view_name = f"{model_string}_list"
+create_view_name = f"{model_string}_create"
+update_view_name = f"{model_string}_update"
+delete_view_name = f"{model_string}_delete"
 
 # @method_decorator(login_required, name='dispatch')
-class PresupuestoListView(MaestroDetalleListView):
+class FacturaListView(MaestroDetalleListView):
 	model = modelo
 	template_name = f"ventas/maestro_detalle_list.html"
 	context_object_name = 'objetos'
-	tipo_comprobante = 'presupuesto'  # Nuevo atributo de clase
+	tipo_comprobante = 'electronico'  # Nuevo atributo de clase
 
 	search_fields = [
 	 'id_factura',
@@ -67,6 +63,7 @@ class PresupuestoListView(MaestroDetalleListView):
 		'compro': (1, 'Compro'),
 		'letra_comprobante': (1, 'Letra'),
 		'numero_comprobante': (1, 'Nro Comp'),
+		# 'numero_comprobante_formateado': (1, 'Nro Comp'),
 		'fecha_comprobante': (1, 'fecha'),
 		'cuit': (1, 'CUIT'),
 		'id_cliente': (3, 'Cliente'),
@@ -80,6 +77,7 @@ class PresupuestoListView(MaestroDetalleListView):
 		{'field_name': 'compro', 'date_format': None},
 		{'field_name': 'letra_comprobante', 'date_format': None},
 		{'field_name': 'numero_comprobante', 'date_format': None},
+		# {'field_name': 'numero_comprobante_formateado', 'date_format': None},
   		{'field_name': 'fecha_comprobante', 'date_format': 'd/m/Y'},
 		{'field_name': 'cuit', 'date_format': None},
 		{'field_name': 'id_cliente', 'date_format': None},
@@ -89,7 +87,7 @@ class PresupuestoListView(MaestroDetalleListView):
 	#cadena_filtro = "Q(nombre_color__icontains=text)"
 	extra_context = {
 		#"master_title": model._meta.verbose_name_plural,
-		"master_title": "Presupuestos",
+		"master_title": "Comprobantes Electrónicos",
 		"home_view_name": home_view_name,
 		"list_view_name": list_view_name,
 		"create_view_name": create_view_name,
@@ -112,9 +110,12 @@ class PresupuestoListView(MaestroDetalleListView):
 		if not user.is_superuser:
 				queryset = queryset.filter(id_sucursal=user.id_sucursal)
 		
-		# 2. NUEVO FILTRO: Presupuestos
+		# 2. NUEVO FILTRO: Comprobantes electrónicos o remitos
 		queryset = queryset.filter(
-            id_comprobante_venta__presupuesto=True
+			Q(id_comprobante_venta__electronica=True) |
+			Q(id_comprobante_venta__remito=True),
+			id_comprobante_venta__recibo=False,
+			id_comprobante_venta__presupuesto=False
 		)
 
 		# Aplicar búsqueda y ordenación
@@ -142,13 +143,13 @@ class PresupuestoListView(MaestroDetalleListView):
 		return context
 
 # @method_decorator(login_required, name='dispatch')
-class PresupuestoCreateView(MaestroDetalleCreateView):
+class FacturaCreateView(MaestroDetalleCreateView):
 	model = modelo
 	list_view_name = list_view_name
 	form_class = formulario
 	template_name = f"ventas/{template_form}"
 	success_url = reverse_lazy(list_view_name) # Nombre de la url.
-	tipo_comprobante = 'presupuesto'  # Nuevo atributo de clase
+	tipo_comprobante = 'electronico'  # Nuevo atributo de clase
 
 	#-- Indicar el permiso que requiere para ejecutar la acción:
 	# Obtener el nombre de la aplicación a la que pertenece el modelo.
@@ -196,7 +197,7 @@ class PresupuestoCreateView(MaestroDetalleCreateView):
 		# Obtener todos los comprobantes con sus valores tipo_comprobante
 		tipo_comprobante_dict = {str(c.id_comprobante_venta): c.tipo_comprobante for c in ComprobanteVenta.objects.all()}
 		data['tipo_comprobante_dict'] = mark_safe(json.dumps(tipo_comprobante_dict, ensure_ascii=False))
-		
+
 		# Obtener todos los comprobantes con sus valores mipyme
 		mipyme_dict = {str(c.id_comprobante_venta): c.mipyme for c in ComprobanteVenta.objects.all()}
 		data['mipyme_dict'] = json.dumps(mipyme_dict)
@@ -220,7 +221,7 @@ class PresupuestoCreateView(MaestroDetalleCreateView):
 		# Obtener id_cliente del primer cliente con el filtro cliente_empresa=True
 		first_id = Cliente.objects.filter(cliente_empresa=True).values_list('id_cliente', flat=True).first()
 		data['cliente_empresa_id'] = str(first_id) if first_id is not None else ''
-		
+
 		# Obtener todos los operarios con sus id
 		operario_dict = {str(o.id_operario): o.nombre_operario for o in Operario.objects.all()}
 		data['operario_dict'] = json.dumps(operario_dict)
@@ -279,23 +280,23 @@ class PresupuestoCreateView(MaestroDetalleCreateView):
 							Cliente.objects.filter(id_cliente=cliente_id).update(**updates)
 					
 					except Cliente.DoesNotExist:
-						pass				
+						pass
 				
 				# 1. Validación mínima necesaria
 				deposito = form.cleaned_data.get('id_deposito')
 				if not deposito:
-						form.add_error('id_deposito', 'Debe seleccionar un depósito')
-						return self.form_invalid(form)
+					form.add_error('id_deposito', 'Debe seleccionar un depósito')
+					return self.form_invalid(form)
 
 				# 2. Validación para documentos pendientes
 				comprobante_venta = form.cleaned_data['id_comprobante_venta']
 				if comprobante_venta.pendiente:
-						comprobante_remito = form.cleaned_data.get('comprobante_remito')
-						remito = form.cleaned_data.get('remito')
-						
-						if not all([comprobante_remito, remito]):
-								form.add_error(None, 'Para este tipo de comprobante debe especificar el documento asociado')
-								return self.form_invalid(form)
+					comprobante_remito = form.cleaned_data.get('comprobante_remito')
+					remito = form.cleaned_data.get('remito')
+					
+					if not all([comprobante_remito, remito]):
+							form.add_error(None, 'Para este tipo de comprobante debe especificar el documento asociado')
+							return self.form_invalid(form)
 
 				# 3. Numeración - Inicio  ----------------------->
 				sucursal = form.cleaned_data['id_sucursal']
@@ -326,16 +327,14 @@ class PresupuestoCreateView(MaestroDetalleCreateView):
 				# Determinar el tipo de numeración basado en comprobante_data
 				if comprobante_data.electronica:
 					tipo_numeracion = 'electronica'
-				elif not comprobante_data.electronica and comprobante_data.libro_iva:
+					print("tipo_numeracion = 'electronica'")
+				elif comprobante_data.manual:
 					tipo_numeracion = 'manual'
-					print("Entró")
-				elif comprobante_data.remito:
-					tipo_numeracion = 'automatica'
+					print("tipo_numeracion = 'manual'")
 				else:
-					pass
-					# form.add_error(None, 'Tipo de numeración no válido')
-					# return self.form_invalid(form)
-
+					tipo_numeracion = 'automatica'
+					print("tipo_numeracion = 'automatica'")
+									
 				# Determinar comprobante AFIP y letra
 				codigo_afip_a = comprobante_data.codigo_afip_a
 				codigo_afip_b = comprobante_data.codigo_afip_b
@@ -577,6 +576,9 @@ class PresupuestoCreateView(MaestroDetalleCreateView):
 						defaults={'numero': numero_plantilla}  # Valor inicial
 					)
 					
+					if not created:
+						print("Elnúmerto No fue actualizado")
+
 					# Si ya existe, actualizar solo si el número manual es mayor
 					if not created and numero_plantilla > numero_obj.numero:
 						Numero.objects.filter(pk=numero_obj.pk).update(numero=numero_plantilla)
@@ -655,25 +657,25 @@ class PresupuestoCreateView(MaestroDetalleCreateView):
 
 				# 5. ACTUALIZACIÓN DEL DOCUMENTO ASOCIADO (PARTE CLAVE)
 				if comprobante_venta.pendiente:
-						try:
-							# Buscar el documento asociado (remito) con estado NULL o vacío
-							documento_asociado = Factura.objects.filter(
-									Q(compro=form.cleaned_data['comprobante_remito']) &
-									Q(numero_comprobante=form.cleaned_data['remito']) &
-									(Q(estado="") | Q(estado__isnull=True))
-							).select_for_update().first()
-							
-							if documento_asociado:
-									# Actualización directa y eficiente
-									Factura.objects.filter(pk=documento_asociado.pk).update(
-											estado="F"
-									)
-									print(f"Documento {documento_asociado.compro}-{documento_asociado.numero_comprobante} actualizado a estado 'F'")
-							else:
-									print("Advertencia: No se encontró el documento asociado para actualizar")
-						except Exception as e:
-							print(f"Error al actualizar documento asociado: {str(e)}")
-							# No hacemos return para no impedir la creación de la factura principal
+					try:
+						# Buscar el documento asociado (remito) con estado NULL o vacío
+						documento_asociado = Factura.objects.filter(
+								Q(compro=form.cleaned_data['comprobante_remito']) &
+								Q(numero_comprobante=form.cleaned_data['remito']) &
+								(Q(estado="") | Q(estado__isnull=True))
+						).select_for_update().first()
+						
+						if documento_asociado:
+								# Actualización directa y eficiente
+								Factura.objects.filter(pk=documento_asociado.pk).update(
+										estado="F"
+								)
+								print(f"Documento {documento_asociado.compro}-{documento_asociado.numero_comprobante} actualizado a estado 'F'")
+						else:
+								print("Advertencia: No se encontró el documento asociado para actualizar")
+					except Exception as e:
+						print(f"Error al actualizar documento asociado: {str(e)}")
+						# No hacemos return para no impedir la creación de la factura principal
 
 				# 6. ACTUALIZACIÓN DE LA AUTORIZACIÓN (NUEVO)
 				if form.cleaned_data.get('id_valida'):  # Si tiene autorización asociada
@@ -703,8 +705,7 @@ class PresupuestoCreateView(MaestroDetalleCreateView):
 						
 						# Actualización segura con bloqueo
 						# print("mult_stock", self.object.id_comprobante_venta.mult_stock)
-						
-						''' Código Original Ricardo
+	
 						ProductoStock.objects.select_for_update().filter(
 								id_producto=detalle.id_producto,
 								id_deposito=deposito
@@ -713,17 +714,6 @@ class PresupuestoCreateView(MaestroDetalleCreateView):
 								stock=F('stock') + (detalle.cantidad * self.object.id_comprobante_venta.mult_stock),
 								fecha_producto_stock=fecha_comprobante
 						)
-						'''
-						#-- Código Modificado por Leoncio (para que se active el signal).
-						producto_stocks = ProductoStock.objects.select_for_update().filter(
-							id_producto=detalle.id_producto,
-							id_deposito=deposito
-						)
-						
-						for producto_stock in producto_stocks:
-							producto_stock.stock += (detalle.cantidad * self.object.id_comprobante_venta.mult_stock)
-							producto_stock.fecha_producto_stock = fecha_comprobante
-							producto_stock.save()
 				
 				# Mensaje de confirmación de la creación de la factura y redirección
 				messages.success(self.request, f"Documento {nuevo_numero} creado correctamente")
@@ -738,14 +728,23 @@ class PresupuestoCreateView(MaestroDetalleCreateView):
 			return self.form_invalid(form)
 		
 	def form_invalid(self, form):
-		print("Entro a form_invalid")
+		print("Entro a form_invalid***")
 		print("Errores del formulario principal:", form.errors)
 
 		context = self.get_context_data()
 		formset_detalle = context['formset_detalle']
+		formset_serial = context['formset_serial']
 
 		if formset_detalle:
-			print("Errores del formset:", formset_detalle.errors)
+			print("Errores del formset detalle:")
+			for i, form_d in enumerate(formset_detalle):
+				print(f"Form {i}:", form_d.errors)
+				print("Non field errors:", form_d.non_field_errors())
+
+		if formset_serial:
+			print("Errores del formset serial:")
+			for i, form_s in enumerate(formset_serial):
+				print(f"Form {i}:", form_s.errors)
 
 		return super().form_invalid(form)
 
@@ -802,7 +801,7 @@ class PresupuestoCreateView(MaestroDetalleCreateView):
 		# CUIT del certificado (Mario)
 		# Es temporal porque los certificados 
 		# Son de mario y no de Debona
-		tax_id = 20207882950
+		# tax_id = 20207882950 # CUIT de Mario
 
 		# Instanciamos la clase Afip con las credenciales
 		afip = Afip({
@@ -954,14 +953,15 @@ class PresupuestoCreateView(MaestroDetalleCreateView):
 		parsed = minidom.parseString(raw)
 		return '\n'.join([line for line in parsed.toprettyxml(indent="    ").splitlines() if line.strip()])	
 
+
 # @method_decorator(login_required, name='dispatch')
-class PresupuestoUpdateView(MaestroDetalleUpdateView):
+class FacturaUpdateView(MaestroDetalleUpdateView):
 	model = modelo
 	list_view_name = list_view_name
 	form_class = formulario
 	template_name = f"ventas/{template_form}"
 	success_url = reverse_lazy(list_view_name) # Nombre de la url.
-	tipo_comprobante = 'presupuesto'  # Nuevo atributo de clase
+	tipo_comprobante = 'electronico'  # Nuevo atributo de clase
 
 	#-- Indicar el permiso que requiere para ejecutar la acción:
 	# Obtener el nombre de la aplicación a la que pertenece el modelo.
@@ -971,6 +971,7 @@ class PresupuestoUpdateView(MaestroDetalleUpdateView):
 
 	def get_context_data(self, **kwargs):
 		data = super().get_context_data(**kwargs)
+		data['request'] = self.request  # Asegura que el token CSRF esté disponible 11/07/2025
 		usuario = self.request.user
 		data['cambia_precio_descripcion'] = usuario.cambia_precio_descripcion
 		data['tipo_venta'] = TIPO_VENTA
@@ -1004,7 +1005,7 @@ class PresupuestoUpdateView(MaestroDetalleUpdateView):
 		# Obtener todos los comprobantes con sus valores tipo_comprobante
 		tipo_comprobante_dict = {str(c.id_comprobante_venta): c.tipo_comprobante for c in ComprobanteVenta.objects.all()}
 		data['tipo_comprobante_dict'] = mark_safe(json.dumps(tipo_comprobante_dict, ensure_ascii=False))
-		
+
 		# Obtener todos los comprobantes con sus valores mipyme
 		mipyme_dict = {str(c.id_comprobante_venta): c.mipyme for c in ComprobanteVenta.objects.all()}
 		data['mipyme_dict'] = json.dumps(mipyme_dict)
@@ -1020,7 +1021,7 @@ class PresupuestoUpdateView(MaestroDetalleUpdateView):
 		# Obtener todos los comprobantes con sus valores compro_asociado
 		compro_asociado_dict = {str(c.id_comprobante_venta): c.compro_asociado for c in ComprobanteVenta.objects.all()}
 		data['compro_asociado_dict'] = json.dumps(compro_asociado_dict)
-		
+
 		# Obtener todos los comprobantes con sus valores interno
 		interno_dict = {str(c.id_comprobante_venta): c.interno for c in ComprobanteVenta.objects.all()}
 		data['interno_dict'] = json.dumps(interno_dict)
@@ -1028,7 +1029,7 @@ class PresupuestoUpdateView(MaestroDetalleUpdateView):
 		# Obtener id_cliente del primer cliente con el filtro cliente_empresa=True
 		first_id = Cliente.objects.filter(cliente_empresa=True).values_list('id_cliente', flat=True).first()
 		data['cliente_empresa_id'] = str(first_id) if first_id is not None else ''
-		
+
 		# Obtener todos los operarios con sus id
 		operario_dict = {str(o.id_operario): o.nombre_operario for o in Operario.objects.all()}
 		data['operario_dict'] = json.dumps(operario_dict)
@@ -1060,7 +1061,7 @@ class PresupuestoUpdateView(MaestroDetalleUpdateView):
 			return self.form_invalid(form)
 
 	def form_invalid(self, form):
-		print("Entro a form_invalid")
+		print("Entro a form_invalid$$$")
 		print("Errores del formulario principal:", form.errors)
 
 		context = self.get_context_data()
@@ -1083,7 +1084,7 @@ class PresupuestoUpdateView(MaestroDetalleUpdateView):
 
 
 # @method_decorator(login_required, name='dispatch')
-class PresupuestoDeleteView(MaestroDetalleDeleteView):
+class FacturaDeleteView(MaestroDetalleDeleteView):
 	model = modelo
 	list_view_name = list_view_name
 	template_name = "base_confirm_delete.html"

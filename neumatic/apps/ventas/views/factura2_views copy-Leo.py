@@ -32,12 +32,16 @@ model_string = modelo.__name__.lower()   # Cuando el modelo es una sola palabra.
 #model_string = "color"
 
 #-- Usar esta forma para personalizar el nombre de la plantilla y las vistas
-model_string2 = "presupuesto"
+model_string2 = "factura_manual"
 
 formulario = FacturaForm
 
 template_form = f"{model_string}_form.html"
 home_view_name = "home"
+# list_view_name = f"{model_string}_list"
+# create_view_name = f"{model_string}_create"
+# update_view_name = f"{model_string}_update"
+# delete_view_name = f"{model_string}_delete"
 list_view_name = f"{model_string2}_list"
 create_view_name = f"{model_string2}_create"
 update_view_name = f"{model_string2}_update"
@@ -45,11 +49,11 @@ delete_view_name = f"{model_string2}_delete"
 
 
 # @method_decorator(login_required, name='dispatch')
-class PresupuestoListView(MaestroDetalleListView):
+class FacturaManualListView(MaestroDetalleListView):
 	model = modelo
 	template_name = f"ventas/maestro_detalle_list.html"
 	context_object_name = 'objetos'
-	tipo_comprobante = 'presupuesto'  # Nuevo atributo de clase
+	tipo_comprobante = 'manual'  # Nuevo atributo de clase
 
 	search_fields = [
 	 'id_factura',
@@ -89,7 +93,7 @@ class PresupuestoListView(MaestroDetalleListView):
 	#cadena_filtro = "Q(nombre_color__icontains=text)"
 	extra_context = {
 		#"master_title": model._meta.verbose_name_plural,
-		"master_title": "Presupuestos",
+		"master_title": "Comprobantes Manuales",
 		"home_view_name": home_view_name,
 		"list_view_name": list_view_name,
 		"create_view_name": create_view_name,
@@ -112,9 +116,10 @@ class PresupuestoListView(MaestroDetalleListView):
 		if not user.is_superuser:
 				queryset = queryset.filter(id_sucursal=user.id_sucursal)
 		
-		# 2. NUEVO FILTRO: Presupuestos
+		# 2. NUEVO FILTRO: Comprobantes electrónicos o remitos
 		queryset = queryset.filter(
-            id_comprobante_venta__presupuesto=True
+			id_comprobante_venta__recibo=False,
+            id_comprobante_venta__presupuesto=False
 		)
 
 		# Aplicar búsqueda y ordenación
@@ -142,13 +147,13 @@ class PresupuestoListView(MaestroDetalleListView):
 		return context
 
 # @method_decorator(login_required, name='dispatch')
-class PresupuestoCreateView(MaestroDetalleCreateView):
+class FacturaManualCreateView(MaestroDetalleCreateView):
 	model = modelo
 	list_view_name = list_view_name
 	form_class = formulario
 	template_name = f"ventas/{template_form}"
 	success_url = reverse_lazy(list_view_name) # Nombre de la url.
-	tipo_comprobante = 'presupuesto'  # Nuevo atributo de clase
+	tipo_comprobante = 'manual'  # Nuevo atributo de clase
 
 	#-- Indicar el permiso que requiere para ejecutar la acción:
 	# Obtener el nombre de la aplicación a la que pertenece el modelo.
@@ -175,7 +180,7 @@ class PresupuestoCreateView(MaestroDetalleCreateView):
 			data['formset_detalle'] = DetalleFacturaFormSet(instance=self.object)
 			data['formset_serial'] = SerialFacturaFormSet(instance=self.object)
 
-		data['is_edit'] = False  # Indicar que es una edición
+		data['is_edit'] = False  # Indicar que es una creación
 
 		# Obtener todos los comprobantes con sus valores libro_iva
 		libro_iva_dict = {str(c.id_comprobante_venta): c.libro_iva for c in ComprobanteVenta.objects.all()}
@@ -196,7 +201,7 @@ class PresupuestoCreateView(MaestroDetalleCreateView):
 		# Obtener todos los comprobantes con sus valores tipo_comprobante
 		tipo_comprobante_dict = {str(c.id_comprobante_venta): c.tipo_comprobante for c in ComprobanteVenta.objects.all()}
 		data['tipo_comprobante_dict'] = mark_safe(json.dumps(tipo_comprobante_dict, ensure_ascii=False))
-		
+
 		# Obtener todos los comprobantes con sus valores mipyme
 		mipyme_dict = {str(c.id_comprobante_venta): c.mipyme for c in ComprobanteVenta.objects.all()}
 		data['mipyme_dict'] = json.dumps(mipyme_dict)
@@ -279,7 +284,7 @@ class PresupuestoCreateView(MaestroDetalleCreateView):
 							Cliente.objects.filter(id_cliente=cliente_id).update(**updates)
 					
 					except Cliente.DoesNotExist:
-						pass				
+						pass
 				
 				# 1. Validación mínima necesaria
 				deposito = form.cleaned_data.get('id_deposito')
@@ -703,8 +708,7 @@ class PresupuestoCreateView(MaestroDetalleCreateView):
 						
 						# Actualización segura con bloqueo
 						# print("mult_stock", self.object.id_comprobante_venta.mult_stock)
-						
-						''' Código Original Ricardo
+	
 						ProductoStock.objects.select_for_update().filter(
 								id_producto=detalle.id_producto,
 								id_deposito=deposito
@@ -713,42 +717,39 @@ class PresupuestoCreateView(MaestroDetalleCreateView):
 								stock=F('stock') + (detalle.cantidad * self.object.id_comprobante_venta.mult_stock),
 								fecha_producto_stock=fecha_comprobante
 						)
-						'''
-						#-- Código Modificado por Leoncio (para que se active el signal).
-						producto_stocks = ProductoStock.objects.select_for_update().filter(
-							id_producto=detalle.id_producto,
-							id_deposito=deposito
-						)
-						
-						for producto_stock in producto_stocks:
-							producto_stock.stock += (detalle.cantidad * self.object.id_comprobante_venta.mult_stock)
-							producto_stock.fecha_producto_stock = fecha_comprobante
-							producto_stock.save()
 				
 				# Mensaje de confirmación de la creación de la factura y redirección
-				messages.success(self.request, f"Documento {nuevo_numero} creado correctamente")
+				messages.success(self.request, f"Documento {nuevo_numero} creada correctamente")
 				return redirect(self.get_success_url())
-
 						
 		except DatabaseError as e:
 			messages.error(self.request, "Error de concurrencia: Intente nuevamente")
 			return self.form_invalid(form)
+
 		except Exception as e:
 			messages.error(self.request, f"Error inesperado: {str(e)}")
 			return self.form_invalid(form)
 		
 	def form_invalid(self, form):
-		print("Entro a form_invalid")
+		print("Entro a form_invalid***")
 		print("Errores del formulario principal:", form.errors)
 
 		context = self.get_context_data()
 		formset_detalle = context['formset_detalle']
+		# formset_serial = context['formset_serial']
 
 		if formset_detalle:
-			print("Errores del formset:", formset_detalle.errors)
+			print("Errores del formset detalle:")
+			for i, form_d in enumerate(formset_detalle):
+				print(f"Form {i}:", form_d.errors)
+				print("Non field errors:", form_d.non_field_errors())
+
+		# if formset_serial:
+		# 	print("Errores del formset serial:")
+		# 	for i, form_s in enumerate(formset_serial):
+		# 		print(f"Form {i}:", form_s.errors)
 
 		return super().form_invalid(form)
-
 
 	def get_success_url(self):
 		return reverse(list_view_name)
@@ -771,7 +772,7 @@ class PresupuestoCreateView(MaestroDetalleCreateView):
 		kwargs['usuario'] = self.request.user  # Pasar el usuario autenticado
 
 		return kwargs
-
+	
 	def obtener_token_afiparca(self):
 		from afip import Afip
 		from pathlib import Path
@@ -954,14 +955,15 @@ class PresupuestoCreateView(MaestroDetalleCreateView):
 		parsed = minidom.parseString(raw)
 		return '\n'.join([line for line in parsed.toprettyxml(indent="    ").splitlines() if line.strip()])	
 
+
 # @method_decorator(login_required, name='dispatch')
-class PresupuestoUpdateView(MaestroDetalleUpdateView):
+class FacturaManualUpdateView(MaestroDetalleUpdateView):
 	model = modelo
 	list_view_name = list_view_name
 	form_class = formulario
 	template_name = f"ventas/{template_form}"
 	success_url = reverse_lazy(list_view_name) # Nombre de la url.
-	tipo_comprobante = 'presupuesto'  # Nuevo atributo de clase
+	tipo_comprobante = 'manual'  # Nuevo atributo de clase
 
 	#-- Indicar el permiso que requiere para ejecutar la acción:
 	# Obtener el nombre de la aplicación a la que pertenece el modelo.
@@ -1020,7 +1022,7 @@ class PresupuestoUpdateView(MaestroDetalleUpdateView):
 		# Obtener todos los comprobantes con sus valores compro_asociado
 		compro_asociado_dict = {str(c.id_comprobante_venta): c.compro_asociado for c in ComprobanteVenta.objects.all()}
 		data['compro_asociado_dict'] = json.dumps(compro_asociado_dict)
-		
+
 		# Obtener todos los comprobantes con sus valores interno
 		interno_dict = {str(c.id_comprobante_venta): c.interno for c in ComprobanteVenta.objects.all()}
 		data['interno_dict'] = json.dumps(interno_dict)
@@ -1037,6 +1039,7 @@ class PresupuestoUpdateView(MaestroDetalleUpdateView):
 		data['tipo_comprobante'] = self.tipo_comprobante
 
 		return data
+		
 
 	def form_valid(self, form):
 		context = self.get_context_data()
@@ -1083,7 +1086,7 @@ class PresupuestoUpdateView(MaestroDetalleUpdateView):
 
 
 # @method_decorator(login_required, name='dispatch')
-class PresupuestoDeleteView(MaestroDetalleDeleteView):
+class FacturaManualDeleteView(MaestroDetalleDeleteView):
 	model = modelo
 	list_view_name = list_view_name
 	template_name = "base_confirm_delete.html"
