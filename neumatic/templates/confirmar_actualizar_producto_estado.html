@@ -1,0 +1,175 @@
+<!-- neumatic\templates\confirmar_actualizar_producto_estado.html -->
+{% extends 'maestro_form.html' %}
+{% load static %}
+
+{% block title %}Actualizar Estados de Productos{% endblock %}
+
+{% block maincomponent %}
+	{% block principalcomponent %}
+		<div id="layoutSidenav_content">
+			<main>
+				<div class="container-fluid px-4 py-4">
+					
+					<h2>{{ master_title }}</h2>
+					<ol class="breadcrumb mb-4">
+						<li class="breadcrumb-item"><a href="{% url home_view_name %}">Panel</a></li>
+						<li class="breadcrumb-item active">Actualizar Estados de Productos</li>
+					</ol>
+					
+					<div class="card mb-4 col-8">
+						<div class="card-header">
+							<i class="bi bi-exclamation-octagon-fill"></i>
+							ATENCIÓN!
+						</div>
+						<div class="card-body">
+							<p>Esta acción actualizará los estados a: <strong>FALTANTES, DISPONIBLES o POCAS</strong> según el stock en depósitos.</p>
+							<p>{{ mensaje }}</p>
+							
+							<!-- Mensaje de carga (inicialmente oculto) -->
+							<div id="mensaje-carga" class="alert alert-info" style="display: none;">
+								<div class="spinner-border spinner-border-sm text-primary me-2" role="status">
+									<span class="visually-hidden">Cargando...</span>
+								</div>
+								<strong>Procesando actualización...</strong> Este proceso puede tomar varios segundos. Por favor, espere.
+							</div>
+							
+							<!-- Área para mostrar resultados -->
+							<div id="resultado"></div>
+							
+							<!-- Formulario normal como fallback -->
+							<form method="post" id="actualizarForm">
+								{% csrf_token %}
+								<button type="button" class="btn btn-primary" id="procesar-btn">
+									<i class="bi bi-check-lg"></i>
+									Sí, Actualizar Estados
+								</button>
+								<a href="{% url home_view_name %}" class="btn btn-secondary" id="cancelar-btn">
+									<i class="bi bi-x-lg"></i>
+									Cancelar
+								</a>
+							</form>
+						</div>
+					</div>
+					
+				</div>
+			</main>
+		</div>
+	{% endblock principalcomponent %}
+{% endblock maincomponent %}
+
+{% block script %}
+	{{ block.super }}
+	
+	<script>
+		document.addEventListener('DOMContentLoaded', function() {
+			const procesarBtn = document.getElementById('procesar-btn');
+			const cancelarBtn = document.getElementById('cancelar-btn');
+			const mensajeCarga = document.getElementById('mensaje-carga');
+			const resultadoDiv = document.getElementById('resultado');
+			const formulario = document.getElementById('actualizarForm');
+			
+			if (procesarBtn) {
+				procesarBtn.addEventListener('click', function() {
+					//-- Mostrar mensaje de carga.
+					mensajeCarga.style.display = 'block';
+					resultadoDiv.innerHTML = '';
+					
+					//-- Deshabilitar botones.
+					procesarBtn.disabled = true;
+					procesarBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Procesando...';
+					
+					if (cancelarBtn) {
+						cancelarBtn.style.pointerEvents = 'none';
+						cancelarBtn.style.opacity = '0.6';
+					}
+					
+					//-- Obtener el token CSRF.
+					const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+					
+					//-- Enviar solicitud AJAX.
+					fetch('', {  // URL vacía = misma URL actual
+						method: 'POST',
+						headers: {
+							'X-Requested-With': 'XMLHttpRequest',
+							'X-CSRFToken': csrfToken
+						},
+						body: new FormData(formulario)
+					})
+					.then(response => {
+						if (!response.ok) {
+							throw new Error('Error en la respuesta del servidor');
+						}
+						return response.json();
+					})
+					.then(data => {
+						//-- Ocultar mensaje de carga.
+						mensajeCarga.style.display = 'none';
+						
+						if (data.success) {
+							//-- Mostrar mensaje de éxito.
+							resultadoDiv.innerHTML = `
+								<div class="alert alert-success mt-3">
+									<i class="bi bi-check-circle-fill"></i>
+									<strong>¡Éxito!</strong> ${data.message}
+								</div>
+							`;
+							
+							//-- Cambiar el botón a estado "completado".
+							procesarBtn.disabled = true;
+							procesarBtn.innerHTML = '<i class="bi bi-check-circle"></i> Proceso Completado';
+							procesarBtn.classList.remove('btn-primary');
+							procesarBtn.classList.add('btn-success');
+							
+							//-- Re-habilitar el botón cancelar.
+							if (cancelarBtn) {
+								cancelarBtn.style.pointerEvents = 'auto';
+								cancelarBtn.style.opacity = '1';
+							}
+							
+						} else {
+							//-- Mostrar mensaje de error.
+							resultadoDiv.innerHTML = `
+								<div class="alert alert-danger mt-3">
+									<i class="bi bi-exclamation-triangle-fill"></i>
+									<strong>Error:</strong> ${data.message}
+								</div>
+							`;
+							
+							//-- Re-habilitar botón para reintentar.
+							procesarBtn.disabled = false;
+							procesarBtn.innerHTML = '<i class="bi bi-check-lg"></i> Reintentar Actualización';
+							
+							//-- Re-habilitar el botón cancelar.
+							if (cancelarBtn) {
+								cancelarBtn.style.pointerEvents = 'auto';
+								cancelarBtn.style.opacity = '1';
+							}
+						}
+					})
+					.catch(error => {
+						//-- Ocultar mensaje de carga.
+						mensajeCarga.style.display = 'none';
+						
+						//-- Mostrar error.
+						resultadoDiv.innerHTML = `
+							<div class="alert alert-danger mt-3">
+								<i class="bi bi-exclamation-triangle-fill"></i>
+								<strong>Error de conexión:</strong> ${error.message}
+							</div>
+						`;
+						
+						//-- Re-habilitar botón para reintentar.
+						procesarBtn.disabled = false;
+						procesarBtn.innerHTML = '<i class="bi bi-check-lg"></i> Reintentar Actualización';
+						
+						//-- Re-habilitar el botón cancelar.
+						if (cancelarBtn) {
+							cancelarBtn.style.pointerEvents = 'auto';
+							cancelarBtn.style.opacity = '1';
+						}
+					});
+				});
+			}
+		});
+	</script>
+{% endblock %}

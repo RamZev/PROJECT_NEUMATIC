@@ -1,22 +1,61 @@
-- Informes 
-  - Comunes
-    · Actividades
-    · Sucursales
-    · Monedas
-    · Provincias
-    · Localidades
-    · Tipo de Documentos de Identidad
-    · Tipos de IVA
-    · Alícuotas IVA
-    · Tipos Percepción
-    · Tipos Retención
-    · Códigos de Retención
-	
-  - Bancos
-    · Bancos
-    · Cuentas de Bancos
-    · Tarjetas
-    · Conceptos de Bancos
-	
-	
-  
+===================================================
+Actualizar Estados de Productos - Consideraciones 
+===================================================
+- Si el CAI no existe en medidas_estados, cuál sería el estado por defecto? DSIPONIBLE o FALTANTES?
+- Todo produto ("P") con CAI debe tener un registro en medidas_estados? porque no están todos en medidas_estados.
+
+
+
+
+
+
+
+
+-- Consulta control Estados de Productos.
+SELECT
+	p.id_producto, p.id_cai_id, pc.cai, p.nombre_producto, p.id_producto_estado_id, pe.nombre_producto_estado,
+	me.stock_desde, me.stock_hasta, sum(ps.stock) AS stock
+FROM producto p
+JOIN producto_estado pe ON p.id_producto_estado_id = pe.id_producto_estado
+JOIN producto_cai pc ON p.id_cai_id = pc.id_cai
+JOIN medidas_estados me ON p.id_cai_id = me.id_cai_id
+JOIN producto_stock ps ON p.id_producto = ps.id_producto_id
+GROUP by p.id_producto
+
+
+--UPDATE producto SET id_producto_estado_id = 1
+
+
+
+Te comparto los modelos para que me ayudes en lo siguiente:
+Necesito que cuando se actualice el campo stock en ProductoStock se debe actualizar el estado del producto en Producto según lo que corresponda de ProductoEstado
+tomando en cuenta el "rango" indicado en MedidasEstados. Por ejemplo, cuando se actualice el campo stock en ProductoStock se debe determinar la cantidad de stock
+de ese producto sumando el stock de todos los depósitos en ProductoStock y comparar con lo indicado en MedidasEstados para ese producto mediante su CAI (id_cai)
+si el total de existencia está por debajo del límite inferior (stock_desde) el estado a asignar sería el correspondiente a "FALTANTES" en ProductoEstado, si el
+total de existencia está por encima del límite superior (stock_hasta) el estado a asignar sería el correspondiente a "DISPONIBLES" en ProductoEstado, por último
+si está entre los límites el estado sería el correspondiente a "POCAS". Si no encuentra una correspondencia en MedidasEstados, el estado por defecto sería
+el correspondiente a "DISPONIBLE"
+
+
+
+
+
+-------------------------------------------------
+-- Actualizar Mínimos por CAI.
+-------------------------------------------------
+
+-- Consulta completa.
+SELECT pm.id_cai_id, pc.cai, pm.id_deposito_id, d.nombre_producto_deposito, pm.minimo
+FROM producto_minimo pm
+JOIN producto_cai pc ON pm.id_cai_id = pc.id_cai
+JOIN producto_deposito d ON pm.id_deposito_id = d.id_producto_deposito;
+
+-- Contenido del Excel.
+SELECT pc.cai, pm.id_deposito_id, pm.minimo
+FROM producto_minimo pm
+JOIN producto_cai pc ON pm.id_cai_id = pc.id_cai
+JOIN producto_deposito d ON pm.id_deposito_id = d.id_producto_deposito;
+
+
+--SELECT * FROM producto_minimo
+--SELECT * FROM producto_deposito
