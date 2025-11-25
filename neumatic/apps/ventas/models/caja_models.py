@@ -3,6 +3,7 @@ from django.db import models
 from apps.maestros.models.base_gen_models import ModeloBaseGenerico
 from apps.usuarios.models import User 
 from apps.maestros.models.sucursal_models import Sucursal
+from apps.maestros.models.base_models import FormaPago
 from entorno.constantes_base import ESTATUS_GEN
 
 
@@ -82,3 +83,68 @@ class Caja(ModeloBaseGenerico):
 
     def __str__(self):
         return f'Caja {self.numero_caja} - {self.fecha_caja}'
+    
+
+
+class CajaDetalle(ModeloBaseGenerico):
+    id_caja_detalle = models.AutoField(primary_key=True, verbose_name='ID Caja Detalle')
+    id_caja = models.ForeignKey(
+		Caja,
+		on_delete=models.PROTECT,
+		verbose_name="Caja Detalle",
+		null=True,
+		blank=True
+	) 
+
+    caja = models.PositiveIntegerField(
+        db_index=True,
+        help_text="Código de caja o sucursal"
+    )
+
+    # Relaciones típicas (ajusta los modelos relacionados según tu proyecto)
+    idventas = models.SmallIntegerField(
+        null=True,
+        blank=True,
+    )
+
+    idcompras = models.SmallIntegerField(
+        null=True,
+        blank=True,
+    )
+
+    idbancos = models.SmallIntegerField(
+        null=True,
+        blank=True,
+    )
+
+    id_forma_pago = models.ForeignKey(
+        FormaPago,
+		on_delete=models.PROTECT,
+		verbose_name="Forma de Pago",
+		null=True,
+		blank=True
+	) 
+
+    importe = models.DecimalField(
+        max_digits=12,
+        decimal_places=2,
+        help_text="Importe del movimiento (puede ser positivo o negativo)"
+    )
+
+    observacion = models.CharField(
+        max_length=50,
+        blank=True,
+        help_text="Observaciones del movimiento"
+    )
+
+    # Opcional: si tienes fecha/hora del movimiento (no aparece en la estructura pero es muy común)
+    fecha = models.DateTimeField(auto_now_add=True, db_index=True)
+
+    class Meta:
+        db_table = 'caja_detalle'
+        verbose_name = 'Detalle de Caja'
+        verbose_name_plural = 'Detalle de Cajas'
+        ordering = ['-fecha']
+
+    def __str__(self):
+        return f"Caja {self.caja} - {self.importe} ({self.get_formapago_display() or self.formapago})"

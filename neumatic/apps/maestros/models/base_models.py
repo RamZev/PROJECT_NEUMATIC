@@ -1086,3 +1086,19 @@ class MedidasEstados(ModeloBaseGenerico):
 		Retorna la medida del ProductoCai asociado
 		"""
 		return self.id_cai.medida if self.id_cai else ''
+
+class FormaPago(ModeloBaseGenerico):
+	id_forma_pago = models.AutoField(primary_key=True)
+	estatus_forma_pago = models.BooleanField("Estatus", default=True,
+											choices=ESTATUS_GEN)
+	descripcion_forma_pago = models.CharField("Forma Pago",
+											 max_length=20)
+	
+	class Meta:
+		db_table = 'forma_pago'
+		verbose_name = ('Forma de Pago')
+		verbose_name_plural = ('Formas de Pago')
+		ordering = ['descripcion_forma_pago']
+	
+	def __str__(self):
+		return self.descripcion_forma_pago
