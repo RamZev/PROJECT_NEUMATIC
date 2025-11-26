@@ -31,6 +31,7 @@ from .views.codigo_retencion_views import *
 from .views.concepto_banco_views import *
 from .views.marketing_origen_views import *
 from .views.medidas_estados_views import *
+from .views.forma_pago_views import *
 
 #-- Catálogos
 from .views.cliente_views import *
@@ -280,9 +281,14 @@ urlpatterns = [
 	path('medidas_estados/nueva/', MedidasEstadosCreateView.as_view(), name='medidas_estados_create'),
 	path('medidas_estados/<int:pk>/editar/', MedidasEstadosUpdateView.as_view(), name='medidas_estados_update'),
 	path('medidas_estados/<int:pk>/eliminar/', MedidasEstadosDeleteView.as_view(), name='medidas_estados_delete'),
-	
-	
-	
+
+	#-- FormaPago.
+	path('forma_pago/', FormaPagoListView.as_view(), name='forma_pago_list'),
+	path('forma_pago/nueva/', FormaPagoCreateView.as_view(), name='forma_pago_create'),
+	path('forma_pago/<int:pk>/editar/', FormaPagoUpdateView.as_view(), name='forma_pago_update'),
+	path('forma_pago/<int:pk>/eliminar/', FormaPagoDeleteView.as_view(), name='forma_pago_delete'),	
+
+
 	#-- Otras rutas.
 	path('filtrar-localidad/', filtrar_localidad, name='filtrar_localidad'),
 	path('verificar-codigo-postal/', verificar_codigo_postal, name='verificar_codigo_postal'),

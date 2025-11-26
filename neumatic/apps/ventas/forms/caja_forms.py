@@ -24,23 +24,29 @@ class CajaForm(forms.ModelForm):
             'estatus_caja': 
                 forms.Select(attrs={**formclassselect}),
             'numero_caja': 
-                forms.NumberInput(attrs={**formclasstext}),
+                forms.NumberInput(attrs={**formclasstext,
+                'readonly': 'readonly'}),
             'fecha_caja': 
                 forms.DateInput(attrs={**formclassdate, 'type': 'date'}),
             'saldoanterior': 
-                forms.NumberInput(attrs={**formclasstext, 'step': '0.01'}),
+                forms.NumberInput(attrs={**formclasstext, 'step': '0.01',
+                'readonly': 'readonly'}),
             'ingresos': 
-                forms.NumberInput(attrs={**formclasstext, 'step': '0.01'}),
+                forms.NumberInput(attrs={**formclasstext, 'step': '0.01',
+                'readonly': 'readonly'}),
             'egresos': 
-                forms.NumberInput(attrs={**formclasstext, 'step': '0.01'}),
+                forms.NumberInput(attrs={**formclasstext, 'step': '0.01',
+                'readonly': 'readonly'}),
             'saldo': 
-                forms.NumberInput(attrs={**formclasstext, 'step': '0.01'}),
+                forms.NumberInput(attrs={**formclasstext, 'step': '0.01',
+                'readonly': 'readonly'}),
             'caja_cerrada': 
                 forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'recuento': 
                 forms.NumberInput(attrs={**formclasstext, 'step': '0.01'}),
             'diferencia': 
-                forms.NumberInput(attrs={**formclasstext, 'step': '0.01'}),
+                forms.NumberInput(attrs={**formclasstext, 'step': '0.01',
+                'readonly': 'readonly'}),
             'id_sucursal': forms.HiddenInput(),
             'hora_cierre': 
                 forms.DateTimeInput(attrs={**formclassdatetime, 'type': 'datetime-local'}),
