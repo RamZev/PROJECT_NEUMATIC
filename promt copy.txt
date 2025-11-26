@@ -11,6 +11,10 @@ Actualizar Estados de Productos - Consideraciones
 
 
 
+-------------------------------------------------
+-- Actualizar Estados de Productos.
+-------------------------------------------------
+
 -- Consulta control Estados de Productos.
 SELECT
 	p.id_producto, p.id_cai_id, pc.cai, p.nombre_producto, p.id_producto_estado_id, pe.nombre_producto_estado,
@@ -27,17 +31,6 @@ GROUP by p.id_producto
 
 
 
-Te comparto los modelos para que me ayudes en lo siguiente:
-Necesito que cuando se actualice el campo stock en ProductoStock se debe actualizar el estado del producto en Producto según lo que corresponda de ProductoEstado
-tomando en cuenta el "rango" indicado en MedidasEstados. Por ejemplo, cuando se actualice el campo stock en ProductoStock se debe determinar la cantidad de stock
-de ese producto sumando el stock de todos los depósitos en ProductoStock y comparar con lo indicado en MedidasEstados para ese producto mediante su CAI (id_cai)
-si el total de existencia está por debajo del límite inferior (stock_desde) el estado a asignar sería el correspondiente a "FALTANTES" en ProductoEstado, si el
-total de existencia está por encima del límite superior (stock_hasta) el estado a asignar sería el correspondiente a "DISPONIBLES" en ProductoEstado, por último
-si está entre los límites el estado sería el correspondiente a "POCAS". Si no encuentra una correspondencia en MedidasEstados, el estado por defecto sería
-el correspondiente a "DISPONIBLE"
-
-
-
 
 
 -------------------------------------------------
@@ -51,11 +44,40 @@ JOIN producto_cai pc ON pm.id_cai_id = pc.id_cai
 JOIN producto_deposito d ON pm.id_deposito_id = d.id_producto_deposito;
 
 -- Contenido del Excel.
-SELECT pc.cai, pm.id_deposito_id, pm.minimo
+SELECT pc.cai, pm.id_deposito_id, d.nombre_producto_deposito, pm.minimo
 FROM producto_minimo pm
 JOIN producto_cai pc ON pm.id_cai_id = pc.id_cai
-JOIN producto_deposito d ON pm.id_deposito_id = d.id_producto_deposito;
+JOIN producto_deposito d ON pm.id_deposito_id = d.id_producto_deposito
+ORDER by pc.cai, pm.id_deposito_id;
+
 
 
 --SELECT * FROM producto_minimo
 --SELECT * FROM producto_deposito
+
+
+
+
+-- Ejemplo de consulta filtrada.
+SELECT pm.id_cai_id, pc.cai, pm.id_deposito_id, d.nombre_producto_deposito, pm.minimo
+FROM producto_minimo pm
+JOIN producto_cai pc ON pm.id_cai_id = pc.id_cai
+JOIN producto_deposito d ON pm.id_deposito_id = d.id_producto_deposito
+WHERE
+	pm.id_cai_id = 990
+	AND 
+	pm.id_deposito_id = 2
+
+
+
+
+####################################################################
+####################################################################
+
+label_to_field_map = {'CAI': 'cai', 'Id Depósito': 'id_deposito_id', 'Depósito': 'nombre_deposito', 'Mínimo': 'minimo'}
+
+todos_los_datos = [
+	{'CAI': '128641', 'Id Depósito': 1, 'Depósito': 'XXX', 'Mínimo': 10}, 
+	{'CAI': '611836', 'Id Depósito': 1, 'Depósito': 'YYYY', 'Mínimo': 200}, 
+	{'CAI': '257465', 'Id Depósito': 1, 'Depósito': 'ZZZZ', 'Mínimo': 3000}
+]

@@ -18,6 +18,13 @@ from .views.excel_views import (
 	AgregarProductosView,
 )
 
+from .views.actualizar_minimo_views import (
+	ActualizarMinimoCargarView,
+	ActualizarMinimoPrevisualizarView,
+	ActualizarMinimoErroresView,
+	ActualizarMinimoView
+)
+
 urlpatterns = [
     path('facturas-cliente/', ConsultaFacturasClienteView.as_view(), name='consulta_facturas_cliente'),
     path('productos/', ConsultaProductosView.as_view(), name='consulta_productos_stock'),
@@ -38,4 +45,9 @@ urlpatterns = [
 	path('actualizar-productos/', ActualizarProductosView.as_view(), name='actualizar_productos'),
 	path('agregar-productos/', AgregarProductosView.as_view(), name='agregar_productos'),
 	
+	#-- Actualizar/Agregar Mínimo por CAI (Excel).
+	path('actualizar-minimo-cargar/', ActualizarMinimoCargarView.as_view(), name='actualizar_minimo_cargar'),
+	path('actualizar-minimo-previsualizar/', ActualizarMinimoPrevisualizarView.as_view(), name='actualizar_minimo_previsualizar'),
+	path('actualizar-minimo-errores/', ActualizarMinimoErroresView.as_view(), name='actualizar_minimo_errores'),
+	path('actualizar-minimo/', ActualizarMinimoView.as_view(), name='actualizar_minimo'),
 ]

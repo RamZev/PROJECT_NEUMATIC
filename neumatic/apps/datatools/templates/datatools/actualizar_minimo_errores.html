@@ -1,4 +1,4 @@
-<!-- apps\datatools\templates\datatools\errores_excel.html -->
+<!-- neumatic\apps\datatools\templates\datatools\actualizar_minimo_errores.html -->
 {% extends 'base.html' %}
 {% load static %}
 {% load custom_tags %}
@@ -199,10 +199,10 @@
 		<div id="layoutSidenav_content">
 			<main>
 				<div class="container-fluid px-4">
-					<h2 class="mt-4">Errores en Procesamiento del Excel ({{proceso}})</h2>
+					<h2 class="mt-4">Errores en Procesamiento del Excel</h2>
 					<ol class="breadcrumb mb-4">
 						<li class="breadcrumb-item"><a href="{% url 'home' %}">Panel</a></li>
-						<li class="breadcrumb-item"><a href="{% url 'cargar_excel' %}?proceso={{proceso}}">Cargar Excel</a></li>
+						<li class="breadcrumb-item"><a href="{% url 'actualizar_minimo_cargar' %}">Cargar Excel</a></li>
 						<li class="breadcrumb-item active">Errores</li>
 					</ol>
 					
@@ -239,20 +239,10 @@
 							</div>
 							<div class="card-body">
 								<div class="row">
-									<div class="col-md-4">
+									<div class="col-md-12">
 										<p><strong>Archivo:</strong> {{ nombre_archivo|default:"No especificado" }}</p>
 										<p><strong>Total de registros procesados:</strong> {{ total_registros }}</p>
 										<p><strong>Registros con errores:</strong> <span class="text-danger">{{ filas_con_errores|length }}</span></p>
-									</div>
-									<div class="col-md-8">
-										<p><strong>Campos seleccionados:</strong></p>
-										<p>
-											{% for campo in campos_seleccionados %}
-												<span class="badge bg-secondary me-1">{{ campo }}</span>
-											{% empty %}
-												<small class="text-muted">No se seleccionaron campos</small>
-											{% endfor %}
-										</p>
 									</div>
 								</div>
 							</div>
@@ -368,7 +358,7 @@
 					{% endif %} <!-- Cierre del if filas_con_errores -->
 					
 					<div class="text-center mt-4">
-						<a href="{% url 'cargar_excel' %}?proceso={{proceso}}" class="btn btn-primary me-2">
+						<a href="{% url 'actualizar_minimo_cargar' %}" class="btn btn-primary me-2">
 							<i class="fas fa-upload me-1"></i>
 							Volver a Cargar Archivo
 						</a>
@@ -392,7 +382,7 @@
 			// Verificar que la siguiente fila es realmente la de detalles
 			if (detailsRow && detailsRow.classList.contains('error-details')) {
 				row.classList.toggle('expanded');
-				const icon = element.querySelector('.fa-chevron-down, .fa-chevron-up'); // ← CORRECCIÓN AQUÍ
+				const icon = element.querySelector('.fa-chevron-down, .fa-chevron-up');
 				
 				// Cambiar icono
 				if (row.classList.contains('expanded')) {
@@ -411,7 +401,7 @@
 				const expandedRows = document.querySelectorAll('.error-row.expanded');
 				expandedRows.forEach(row => {
 					row.classList.remove('expanded');
-					const icon = row.querySelector('.fa-chevron-up, .fa-chevron-down'); // ← CORRECCIÓN AQUÍ TAMBIÉN
+					const icon = row.querySelector('.fa-chevron-up, .fa-chevron-down');
 					if (icon) {
 						icon.classList.remove('fa-chevron-up');
 						icon.classList.add('fa-chevron-down');
