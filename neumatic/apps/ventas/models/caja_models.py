@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 
 from apps.maestros.models.base_gen_models import ModeloBaseGenerico
 from apps.usuarios.models import User 
@@ -13,7 +14,7 @@ class Caja(ModeloBaseGenerico):
 		verbose_name="Estatus",
 		default=True,
 		choices=ESTATUS_GEN)
-    numero_caja = models.IntegerField(verbose_name='Número')
+    numero_caja = models.IntegerField(verbose_name='Número Caja')
     fecha_caja = models.DateField(verbose_name='Fecha')
     saldoanterior = models.DecimalField(
         max_digits=12, 
@@ -95,12 +96,7 @@ class CajaDetalle(ModeloBaseGenerico):
 		null=True,
 		blank=True
 	) 
-
-    caja = models.PositiveIntegerField(
-        db_index=True,
-        help_text="Código de caja o sucursal"
-    )
-
+    
     # Relaciones típicas (ajusta los modelos relacionados según tu proyecto)
     idventas = models.SmallIntegerField(
         null=True,
@@ -138,13 +134,19 @@ class CajaDetalle(ModeloBaseGenerico):
     )
 
     # Opcional: si tienes fecha/hora del movimiento (no aparece en la estructura pero es muy común)
-    fecha = models.DateTimeField(auto_now_add=True, db_index=True)
+    fecha_detalle_caja = models.DateField(
+        verbose_name='Fecha Detalle',
+        default=timezone.now,
+        editable=False,
+        null=True,
+		blank=True
+    )
 
     class Meta:
         db_table = 'caja_detalle'
         verbose_name = 'Detalle de Caja'
         verbose_name_plural = 'Detalle de Cajas'
-        ordering = ['-fecha']
+        ordering = ['-fecha_detalle_caja']
 
     def __str__(self):
         return f"Caja {self.caja} - {self.importe} ({self.get_formapago_display() or self.formapago})"

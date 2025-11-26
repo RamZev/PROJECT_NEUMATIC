@@ -1,4 +1,4 @@
-# neumatic\apps\maestros\views\actividad_views.py
+# neumatic\apps\maestros\views\forma_pago_views.py
 from django.urls import reverse_lazy
 from ..views.cruds_views_generics import *
 from ..models.base_models import FormaPago
@@ -56,9 +56,9 @@ class ConfigViews():
 
 
 class DataViewList():
-	search_fields = ['descripcion_actividad']
+	search_fields = ['descripcion_forma_pago']
 	
-	ordering = ['descripcion_actividad']
+	ordering = ['descripcion_forma_pago']
 	
 	paginate_by = 8
 	  
