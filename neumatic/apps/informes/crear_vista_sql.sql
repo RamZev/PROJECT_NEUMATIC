@@ -1684,3 +1684,20 @@ CREATE VIEW VLCompraIngresada AS
 		INNER JOIN comprobante_compra cc ON c.id_comprobante_compra_id = cc.id_comprobante_compra
 		INNER JOIN proveedor p ON c.id_proveedor_id = p.id_proveedor;
 
+
+-- ---------------------------------------------------------------------------
+-- Stock Mínimo por CAI.
+-- Modelo: VLProductoMinimo
+-- ---------------------------------------------------------------------------
+DROP VIEW IF EXISTS "main"."VLProductoMinimo";
+CREATE VIEW "VLProductoMinimo" AS 
+	SELECT
+		pm.id_cai_id,
+		pc.cai, 
+		pm.id_deposito_id, 
+		d.nombre_producto_deposito, 
+		pm.minimo
+	FROM
+		producto_minimo pm
+		JOIN producto_cai pc ON pm.id_cai_id = pc.id_cai
+		JOIN producto_deposito d ON pm.id_deposito_id = d.id_producto_deposito;

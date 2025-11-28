@@ -21,34 +21,6 @@ from ..forms.actualizar_minimo_forms import ActualizarMinimoForm
 from apps.maestros.models.producto_models import ProductoCai, ProductoDeposito, ProductoMinimo
 
 
-table_info = {
-	"id_cai_id": {
-		"label": "Id CAI",
-		"excel": False,
-		# "protected": True
-	},
-	"cai": {
-		"label": "CAI",
-		"excel": True,
-		"type": "char",
-	},
-	"id_deposito_id": {
-		"label": "Id Depósito",
-		"excel": True,
-		"type": "FK",
-	},
-	"nombre_deposito": {
-		"label": "Depósito",
-		"excel": True,
-	},
-	"minimo": {
-		"label": "Mínimo",
-		"excel": True,
-		"type": "int",
-	},
-}
-
-
 class ActualizarMinimoCargarView(FormView):
 	template_name = 'datatools/actualizar_minimo_cargar.html'
 	form_class = ActualizarMinimoForm
@@ -66,10 +38,11 @@ class ActualizarMinimoCargarView(FormView):
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
 		context['fecha'] = timezone.now()
-		# context['proceso'] = self.request.GET.get('proceso', 'actualizar')
 		return context
 	
 	def form_valid(self, form):
+		from apps.informes.views.vlproductominimo_list_views import ConfigViews
+		
 		#-- LIMPIAR datos anteriores antes de guardar nuevos.
 		keys_to_remove = ['actualizar_minimo_excel_data', 'actualizar_minimo_errores_procesamiento']
 		for key in keys_to_remove:
@@ -84,13 +57,13 @@ class ActualizarMinimoCargarView(FormView):
 				df_headers = pd.read_excel(archivo, nrows=0)
 				columnas_excel = df_headers.columns.tolist()
 				
-				#-- Identificar tipos de campos
+				#-- Identificar tipos de campos.
 				columnas_texto = []
 				columnas_booleanos = []
 				columnas_enteros = []
 				columnas_decimales = []
 				
-				for key, value in table_info.items():
+				for key, value in ConfigViews.table_info.items():
 					if value.get('excel') and value['label'] in columnas_excel:
 						if value.get('type') == "char":
 							columnas_texto.append(value['label'])
@@ -117,7 +90,7 @@ class ActualizarMinimoCargarView(FormView):
 					return self.form_invalid(form)
 				
 				#-- Verificar que las columnas coincidan con las esperadas.
-				columnas_esperadas = [value['label'] for value in table_info.values() if value['excel'] ]
+				columnas_esperadas = [value['label'] for value in ConfigViews.table_info.values() if value['excel'] ]
 				if set(columnas_esperadas) != set(columnas_excel):
 					form.add_error('archivo_excel', f'Las columnas del archivo no coinciden con las esperadas. ')
 					return self.form_invalid(form)
@@ -153,11 +126,11 @@ class ActualizarMinimoCargarView(FormView):
 						)
 				
 				#-- Generar lista de campos protegidos y sus etiquetas.
-				campos_portegidos = [campo for campo, info in table_info.items() if info.get('protected', False)]
-				etiquetas_portegidas = [info['label'] for info in table_info.values() if info.get('protected', False)]
+				campos_portegidos = [campo for campo, info in ConfigViews.table_info.items() if info.get('protected', False)]
+				etiquetas_portegidas = [info['label'] for info in ConfigViews.table_info.values() if info.get('protected', False)]
 				
 				#-- Mapear Columnas del Excel a nombres de campos {"label": producto.campo}.
-				label_to_field_map = {value['label']: key for key, value in table_info.items() if value['label'] in columnas_excel}
+				label_to_field_map = {value['label']: key for key, value in ConfigViews.table_info.items() if value['label'] in columnas_excel}
 				#-- Limpiar datos (solo valores específicos, no formato).
 				df = df.replace(['nan', 'NaN', 'NAN', 'NULL', 'null'], None)
 				
@@ -174,7 +147,6 @@ class ActualizarMinimoCargarView(FormView):
 					'campos_protegidos': campos_portegidos,
 					'etiquetas_protegidas': etiquetas_portegidas,
 					'etiquetas_a_campos_map': label_to_field_map,
-					# 'proceso': self.request.GET.get('proceso', 'actualizar')
 				}
 				
 				return super().form_valid(form)
@@ -258,6 +230,7 @@ class ActualizarMinimoCargarView(FormView):
 		Preserva el formato de campos enteros, manejando valores vacíos y conversiones.
 		"""
 		if valor is None or pd.isna(valor) or valor == '':
+			return 0
 			return None
 		
 		#-- Si ya es entero, mantener como está.
@@ -268,6 +241,7 @@ class ActualizarMinimoCargarView(FormView):
 		if isinstance(valor, str):
 			#-- Manejar casos especiales
 			if valor in ['nan', 'NaN', 'NAN', 'NULL', 'null']:
+				return 0
 				return None
 			
 			#-- Limpiar el string: reemplazar coma por punto y eliminar espacios.
@@ -393,7 +367,6 @@ class ActualizarMinimoErroresView(TemplateView):
 		#-- Verificar que hay datos de errores en la sesión.
 		if 'actualizar_minimo_errores_procesamiento' not in request.session:
 			messages.error(request, 'No hay datos de errores para mostrar.')
-			print("*----* aquí *----*")
 			return redirect('actualizar_minimo_cargar_excel')
 		
 		#-- Obtener los datos.
@@ -489,14 +462,13 @@ class ActualizarMinimoView(TemplateView):
 				filas_con_errores = []
 				errores = []
 				
-				for index, fila in enumerate(todos_los_datos, 1):
-					index += 1  # Ajustar índice para que coincida con fila Excel
+				for index, fila in enumerate(todos_los_datos, 2):
+					# index += 1  # Ajustar índice para que coincida con fila Excel
 					
 					try:
 						errores_en_fila = []
 						
 						# ========== VALIDACIÓN 1: CAI ==========
-						# cai = fila.get('CAI', '').strip() if isinstance(fila.get('CAI'), str) else str(fila.get('CAI', '')).strip()
 						cai = fila.get('CAI', '').strip()
 						
 						if not cai:
@@ -510,15 +482,14 @@ class ActualizarMinimoView(TemplateView):
 								errores_en_fila.append(f"Error al buscar CAI '{cai}': {str(e)}")
 						
 						# ========== VALIDACIÓN 2: ID DEPÓSITO ==========
-						id_deposito = fila.get('id_deposito')
-						# deposito = None
+						id_deposito = fila.get('Id. Depósito')
 						
 						if id_deposito is None or id_deposito == '':
 							errores_en_fila.append("El campo ID Depósito es obligatorio")
 						else:
 							try:
 								id_deposito = int(id_deposito)
-								deposito = ProductoDeposito.objects.get(id=id_deposito)
+								deposito = ProductoDeposito.objects.get(pk=id_deposito)
 							except ValueError:
 								errores_en_fila.append(f"El ID Depósito '{id_deposito}' debe ser un número entero")
 							except TypeError:
@@ -620,7 +591,6 @@ class ActualizarMinimoView(TemplateView):
 		
 		except ValidationError as e:
 			#-- Redirigir a la vista de errores.
-			print("ValidationError capturado:", str(e))
 			return redirect('actualizar_minimo_errores')
 		
 		except Exception as e:

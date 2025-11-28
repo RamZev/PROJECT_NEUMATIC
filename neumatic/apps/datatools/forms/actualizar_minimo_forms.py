@@ -1,5 +1,4 @@
 # neumatic\apps\datatools\forms\actualizar_minimo_forms.py
-# neumatic\apps\datatools\forms\actualizar_minimo_excel_forms.py
 from django import forms
 from .forms_generics import GenericForm
 

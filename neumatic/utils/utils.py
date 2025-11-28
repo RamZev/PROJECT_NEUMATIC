@@ -86,6 +86,43 @@ def format_date(date_value):
 
 
 def normalizar(nombre):
+	"""
+	Normalize a string by removing Unicode diacritics and unsafe characters to produce
+	a filesystem/identifier-friendly name.
+	Parameters
+	----------
+	nombre : str
+		The input string to normalize. Expected to be a Unicode/text string.
+	Returns
+	-------
+	str
+		A normalized string where:
+		- Unicode characters are decomposed using NFKD and diacritical marks (e.g. accents, dieresis)
+		  are removed.
+		- Specific replacements are applied: 'ñ' -> 'n', 'Ñ' -> 'N', and spaces -> '_'.
+		- Any remaining characters that are not word characters, hyphens or dots (i.e. not matching
+		  the regular expression class [^\w\-.]) are removed.
+	Raises
+	------
+	TypeError
+		If `nombre` is not an instance of `str`.
+	Notes
+	-----
+	- Implementation relies on `unicodedata.normalize('NFKD', ...)` to separate base characters
+	  from combining diacritical marks, and then filters out combining characters.
+	- A final regular-expression pass removes characters that could be problematic in filenames
+	  or identifiers, preserving alphanumeric characters, underscore, hyphen and dot.
+	- This function is suitable for generating safe filenames, URL slugs for simple use-cases,
+	  or other identifiers where accents and special punctuation should be stripped.
+	Examples
+	--------
+	>>> normalizar('acción.png')
+	'accion.png'
+	>>> normalizar('España nombre.txt')
+	'Espana_nombre.txt'
+	>>> normalizar('perfíl-user@2025!.md')
+	'perfil-user2025.md'
+	"""
 	#-- Normaliza los caracteres Unicode (descompone acentos en caracteres base + acento).
 	nombre_normalizado = unicodedata.normalize('NFKD', nombre)
 	

@@ -3467,3 +3467,57 @@ class VLCompraIngresada(models.Model):
 		verbose_name = ('Comprobantes Ingresados')
 		verbose_name_plural = ('Comprobantes Ingresados')
 
+
+#-----------------------------------------------------------------------------
+# Stock Mínimo por CAI.
+#-----------------------------------------------------------------------------
+class VLProductoMinimoManager(models.Manager):
+	
+	def obtener_datos(self, id_cai=None, id_deposito=None):
+		
+		#-- La consulta SQL.
+		query = """
+			SELECT
+				(ROW_NUMBER() OVER(ORDER BY cai, id_deposito_id)) AS id,
+				*
+			FROM
+				VLProductoMinimo
+		"""
+		
+		#-- Se añaden parámetros.
+		params = []
+		
+		#-- Filtros y parámetros adicionales.
+		condicion = []
+		
+		if id_cai:
+			condicion.append("id_cai_id = %s")
+			params.append(id_cai)
+		
+		if id_deposito:
+			condicion.append("id_deposito_id = %s")
+			params.append(id_deposito)
+		
+		if condicion:
+			query += " WHERE " + " AND ".join(condicion)
+		
+		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
+		return self.raw(query, params)
+
+
+class VLProductoMinimo(models.Model):
+	id = models.IntegerField(primary_key=True)
+	id_cai_id = models.IntegerField()
+	cai = models.CharField(max_length=20)
+	id_deposito_id = models.IntegerField()
+	nombre_producto_deposito = models.CharField(max_length=50)
+	minimo = models.IntegerField()
+
+	objects = VLProductoMinimoManager()
+
+	class Meta:
+		managed = False
+		db_table = 'VLProductoMinimo'
+		verbose_name = ('Stock Mínimo por CAI')
+		verbose_name_plural = ('Stock Mínimo por CAI')
+
