@@ -2,7 +2,7 @@ from django import forms
 from django.core.exceptions import ValidationError
 
 from diseno_base.diseno_bootstrap import (
-    formclasstext, formclassselect, formclassdatetime)
+    formclasstext, formclassselect, formclassdatetime, formclassradio)
 
 from apps.maestros.forms.crud_forms_generics import CrudGenericForm
 from ..models.caja_models import CajaDetalle
@@ -32,6 +32,7 @@ class CajaDetalleForm(CrudGenericForm):
                 **formclasstext,
                 'placeholder': 'ID Banco (opcional)'
             }),
+            'tipo_movimiento': forms.RadioSelect(attrs={**formclassradio}),
             'id_forma_pago': forms.Select(attrs={**formclassselect}),
             'importe': forms.NumberInput(attrs={
                 **formclasstext,

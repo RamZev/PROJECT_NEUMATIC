@@ -83,11 +83,16 @@ class Caja(ModeloBaseGenerico):
         verbose_name_plural = 'Cajas'
 
     def __str__(self):
-        return f'Caja {self.numero_caja} - {self.fecha_caja}'
+        return f'{self.numero_caja}'
     
 
 
 class CajaDetalle(ModeloBaseGenerico):
+    TIPOS_MOVIMIENTO = [
+        (1, 'Ingreso'),
+        (2, 'Egreso'),
+    ]
+
     id_caja_detalle = models.AutoField(primary_key=True, verbose_name='ID Caja Detalle')
     id_caja = models.ForeignKey(
 		Caja,
@@ -113,6 +118,12 @@ class CajaDetalle(ModeloBaseGenerico):
         blank=True,
     )
 
+    tipo_movimiento = models.IntegerField(
+        choices=TIPOS_MOVIMIENTO,
+        default=1,
+        verbose_name="Tipo de Movimiento"
+    )
+    
     id_forma_pago = models.ForeignKey(
         FormaPago,
 		on_delete=models.PROTECT,
@@ -133,20 +144,11 @@ class CajaDetalle(ModeloBaseGenerico):
         help_text="Observaciones del movimiento"
     )
 
-    # Opcional: si tienes fecha/hora del movimiento (no aparece en la estructura pero es muy común)
-    fecha_detalle_caja = models.DateField(
-        verbose_name='Fecha Detalle',
-        default=timezone.now,
-        editable=False,
-        null=True,
-		blank=True
-    )
-
     class Meta:
         db_table = 'caja_detalle'
         verbose_name = 'Detalle de Caja'
         verbose_name_plural = 'Detalle de Cajas'
-        ordering = ['-fecha_detalle_caja']
+        ordering = ['-id_caja']
 
     def __str__(self):
         return f"Caja {self.caja} - {self.importe} ({self.get_formapago_display() or self.formapago})"

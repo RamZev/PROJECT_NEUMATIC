@@ -1,22 +1,23 @@
 # neumatic\apps\ventas\views\caja_views.py
 from django.urls import reverse_lazy
 from apps.maestros.views.cruds_views_generics import *
-from ..models.caja_models import Caja
-from ..forms.caja_forms import CajaForm
+from ..models.caja_models import CajaDetalle
+from ..forms.caja_detalle_forms import CajaDetalleForm
 
 
 class ConfigViews():
     # Modelo
-    model = Caja
+    model = CajaDetalle
     
     # Formulario asociado al modelo
-    form_class = CajaForm
+    form_class = CajaDetalleForm
     
     # Aplicación asociada al modelo
     app_label = model._meta.app_label
     
     #-- Usar esta forma cuando el modelo esté compuesto de una sola palabra: Ej. Color.
     model_string = model.__name__.lower()  # "caja"
+    model_string = "caja_detalle"
     
     # Permisos
     permission_add = f"{app_label}.add_{model.__name__.lower()}"
@@ -49,35 +50,30 @@ class ConfigViews():
 
 
 class DataViewList():
-    search_fields = ['numero_caja', 'observacion_caja']
+    search_fields = ['numero_caja']
     
     ordering = ['-fecha_caja', '-numero_caja']
     
     paginate_by = 10
       
     table_headers = {
-        'numero_caja': (1, 'Número'),
-        'fecha_caja': (1, 'Fecha'),
-        'id_sucursal': (1, 'Sucursal'),
-        'ingresos': (1, 'Ingresos'),
-        'egresos': (1, 'Egresos'),
-        'saldo': (1, 'Saldo'),
-        'diferencia': (1, 'Diferencia'),
-        'observacion_caja': (2, 'Observaciones'),
-        'caja_cerrada': (1, 'Cerrada'),
-        'acciones': (2, 'Acciones'),
+        'id_caja': (1, 'Número'),
+        'idventas': (1, 'Fecha'),
+        'id_forma_pago': (1, 'Sucursal'),
+        'importe': (1, 'Ingresos'),
+        'fecha_detalle_caja': (1, 'Egresos'),
+        'observacion': (1, 'Saldo'),
+
     }
     
     table_data = [
-        {'field_name': 'numero_caja', 'date_format': None},
-        {'field_name': 'fecha_caja', 'date_format': 'd/m/Y'},
-        {'field_name': 'id_sucursal', 'date_format': None},
-        {'field_name': 'ingresos', 'date_format': None},
-        {'field_name': 'egresos', 'date_format': None},
-        {'field_name': 'saldo', 'date_format': None},
-        {'field_name': 'diferencia', 'date_format': None},
-        {'field_name': 'observacion_caja', 'date_format': None},
-        {'field_name': 'caja_cerrada', 'date_format': None},
+        {'field_name': 'id_caja', 'date_format': None},
+        {'field_name': 'idventas', 'date_format': None},
+        {'field_name': 'id_forma_pago', 'date_format': None},
+        {'field_name': 'importe', 'date_format': None},
+        {'field_name': 'fecha_detalle_caja', 'date_format': 'd/m/Y'},
+        {'field_name': 'observacion', 'date_format': None},
+
     ]
 
 
