@@ -41,7 +41,8 @@ GROUP by p.id_producto
 SELECT pm.id_cai_id, pc.cai, pm.id_deposito_id, d.nombre_producto_deposito, pm.minimo
 FROM producto_minimo pm
 JOIN producto_cai pc ON pm.id_cai_id = pc.id_cai
-JOIN producto_deposito d ON pm.id_deposito_id = d.id_producto_deposito;
+JOIN producto_deposito d ON pm.id_deposito_id = d.id_producto_deposito
+WHERE pc.cai in ("443664", "546862", "280950") AND pm.id_deposito_id = 2;
 
 -- Contenido del Excel.
 SELECT pc.cai, pm.id_deposito_id, d.nombre_producto_deposito, pm.minimo
@@ -49,11 +50,6 @@ FROM producto_minimo pm
 JOIN producto_cai pc ON pm.id_cai_id = pc.id_cai
 JOIN producto_deposito d ON pm.id_deposito_id = d.id_producto_deposito
 ORDER by pc.cai, pm.id_deposito_id;
-
-
-
---SELECT * FROM producto_minimo
---SELECT * FROM producto_deposito
 
 
 
@@ -81,3 +77,25 @@ todos_los_datos = [
 	{'CAI': '611836', 'Id Depósito': 1, 'Depósito': 'YYYY', 'Mínimo': 200}, 
 	{'CAI': '257465', 'Id Depósito': 1, 'Depósito': 'ZZZZ', 'Mínimo': 3000}
 ]
+
+
+
+-- Script para gregar nueva opción en Informes -> Productos
+INSERT INTO "main"."menu_menuitem" ("id_menu_item", "name", "url_name", "query_params", "icon", "is_collapse", "order", "heading_id", "parent_id") 
+VALUES (153, 'Mínimos por CAI', 'productominimo_informe_list', '', '', '0', 9, NULL, 53);
+
+-- Script para reordenar opción: Informes -> Productos -> Stock
+UPDATE menu_menuitem SET "order" = 10 WHERE id_menu_item = 141;
+
+-- Script para actualizar la url de la opción: Informes -> Productos -> Mínimos por CAI
+UPDATE menu_menuitem SET "url_name" = 'vlproductominimo_informe_list' WHERE name= 'Mínimos por CAI';
+
+******************************************
+-- Scripts para que Mario actualize su BD:
+-- 1.- Script para gregar nueva opción en Informes -> Productos
+INSERT INTO "main"."menu_menuitem" ("id_menu_item", "name", "url_name", "query_params", "icon", "is_collapse", "order", "heading_id", "parent_id") 
+VALUES (153, 'Mínimos por CAI', 'vlproductominimo_informe_list', '', '', '0', 9, NULL, 53);
+
+-- 2.- Script para reordenar opción: Informes -> Productos -> Stock
+UPDATE menu_menuitem SET "order" = 10 WHERE id_menu_item = 141;
+

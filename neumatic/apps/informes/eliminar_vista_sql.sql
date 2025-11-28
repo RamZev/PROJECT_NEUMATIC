@@ -47,3 +47,4 @@ DROP VIEW IF EXISTS "main"."VLStockDeposito";
 DROP VIEW IF EXISTS "main"."VLFichaSeguimientoStock";
 DROP VIEW IF EXISTS "main"."VLDetalleCompraProveedor";
 DROP VIEW IF EXISTS "main"."VLCompraIngresada";
+DROP VIEW IF EXISTS "main"."VLProductoMinimo";

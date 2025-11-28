@@ -1,5 +1,4 @@
 <!-- neumatic\apps\datatools\templates\datatools\actualizar_minimo_previsualizar.html -->
-<!-- neumatic\apps\datatools\templates\datatools\actualizar_minimo_excel_preview.html -->
 {% extends 'base.html' %}
 {% load static %}
 {% load custom_tags %}
@@ -185,7 +184,7 @@
 		<div id="layoutSidenav_content">
 			<main>
 				<div class="container-fluid px-4">
-					<h2 class="mt-4">Previsualización del Archivo</h2>
+					<h3 class="mt-4">Previsualización del Archivo</h3>
 					<ol class="breadcrumb mb-4">
 						<li class="breadcrumb-item"><a href="{% url 'home' %}">Panel</a></li>
 						<li class="breadcrumb-item"><a href="{% url 'actualizar_minimo_cargar' %}">Cargar Excel</a></li>
@@ -204,7 +203,6 @@
 					{% endif %}
 					
 					<div class="container-main" style="display: block;">
-					{% comment %} <div class="container-main"> {% endcomment %}
 						<!-- Panel izquierdo: Tabla de datos -->
 						<div class="table-container">
 							<div class="card mb-4">
@@ -277,7 +275,8 @@
 						</div>
 						
 						<!--***********************************-->
-						<form method="post" id="formAgregar" action="{% url 'actualizar_minimo' %}?pagina={{ pagina_actual }}">
+						{% comment %} <form method="post" id="formAgregar" action="{% url 'actualizar_minimo' %}?pagina={{ pagina_actual }}"> {% endcomment %}
+						<form method="post" id="formAgregar" action="{% url 'actualizar_minimo' %}">
 							{% csrf_token %}
 							<div class="text-center">
 								

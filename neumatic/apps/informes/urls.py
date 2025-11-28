@@ -35,6 +35,7 @@ from .views.tarjeta_list_views import *
 from .views.codigoretencion_list_views import *
 from .views.conceptobanco_list_views import *
 from .views.marketingorigen_list_views import *
+from .views.vlproductominimo_list_views import *
 
 #-- Procesos.
 #- Lote 1:
@@ -475,6 +476,18 @@ urlpatterns = [
 		 name="marketingorigen_vista_excel"),
 	path("marketingorigen/vista-csv/", marketingorigen_vista_csv, 
 		 name="marketingorigen_vista_csv"),
+	
+	#-- Producto Minimo.
+	path('vlproductominimo_informe/', VLProductoMinimoInformeView.as_view(), 
+		 name='vlproductominimo_informe_list'),
+	path('vlproductominimo/vista-preliminar/', vlproductominimo_vista_pantalla, 
+		 name="vlproductominimo_vista_pantalla"),
+	path("vlproductominimo/vista-pdf/", vlproductominimo_vista_pdf, 
+		 name="vlproductominimo_vista_pdf"),
+	path("vlproductominimo/vista-excel/", vlproductominimo_vista_excel, 
+		 name="vlproductominimo_vista_excel"),
+	path("vlproductominimo/vista-csv/", vlproductominimo_vista_csv, 
+		 name="vlproductominimo_vista_csv"),
 	
 	#-- Informes-Procesos. --------------------------------------------------------
 	
