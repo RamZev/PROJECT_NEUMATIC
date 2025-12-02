@@ -151,4 +151,4 @@ class CajaDetalle(ModeloBaseGenerico):
         ordering = ['-id_caja']
 
     def __str__(self):
-        return f"Caja {self.caja} - {self.importe} ({self.get_formapago_display() or self.formapago})"
+        return f"{self.id_caja}"

@@ -22,15 +22,18 @@ class CajaDetalleForm(CrudGenericForm):
             }),
             'idventas': forms.NumberInput(attrs={
                 **formclasstext,
-                'placeholder': 'ID Venta (opcional)'
+                'placeholder': 'ID Venta (opcional)',
+                'readonly': 'readonly',
             }),
             'idcompras': forms.NumberInput(attrs={
                 **formclasstext,
-                'placeholder': 'ID Compra (opcional)'
+                'placeholder': 'ID Compra (opcional)',
+                'readonly': 'readonly',
             }),
             'idbancos': forms.NumberInput(attrs={
                 **formclasstext,
-                'placeholder': 'ID Banco (opcional)'
+                'placeholder': 'ID Banco (opcional)',
+                'readonly': 'readonly',
             }),
             'tipo_movimiento': forms.RadioSelect(attrs={**formclassradio}),
             'id_forma_pago': forms.Select(attrs={**formclassselect}),

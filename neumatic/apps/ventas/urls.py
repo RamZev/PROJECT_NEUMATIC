@@ -27,6 +27,13 @@ from .views.caja_views import (
 	CajaUpdateView,
 	CajaDeleteView)
 
+from .views.caja_detalle_views import (
+    CajaDetalleListView, 
+	CajaDetalleCreateView,
+	CajaDetalleUpdateView,
+	CajaDetalleDeleteView)
+
+
 from .views.consultas_factura_views import (buscar_agenda, 
 											buscar_producto,
 											buscar_cliente,
@@ -130,6 +137,12 @@ urlpatterns = [
 	path('caja/nueva/', CajaCreateView.as_view(), name='caja_create'),
 	path('caja/<int:pk>/editar/', CajaUpdateView.as_view(), name='caja_update'),
 	path('caja/<int:pk>/eliminar/', CajaDeleteView.as_view(), name='caja_delete'),
+    
+	#-- Caja.
+	path('cajadetalle/', CajaDetalleListView.as_view(), name='caja_detalle_list'),
+	path('cajadetalle/nueva/', CajaDetalleCreateView.as_view(), name='caja_detalle_create'),
+	path('cajadetalle/<int:pk>/editar/', CajaDetalleUpdateView.as_view(), name='caja_detalle_update'),
+	path('cajadetalle/<int:pk>/eliminar/', CajaDetalleDeleteView.as_view(), name='caja_detalle_delete'),
 	
 	path('obtener-numero-compra/', obtener_numero_compra, name='obtener_numero_compra'),
 	path('obtener-alicuota-proveedor/', obtener_alicuota_proveedor, name='obtener_alicuota_proveedor'),

@@ -52,17 +52,17 @@ class ConfigViews():
 class DataViewList():
     search_fields = ['numero_caja']
     
-    ordering = ['-fecha_caja', '-numero_caja']
+    ordering = ['-id_caja']
     
     paginate_by = 10
       
     table_headers = {
         'id_caja': (1, 'Número'),
-        'idventas': (1, 'Fecha'),
-        'id_forma_pago': (1, 'Sucursal'),
-        'importe': (1, 'Ingresos'),
-        'fecha_detalle_caja': (1, 'Egresos'),
-        'observacion': (1, 'Saldo'),
+        'idventas': (1, 'idventas'),
+        'id_forma_pago': (1, 'F. Pago'),
+        'importe': (1, 'Importe'),
+        # 'fecha_detalle_caja': (1, 'Egresos'),
+        'observacion': (4, 'Observación'),
 
     }
     
@@ -71,14 +71,14 @@ class DataViewList():
         {'field_name': 'idventas', 'date_format': None},
         {'field_name': 'id_forma_pago', 'date_format': None},
         {'field_name': 'importe', 'date_format': None},
-        {'field_name': 'fecha_detalle_caja', 'date_format': 'd/m/Y'},
+        # {'field_name': 'fecha_detalle_caja', 'date_format': 'd/m/Y'},
         {'field_name': 'observacion', 'date_format': None},
 
     ]
 
 
 # CajaListView - Inicio
-class CajaListView(MaestroListView):
+class CajaDetalleListView(MaestroListView):
     model = ConfigViews.model
     template_name = ConfigViews.template_list
     context_object_name = ConfigViews.context_object_name
@@ -100,7 +100,7 @@ class CajaListView(MaestroListView):
 
 
 # CajaCreateView - Inicio
-class CajaCreateView(MaestroCreateView):
+class CajaDetalleCreateView(MaestroCreateView):
     model = ConfigViews.model
     list_view_name = ConfigViews.list_view_name
     form_class = ConfigViews.form_class
@@ -141,7 +141,7 @@ class CajaCreateView(MaestroCreateView):
 
 
 # CajaUpdateView
-class CajaUpdateView(MaestroUpdateView):
+class CajaDetalleUpdateView(MaestroUpdateView):
     model = ConfigViews.model
     list_view_name = ConfigViews.list_view_name
     form_class = ConfigViews.form_class
@@ -153,7 +153,7 @@ class CajaUpdateView(MaestroUpdateView):
 
 
 # CajaDeleteView
-class CajaDeleteView(MaestroDeleteView):
+class CajaDetalleDeleteView(MaestroDeleteView):
     model = ConfigViews.model
     list_view_name = ConfigViews.list_view_name
     template_name = ConfigViews.template_delete
