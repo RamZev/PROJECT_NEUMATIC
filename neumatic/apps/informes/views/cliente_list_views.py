@@ -16,7 +16,7 @@ from reportlab.platypus import Paragraph
 from .report_views_generics import *
 from apps.maestros.models.cliente_models import Cliente
 from ..forms.buscador_cliente_forms import BuscadorClienteForm
-from utils.utils import deserializar_datos, normalizar, raw_to_dict
+from utils.utils import deserializar_datos, normalizar
 from utils.helpers.export_helpers import ExportHelper, PDFGenerator, add_row_table
 
 
@@ -108,7 +108,7 @@ class ConfigViews:
 			"excel": True,
 			"csv": True
 		},
-		"nombre_localidad": {
+		"id_localidad__nombre_localidad": {
 			"label": "Localidad",
 			"col_width_pdf": 140,
 			"pdf_paragraph": True,
@@ -126,7 +126,7 @@ class ConfigViews:
 			"excel": True,
 			"csv": True
 		},
-		"codigo_iva": {
+		"id_tipo_iva__codigo_iva": {
 			"label": "IVA",
 			"col_width_pdf": 40,
 			"pdf_paragraph": False,
@@ -179,57 +179,16 @@ class ClienteInformeView(InformeFormView):
 		provincia = cleaned_data.get('provincia')
 		localidad = cleaned_data.get('localidad')
 		
-		if estatus:
-			match estatus:
-				case "activos":
-					queryset = ConfigViews.model.objects.filter(
-						estatus_cliente=True
-					).select_related(
-						"id_localidad", "id_tipo_iva"
-					)
-				case "inactivos":
-					queryset = ConfigViews.model.objects.filter(
-						estatus_cliente=False
-					).select_related(
-						"id_localidad", "id_tipo_iva"
-					)
-				case "todos":
-					queryset = ConfigViews.model.objects.all().select_related(
-						"id_localidad", "id_tipo_iva"
-					)
+		#-- Crear el queryset base con select_related.
+		queryset = ConfigViews.model.objects.select_related(
+			"id_localidad", "id_tipo_iva"
+		)
 		
-		if orden not in ['nombre', 'codigo']:
-			orden = 'nombre'
-		
-		orden = "nombre_cliente" if orden == "nombre" else "id_cliente"
-		
-		# queryset = queryset.order_by(orden)
-		
-		if orden == 'nombre_cliente':
-			#-- Anotar un campo en minúsculas para la comparación insensible a mayúsculas/minúsculas.
-			queryset = queryset.annotate(nombre_lower=Lower('nombre_cliente'))
-			
-			if desde and hasta:
-				#-- Filtrar clientes cuyos nombres comienzan con letras en el rango desde-hasta.
-				queryset = queryset.filter(
-					Q(nombre_lower__gte=desde) &  # Nombres mayor o igual a "desde"
-					Q(nombre_lower__lt=chr(ord(hasta[0]) + 1))  # Menor que la siguiente letra de "hasta"
-				)
-			elif desde:
-				#-- Filtrar solo clientes mayores o iguales a "desde".
-				queryset = queryset.filter(nombre_lower__gte=desde)
-			elif hasta:
-				#-- Filtrar solo clientes menores que la siguiente letra de "hasta".
-				queryset = queryset.filter(nombre_lower__lt=chr(ord(hasta[0]) + 1))
-			
-			
-		elif orden == 'id_cliente':
-			if desde and hasta:
-				queryset = queryset.filter(id_cliente__range=(desde, hasta))
-			elif desde:
-				queryset = queryset.filter(id_cliente__gte=desde)
-			elif hasta:
-				queryset = queryset.filter(id_cliente__lte=hasta)
+		#-- Aplicar filtros.
+		if estatus == "activos":
+			queryset = queryset.filter(estatus_cliente=True)
+		elif estatus == "inactivos":
+			queryset = queryset.filter(estatus_cliente=False)
 		
 		if vendedor:
 			queryset = queryset.filter(id_vendedor=vendedor.id_vendedor)
@@ -240,19 +199,54 @@ class ClienteInformeView(InformeFormView):
 		if localidad:
 			queryset = queryset.filter(id_localidad=localidad.id_localidad)
 		
-		queryset = queryset.order_by(orden)
+		#-- Aplicar filtros por rango según orden.
+		if orden == 'nombre':
+			#-- Anotar para búsqueda insensible a mayúsculas/minúsculas
+			queryset = queryset.annotate(nombre_lower=Lower('nombre_cliente'))
+			
+			if desde and hasta:
+				#-- Filtrar clientes cuyos nombres comienzan con letras en el rango desde-hasta.
+				queryset = queryset.filter(
+					Q(nombre_lower__gte=desde) &                 #-- Nombres mayor o igual a "desde".
+					Q(nombre_lower__lt=chr(ord(hasta[0]) + 1))   #-- Menor que la siguiente letra de "hasta".
+				)
+			elif desde:
+				#-- Filtrar solo clientes mayores o iguales a "desde".
+				queryset = queryset.filter(nombre_lower__gte=desde)
+			elif hasta:
+				#-- Filtrar solo clientes menores que la siguiente letra de "hasta".
+				queryset = queryset.filter(nombre_lower__lt=chr(ord(hasta[0]) + 1))
+			
+			#-- Ordenar por nombre.
+			queryset = queryset.order_by('nombre_cliente')
 		
-		#-- Convertir QUERYSET a LISTA DE DICCIONARIOS con los nombres de las relaciones.
-		queryset_list = []
-		for obj in queryset:
-			obj_dict = raw_to_dict(obj)
-			#-- Agregar los nombres de las relaciones.
-			obj_dict['nombre_localidad'] = obj.id_localidad.nombre_localidad if obj.id_localidad else ""
-			obj_dict['codigo_postal'] = obj.id_localidad.codigo_postal if obj.id_localidad else ""
-			obj_dict['codigo_iva'] = obj.id_tipo_iva.codigo_iva if obj.id_tipo_iva else ""
-			queryset_list.append(obj_dict)
+		elif orden == 'codigo':
+			if desde and hasta:
+				queryset = queryset.filter(id_cliente__range=(desde, hasta))
+			elif desde:
+				queryset = queryset.filter(id_cliente__gte=desde)
+			elif hasta:
+				queryset = queryset.filter(id_cliente__lte=hasta)
+			
+			#-- Ordenar por código.
+			queryset = queryset.order_by('id_cliente')
 		
-		return queryset_list
+		#-- Usar values() para obtener directamente los datos necesarios.
+		queryset = queryset.values(
+			'estatus_cliente',
+			'id_cliente',
+			'nombre_cliente',
+			'domicilio_cliente',
+			'codigo_postal',
+			'telefono_cliente',
+			'cuit',
+			'id_localidad_id',
+			'id_localidad__nombre_localidad',
+			# 'id_localidad__codigo_postal',
+			'id_tipo_iva__codigo_iva',
+		)
+		
+		return queryset
 	
 	def obtener_contexto_reporte(self, queryset, cleaned_data):
 		"""
@@ -290,11 +284,15 @@ class ClienteInformeView(InformeFormView):
 			)
 		
 		# **************************************************
+		
+		#-- Convertir el queryset a lista de diccionarios.
+		queryset_list = list(queryset)
+		
 		# **************************************************
 		
 		#-- Se retorna un contexto que será consumido tanto para la vista en pantalla como para la generación del PDF.
 		return {
-			"objetos": queryset,
+			"objetos": queryset_list,
 			"parametros_i": param_left,
 			"parametros_d": param_right,
 			'fecha_hora_reporte': fecha_hora_reporte,

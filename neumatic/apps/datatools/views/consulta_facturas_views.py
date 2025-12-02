@@ -19,7 +19,6 @@ from django.contrib import messages
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 
-from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
@@ -228,6 +227,7 @@ class ConsultaProductosView(TemplateView):
         })
 
         return context
+
 
 # === NUEVAS VISTAS ===
 def obtener_proximo_correlativo(factura_id):
@@ -539,7 +539,6 @@ def generar_pdf_entrega(datos_entrega):
     return response
 
 
-
 def descargar_pdf_entrega(request, factura_id):
     """Vista para descargar el PDF de entrega"""
     datos_entrega = request.session.get('ultima_entrega', {})
@@ -555,6 +554,7 @@ def descargar_pdf_entrega(request, factura_id):
         }
     
     return generar_pdf_entrega(datos_entrega)
+
 
 class CrearStockClienteView(View):
     def post(self, request, id_factura):

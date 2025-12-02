@@ -6,12 +6,12 @@
 			<ul class="pagination">
 				{% if page_obj.has_previous %}
 					<li class="page-item">
-						<a class="page-link" href="?page=1&{{ query_params }}" aria-label="First">
+						<a class="page-link" href="?page=1&{{ query_params }}" aria-label="First" title="Primera página">
 							<span aria-hidden="true">&laquo;&laquo;</span>
 						</a>
 					</li>
 					<li class="page-item">
-						<a class="page-link" href="?page={{ page_obj.previous_page_number }}&{{ query_params }}" aria-label="Previous">
+						<a class="page-link" href="?page={{ page_obj.previous_page_number }}&{{ query_params }}" aria-label="Previous" title="Página anterior">
 							<span aria-hidden="true">&laquo;</span>
 						</a>
 					</li>
@@ -36,12 +36,12 @@
 				
 				{% if page_obj.has_next %}
 					<li class="page-item">
-						<a class="page-link" href="?page={{ page_obj.next_page_number }}&{{ query_params }}" aria-label="Next">
+						<a class="page-link" href="?page={{ page_obj.next_page_number }}&{{ query_params }}" aria-label="Next" title="Página siguiente">
 							<span aria-hidden="true">&raquo;</span>
 						</a>
 					</li>
 					<li class="page-item">
-						<a class="page-link" href="?page={{ page_obj.paginator.num_pages }}&{{ query_params }}" aria-label="Last">
+						<a class="page-link" href="?page={{ page_obj.paginator.num_pages }}&{{ query_params }}" aria-label="Last" title="Última página">
 							<span aria-hidden="true">&raquo;&raquo;</span>
 						</a>
 					</li>
