@@ -40,7 +40,7 @@
 			{% for obj in objetos %}
 				<tr>
 					<td>{{ obj.estatus_punto_venta|get_estatus }}</td>
-					<td>{{ obj.nombre_sucursal }}</td>
+					<td>{{ obj.id_sucursal__nombre_sucursal }}</td>
 					<td>{{ obj.punto_venta }}</td>
 					<td>{{ obj.descripcion_punto_venta|default_if_none:"" }}</td>
 				</tr>

@@ -13,7 +13,7 @@ from reportlab.platypus import Paragraph
 from .report_views_generics import *
 from apps.maestros.models.base_models import ProductoMarca
 from ..forms.buscador_productomarca_forms import BuscadorProductoMarcaForm
-from utils.utils import deserializar_datos, normalizar, raw_to_dict
+from utils.utils import deserializar_datos, normalizar
 from utils.helpers.export_helpers import ExportHelper, PDFGenerator, add_row_table
 
 
@@ -70,7 +70,7 @@ class ConfigViews:
 			"csv": True
 		},
 		"id_producto_marca": {
-			"label": "ID",
+			"label": "Código",
 			"col_width_pdf": 30,
 			"pdf_paragraph": False,
 			"date_format": None,
@@ -123,7 +123,7 @@ class ConfigViews:
 			"excel": True,
 			"csv": True
 		},
-		"nombre_moneda": {
+		"id_moneda__nombre_moneda": {
 			"label": "Moneda",
 			"col_width_pdf": 90,
 			"pdf_paragraph": False,
@@ -152,26 +152,30 @@ class ProductoMarcaInformeView(InformeFormView):
 	def obtener_queryset(self, cleaned_data):
 		estatus = cleaned_data.get('estatus', 'activos')
 		
-		if estatus:
-			match estatus:
-				case "activos":
-					queryset = ConfigViews.model.objects.filter(estatus_producto_marca=True).select_related("id_moneda")
-				case "inactivos":
-					queryset = ConfigViews.model.objects.filter(estatus_producto_marca=False).select_related("id_moneda")
-				case "todos":
-					queryset = ConfigViews.model.objects.all().select_related("id_moneda")
+		#-- Crear el queryset base con select_related.
+		queryset = ConfigViews.model.objects.select_related("id_moneda")
+		
+		#-- Aplicar filtros.
+		if estatus == "activos":
+			queryset = queryset.filter(estatus_producto_marca=True)
+		elif estatus == "inactivos":
+			queryset = queryset.filter(estatus_producto_marca=False)
 		
 		queryset = queryset.order_by('nombre_producto_marca')
 		
-		#-- Convertir QUERYSET a LISTA DE DICCIONARIOS con los nombres de las relaciones.
-		queryset_list = []
-		for obj in queryset:
-			obj_dict = raw_to_dict(obj)
-			#-- Agregar los nombres de las relaciones.
-			obj_dict['nombre_moneda'] = obj.id_moneda.nombre_moneda if obj.id_moneda else ""
-			queryset_list.append(obj_dict)
+		#-- Usar values() para obtener directamente los datos necesarios.
+		queryset = queryset.values(
+			'estatus_producto_marca',
+			'id_producto_marca',
+			'nombre_producto_marca',
+			'principal',
+			'info_michelin_auto',
+			'info_michelin_camion',
+			'id_moneda_id',
+			'id_moneda__nombre_moneda',
+		)
 		
-		return queryset_list
+		return queryset
 	
 	def obtener_contexto_reporte(self, queryset, cleaned_data):
 		"""
@@ -192,11 +196,15 @@ class ProductoMarcaInformeView(InformeFormView):
 		}
 		
 		# **************************************************
+		
+		#-- Convertir el queryset a lista de diccionarios.
+		queryset_list = list(queryset)
+		
 		# **************************************************
 		
 		#-- Se retorna un contexto que será consumido tanto para la vista en pantalla como para la generación del PDF.
 		return {
-			"objetos": queryset,
+			"objetos": queryset_list,
 			"parametros_i": param_left,
 			"parametros_d": param_right,
 			'fecha_hora_reporte': fecha_hora_reporte,
@@ -289,7 +297,7 @@ def generar_pdf(contexto_reporte):
 	
 	#-- Estilos específicos adicionales iniciales de la tabla.
 	table_style_config = [
-		# ('ALIGN', (4,0), (4,-1), 'RIGHT'),
+		('ALIGN', (1,0), (1,-1), 'RIGHT'),
 	]
 	
 	#-- Agregar los datos a la tabla.

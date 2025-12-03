@@ -13,7 +13,7 @@ from reportlab.platypus import Paragraph
 from .report_views_generics import *
 from apps.maestros.models.base_models import ProductoDeposito
 from ..forms.buscador_productodeposito_forms import BuscadorProductoDepositoForm
-from utils.utils import deserializar_datos, normalizar, raw_to_dict
+from utils.utils import deserializar_datos, normalizar
 from utils.helpers.export_helpers import ExportHelper, PDFGenerator, add_row_table
 
 
@@ -69,6 +69,24 @@ class ConfigViews:
 			"excel": True,
 			"csv": True
 		},
+		"id_producto_deposito": {
+			"label": "Id. Depósito",
+			"col_width_pdf": 50,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
+		"nombre_producto_deposito": {
+			"label": "Nombre Depósito",
+			"col_width_pdf": 200,
+			"pdf_paragraph": True,
+			"date_format": None,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
 		"id_sucursal_id": {
 			"label": "Id. Sucursal",
 			"col_width_pdf": 0,
@@ -78,18 +96,9 @@ class ConfigViews:
 			"excel": True,
 			"csv": True
 		},
-		"nombre_sucursal": {
+		"id_sucursal__nombre_sucursal": {
 			"label": "Sucursal",
 			"col_width_pdf": 160,
-			"pdf_paragraph": True,
-			"date_format": None,
-			"pdf": True,
-			"excel": True,
-			"csv": True
-		},
-		"nombre_producto_deposito": {
-			"label": "Nombre Depósito",
-			"col_width_pdf": 200,
 			"pdf_paragraph": True,
 			"date_format": None,
 			"pdf": True,
@@ -117,30 +126,32 @@ class ProductoDepositoInformeView(InformeFormView):
 		estatus = cleaned_data.get('estatus', 'activos')
 		sucursal = cleaned_data.get('sucursal')
 		
-		if estatus:
-			match estatus:
-				case "activos":
-					queryset = ConfigViews.model.objects.filter(estatus_producto_deposito=True).select_related("id_sucursal")
-				case "inactivos":
-					queryset = ConfigViews.model.objects.filter(estatus_producto_deposito=False).select_related("id_sucursal")
-				case "todos":
-					queryset = ConfigViews.model.objects.all().select_related("id_sucursal")
+		#-- Crear el queryset base con select_related.
+		queryset = ConfigViews.model.objects.select_related("id_sucursal")
 		
-		queryset = queryset.order_by('id_sucursal__nombre_sucursal', 'nombre_producto_deposito')
+		#-- Aplicar filtros.
+		if estatus == "activos":
+			queryset = queryset.filter(estatus_producto_deposito=True)
+		elif estatus == "inactivos":
+			queryset = queryset.filter(estatus_producto_deposito=False)
 		
 		if sucursal:
 			queryset = queryset.filter(id_sucursal=sucursal)
 		
-		#-- Convertir QUERYSET a LISTA DE DICCIONARIOS con los nombres de las relaciones.
-		queryset_list = []
-		for obj in queryset:
-			obj_dict = raw_to_dict(obj)
-			#-- Agregar los nombres de las relaciones.
-			obj_dict['nombre_sucursal'] = obj.id_sucursal.nombre_sucursal if obj.id_sucursal else ""
-			queryset_list.append(obj_dict)
+		#-- Ordenar los resultados.
+		queryset = queryset.order_by('id_sucursal__nombre_sucursal', 'nombre_producto_deposito')
 		
-		return queryset_list
-	
+		#-- Usar values() para obtener directamente los datos necesarios.
+		queryset = queryset.values(
+			'estatus_producto_deposito',
+			'id_producto_deposito',
+			'nombre_producto_deposito',
+			'id_sucursal_id',
+			'id_sucursal__nombre_sucursal',
+		)
+
+		return queryset
+
 	def obtener_contexto_reporte(self, queryset, cleaned_data):
 		"""
 		Aquí se estructura el contexto para el reporte, agrupando los comprobantes,
@@ -162,11 +173,15 @@ class ProductoDepositoInformeView(InformeFormView):
 		}
 		
 		# **************************************************
+		
+		#-- Convertir el queryset a lista de diccionarios.
+		queryset_list = list(queryset)
+		
 		# **************************************************
 		
 		#-- Se retorna un contexto que será consumido tanto para la vista en pantalla como para la generación del PDF.
 		return {
-			"objetos": queryset,
+			"objetos": queryset_list,
 			"parametros_i": param_left,
 			"parametros_d": param_right,
 			'fecha_hora_reporte': fecha_hora_reporte,
@@ -259,7 +274,7 @@ def generar_pdf(contexto_reporte):
 	
 	#-- Estilos específicos adicionales iniciales de la tabla.
 	table_style_config = [
-		# ('ALIGN', (4,0), (4,-1), 'RIGHT'),
+		('ALIGN', (1,0), (1,-1), 'RIGHT'),
 	]
 	
 	#-- Agregar los datos a la tabla.

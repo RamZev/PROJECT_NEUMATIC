@@ -155,11 +155,17 @@ class CuentaBancoInformeView(InformeFormView):
 		if estatus:
 			match estatus:
 				case "activos":
-					queryset = ConfigViews.model.objects.filter(estatus_cuenta_banco=True).select_related("id_banco", "id_moneda")
+					queryset = ConfigViews.model.objects.select_related(
+						"id_banco", "id_moneda"
+					).filter(estatus_cuenta_banco=True)
 				case "inactivos":
-					queryset = ConfigViews.model.objects.filter(estatus_cuenta_banco=False).select_related("id_banco", "id_moneda")
+					queryset = ConfigViews.model.objects.select_related(
+						"id_banco", "id_moneda"
+					).filter(estatus_cuenta_banco=False)
 				case "todos":
-					queryset = ConfigViews.model.objects.all().select_related("id_banco", "id_moneda")
+					queryset = ConfigViews.model.objects.select_related(
+						"id_banco", "id_moneda"
+					).all()
 		
 		queryset = queryset.order_by('id_banco__nombre_banco', 'numero_cuenta')
 		

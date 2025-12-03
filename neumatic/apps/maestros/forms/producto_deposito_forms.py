@@ -15,8 +15,8 @@ class ProductoDepositoForm(CrudGenericForm):
 		widgets = {
 			'estatus_producto_deposito': 
 				forms.Select(attrs={**formclassselect}),
-			'id_sucursal': 
-				forms.Select(attrs={**formclassselect}),
 			'nombre_producto_deposito': 
 				forms.TextInput(attrs={**formclasstext}),
+			'id_sucursal': 
+				forms.Select(attrs={**formclassselect}),
 		}

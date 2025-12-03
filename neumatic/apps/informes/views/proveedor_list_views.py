@@ -16,7 +16,7 @@ from reportlab.platypus import Paragraph
 from .report_views_generics import *
 from apps.maestros.models.proveedor_models import Proveedor
 from ..forms.buscador_proveedor_forms import BuscadorProveedorForm
-from utils.utils import deserializar_datos, normalizar, raw_to_dict
+from utils.utils import deserializar_datos, normalizar
 from utils.helpers.export_helpers import ExportHelper, PDFGenerator, add_row_table
 
 
@@ -99,16 +99,7 @@ class ConfigViews:
 			"excel": True,
 			"csv": True
 		},
-		"id_localidad_id": {
-			"label": "Id. Localidad",
-			"col_width_pdf": 0,
-			"pdf_paragraph": True,
-			"date_format": None,
-			"pdf": False,
-			"excel": True,
-			"csv": True
-		},
-		"nombre_localidad": {
+		"id_localidad__nombre_localidad": {
 			"label": "Localidad",
 			"col_width_pdf": 140,
 			"pdf_paragraph": True,
@@ -126,7 +117,7 @@ class ConfigViews:
 			"excel": True,
 			"csv": True
 		},
-		"codigo_iva": {
+		"id_tipo_iva__codigo_iva": {
 			"label": "IVA",
 			"col_width_pdf": 50,
 			"pdf_paragraph": False,
@@ -176,70 +167,64 @@ class ProveedorInformeView(InformeFormView):
 		desde = cleaned_data.get('desde', '').lower()
 		hasta = cleaned_data.get('hasta', '').lower()
 		
-		if estatus:
-			match estatus:
-				case "activos":
-					queryset = ConfigViews.model.objects.filter(
-						estatus_proveedor=True
-					).select_related(
-						"id_localidad", "id_tipo_iva"
-					)
-				case "inactivos":
-					queryset = ConfigViews.model.objects.filter(
-						estatus_proveedor=False
-					).select_related(
-						"id_localidad", "id_tipo_iva"
-					)
-				case "todos":
-					queryset = ConfigViews.model.objects.all().select_related(
-						"id_localidad", "id_tipo_iva"
-					)
+		#-- Crear el queryset base con select_related.
+		queryset = ConfigViews.model.objects.select_related(
+			"id_localidad", "id_tipo_iva"
+		)
 		
-		if orden not in ['nombre', 'codigo']:
-			orden = 'nombre'
+		#-- Aplicar filtros.
+		if estatus == "activos":
+			queryset = queryset.filter(estatus_proveedor=True)
+		elif estatus == "inactivos":
+			queryset = queryset.filter(estatus_proveedor=False)
 		
-		orden = "nombre_proveedor" if orden == "nombre" else "id_proveedor"
-		
-		if orden == 'nombre_proveedor':
-			#-- Anotar un campo en minúsculas para la comparación insensible a mayúsculas/minúsculas.
+		#-- Aplicar filtros por rango según orden.
+		if orden == 'nombre':
+			#-- Anotar para búsqueda insensible a mayúsculas/minúsculas
 			queryset = queryset.annotate(nombre_lower=Lower('nombre_proveedor'))
 			
 			if desde and hasta:
-				#-- Filtrar clientes cuyos nombres comienzan con letras en el rango desde-hasta.
+				#-- Filtrar proveedores cuyos nombres comienzan con letras en el rango desde-hasta.
 				queryset = queryset.filter(
-					Q(nombre_lower__gte=desde) &  # Nombres mayor o igual a "desde"
-					Q(nombre_lower__lt=chr(ord(hasta[0]) + 1))  # Menor que la siguiente letra de "hasta"
+					Q(nombre_lower__gte=desde) &                 #-- Nombres mayor o igual a "desde".
+					Q(nombre_lower__lt=chr(ord(hasta[0]) + 1))   #-- Menor que la siguiente letra de "hasta".
 				)
 			elif desde:
-				#-- Filtrar solo clientes mayores o iguales a "desde".
+				#-- Filtrar solo proveedores mayores o iguales a "desde".
 				queryset = queryset.filter(nombre_lower__gte=desde)
 			elif hasta:
-				#-- Filtrar solo clientes menores que la siguiente letra de "hasta".
+				#-- Filtrar solo proveedores menores que la siguiente letra de "hasta".
 				queryset = queryset.filter(nombre_lower__lt=chr(ord(hasta[0]) + 1))
 			
-			
-		elif orden == 'id_proveedor':
+			#-- Ordenar por nombre.
+			queryset = queryset.order_by('nombre_proveedor')
+		
+		elif orden == 'codigo':
 			if desde and hasta:
 				queryset = queryset.filter(id_proveedor__range=(desde, hasta))
 			elif desde:
 				queryset = queryset.filter(id_proveedor__gte=desde)
 			elif hasta:
 				queryset = queryset.filter(id_proveedor__lte=hasta)
+
+			#-- Ordenar por código.
+			queryset = queryset.order_by('id_proveedor')
 		
-		queryset = queryset.order_by(orden)
+		#-- Usar values() para obtener directamente los datos necesarios.
+		queryset = queryset.values(
+			"estatus_proveedor",
+			"id_proveedor",
+			"nombre_proveedor",
+			"domicilio_proveedor",
+			"id_localidad__nombre_localidad",
+			"codigo_postal",
+			"id_tipo_iva__codigo_iva",
+			"cuit",
+			"telefono_proveedor",
+		)
 		
-		#-- Convertir QUERYSET a LISTA DE DICCIONARIOS con los nombres de las relaciones.
-		queryset_list = []
-		for obj in queryset:
-			obj_dict = raw_to_dict(obj)
-			#-- Agregar los nombres de las relaciones.
-			obj_dict['nombre_localidad'] = obj.id_localidad.nombre_localidad if obj.id_localidad else ""
-			obj_dict['codigo_postal'] = obj.id_localidad.codigo_postal if obj.id_localidad else ""
-			obj_dict['codigo_iva'] = obj.id_tipo_iva.codigo_iva if obj.id_tipo_iva else ""
-			queryset_list.append(obj_dict)
-		
-		return queryset_list
-	
+		return queryset
+
 	def obtener_contexto_reporte(self, queryset, cleaned_data):
 		"""
 		Aquí se estructura el contexto para el reporte, agrupando los comprobantes,
@@ -270,11 +255,15 @@ class ProveedorInformeView(InformeFormView):
 			)
 		
 		# **************************************************
+		
+		#-- Convertir el queryset a lista de diccionarios.
+		queryset_list = list(queryset)
+		
 		# **************************************************
 		
 		#-- Se retorna un contexto que será consumido tanto para la vista en pantalla como para la generación del PDF.
 		return {
-			"objetos": queryset,
+			"objetos": queryset_list,
 			"parametros_i": param_left,
 			"parametros_d": param_right,
 			'fecha_hora_reporte': fecha_hora_reporte,

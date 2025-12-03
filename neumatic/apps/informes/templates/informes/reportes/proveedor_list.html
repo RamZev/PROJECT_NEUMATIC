@@ -24,7 +24,7 @@
 
 {% block content %}
 	<br>
-	<table style="max-width: 80%; margin: auto;">
+	<table style="max-width: 90%; margin: auto;">
 		
 		<thead>
 			<tr>
@@ -48,9 +48,9 @@
 					<td class="numeric" style="padding-right: 15px;">{{ obj.id_proveedor }}</td>
 					<td>{{ obj.nombre_proveedor }}</td>
 					<td>{{ obj.domicilio_proveedor }}</td>
-					<td>{{ obj.nombre_localidad }}</td>
+					<td>{{ obj.id_localidad__nombre_localidad }}</td>
 					<td>{{ obj.codigo_postal }}</td>
-					<td>{{ obj.codigo_iva }}</td>
+					<td>{{ obj.id_tipo_iva__codigo_iva }}</td>
 					<td>{{ obj.cuit }}</td>
 					<td>{{ obj.telefono_proveedor }}</td>
 				</tr>

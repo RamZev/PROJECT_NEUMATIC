@@ -29,7 +29,7 @@
 		<thead>
 			<tr>
 				<th>Estatus</th>
-				<th class="numeric" style="padding-right: 15px;">ID</th>
+				<th class="numeric" style="padding-right: 15px;">Código</th>
 				<th>Nombre Marca</th>
 				<th>Principal</th>
 				<th>Inf. Michelin Auto</th>
@@ -48,7 +48,7 @@
 					<td>{{ obj.principal|get_si_no }}</td>
 					<td>{{ obj.info_michelin_auto|get_si_no }}</td>
 					<td>{{ obj.info_michelin_camion|get_si_no }}</td>
-					<td>{{ obj.nombre_moneda }}</td>
+					<td>{{ obj.id_moneda__nombre_moneda }}</td>
 				</tr>
 			{% endfor %}
 			

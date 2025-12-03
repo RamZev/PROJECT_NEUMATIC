@@ -16,7 +16,7 @@ from reportlab.platypus import Paragraph
 from .report_views_generics import *
 from apps.maestros.models.vendedor_models import Vendedor
 from ..forms.buscador_vendedor_forms import BuscadorVendedorForm
-from utils.utils import deserializar_datos, normalizar, raw_to_dict
+from utils.utils import deserializar_datos, normalizar
 from utils.helpers.export_helpers import ExportHelper, PDFGenerator, add_row_table
 
 
@@ -171,47 +171,59 @@ class VendedorInformeView(InformeFormView):
 		desde = cleaned_data.get('desde', '').lower()
 		hasta = cleaned_data.get('hasta', '').lower()
 		
-		if estatus:
-			match estatus:
-				case "activos":
-					queryset = ConfigViews.model.objects.filter(estatus_vendedor=True).select_related("id_sucursal")
-				case "inactivos":
-					queryset = ConfigViews.model.objects.filter(estatus_vendedor=False).select_related("id_sucursal")
-				case "todos":
-					queryset = ConfigViews.model.objects.all().select_related("id_sucursal")
+		#-- Crear el queryset base con select_related.
+		queryset = ConfigViews.model.objects.all()
 		
-			if orden not in ['nombre', 'codigo']:
-				orden = 'nombre'
+		#-- Aplicar filtros.
+		if estatus == "activos":
+			queryset = queryset.filter(estatus_vendedor=True)
+		elif estatus == "inactivos":
+			queryset = queryset.filter(estatus_vendedor=False)
+		
+		#-- Aplicar filtros por rango según orden.
+		if orden == 'nombre':
+			#-- Anotar para búsqueda insensible a mayúsculas/minúsculas
+			queryset = queryset.annotate(nombre_lower=Lower('nombre_vendedor'))
 			
-			orden = "nombre_vendedor" if orden == "nombre" else "id_vendedor"
+			if desde and hasta:
+				#-- Filtrar vendedores cuyos nombres comienzan con letras en el rango desde-hasta.
+				queryset = queryset.filter(
+					Q(nombre_lower__gte=desde) &                # Nombres mayor o igual a "desde"
+					Q(nombre_lower__lt=chr(ord(hasta[0]) + 1))  # Menor que la siguiente letra de "hasta"
+				)
+			elif desde:
+				#-- Filtrar solo vendedores mayores o iguales a "desde".
+				queryset = queryset.filter(nombre_lower__gte=desde)
+			elif hasta:
+				#-- Filtrar solo vendedores menores que la siguiente letra de "hasta".
+				queryset = queryset.filter(nombre_lower__lt=chr(ord(hasta[0]) + 1))
 			
-			queryset = queryset.order_by(orden)
+			#-- Ordenar por nombre.
+			queryset = queryset.order_by('nombre_vendedor')
+		
+		elif orden == 'codigo':
+			if desde and hasta:
+				queryset = queryset.filter(id_vendedor__range=(desde, hasta))
+			elif desde:
+				queryset = queryset.filter(id_vendedor__gte=desde)
+			elif hasta:
+				queryset = queryset.filter(id_vendedor__lte=hasta)
 			
-			if orden == 'nombre_vendedor':
-				#-- Anotar un campo en minúsculas para la comparación insensible a mayúsculas/minúsculas.
-				queryset = queryset.annotate(nombre_lower=Lower('nombre_vendedor'))
-				
-				if desde and hasta:
-					#-- Filtrar clientes cuyos nombres comienzan con letras en el rango desde-hasta.
-					queryset = queryset.filter(
-						Q(nombre_lower__gte=desde) &  # Nombres mayor o igual a "desde"
-						Q(nombre_lower__lt=chr(ord(hasta[0]) + 1))  # Menor que la siguiente letra de "hasta"
-					)
-				elif desde:
-					#-- Filtrar solo clientes mayores o iguales a "desde".
-					queryset = queryset.filter(nombre_lower__gte=desde)
-				elif hasta:
-					#-- Filtrar solo clientes menores que la siguiente letra de "hasta".
-					queryset = queryset.filter(nombre_lower__lt=chr(ord(hasta[0]) + 1))
-				
-				
-			elif orden == 'id_vendedor':
-				if desde and hasta:
-					queryset = queryset.filter(id_vendedor__range=(desde, hasta))
-				elif desde:
-					queryset = queryset.filter(id_vendedor__gte=desde)
-				elif hasta:
-					queryset = queryset.filter(id_vendedor__lte=hasta)
+			#-- Ordenar por código.
+			queryset = queryset.order_by('id_vendedor')
+		
+		#-- Usar values() para obtener directamente los datos necesarios.
+		queryset = queryset.values(
+			'estatus_vendedor',
+			'id_vendedor',
+			'nombre_vendedor',
+			'domicilio_vendedor',
+			'telefono_vendedor',
+			'pje_auto',
+			'pje_camion',
+			'vence_factura',
+			'vence_remito',
+		)
 		
 		return queryset
 	
@@ -246,8 +258,8 @@ class VendedorInformeView(InformeFormView):
 		
 		# **************************************************
 		
-		#-- Convertir QUERYSET a LISTA DE DICCIONARIOS al inicio (optimización clave).
-		queryset_list = [raw_to_dict(obj) for obj in queryset]
+		#-- Convertir QUERYSET a LISTA DE DICCIONARIOS.
+		queryset_list = list(queryset)
 		
 		# **************************************************
 		
