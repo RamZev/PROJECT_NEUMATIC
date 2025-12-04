@@ -107,9 +107,9 @@ INSERT INTO "main"."menu_menuitem" ("name", "url_name", "query_params", "icon", 
 VALUES ('Actualizar Mínimos por CAI', 'actualizar_minimo_cargar', '', '', '0', 2, NULL, 138);
 
 
--- 1.- Script para gregar nueva opción en Informes -> Productos
+-- Script para cregar nueva opción en Informes -> Productos
 INSERT INTO "main"."menu_menuitem" ("name", "url_name", "query_params", "icon", "is_collapse", "order", "heading_id", "parent_id") 
 VALUES ('Mínimos por CAI', 'vlproductominimo_informe_list', '', '', '0', 9, NULL, 53);
 
--- 2.- Script para reordenar opción: Informes -> Productos -> Stock
+-- Script para reordenar opción: Informes -> Productos -> Stock
 UPDATE menu_menuitem SET "order" = 10 WHERE id_menu_item = 141;

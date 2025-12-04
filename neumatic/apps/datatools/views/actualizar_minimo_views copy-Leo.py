@@ -53,82 +53,36 @@ class ActualizarMinimoCargarView(FormView):
 		
 		try:
 			if archivo.name.endswith('.xlsx') or archivo.name.endswith('.xls'):
-				#-- PRIMERO: Leer SOLO los headers para identificar columnas
+				#-- PRIMERO: Leer los nombres de columnas para identificar tipos.
 				df_headers = pd.read_excel(archivo, nrows=0)
 				columnas_excel = df_headers.columns.tolist()
 				
-				#-- Mapeo de columnas a tipos según table_info
-				columnas_por_tipo = {
-					'string': [],
-					'boolean': [],
-					'int': [],
-					'decimal': [],
-				}
+				#-- Identificar tipos de campos.
+				columnas_texto = []
+				columnas_booleanos = []
+				columnas_enteros = []
+				columnas_decimales = []
 				
-				#-- Mapeo de columnas que deben preservarse como strings exactas
-				columnas_preservar_string = []
+				for key, value in ConfigViews.table_info.items():
+					if value.get('excel') and value['label'] in columnas_excel:
+						if value.get('type') == "char":
+							columnas_texto.append(value['label'])
+						elif value.get('type') ==  "bool":
+							columnas_booleanos.append(value['label'])
+						elif value.get('type') ==  "int":
+							columnas_enteros.append(value['label'])
+						elif value.get('type') ==  "decimalField":
+							columnas_decimales.append(value['label'])
 				
-				#-- Analizar table_info para determinar tipos
-				for field_name, field_info in ConfigViews.table_info.items():
-					if field_info.get('excel') and field_info['label'] in columnas_excel:
-						field_type = field_info.get('type', '').lower()
-						
-						if field_type in ['char', 'string']:
-							columnas_por_tipo['string'].append(field_info['label'])
-							#-- Para CAI específicamente, preservar formato exacto
-							if field_info['label'] == 'CAI':
-								columnas_preservar_string.append(field_info['label'])
-						elif field_type in ['bool', 'boolean']:
-							columnas_por_tipo['boolean'].append(field_info['label'])
-						elif field_type in ['int', 'integer']:
-							columnas_por_tipo['int'].append(field_info['label'])
-						elif field_type in ['decimal', 'float']:
-							columnas_por_tipo['decimal'].append(field_info['label'])
-						else:
-							#-- Por defecto, tratar como string
-							columnas_por_tipo['string'].append(field_info['label'])
+				#-- SEGUNDO: Leer Excel forzando las columnas string como texto.
+				dtype_dict = {col: str for col in columnas_texto}
 				
-				#-- Crear diccionario de tipos para pandas
-				dtype_dict = {}
-				converters_dict = {}
+				# #-- Para decimales, leer como float para preservar formato numérico.
+				# for columna in columnas_decimales:
+				# 	if columna in df_headers.columns:
+				# 		dtype_dict[columna] = float
 				
-				#-- Para columnas que deben preservarse como strings EXACTAS
-				for columna in columnas_preservar_string:
-					converters_dict[columna] = lambda x: str(x) if not pd.isna(x) else ''
-				
-				#-- Para otras columnas string
-				for columna in columnas_por_tipo['string']:
-					if columna not in columnas_preservar_string:
-						dtype_dict[columna] = str
-				
-				#-- Leer el Excel con las configuraciones apropiadas
-				try:
-					#-- Primero intentar leer con dtype_dict y converters
-					if converters_dict:
-						df = pd.read_excel(
-							archivo, 
-							dtype=dtype_dict,
-							converters=converters_dict,
-							na_filter=False,
-							keep_default_na=False
-						)
-					else:
-						df = pd.read_excel(
-							archivo, 
-							dtype=dtype_dict,
-							na_filter=False,
-							keep_default_na=False
-						)
-				except Exception as e:
-					#-- Si falla, intentar lectura básica y luego procesar
-					df = pd.read_excel(archivo, na_filter=False, keep_default_na=False)
-					
-					#-- Aplicar procesamiento post-carga
-					for columna in columnas_preservar_string:
-						if columna in df.columns:
-							df[columna] = df[columna].apply(
-								lambda x: self._preservar_formato_exacto_con_ceros(x)
-							)
+				df = pd.read_excel(archivo, na_filter=False, dtype=dtype_dict, keep_default_na=False)
 				
 				#-- Verificar si el DataFrame está vacío.
 				if df.empty:
@@ -136,55 +90,34 @@ class ActualizarMinimoCargarView(FormView):
 					return self.form_invalid(form)
 				
 				#-- Verificar que las columnas coincidan con las esperadas.
-				columnas_esperadas = [value['label'] for value in ConfigViews.table_info.values() 
-									if value.get('excel', False)]
-				
-				#-- Comparar conjuntos ignorando mayúsculas/minúsculas
-				excel_cols_lower = set([col.strip().lower() for col in columnas_excel])
-				expected_cols_lower = set([col.strip().lower() for col in columnas_esperadas])
-				
-				if excel_cols_lower != expected_cols_lower:
-					form.add_error('archivo_excel', 
-						f'Columnas del archivo: {columnas_excel}<br>'
-						f'Columnas esperadas: {columnas_esperadas}'
-					)
+				columnas_esperadas = [value['label'] for value in ConfigViews.table_info.values() if value['excel'] ]
+				if set(columnas_esperadas) != set(columnas_excel):
+					form.add_error('archivo_excel', f'Las columnas del archivo no coinciden con las esperadas. ')
 					return self.form_invalid(form)
 				
-				#-- Procesar cada tipo de columna según su configuración
-				#-- Columnas string: asegurar formato correcto
-				for columna in columnas_por_tipo['string']:
+				#-- TERCERO: Asegurar que los campos string mantengan formato exacto.
+				for columna in columnas_texto:
 					if columna in df.columns:
-						if columna in columnas_preservar_string:
-							#-- Ya procesadas, asegurar que sean strings
-							df[columna] = df[columna].astype(str)
-						else:
-							df[columna] = df[columna].apply(
-								lambda x: self._preservar_formato_exacto(x)
-							)
+						#-- Preservar strings exactos, incluyendo ceros iniciales.
+						df[columna] = df[columna].apply(lambda x: self._preservar_formato_exacto(x))
 				
-				#-- Columnas enteras
-				for columna in columnas_por_tipo['int']:
+				#-- CUARTO: Convertir campos booleanos a formato Si/No
+				for columna in columnas_booleanos:
 					if columna in df.columns:
-						df[columna] = df[columna].apply(
-							lambda x: self._preservar_formato_entero_mejorado(x)
-						)
+						df[columna] = df[columna].apply(lambda x: self._convertir_booleano_a_si_no(x))
 				
-				#-- Columnas decimales
-				for columna in columnas_por_tipo['decimal']:
+				#-- QUINTO: Procesar campos enteros para preservar formato
+				for columna in columnas_enteros:
 					if columna in df.columns:
-						df[columna] = df[columna].apply(
-							lambda x: self._preservar_formato_decimal_mejorado(x)
-						)
+						df[columna] = df[columna].apply(lambda x: self._preservar_formato_entero(x))
 				
-				#-- Columnas booleanas
-				for columna in columnas_por_tipo['boolean']:
+				#-- SEXTO: Procesar campos decimales para preservar formato
+				for columna in columnas_decimales:
 					if columna in df.columns:
-						df[columna] = df[columna].apply(
-							lambda x: self._convertir_booleano_a_si_no(x)
-						)
+						df[columna] = df[columna].apply(lambda x: self._preservar_formato_decimal(x))
 				
-				#-- Convertir campos específicos a mayúsculas si es necesario
-				campos_a_mayusculas = []  # Agregar aquí si es necesario
+				#-- SEPTIMO: Convertir campos específicos a mayúsculas.
+				campos_a_mayusculas = ['Tipo Producto']
 				
 				for columna in campos_a_mayusculas:
 					if columna in df.columns:
@@ -193,25 +126,19 @@ class ActualizarMinimoCargarView(FormView):
 						)
 				
 				#-- Generar lista de campos protegidos y sus etiquetas.
-				campos_portegidos = [campo for campo, info in ConfigViews.table_info.items() 
-									if info.get('protected', False)]
-				etiquetas_portegidas = [info['label'] for info in ConfigViews.table_info.values() 
-										if info.get('protected', False)]
+				campos_portegidos = [campo for campo, info in ConfigViews.table_info.items() if info.get('protected', False)]
+				etiquetas_portegidas = [info['label'] for info in ConfigViews.table_info.values() if info.get('protected', False)]
 				
-				#-- Mapear Columnas del Excel a nombres de campos
-				label_to_field_map = {}
-				for key, value in ConfigViews.table_info.items():
-					if value.get('excel', False) and value['label'] in columnas_excel:
-						label_to_field_map[value['label']] = key
-				
-				#-- Limpiar datos
-				df = df.replace(['nan', 'NaN', 'NAN', 'NULL', 'null', 'None', 'none'], None)
+				#-- Mapear Columnas del Excel a nombres de campos {"label": producto.campo}.
+				label_to_field_map = {value['label']: key for key, value in ConfigViews.table_info.items() if value['label'] in columnas_excel}
+				#-- Limpiar datos (solo valores específicos, no formato).
+				df = df.replace(['nan', 'NaN', 'NAN', 'NULL', 'null'], None)
 				
 				#-- Convertir a lista de diccionarios y guardar en sesión.
 				todos_los_datos = df.to_dict('records')
 				total_filas = len(todos_los_datos)
 				
-				#-- Guardar en sesión
+				#-- Guardar en sesión - optimizado para grandes volúmenes.
 				self.request.session['actualizar_minimo_excel_data'] = {
 					'columnas': list(df.columns),
 					'todos_los_datos': todos_los_datos,
@@ -220,7 +147,6 @@ class ActualizarMinimoCargarView(FormView):
 					'campos_protegidos': campos_portegidos,
 					'etiquetas_protegidas': etiquetas_portegidas,
 					'etiquetas_a_campos_map': label_to_field_map,
-					'tipos_columnas': columnas_por_tipo,  # Agregar tipos para referencia
 				}
 				
 				return super().form_valid(form)
@@ -230,37 +156,8 @@ class ActualizarMinimoCargarView(FormView):
 			
 		except Exception as e:
 			form.add_error('archivo_excel', f'Error al procesar el archivo: {str(e)}')
-			return self.form_invalid(form)	
-	
-	def _preservar_formato_exacto_con_ceros(self, valor):
-		"""
-		Preserva el formato exacto del valor, especialmente ceros iniciales.
-		"""
-		if valor is None or pd.isna(valor):
-			return None
+			return self.form_invalid(form)
 		
-		#-- Si es string, devolver tal cual
-		if isinstance(valor, str):
-			#-- Manejar casos especiales
-			if valor.strip().lower() in ['nan', 'null', 'none', '']:
-				return None
-			return valor.strip()
-		
-		#-- Si es número, convertirlo a string preservando ceros
-		if isinstance(valor, (int, float)):
-			#-- Para enteros, usar formato que preserve ceros
-			if isinstance(valor, int) or (isinstance(valor, float) and valor.is_integer()):
-				#-- Convertir a int para quitar decimales .0
-				int_val = int(valor)
-				#-- Devolver como string sin formato adicional
-				return str(int_val)
-			else:
-				#-- Para floats con decimales
-				return str(valor)
-		
-		#-- Para cualquier otro tipo
-		return str(valor)	
-	
 	def _preservar_formato_exacto(self, valor):
 		"""
 		Preserva el formato exacto del valor tal como está en Excel.
@@ -362,53 +259,6 @@ class ActualizarMinimoCargarView(FormView):
 			return int(valor)
 		except (ValueError, TypeError):
 			return valor
-	
-	def _preservar_formato_entero_mejorado(self, valor):
-		"""
-		Preserva el formato de campos enteros, manejando valores vacíos y conversiones.
-		"""
-		if valor is None or pd.isna(valor) or valor == '':
-			return 0  # O None, según prefieras
-		
-		#-- Si ya es entero, mantener como está
-		if isinstance(valor, int):
-			return valor
-		
-		#-- Si es string
-		if isinstance(valor, str):
-			#-- Manejar casos especiales
-			valor_limpio = valor.strip()
-			if valor_limpio.lower() in ['nan', 'null', 'none', '']:
-				return 0
-			
-			#-- Intentar convertir directamente
-			try:
-				return int(valor_limpio)
-			except ValueError:
-				#-- Si falla, intentar limpiar
-				#-- Remover caracteres no numéricos excepto signo y punto
-				valor_numerico = re.sub(r'[^\d\-]', '', valor_limpio)
-				if valor_numerico:
-					try:
-						return int(valor_numerico)
-					except ValueError:
-						return 0
-				else:
-					return 0
-		
-		#-- Si es float
-		if isinstance(valor, float):
-			#-- Redondear hacia abajo para convertir a int
-			try:
-				return int(valor)
-			except (ValueError, TypeError):
-				return 0
-		
-		#-- Para cualquier otro tipo
-		try:
-			return int(valor)
-		except (ValueError, TypeError):
-			return 0
 	
 	def _preservar_formato_decimal(self, valor):
 		"""

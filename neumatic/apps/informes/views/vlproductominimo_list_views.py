@@ -68,7 +68,8 @@ class ConfigViews:
 			"date_format": None,
 			"pdf": True,
 			"excel": False,
-			"csv": True
+			"csv": True,
+			"type": "int"
 		},
 		"cai": {
 			"label": "CAI",
@@ -77,7 +78,8 @@ class ConfigViews:
 			"date_format": None,
 			"pdf": True,
 			"excel": True,
-			"csv": True
+			"csv": True,
+			"type": "char"
 		},
 		"id_deposito_id": {
 			"label": "Id. Depósito",
@@ -86,7 +88,8 @@ class ConfigViews:
 			"date_format": None,
 			"pdf": True,
 			"excel": True,
-			"csv": True
+			"csv": True,
+			"type": "int"
 		},
 		"nombre_producto_deposito": {
 			"label": "Depósito",
@@ -95,7 +98,8 @@ class ConfigViews:
 			"date_format": None,
 			"pdf": True,
 			"excel": True,
-			"csv": True
+			"csv": True,
+			"type": "char"
 		},
 		"minimo": {
 			"label": "Mínimo",
