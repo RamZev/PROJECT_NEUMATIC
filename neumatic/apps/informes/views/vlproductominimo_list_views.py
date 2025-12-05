@@ -89,7 +89,8 @@ class ConfigViews:
 			"pdf": True,
 			"excel": True,
 			"csv": True,
-			"type": "int"
+			# "type": "int",
+			"type": "char"
 		},
 		"nombre_producto_deposito": {
 			"label": "Depósito",

@@ -203,7 +203,7 @@
 					{% endif %}
 					
 					<div class="container-main" style="display: block;">
-						<!-- Panel izquierdo: Tabla de datos -->
+						<!-- Tabla de datos -->
 						<div class="table-container">
 							<div class="card mb-4">
 								<div class="card-header d-flex align-items-center">
@@ -243,7 +243,7 @@
 														{% for key, valor in fila.items %}
 															{% with valor_tipo=valor|get_type %}
 																<td data-content="{{ valor|default:'' }}" 
-																	title="{{ valor|default:'' }}"
+																	title="{% if valor_tipo == 'float' or valor_tipo == 'Decimal' %}{{ valor|default:'0.00' }}{% else %}{{ valor|default:'0' }}{% endif %}"
 																	{% if valor_tipo == 'int' or valor_tipo == 'float' or valor_tipo == 'Decimal' %}class="number-cell"{% endif %}>
 																	{% if valor_tipo == 'float' or valor_tipo == 'Decimal' %}
 																		{{ valor|formato_es_ar }}

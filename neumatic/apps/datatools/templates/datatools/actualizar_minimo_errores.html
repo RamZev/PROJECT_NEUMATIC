@@ -303,12 +303,14 @@
 														{% for columna in columnas %}
 															{% with valor=fila|get_dict_value:columna %}
 																{% with valor_tipo=valor|get_type %}
-																	<td class="error-cell {% if valor_tipo == 'float' or valor_tipo == 'Decimal' %}number-cell{% endif %}" 
+																	<td class="error-cell {% if valor_tipo == 'int' or valor_tipo == 'float' or valor_tipo == 'Decimal' %}number-cell{% endif %}" 
 																		data-content="{{ valor|default:'' }}" 
-																		title="{{ valor|default:'' }}"
+																		title="{% if valor_tipo == 'float' or valor_tipo == 'Decimal' %}{{ valor|default:'0.00' }}{% else %}{{ valor|default:'0' }}{% endif %}"
 																		data-error="Error en {{ columna }}: {{ fila.error_message }}">
 																		{% if valor_tipo == 'float' or valor_tipo == 'Decimal' %}
 																			{{ valor|formato_es_ar }}
+																		{% elif valor_tipo == 'int' %}
+																			{{ valor|formato_es_ar_entero }}
 																		{% else %}
 																			{{ valor|default:'' }}
 																		{% endif %}
