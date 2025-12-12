@@ -29,7 +29,7 @@
 		<thead>
 			<tr>
 				<th>Estatus</th>
-				<th class="numeric" style="padding-right: 15px;">Código</th>
+				<th class="numeric" style="padding-right: 15px;">Id. Localidad</th>
 				<th>Nombre Localidad</th>
 				<th>Código Postal</th>
 				<th>Provincia</th>
@@ -44,7 +44,7 @@
 					<td class="numeric" style="padding-right: 15px;">{{ obj.id_localidad }}</td>
 					<td>{{ obj.nombre_localidad }}</td>
 					<td>{{ obj.codigo_postal }}</td>
-					<td>{{ obj.nombre_provincia }}</td>
+					<td>{{ obj.id_provincia__nombre_provincia }}</td>
 				</tr>
 			{% endfor %}
 			

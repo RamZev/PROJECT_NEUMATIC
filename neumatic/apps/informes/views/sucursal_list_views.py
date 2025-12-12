@@ -14,7 +14,7 @@ from reportlab.platypus import Paragraph
 from .report_views_generics import *
 from apps.maestros.models.sucursal_models import Sucursal
 from ..forms.buscador_sucursal_forms import BuscadorSucursalForm
-from utils.utils import deserializar_datos, normalizar, raw_to_dict
+from utils.utils import deserializar_datos, normalizar
 from utils.helpers.export_helpers import ExportHelper, PDFGenerator, add_row_table
 
 
@@ -88,7 +88,7 @@ class ConfigViews:
 			"excel": True,
 			"csv": True
 		},
-		"nombre_localidad": {
+		"id_localidad__nombre_localidad": {
 			"label": "Localidad",
 			"col_width_pdf": 100,
 			"pdf_paragraph": True,
@@ -106,7 +106,7 @@ class ConfigViews:
 			"excel": True,
 			"csv": True
 		},
-		"nombre_provincia": {
+		"id_provincia__nombre_provincia": {
 			"label": "Provincia",
 			"col_width_pdf": 80,
 			"pdf_paragraph": True,
@@ -144,39 +144,32 @@ class SucursalInformeView(InformeFormView):
 	def obtener_queryset(self, cleaned_data):
 		estatus = cleaned_data.get('estatus', 'activos')
 		
-		if estatus:
-			match estatus:
-				case "activos":
-					queryset = ConfigViews.model.objects.filter(
-						estatus_sucursal=True
-						).select_related(
-							'id_localidad', 'id_provincia'
-						)
-				case "inactivos":
-					queryset = ConfigViews.model.objects.filter(
-						estatus_sucursal=False
-					).select_related(
-						'id_localidad', 'id_provincia'
-					)
-				case "todos":
-					queryset = ConfigViews.model.objects.all().select_related(
-						'id_localidad', 'id_provincia'
-					)
+		#-- Crear el queryset base con select_related.
+		queryset = ConfigViews.model.objects.select_related(
+			'id_localidad', 'id_provincia'
+		)
 		
+		#-- Aplicar filtros.
+		if estatus == "activos":
+			queryset = queryset.filter(estatus_sucursal=True)
+		elif estatus == "inactivos":
+			queryset = queryset.filter(estatus_sucursal=False)
+		
+		#-- Ordenar los resultados.
 		queryset = queryset.order_by("nombre_sucursal")
 		
-		#-- Convertir QUERYSET a LISTA DE DICCIONARIOS con los nombres de las relaciones.
-		queryset_list = []
-		for obj in queryset:
-			obj_dict = raw_to_dict(obj)
-			#-- Agregar los nombres de las relaciones.
-			obj_dict['nombre_localidad'] = obj.id_localidad.nombre_localidad if obj.id_localidad else ""
-			obj_dict['nombre_provincia'] = obj.id_provincia.nombre_provincia if obj.id_provincia else ""
-			queryset_list.append(obj_dict)
+		#-- Usar values() para obtener directamente los datos necesarios.
+		queryset = queryset.values(
+			"estatus_sucursal",
+			"nombre_sucursal",
+			"domicilio_sucursal",
+			"id_localidad__nombre_localidad",
+			"codigo_postal",
+			"id_provincia__nombre_provincia",
+			"telefono_sucursal"
+		)
+		return queryset
 
-		
-		return queryset_list
-	
 	def obtener_contexto_reporte(self, queryset, cleaned_data):
 		"""
 		Aquí se estructura el contexto para el reporte, agrupando los comprobantes,
@@ -196,11 +189,15 @@ class SucursalInformeView(InformeFormView):
 		}
 		
 		# **************************************************
+		
+		#-- Convertir el queryset a lista de diccionarios.
+		queryset_list = list(queryset)
+		
 		# **************************************************
 		
 		#-- Se retorna un contexto que será consumido tanto para la vista en pantalla como para la generación del PDF.
 		return {
-			"objetos": queryset,
+			"objetos": queryset_list,
 			"parametros_i": param_left,
 			"parametros_d": param_right,
 			'fecha_hora_reporte': fecha_hora_reporte,

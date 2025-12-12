@@ -1,21 +1,14 @@
 # neumatic\apps\datatools\views\actualizar_minimo_views.py
-import re
 import pandas as pd
 from django.core.paginator import Paginator
 from django.views.generic import FormView, TemplateView
 from django.urls import reverse_lazy
 from django.shortcuts import redirect
 from django.utils import timezone
-from datetime import datetime
 from django.contrib import messages
 from django.core.exceptions import ValidationError
-from decimal import Decimal, InvalidOperation
+from decimal import Decimal
 from django.db import transaction
-from django.db.models import (
-	CharField, TextField, IntegerField, BigIntegerField, 
-	DecimalField, FloatField, BooleanField, DateField, 
-	DateTimeField, ForeignKey, AutoField
-)
 
 from ..forms.actualizar_minimo_forms import ActualizarMinimoForm
 from apps.maestros.models.producto_models import ProductoCai, ProductoDeposito, ProductoMinimo
@@ -63,16 +56,19 @@ class ActualizarMinimoCargarView(FormView):
 				columnas_enteros = []
 				columnas_decimales = []
 				
-				for key, value in ConfigViews.table_info.items():
+				for value in ConfigViews.table_info.values():
 					if value.get('excel') and value['label'] in columnas_excel:
-						if value.get('type') == "char":
+						if value.get('type') in ["char", "text", "string"]:
 							columnas_texto.append(value['label'])
-						elif value.get('type') ==  "bool":
+						elif value.get('type') in ["bool", "boolean"]:
 							columnas_booleanos.append(value['label'])
 						elif value.get('type') ==  "int":
 							columnas_enteros.append(value['label'])
-						elif value.get('type') ==  "decimalField":
+						elif value.get('type') in ["decimal", "float"]:
 							columnas_decimales.append(value['label'])
+						else:
+							#-- Por defecto, tratar como string.
+							columnas_texto.append(value['label'])
 				
 				#-- SEGUNDO: Leer Excel forzando las columnas string como texto.
 				dtype_dict = {col: str for col in columnas_texto}
@@ -115,15 +111,6 @@ class ActualizarMinimoCargarView(FormView):
 				for columna in columnas_decimales:
 					if columna in df.columns:
 						df[columna] = df[columna].apply(lambda x: self._preservar_formato_decimal(x))
-				
-				#-- SEPTIMO: Convertir campos específicos a mayúsculas.
-				campos_a_mayusculas = ['Tipo Producto']
-				
-				for columna in campos_a_mayusculas:
-					if columna in df.columns:
-						df[columna] = df[columna].apply(
-							lambda x: str(x).strip().upper() if x and pd.notna(x) else x
-						)
 				
 				#-- Generar lista de campos protegidos y sus etiquetas.
 				campos_portegidos = [campo for campo, info in ConfigViews.table_info.items() if info.get('protected', False)]
@@ -231,7 +218,6 @@ class ActualizarMinimoCargarView(FormView):
 		"""
 		if valor is None or pd.isna(valor) or valor == '':
 			return 0
-			return None
 		
 		#-- Si ya es entero, mantener como está.
 		if isinstance(valor, int):
@@ -242,7 +228,6 @@ class ActualizarMinimoCargarView(FormView):
 			#-- Manejar casos especiales
 			if valor in ['nan', 'NaN', 'NAN', 'NULL', 'null']:
 				return 0
-				return None
 			
 			#-- Limpiar el string: reemplazar coma por punto y eliminar espacios.
 			valor_limpio = valor.replace(',', '.').strip()
@@ -463,8 +448,6 @@ class ActualizarMinimoView(TemplateView):
 				errores = []
 				
 				for index, fila in enumerate(todos_los_datos, 2):
-					# index += 1  # Ajustar índice para que coincida con fila Excel
-					
 					try:
 						errores_en_fila = []
 						
@@ -490,12 +473,10 @@ class ActualizarMinimoView(TemplateView):
 							try:
 								id_deposito = int(id_deposito)
 								deposito = ProductoDeposito.objects.get(pk=id_deposito)
-							except ValueError:
+							except (ValueError, TypeError):
 								errores_en_fila.append(f"El ID Depósito '{id_deposito}' debe ser un número entero")
-							except TypeError:
-								errores_en_fila.append(f"El ID Depósito tiene un formato inválido")
 							except ProductoDeposito.DoesNotExist:
-								errores_en_fila.append(f"El depósito con ID '{id_deposito}' no existe en el sistema")
+								errores_en_fila.append(f"No existe un Depósito con ID '{id_deposito}'")
 							except Exception as e:
 								errores_en_fila.append(f"Error al buscar depósito: {str(e)}")
 						
@@ -508,6 +489,8 @@ class ActualizarMinimoView(TemplateView):
 								errores_en_fila.append("El Mínimo no puede ser negativo")
 						except (ValueError, TypeError):
 							errores_en_fila.append(f"El Mínimo '{minimo}' debe ser un número entero válido")
+						except Exception as e:
+							errores_en_fila.append(f"Error al leer el Mínimo: {str(e)}")
 						
 						# ========== Si hay errores, guardar fila con error ==========
 						if errores_en_fila:
@@ -603,228 +586,3 @@ class ActualizarMinimoView(TemplateView):
 		context = super().get_context_data(**kwargs)
 		context['fecha'] = timezone.now()
 		return context
-
-
-#-- Funciones de validación según tipo de dato del campo.
-def obtener_tipo_campo_desde_modelo(campo_obj):
-	"""Obtener el tipo de campo basado en la instancia del campo del modelo"""
-	if isinstance(campo_obj, (CharField, TextField)):
-		return 'string'
-	elif isinstance(campo_obj, (IntegerField, BigIntegerField, AutoField)):
-		return 'integer'
-	elif isinstance(campo_obj, (DecimalField, FloatField)):
-		return 'decimal'
-	elif isinstance(campo_obj, BooleanField):
-		return 'boolean'
-	elif isinstance(campo_obj, DateField):
-		return 'date'
-	elif isinstance(campo_obj, DateTimeField):
-		return 'datetime'
-	elif isinstance(campo_obj, ForeignKey):
-		return 'foreign_key'
-	else:
-		return 'string'
-
-
-def obtener_especificaciones_campo(campo_obj):
-	"""Obtener especificaciones de validación del campo"""
-	especificaciones = {}
-	
-	if hasattr(campo_obj, 'max_length') and campo_obj.max_length:
-		especificaciones['max_length'] = campo_obj.max_length
-	
-	if hasattr(campo_obj, 'max_digits') and campo_obj.max_digits:
-		especificaciones['max_digits'] = campo_obj.max_digits
-	
-	if hasattr(campo_obj, 'decimal_places') and campo_obj.decimal_places:
-		especificaciones['decimal_places'] = campo_obj.decimal_places
-	
-	#-- Validaciones específicas basadas en el nombre del campo.
-	if campo_obj.name == 'fecha_fabricacion':
-		especificaciones.update({
-			'pattern': r'^$|^20\d{2}(0[1-9]|1[0-2])$',
-			'mensaje': 'Formato correcto AAAAMM (AAAA año, MM mes)'
-		})
-	elif campo_obj.name == 'unidad':
-		especificaciones.update({
-			'pattern': r'^[1-9]\d{0,2}$|^0$|^$',
-			'mensaje': 'Número entero positivo de hasta 3 dígitos'
-		})
-	elif campo_obj.name in ['costo', 'descuento', 'precio']:
-		especificaciones.update({
-			'pattern': r'^(0|[1-9]\d{0,13})(\.\d{1,2})?$|^$',
-			'mensaje': 'Número positivo con hasta 13 dígitos y 2 decimales'
-		})
-	
-	return especificaciones
-
-
-def validar_string(valor, campo_obj, especificaciones):
-	"""Validar campo string preservando formato exacto"""
-	#-- El valor ya viene preservado desde la carga del Excel.
-	#-- Solo necesitamos validar, no convertir.
-	
-	#-- Validar campo obligatorio.
-	if campo_obj.blank is False and campo_obj.null is False:
-		if valor is None or valor == '':
-			raise ValidationError("Este campo es obligatorio y no puede estar vacío")
-	
-	if valor is None:
-		return None
-	
-	#-- Asegurar que es string (por si acaso).
-	if not isinstance(valor, str):
-		valor = str(valor)
-	
-	max_length = especificaciones.get('max_length')
-	if max_length and len(valor) > max_length:
-		raise ValidationError(f"Longitud máxima excedida ({max_length} caracteres)")
-	
-	#-- Validación específica por patrón si existe.
-	pattern = especificaciones.get('pattern')
-	if pattern and valor and not re.match(pattern, valor):
-		raise ValidationError(especificaciones.get('mensaje', 'Formato inválido'))
-	
-	return valor
-
-
-def validar_integer(valor, campo_obj, especificaciones):
-	"""Validar campo integer"""
-	try:
-		int_val = int(valor)
-		
-		#-- Validación específica por patrón si existe.
-		pattern = especificaciones.get('pattern')
-		if pattern and not re.match(pattern, str(int_val)):
-			raise ValidationError(especificaciones.get('mensaje', 'Formato inválido'))
-		
-		return int_val
-	except (ValueError, TypeError):
-		raise ValidationError("Valor entero inválido")
-
-
-def validar_decimal(valor, campo_obj, especificaciones):
-	"""Validar campo decimal"""
-	try:
-		#-- Convertir a Decimal.
-		if isinstance(valor, str):
-			#-- Reemplazar coma por punto para formato argentino.
-			valor = valor.replace(',', '.')
-			#-- Eliminar caracteres no numéricos excepto punto y signo.
-			valor = re.sub(r'[^\d\.\-]', '', valor)
-		
-		decimal_val = Decimal(str(valor))
-		
-		#-- Validar máximo de dígitos.
-		max_digits = especificaciones.get('max_digits')
-		decimal_places = especificaciones.get('decimal_places')
-		
-		if max_digits:
-			#-- Verificar que no exceda los dígitos permitidos.
-			digits = len(str(decimal_val).replace('.', '').replace('-', ''))
-			if digits > max_digits:
-				raise ValidationError(f"Máximo {max_digits} dígitos permitidos")
-		
-		if decimal_places:
-			#-- Verificar decimales.
-			if decimal_val.as_tuple().exponent and abs(decimal_val.as_tuple().exponent) > decimal_places:
-				raise ValidationError(f"Máximo {decimal_places} decimales permitidos")
-		
-		#-- Validación específica por patrón si existe.
-		pattern = especificaciones.get('pattern')
-		if pattern and not re.match(pattern, str(decimal_val)):
-			raise ValidationError(especificaciones.get('mensaje', 'Formato inválido'))
-		
-		return decimal_val
-		
-	except (ValueError, InvalidOperation):
-		raise ValidationError("Valor decimal inválido")
-
-
-def validar_boolean(valor, campo_obj, especificaciones):
-	"""Validar campo boolean"""
-	if isinstance(valor, bool):
-		return valor
-	
-	elif isinstance(valor, str):
-		valor_lower = valor.lower().strip()
-		true_values = ['true', '1', 'yes', 'sí', 'si', 'verdadero', 'x', '✔', 'verdad', 't', 'v']
-		false_values = ['false', '0', 'no', 'not', 'falso', '', 'null', 'none', 'f', 'n']
-		
-		if valor_lower in true_values:
-			return True
-		elif valor_lower in false_values:
-			return False
-		else:
-			raise ValidationError("Valor booleano inválido")
-	else:
-		return bool(valor)
-
-
-def validar_foreign_key(valor, campo_obj, especificaciones):
-	"""Validar campo foreign key"""
-	try:
-		#-- Para foreign keys, validamos que sea un entero válido.
-		if valor in ['', None, 'NULL', 'null']:
-			return None
-		
-		int_val = int(valor)
-		
-		#-- Verificar que exista en la tabla relacionada.
-		related_model = campo_obj.related_model
-		
-		if not related_model.objects.filter(pk=int_val).exists():
-			raise ValidationError(f"ID {int_val} no existe en {related_model._meta.verbose_name}")
-		
-		return int_val
-	except (ValueError, TypeError):
-		raise ValidationError("ID inválido para relación")
-
-
-def validar_date(valor, campo_obj, especificaciones):
-	"""Validar campo date"""
-	try:
-		if isinstance(valor, datetime):
-			return valor.date()
-		elif isinstance(valor, str):
-			#-- Intentar varios formatos de fecha.
-			formats = ['%Y-%m-%d', '%d/%m/%Y', '%d-%m-%Y', '%m/%d/%Y', '%Y%m%d']
-			for fmt in formats:
-				try:
-					return datetime.strptime(valor, fmt).date()
-				except ValueError:
-					continue
-			raise ValidationError("Formato de fecha inválido")
-		else:
-			raise ValidationError("Tipo de fecha inválido")
-	except Exception:
-		raise ValidationError("Fecha inválida")
-
-
-def validar_datetime(valor, campo_obj, especificaciones):
-	"""Validar campo datetime"""
-	try:
-		if isinstance(valor, datetime):
-			return valor
-		elif isinstance(valor, str):
-			#-- Intentar varios formatos de fecha/hora.
-			formats = ['%Y-%m-%d %H:%M:%S', '%d/%m/%Y %H:%M:%S', '%Y-%m-%dT%H:%M:%S', '%Y%m%d %H%M%S']
-			for fmt in formats:
-				try:
-					return datetime.strptime(valor, fmt)
-				except ValueError:
-					continue
-			raise ValidationError("Formato de fecha/hora inválido")
-		else:
-			raise ValidationError("Tipo de fecha/hora inválido")
-	except Exception:
-		raise ValidationError("Fecha/hora inválida")
-
-
-def validar_generico(valor, campo_obj, especificaciones):
-	"""Validación genérica para tipos no especificados"""
-	try:
-		#-- Intentar conversión básica a string.
-		return str(valor)
-	except Exception:
-		raise ValidationError("Valor inválido para el campo")

@@ -29,6 +29,7 @@
 		<thead>
 			<tr>
 				<th>Estatus</th>
+				<th class="numeric" style="padding-right: 15px;">Id. Depósito</th>
 				<th>Nombre Depósito</th>
 				<th>Sucursal</th>
 			</tr>
@@ -39,8 +40,9 @@
 			{% for obj in objetos %}
 				<tr>
 					<td>{{ obj.estatus_producto_deposito|get_estatus }}</td>
+					<td class="numeric" style="padding-right: 15px;">{{ obj.id_producto_deposito }}</td>
 					<td>{{ obj.nombre_producto_deposito }}</td>
-					<td>{{ obj.nombre_sucursal }}</td>
+					<td>{{ obj.id_sucursal__nombre_sucursal }}</td>
 				</tr>
 			{% endfor %}
 			

@@ -17,13 +17,13 @@ from .views.excel_views import (
 	ActualizarProductosView, 
 	AgregarProductosView,
 )
-
 from .views.actualizar_minimo_views import (
 	ActualizarMinimoCargarView,
 	ActualizarMinimoPrevisualizarView,
 	ActualizarMinimoErroresView,
 	ActualizarMinimoView
 )
+
 
 urlpatterns = [
     path('facturas-cliente/', ConsultaFacturasClienteView.as_view(), name='consulta_facturas_cliente'),

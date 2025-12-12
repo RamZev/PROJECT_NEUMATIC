@@ -13,7 +13,7 @@ from reportlab.platypus import Paragraph
 from .report_views_generics import *
 from apps.maestros.models.producto_models import Producto
 from ..forms.buscador_producto_forms import BuscadorProductoForm
-from utils.utils import deserializar_datos, normalizar, raw_to_dict
+from utils.utils import deserializar_datos, normalizar
 from utils.helpers.export_helpers import ExportHelper, PDFGenerator, add_row_table
 
 
@@ -87,7 +87,7 @@ class ConfigViews:
 			"excel": True,
 			"csv": True
 		},
-		"cai": {
+		"id_cai__cai": {
 			"label": "CAI",
 			"col_width_pdf": 0,
 			"pdf_paragraph": False,
@@ -123,7 +123,7 @@ class ConfigViews:
 			"excel": True,
 			"csv": True
 		},
-		"nombre_familia": {
+		"id_familia__nombre_producto_familia": {
 			"label": "Familia",
 			"col_width_pdf": 0,
 			"pdf_paragraph": False,
@@ -141,7 +141,7 @@ class ConfigViews:
 			"excel": True,
 			"csv": True
 		},
-		"nombre_modelo": {
+		"id_modelo__nombre_modelo": {
 			"label": "Modelo",
 			"col_width_pdf": 0,
 			"pdf_paragraph": False,
@@ -159,7 +159,7 @@ class ConfigViews:
 			"excel": True,
 			"csv": True
 		},
-		'nombre_marca': {
+		'id_marca__nombre_producto_marca': {
 			"label": "Marca",
 			"col_width_pdf": 140,
 			"pdf_paragraph": True,
@@ -233,7 +233,7 @@ class ConfigViews:
 			"excel": True,
 			"csv": True
 		},
-		"alicuota_iva": {
+		"id_alicuota_iva__alicuota_iva": {
 			"label": "Alícuota IVA",
 			"col_width_pdf": 0,
 			"pdf_paragraph": False,
@@ -314,24 +314,16 @@ class ProductoInformeView(InformeFormView):
 		id_modelo_desde = cleaned_data.get('id_modelo_desde')
 		id_modelo_hasta = cleaned_data.get('id_modelo_hasta')
 		
-		if estatus:
-			match estatus:
-				case "activos":
-					queryset = ConfigViews.model.objects.filter(
-						estatus_producto=True
-					).select_related(
-						"id_cai", "id_familia", "id_modelo", "id_marca", "id_alicuota_iva"
-					)
-				case "inactivos":
-					queryset = ConfigViews.model.objects.filter(
-						estatus_producto=False
-					).select_related(
-						"id_cai", "id_familia", "id_modelo", "id_marca", "id_alicuota_iva"
-					)
-				case "todos":
-					queryset = ConfigViews.model.objects.all().select_related(
-						"id_cai", "id_familia", "id_modelo", "id_marca", "id_alicuota_iva"
-					)
+		#-- Crear el queryset base con select_related.
+		queryset = ConfigViews.model.objects.select_related(
+			"id_cai", "id_familia", "id_modelo", "id_marca", "id_alicuota_iva"
+		)
+		
+		#-- Aplicar filtros.
+		if estatus == "activos":
+			queryset = queryset.filter(estatus_producto=True)
+		elif estatus == "inactivos":
+			queryset = queryset.filter(estatus_producto=False)
 		
 		if id_familia_desde and id_familia_hasta:
 			#-- Filtrar por rango de familias (ambos límites).
@@ -368,19 +360,36 @@ class ProductoInformeView(InformeFormView):
 		
 		queryset = queryset.order_by('id_producto')
 		
-		#-- Convertir QUERYSET a LISTA DE DICCIONARIOS con los nombres de las relaciones.
-		queryset_list = []
-		for obj in queryset:
-			obj_dict = raw_to_dict(obj)
-			#-- Agregar los nombres de las relaciones.
-			obj_dict['cai'] = obj.id_cai.cai if obj.id_cai else ""
-			obj_dict['nombre_familia'] = obj.id_familia.nombre_producto_familia if obj.id_familia else ""
-			obj_dict['nombre_modelo'] = obj.id_modelo.nombre_modelo if obj.id_modelo else ""
-			obj_dict['nombre_marca'] = obj.id_marca.nombre_producto_marca if obj.id_marca else ""
-			obj_dict['alicuota_iva'] = obj.id_alicuota_iva.alicuota_iva if obj.id_alicuota_iva else ""
-			queryset_list.append(obj_dict)
+		#-- Usar values() para obtener directamente los datos necesarios.
+		queryset = queryset.values(
+			'estatus_producto',
+			'id_producto',
+			'id_cai_id',
+			'id_cai__cai',
+			'medida',
+			'nombre_producto',
+			'id_familia_id',
+			'id_familia__nombre_producto_familia',
+			'id_modelo_id',
+			'id_modelo__nombre_modelo',
+			'id_marca_id',
+			'id_marca__nombre_producto_marca',
+			'unidad',
+			'precio',
+			'tipo_producto',
+			'segmento',
+			'fecha_fabricacion',
+			'costo',
+			'id_alicuota_iva_id',
+			'id_alicuota_iva__alicuota_iva',
+			'minimo',
+			'descuento',
+			'despacho_1',
+			'despacho_2',
+			'carrito',
+		)
 		
-		return queryset_list
+		return queryset
 	
 	def obtener_contexto_reporte(self, queryset, cleaned_data):
 		"""
@@ -435,11 +444,15 @@ class ProductoInformeView(InformeFormView):
 		}
 		
 		# **************************************************
+		
+		#-- Convertir el queryset a lista de diccionarios.
+		queryset_list = list(queryset)
+		
 		# **************************************************
 		
 		#-- Se retorna un contexto que será consumido tanto para la vista en pantalla como para la generación del PDF.
 		return {
-			"objetos": queryset,
+			"objetos": queryset_list,
 			"parametros_i": param_left,
 			"parametros_d": param_right,
 			'fecha_hora_reporte': fecha_hora_reporte,

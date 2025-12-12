@@ -67,17 +67,17 @@ class DataViewList():
 	
 	table_headers = {
 		'estatus_producto_deposito': (1, 'Estatus'),
-		# 'id_producto_deposito': (1, 'ID'),
+		'id_producto_deposito': (1, 'Id. Depósito'),
+		'nombre_producto_deposito': (4, 'Depósito'),
 		'id_sucursal': (4, 'Sucursal'),
-		'nombre_producto_deposito': (5, 'Depósito'),
 		'acciones': (2, 'Acciones'),
 	}
 	
 	table_data = [
 		{'field_name': 'estatus_producto_deposito', 'date_format': None},
-		# {'field_name': 'id_producto_deposito', 'date_format': None},
-		{'field_name': 'id_sucursal', 'date_format': None},
+		{'field_name': 'id_producto_deposito', 'date_format': None},
 		{'field_name': 'nombre_producto_deposito', 'date_format': None},
+		{'field_name': 'id_sucursal', 'date_format': None},
 	]
 
 
