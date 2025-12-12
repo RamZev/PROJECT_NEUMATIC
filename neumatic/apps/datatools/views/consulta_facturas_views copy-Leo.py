@@ -136,111 +136,107 @@ class ConsultaProductosView(TemplateView):
 	
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
-		usuario = self.request.user
-		print(f"Usuario que realiza la consulta: {usuario.username} | Vendedor: {usuario.id_vendedor}")
-		#-- Parámetros de búsqueda.
+		
+		# Parámetros de búsqueda
 		medida = self.request.GET.get('medida', '').strip()
 		nombre = self.request.GET.get('nombre', '').strip()
 		cai = self.request.GET.get('cai', '').strip()
 		filtro_marca = self.request.GET.get('filtro_marca', 'primeras')
 		
 		error = None
-		page_obj = None
 		
-		if any([medida, nombre, cai]):
+		try:
+			# ========== FILTRADO PRINCIPAL ==========
+			# Construir filtros base
+			filters = Q(tipo_producto='P')  # Solo productos
 			
-			try:
-				# ========== FILTRADO PRINCIPAL ==========
-				#-- Construir filtros base.
-				filters = Q(tipo_producto='P')  # Solo productos
-				
-				if medida:
-					filters &= Q(medida__icontains=medida)
-				if nombre:
-					filters &= Q(nombre_producto__icontains=nombre)
-				if cai:
-					filters &= Q(id_cai__descripcion_cai__icontains=cai)
-				
-				if filtro_marca == "primeras":
-					filters &= Q(id_marca__principal=True)
-				elif filtro_marca == "otras":
-					filters &= Q(id_marca__principal=False)
-				
-				# ========== FILTRO DE STOCK OPTIMIZADO ==========
-				#-- Usar EXISTS subquery que es más eficiente que annotate.
-				if filtro_marca == "stock":
-					#-- Subquery: productos que tienen al menos un registro con stock > 0.
-					stock_subquery = ProductoStock.objects.filter(
-						id_producto=OuterRef('pk'),
-						stock__gt=0
-					)
-					
-					#-- Aplicar filtro con EXISTS.
-					productos = Producto.objects.filter(
-						filters & Exists(stock_subquery)
-					)
-				else:
-					#-- Sin filtro de stock.
-					productos = Producto.objects.filter(filters)
-				
-				#-- Select related y ordenar.
-				productos = productos.select_related(
-					'id_marca', 'id_cai', 'id_familia', 'id_alicuota_iva', 'id_producto_estado'
-				).order_by('nombre_producto')
-				
-				#-- Paginación.
-				paginator = Paginator(productos, 10)
-				page_number = self.request.GET.get('page')
-				page_obj = paginator.get_page(page_number)
-				
-				# ========== CÁLCULO DE STOCK DETALLADO (solo página actual) ==========
-				if page_obj and page_obj.object_list:
-					#-- IDs de productos en esta página.
-					productos_pagina_ids = [p.id_producto for p in page_obj]
-					
-					#-- Obtener depósitos.
-					depositos = ProductoDeposito.objects.all()
-					
-					#-- Obtener stock para estos productos específicos.
-					stock_data = ProductoStock.objects.filter(
-						id_producto__in=productos_pagina_ids
-					).values('id_producto', 'id_deposito', 'stock')
-					
-					#-- Organizar stock en diccionario.
-					stock_dict = {}
-					for item in stock_data:
-						pid = item['id_producto']
-						did = item['id_deposito']
-						
-						if pid not in stock_dict:
-							stock_dict[pid] = {}
-						
-						stock_dict[pid][did] = item['stock']
-					
-					#-- Calcular stock total y por depósito para cada producto.
-					for producto in page_obj:
-						producto.stock_total = 0
-						producto.stock_por_deposito_list = []
-						
-						# Stock de este producto
-						producto_stock = stock_dict.get(producto.id_producto, {})
-						
-						#-- Sumar por depósito.
-						for deposito in depositos:
-							stock = producto_stock.get(deposito.id_producto_deposito, 0)
-							producto.stock_total += stock
-							
-							producto.stock_por_deposito_list.append({
-								'deposito': deposito.nombre_producto_deposito,
-								'stock': stock
-							})
-						
-						#-- Calcular precio con descuento.
-						producto.precio_descuento = producto.precio * (1 - (producto.descuento or 0) / 100) if producto.descuento else producto.precio
+			if medida:
+				filters &= Q(medida__icontains=medida)
+			if nombre:
+				filters &= Q(nombre_producto__icontains=nombre)
+			if cai:
+				filters &= Q(id_cai__descripcion_cai__icontains=cai)
 			
-			except Exception as e:
-				error = f"Error al realizar la búsqueda: {str(e)}"
-				page_obj = None
+			if filtro_marca == "primeras":
+				filters &= Q(id_marca__principal=True)
+			elif filtro_marca == "otras":
+				filters &= Q(id_marca__principal=False)
+			
+			# ========== FILTRO DE STOCK OPTIMIZADO ==========
+			# Usar EXISTS subquery que es más eficiente que annotate
+			if filtro_marca == "stock":
+				# Subquery: productos que tienen al menos un registro con stock > 0
+				stock_subquery = ProductoStock.objects.filter(
+					id_producto=OuterRef('pk'),
+					stock__gt=0
+				)
+				
+				# Aplicar filtro con EXISTS
+				productos = Producto.objects.filter(
+					filters & Exists(stock_subquery)
+				)
+			else:
+				# Sin filtro de stock
+				productos = Producto.objects.filter(filters)
+			
+			# Select related y ordenar
+			productos = productos.select_related(
+				'id_marca', 'id_cai', 'id_familia', 'id_alicuota_iva', 'id_producto_estado'
+			).order_by('nombre_producto')
+			
+			# Paginación
+			paginator = Paginator(productos, 10)
+			page_number = self.request.GET.get('page')
+			page_obj = paginator.get_page(page_number)
+			
+			# ========== CÁLCULO DE STOCK DETALLADO (solo página actual) ==========
+			if page_obj and page_obj.object_list:
+				# IDs de productos en esta página
+				productos_pagina_ids = [p.id_producto for p in page_obj]
+				
+				# Obtener depósitos
+				depositos = ProductoDeposito.objects.all()
+				
+				# Obtener stock para estos productos específicos
+				stock_data = ProductoStock.objects.filter(
+					id_producto__in=productos_pagina_ids
+				).values('id_producto', 'id_deposito', 'stock')
+				
+				# Organizar stock en diccionario
+				stock_dict = {}
+				for item in stock_data:
+					pid = item['id_producto']
+					did = item['id_deposito']
+					
+					if pid not in stock_dict:
+						stock_dict[pid] = {}
+					
+					stock_dict[pid][did] = item['stock']
+				
+				# Calcular stock total y por depósito para cada producto
+				for producto in page_obj:
+					producto.stock_total = 0
+					producto.stock_por_deposito_list = []
+					
+					# Stock de este producto
+					producto_stock = stock_dict.get(producto.id_producto, {})
+					
+					# Sumar por depósito
+					for deposito in depositos:
+						stock = producto_stock.get(deposito.id_producto_deposito, 0)
+						producto.stock_total += stock
+						
+						producto.stock_por_deposito_list.append({
+							'deposito': deposito.nombre_producto_deposito,
+							'stock': stock
+						})
+					
+					#-- Calcular precio con descuento.
+					producto.precio_descuento = producto.precio * (1 - (producto.descuento or 0) / 100) if producto.descuento else producto.precio
+		
+		except Exception as e:
+			error = f"Error al realizar la búsqueda: {str(e)}"
+			page_obj = None
 		
 		context.update({
 			'productos': page_obj.object_list if page_obj else [],
@@ -252,6 +248,7 @@ class ConsultaProductosView(TemplateView):
 			'error': error,
 			'fecha': timezone.now()
 		})
+
 		return context
 
 

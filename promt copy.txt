@@ -67,19 +67,7 @@ WHERE
 
 
 
-####################################################################
-####################################################################
-
-label_to_field_map = {'CAI': 'cai', 'Id Depósito': 'id_deposito_id', 'Depósito': 'nombre_deposito', 'Mínimo': 'minimo'}
-
-todos_los_datos = [
-	{'CAI': '128641', 'Id Depósito': 1, 'Depósito': 'XXX', 'Mínimo': 10}, 
-	{'CAI': '611836', 'Id Depósito': 1, 'Depósito': 'YYYY', 'Mínimo': 200}, 
-	{'CAI': '257465', 'Id Depósito': 1, 'Depósito': 'ZZZZ', 'Mínimo': 3000}
-]
-
-
-
+##################################################################################################################################
 -- Script para gregar nueva opción en Informes -> Productos
 INSERT INTO "main"."menu_menuitem" ("id_menu_item", "name", "url_name", "query_params", "icon", "is_collapse", "order", "heading_id", "parent_id") 
 VALUES (153, 'Mínimos por CAI', 'productominimo_informe_list', '', '', '0', 9, NULL, 53);
@@ -113,3 +101,35 @@ VALUES ('Mínimos por CAI', 'vlproductominimo_informe_list', '', '', '0', 9, NUL
 
 -- Script para reordenar opción: Informes -> Productos -> Stock
 UPDATE menu_menuitem SET "order" = 10 WHERE id_menu_item = 141;
+
+
+##################################################################################################################################
+-----------------------------------------------------------------------------------
+-- Consultas Control - ProductoStock - Consulta de Precios
+SELECT ps.id_producto_id, ps.id_deposito_id, pd.nombre_producto_deposito, ps.stock 
+FROM producto_stock ps
+JOIN producto_deposito pd ON ps.id_deposito_id = pd.id_producto_deposito
+WHERE ps.id_producto_id=205025
+ORDER by pd.nombre_producto_deposito;
+
+
+-- Consulta Control.
+SELECT ps.id_producto_id, p.nombre_producto, sum(ps.stock)
+FROM producto_stock ps
+JOIN producto p ON ps.id_producto_id = p.id_producto
+GROUP by ps.id_producto_id 
+HAVING sum(ps.stock) > 0
+ORDER by p.nombre_producto
+-----------------------------------------------------------------------------------
+
+
+SELECT 
+	cv.codigo_comprobante_venta, cv.nombre_comprobante_venta, f.numero_comprobante, f.estado, 
+	df.codigo, p.medida, p.nombre_producto, df.cantidad
+FROM factura f
+JOIN detalle_factura df ON f.id_factura = df.id_factura_id
+JOIN producto p ON df.id_producto_id = p.id_producto
+JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
+WHERE id_comprobante_venta_id = 16 AND estado = '';
+
+##################################################################################################################################

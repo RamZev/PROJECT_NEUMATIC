@@ -25,9 +25,11 @@ def actualizar_estados_productos():
 		raise ValueError(f"No se encontraron los estados: {', '.join(estados_faltantes)}")
 	
 	#-- Obtener productos a actualizar con prefetch_related para optimización.
-	productos = Producto.objects.filter(
-		tipo_producto='P'
-	).select_related('id_cai').prefetch_related('productostock_set')
+	productos = (Producto.objects
+		.select_related('id_cai')
+		.prefetch_related('productostock_set')
+		.filter(tipo_producto='P')
+	)
 	
 	productos_actualizados = 0
 	actualizaciones = []
