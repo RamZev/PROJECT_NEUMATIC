@@ -1,7 +1,7 @@
 # neumatic\apps\ventas\views\caja_views.py
 from django.urls import reverse_lazy
 from apps.maestros.views.cruds_views_generics import *
-from ..models.caja_models import Caja, CajaDetalle
+from ..models.caja_models import CajaDetalle
 from ..forms.caja_detalle_forms import CajaDetalleForm
 
 
@@ -60,8 +60,8 @@ class DataViewList():
         'id_caja': (1, 'Número'),
         'idventas': (1, 'idventas'),
         'id_forma_pago': (1, 'F. Pago'),
-        'tipo_movimiento': (1, 'I(1)-E(2)'),
         'importe': (1, 'Importe'),
+        # 'fecha_detalle_caja': (1, 'Egresos'),
         'observacion': (4, 'Observación'),
 
     }
@@ -70,8 +70,8 @@ class DataViewList():
         {'field_name': 'id_caja', 'date_format': None},
         {'field_name': 'idventas', 'date_format': None},
         {'field_name': 'id_forma_pago', 'date_format': None},
-        {'field_name': 'tipo_movimiento', 'date_format': None},
         {'field_name': 'importe', 'date_format': None},
+        # {'field_name': 'fecha_detalle_caja', 'date_format': 'd/m/Y'},
         {'field_name': 'observacion', 'date_format': None},
 
     ]
@@ -99,74 +99,57 @@ class CajaDetalleListView(MaestroListView):
     }
 
 
+# CajaCreateView - Inicio
 class CajaDetalleCreateView(MaestroCreateView):
     model = ConfigViews.model
     list_view_name = ConfigViews.list_view_name
     form_class = ConfigViews.form_class
     template_name = ConfigViews.template_form
     success_url = ConfigViews.success_url
+    
+    #-- Indicar el permiso que requiere para ejecutar la acción.
     permission_required = ConfigViews.permission_add
-    
-    def get_form_kwargs(self):
-        """Pasar el request al formulario"""
-        kwargs = super().get_form_kwargs()
-        kwargs['request'] = self.request
-        return kwargs
-    
-    def get_context_data(self, **kwargs):
-        """Agregar información adicional al contexto"""
-        context = super().get_context_data(**kwargs)
-        
-        # Verificar si hay caja abierta para mostrar mensaje en template
-        usuario = self.request.user
-        caja_abierta = None
-        
-        if usuario and usuario.id_sucursal:
-            try:
-                caja_abierta = Caja.objects.filter(
-                    id_sucursal=usuario.id_sucursal,
-                    caja_cerrada=False,
-                    estatus_caja=True
-                ).latest('fecha_caja')
-            except Caja.DoesNotExist:
-                pass
-        
-        context['caja_abierta'] = caja_abierta
-        context['puede_crear'] = caja_abierta is not None
-        
-        return context
-    
-    def form_valid(self, form):
-        """Guardar el detalle asociado a la caja abierta"""
-        # El formulario ya validó que haya caja abierta
-        # y asignó automáticamente id_caja en el clean()
-        detalle = form.save()
-        
-        messages.success(
-            self.request, 
-            f"Movimiento registrado exitosamente en la caja {detalle.id_caja.numero_caja}"
-        )
-        return super().form_valid(form)
 
+    def get_initial(self):
+        initial = super().get_initial()
+        user = self.request.user
+        
+        # Asignar automáticamente la sucursal del usuario
+        initial['id_sucursal'] = user.id_sucursal
+        
+        # Mostrar el nombre de la sucursal inmediatamente
+        if user.id_sucursal:
+            initial['nombre_sucursal'] = user.id_sucursal.nombre_sucursal
+        
+        return initial
+    
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        user = self.request.user
+        
+        # Forzar la inicialización del campo nombre_sucursal
+        if not form.initial.get('nombre_sucursal') and user.id_sucursal:
+            form.initial['nombre_sucursal'] = user.id_sucursal.nombre_sucursal
+        
+        # Limitar las opciones de sucursal a solo la del usuario
+        if not user.is_superuser:
+            form.fields['id_sucursal'].queryset = ConfigViews.model.id_sucursal.field.related_model.objects.filter(
+                id_sucursal=user.id_sucursal.id_sucursal
+            )
+        
+        return form
+
+
+# CajaUpdateView
 class CajaDetalleUpdateView(MaestroUpdateView):
     model = ConfigViews.model
     list_view_name = ConfigViews.list_view_name
     form_class = ConfigViews.form_class
     template_name = ConfigViews.template_form
     success_url = ConfigViews.success_url
+    
+    #-- Indicar el permiso que requiere para ejecutar la acción.
     permission_required = ConfigViews.permission_change
-    
-    def get_form_kwargs(self):
-        """Pasar el request al formulario"""
-        kwargs = super().get_form_kwargs()
-        kwargs['request'] = self.request
-        return kwargs
-    
-    def get_context_data(self, **kwargs):
-        """Agregar información de solo lectura para modificaciones"""
-        context = super().get_context_data(**kwargs)
-        context['modo_lectura'] = True  # Indicar que estamos en modo lectura
-        return context
 
 
 # CajaDeleteView

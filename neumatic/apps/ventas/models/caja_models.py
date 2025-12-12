@@ -1,4 +1,5 @@
 from django.db import models
+from django.forms import ValidationError
 from django.utils import timezone
 
 from apps.maestros.models.base_gen_models import ModeloBaseGenerico
@@ -14,37 +15,46 @@ class Caja(ModeloBaseGenerico):
 		verbose_name="Estatus",
 		default=True,
 		choices=ESTATUS_GEN)
-    numero_caja = models.IntegerField(verbose_name='Número Caja')
+    numero_caja = models.IntegerField(
+        verbose_name='Número Caja',
+        null=True,
+		blank=True)
     fecha_caja = models.DateField(verbose_name='Fecha')
     saldoanterior = models.DecimalField(
         max_digits=12, 
         decimal_places=2, 
+        default=0,
         verbose_name='Saldo Anterior'
     )
     ingresos = models.DecimalField(
         max_digits=12, 
         decimal_places=2, 
+        default=0,
         verbose_name='Ingresos'
     )
     egresos = models.DecimalField(
         max_digits=12, 
         decimal_places=2, 
+        default=0,
         verbose_name='Egresos'
     )
     saldo = models.DecimalField(
         max_digits=12, 
         decimal_places=2, 
+        default=0,
         verbose_name='Saldo'
     )
     caja_cerrada = models.BooleanField(default=False, verbose_name='Cerrada')
     recuento = models.DecimalField(
         max_digits=12, 
         decimal_places=2, 
+        default=0,
         verbose_name='Recuento'
     )
     diferencia = models.DecimalField(
         max_digits=12, 
         decimal_places=2, 
+        default=0,
         verbose_name='Diferencia'
     )
     id_sucursal = models.ForeignKey(
@@ -85,6 +95,22 @@ class Caja(ModeloBaseGenerico):
     def __str__(self):
         return f'{self.numero_caja}'
     
+    def clean(self):
+        """Validaciones básicas del modelo"""
+        super().clean()
+        
+        errors = {}
+        
+        # Solo validar numero_caja para registros existentes
+        if self.pk and not self.numero_caja:
+            errors['numero_caja'] = 'El número de caja es requerido'
+        
+        # Validar que id_sucursal tenga máximo 2 dígitos
+        if self.id_sucursal and self.id_sucursal.id_sucursal > 99:
+            errors['id_sucursal'] = 'El ID de sucursal debe ser de máximo 2 dígitos'
+        
+        if errors:
+            raise ValidationError(errors)
 
 
 class CajaDetalle(ModeloBaseGenerico):

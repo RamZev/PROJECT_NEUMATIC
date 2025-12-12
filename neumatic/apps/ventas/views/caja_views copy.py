@@ -4,7 +4,7 @@ from django import forms
 from django.db.models import Max
 
 from apps.maestros.views.cruds_views_generics import *
-from ..models.caja_models import Caja, CajaDetalle
+from ..models.caja_models import Caja
 from ..forms.caja_forms import CajaForm
 
 
@@ -327,20 +327,22 @@ class CajaCreateView(MaestroCreateView):
             return self.form_invalid(form)
 
 
-# En neumatic\apps\ventas\views\caja_views.py
-# En neumatic\apps\ventas\views\caja_views.py
+# Para CajaUpdateView (edición)
 class CajaUpdateView(MaestroUpdateView):
     model = ConfigViews.model
     list_view_name = ConfigViews.list_view_name
     form_class = ConfigViews.form_class
     template_name = ConfigViews.template_form
     success_url = ConfigViews.success_url
+    
     permission_required = ConfigViews.permission_change
     
     def dispatch(self, request, *args, **kwargs):
         """Validar antes de mostrar el formulario"""
+        # Primero obtener el objeto
         self.object = self.get_object()
         
+        # Si la caja está cerrada, redirigir con mensaje de error
         if self.object.caja_cerrada:
             messages.error(
                 request,
@@ -350,77 +352,6 @@ class CajaUpdateView(MaestroUpdateView):
         
         return super().dispatch(request, *args, **kwargs)
     
-    def get_initial(self):
-        """Sobreescribir get_initial para asignar valores calculados"""
-        initial = super().get_initial()
-        
-        # Solo para cajas abiertas
-        if not self.object.caja_cerrada:
-            # Calcular totales desde CajaDetalle
-            detalles = CajaDetalle.objects.filter(id_caja=self.object)
-            
-            total_ingresos = sum(
-                detalle.importe for detalle in detalles 
-                if detalle.tipo_movimiento == 1  # Ingreso
-            )
-            
-            total_egresos = sum(
-                detalle.importe for detalle in detalles 
-                if detalle.tipo_movimiento == 2  # Egreso
-            )
-            
-            # Asignar valores calculados a los campos del formulario
-            initial['ingresos'] = total_ingresos
-            initial['egresos'] = total_egresos
-            
-            # Calcular diferencia según la fórmula: 
-            # diferencia = saldoanterior + ingresos - (egresos + recuento)
-            recuento = self.object.recuento or 0
-            diferencia = self.object.saldoanterior + total_ingresos - (total_egresos + recuento)
-            initial['diferencia'] = diferencia
-            
-            # El saldo siempre será 0 porque la diferencia ya incluye todo
-            initial['saldo'] = 0
-        
-        return initial
-    
-    def get_context_data(self, **kwargs):
-        """Agregar información adicional al contexto"""
-        context = super().get_context_data(**kwargs)
-        
-        # Obtener los detalles de caja para mostrar información
-        detalles = CajaDetalle.objects.filter(id_caja=self.object)
-        
-        # Calcular totales a partir de los detalles
-        total_ingresos = sum(
-            detalle.importe for detalle in detalles 
-            if detalle.tipo_movimiento == 1  # Ingreso
-        )
-        
-        total_egresos = sum(
-            detalle.importe for detalle in detalles 
-            if detalle.tipo_movimiento == 2  # Egreso
-        )
-        
-        # Calcular diferencia según la nueva fórmula
-        recuento = self.object.recuento or 0
-        diferencia_calculada = self.object.saldoanterior + total_ingresos - (total_egresos + recuento)
-        
-        # Agregar al contexto para mostrar en template
-        context['detalles_caja'] = detalles
-        context['total_detalles'] = detalles.count()
-        context['total_ingresos_calculado'] = total_ingresos
-        context['total_egresos_calculado'] = total_egresos
-        context['diferencia_calculada'] = diferencia_calculada
-        
-        # Agregar fórmula para mostrar en template
-        context['formula_diferencia'] = (
-            f"${self.object.saldoanterior:.2f} + ${total_ingresos:.2f} - "
-            f"(${total_egresos:.2f} + ${recuento:.2f}) = ${diferencia_calculada:.2f}"
-        )
-        
-        return context
-    
     @transaction.atomic
     def form_valid(self, form):
         """
@@ -428,64 +359,62 @@ class CajaUpdateView(MaestroUpdateView):
         """
         caja = self.get_object()
         
-        # Calcular totales desde los detalles
-        detalles = CajaDetalle.objects.filter(id_caja=caja)
+        # Validar que no se pueda editar una caja cerrada
+        if caja.caja_cerrada:
+            form.add_error(None, 'No se puede modificar una caja cerrada')
+            return self.form_invalid(form)
         
-        total_ingresos = sum(
-            detalle.importe for detalle in detalles 
-            if detalle.tipo_movimiento == 1  # Ingreso
-        )
+        # Validaciones básicas
+        if form.cleaned_data.get('numero_caja') != caja.numero_caja:
+            form.add_error('numero_caja', 'No se puede modificar el número de caja')
+            return self.form_invalid(form)
         
-        total_egresos = sum(
-            detalle.importe for detalle in detalles 
-            if detalle.tipo_movimiento == 2  # Egreso
-        )
+        if form.cleaned_data.get('id_sucursal') != caja.id_sucursal:
+            form.add_error('id_sucursal', 'No se puede cambiar la sucursal de la caja')
+            return self.form_invalid(form)
         
-        # FORZAR valores calculados desde detalles
-        form.instance.ingresos = total_ingresos
-        form.instance.egresos = total_egresos
-        
-        # Si el usuario marca "cerrada", realizar validaciones adicionales
-        if form.cleaned_data.get('caja_cerrada'):
-            # 1. Validar que se haya ingresado el recuento
+        # ========== PROCESO DE CIERRE DE CAJA ==========
+        # Si el usuario está intentando CERRAR la caja
+        if not caja.caja_cerrada and form.cleaned_data.get('caja_cerrada'):
+            print(f"DEBUG: Cerrando caja #{caja.numero_caja}")
+            
+            # 1. Validar que se haya hecho recuento
             recuento = form.cleaned_data.get('recuento') or 0
-            if not recuento or recuento <= 0:
-                messages.error(
-                    self.request,
-                    'Error: Debe ingresar el recuento físico para cerrar la caja.'
-                )
+            if recuento == 0:
+                form.add_error('recuento', 'Debe realizar el recuento físico antes de cerrar la caja. Use el botón 🧮 para contar el efectivo.')
                 return self.form_invalid(form)
             
-            # 2. Calcular diferencia según la nueva fórmula
-            form.instance.diferencia = (
-                form.instance.saldoanterior + 
-                total_ingresos - 
-                (total_egresos + recuento)
-            )
-            
-            # 3. Saldo siempre será 0 al cerrar
-            form.instance.saldo = 0
-            
-            # 4. Asignar fecha/hora actual
-            form.instance.hora_cierre = timezone.now()
-            
-            # 5. Asignar usuario actual
+            # 2. Asignar usuario actual automáticamente
             form.instance.id_usercierre = self.request.user
+            print(f"DEBUG: Usuario de cierre asignado: {self.request.user}")
             
-            # 6. Mensaje de éxito
+            # 3. Registrar fecha y hora actual automáticamente
+            form.instance.hora_cierre = timezone.now()
+            print(f"DEBUG: Hora de cierre asignada: {form.instance.hora_cierre}")
+            
+            # 4. Calcular diferencia automáticamente
+            form.instance.diferencia = recuento - form.instance.saldo
+            print(f"DEBUG: Diferencia calculada: {form.instance.diferencia}")
+            
+            # 5. Mensaje de éxito
             messages.success(
                 self.request, 
-                f'✅ Caja #{caja.numero_caja} cerrada exitosamente.<br>'
-                f'• Ingresos: <strong>${total_ingresos:.2f}</strong><br>'
-                f'• Egresos: <strong>${total_egresos:.2f}</strong><br>'
-                f'• Recuento: <strong>${recuento:.2f}</strong><br>'
-                f'• Diferencia: <strong>${form.instance.diferencia:+.2f}</strong><br>'
-                f'• Cerrada por: <strong>{self.request.user.get_full_name() or self.request.user.username}</strong>',
-                extra_tags='safe'
+                f'Caja #{caja.numero_caja} cerrada exitosamente. '
+                f'Diferencia: ${form.instance.diferencia:.2f}'
             )
         
-        # Llamar al padre para guardar
-        return super().form_valid(form)
+        # Si el usuario está intentando ABRIR una caja cerrada (no permitido)
+        elif caja.caja_cerrada and not form.cleaned_data.get('caja_cerrada'):
+            form.add_error('caja_cerrada', 'No se puede reabrir una caja cerrada')
+            return self.form_invalid(form)
+        
+        # 6. GUARDAR LOS CAMBIOS
+        try:
+            response = super().form_valid(form)
+            return response
+        except Exception as e:
+            form.add_error(None, f'Error al guardar los cambios: {str(e)}')
+            return self.form_invalid(form)
 
 # CajaDeleteView
 class CajaDeleteView(MaestroDeleteView):
