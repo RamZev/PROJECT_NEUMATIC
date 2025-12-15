@@ -1,6 +1,6 @@
 # neumatic\apps\ventas\views\recibo_views.py
 from django.urls import reverse_lazy, reverse
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 from django.db import transaction
 from django.db.models import F
 from django.db import DatabaseError
@@ -12,6 +12,7 @@ from .msdt_views_generics import *
 
 from ...maestros.models.numero_models import Numero
 from ..models.factura_models import Factura
+from ..models.caja_models import Caja, CajaDetalle
 from ..models.recibo_models import (
 	DetalleRecibo,
 	RetencionRecibo,
@@ -115,182 +116,232 @@ class ReciboListView(MaestroDetalleListView):
 
 		return queryset.order_by(*self.ordering)
 
+
 class ReciboCreateView(MaestroDetalleCreateView):
-	model = modelo
-	list_view_name = list_view_name
-	form_class = formulario
-	template_name = f"ventas/{template_form}"
-	success_url = reverse_lazy(list_view_name)
-	
-	app_label = model._meta.app_label
-	permission_required = f"{app_label}.add_{model.__name__.lower()}"
+    model = modelo
+    list_view_name = list_view_name
+    form_class = formulario
+    template_name = f"ventas/{template_form}"
+    success_url = reverse_lazy(list_view_name)
+    
+    app_label = model._meta.app_label
+    permission_required = f"{app_label}.add_{model.__name__.lower()}"
 
-	def get_context_data(self, **kwargs):
-		data = super().get_context_data(**kwargs)
-		usuario = self.request.user
+    def get_context_data(self, **kwargs):
+        data = super().get_context_data(**kwargs)
+        usuario = self.request.user
 
-		if self.request.POST:
-			data['formset_recibo'] = DetalleReciboFormSet(self.request.POST, prefix='detallerecibo_set')
-			print(f"Prefijo de formset_recibo (POST): {data['formset_recibo'].prefix}")
-			data['formset_retencion'] = RetencionReciboFormSet(self.request.POST)
-			data['formset_deposito'] = DepositoReciboFormSet(self.request.POST)
-			data['formset_tarjeta'] = TarjetaReciboFormSet(self.request.POST)
-			data['formset_cheque'] = ChequeReciboFormSet(self.request.POST)
-		else:
-			data['formset_recibo'] = DetalleReciboFormSet(queryset=DetalleRecibo.objects.none(), prefix='detallerecibo_set')
-			print(f"Prefijo de formset_recibo (GET): {data['formset_recibo'].prefix}")
-			data['formset_retencion'] = RetencionReciboFormSet(queryset=RetencionRecibo.objects.none())
-			data['formset_deposito'] = DepositoReciboFormSet(queryset=DepositoRecibo.objects.none())
-			data['formset_tarjeta'] = TarjetaReciboFormSet(queryset=TarjetaRecibo.objects.none())
-			data['formset_cheque'] = ChequeReciboFormSet(queryset=ChequeRecibo.objects.none())
+        if self.request.POST:
+            data['formset_recibo'] = DetalleReciboFormSet(self.request.POST, prefix='detallerecibo_set')
+            print(f"Prefijo de formset_recibo (POST): {data['formset_recibo'].prefix}")
+            data['formset_retencion'] = RetencionReciboFormSet(self.request.POST)
+            data['formset_deposito'] = DepositoReciboFormSet(self.request.POST)
+            data['formset_tarjeta'] = TarjetaReciboFormSet(self.request.POST)
+            data['formset_cheque'] = ChequeReciboFormSet(self.request.POST)
+        else:
+            data['formset_recibo'] = DetalleReciboFormSet(queryset=DetalleRecibo.objects.none(), prefix='detallerecibo_set')
+            print(f"Prefijo de formset_recibo (GET): {data['formset_recibo'].prefix}")
+            data['formset_retencion'] = RetencionReciboFormSet(queryset=RetencionRecibo.objects.none())
+            data['formset_deposito'] = DepositoReciboFormSet(queryset=DepositoRecibo.objects.none())
+            data['formset_tarjeta'] = TarjetaReciboFormSet(queryset=TarjetaRecibo.objects.none())
+            data['formset_cheque'] = ChequeReciboFormSet(queryset=ChequeRecibo.objects.none())
 
-		data['form_retencion_input'] = RetencionReciboForm()
-		data['form_deposito_input'] = DepositoReciboInputForm()  # Nuevo
-		data['form_tarjeta_input'] = TarjetaReciboInputForm()
-		data['form_cheque_input'] = ChequeReciboInputForm()
-		data['is_edit'] = False
-		return data
+        data['form_retencion_input'] = RetencionReciboForm()
+        data['form_deposito_input'] = DepositoReciboInputForm()
+        data['form_tarjeta_input'] = TarjetaReciboInputForm()
+        data['form_cheque_input'] = ChequeReciboInputForm()
+        data['is_edit'] = False
+        return data
 
-	def form_valid_ini(self, form):
-		context = self.get_context_data()
-		formsets = [
-			context['formset_recibo'],
-			context['formset_retencion'],
-			context['formset_deposito'],
-			context['formset_tarjeta'],
-			context['formset_cheque']
-		]
+    def form_valid(self, form):
+        # 1. OBTENER EFECTIVO DEL FORMULARIO
+        efectivo_recibo = form.cleaned_data.get('efectivo_recibo', 0.0)
+        print(f"DEBUG - efectivo_recibo obtenido: {efectivo_recibo}")
+        
+        # 2. VALIDAR CAJA SOLO SI HAY EFECTIVO
+        if efectivo_recibo > 0:
+            usuario = self.request.user
+            print(f"DEBUG - Usuario: {usuario}")
+            print(f"DEBUG - ID Sucursal usuario: {usuario.id_sucursal}")
 
-		if not all([formset.is_valid() for formset in formsets]):
-			return self.form_invalid(form)
+            fecha_comprobante = form.cleaned_data.get('fecha_comprobante')
+            
+            caja_activa = Caja.objects.filter(
+                id_sucursal=usuario.id_sucursal,
+                caja_cerrada=True,  # Caja activa
+                fecha_caja=fecha_comprobante
+            ).first()
+            
+            print(f"DEBUG - Caja activa encontrada: {caja_activa}")
 
-		try:
-			with transaction.atomic():
-				self.object = form.save()
-				
-				# Guardar todos los formsets
-				for formset in formsets:
-					formset.instance = self.object
-					formset.save()
+            if not caja_activa:
+                # No hay caja activa para registrar efectivo
+                print("DEBUG - NO HAY CAJA ACTIVA, MOSTRANDO ERROR")
+                messages.error(
+                    self.request,
+                    "❌ No hay caja activa para registrar el efectivo. "
+                    "Active una caja antes de crear un recibo con efectivo."
+                )
+                return redirect(self.list_view_name)
 
-				messages.success(self.request, "Recibo creado correctamente")
-				return redirect(self.get_success_url())
+        # 3. OBTENER CONTEXTO Y VALIDAR FORMSETS
+        context = self._get_context_with_preserved_data(form)
+        formsets = [
+            context['formset_recibo'],
+            context['formset_retencion'],
+            context['formset_deposito'],
+            context['formset_tarjeta'],
+            context['formset_cheque']
+        ]
 
-		except DatabaseError as e:
-			messages.error(self.request, "Error de concurrencia: Intente nuevamente")
-			return self.form_invalid(form)
-		except Exception as e:
-			messages.error(self.request, f"Error inesperado: {str(e)}")
-			return self.form_invalid(form)
-	
-	def form_valid(self, form):
-		context = self.get_context_data()
-		formsets = [
-			context['formset_recibo'],
-			context['formset_retencion'],
-			context['formset_deposito'],
-			context['formset_tarjeta'],
-			context['formset_cheque']
-		]
+        # 4. VALIDAR FORMSETS
+        for i, formset in enumerate(formsets):
+            if not formset.is_valid():
+                print(f"Formset {i} no es válido. Errores:", formset.errors)
+                print(f"Management form errores:", formset.management_form.errors)
+                return self.form_invalid(form)
 
-		for i, formset in enumerate(formsets):
-			if not formset.is_valid():
-				print(f"Formset {i} no es válido. Errores:", formset.errors)
-				print(f"Management form errores:", formset.management_form.errors)
-				return self.form_invalid(form)
+        try:
+            with transaction.atomic():
+                # 5. Obtener datos para la numeración
+                sucursal = form.cleaned_data['id_sucursal']
+                punto_venta = form.cleaned_data['id_punto_venta']
+                comprobante = form.cleaned_data['compro']
+                letra = form.cleaned_data['letra_comprobante']
 
-		try:
-			with transaction.atomic():
-				# 1. Obtener datos para la numeración
-				sucursal = form.cleaned_data['id_sucursal']
-				punto_venta = form.cleaned_data['id_punto_venta']
-				comprobante = form.cleaned_data['compro']
-				letra = form.cleaned_data['letra_comprobante']
+                # 6. Obtener o crear el número en el modelo Numero
+                numero_obj, created = Numero.objects.select_for_update(
+                    nowait=True
+                ).get_or_create(
+                    id_sucursal=sucursal,
+                    id_punto_venta=punto_venta,
+                    comprobante=comprobante,
+                    letra=letra,
+                    defaults={'numero': 0}
+                )
 
-				# 2. Obtener o crear el número en el modelo Numero
-				numero_obj, created = Numero.objects.select_for_update(
-					nowait=True
-				).get_or_create(
-					id_sucursal=sucursal,
-					id_punto_venta=punto_venta,
-					comprobante=comprobante,
-					letra=letra,
-					defaults={'numero': 0}
-				)
+                # 7. Calcular el nuevo número y actualizar el modelo Numero
+                nuevo_numero = numero_obj.numero + 1
+                Numero.objects.filter(pk=numero_obj.pk).update(numero=F('numero') + 1)
+                form.instance.numero_comprobante = nuevo_numero
+                form.instance.full_clean()
 
-				# 3. Calcular el nuevo número y actualizar el modelo Numero
-				nuevo_numero = numero_obj.numero + 1
-				Numero.objects.filter(pk=numero_obj.pk).update(numero=F('numero') + 1)
-				form.instance.numero_comprobante = nuevo_numero
-				form.instance.full_clean()  # Validar el formulario con el nuevo número
+                # Asignar total_cobrado a entrega
+                total_cobrado = form.cleaned_data.get('total_cobrado', 0.0)
+                print('total_cobrado:', total_cobrado)
+                form.instance.entrega = total_cobrado
+                
+                # 8. Guardar el formulario principal
+                self.object = form.save()
+                
+                # 9. REGISTRAR EN CAJA SOLO SI HAY EFECTIVO
+                if efectivo_recibo > 0:
+                    usuario = self.request.user
+                    fecha_comprobante = form.cleaned_data.get('fecha_comprobante')
+                    
+                    # IMPORTANTE: Corrección del campo - usar caja_cerrada en lugar de estado
+                    caja_activa = Caja.objects.filter(
+                        id_sucursal=usuario.id_sucursal,
+                        caja_cerrada=True,  # CAMBIAR: estado=True -> caja_cerrada=True
+                        fecha_caja=fecha_comprobante
+                    ).first()
+                    
+                    if caja_activa:
+                        print(f"DEBUG - Registrando en caja #{caja_activa.numero_caja}")
+                        
+                        # Quitar cálculo de totales de caja si no lo quieres
+                        # caja_activa.ingresos += efectivo_recibo
+                        # caja_activa.saldo = caja_activa.saldoanterior + caja_activa.ingresos - caja_activa.egresos
+                        # caja_activa.save()
+                        
+                        # Importar FormaPago para el campo id_forma_pago
+                        from apps.maestros.models.base_models import FormaPago
+                        forma_pago_efectivo = FormaPago.objects.get(id_forma_pago=1)
+                        
+                        # Crear detalle de caja con campos correctos según el modelo
+                        CajaDetalle.objects.create(
+                            id_caja=caja_activa,
+                            idventas=self.object.id_factura,
+                            tipo_movimiento=1,  # 1 para ingresos
+                            id_forma_pago=forma_pago_efectivo,  # Campo requerido
+                            importe=efectivo_recibo,  # Cambiar valor por importe si ese es el nombre real
+                            observacion=f"Recibo #{self.object.numero_comprobante}",
+                            fecha=timezone.now(),
+                            id_usuario=usuario
+                        )
+                        
+                        messages.info(
+                            self.request,
+                            f'💰 Se registró efectivo de ${efectivo_recibo:.2f} '
+                            f'en la Caja #{caja_activa.numero_caja}'
+                        )
+                    
+                # 10. Guardar los formsets
+                for formset in formsets:
+                    formset.instance = self.object
+                    formset.save()
+                
+                # 11. Actualizar el campo entrega en Factura
+                for detalle in self.object.detalles_recibo.filter(monto_cobrado__gt=0):
+                    factura = detalle.id_factura_cobrada
+                    if factura:
+                        print("actualizando monto de entrega en Factura")
+                        factura.entrega += detalle.monto_cobrado
+                        factura.save()
+                
+                messages.success(self.request, "Recibo creado correctamente")
+                return redirect(self.get_success_url())
 
-				# Asignar total_cobrado a entrega
-				total_cobrado = form.cleaned_data.get('total_cobrado', 0.0)
-				print('total_cobrado:', total_cobrado)
-				form.instance.entrega = total_cobrado
-				
-				# 4. Guardar el formulario principal (Factura/Recibo)
-				self.object = form.save()
-				
-				# 5. Guardar los formsets
-				for formset in formsets:
-					formset.instance = self.object
-					formset.save()
-				
-				# 6. Actualizar el campo entrega en Factura para los detalles con monto_cobrado > 0
-				for detalle in self.object.detalles_recibo.filter(monto_cobrado__gt=0):
-					factura = detalle.id_factura_cobrada
-					if factura:
-						print("actualizando monto de enterega en Factura")
-						factura.entrega += detalle.monto_cobrado
-						factura.save()
-				
-				messages.success(self.request, "Recibo creado correctamente")
-				return redirect(self.get_success_url())
+        except DatabaseError as e:
+            messages.error(self.request, "Error de concurrencia: Intente nuevamente")
+            return self.form_invalid(form)
+        except Exception as e:
+            messages.error(self.request, f"Error inesperado: {str(e)}")
+            return self.form_invalid(form)
 
-		except DatabaseError as e:
-			messages.error(self.request, "Error de concurrencia: Intente nuevamente")
-			return self.form_invalid(form)
-		except Exception as e:
-			messages.error(self.request, f"Error inesperado: {str(e)}")
-			return self.form_invalid(form)
-	
-	def form_invalid(self, form):
-		print("Entro a form_invalid")
-		print("Errores del formulario principal:", form.errors)
+    def _get_context_with_preserved_data(self, form):
+        """Obtener contexto con datos del formulario preservados"""
+        context = self.get_context_data()
+        context['form'] = form
+        return context
+    
+    def _return_with_preserved_data(self, form):
+        """Retornar al formulario con datos preservados"""
+        context = self._get_context_with_preserved_data(form)
+        return render(self.request, self.template_name, context)
+    
+    def form_invalid(self, form):
+        print("Entro a form_invalid")
+        print("Errores del formulario principal:", form.errors)
 
-		context = self.get_context_data()
-		formset_recibo= context['formset_recibo']
+        context = self.get_context_data()
+        formset_recibo = context['formset_recibo']
 
-		if formset_recibo:
-			print("Errores del formset:", formset_recibo.errors)
-			return super().form_invalid(form)
+        if formset_recibo:
+            print("Errores del formset:", formset_recibo.errors)
 
-		if formset_recibo:
-			print("Errores del formset:", formset_recibo.errors)
+        # Usar render() en lugar de super().form_invalid()
+        context['form'] = form
+        return render(self.request, self.template_name, context)
+        # return render(self.request, self.template_name, context)
+    
+    def get_success_url(self):
+        return reverse(list_view_name)
+    
+    def get_initial(self):
+        initial = super().get_initial()
+        usuario = self.request.user
 
-		return super().form_invalid(form)
-	
-	def get_success_url(self):
-		return reverse(list_view_name)
-	
-	def get_initial(self):
-		initial = super().get_initial()
-		usuario = self.request.user  # Obtener el usuario autenticado
+        initial['id_sucursal'] = usuario.id_sucursal
+        initial['id_punto_venta'] = usuario.id_punto_venta
+        initial['cambia_precio_descripcion'] = usuario.cambia_precio_descripcion
 
-		# Establecer valores iniciales basados en el usuario
-		initial['id_sucursal'] = usuario.id_sucursal
-		initial['id_punto_venta'] = usuario.id_punto_venta
-		initial['cambia_precio_descripcion'] = usuario.cambia_precio_descripcion
-		#initial['jerarquia'] = usuario.jerarquia
-
-		return initial
-	
-	def get_form_kwargs(self):
-		kwargs = super().get_form_kwargs()
-		kwargs['usuario'] = self.request.user  # Pasar el usuario autenticado
-
-		return kwargs
+        return initial
+    
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['usuario'] = self.request.user
+        return kwargs
 
 
 class ReciboUpdateView(MaestroDetalleUpdateView):
