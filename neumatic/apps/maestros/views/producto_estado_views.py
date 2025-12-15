@@ -51,7 +51,7 @@ class ConfigViews():
 	success_url = reverse_lazy(list_view_name)
 	
 	# Registros protegidos (no se pueden modificar ni eliminar).
-	REGISTROS_PROTEGIDOS = [1, 3, 5]  #-- IDs de los estados "DISPONIBLES", "FALTANTES", "POCAS".
+	REGISTROS_PROTEGIDOS = [1, 3, 4, 5]  #-- IDs de los estados "DISPONIBLES", "FALTANTES", "OFERTAS", "POCAS".
 
 
 class DataViewList():

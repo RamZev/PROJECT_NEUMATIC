@@ -23,6 +23,7 @@ def text_color_from_bg(hex_color):
 	Determina el color del texto basado en el color de fondo considerando luminosidad y saturación.
 	"""
 	if not hex_color or hex_color == '':
+		print("DEBUG: Color vacío, retornando negro")
 		return 'black'
 	
 	hex_color = hex_color.strip('#')
@@ -57,14 +58,13 @@ def text_color_from_bg(hex_color):
 	is_high_saturation = saturation > 0.5
 	is_not_very_light = yiq < 180  #-- No es casi blanco.
 	
-	#-- Regla de decisión mejorada:
-	#-- 1. Si es oscuro (YIQ < 128) → blanco.
-	#-- 2. Si es color saturado y no muy claro → blanco (para rojos, azules fuertes).
-	#-- 3. En otros casos → negro.
-	if yiq < 128 or (is_high_saturation and is_not_very_light):
-		return 'white'
-	else:
-		return 'black'
+	# Regla de decisión mejorada:
+	# 1. Si es oscuro (YIQ < 128) → blanco
+	# 2. Si es color saturado y no muy claro → blanco (para rojos, azules fuertes)
+	# 3. En otros casos → negro
+	resultado = 'white' if (yiq < 128 or (is_high_saturation and is_not_very_light)) else 'black'
+	
+	return resultado
 
 
 @register.filter

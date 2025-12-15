@@ -30,6 +30,32 @@
 	.rojo {
 		color: #f80404 !important;
 	}
+	/* Forzar que las celdas hereden el color de su fila */
+	.table.table-bordered.table-striped tbody tr td {
+		color: inherit !important;
+		background-color: inherit !important;
+	}
+	
+	/* EXCEPCIÓN: Los botones NO deben heredar el color */
+	.table.table-bordered.table-striped tbody tr td .btn {
+		color: initial !important;
+		background-color: initial !important;
+		border-color: initial !important;
+	}
+	
+	/* Específico para btn-secondary */
+	.table.table-bordered.table-striped tbody tr td .btn-secondary {
+		color: #fff !important;
+		background-color: #6c757d !important;
+		border-color: #6c757d !important;
+	}
+	
+	/* Específico para btn-outline-info (si lo usas en otro lugar) */
+	.table.table-bordered.table-striped tbody tr td .btn-outline-info {
+		color: #0dcaf0 !important;
+		background-color: transparent !important;
+		border-color: #0dcaf0 !important;
+	}
 {% endblock style %}
 
 {% block maincomponent %}
@@ -153,6 +179,10 @@
 																<td style="width: 70%;"><strong>{{ producto.id_producto }}</strong></td>
 															</tr>
 															<tr>
+																<td class="text-end">CAI:</td>
+																<td><strong>{{ producto.id_cai }}</strong></td>
+															</tr>
+															<tr>
 																<td class="text-end">Medida:</td>
 																<td><strong>{{ producto.medida }}</strong></td>
 															</tr>
@@ -161,18 +191,12 @@
 																<td><strong>{{ producto.id_marca }}</strong></td>
 															</tr>
 															<tr>
-																<td class="text-end">Stock Total:</td>
-																<td><strong>{{ producto.stock_total|formato_es_ar_entero }}</strong></td>
-															</tr>
-															{% comment %}
-															<tr>
-																<td class="text-end">Stock Mínimo:</td>
-																<td><strong>{{ producto.minimo|formato_es_ar_entero }}</strong></td>
-															</tr>
-															{% endcomment %}
-															<tr>
 																<td class="text-end">Fecha Fabricación:</td>
 																<td><strong>{{ producto.fecha_fabricacion|default_if_none:"" }}</strong></td>
+															</tr>
+															<tr>
+																<td class="text-end">Stock Total:</td>
+																<td><strong>{{ producto.stock_total|formato_es_ar_entero }}</strong></td>
 															</tr>
 															<tr>
 																<td class="text-end">Descuento:</td>

@@ -137,7 +137,7 @@ class ConsultaProductosView(TemplateView):
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
 		usuario = self.request.user
-		print(f"Usuario que realiza la consulta: {usuario.username} | Vendedor: {usuario.id_vendedor}")
+		
 		#-- Parámetros de búsqueda.
 		medida = self.request.GET.get('medida', '').strip()
 		nombre = self.request.GET.get('nombre', '').strip()
@@ -148,19 +148,52 @@ class ConsultaProductosView(TemplateView):
 		page_obj = None
 		
 		if any([medida, nombre, cai]):
-			
 			try:
 				# ========== FILTRADO PRINCIPAL ==========
 				#-- Construir filtros base.
-				filters = Q(tipo_producto='P')  # Solo productos
+				filters = Q()
 				
 				if medida:
 					filters &= Q(medida__icontains=medida)
 				if nombre:
 					filters &= Q(nombre_producto__icontains=nombre)
 				if cai:
-					filters &= Q(id_cai__descripcion_cai__icontains=cai)
+					filters &= Q(id_cai__cai__icontains=cai)
 				
+				# ========== FILTRO PARA VENDEDORES ==========
+				if usuario.id_vendedor:
+					#-- Buscar IDs de los estados "Disponible" y "Ofertas".
+					from apps.maestros.models.base_models import ProductoEstado
+					
+					#-- Buscar estado "Disponible".
+					try:
+						estado_disponibles = ProductoEstado.objects.get(
+							nombre_producto_estado__iexact="disponibles"
+						)
+						estado_disponibles_id = estado_disponibles.id_producto_estado
+					except ProductoEstado.DoesNotExist:
+						estado_disponibles_id = None
+					
+					#-- Buscar estado "Ofertas".
+					try:
+						estado_ofertas = ProductoEstado.objects.get(
+							nombre_producto_estado__iexact="ofertas"
+						)
+						estado_ofertas_id = estado_ofertas.id_producto_estado
+					except ProductoEstado.DoesNotExist:
+						estado_ofertas_id = None
+					
+					#-- Crear filtro para estados permitidos.
+					estado_filters = Q(id_producto_estado__isnull=True)  #-- NULL siempre permitido
+					
+					if estado_disponibles_id:
+						estado_filters |= Q(id_producto_estado=estado_disponibles_id)
+					
+					if estado_ofertas_id:
+						estado_filters |= Q(id_producto_estado=estado_ofertas_id)
+					filters &= estado_filters
+				
+				# ============== FILTROS DE MARCAS ===============
 				if filtro_marca == "primeras":
 					filters &= Q(id_marca__principal=True)
 				elif filtro_marca == "otras":
