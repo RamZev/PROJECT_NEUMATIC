@@ -181,13 +181,14 @@
 											<td style="text-align: center;">
 												<button class="btn btn-sm btn-secondary" 
 														data-bs-toggle="collapse" 
-														data-bs-target="#detalles{{ producto.id_producto }}">
+														data-bs-target="#detalles{{ producto.id_producto }}"
+														data-bs-parent=".sticky-table-wrapper">
 													<i class="bi bi-box-seam"></i> Stock
 												</button>
 											</td>
 										</tr>
 									{% endwith %}
-									<tr class="collapse" id="detalles{{ producto.id_producto }}">
+									<tr class="collapse" id="detalles{{ producto.id_producto }}" data-bs-parent=".sticky-table-wrapper">
 										<td colspan="7" style="padding: 10px !important;">
 											<div class="row m-0">
 												
