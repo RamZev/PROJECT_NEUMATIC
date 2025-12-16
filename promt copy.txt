@@ -134,19 +134,36 @@ WHERE id_comprobante_venta_id = 16 AND estado = '';
 
 ##################################################################################################################################
 -- Consultas control "Mercancía en Tránsito"
+-- Todos los productos en Tránsito o uno específico.
 --SELECT * FROM factura
 
-SELECT f.id_factura, cv.codigo_comprobante_venta, f.numero_comprobante,
+SELECT 
+	f.id_factura, cv.codigo_comprobante_venta, f.numero_comprobante,
 	df.id_producto_id, p.medida, df.precio, df.cantidad, f.estado
-FROM factura f
+FROM 
+	factura f
 	JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
 	JOIN detalle_factura df ON f.id_factura = df.id_factura_id
 	JOIN producto p ON df.id_producto_id = p.id_producto
-WHERE cv.codigo_comprobante_venta = 'RM' AND f.estado in (null, '')--AND df.id_producto_id = 
-
--- Control
-SELECT * from factura where id_comprobante_venta_id = 16 AND estado = ''
-SELECT estado, count(*) FROM factura GROUP by estado
-SELECT * FROM factura WHERE estado is NULL
+WHERE 
+	cv.codigo_comprobante_venta = 'RM' AND f.estado in (null, '')
+	--AND df.id_producto_id = 23800
+	--AND df.id_producto_id = 3225
+ORDER by
+	df.id_producto_id
+	
+-- Consultas control "Mercancía en Tránsito"
+-- Cantidad total en tránsito de un producto.
+SELECT 
+	sum(df.cantidad)
+FROM 
+	factura f
+	JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
+	JOIN detalle_factura df ON f.id_factura = df.id_factura_id
+WHERE 
+	cv.codigo_comprobante_venta = 'RM' AND f.estado in (null, '')
+	--AND df.id_producto_id = 23800		-- tiene 1 Remito
+	AND df.id_producto_id = 381100	-- tiene 3 Remitos
+	--AND df.id_producto_id = 213560		-- tiene 0 Remitos
 
 ##################################################################################################################################

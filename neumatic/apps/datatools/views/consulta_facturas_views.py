@@ -18,6 +18,7 @@ from django.db import transaction
 from django.contrib import messages
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
+from django.db.models import Sum
 
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
@@ -231,6 +232,22 @@ class ConsultaProductosView(TemplateView):
 					#-- IDs de productos en esta página.
 					productos_pagina_ids = [p.id_producto for p in page_obj]
 					
+					# ============= OBTENER CANTIDADES EN TRÁNSITO =============
+					#-- Obtener sumatoria de cantidades en tránsito por producto.
+					transito_data = DetalleFactura.objects.filter(
+						id_producto__in=productos_pagina_ids,
+						id_factura__id_comprobante_venta__codigo_comprobante_venta='RM',
+						id_factura__estado__in=['', None]  # vacío o NULL
+					).values('id_producto').annotate(
+						total_transito=Sum('cantidad')
+					)
+					
+					#-- Convertir a diccionario para acceso rápido: {producto_id: cantidad_en_transito}.
+					transito_dict = {
+						item['id_producto']: item['total_transito'] 
+						for item in transito_data
+					}
+					
 					#-- Obtener depósitos.
 					depositos = ProductoDeposito.objects.all()
 					
@@ -267,6 +284,9 @@ class ConsultaProductosView(TemplateView):
 								'deposito': deposito.nombre_producto_deposito,
 								'stock': stock
 							})
+						
+						#-- Cantidad en tránsito.
+						producto.cantidad_transito = transito_dict.get(producto.id_producto, 0)
 						
 						#-- Calcular precio con descuento.
 						producto.precio_descuento = producto.precio * (1 - (producto.descuento or 0) / 100) if producto.descuento else producto.precio
