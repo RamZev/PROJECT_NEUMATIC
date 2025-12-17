@@ -168,7 +168,7 @@ class ReciboCreateView(MaestroDetalleCreateView):
             
             caja_activa = Caja.objects.filter(
                 id_sucursal=usuario.id_sucursal,
-                caja_cerrada=True,  # Caja activa
+                caja_cerrada=False,  # Caja no cerrada
                 fecha_caja=fecha_comprobante
             ).first()
             
@@ -242,7 +242,7 @@ class ReciboCreateView(MaestroDetalleCreateView):
                     # IMPORTANTE: Corrección del campo - usar caja_cerrada en lugar de estado
                     caja_activa = Caja.objects.filter(
                         id_sucursal=usuario.id_sucursal,
-                        caja_cerrada=True,  # CAMBIAR: estado=True -> caja_cerrada=True
+                        caja_cerrada=False,  
                         fecha_caja=fecha_comprobante
                     ).first()
                     
@@ -265,9 +265,7 @@ class ReciboCreateView(MaestroDetalleCreateView):
                             tipo_movimiento=1,  # 1 para ingresos
                             id_forma_pago=forma_pago_efectivo,  # Campo requerido
                             importe=efectivo_recibo,  # Cambiar valor por importe si ese es el nombre real
-                            observacion=f"Recibo #{self.object.numero_comprobante}",
-                            fecha=timezone.now(),
-                            id_usuario=usuario
+                            observacion=f"Recibo #{self.object.numero_comprobante}"
                         )
                         
                         messages.info(

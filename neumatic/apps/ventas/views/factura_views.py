@@ -20,6 +20,7 @@ from ...maestros.models.cliente_models import Cliente
 # OJO: es nuevo 25/08/2025
 from ...maestros.models.empresa_models import Empresa
 from ...maestros.models.base_models import AlicuotaIva
+from apps.ventas.models.caja_models import Caja, CajaDetalle
 
 from entorno.constantes_base import TIPO_VENTA
 
@@ -607,7 +608,7 @@ class FacturaCreateView(MaestroDetalleCreateView):
 					nuevo_numero = numero_obj.numero + 1
 					Numero.objects.filter(pk=numero_obj.pk).update(numero=F('numero') + 1)
 
-				# Asignar valores definicitivo
+				# Asignar valores definiitivos
 				form.instance.numero_comprobante = nuevo_numero
 				form.instance.letra_comprobante = letra
 				form.instance.compro = comprobante
@@ -621,6 +622,30 @@ class FacturaCreateView(MaestroDetalleCreateView):
 					# Venta de contado
 					form.instance.entrega = form.instance.total  # Asignar el total a entrega
 					form.instance.estado = "C"  # Marcar como cobrado ("C")
+
+					# =========================================================
+					# VALIDAR CAJA Y REGISTRAR EN CajaDetalle PARA VENTA DE CONTADO
+					# =========================================================
+					usuario = self.request.user
+					monto_factura = form.instance.total
+					fecha_comprobante = form.cleaned_data['fecha_comprobante']
+					
+					# Buscar caja ABIERTA (caja_cerrada=False) con fecha coincidente
+					caja_activa = Caja.objects.filter(
+						id_sucursal=usuario.id_sucursal,
+						caja_cerrada=False,  # Caja abierta
+						fecha_caja=fecha_comprobante  # Fecha debe coincidir
+					).first()
+					
+					if not caja_activa:
+						# No hay caja activa para factura de contado
+						messages.error(
+							self.request,
+							"❌ No hay caja activa para registrar la venta de contado. "
+							"Active una caja antes de crear una factura de contado."
+						)
+						return redirect(self.list_view_name)  # Redirecciona a la lista de facturas
+					# =========================================================
 
 				# Verificación de Nota de Crédito
 				comprobante_venta = form.cleaned_data['id_comprobante_venta']
@@ -654,6 +679,64 @@ class FacturaCreateView(MaestroDetalleCreateView):
 
 				# 4. Guardado en el modelo Factura
 				self.object = form.save()
+
+				# =========================================================
+				# REGISTRAR EN CAJA DETALLE PARA VENTA DE CONTADO (DESPUÉS DE GUARDAR)
+				# =========================================================
+				if condicion_comprobante == 1:
+					try:
+						usuario = self.request.user
+						fecha_comprobante = form.cleaned_data['fecha_comprobante']
+						
+						# Buscar caja ABIERTA nuevamente (en contexto de transacción)
+						caja_activa = Caja.objects.filter(
+							id_sucursal=usuario.id_sucursal,
+							caja_cerrada=False,  # Caja abierta
+							fecha_caja=fecha_comprobante  # Fecha debe coincidir
+						).first()
+						
+						if caja_activa:
+							# Importar FormaPago para el campo id_forma_pago
+							from apps.maestros.models.base_models import FormaPago
+							forma_pago_efectivo = FormaPago.objects.get(id_forma_pago=1)
+							
+							# Crear detalle de caja
+							CajaDetalle.objects.create(
+								id_caja=caja_activa,
+								idventas=self.object.id_factura,
+								tipo_movimiento=1,  # 1 para Ingreso
+								id_forma_pago=forma_pago_efectivo,
+								importe=self.object.total,  # Total de la factura
+								observacion=f"Factura #{self.object.numero_comprobante}"
+							)
+							
+							messages.info(
+								self.request,
+								f'💰 Se registró venta de contado de ${self.object.total:.2f} '
+								f'en la Caja #{caja_activa.numero_caja}'
+							)
+						else:
+							# Esto no debería pasar porque ya validamos arriba, pero por seguridad
+							messages.warning(
+								self.request,
+								f'⚠️ Venta de contado de ${self.object.total:.2f} no se registró en caja '
+								f'(caja no disponible para fecha {fecha_comprobante.strftime("%d/%m/%Y")})'
+							)
+							
+					except FormaPago.DoesNotExist:
+						messages.warning(
+							self.request,
+							f'⚠️ No se encontró forma de pago efectivo (ID 1) para registrar en caja'
+						)
+					except Exception as e:
+						print(f"DEBUG - ERROR al crear CajaDetalle para factura: {str(e)}")
+						# Continuar sin registrar en caja pero mostrar advertencia
+						messages.warning(
+							self.request,
+							f'⚠️ No se pudo registrar en caja: {str(e)}'
+						)
+				# =========================================================
+
 
 				# 5. ACTUALIZACIÓN DEL DOCUMENTO ASOCIADO (PARTE CLAVE)
 				if comprobante_venta.pendiente:
@@ -786,6 +869,11 @@ class FacturaCreateView(MaestroDetalleCreateView):
 	def obtener_token_afiparca(self):
 		from afip import Afip
 		from pathlib import Path
+		from dotenv import load_dotenv
+		from os import getenv
+
+		load_dotenv()
+		afip_token = getenv('AFIP_TOKEN')
 
 		# Obteber Datos del modelo Empresa
 		empresa = Empresa.objects.first()
@@ -819,7 +907,8 @@ class FacturaCreateView(MaestroDetalleCreateView):
 		afip = Afip({
 			"CUIT": tax_id,
 			"cert": cert,
-			"key": key
+			"key": key,
+			"access_token": afip_token
 		})
 
 		# Esta URL la podes encontrar en el manual del web service
