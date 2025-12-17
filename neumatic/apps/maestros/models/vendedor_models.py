@@ -8,28 +8,83 @@ from entorno.constantes_base import ESTATUS_GEN, TIPO_VENTA
 
 
 class Vendedor(ModeloBaseGenerico):
-	id_vendedor = models.AutoField(primary_key=True)
-	estatus_vendedor = models.BooleanField("Estatus", default=True, 
-										   choices=ESTATUS_GEN)
-	nombre_vendedor = models.CharField("Nombre vendedor", max_length=30)
-	domicilio_vendedor = models.CharField("Domicilio", max_length=30)
-	email_vendedor = models.EmailField("Correo", max_length=50)
-	telefono_vendedor = models.CharField("Teléfono", max_length=15)
-	
-	pje_auto = models.DecimalField("% auto", max_digits=4, decimal_places=2, 
-								null=True, blank=True, default=0.00)
-	pje_camion = models.DecimalField("% camión", max_digits=4, decimal_places=2, 
-								null=True, blank=True, default=0.00)
-	
-	vence_factura = models.IntegerField("Días vcto. Fact.", default=0, blank=True)
-	vence_remito = models.IntegerField("Días vcto. Remito", default=0, blank=True)
-	id_sucursal = models.ForeignKey(Sucursal, on_delete=models.CASCADE, 
-									verbose_name="Sucursal")  # Relación con sucursal
-	tipo_venta = models.CharField("Tipo", max_length=1, choices=TIPO_VENTA)
-	col_descuento = models.IntegerField("Columna Dcto.", default=0, blank=True)
-	email_venta = models.BooleanField("Enviar correos con Comprobantes", default=False)
-	info_saldo = models.BooleanField("Mostrar Saldo en Correos Electrónicos", default=False)
-	info_estadistica = models.BooleanField("Mostrar Saldos en Comp. Sin Estadísticas", default=False)
+	id_vendedor = models.AutoField(
+		primary_key=True
+	)
+	estatus_vendedor = models.BooleanField(
+		verbose_name="Estatus",
+		default=True,
+		choices=ESTATUS_GEN
+	)
+	nombre_vendedor = models.CharField(
+		verbose_name="Nombre vendedor",
+		max_length=30
+	)
+	domicilio_vendedor = models.CharField(
+		verbose_name="Domicilio",
+		max_length=30
+	)
+	email_vendedor = models.EmailField(
+		verbose_name="Correo",
+		max_length=50
+	)
+	telefono_vendedor = models.CharField(
+		verbose_name="Teléfono",
+		max_length=15
+	)
+	pje_auto = models.DecimalField(
+		verbose_name="% auto",
+		max_digits=4,
+		decimal_places=2,
+		null=True,
+		blank=True,
+		default=0.00
+	)
+	pje_camion = models.DecimalField(
+		verbose_name="% camión",
+		max_digits=4,
+		decimal_places=2,
+		null=True,
+		blank=True,
+		default=0.00
+	)
+	vence_factura = models.IntegerField(
+		verbose_name="Días vcto. Fact.",
+		default=0,
+		blank=True
+	)
+	vence_remito = models.IntegerField(
+		verbose_name="Días vcto. Remito",
+		default=0,
+		blank=True
+	)
+	id_sucursal = models.ForeignKey(
+		Sucursal,
+		on_delete=models.CASCADE,
+		verbose_name="Sucursal"
+	)
+	tipo_venta = models.CharField(
+		verbose_name="Tipo",
+		max_length=1,
+		choices=TIPO_VENTA
+	)
+	col_descuento = models.IntegerField(
+		verbose_name="Columna Dcto.",
+		default=0,
+		blank=True
+	)
+	email_venta = models.BooleanField(
+		verbose_name="Enviar correos con Comprobantes",
+		default=False
+	)
+	info_saldo = models.BooleanField(
+		verbose_name="Mostrar Saldo en Correos Electrónicos",
+		default=False
+	)
+	info_estadistica = models.BooleanField(
+		verbose_name="Mostrar Saldos en Comp. Sin Estadísticas",
+		default=False
+	)
 	
 	class Meta:
 		db_table = 'vendedor'

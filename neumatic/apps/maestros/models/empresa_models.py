@@ -10,61 +10,164 @@ from entorno.constantes_base import ESTATUS_GEN, WS_MODO
 
 
 class Empresa(ModeloBaseGenerico):
-	id_empresa = models.AutoField(primary_key=True)
-	estatus_empresa = models.BooleanField("Estatus*", default=True,
-										  choices=ESTATUS_GEN)
-	nombre_fiscal = models.CharField("Nombre Fiscal*", max_length=50)
-	nombre_comercial = models.CharField("Nombre Comercial*", max_length=50)
-	domicilio_empresa = models.CharField("Domicilio*", max_length=50)
-	codigo_postal = models.CharField("Código postal*", max_length=4)
-	id_localidad = models.ForeignKey(Localidad, on_delete=models.PROTECT, 
-								  verbose_name="Localidad*")
-	id_provincia = models.ForeignKey(Provincia, on_delete=models.PROTECT, 
-								  verbose_name="Provincia*")
-	id_iva = models.ForeignKey(TipoIva, on_delete=models.PROTECT, 
-						 verbose_name="Tipo I.V.A.", null=True, blank=True)
-	cuit = models.IntegerField("C.U.I.T.*", )
-	ingresos_bruto = models.CharField("Ing. Bruto*", max_length=15)
-	inicio_actividad = models.DateField("Inicio de actividad*")
-	cbu = models.CharField("CBU Bancaria*", max_length=22)
-	cbu_alias = models.CharField("CBU Alias*", max_length=50)
-	cbu_vence = models.DateField("Vcto. CBU*")
-	telefono = models.CharField("Teléfono*", max_length=20)
-	email_empresa = models.EmailField("Correo*", max_length=50)
-	web_empresa = models.CharField("Web", max_length=50, 
-								   null=True, blank=True)
-	
+	id_empresa = models.AutoField(
+		primary_key=True
+	)
+	estatus_empresa = models.BooleanField(
+		verbose_name="Estatus*",
+		default=True,
+		choices=ESTATUS_GEN
+	)
+	nombre_fiscal = models.CharField(
+		verbose_name="Nombre Fiscal*",
+		max_length=50
+	)
+	nombre_comercial = models.CharField(
+		verbose_name="Nombre Comercial*",
+		max_length=50
+	)
+	domicilio_empresa = models.CharField(
+		verbose_name="Domicilio*",
+		max_length=50
+	)
+	codigo_postal = models.CharField(
+		verbose_name="Código postal*",
+		max_length=4
+	)
+	id_localidad = models.ForeignKey(
+		Localidad,
+		on_delete=models.PROTECT,
+		verbose_name="Localidad*"
+	)
+	id_provincia = models.ForeignKey(
+		Provincia,
+		on_delete=models.PROTECT,
+		verbose_name="Provincia*"
+	)
+	id_iva = models.ForeignKey(
+		TipoIva,
+		on_delete=models.PROTECT,
+		verbose_name="Tipo I.V.A.",
+		null=True,
+		blank=True
+	)
+	cuit = models.IntegerField(
+		verbose_name="C.U.I.T.*"
+	)
+	ingresos_bruto = models.CharField(
+		verbose_name="Ing. Bruto*",
+		max_length=15
+	)
+	inicio_actividad = models.DateField(
+		verbose_name="Inicio de actividad*"
+	)
+	cbu = models.CharField(
+		verbose_name="CBU Bancaria*",
+		max_length=22
+	)
+	cbu_alias = models.CharField(
+		verbose_name="CBU Alias*",
+		max_length=50
+	)
+	cbu_vence = models.DateField(
+		verbose_name="Vcto. CBU*"
+	)
+	telefono = models.CharField(
+		verbose_name="Teléfono*",
+		max_length=20
+	)
+	email_empresa = models.EmailField(
+		verbose_name="Correo*",
+		max_length=50
+	)
+	web_empresa = models.CharField(
+		verbose_name="Web",
+		max_length=50,
+		null=True, blank=True
+	)
+
 	logo_empresa = models.BinaryField()  # Para el campo 'image'
-	
-	ws_archivo_crt = models.CharField("Archivo CRT WSAFIP*", max_length=50)
-	ws_archivo_key = models.CharField("Archivo KEY WSAFIP*", max_length=50)
-	ws_archivo_crt2 = models.TextField("CRT", null=True, blank=True)
-	ws_archivo_key2 = models.TextField("KEY", null=True, blank=True)
-	ws_token = models.TextField("Token", null=True, blank=True)
-	ws_sign = models.TextField("Sign", null=True, blank=True)
-	ws_expiracion = models.DateField("Expiración Ticket WS", null=True, blank=True)
-	ws_modo = models.IntegerField("Modo*", choices=WS_MODO)
-	ws_vence = models.DateField("Vcto. Certificado*")
-	
+
+	ws_archivo_crt = models.CharField(
+		verbose_name="Archivo CRT WSAFIP*",
+		max_length=50
+	)
+	ws_archivo_key = models.CharField(
+		verbose_name="Archivo KEY WSAFIP*",
+		max_length=50
+	)
+	ws_archivo_crt2 = models.TextField(
+		verbose_name="CRT",
+		null=True,
+		blank=True
+	)
+	ws_archivo_key2 = models.TextField(
+		verbose_name="KEY",
+		null=True,
+		blank=True
+	)
+	ws_token = models.TextField(
+		verbose_name="Token",
+		null=True,
+		blank=True
+	)
+	ws_sign = models.TextField(
+		verbose_name="Sign",
+		null=True,
+		blank=True
+	)
+	ws_expiracion = models.DateField(
+		verbose_name="Expiración Ticket WS",
+		null=True,
+		blank=True
+	)
+	ws_modo = models.IntegerField(
+		verbose_name="Modo*",
+		choices=WS_MODO
+	)
+	ws_vence = models.DateField(
+		verbose_name="Vcto. Certificado*"
+	)
+
 	#-- Parámetros.
-	interes = models.DecimalField("Intereses(%)", max_digits=5,
-								decimal_places=2, default=0.00, blank=True)
-	interes_dolar = models.DecimalField("Intereses Dólar(%)", max_digits=5,
-										decimal_places=2, default=0.00,
-										blank=True)
-	cotizacion_dolar = models.DecimalField("Cotización Dólar",
-										max_digits=15, decimal_places=2, 
-										default=0.00, blank=True)
-	dias_vencimiento = models.IntegerField("Días Vcto.", default=0, 
-										blank=True)
-	descuento_maximo = models.DecimalField("Dcto. Máximo(%)",
-										max_digits=5, decimal_places=2, 
-										default=0.00, blank=True)
+	interes = models.DecimalField(
+		verbose_name="Intereses(%)",
+		max_digits=5,
+		decimal_places=2,
+		default=0.00,
+		blank=True
+	)
+	interes_dolar = models.DecimalField(
+		verbose_name="Intereses Dólar(%)",
+		max_digits=5,
+		decimal_places=2,
+		default=0.00,
+		blank=True
+	)
+	cotizacion_dolar = models.DecimalField(
+		verbose_name="Cotización Dólar",
+		max_digits=15,
+		decimal_places=2,
+		default=0.00,
+		blank=True
+	)
+	dias_vencimiento = models.IntegerField(
+		verbose_name="Días Vcto.",
+		default=0,
+		blank=True
+	)
+	descuento_maximo = models.DecimalField(
+		verbose_name="Dcto. Máximo(%)",
+		max_digits=5,
+		decimal_places=2,
+		default=0.00,
+		blank=True
+	)
 	
 	class Meta:
 		db_table = 'empresa'
-		verbose_name = ('Empresa')
-		verbose_name_plural = ('Empresas')
+		verbose_name = 'Empresa'
+		verbose_name_plural = 'Empresas'
 		ordering = ['nombre_fiscal']
 	
 	def __str__(self):
