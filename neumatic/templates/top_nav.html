@@ -27,7 +27,8 @@
 				<li><a class="dropdown-item" href="{% url 'producto_list' %}"><i class="fas fa-boxes text-primary me-2"></i>Productos</a></li>
 				<li><a class="dropdown-item" href="{% url 'vlresumenctacte_informe_list' %}"><i class="fas fa-chart-pie text-danger me-2"></i>Resumen Cta. Corriente</a></li>
 				<li><a class="dropdown-item" href="{% url 'consulta_facturas_cliente' %}"><i class="fas fa-search-dollar text-danger me-2"></i>Facturas por Cliente</a></li>
-				<li><a class="dropdown-item" href="{% url 'consulta_productos_stock' %}"><i class="fas fa-boxes text-danger me-2"></i>Stock de Productos</a></li>
+				{% comment %} <li><a class="dropdown-item" href="{% url 'consulta_productos_stock' %}"><i class="fas fa-boxes text-danger me-2"></i>Stock de Productos</a></li> {% endcomment %}
+				<li><a class="dropdown-item" href="{% url 'consulta_productos_stock' %}"><i class="fas fa-boxes text-danger me-2"></i>Consulta de Precios</a></li>
 			</ul>
 		</div>
 
