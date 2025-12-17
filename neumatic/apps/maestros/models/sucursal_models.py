@@ -2,31 +2,62 @@
 from django.db import models
 from django.core.exceptions import ValidationError
 import re
+
 from .base_gen_models import ModeloBaseGenerico
 from .base_models import Provincia, Localidad
 from entorno.constantes_base import ESTATUS_GEN
 
 
 class Sucursal(ModeloBaseGenerico):
-	id_sucursal = models.AutoField(primary_key=True)
-	estatus_sucursal = models.BooleanField("Estatus", default=True,
-										   choices=ESTATUS_GEN)
-	nombre_sucursal = models.CharField("Nombre sucursal", max_length=50)
-	codigo_michelin = models.IntegerField("Código Michelin")
-	domicilio_sucursal = models.CharField("Domicilio", max_length=50)
-	codigo_postal = models.CharField("Código Postal*", max_length=5)
-	id_provincia = models.ForeignKey(Provincia, on_delete=models.PROTECT, 
-								  verbose_name="Provincia")
-	id_localidad = models.ForeignKey(Localidad, on_delete=models.PROTECT, 
-								  verbose_name="Localidad")
-	telefono_sucursal = models.CharField("Teléfono", max_length=15)
-	email_sucursal = models.EmailField("Correo", max_length=50)
-	inicio_actividad = models.DateField("Inicio actividad")
+	id_sucursal = models.AutoField(
+		primary_key=True
+	)
+	estatus_sucursal = models.BooleanField(
+		verbose_name="Estatus",
+		default=True,
+		choices=ESTATUS_GEN
+	)
+	nombre_sucursal = models.CharField(
+		verbose_name="Nombre sucursal",
+		max_length=50
+	)
+	codigo_michelin = models.IntegerField(
+		verbose_name="Código Michelin"
+	)
+	domicilio_sucursal = models.CharField(
+		verbose_name="Domicilio",
+		max_length=50
+	)
+	codigo_postal = models.CharField(
+		verbose_name="Código Postal*",
+		max_length=5
+	)
+	id_provincia = models.ForeignKey(
+		Provincia,
+		on_delete=models.PROTECT,
+		verbose_name="Provincia"
+	)
+	id_localidad = models.ForeignKey(
+		Localidad,
+		on_delete=models.PROTECT,
+		verbose_name="Localidad"
+	)
+	telefono_sucursal = models.CharField(
+		verbose_name="Teléfono",
+		max_length=15
+	)
+	email_sucursal = models.EmailField(
+		verbose_name="Correo",
+		max_length=50
+	)
+	inicio_actividad = models.DateField(
+		verbose_name="Inicio actividad"
+	)
 	
 	class Meta:
 		db_table = 'sucursal'
-		verbose_name = ('Sucursal')
-		verbose_name_plural = ('Sucursales')
+		verbose_name = 'Sucursal'
+		verbose_name_plural = 'Sucursales'
 		ordering = ['nombre_sucursal']
 	
 	def __str__(self):

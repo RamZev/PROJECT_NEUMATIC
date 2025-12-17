@@ -10,44 +10,107 @@ from entorno.constantes_base import ESTATUS_GEN
 
 
 class Proveedor(ModeloBaseGenerico):
-	id_proveedor = models.AutoField(primary_key=True)
-	estatus_proveedor = models.BooleanField("Estatus", default=True, 
-										 choices=ESTATUS_GEN)
-	nombre_proveedor = models.CharField("Nombre proveedor", max_length=50)
-	domicilio_proveedor = models.CharField("Domicilio", max_length=50,
-										 blank=True, null=True)
-	codigo_postal = models.CharField("Código Postal*", max_length=5,
-								  blank=True, null=True)
-	id_provincia = models.ForeignKey(Provincia, on_delete=models.PROTECT, 
-									 verbose_name="Provincia*",
-									 blank=True, null=True)
-	id_localidad = models.ForeignKey(Localidad, on_delete=models.PROTECT,
-									 verbose_name="Localidad*",
-									 blank=True, null=True)
-	id_tipo_iva = models.ForeignKey(TipoIva, on_delete=models.PROTECT, 
-								 verbose_name="Tipo IVA",
-								 blank=True, null=True)
-	cuit = models.IntegerField("C.U.I.T.", unique=True)
-	id_tipo_retencion_ib = models.ForeignKey(TipoRetencionIb, 
-										  on_delete=models.PROTECT, 
-										  verbose_name="Tipo de Retención Ib",
-										  blank=True, null=True)
-	ib_numero = models.CharField("Ingreso Bruto*", max_length=15,
-							  blank=True, null=True)
-	ib_exento = models.BooleanField("Exento Ret. Ing. Bruto",
-								 blank=True, null=True)
-	ib_alicuota = models.DecimalField("Alíc. Ing. B.", max_digits=4, 
-								   decimal_places=2, default=0.00,
-								   blank=True, null=True)
-	multilateral = models.BooleanField("Contrib. Conv. Multilateral",
-									blank=True, null=True)
-	telefono_proveedor = models.CharField("Taléfono", max_length=15)
-	movil_proveedor = models.CharField("Móvil", max_length=15, 
-										null=True, blank=True)
-	email_proveedor = models.EmailField("Correo", max_length=50,
-									 blank=True, null=True)
-	observacion_proveedor = models.TextField("Observaciones", blank=True, 
-											null=True)
+	id_proveedor = models.AutoField(
+		primary_key=True
+	)
+	estatus_proveedor = models.BooleanField(
+		verbose_name="Estatus",
+		default=True, 
+		choices=ESTATUS_GEN
+	)
+	nombre_proveedor = models.CharField(
+		verbose_name="Nombre proveedor",
+		max_length=50
+	)
+	domicilio_proveedor = models.CharField(
+		verbose_name="Domicilio",
+		max_length=50,
+		blank=True,
+		null=True
+	)
+	codigo_postal = models.CharField(
+		verbose_name="Código Postal*",
+		max_length=5,
+		blank=True,
+		null=True
+	)
+	id_provincia = models.ForeignKey(
+		Provincia,
+		on_delete=models.PROTECT,
+		verbose_name="Provincia*",
+		blank=True,
+		null=True
+	)
+	id_localidad = models.ForeignKey(
+		Localidad,
+		on_delete=models.PROTECT,
+		verbose_name="Localidad*",
+		blank=True,
+		null=True
+	)
+	id_tipo_iva = models.ForeignKey(
+		TipoIva,
+		on_delete=models.PROTECT,
+		verbose_name="Tipo IVA",
+		blank=True,
+		null=True
+	)
+	cuit = models.IntegerField(
+		verbose_name="C.U.I.T.",
+		unique=True
+	)
+	id_tipo_retencion_ib = models.ForeignKey(
+		TipoRetencionIb,
+		on_delete=models.PROTECT,
+		verbose_name="Tipo de Retención Ib",
+		blank=True,
+		null=True
+	)
+	ib_numero = models.CharField(
+		verbose_name="Ingreso Bruto*",
+		max_length=15,
+		blank=True,
+		null=True
+	)
+	ib_exento = models.BooleanField(
+		verbose_name="Exento Ret. Ing. Bruto",
+		blank=True,
+		null=True
+	)
+	ib_alicuota = models.DecimalField(
+		verbose_name="Alíc. Ing. B.",
+		max_digits=4,
+		decimal_places=2,
+		default=0.00,
+		blank=True,
+		null=True
+	)
+	multilateral = models.BooleanField(
+		verbose_name="Contrib. Conv. Multilateral",
+		blank=True,
+		null=True
+	)
+	telefono_proveedor = models.CharField(
+		verbose_name="Teléfono",
+		max_length=15
+	)
+	movil_proveedor = models.CharField(
+		verbose_name="Móvil",
+		max_length=15,
+		null=True,
+		blank=True
+	)
+	email_proveedor = models.EmailField(
+		verbose_name="Correo",
+		max_length=50,
+		blank=True,
+		null=True
+	)
+	observacion_proveedor = models.TextField(
+		verbose_name="Observaciones",
+		blank=True,
+		null=True
+	)
 	
 	class Meta:
 		db_table = 'proveedor'

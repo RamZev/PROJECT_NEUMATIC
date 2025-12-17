@@ -2,6 +2,7 @@
 from django.db import models
 from django.core.exceptions import ValidationError
 import re
+
 from .base_gen_models import ModeloBaseGenerico
 from .base_models import PuntoVenta
 from .sucursal_models import Sucursal
@@ -9,19 +10,41 @@ from entorno.constantes_base import ESTATUS_GEN
 
 
 class Numero(ModeloBaseGenerico):
-	id_numero = models.AutoField(primary_key=True)
-	estatus_numero = models.BooleanField("Estatus", default=True, 
-										 choices=ESTATUS_GEN)
-	id_sucursal = models.ForeignKey(Sucursal, on_delete=models.CASCADE, 
-									verbose_name="Sucursal")
-	# punto_venta = models.IntegerField("Punto de Venta")
-	id_punto_venta = models.ForeignKey(PuntoVenta, on_delete=models.PROTECT, 
-									verbose_name="Punto de Venta")
-	comprobante = models.CharField("Comprobante", max_length=3)
-	letra = models.CharField("Letra", max_length=1)
-	numero = models.IntegerField("Número")
-	lineas = models.IntegerField("Líneas")
-	copias = models.IntegerField("Copias")
+	id_numero = models.AutoField(
+		primary_key=True
+	)
+	estatus_numero = models.BooleanField(
+		verbose_name="Estatus",
+		default=True,
+		choices=ESTATUS_GEN
+	)
+	id_sucursal = models.ForeignKey(
+		Sucursal,
+		on_delete=models.CASCADE,
+		verbose_name="Sucursal"
+	)
+	id_punto_venta = models.ForeignKey(
+		PuntoVenta,
+		on_delete=models.PROTECT,
+		verbose_name="Punto de Venta"
+	)
+	comprobante = models.CharField(
+		verbose_name="Comprobante",
+		max_length=3
+	)
+	letra = models.CharField(
+		verbose_name="Letra",
+		max_length=1
+	)
+	numero = models.IntegerField(
+		verbose_name="Número"
+	)
+	lineas = models.IntegerField(
+		verbose_name="Líneas"
+	)
+	copias = models.IntegerField(
+		verbose_name="Copias"
+	)
 	
 	class Meta:
 		db_table = 'numero'

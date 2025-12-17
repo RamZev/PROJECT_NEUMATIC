@@ -2,30 +2,59 @@
 from django.db import models
 from django.core.exceptions import ValidationError
 import re
+
 from .base_gen_models import ModeloBaseGenerico
 from .empresa_models import Empresa
 from entorno.constantes_base import ESTATUS_GEN
 
 
 class Parametro(ModeloBaseGenerico):
-	id_parametro = models.AutoField(primary_key=True)  # Clave primaria
-	estatus_parametro = models.BooleanField("Estatus", default=True,
-											choices=ESTATUS_GEN)  # Estatus del parámetro
-	id_empresa = models.ForeignKey(Empresa, on_delete=models.CASCADE,
-								   verbose_name="Empresa")
-	interes = models.DecimalField("Intereses(%)", max_digits=5,
-								decimal_places=2, default=0.00, blank=True)
-	interes_dolar = models.DecimalField("Intereses Dólar(%)", max_digits=5,
-										decimal_places=2, default=0.00,
-										blank=True)
-	cotizacion_dolar = models.DecimalField("Cotización Dólar",
-										max_digits=15, decimal_places=2, 
-										default=0.00, blank=True)
-	dias_vencimiento = models.IntegerField("Días Vcto.", default=0, 
-										blank=True)
-	descuento_maximo = models.DecimalField("Descuento Máximo(%)",
-										max_digits=5, decimal_places=2, 
-										default=0.00, blank=True)
+	id_parametro = models.AutoField(
+		primary_key=True
+	)
+	estatus_parametro = models.BooleanField(
+		verbose_name="Estatus",
+		default=True,
+		choices=ESTATUS_GEN
+	)
+	id_empresa = models.ForeignKey(
+		Empresa,
+		on_delete=models.CASCADE,
+		verbose_name="Empresa"
+	)
+	interes = models.DecimalField(
+		verbose_name="Intereses(%)",
+		max_digits=5,
+		decimal_places=2,
+		default=0.00,
+		blank=True
+	)
+	interes_dolar = models.DecimalField(
+		verbose_name="Intereses Dólar(%)",
+		max_digits=5,
+		decimal_places=2,
+		default=0.00,
+		blank=True
+	)
+	cotizacion_dolar = models.DecimalField(
+		verbose_name="Cotización Dólar",
+		max_digits=15,
+		decimal_places=2,
+		default=0.00,
+		blank=True
+	)
+	dias_vencimiento = models.IntegerField(
+		verbose_name="Días Vcto.",
+		default=0,
+		blank=True
+	)
+	descuento_maximo = models.DecimalField(
+		verbose_name="Descuento Máximo(%)",
+		max_digits=5,
+		decimal_places=2,
+		default=0.00,
+		blank=True
+	)
 	
 	class Meta:
 		db_table = 'parametro'
