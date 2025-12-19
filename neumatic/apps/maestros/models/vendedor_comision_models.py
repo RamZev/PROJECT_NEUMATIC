@@ -1,6 +1,5 @@
 # neumatic\apps\maestros\models\vendedor_comision_models.py
 from django.db import models
-
 from datetime import date
 
 from .base_gen_models import ModeloBaseGenerico
@@ -10,9 +9,12 @@ from entorno.constantes_base import ESTATUS_GEN
 
 
 class VendedorComision(ModeloBaseGenerico):
-	id_vendedor_comision = models.AutoField(primary_key=True)
+	id_vendedor_comision = models.AutoField(
+		primary_key=True
+	)
 	estatus_vendedor_comision = models.BooleanField(
-		"Estatus", default=True, 
+		verbose_name="Estatus",
+		default=True, 
 		choices=ESTATUS_GEN
 	)
 	id_vendedor = models.ForeignKey(
@@ -21,23 +23,27 @@ class VendedorComision(ModeloBaseGenerico):
 		verbose_name="Vendedor"
 	)
 	fecha_registro = models.DateField(
-		"Fecha Registro", default=date.today
+		verbose_name="Fecha Registro",
+		default=date.today
 	)
 	
 	class Meta:
 		db_table = "vendedor_comision"
-		verbose_name = ('Vendedor Comisión')
-		verbose_name_plural = ('Vendedor Comisiones')
+		verbose_name = 'Vendedor Comisión'
+		verbose_name_plural = 'Vendedor Comisiones'
 	
 	def __str__(self):
 		return f'{self.id_vendedor}'
 
 
 class DetalleVendedorComision(ModeloBaseGenerico):
-	id_detalle_vendedor_comision = models.AutoField(primary_key=True)
+	id_detalle_vendedor_comision = models.AutoField(
+		primary_key=True
+	)
 	id_vendedor_comision = models.ForeignKey(
 		VendedorComision,
 		on_delete=models.CASCADE,
+		verbose_name="Vendedor Comisión"
 	)
 	id_familia = models.ForeignKey(
 		ProductoFamilia, 
@@ -60,8 +66,8 @@ class DetalleVendedorComision(ModeloBaseGenerico):
 	
 	class Meta:
 		db_table = "detalle_vendedor_comision"
-		verbose_name = ('Detalle Vendedor Comisión')
-		verbose_name_plural = ('Detalles Vendedor Comisiones')
+		verbose_name = 'Detalle Vendedor Comisión'
+		verbose_name_plural = 'Detalles Vendedor Comisiones'
 	
 	def __str__(self):
 		return f'{self.id_detalle_vendedor_comision}'

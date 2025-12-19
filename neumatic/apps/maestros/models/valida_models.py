@@ -1,13 +1,12 @@
 # neumatic\apps\maestros\models\valida_models.py
 from django.db import models
-from django.core.validators import MaxValueValidator, MinValueValidator
-from datetime import time
 from django.utils import timezone
 
 from .base_gen_models import ModeloBaseGenerico
 from .sucursal_models import Sucursal
 from .cliente_models import Cliente
 from entorno.constantes_base import ESTATUS_GEN
+
 
 COMPROBANTES = [
 	("", ""),
@@ -17,8 +16,11 @@ COMPROBANTES = [
 	("203", "208")
 ]
 
+
 class Valida(ModeloBaseGenerico):
-	id_valida = models.AutoField(primary_key=True)
+	id_valida = models.AutoField(
+		primary_key=True
+	)
 	estatus_valida = models.BooleanField(
 		verbose_name="Estatus",
 		default=True,
@@ -27,26 +29,26 @@ class Valida(ModeloBaseGenerico):
 	id_sucursal = models.ForeignKey(
 		Sucursal,
 		on_delete=models.CASCADE,
+		verbose_name="Sucursal*",
 		null=True, 
 		blank=True,
-		verbose_name="Sucursal*"
 	)
 	fecha_valida = models.DateField(
-		'Fecha',
+		verbose_name='Fecha',
 		blank=True,
 		null=True
 	)
 	hora_valida = models.TimeField(
-		'Hora',
+		verbose_name='Hora',
 		blank=True,
 		null=True
 	)
 	solicitado = models.CharField(
-		'Solicitado por',
+		verbose_name='Solicitado por',
 		max_length=20
 	)
 	comentario = models.CharField(
-		'Comentario',
+		verbose_name='Comentario',
 		max_length=50,
 		blank=True,
 		null=True
@@ -71,7 +73,7 @@ class Valida(ModeloBaseGenerico):
 		blank=True
 	)
 	hs = models.TimeField(
-		'Hora Aplicación',
+		verbose_name='Hora Aplicación',
 		null=True,
 		blank=True
 	)
