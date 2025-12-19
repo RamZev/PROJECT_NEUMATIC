@@ -24,7 +24,8 @@ class AutorizaComprobante(ModeloBaseGenerico):
 	)
 	hora_autorizacion = models.TimeField(
 		verbose_name="Hora Autorización",
-		null=True, blank=True
+		null=True,
+		blank=True
 	)
 	solicitante = models.CharField(
 		verbose_name="Solicitante",
@@ -63,8 +64,8 @@ class AutorizaComprobante(ModeloBaseGenerico):
 	
 	class Meta:
 		db_table = "autoriza_comprobante"
-		verbose_name = ('Autoriza Comprobante')
-		verbose_name_plural = ('Autoriza Comprobantes')
+		verbose_name = 'Autoriza Comprobante'
+		verbose_name_plural = 'Autoriza Comprobantes'
 		# ordering = ['id_factura']
 	
 	def __str__(self):

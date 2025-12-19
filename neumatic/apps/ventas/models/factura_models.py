@@ -303,8 +303,8 @@ class Factura(ModeloBaseGenerico):
 	
 	class Meta:
 		db_table = "factura"
-		verbose_name = ('Factura')
-		verbose_name_plural = ('Facturas')
+		verbose_name = 'Factura'
+		verbose_name_plural = 'Facturas'
 		# ordering = ['id_factura']
 	
 	def __str__(self):
@@ -369,7 +369,7 @@ class DetalleFactura(ModeloBaseGenerico):
 		blank=True
 	)
 	producto_venta = models.CharField(
-	 	"Nombre producto", 
+	 	verbose_name="Nombre producto", 
 	  	max_length=50,
 		null=True,
 		blank=True
@@ -473,14 +473,15 @@ class DetalleFactura(ModeloBaseGenerico):
 	id_operario = models.ForeignKey(
 		Operario,
 		on_delete=models.PROTECT,
+		verbose_name="Operario",
 		null=True,
 		blank=True
 	)
 	
 	class Meta:
 		db_table = "detalle_factura"
-		verbose_name = ('Detalle Factura')
-		verbose_name_plural = ('Detalles Factura')
+		verbose_name = 'Detalle Factura'
+		verbose_name_plural = 'Detalles Factura'
 		# ordering = ['id_detalle_factura']
 	
 	def __str__(self):
@@ -499,7 +500,7 @@ class SerialFactura(ModeloBaseGenerico):
 		blank=True
 	)
 	producto_serial = models.CharField(
-		"Serial producto", 
+		verbose_name="Serial producto", 
 		max_length=50,
 		null=True,
 		blank=True
@@ -507,8 +508,8 @@ class SerialFactura(ModeloBaseGenerico):
 	
 	class Meta:
 		db_table = "serial_factura"
-		verbose_name = ('Detalle Serial')
-		verbose_name_plural = ('Detalles Serial')
-	
+		verbose_name = 'Detalle Serial'
+		verbose_name_plural = 'Detalles Serial'
+
 	def __str__(self):
 		return self.producto_serial

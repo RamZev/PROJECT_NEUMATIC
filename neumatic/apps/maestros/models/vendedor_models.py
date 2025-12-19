@@ -88,8 +88,8 @@ class Vendedor(ModeloBaseGenerico):
 	
 	class Meta:
 		db_table = 'vendedor'
-		verbose_name = ('Vendedor')
-		verbose_name_plural = ('Vendedores')
+		verbose_name = 'Vendedor'
+		verbose_name_plural = 'Vendedores'
 		ordering = ['nombre_vendedor']
 	
 	def __str__(self):

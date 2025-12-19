@@ -8,11 +8,10 @@ from apps.maestros.models.base_models import (Banco,
 											  CodigoRetencion, 
 											  Tarjeta)
 from .factura_models import Factura
-
 from entorno.constantes_base import ESTATUS_GEN, CONDICION_VENTA
 
 
-# Detalle del Recibo (I)
+#-- Detalle del Recibo (I).
 class DetalleRecibo(ModeloBaseGenerico):
 	id_detalle_recibo = models.AutoField(
 		primary_key=True
@@ -57,7 +56,7 @@ class DetalleRecibo(ModeloBaseGenerico):
 		return f"{self.id_factura} {self.id_detalle_recibo}"
 
    
-# Detalle de las Retenciones (II)
+#-- Detalle de las Retenciones (II).
 class RetencionRecibo(ModeloBaseGenerico):
 	id_retencion_recibo = models.AutoField(
 		primary_key=True
@@ -105,7 +104,7 @@ class RetencionRecibo(ModeloBaseGenerico):
 		return f"{self.id_factura} {self.id_retencion_recibo}"
 
 
-# Detalle del depósito o transferencia  (III)
+#-- Detalle del depósito o transferencia  (III).
 class DepositoRecibo(ModeloBaseGenerico):
 	id_deposito_recibo = models.AutoField(
 		primary_key=True
@@ -160,7 +159,7 @@ class DepositoRecibo(ModeloBaseGenerico):
 		return f"{self.id_factura} {self.id_deposito_recibo}"
 
 
-# Detalle del Pago con Tarjeta  (IV)
+#-- Detalle del Pago con Tarjeta  (IV).
 class TarjetaRecibo(ModeloBaseGenerico):
 	id_tarjeta_recibo = models.AutoField(
 		primary_key=True
@@ -212,7 +211,7 @@ class TarjetaRecibo(ModeloBaseGenerico):
 		return f"{self.id_factura} {self.id_tarjeta_recibo}"
 
 
-# Detalle del cheque  (V)
+#-- Detalle del cheque  (V).
 class ChequeRecibo(ModeloBaseGenerico):
 	id_cheque_recibo = models.AutoField(
 		primary_key=True
@@ -233,10 +232,12 @@ class ChequeRecibo(ModeloBaseGenerico):
 	)
 	codigo_banco = models.SmallIntegerField(
 		verbose_name="Código Banco", 
-		null=True, blank=True)
+		null=True, blank=True
+	)
 	sucursal = models.SmallIntegerField(
 		verbose_name="Sucursal", 
-		null=True, blank=True)
+		null=True, blank=True
+	)
 	codigo_postal = models.SmallIntegerField(
 		verbose_name="Código Postal",
 		null=True, blank=True
