@@ -1,0 +1,24 @@
+2025-12-18 16:10:40,400 - ERROR - Error fatal en cargar_datos_cajadetalle: [Errno 13] Permission denied: 'D:\\PROJECT_NEUMATIC\\neumatic\\data_load\\datavfox\\cajadetalle.DBF'
+2025-12-18 16:19:19,392 - WARNING - Registro 79921: Campo CAJA vacío o inválido, omitiendo...
+2025-12-18 16:19:19,392 - WARNING - Registro 79922: Campo CAJA vacío o inválido, omitiendo...
+2025-12-18 16:19:19,841 - WARNING - Registro 79959: Campo CAJA vacío o inválido, omitiendo...
+2025-12-18 16:28:29,352 - WARNING - Registro 115851: Campo CAJA vacío o inválido, omitiendo...
+2025-12-18 16:29:46,222 - INFO - Migración completada. Registros: 120100, Errores: 0
+2025-12-18 16:29:46,222 - INFO - Cajas no encontradas: 0
+2025-12-18 16:29:46,222 - INFO - Formas de pago no encontradas: 0
+2025-12-18 16:29:46,222 - INFO - Duplicados omitidos: 1
+2025-12-18 16:29:46,222 - INFO - Tiempo total: 1125.16 segundos
+2025-12-18 17:15:26,251 - INFO - Observaciones con valor encontradas: 0
+2025-12-18 17:15:26,251 - INFO - Total procesados: 120101
+2025-12-18 17:27:00,527 - INFO - Observaciones con valor encontradas: 0
+2025-12-18 17:27:00,527 - INFO - Total procesados: 120101
+2025-12-18 17:29:10,821 - INFO - Observaciones con valor encontradas: 0
+2025-12-18 17:29:10,822 - INFO - Total procesados: 120101
+2025-12-18 17:33:26,191 - INFO - Campo de observación: OBSERVACIO
+2025-12-18 17:33:26,192 - INFO - Observaciones con valor encontradas: 119819
+2025-12-18 17:33:26,192 - INFO - Porcentaje: 99.76%
+2025-12-18 17:33:26,192 - INFO - Total procesados: 120101
+2025-12-18 17:40:33,295 - INFO - Campo de observación: OBSERVACIO
+2025-12-18 17:40:33,295 - INFO - Observaciones con valor encontradas: 119819
+2025-12-18 17:40:33,295 - INFO - Porcentaje: 99.76%
+2025-12-18 17:40:33,295 - INFO - Total procesados: 120101

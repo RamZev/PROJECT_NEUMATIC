@@ -1,0 +1,1 @@
+2025-12-18 17:58:22,847 - ERROR - Error fatal en cargar_datos_caja_arqueo: Cannot resolve keyword 'id' into field. Choices are: cantidad, detalle, id_caja, id_caja_arqueo, id_caja_id, total, valor

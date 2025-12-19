@@ -473,15 +473,23 @@ class CajaUpdateView(MaestroUpdateView):
             form.instance.id_usercierre = self.request.user
             
             # 6. Mensaje de éxito
-            messages.success(
-                self.request, 
-                f'✅ Caja #{caja.numero_caja} cerrada exitosamente.<br>'
-                f'• Ingresos: <strong>${total_ingresos:.2f}</strong><br>'
-                f'• Egresos: <strong>${total_egresos:.2f}</strong><br>'
-                f'• Recuento: <strong>${recuento:.2f}</strong><br>'
-                f'• Diferencia: <strong>${form.instance.diferencia:+.2f}</strong><br>'
-                f'• Cerrada por: <strong>{self.request.user.get_full_name() or self.request.user.username}</strong>',
-                extra_tags='safe'
+            # messages.success(
+            #     self.request, 
+            #     f'✅ Caja #{caja.numero_caja} cerrada exitosamente.<br>'
+            #     f'• Ingresos: <strong>${total_ingresos:.2f}</strong><br>'
+            #     f'• Egresos: <strong>${total_egresos:.2f}</strong><br>'
+            #     f'• Recuento: <strong>${recuento:.2f}</strong><br>'
+            #     f'• Diferencia: <strong>${form.instance.diferencia:+.2f}</strong><br>'
+            #     f'• Cerrada por: <strong>{self.request.user.get_full_name() or self.request.user.username}</strong>',
+            #     extra_tags='safe'
+            # )
+
+            messages.info(
+                self.request,
+                f'✅ *Caja #{caja.numero_caja} cerrada. '
+                f'Ingresos: ${total_ingresos:.2f}, '
+                f'Egresos: ${total_egresos:.2f}, '
+                f'Diferencia: ${form.instance.diferencia:+.2f}'
             )
         
         # Llamar al padre para guardar
