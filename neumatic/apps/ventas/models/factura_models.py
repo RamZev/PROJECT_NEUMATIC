@@ -12,6 +12,7 @@ from apps.maestros.models.cliente_models import Cliente
 from apps.maestros.models.producto_models import Producto
 from apps.maestros.models.vendedor_models import Vendedor
 from apps.maestros.models.valida_models import Valida
+from apps.ventas.models.caja_models import Caja
 
 
 class Factura(ModeloBaseGenerico):
@@ -42,6 +43,13 @@ class Factura(ModeloBaseGenerico):
 		null=True,
 		blank=True
 	)
+	id_caja = models.ForeignKey(
+        Caja,
+        on_delete=models.PROTECT,
+        verbose_name="Caja",
+        null=True,
+        blank=True
+    )
 	jerarquia = models.CharField(
 		verbose_name="Jerarquía", 
 		max_length=1,

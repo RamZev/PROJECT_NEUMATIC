@@ -282,10 +282,3 @@ class CajaMedioPago(models.Model):
         verbose_name_plural = 'Medios de pago de Caja'
 
 
-    
-
-
-
-
-
-

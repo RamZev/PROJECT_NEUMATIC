@@ -274,6 +274,11 @@ class ChequeRecibo(ModeloBaseGenerico):
 		null=True,
 		blank=True
 	)
+	electronico = models.BooleanField(
+		verbose_name="Estatus",
+		null=True,
+		blank=True
+	)
 	
 	class Meta:
 		db_table = "cheque_recibo"
