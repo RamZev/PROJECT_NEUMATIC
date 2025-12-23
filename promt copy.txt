@@ -167,3 +167,80 @@ WHERE
 	--AND df.id_producto_id = 213560		-- tiene 0 Remitos
 
 ##################################################################################################################################
+-- 1er. Reporte: Cheques recibidos en Caja (Físicos/Electrónicos).
+--CREATE VIEW vlCajaCheques AS
+SELECT 
+	cr.codigo_banco,
+	b.nombre_banco,
+	cr.codigo_postal,
+	cr.numero_cheque_recibo,
+	cr.fecha_cheque1,
+	cr.importe_cheque,
+	cv.codigo_comprobante_venta,
+	f.numero_comprobante
+FROM cheque_recibo cr
+	INNER JOIN factura f ON cr.id_factura_id = f.id_factura 
+	INNER JOIN banco b ON cr.id_banco_id = b.id_banco
+	INNER JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
+WHERE 
+	cv.mult_caja <> 0
+
+
+-- 2do. Reporte: Comprobantes de Ventas de Contado de una caja en específico.
+--CREATE VIEW vlCajaComprobantes AS
+SELECT factura.id_factura,
+	factura.compro, factura.letra_comprobante, factura.numero_comprobante, factura.fecha_comprobante,
+	factura.id_cliente_id, factura.nombre_factura, factura.condicion_comprobante,
+	factura.total*comprobante_venta.mult_caja AS total, factura.id_user_id, usuarios_user.iniciales,
+	factura.id_sucursal_id, factura.no_estadist
+FROM factura
+	INNER JOIN comprobante_venta on factura.id_comprobante_venta_id = comprobante_venta.id_comprobante_venta
+	INNER JOIN usuarios_user on factura.id_user_id = usuarios_user.id
+WHERE comprobante_venta.mult_caja <> 0 AND
+	factura.condicion_comprobante = 1 AND
+	factura.no_estadist = False
+order by factura.compro, factura.letra_comprobante, factura.numero_comprobante
+
+-- 3er. Reporte: Todos los Comprobantes de Ventas (Contado y Cta. Cte.).
+--CREATE VIEW vlCajaComprobantesTodos AS
+SELECT factura.id_factura,
+	factura.compro, factura.letra_comprobante, factura.numero_comprobante, factura.fecha_comprobante,
+	factura.id_cliente_id, factura.nombre_factura, factura.condicion_comprobante,
+	factura.total*comprobante_venta.mult_caja AS total, factura.id_user_id, usuarios_user.iniciales,
+	factura.id_sucursal_id, factura.no_estadist
+FROM factura
+	INNER JOIN comprobante_venta on factura.id_comprobante_venta_id = comprobante_venta.id_comprobante_venta
+	INNER JOIN usuarios_user on factura.id_user_id = usuarios_user.id
+WHERE comprobante_venta.mult_caja <> 0 AND
+	factura.no_estadist = False
+order by factura.compro, factura.letra_comprobante, factura.numero_comprobante
+
+-- 4to. Reporte: Comprobantes de Ventas de una caja en específico (Planilla de Caja).
+--CREATE VIEW vlCajaDetalle AS
+SELECT caja_detalle.id_caja_id, caja.numero_caja, 
+	caja_detalle.idventas, factura.compro, factura.letra_comprobante, factura.numero_comprobante, 
+	factura.id_cliente_id, cliente.nombre_cliente,
+	caja_detalle.importe, 
+	forma_pago.descripcion_forma_pago, 
+	caja_detalle.observacion
+FROM caja_detalle 
+	INNER JOIN caja on caja_detalle.id_caja_id = caja.id_caja
+	INNER JOIN factura on caja_detalle.idventas = factura.id_factura
+	INNER JOIN cliente on factura.id_cliente_id = cliente.id_cliente 
+	INNER JOIN forma_pago on caja_detalle.id_forma_pago_id = forma_pago.id_forma_pago
+order by factura.compro, factura.letra_comprobante, factura.numero_comprobante
+
+
+--------------------------------------------------------
+Para los reportes de Caja se necesita:
+- Migrar los datos de cheque_recibo <== cheques.dbf
+- Migrar los datos de tarjeta_recibo <== cuponestarj.dbf
+- Migrar los dastos de Bancos <== codbco.dbf
+
+- Asociar la caja a los comprobantes.
+- Agregar campo booleano en cheque_recibo para indicar si el cheque es Electrónico.
+--------------------------------------------------------
+
+
+##################################################################################################################################
+
