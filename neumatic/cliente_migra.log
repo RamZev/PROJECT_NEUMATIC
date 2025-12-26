@@ -308,3 +308,8 @@
 2025-11-11 09:45:19,544 - ERROR - Error procesando registro 160291: invalid literal for int() with base 10: '2700000000000.0'
 2025-11-11 09:45:20,163 - ERROR - Error procesando registro 162911: invalid literal for int() with base 10: '309990000000.0'
 2025-11-11 09:45:22,294 - INFO - Migración completada. Total registros procesados: 128347/128359. Tiempo: 48.92 segundos
+2025-12-26 17:04:26,971 - INFO - Iniciando migración de clientes
+2025-12-26 17:04:27,065 - INFO - Precargando relaciones en memoria...
+2025-12-26 17:04:27,778 - INFO - Relaciones precargadas en memoria
+2025-12-26 17:04:35,001 - INFO - DBF cargado en memoria. Total registros: 129153
+2025-12-26 17:05:22,597 - INFO - Migración completada. Total registros procesados: 129153/129153. Tiempo: 55.63 segundos

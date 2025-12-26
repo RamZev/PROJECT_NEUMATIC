@@ -4,7 +4,7 @@
 
 Ejecutar los algoritmos de de deupración de la base datos de datos de VisualFoxpro
 
-* ajustes_migracion
+* ajustes_migracion.prg
 
 * act_detcom.prg
 

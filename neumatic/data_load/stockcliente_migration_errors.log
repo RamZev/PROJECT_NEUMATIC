@@ -158,3 +158,108 @@ RESUMEN FINAL:
 2025-11-11 09:18:55,981 - INFO - Enteros inválidos (NUMERO): 0
 2025-11-11 09:18:55,981 - INFO - Otros errores: 0
 2025-11-11 09:18:55,981 - INFO - Tasa de éxito: 100.00%
+2025-12-26 17:13:01,363 - INFO - Eliminados 0 registros existentes
+2025-12-26 17:13:01,367 - INFO - Cargando cache de relaciones...
+2025-12-26 17:13:12,233 - WARNING - Factura no encontrada: ID 1188046
+2025-12-26 17:13:12,234 - WARNING - Factura no encontrada: ID 911881
+2025-12-26 17:13:12,234 - WARNING - Factura no encontrada: ID 1097572
+2025-12-26 17:13:12,234 - WARNING - Factura no encontrada: ID 1213973
+2025-12-26 17:13:12,235 - WARNING - Factura no encontrada: ID 1220786
+2025-12-26 17:13:12,235 - WARNING - Factura no encontrada: ID 1245827
+2025-12-26 17:13:12,236 - WARNING - Factura no encontrada: ID 1250375
+2025-12-26 17:13:12,236 - WARNING - Factura no encontrada: ID 1268732
+2025-12-26 17:13:12,236 - WARNING - Factura no encontrada: ID 1268732
+2025-12-26 17:13:12,237 - WARNING - Factura no encontrada: ID 1293433
+2025-12-26 17:13:12,237 - WARNING - Factura no encontrada: ID 1297532
+2025-12-26 17:13:12,238 - WARNING - Factura no encontrada: ID 1300557
+2025-12-26 17:13:12,238 - WARNING - Factura no encontrada: ID 1304461
+2025-12-26 17:13:12,238 - WARNING - Factura no encontrada: ID 1304461
+2025-12-26 17:13:12,239 - WARNING - Factura no encontrada: ID 1306500
+2025-12-26 17:13:12,239 - WARNING - Factura no encontrada: ID 1306500
+2025-12-26 17:13:12,240 - WARNING - Factura no encontrada: ID 1307172
+2025-12-26 17:13:12,240 - WARNING - Factura no encontrada: ID 1307492
+2025-12-26 17:13:12,240 - WARNING - Factura no encontrada: ID 1307777
+2025-12-26 17:13:12,240 - WARNING - Factura no encontrada: ID 1309404
+2025-12-26 17:13:12,241 - WARNING - Factura no encontrada: ID 1318469
+2025-12-26 17:13:12,241 - WARNING - Factura no encontrada: ID 1321069
+2025-12-26 17:13:12,242 - WARNING - Factura no encontrada: ID 1322377
+2025-12-26 17:13:12,242 - WARNING - Factura no encontrada: ID 1322377
+2025-12-26 17:13:12,243 - WARNING - Factura no encontrada: ID 1331693
+2025-12-26 17:13:12,243 - WARNING - Factura no encontrada: ID 1331735
+2025-12-26 17:13:12,243 - WARNING - Factura no encontrada: ID 1347483
+2025-12-26 17:13:12,244 - WARNING - Factura no encontrada: ID 1365100
+2025-12-26 17:13:12,245 - WARNING - Factura no encontrada: ID 1365101
+2025-12-26 17:13:12,246 - WARNING - Factura no encontrada: ID 1367649
+2025-12-26 17:13:12,246 - WARNING - Factura no encontrada: ID 1369439
+2025-12-26 17:13:12,246 - WARNING - Factura no encontrada: ID 1372171
+2025-12-26 17:13:12,247 - WARNING - Factura no encontrada: ID 1372172
+2025-12-26 17:13:12,247 - WARNING - Factura no encontrada: ID 1377524
+2025-12-26 17:13:12,248 - WARNING - Factura no encontrada: ID 1381403
+2025-12-26 17:13:12,248 - WARNING - Factura no encontrada: ID 1396708
+2025-12-26 17:13:12,249 - WARNING - Factura no encontrada: ID 1400498
+2025-12-26 17:13:12,249 - WARNING - Factura no encontrada: ID 1405356
+2025-12-26 17:13:12,250 - WARNING - Factura no encontrada: ID 1405357
+2025-12-26 17:13:12,250 - WARNING - Factura no encontrada: ID 1407365
+2025-12-26 17:13:12,251 - WARNING - Factura no encontrada: ID 1411733
+2025-12-26 17:13:12,251 - WARNING - Factura no encontrada: ID 1418590
+2025-12-26 17:13:12,252 - WARNING - Factura no encontrada: ID 1420276
+2025-12-26 17:13:12,252 - WARNING - Factura no encontrada: ID 1420282
+2025-12-26 17:13:12,253 - WARNING - Factura no encontrada: ID 1427125
+2025-12-26 17:13:12,253 - WARNING - Factura no encontrada: ID 1427132
+2025-12-26 17:13:12,253 - WARNING - Factura no encontrada: ID 1430814
+2025-12-26 17:13:12,254 - WARNING - Factura no encontrada: ID 1430817
+2025-12-26 17:13:12,254 - WARNING - Factura no encontrada: ID 1431992
+2025-12-26 17:13:12,255 - WARNING - Factura no encontrada: ID 1447783
+2025-12-26 17:13:12,255 - WARNING - Factura no encontrada: ID 1447783
+2025-12-26 17:13:12,256 - WARNING - Factura no encontrada: ID 1449535
+2025-12-26 17:13:12,256 - WARNING - Factura no encontrada: ID 1449541
+2025-12-26 17:13:12,256 - WARNING - Factura no encontrada: ID 1449982
+2025-12-26 17:13:12,257 - WARNING - Factura no encontrada: ID 1453754
+2025-12-26 17:13:12,257 - WARNING - Factura no encontrada: ID 1454783
+2025-12-26 17:13:12,258 - WARNING - Factura no encontrada: ID 1458681
+2025-12-26 17:13:12,258 - WARNING - Factura no encontrada: ID 1458681
+2025-12-26 17:13:12,259 - WARNING - Factura no encontrada: ID 1459941
+2025-12-26 17:13:12,259 - WARNING - Factura no encontrada: ID 1460276
+2025-12-26 17:13:12,260 - WARNING - Factura no encontrada: ID 1460276
+2025-12-26 17:13:12,260 - WARNING - Factura no encontrada: ID 1460449
+2025-12-26 17:13:12,260 - WARNING - Factura no encontrada: ID 1468080
+2025-12-26 17:13:12,261 - WARNING - Factura no encontrada: ID 1468151
+2025-12-26 17:13:12,261 - WARNING - Factura no encontrada: ID 1468151
+2025-12-26 17:13:12,262 - WARNING - Factura no encontrada: ID 1469566
+2025-12-26 17:13:12,262 - WARNING - Factura no encontrada: ID 1474522
+2025-12-26 17:13:12,262 - WARNING - Factura no encontrada: ID 1475117
+2025-12-26 17:13:12,263 - WARNING - Factura no encontrada: ID 1475183
+2025-12-26 17:13:12,263 - WARNING - Factura no encontrada: ID 1477521
+2025-12-26 17:13:12,263 - WARNING - Factura no encontrada: ID 1477521
+2025-12-26 17:13:12,264 - WARNING - Factura no encontrada: ID 1490173
+2025-12-26 17:13:12,264 - WARNING - Factura no encontrada: ID 1491073
+2025-12-26 17:13:12,264 - WARNING - Factura no encontrada: ID 1492182
+2025-12-26 17:13:12,265 - WARNING - Factura no encontrada: ID 1495899
+2025-12-26 17:13:12,265 - WARNING - Factura no encontrada: ID 1497020
+2025-12-26 17:13:12,529 - INFO - Lote guardado: 1000 registros
+2025-12-26 17:13:12,887 - INFO - Lote guardado: 1000 registros
+2025-12-26 17:13:13,212 - INFO - Lote guardado: 1000 registros
+2025-12-26 17:13:13,554 - INFO - Lote guardado: 1000 registros
+2025-12-26 17:13:14,094 - INFO - Lote guardado: 1000 registros
+2025-12-26 17:13:14,446 - INFO - Lote guardado: 1000 registros
+2025-12-26 17:13:14,755 - INFO - Lote guardado: 1000 registros
+2025-12-26 17:13:15,094 - INFO - Lote guardado: 1000 registros
+2025-12-26 17:13:15,428 - INFO - Lote guardado: 1000 registros
+2025-12-26 17:13:15,761 - INFO - Lote guardado: 1000 registros
+2025-12-26 17:13:16,061 - INFO - Lote guardado: 1000 registros
+2025-12-26 17:13:16,336 - INFO - Lote guardado: 1000 registros
+2025-12-26 17:13:16,662 - INFO - Lote guardado: 1000 registros
+2025-12-26 17:13:17,003 - INFO - Lote guardado: 1000 registros
+2025-12-26 17:13:17,328 - INFO - Lote guardado: 1000 registros
+2025-12-26 17:13:17,653 - INFO - Último lote guardado: 881 registros
+2025-12-26 17:13:17,654 - INFO - 
+RESUMEN FINAL:
+2025-12-26 17:13:17,655 - INFO - Total registros procesados: 15957
+2025-12-26 17:13:17,655 - INFO - Registros migrados exitosamente: 15881
+2025-12-26 17:13:17,656 - INFO - Facturas no encontradas: 76
+2025-12-26 17:13:17,656 - INFO - Productos no encontrados: 0
+2025-12-26 17:13:17,657 - INFO - Decimales inválidos (RETIRADO): 0
+2025-12-26 17:13:17,657 - INFO - Fechas inválidas: 0
+2025-12-26 17:13:17,657 - INFO - Enteros inválidos (NUMERO): 0
+2025-12-26 17:13:17,658 - INFO - Otros errores: 0
+2025-12-26 17:13:17,658 - INFO - Tasa de éxito: 99.52%

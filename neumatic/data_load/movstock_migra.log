@@ -27786,3 +27786,10 @@
 2025-11-11 11:25:44,908 - ERROR - Error en registro 11456 (ID: 11461): UNIQUE constraint failed: factura.id_factura
 2025-11-11 11:25:44,988 - ERROR - Error en registro 11457 (ID: 11462): UNIQUE constraint failed: factura.id_factura
 2025-11-11 11:25:45,056 - ERROR - Error fatal en cargar_datos_movstock: UNIQUE constraint failed: factura.id_factura
+2025-12-26 17:12:55,785 - INFO - No se encontraron duplicados en el archivo DBF
+2025-12-26 17:12:56,272 - WARNING - No se encontró PuntoVenta para Sucursal ID=12 en registro 649
+2025-12-26 17:12:56,311 - WARNING - No se encontró PuntoVenta para Sucursal ID=12 en registro 712
+2025-12-26 17:12:56,351 - WARNING - No se encontró PuntoVenta para Sucursal ID=12 en registro 773
+2025-12-26 17:12:57,339 - INFO - Lote final guardado: 776 registros
+2025-12-26 17:12:57,339 - INFO - Migración completada. Registros: 776, Errores: 0
+2025-12-26 17:12:57,340 - INFO - Tiempo total: 1.56 segundos

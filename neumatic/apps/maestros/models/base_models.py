@@ -1198,10 +1198,14 @@ class Banco(ModeloBaseGenerico):
 		blank=True
 	)
 	codigo_banco = models.SmallIntegerField(
-		verbose_name="Código Banco"
+		verbose_name="Código Banco",
+		null=True,
+		blank=True
 	)
 	cuit_banco = models.IntegerField(
-		verbose_name="CUIT"
+		verbose_name="CUIT",
+		null=True,
+		blank=True
 	)
 	
 	class Meta:
