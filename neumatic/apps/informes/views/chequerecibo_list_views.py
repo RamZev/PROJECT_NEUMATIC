@@ -18,8 +18,8 @@ from .report_views_generics import *
 from apps.ventas.models.recibo_models import ChequeRecibo
 from apps.ventas.models.caja_models import Caja
 from ..forms.buscador_chequerecibo_forms import BuscadorChequeReciboForm
-from utils.utils import deserializar_datos, normalizar, raw_to_dict
-from utils.helpers.export_helpers import ExportHelper, PDFGenerator, add_row_table
+from utils.utils import deserializar_datos, normalizar, format_date, formato_argentino
+from utils.helpers.export_helpers import ExportHelper, PDFGenerator
 
 
 class ConfigViews:
@@ -65,16 +65,7 @@ class ConfigViews:
 	
 	#-- Establecer las columnas del reporte y sus atributos.
 	table_info = {
-		"codigo_comprobante_venta": {
-			"label": "",
-			"col_width_pdf": 30,
-			"pdf_paragraph": False,
-			"date_format": None,
-			"pdf": True,
-			"excel": True,
-			"csv": True
-		},
-		"numero_comprobante": {
+		"comprobante_completo": {
 			"label": "Comprobante",
 			"col_width_pdf": 60,
 			"pdf_paragraph": False,
@@ -85,14 +76,14 @@ class ConfigViews:
 		},
 		"codigo_banco": {
 			"label": "Cód. Bco.",
-			"col_width_pdf": 40,
+			"col_width_pdf": 60,
 			"pdf_paragraph": False,
 			"date_format": None,
 			"pdf": True,
 			"excel": True,
 			"csv": True,
 		},
-		"nombre_banco": {
+		"id_banco__nombre_banco": {
 			"label": "Nombre Banco",
 			"col_width_pdf": 180,
 			"pdf_paragraph": False,
@@ -146,6 +137,15 @@ class ConfigViews:
 			"excel": True,
 			"csv": True
 		},
+		"electronico": {
+			"label": "Electrónico",
+			"col_width_pdf": 30,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
 	}
 
 
@@ -166,11 +166,15 @@ class ChequeReciboInformeView(InformeFormView):
 	def obtener_queryset(self, cleaned_data):
 		caja = cleaned_data.get('caja', 0)
 		
+		caja_obj = Caja.objects.filter(numero_caja=caja).first()
+		
 		queryset = ChequeRecibo.objects.select_related(
 			'id_factura',
 			'id_banco',
 			'id_factura__id_comprobante_venta',
 			'id_user'
+		).filter(
+			id_factura__id_caja=caja_obj
 		).exclude(
 			id_factura__id_comprobante_venta__mult_caja=0
 		).annotate(
@@ -184,9 +188,9 @@ class ChequeReciboInformeView(InformeFormView):
 			#-- Crear el formato final.
 			comprobante_completo=Concat(
 				F('id_factura__id_comprobante_venta__codigo_comprobante_venta'),
-				Value(' '),
-				F('id_factura__letra_comprobante'),
-				Value(' '),
+				# Value('  '),
+				# F('id_factura__letra_comprobante'),
+				Value('  '),
 				Substr(F('numero_texto'), 1, 4),
 				Value('-'),
 				Substr(F('numero_texto'), 5, 8)
@@ -199,11 +203,12 @@ class ChequeReciboInformeView(InformeFormView):
 			'numero_cheque_recibo',
 			'fecha_cheque1',
 			'importe_cheque',
-			'comprobante_completo'  # ← Esto será como "FAC A 0102-00123456"
-		).order_by('id_cheque_recibo')
+			'comprobante_completo',  # ← Esto será como "FAC A 0102-00123456"
+			'electronico'
+		).order_by('electronico','comprobante_completo')
 		
 		return list(queryset)
-			
+		
 	def obtener_contexto_reporte(self, queryset, cleaned_data):
 		"""
 		Aquí se estructura el contexto para el reporte, agrupando los comprobantes,
@@ -231,13 +236,26 @@ class ChequeReciboInformeView(InformeFormView):
 		# **************************************************
 		
 		#-- Convertir QUERYSET a LISTA DE DICCIONARIOS al inicio (optimización clave).
-		queryset_list = [raw_to_dict(obj) for obj in queryset]
-		print(">> queryset_list:", queryset_list)
-		# **************************************************
+		# queryset_list = [raw_to_dict(obj) for obj in queryset]
 		
+		datos_estructurados = {}
+		total_general = 0.0
+		for item in queryset:
+			electronico = "electrónico" if item['electronico'] else "físico"
+			if electronico not in datos_estructurados:
+				datos_estructurados[electronico] = {
+					'cheques': [],
+					'subtotal': 0.0
+				}
+			datos_estructurados[electronico]['cheques'].append(item)
+			datos_estructurados[electronico]['subtotal'] += float(item['importe_cheque'] or 0.0)
+			total_general += float(item['importe_cheque'] or 0.0)
+		
+		# **************************************************
 		#-- Se retorna un contexto que será consumido tanto para la vista en pantalla como para la generación del PDF.
 		return {
-			"objetos": queryset_list,
+			"objetos": datos_estructurados,
+			"total_general": total_general,
 			"parametros_i": param_left,
 			"parametros_d": param_right,
 			'fecha_hora_reporte': fecha_hora_reporte,
@@ -313,28 +331,88 @@ class CustomPDFGenerator(PDFGenerator):
 
 def generar_pdf(contexto_reporte):
 	#-- Crear instancia del generador personalizado.
-	generator = CustomPDFGenerator(contexto_reporte, pagesize=portrait(A4), body_font_size=8)
+	generator = CustomPDFGenerator(contexto_reporte, pagesize=portrait(A4), body_font_size=7)
 	
-	#-- Extraer los campos de las columnas de la tabla (headers).
-	table_info = ConfigViews.table_info
-	fields = [ field for field in table_info if table_info[field]['pdf']]
+	#-- Construir datos de la tabla:
 	
-	#-- Extraer Títulos de las columnas de la tabla (headers).
-	headers_titles = [value['label'] for value in table_info.values() if value['pdf']]
+	#-- Obtener los títulos de las columnas (headers).
+	headers_titles = [value['label'] for value in ConfigViews.table_info.values() if value['pdf']]
+	headers_titles.insert(0, "")
 	
-	#-- Extraer Ancho de las columnas de la tabla.
-	col_widths = [value['col_width_pdf'] for value in table_info.values() if value['pdf']]
+	#-- Extrae los anchos de las columnas de la estructura ConfigViews.table_info.
+	col_widths = [value['col_width_pdf'] for value in ConfigViews.table_info.values() if value['pdf']]
+	col_widths.insert(0, 10)
 	
 	table_data = [headers_titles]
 	
 	#-- Estilos específicos adicionales iniciales de la tabla.
 	table_style_config = [
-		# ('ALIGN', (7,0), (-1,-1), 'RIGHT'),
+		('ALIGN', (2,0), (2,-1), 'RIGHT'),
+		('ALIGN', (4,0), (5,-1), 'RIGHT'),
+		('ALIGN', (7,0), (8,-1), 'RIGHT'),
 	]
 	
+	#-- Contador de filas (empezamos en 1 porque la 0 es el header).
+	current_row = 1
+	
 	#-- Agregar los datos a la tabla.
-	objetos = contexto_reporte.get("objetos", [])
-	add_row_table(table_data, objetos, fields, table_info, generator)
+	
+	for electronico, datos in contexto_reporte.get("objetos", []).items():
+		#-- Datos agrupado por tipo de cheque (electrónico/Físico).
+		table_data.append([
+			f"Cheques Físicos" if electronico == 'físico' else f"Cheques Electrónicos",
+			"", "", "", "", "", "", "", ""
+		])
+		
+		#-- Aplicar estilos a la fila de agrupación (fila actual).
+		table_style_config.extend([
+			('SPAN', (0,current_row), (-1,current_row)),
+			('FONTNAME', (0,current_row), (-1,current_row), 'Helvetica-Bold')
+		])
+		
+		current_row += 1
+		
+		#-- Agregar filas del detalle.
+		for cheque in datos['cheques']:
+			table_data.append([
+				'',
+				cheque['comprobante_completo'],
+				cheque['codigo_banco'],
+				Paragraph(str(cheque['id_banco__nombre_banco']), generator.styles['CellStyle']),
+				cheque['sucursal'],
+				cheque['codigo_postal'],
+				format_date(cheque['fecha_cheque1']),
+				cheque['numero_cheque_recibo'],
+				formato_argentino(cheque['importe_cheque']),
+			])
+			current_row += 1
+		
+		#-- Fila Total por tipo de cheque.
+		table_data.append(["", "", "", "", "", "", "", f"Total Cheques {electronico.capitalize()}s:", formato_argentino(datos['subtotal'])])
+		
+		#-- Aplicar estilos a la fila de total (fila actual).
+		table_style_config.extend([
+			('FONTNAME', (0,current_row), (-1,current_row), 'Helvetica-Bold'),
+			# ('LINEABOVE', (0,current_row), (-1,current_row), 0.5, colors.black),
+		])
+		
+		current_row += 1
+		
+		#-- Fila divisoria.
+		table_data.append(["", "", "", "", "", "", "", ""])
+		table_style_config.append(
+			('LINEBELOW', (0,current_row), (-1,current_row), 0.5, colors.gray),
+		)
+		current_row += 1
+	
+	#-- Fila Total General.
+	table_data.append(["", "", "", "", "", "", "", "Total General:", formato_argentino(contexto_reporte.get('total_general'))])
+	
+	#-- Aplicar estilos a la fila de total (fila actual).
+	table_style_config.extend([
+		('FONTNAME', (0,current_row), (-1,current_row), 'Helvetica-Bold'),
+		# ('LINEABOVE', (0,current_row), (-1,current_row), 0.5, colors.black),
+	])
 	
 	return generator.generate(table_data, col_widths, table_style_config)		
 

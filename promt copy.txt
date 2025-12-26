@@ -230,6 +230,47 @@ FROM caja_detalle
 	INNER JOIN forma_pago on caja_detalle.id_forma_pago_id = forma_pago.id_forma_pago
 order by factura.compro, factura.letra_comprobante, factura.numero_comprobante
 
+*******************************************************
+Consultas control: Cheques Recibidos en Caja
+
+	-- 1er. Reporte: Cheques recibidos en Caja (Físicos/Electrónicos).
+	--CREATE VIEW vlCajaCheques AS
+	SELECT 
+		cr.codigo_banco,
+		b.nombre_banco,
+		cr.codigo_postal,
+		cr.numero_cheque_recibo,
+		cr.fecha_cheque1,
+		cr.importe_cheque,
+		cv.codigo_comprobante_venta,
+		f.numero_comprobante,
+		f.id_caja_id
+	FROM cheque_recibo cr
+		INNER JOIN factura f ON cr.id_factura_id = f.id_factura 
+		INNER JOIN banco b ON cr.id_banco_id = b.id_banco
+		INNER JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
+		INNER JOIN caja c ON f.id_caja_id = c.id_caja
+	WHERE 
+		cv.mult_caja <> 0
+		AND c.numero_caja = 1001986
+		
+
+	SELECT cr.id_factura_id, cr.electronico, f.numero_comprobante, f.id_caja_id, c.numero_caja
+	FROM cheque_recibo cr
+		JOIN factura f ON cr.id_factura_id = f.id_factura
+		JOIN caja c ON f.id_caja_id = c.id_caja
+	WHERE cr.id_factura_id is not NULL
+
+Cajas ejemplos:
+10000616 ==> T:3 E:1
+10000241 ==> T:5 E:1
+ 8000786 ==> T:6 E:1
+ 8000786 ==> T:6 E:1
+ 8000764 ==> T:19 E:4
+ 1001848 ==> T:9 E:44 *
+ 1001815 ==> T:12 E:32 *
+
+*******************************************************
 
 --------------------------------------------------------
 Para los reportes de Caja se necesita:
@@ -240,6 +281,20 @@ Para los reportes de Caja se necesita:
 - Asociar la caja a los comprobantes.
 - Agregar campo booleano en cheque_recibo para indicar si el cheque es Electrónico.
 --------------------------------------------------------
+
+
+##################################################################################################################################
+-- 6to. Reporte: Detalle de Cupones/Detalle de Tarjetas Recibidas
+--CREATE VIEW vlCajaTarjetas AS 
+SELECT tarjeta_recibo.id_tarjeta_id, tarjeta.nombre_tarjeta, tarjeta_recibo.id_factura_id,
+	factura.compro, factura.letra_comprobante, factura.numero_comprobante, factura.fecha_comprobante,
+	tarjeta_recibo.cupon, tarjeta_recibo.lote, tarjeta_recibo.cuotas,
+	tarjeta_recibo.importe_tarjeta
+FROM tarjeta_recibo 
+	INNER JOIN tarjeta ON tarjeta_recibo.id_tarjeta_id = tarjeta.id_tarjeta
+	INNER JOIN factura ON tarjeta_recibo.id_factura_id = factura.id_factura 
+ORDER BY tarjeta_recibo.id_tarjeta_id
+
 
 
 ##################################################################################################################################

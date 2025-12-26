@@ -819,6 +819,7 @@ def add_row_table(table_data, objetos, fields, table_info, generator):
 		row = []
 		
 		for field in fields:
+			print("Procesando campo:", field)
 			value = obj[field]
 			field_config = table_info.get(field)
 			
