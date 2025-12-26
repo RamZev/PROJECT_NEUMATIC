@@ -97,6 +97,9 @@ from apps.informes.views.vlfichaseguimientostock_list_views import *
 from apps.informes.views.vldetallecompraproveedor_list_views import *
 from apps.informes.views.vlcompraingresada_list_views import *
 
+#- Lote 7 (Caja):
+from apps.informes.views.chequerecibo_list_views import *
+
 
 #-- Otras rutas.
 from apps.maestros.views.consulta_views_maestros import filtrar_localidad
@@ -1066,6 +1069,20 @@ urlpatterns = [
 		 name="vlcompraingresada_vista_excel"),
 	path("vlcompraingresada/vista-csv/", vlcompraingresada_vista_csv, 
 		 name="vlcompraingresada_vista_csv"),
+	
+	#-- 7mo. Lote (Caja).
+	
+	#-- Detalle de Cheques.
+	path('chequerecibo_informe/', ChequeReciboInformeView.as_view(), 
+		 name='chequerecibo_informe_list'),
+	path('chequerecibo/vista-preliminar/', chequerecibo_vista_pantalla, 
+		 name="chequerecibo_vista_pantalla"),
+	path("chequerecibo/vista-pdf/", chequerecibo_vista_pdf, 
+		 name="chequerecibo_vista_pdf"),
+	path("chequerecibo/vista-excel/", chequerecibo_vista_excel, 
+		 name="chequerecibo_vista_excel"),
+	path("chequerecibo/vista-csv/", chequerecibo_vista_csv, 
+		 name="chequerecibo_vista_csv"),
 	
 	
 	
