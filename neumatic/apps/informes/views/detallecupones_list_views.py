@@ -1,4 +1,4 @@
-# neumatic\apps\informes\views\chequerecibo_list_views.py
+# neumatic\apps\informes\views\detallecupones_list_views.py
 
 from django.shortcuts import render
 from django.http import HttpResponse
@@ -14,9 +14,9 @@ from reportlab.lib.pagesizes import A4, landscape, portrait
 from reportlab.platypus import Paragraph
 
 from .report_views_generics import *
-from apps.ventas.models.recibo_models import ChequeRecibo
+from apps.ventas.models.recibo_models import TarjetaRecibo
 from apps.ventas.models.caja_models import Caja
-from ..forms.buscador_chequerecibo_forms import BuscadorChequeReciboForm
+from ..forms.buscador_detallecupones_forms import BuscadorDetalleCuponesForm
 from utils.utils import deserializar_datos, normalizar, format_date, formato_argentino
 from utils.helpers.export_helpers import ExportHelper, PDFGenerator
 
@@ -24,13 +24,13 @@ from utils.helpers.export_helpers import ExportHelper, PDFGenerator
 class ConfigViews:
 	
 	#-- Título del reporte.
-	report_title = "Detalle de Cheques"
+	report_title = "Detalle de Cupones de Tarjetas"
 	
 	#-- Modelo.
-	model = ChequeRecibo
+	model = TarjetaRecibo
 	
 	#-- Formulario asociado al modelo.
-	form_class = BuscadorChequeReciboForm
+	form_class = BuscadorDetalleCuponesForm
 	
 	#-- Aplicación asociada al modelo.
 	app_label = "informes"
@@ -64,52 +64,25 @@ class ConfigViews:
 	
 	#-- Establecer las columnas del reporte y sus atributos.
 	table_info = {
-		"comprobante_completo": {
-			"label": "Comprobante",
+		"id_tarjeta": {
+			"label": "Cód. Tarjeta",
 			"col_width_pdf": 60,
 			"pdf_paragraph": False,
 			"date_format": None,
-			"pdf": True,
-			"excel": True,
-			"csv": True
-		},
-		"codigo_banco": {
-			"label": "Cód. Bco.",
-			"col_width_pdf": 60,
-			"pdf_paragraph": False,
-			"date_format": None,
-			"pdf": True,
+			"pdf": False,
 			"excel": True,
 			"csv": True,
 		},
-		"id_banco__nombre_banco": {
-			"label": "Nombre Banco",
-			"col_width_pdf": 180,
+		"id_tarjeta__nombre_tarjeta": {
+			"label": "Tarjeta",
+			"col_width_pdf": 70,
 			"pdf_paragraph": False,
 			"date_format": None,
-			"pdf": True,
+			"pdf": False,
 			"excel": True,
-			"csv": True
+			"csv": True,
 		},
-		"sucursal": {
-			"label": "Suc.",
-			"col_width_pdf": 30,
-			"pdf_paragraph": False,
-			"date_format": None,
-			"pdf": True,
-			"excel": True,
-			"csv": True
-		},
-		"codigo_postal": {
-			"label": "C. P.",
-			"col_width_pdf": 30,
-			"pdf_paragraph": False,
-			"date_format": None,
-			"pdf": True,
-			"excel": True,
-			"csv": True
-		},
-		"fecha_cheque1": {
+		"id_factura__fecha_comprobante": {
 			"label": "Fecha",
 			"col_width_pdf": 50,
 			"pdf_paragraph": False,
@@ -118,37 +91,55 @@ class ConfigViews:
 			"excel": True,
 			"csv": True
 		},
-		"numero_cheque_recibo": {
-			"label": "Número",
-			"col_width_pdf": 60,
+		"cupon": {
+			"label": "Cupón",
+			"col_width_pdf": 50,
 			"pdf_paragraph": False,
 			"date_format": None,
 			"pdf": True,
 			"excel": True,
 			"csv": True
 		},
-		"importe_cheque": {
+		"lote": {
+			"label": "Lote",
+			"col_width_pdf": 50,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
+		"cuotas": {
+			"label": "Cuotas",
+			"col_width_pdf": 50,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
+		"comprobante_completo": {
+			"label": "Comprobante",
+			"col_width_pdf": 80,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
+		"importe_tarjeta": {
 			"label": "Importe",
-			"col_width_pdf": 60,
+			"col_width_pdf": 80,
 			"pdf_paragraph": False,
 			"date_format": None,
 			"pdf": True,
-			"excel": True,
-			"csv": True
-		},
-		"electronico": {
-			"label": "Electrónico",
-			"col_width_pdf": 30,
-			"pdf_paragraph": False,
-			"date_format": None,
-			"pdf": False,
 			"excel": True,
 			"csv": True
 		},
 	}
 
 
-class ChequeReciboInformeView(InformeFormView):
+class TarjetaReciboInformeView(InformeFormView):
 	config = ConfigViews  #-- Ahora la configuración estará disponible en self.config.
 	form_class = ConfigViews.form_class
 	template_name = ConfigViews.template_list
@@ -167,15 +158,13 @@ class ChequeReciboInformeView(InformeFormView):
 		
 		caja_obj = Caja.objects.filter(numero_caja=caja).first()
 		
-		queryset = ChequeRecibo.objects.select_related(
+		queryset = TarjetaRecibo.objects.select_related(
+			'id_tarjeta',
 			'id_factura',
-			'id_banco',
-			'id_factura__id_comprobante_venta',
+			'id_factura__id_caja',
 			'id_user'
 		).filter(
 			id_factura__id_caja=caja_obj
-		).exclude(
-			id_factura__id_comprobante_venta__mult_caja=0
 		).annotate(
 			#-- Convertir número a texto con ceros.
 			numero_texto=LPad(
@@ -193,16 +182,15 @@ class ChequeReciboInformeView(InformeFormView):
 				Substr(F('numero_texto'), 5, 8)
 			)
 		).values(
-			'codigo_banco',
-			'id_banco__nombre_banco',
-			'sucursal',
-			'codigo_postal',
-			'numero_cheque_recibo',
-			'fecha_cheque1',
-			'importe_cheque',
+			'id_factura__fecha_comprobante',
+			'cupon',
+			'lote',
+			'cuotas',
 			'comprobante_completo',
-			'electronico'
-		).order_by('electronico','comprobante_completo')
+			'importe_tarjeta',
+			'id_tarjeta',
+			'id_tarjeta__nombre_tarjeta',
+		).order_by('id_tarjeta','comprobante_completo')
 		
 		return list(queryset)
 		
@@ -232,21 +220,18 @@ class ChequeReciboInformeView(InformeFormView):
 		
 		# **************************************************
 		
-		#-- Convertir QUERYSET a LISTA DE DICCIONARIOS al inicio (optimización clave).
-		# queryset_list = [raw_to_dict(obj) for obj in queryset]
-		
 		datos_estructurados = {}
 		total_general = 0.0
 		for item in queryset:
-			electronico = "electrónico" if item['electronico'] else "físico"
-			if electronico not in datos_estructurados:
-				datos_estructurados[electronico] = {
-					'cheques': [],
+			tarjeta = item['id_tarjeta__nombre_tarjeta']
+			if tarjeta not in datos_estructurados:
+				datos_estructurados[tarjeta] = {
+					'cupones': [],
 					'subtotal': 0.0
 				}
-			datos_estructurados[electronico]['cheques'].append(item)
-			datos_estructurados[electronico]['subtotal'] += float(item['importe_cheque'] or 0.0)
-			total_general += float(item['importe_cheque'] or 0.0)
+			datos_estructurados[tarjeta]['cupones'].append(item)
+			datos_estructurados[tarjeta]['subtotal'] += float(item['importe_tarjeta'] or 0.0)
+			total_general += float(item['importe_tarjeta'] or 0.0)
 		
 		# **************************************************
 		#-- Se retorna un contexto que será consumido tanto para la vista en pantalla como para la generación del PDF.
@@ -270,7 +255,7 @@ class ChequeReciboInformeView(InformeFormView):
 		return context
 
 
-def chequerecibo_vista_pantalla(request):
+def tarjetarecibo_vista_pantalla(request):
 	#-- Obtener el token de la querystring.
 	token = request.GET.get("token")
 	
@@ -287,7 +272,7 @@ def chequerecibo_vista_pantalla(request):
 	return render(request, ConfigViews.reporte_pantalla, contexto_reporte)
 
 
-def chequerecibo_vista_pdf(request):
+def tarjetarecibo_vista_pdf(request):
 	#-- Obtener el token de la querystring.
 	token = request.GET.get("token")
 	
@@ -345,9 +330,8 @@ def generar_pdf(contexto_reporte):
 	
 	#-- Estilos específicos adicionales iniciales de la tabla.
 	table_style_config = [
-		('ALIGN', (2,0), (2,-1), 'RIGHT'),
-		('ALIGN', (4,0), (5,-1), 'RIGHT'),
-		('ALIGN', (7,0), (8,-1), 'RIGHT'),
+		('ALIGN', (2,0), (4,-1), 'RIGHT'),
+		('ALIGN', (6,0), (6,-1), 'RIGHT'),
 	]
 	
 	#-- Contador de filas (empezamos en 1 porque la 0 es el header).
@@ -355,11 +339,11 @@ def generar_pdf(contexto_reporte):
 	
 	#-- Agregar los datos a la tabla.
 	
-	for electronico, datos in contexto_reporte.get("objetos", []).items():
-		#-- Datos agrupado por tipo de cheque (electrónico/Físico).
+	for tarjeta, datos in contexto_reporte.get("objetos", []).items():
+		#-- Datos agrupado por Tarjeta.
 		table_data.append([
-			f"Cheques Físicos" if electronico == 'físico' else f"Cheques Electrónicos",
-			"", "", "", "", "", "", "", ""
+			f"Tarjeta: {tarjeta.upper()}",
+			"", "", "", "", "", ""
 		])
 		
 		#-- Aplicar estilos a la fila de agrupación (fila actual).
@@ -371,51 +355,53 @@ def generar_pdf(contexto_reporte):
 		current_row += 1
 		
 		#-- Agregar filas del detalle.
-		for cheque in datos['cheques']:
+		for cupon in datos['cupones']:
 			table_data.append([
 				'',
-				cheque['comprobante_completo'],
-				cheque['codigo_banco'],
-				Paragraph(str(cheque['id_banco__nombre_banco']), generator.styles['CellStyle']),
-				cheque['sucursal'],
-				cheque['codigo_postal'],
-				format_date(cheque['fecha_cheque1']),
-				cheque['numero_cheque_recibo'],
-				formato_argentino(cheque['importe_cheque']),
+				format_date(cupon['id_factura__fecha_comprobante']),
+				cupon['cupon'],
+				cupon['lote'],
+				cupon['cuotas'],
+				cupon['comprobante_completo'],
+				formato_argentino(cupon['importe_tarjeta']),
 			])
 			current_row += 1
 		
-		#-- Fila Total por tipo de cheque.
-		table_data.append(["", "", "", "", "", "", "", f"Total Cheques {electronico.capitalize()}s:", formato_argentino(datos['subtotal'])])
+		#-- Fila Total por Tarjeta.
+		table_data.append([f"Total Tarjeta {tarjeta.upper()}:", "", "", "", "", "", formato_argentino(datos['subtotal'])])
 		
 		#-- Aplicar estilos a la fila de total (fila actual).
 		table_style_config.extend([
 			('FONTNAME', (0,current_row), (-1,current_row), 'Helvetica-Bold'),
+			('SPAN', (0,current_row), (-2,current_row)),
+			('ALIGN', (0,current_row), (-1,current_row), 'RIGHT'),
 			# ('LINEABOVE', (0,current_row), (-1,current_row), 0.5, colors.black),
 		])
 		
 		current_row += 1
 		
 		#-- Fila divisoria.
-		table_data.append(["", "", "", "", "", "", "", ""])
+		table_data.append(["", "", "", "", "", "", ""])
 		table_style_config.append(
 			('LINEBELOW', (0,current_row), (-1,current_row), 0.5, colors.gray),
 		)
 		current_row += 1
 	
 	#-- Fila Total General.
-	table_data.append(["", "", "", "", "", "", "", "Total General:", formato_argentino(contexto_reporte.get('total_general'))])
+	table_data.append(["Total General:", "", "", "", "", "",  formato_argentino(contexto_reporte.get('total_general'))])
 	
 	#-- Aplicar estilos a la fila de total (fila actual).
 	table_style_config.extend([
 		('FONTNAME', (0,current_row), (-1,current_row), 'Helvetica-Bold'),
+		('SPAN', (0,current_row), (-2,current_row)),
+		('ALIGN', (0,current_row), (-1,current_row), 'RIGHT'),
 		# ('LINEABOVE', (0,current_row), (-1,current_row), 0.5, colors.black),
 	])
 	
-	return generator.generate(table_data, col_widths, table_style_config)		
+	return generator.generate(table_data, col_widths, table_style_config)
 
 
-def chequerecibo_vista_excel(request):
+def tarjetarecibo_vista_excel(request):
 	token = request.GET.get("token")
 	if not token:
 		return HttpResponse("Token no proporcionado", status=400)
@@ -429,7 +415,7 @@ def chequerecibo_vista_excel(request):
 	# ---------------------------------------------
 	
 	#-- Instanciar la vista y obtener el queryset.
-	view_instance = ChequeReciboInformeView()
+	view_instance = TarjetaReciboInformeView()
 	view_instance.request = request
 	queryset = view_instance.obtener_queryset(cleaned_data)
 	
@@ -453,7 +439,7 @@ def chequerecibo_vista_excel(request):
 	return response
 
 
-def chequerecibo_vista_csv(request):
+def tarjetarecibo_vista_csv(request):
 	token = request.GET.get("token")
 	if not token:
 		return HttpResponse("Token no proporcionado", status=400)
@@ -466,7 +452,7 @@ def chequerecibo_vista_csv(request):
 	cleaned_data = data["cleaned_data"]
 	
 	#-- Instanciar la vista para reejecutar la consulta y obtener el queryset.
-	view_instance = ChequeReciboInformeView()
+	view_instance = TarjetaReciboInformeView()
 	view_instance.request = request
 	queryset = view_instance.obtener_queryset(cleaned_data)
 	

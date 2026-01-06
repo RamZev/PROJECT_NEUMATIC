@@ -1,4 +1,4 @@
-# neumatic\apps\informes\views\chequerecibo_list_views.py
+# neumatic\apps\informes\views\egresoscaja_list_views.py
 
 from django.shortcuts import render
 from django.http import HttpResponse
@@ -14,9 +14,8 @@ from reportlab.lib.pagesizes import A4, landscape, portrait
 from reportlab.platypus import Paragraph
 
 from .report_views_generics import *
-from apps.ventas.models.recibo_models import ChequeRecibo
-from apps.ventas.models.caja_models import Caja
-from ..forms.buscador_chequerecibo_forms import BuscadorChequeReciboForm
+from apps.ventas.models.caja_models import CajaDetalle
+from ..forms.buscador_egresoscaja_forms import BuscadorEgresosCajaForm
 from utils.utils import deserializar_datos, normalizar, format_date, formato_argentino
 from utils.helpers.export_helpers import ExportHelper, PDFGenerator
 
@@ -24,19 +23,20 @@ from utils.helpers.export_helpers import ExportHelper, PDFGenerator
 class ConfigViews:
 	
 	#-- Título del reporte.
-	report_title = "Detalle de Cheques"
+	report_title = "Egresos de Caja"
 	
 	#-- Modelo.
-	model = ChequeRecibo
+	# model = CajaDetalle
 	
 	#-- Formulario asociado al modelo.
-	form_class = BuscadorChequeReciboForm
+	form_class = BuscadorEgresosCajaForm
 	
 	#-- Aplicación asociada al modelo.
 	app_label = "informes"
 	
 	#-- Nombre del modelo en minúsculas.
-	model_string = model.__name__.lower()
+	# model_string = model.__name__.lower()
+	model_string = "egresoscaja"
 	
 	#-- Plantilla base.
 	template_list = f'{app_label}/maestro_informe.html'
@@ -64,17 +64,17 @@ class ConfigViews:
 	
 	#-- Establecer las columnas del reporte y sus atributos.
 	table_info = {
-		"comprobante_completo": {
-			"label": "Comprobante",
-			"col_width_pdf": 60,
+		"id_caja": {
+			"label": "ID Caja",
+			"col_width_pdf": 0,
 			"pdf_paragraph": False,
 			"date_format": None,
-			"pdf": True,
+			"pdf": False,
 			"excel": True,
-			"csv": True
+			"csv": True,
 		},
-		"codigo_banco": {
-			"label": "Cód. Bco.",
+		"numero_caja_formateado": {
+			"label": "Número Caja",
 			"col_width_pdf": 60,
 			"pdf_paragraph": False,
 			"date_format": None,
@@ -82,35 +82,8 @@ class ConfigViews:
 			"excel": True,
 			"csv": True,
 		},
-		"id_banco__nombre_banco": {
-			"label": "Nombre Banco",
-			"col_width_pdf": 180,
-			"pdf_paragraph": False,
-			"date_format": None,
-			"pdf": True,
-			"excel": True,
-			"csv": True
-		},
-		"sucursal": {
-			"label": "Suc.",
-			"col_width_pdf": 30,
-			"pdf_paragraph": False,
-			"date_format": None,
-			"pdf": True,
-			"excel": True,
-			"csv": True
-		},
-		"codigo_postal": {
-			"label": "C. P.",
-			"col_width_pdf": 30,
-			"pdf_paragraph": False,
-			"date_format": None,
-			"pdf": True,
-			"excel": True,
-			"csv": True
-		},
-		"fecha_cheque1": {
-			"label": "Fecha",
+		"id_caja__fecha_caja": {
+			"label": "Fecha Caja",
 			"col_width_pdf": 50,
 			"pdf_paragraph": False,
 			"date_format": '%d/%m/%Y',
@@ -118,27 +91,36 @@ class ConfigViews:
 			"excel": True,
 			"csv": True
 		},
-		"numero_cheque_recibo": {
-			"label": "Número",
-			"col_width_pdf": 60,
-			"pdf_paragraph": False,
+		"observacion": {
+			"label": "Detalle",
+			"col_width_pdf": 200,
+			"pdf_paragraph": True,
 			"date_format": None,
 			"pdf": True,
 			"excel": True,
 			"csv": True
 		},
-		"importe_cheque": {
+		"importe": {
 			"label": "Importe",
-			"col_width_pdf": 60,
+			"col_width_pdf": 80,
 			"pdf_paragraph": False,
 			"date_format": None,
 			"pdf": True,
 			"excel": True,
 			"csv": True
 		},
-		"electronico": {
-			"label": "Electrónico",
-			"col_width_pdf": 30,
+		"id_caja__id_sucursal": {
+			"label": "ID Suc.",
+			"col_width_pdf": 0,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+		"id_caja__id_sucursal__nombre_sucursal": {
+			"label": "Sucursal",
+			"col_width_pdf": 0,
 			"pdf_paragraph": False,
 			"date_format": None,
 			"pdf": False,
@@ -148,13 +130,14 @@ class ConfigViews:
 	}
 
 
-class ChequeReciboInformeView(InformeFormView):
+class EgresosCajaInformeView(InformeFormView):
 	config = ConfigViews  #-- Ahora la configuración estará disponible en self.config.
 	form_class = ConfigViews.form_class
 	template_name = ConfigViews.template_list
 	
 	extra_context = {
-		"master_title": f'Informes - {ConfigViews.model._meta.verbose_name_plural}',
+		# "master_title": f'Informes - {ConfigViews.model._meta.verbose_name_plural}',
+		"master_title": f'Informes - {ConfigViews.report_title}',
 		"home_view_name": ConfigViews.home_view_name,
 		"buscador_template": f"{ConfigViews.app_label}/buscador_{ConfigViews.model_string}.html",
 		"js_file": ConfigViews.js_file,
@@ -163,46 +146,41 @@ class ChequeReciboInformeView(InformeFormView):
 	}
 	
 	def obtener_queryset(self, cleaned_data):
-		caja = cleaned_data.get('caja', 0)
+		sucursal = cleaned_data.get("sucursal")
+		fecha_desde = cleaned_data.get("fecha_desde")
+		fecha_hasta = cleaned_data.get("fecha_hasta")
 		
-		caja_obj = Caja.objects.filter(numero_caja=caja).first()
-		
-		queryset = ChequeRecibo.objects.select_related(
-			'id_factura',
-			'id_banco',
-			'id_factura__id_comprobante_venta',
-			'id_user'
+		#-- Iniciar el queryset.
+		queryset = CajaDetalle.objects.select_related(
+			'id_caja'
 		).filter(
-			id_factura__id_caja=caja_obj
-		).exclude(
-			id_factura__id_comprobante_venta__mult_caja=0
+			#--Aplicar filtros obligatorios.
+			tipo_movimiento=2,
+			id_caja__id_sucursal=sucursal,
+			id_caja__fecha_caja__range=(fecha_desde, fecha_hasta)
 		).annotate(
 			#-- Convertir número a texto con ceros.
 			numero_texto=LPad(
-				Cast(F('id_factura__numero_comprobante'), CharField()),
-				12,
+				Cast(F('id_caja__numero_caja'), CharField()),
+				8,
 				Value('0')
 			)
 		).annotate(
 			#-- Crear el formato final.
-			comprobante_completo=Concat(
-				F('id_factura__id_comprobante_venta__codigo_comprobante_venta'),
-				Value('  '),
-				Substr(F('numero_texto'), 1, 4),
+			numero_caja_formateado=Concat(
+				Substr(F('numero_texto'), 1, 2),
 				Value('-'),
-				Substr(F('numero_texto'), 5, 8)
+				Substr(F('numero_texto'), 3, 8)
 			)
 		).values(
-			'codigo_banco',
-			'id_banco__nombre_banco',
-			'sucursal',
-			'codigo_postal',
-			'numero_cheque_recibo',
-			'fecha_cheque1',
-			'importe_cheque',
-			'comprobante_completo',
-			'electronico'
-		).order_by('electronico','comprobante_completo')
+			'id_caja',
+			'numero_caja_formateado',
+			'id_caja__fecha_caja',
+			'observacion',
+			'importe',
+			'id_caja__id_sucursal',
+			'id_caja__id_sucursal__nombre_sucursal',
+		).order_by('id_caja__fecha_caja', 'numero_caja_formateado')
 		
 		return list(queryset)
 		
@@ -213,11 +191,9 @@ class ChequeReciboInformeView(InformeFormView):
 		"""
 		
 		#-- Parámetros del listado.
-		caja = cleaned_data.get('caja', 0)
-		fecha_caja = Caja.objects.filter(numero_caja=caja).values_list('fecha_caja', flat=True).first()
-		datos_usuario_caja = Caja.objects.filter(numero_caja=caja).values('id_user__username', 'id_user__first_name', 'id_user__last_name').first()
-		
-		usuario_caja = f"{datos_usuario_caja['id_user__first_name']} {datos_usuario_caja['id_user__last_name']}" if datos_usuario_caja else datos_usuario_caja['id_user__username']
+		sucursal = cleaned_data.get("sucursal")
+		fecha_desde = cleaned_data.get("fecha_desde")
+		fecha_hasta = cleaned_data.get("fecha_hasta")
 		
 		fecha_hora_reporte = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
 		
@@ -225,28 +201,26 @@ class ChequeReciboInformeView(InformeFormView):
 		
 		param_left = {}
 		param_right = {
-			"Usuario": usuario_caja,
-			"Número de Caja": f"{str(caja).zfill(8)[:2]}-{str(caja).zfill(8)[2:]}",
-			"Fecha de Caja": fecha_caja.strftime("%d/%m/%Y") if fecha_caja else "N/A",
+			"Sucursal": sucursal.nombre_sucursal,
+			"Fecha desde": fecha_desde.strftime("%d/%m/%Y"),
+			"Fecha hasta": fecha_hasta.strftime("%d/%m/%Y"),
 		}
 		
 		# **************************************************
 		
-		#-- Convertir QUERYSET a LISTA DE DICCIONARIOS al inicio (optimización clave).
-		# queryset_list = [raw_to_dict(obj) for obj in queryset]
-		
 		datos_estructurados = {}
 		total_general = 0.0
 		for item in queryset:
-			electronico = "electrónico" if item['electronico'] else "físico"
-			if electronico not in datos_estructurados:
-				datos_estructurados[electronico] = {
-					'cheques': [],
+			# caja = item['id_caja__numero_caja']
+			caja = item['numero_caja_formateado']
+			if caja not in datos_estructurados:
+				datos_estructurados[caja] = {
+					'egresos': [],
 					'subtotal': 0.0
 				}
-			datos_estructurados[electronico]['cheques'].append(item)
-			datos_estructurados[electronico]['subtotal'] += float(item['importe_cheque'] or 0.0)
-			total_general += float(item['importe_cheque'] or 0.0)
+			datos_estructurados[caja]['egresos'].append(item)
+			datos_estructurados[caja]['subtotal'] += float(item['importe'] or 0.0)
+			total_general += float(item['importe'] or 0.0)
 		
 		# **************************************************
 		#-- Se retorna un contexto que será consumido tanto para la vista en pantalla como para la generación del PDF.
@@ -270,7 +244,7 @@ class ChequeReciboInformeView(InformeFormView):
 		return context
 
 
-def chequerecibo_vista_pantalla(request):
+def egresoscaja_vista_pantalla(request):
 	#-- Obtener el token de la querystring.
 	token = request.GET.get("token")
 	
@@ -287,7 +261,7 @@ def chequerecibo_vista_pantalla(request):
 	return render(request, ConfigViews.reporte_pantalla, contexto_reporte)
 
 
-def chequerecibo_vista_pdf(request):
+def egresoscaja_vista_pdf(request):
 	#-- Obtener el token de la querystring.
 	token = request.GET.get("token")
 	
@@ -335,19 +309,15 @@ def generar_pdf(contexto_reporte):
 	
 	#-- Obtener los títulos de las columnas (headers).
 	headers_titles = [value['label'] for value in ConfigViews.table_info.values() if value['pdf']]
-	headers_titles.insert(0, "")
 	
 	#-- Extrae los anchos de las columnas de la estructura ConfigViews.table_info.
 	col_widths = [value['col_width_pdf'] for value in ConfigViews.table_info.values() if value['pdf']]
-	col_widths.insert(0, 10)
 	
 	table_data = [headers_titles]
 	
 	#-- Estilos específicos adicionales iniciales de la tabla.
 	table_style_config = [
-		('ALIGN', (2,0), (2,-1), 'RIGHT'),
-		('ALIGN', (4,0), (5,-1), 'RIGHT'),
-		('ALIGN', (7,0), (8,-1), 'RIGHT'),
+		('ALIGN', (3,0), (3,-1), 'RIGHT'),
 	]
 	
 	#-- Contador de filas (empezamos en 1 porque la 0 es el header).
@@ -355,67 +325,64 @@ def generar_pdf(contexto_reporte):
 	
 	#-- Agregar los datos a la tabla.
 	
-	for electronico, datos in contexto_reporte.get("objetos", []).items():
-		#-- Datos agrupado por tipo de cheque (electrónico/Físico).
-		table_data.append([
-			f"Cheques Físicos" if electronico == 'físico' else f"Cheques Electrónicos",
-			"", "", "", "", "", "", "", ""
-		])
-		
-		#-- Aplicar estilos a la fila de agrupación (fila actual).
-		table_style_config.extend([
-			('SPAN', (0,current_row), (-1,current_row)),
-			('FONTNAME', (0,current_row), (-1,current_row), 'Helvetica-Bold')
-		])
-		
-		current_row += 1
+	for datos in contexto_reporte.get("objetos", []).values():
 		
 		#-- Agregar filas del detalle.
-		for cheque in datos['cheques']:
-			table_data.append([
-				'',
-				cheque['comprobante_completo'],
-				cheque['codigo_banco'],
-				Paragraph(str(cheque['id_banco__nombre_banco']), generator.styles['CellStyle']),
-				cheque['sucursal'],
-				cheque['codigo_postal'],
-				format_date(cheque['fecha_cheque1']),
-				cheque['numero_cheque_recibo'],
-				formato_argentino(cheque['importe_cheque']),
-			])
+		egreso_anterior = None
+		
+		for egreso in datos['egresos']:
+			if egreso['numero_caja_formateado'] != egreso_anterior:
+				table_data.append([
+					egreso['numero_caja_formateado'],
+					format_date(egreso['id_caja__fecha_caja']),
+					Paragraph(str(egreso['observacion']), generator.styles['CellStyle']),
+					formato_argentino(egreso['importe']),
+				])
+			else:
+				table_data.append([
+					'',
+					'',
+					Paragraph(str(egreso['observacion']), generator.styles['CellStyle']),
+					formato_argentino(egreso['importe']),
+				])
+			egreso_anterior = egreso['numero_caja_formateado']
 			current_row += 1
 		
-		#-- Fila Total por tipo de cheque.
-		table_data.append(["", "", "", "", "", "", "", f"Total Cheques {electronico.capitalize()}s:", formato_argentino(datos['subtotal'])])
+		#-- Fila Total por Caja.
+		table_data.append([f"Total a la Fecha:", "", "", formato_argentino(datos['subtotal'])])
 		
 		#-- Aplicar estilos a la fila de total (fila actual).
 		table_style_config.extend([
 			('FONTNAME', (0,current_row), (-1,current_row), 'Helvetica-Bold'),
+			('SPAN', (0,current_row), (-2,current_row)),
+			('ALIGN', (0,current_row), (-1,current_row), 'RIGHT'),
 			# ('LINEABOVE', (0,current_row), (-1,current_row), 0.5, colors.black),
 		])
 		
 		current_row += 1
 		
 		#-- Fila divisoria.
-		table_data.append(["", "", "", "", "", "", "", ""])
+		table_data.append(["", "", "", ""])
 		table_style_config.append(
 			('LINEBELOW', (0,current_row), (-1,current_row), 0.5, colors.gray),
 		)
 		current_row += 1
 	
 	#-- Fila Total General.
-	table_data.append(["", "", "", "", "", "", "", "Total General:", formato_argentino(contexto_reporte.get('total_general'))])
+	table_data.append(["Total de Egresos:", "", "",  formato_argentino(contexto_reporte.get('total_general'))])
 	
 	#-- Aplicar estilos a la fila de total (fila actual).
 	table_style_config.extend([
 		('FONTNAME', (0,current_row), (-1,current_row), 'Helvetica-Bold'),
+		('SPAN', (0,current_row), (-2,current_row)),
+		('ALIGN', (0,current_row), (-1,current_row), 'RIGHT'),
 		# ('LINEABOVE', (0,current_row), (-1,current_row), 0.5, colors.black),
 	])
 	
-	return generator.generate(table_data, col_widths, table_style_config)		
+	return generator.generate(table_data, col_widths, table_style_config)
 
 
-def chequerecibo_vista_excel(request):
+def egresoscaja_vista_excel(request):
 	token = request.GET.get("token")
 	if not token:
 		return HttpResponse("Token no proporcionado", status=400)
@@ -429,7 +396,7 @@ def chequerecibo_vista_excel(request):
 	# ---------------------------------------------
 	
 	#-- Instanciar la vista y obtener el queryset.
-	view_instance = ChequeReciboInformeView()
+	view_instance = EgresosCajaInformeView()
 	view_instance.request = request
 	queryset = view_instance.obtener_queryset(cleaned_data)
 	
@@ -453,7 +420,7 @@ def chequerecibo_vista_excel(request):
 	return response
 
 
-def chequerecibo_vista_csv(request):
+def egresoscaja_vista_csv(request):
 	token = request.GET.get("token")
 	if not token:
 		return HttpResponse("Token no proporcionado", status=400)
@@ -466,7 +433,7 @@ def chequerecibo_vista_csv(request):
 	cleaned_data = data["cleaned_data"]
 	
 	#-- Instanciar la vista para reejecutar la consulta y obtener el queryset.
-	view_instance = ChequeReciboInformeView()
+	view_instance = EgresosCajaInformeView()
 	view_instance.request = request
 	queryset = view_instance.obtener_queryset(cleaned_data)
 	
