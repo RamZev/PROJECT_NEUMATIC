@@ -295,6 +295,115 @@ FROM tarjeta_recibo
 	INNER JOIN factura ON tarjeta_recibo.id_factura_id = factura.id_factura 
 ORDER BY tarjeta_recibo.id_tarjeta_id
 
+##################################################################################################################################
+-- 5to. Reporte: Gastos de Caja.
+--CREATE VIEW vlCajaGastos AS
+SELECT
+	caja_detalle.id_caja_id,
+	caja.numero_caja, caja.fecha_caja,
+	caja_detalle.importe,
+	caja_detalle.observacion,
+	caja_detalle.idventas
+FROM caja_detalle
+	INNER JOIN caja ON caja_detalle.id_caja_id = caja.id_caja
+--WHERE caja_detalle.idventas = -2
+WHERE caja_detalle.tipo_movimiento = 2
+ORDER by caja.fecha_caja, caja.numero_caja
+
+-- SELECT id_caja_detalle, idventas, idcompras, idbancos, importe, observacion, id_caja_id, id_forma_pago_id, tipo_movimiento FROM caja_detalle
+
+-----------------------------------
+Consultas control
+-----------------------------------
+-- Gastos/Egresos
+SELECT id_caja_detalle, idventas, idcompras, idbancos, importe, observacion, id_caja_id, id_forma_pago_id, tipo_movimiento 
+FROM caja_detalle 
+WHERE idventas = -2
+
+
+
+
+-- caja_detalle: Script para asignar 2 a tipo_movimiento si idventas=-2.
+UPDATE caja_detalle SET tipo_movimiento=2 WHERE idventas=-2 AND tipo_movimiento<>2
+
+
+##################################################################################################################################
+/* 2do. Reporte: Solo comprobantes de Contado (condicion_comprobante=1).
+  "2.- Esta Query muestra los comprobantes de una caja solo de contado, sirve para tomarlo como efectivo en caja, 
+   el filtro debe ser condición de la factura = 1 y no participar en estadísticas, El filtro por parámetros es por Fecha y Sucursal." */
+
+--CREATE VIEW vlCajaComprobantes AS
+SELECT factura.id_factura,
+	factura.compro, factura.letra_comprobante, factura.numero_comprobante, factura.fecha_comprobante,
+	factura.id_cliente_id, factura.nombre_factura, factura.condicion_comprobante,
+	factura.total*comprobante_venta.mult_caja AS total, factura.id_user_id, usuarios_user.iniciales,
+	factura.id_sucursal_id, factura.no_estadist
+FROM factura
+	INNER JOIN comprobante_venta ON factura.id_comprobante_venta_id = comprobante_venta.id_comprobante_venta
+	INNER JOIN usuarios_user ON factura.id_user_id = usuarios_user.id
+	LEFT JOIN caja ON factura.id_caja_id = caja.id_caja
+WHERE comprobante_venta.mult_caja <> 0
+	AND factura.no_estadist = False
+	AND factura.condicion_comprobante = 1 
+	AND caja.numero_caja = 1001961
+ORDER by factura.compro, factura.letra_comprobante, factura.numero_comprobante
+
+
+
+/* 3er. Reporte: Todos los comprobantes (Contado y Cta. Cte.) es el que se emplea en "Planilla de Caja -> Imprimir detalle de Comprobantes"
+   "3.- Esta consulta es igual a la anterior, pero incluye todos los comprobantes sin diferencias condición y no estadísticas." */
+
+--CREATE VIEW vlCajaComprobantesTodos AS
+SELECT factura.id_factura,
+	factura.compro, factura.letra_comprobante, factura.numero_comprobante, factura.fecha_comprobante,
+	factura.id_cliente_id, factura.nombre_factura, factura.condicion_comprobante,
+	factura.total*comprobante_venta.mult_caja AS total, factura.id_user_id, usuarios_user.iniciales,
+	factura.id_sucursal_id, factura.no_estadist
+FROM factura
+	INNER JOIN comprobante_venta ON factura.id_comprobante_venta_id = comprobante_venta.id_comprobante_venta
+	LEFT JOIN usuarios_user ON factura.id_user_id = usuarios_user.id
+	LEFT JOIN caja ON factura.id_caja_id = caja.id_caja
+WHERE comprobante_venta.mult_caja <> 0 
+	AND factura.no_estadist = False
+	AND caja.numero_caja = 1001963
+ORDER by factura.compro, factura.letra_comprobante, factura.numero_comprobante
+
+
+
+/* 4to. Reporte
+   "Esta consulta es por número de caja que se debe pasar por parámetro también y saca todo el detalle de comprobantes de la caja." */
+ 
+--CREATE VIEW vlCajaDetalle AS
+SELECT
+	caja_detalle.id_caja_id, caja.numero_caja,
+	caja_detalle.idventas, factura.compro, factura.letra_comprobante, factura.numero_comprobante,
+	factura.id_cliente_id, cliente.nombre_cliente,
+	caja_detalle.importe,
+	forma_pago.descripcion_forma_pago,
+	caja_detalle.observacion
+FROM caja_detalle
+	JOIN caja ON caja_detalle.id_caja_id = caja.id_caja
+	JOIN factura ON caja_detalle.idventas = factura.id_factura
+	JOIN cliente ON factura.id_cliente_id = cliente.id_cliente
+	LEFT JOIN forma_pago ON caja_detalle.id_forma_pago_id = forma_pago.id_forma_pago
+ORDER by factura.compro, factura.letra_comprobante, factura.numero_comprobante
+
+
+Consultas Control:
+SELECT * FROM caja ORDER by numero_caja
+SELECT * FROM caja WHERE numero_caja like '1001%' ORDER by numero_caja
+SELECT * FROM caja WHERE numero_caja = 1001961
+
+SELECT * FROM factura WHERE numero_comprobante = 2100000683
+SELECT * FROM factura WHERE numero_comprobante in (2100000683, 2100015544, 100144399)
+
+SELECT * FROM caja_arqueo WHERE id_caja_id = 11458
+
+
+-- Consulta control
+SELECT id_factura, compro, letra_comprobante, numero_comprobante, fecha_comprobante, nombre_factura, condicion_comprobante, total, id_comprobante_venta_id, no_estadist, id_caja_id
+FROM factura 
+WHERE numero_comprobante in (100144380, 100144381, 100144382, 100144383, 100144384, 100144385, 100144386, 100144387, 100144388, 100144389, 100144390, 100144391, 100144392, 100144393, 100144394, 100144395, 100144396, 100144397, 100144398, 100144399, 100144400, 100144387) 
 
 
 ##################################################################################################################################
