@@ -1,0 +1,33 @@
+Field  Field Name      Type                Width    Dec 
+    1  IDCHEQUE        Numeric                 6        
+    2  CAJA            Numeric                 8        
+    3  CODBCO          Numeric                 3        
+    4  SUCURSAL        Numeric                 3        
+    5  LOCALIDAD       Numeric                 4        
+    6  NUMERO          Numeric                 8        
+    7  CUENTA          Numeric                11        
+    8  CUIT            Numeric                11        
+    9  EMISION         Date                    8        
+   10  FECHA           Date                    8        
+   11  IMPORTE         Numeric                12      2 
+   12  CLIENTE         Numeric                 6        
+   13  PROVEEDOR       Numeric                 5        
+   14  COMPROING       Character               3        
+   15  NROCOMPROING    Numeric                12        
+   16  DETAING         Character              30        
+   17  COMPROSAL       Character               3        
+   18  NROCOMPROSAL    Numeric                12        
+   19  DETASAL         Character              30        
+   20  DEPOSITADO      Numeric                 3        
+   21  FECDEPOSITO     Date                    8         
+   22  ACREDITADO      Date                    8         
+   23  PROPIO          Logical                 1         
+   24  RECHAZADO       Character              30         
+   25  DESCRIPCION     Character              40         
+   26  CARTERA         Logical                 1         
+   27  CARGO           Character              10         
+   28  IMPUTACION      Numeric                 5         
+   29  CANJE           Logical                 1         
+   30  MONEDA          Numeric                 2         
+   31  ELECTRONICO     Logical                 1         
+

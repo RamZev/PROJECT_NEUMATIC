@@ -30643,3 +30643,68 @@ Tiempo total: 0 minutos 6 segundos
 2025-11-10 14:14:57,127 - INFO - Total errores: 0
 2025-11-10 14:14:57,127 - INFO - 
 Tiempo total: 0 minutos 6 segundos
+2025-12-26 18:05:04,326 - INFO - Cargando cachés de referencia...
+2025-12-26 18:05:05,649 - INFO - Total registros estimados: 31782
+2025-12-26 18:05:05,649 - INFO - Iniciando migración por bloques...
+2025-12-26 18:05:05,649 - INFO - --- Iniciando Bloque 1 (registros 0 a 149999) ---
+2025-12-26 18:05:06,411 - INFO - Bloque 1: Procesando 31782 registros...
+2025-12-26 18:05:06,742 - INFO - Lote guardado: 2000 registros (bloque 1)
+2025-12-26 18:05:07,128 - INFO - Lote guardado: 2000 registros (bloque 1)
+2025-12-26 18:05:07,460 - INFO - Lote guardado: 2000 registros (bloque 1)
+2025-12-26 18:05:07,695 - INFO - Lote guardado: 2000 registros (bloque 1)
+2025-12-26 18:05:08,054 - INFO - Lote guardado: 2000 registros (bloque 1)
+2025-12-26 18:05:08,055 - INFO - Progreso global: 10000 registros procesados
+2025-12-26 18:05:08,318 - INFO - Lote guardado: 2000 registros (bloque 1)
+2025-12-26 18:05:08,626 - INFO - Lote guardado: 2000 registros (bloque 1)
+2025-12-26 18:05:08,976 - INFO - Lote guardado: 2000 registros (bloque 1)
+2025-12-26 18:05:09,259 - INFO - Lote guardado: 2000 registros (bloque 1)
+2025-12-26 18:05:09,557 - INFO - Lote guardado: 2000 registros (bloque 1)
+2025-12-26 18:05:09,559 - INFO - Progreso global: 20000 registros procesados
+2025-12-26 18:05:09,907 - INFO - Lote guardado: 2000 registros (bloque 1)
+2025-12-26 18:05:10,152 - INFO - Lote guardado: 2000 registros (bloque 1)
+2025-12-26 18:05:10,404 - INFO - Lote guardado: 2000 registros (bloque 1)
+2025-12-26 18:05:10,701 - INFO - Lote guardado: 2000 registros (bloque 1)
+2025-12-26 18:05:10,933 - INFO - Lote guardado: 2000 registros (bloque 1)
+2025-12-26 18:05:10,934 - INFO - Progreso global: 30000 registros procesados
+2025-12-26 18:05:11,168 - INFO - Último lote del bloque 1 guardado: 1782 registros
+2025-12-26 18:05:11,169 - INFO - --- Iniciando Bloque 2 (registros 150000 a 299999) ---
+2025-12-26 18:05:11,983 - INFO - No se encontraron más registros. Fin del procesamiento.
+2025-12-26 18:05:11,993 - INFO - 
+=== REPORTE FINAL ===
+2025-12-26 18:05:11,994 - INFO - Total registros procesados: 31782
+2025-12-26 18:05:11,998 - INFO - Total errores: 0
+2025-12-26 18:05:11,999 - INFO - 
+Tiempo total: 0 minutos 7 segundos
+2026-01-05 12:23:13,014 - INFO - Cargando cachés de referencia...
+2026-01-05 12:23:14,084 - INFO - Total registros estimados: 32714
+2026-01-05 12:23:14,084 - INFO - Iniciando migración por bloques...
+2026-01-05 12:23:14,084 - INFO - --- Iniciando Bloque 1 (registros 0 a 149999) ---
+2026-01-05 12:23:14,848 - INFO - Bloque 1: Procesando 32714 registros...
+2026-01-05 12:23:15,123 - INFO - Lote guardado: 2000 registros (bloque 1)
+2026-01-05 12:23:15,474 - INFO - Lote guardado: 2000 registros (bloque 1)
+2026-01-05 12:23:15,746 - INFO - Lote guardado: 2000 registros (bloque 1)
+2026-01-05 12:23:15,981 - INFO - Lote guardado: 2000 registros (bloque 1)
+2026-01-05 12:23:16,277 - INFO - Lote guardado: 2000 registros (bloque 1)
+2026-01-05 12:23:16,278 - INFO - Progreso global: 10000 registros procesados
+2026-01-05 12:23:16,514 - INFO - Lote guardado: 2000 registros (bloque 1)
+2026-01-05 12:23:16,760 - INFO - Lote guardado: 2000 registros (bloque 1)
+2026-01-05 12:23:17,049 - INFO - Lote guardado: 2000 registros (bloque 1)
+2026-01-05 12:23:17,290 - INFO - Lote guardado: 2000 registros (bloque 1)
+2026-01-05 12:23:17,602 - INFO - Lote guardado: 2000 registros (bloque 1)
+2026-01-05 12:23:17,604 - INFO - Progreso global: 20000 registros procesados
+2026-01-05 12:23:18,026 - INFO - Lote guardado: 2000 registros (bloque 1)
+2026-01-05 12:23:18,309 - INFO - Lote guardado: 2000 registros (bloque 1)
+2026-01-05 12:23:18,559 - INFO - Lote guardado: 2000 registros (bloque 1)
+2026-01-05 12:23:18,871 - INFO - Lote guardado: 2000 registros (bloque 1)
+2026-01-05 12:23:19,119 - INFO - Lote guardado: 2000 registros (bloque 1)
+2026-01-05 12:23:19,122 - INFO - Progreso global: 30000 registros procesados
+2026-01-05 12:23:19,366 - INFO - Lote guardado: 2000 registros (bloque 1)
+2026-01-05 12:23:19,457 - INFO - Último lote del bloque 1 guardado: 714 registros
+2026-01-05 12:23:19,457 - INFO - --- Iniciando Bloque 2 (registros 150000 a 299999) ---
+2026-01-05 12:23:20,113 - INFO - No se encontraron más registros. Fin del procesamiento.
+2026-01-05 12:23:20,113 - INFO - 
+=== REPORTE FINAL ===
+2026-01-05 12:23:20,113 - INFO - Total registros procesados: 32714
+2026-01-05 12:23:20,113 - INFO - Total errores: 0
+2026-01-05 12:23:20,114 - INFO - 
+Tiempo total: 0 minutos 7 segundos

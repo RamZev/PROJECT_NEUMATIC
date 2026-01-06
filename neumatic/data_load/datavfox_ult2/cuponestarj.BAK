@@ -1,0 +1,20 @@
+
+Structure for table:    D:\PROJECT_NEUMATIC\NEUMATIC\DATA_LOAD\DATAVFOX\CUPONESTARJ.DBF
+Number of data records: 79507   
+Date of last update:    08/11/2025
+Code Page:              1252    
+Field  Field Name      Type                Width    Dec   Index   Collate Nulls    Next    Step
+    1  ID              Numeric                 6            Asc   Machine    No
+    2  CAJA            Numeric                 8            Asc   Machine    No
+    3  TARJETA         Numeric                 2                             No
+    4  CUPON           Numeric                 8                             No
+    5  LOTE            Numeric                 8                             No
+    6  CUOTAS          Numeric                 3                             No
+    7  IMPORTE         Numeric                10      2                      No
+    8  FECHA           Date                    8                             No
+    9  COMPROING       Character               2                             No
+   10  NROCOMPROING    Numeric                12                             No
+   11  CARTERA         Logical                 1                             No
+   12  PROPIA          Logical                 1                             No
+   13  IDVENTA         Numeric                 7                             No
+** Total **                                   77

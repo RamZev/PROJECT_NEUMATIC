@@ -313,3 +313,109 @@
 2025-12-26 17:04:27,778 - INFO - Relaciones precargadas en memoria
 2025-12-26 17:04:35,001 - INFO - DBF cargado en memoria. Total registros: 129153
 2025-12-26 17:05:22,597 - INFO - Migración completada. Total registros procesados: 129153/129153. Tiempo: 55.63 segundos
+2025-12-29 15:59:26,208 - INFO - Iniciando migración de clientes
+2025-12-29 15:59:26,320 - INFO - Precargando relaciones en memoria...
+2025-12-29 15:59:26,862 - INFO - Relaciones precargadas en memoria
+2025-12-29 15:59:33,077 - INFO - DBF cargado en memoria. Total registros: 129438
+2025-12-29 15:59:42,493 - ERROR - Error procesando registro 69025: invalid literal for int() with base 10: '201000000000.0'
+2025-12-29 15:59:59,331 - ERROR - Error procesando registro 119962: invalid literal for int() with base 10: '307190000000.0'
+2025-12-29 16:00:03,786 - ERROR - Error procesando registro 132780: invalid literal for int() with base 10: '270000000000.0'
+2025-12-29 16:00:05,127 - ERROR - Error procesando registro 136688: invalid literal for int() with base 10: '270000000000.0'
+2025-12-29 16:00:07,183 - ERROR - Error procesando registro 142170: invalid literal for int() with base 10: '270000000000.0'
+2025-12-29 16:00:07,790 - ERROR - Error procesando registro 144339: invalid literal for int() with base 10: '2255500000000.0'
+2025-12-29 16:00:08,090 - ERROR - Error procesando registro 145266: invalid literal for int() with base 10: '101010000000.0'
+2025-12-29 16:00:08,862 - ERROR - Error procesando registro 147762: invalid literal for int() with base 10: '343430000000.0'
+2025-12-29 16:00:08,862 - ERROR - Error procesando registro 147763: invalid literal for int() with base 10: '121210000000000.0'
+2025-12-29 16:00:10,479 - ERROR - Error procesando registro 152471: invalid literal for int() with base 10: '27000000000000.0'
+2025-12-29 16:00:13,326 - ERROR - Error procesando registro 160291: invalid literal for int() with base 10: '2700000000000.0'
+2025-12-29 16:00:14,028 - ERROR - Error procesando registro 162911: invalid literal for int() with base 10: '309990000000.0'
+2025-12-29 16:00:16,144 - ERROR - Error crítico en cargar_datos: NOT NULL constraint failed: cliente.id_tipo_iva_id
+2025-12-29 16:07:52,808 - INFO - Iniciando migración de clientes
+2025-12-29 16:07:52,815 - INFO - Precargando relaciones en memoria...
+2025-12-29 16:07:53,383 - INFO - Relaciones precargadas en memoria
+2025-12-29 16:07:53,385 - ERROR - Error crítico en cargar_datos: [Errno 13] Permission denied: 'D:\\PROJECT_NEUMATIC\\neumatic\\data_load\\datavfox\\clientes.DBF'
+2025-12-29 16:08:04,975 - INFO - Iniciando migración de clientes
+2025-12-29 16:08:04,982 - INFO - Precargando relaciones en memoria...
+2025-12-29 16:08:05,536 - INFO - Relaciones precargadas en memoria
+2025-12-29 16:08:11,775 - INFO - DBF cargado en memoria. Total registros: 129438
+2025-12-29 16:08:21,126 - ERROR - Error procesando registro 69025: invalid literal for int() with base 10: '201000000000.0'
+2025-12-29 16:08:37,871 - ERROR - Error procesando registro 119962: invalid literal for int() with base 10: '307190000000.0'
+2025-12-29 16:08:42,236 - ERROR - Error procesando registro 132780: invalid literal for int() with base 10: '270000000000.0'
+2025-12-29 16:08:43,540 - ERROR - Error procesando registro 136688: invalid literal for int() with base 10: '270000000000.0'
+2025-12-29 16:08:45,517 - ERROR - Error procesando registro 142170: invalid literal for int() with base 10: '270000000000.0'
+2025-12-29 16:08:46,115 - ERROR - Error procesando registro 144339: invalid literal for int() with base 10: '2255500000000.0'
+2025-12-29 16:08:46,399 - ERROR - Error procesando registro 145266: invalid literal for int() with base 10: '101010000000.0'
+2025-12-29 16:08:47,122 - ERROR - Error procesando registro 147762: invalid literal for int() with base 10: '343430000000.0'
+2025-12-29 16:08:47,122 - ERROR - Error procesando registro 147763: invalid literal for int() with base 10: '121210000000000.0'
+2025-12-29 16:08:48,707 - ERROR - Error procesando registro 152471: invalid literal for int() with base 10: '27000000000000.0'
+2025-12-29 16:08:51,511 - ERROR - Error procesando registro 160291: invalid literal for int() with base 10: '2700000000000.0'
+2025-12-29 16:08:52,168 - ERROR - Error procesando registro 162911: invalid literal for int() with base 10: '309990000000.0'
+2025-12-29 16:08:54,240 - ERROR - Error crítico en cargar_datos: NOT NULL constraint failed: cliente.id_tipo_iva_id
+2025-12-29 16:14:41,879 - INFO - Iniciando migración de clientes
+2025-12-29 16:14:41,887 - INFO - Precargando relaciones en memoria...
+2025-12-29 16:14:42,500 - INFO - Relaciones precargadas en memoria
+2025-12-29 16:14:48,787 - INFO - DBF cargado en memoria. Total registros: 129437
+2025-12-29 16:14:58,188 - ERROR - Error procesando registro 69025: invalid literal for int() with base 10: '201000000000.0'
+2025-12-29 16:15:14,826 - ERROR - Error procesando registro 119962: invalid literal for int() with base 10: '307190000000.0'
+2025-12-29 16:15:19,141 - ERROR - Error procesando registro 132780: invalid literal for int() with base 10: '270000000000.0'
+2025-12-29 16:15:20,459 - ERROR - Error procesando registro 136688: invalid literal for int() with base 10: '270000000000.0'
+2025-12-29 16:15:22,502 - ERROR - Error procesando registro 142170: invalid literal for int() with base 10: '270000000000.0'
+2025-12-29 16:15:23,092 - ERROR - Error procesando registro 144339: invalid literal for int() with base 10: '2255500000000.0'
+2025-12-29 16:15:23,392 - ERROR - Error procesando registro 145266: invalid literal for int() with base 10: '101010000000.0'
+2025-12-29 16:15:24,139 - ERROR - Error procesando registro 147762: invalid literal for int() with base 10: '343430000000.0'
+2025-12-29 16:15:24,139 - ERROR - Error procesando registro 147763: invalid literal for int() with base 10: '121210000000000.0'
+2025-12-29 16:15:25,686 - ERROR - Error procesando registro 152471: invalid literal for int() with base 10: '27000000000000.0'
+2025-12-29 16:15:28,488 - ERROR - Error procesando registro 160291: invalid literal for int() with base 10: '2700000000000.0'
+2025-12-29 16:15:29,131 - ERROR - Error procesando registro 162911: invalid literal for int() with base 10: '309990000000.0'
+2025-12-29 16:15:31,839 - INFO - Migración completada. Total registros procesados: 129425/129437. Tiempo: 49.96 segundos
+2025-12-30 16:27:39,861 - INFO - Iniciando migración de clientes
+2025-12-30 16:27:39,986 - INFO - Precargando relaciones en memoria...
+2025-12-30 16:27:40,599 - INFO - Relaciones precargadas en memoria
+2025-12-30 16:27:47,407 - INFO - DBF cargado en memoria. Total registros: 129437
+2025-12-30 16:27:56,870 - ERROR - Error procesando registro 69025: invalid literal for int() with base 10: '201000000000.0'
+2025-12-30 16:28:13,858 - ERROR - Error procesando registro 119962: invalid literal for int() with base 10: '307190000000.0'
+2025-12-30 16:28:18,184 - ERROR - Error procesando registro 132780: invalid literal for int() with base 10: '270000000000.0'
+2025-12-30 16:28:19,545 - ERROR - Error procesando registro 136688: invalid literal for int() with base 10: '270000000000.0'
+2025-12-30 16:28:21,626 - ERROR - Error procesando registro 142170: invalid literal for int() with base 10: '270000000000.0'
+2025-12-30 16:28:22,242 - ERROR - Error procesando registro 144339: invalid literal for int() with base 10: '2255500000000.0'
+2025-12-30 16:28:22,549 - ERROR - Error procesando registro 145266: invalid literal for int() with base 10: '101010000000.0'
+2025-12-30 16:28:23,280 - ERROR - Error procesando registro 147762: invalid literal for int() with base 10: '343430000000.0'
+2025-12-30 16:28:23,280 - ERROR - Error procesando registro 147763: invalid literal for int() with base 10: '121210000000000.0'
+2025-12-30 16:28:24,938 - ERROR - Error procesando registro 152471: invalid literal for int() with base 10: '27000000000000.0'
+2025-12-30 16:28:27,698 - ERROR - Error procesando registro 160291: invalid literal for int() with base 10: '2700000000000.0'
+2025-12-30 16:28:28,338 - ERROR - Error procesando registro 162911: invalid literal for int() with base 10: '309990000000.0'
+2025-12-30 16:28:30,950 - INFO - Migración completada. Total registros procesados: 129425/129437. Tiempo: 51.09 segundos
+2026-01-05 11:38:04,203 - INFO - Iniciando migración de clientes
+2026-01-05 11:38:04,300 - INFO - Precargando relaciones en memoria...
+2026-01-05 11:38:04,871 - INFO - Relaciones precargadas en memoria
+2026-01-05 11:38:10,829 - INFO - DBF cargado en memoria. Total registros: 129529
+2026-01-05 11:38:20,381 - ERROR - Error procesando registro 69025: invalid literal for int() with base 10: '201000000000.0'
+2026-01-05 11:38:37,275 - ERROR - Error procesando registro 119962: invalid literal for int() with base 10: '307190000000.0'
+2026-01-05 11:38:41,579 - ERROR - Error procesando registro 132780: invalid literal for int() with base 10: '270000000000.0'
+2026-01-05 11:38:42,940 - ERROR - Error procesando registro 136688: invalid literal for int() with base 10: '270000000000.0'
+2026-01-05 11:38:45,024 - ERROR - Error procesando registro 142170: invalid literal for int() with base 10: '270000000000.0'
+2026-01-05 11:38:45,678 - ERROR - Error procesando registro 144339: invalid literal for int() with base 10: '2255500000000.0'
+2026-01-05 11:38:45,990 - ERROR - Error procesando registro 145266: invalid literal for int() with base 10: '101010000000.0'
+2026-01-05 11:38:46,761 - ERROR - Error procesando registro 147762: invalid literal for int() with base 10: '343430000000.0'
+2026-01-05 11:38:46,762 - ERROR - Error procesando registro 147763: invalid literal for int() with base 10: '121210000000000.0'
+2026-01-05 11:38:48,467 - ERROR - Error procesando registro 152471: invalid literal for int() with base 10: '27000000000000.0'
+2026-01-05 11:38:51,371 - ERROR - Error procesando registro 160291: invalid literal for int() with base 10: '2700000000000.0'
+2026-01-05 11:38:52,024 - ERROR - Error procesando registro 162911: invalid literal for int() with base 10: '309990000000.0'
+2026-01-05 11:38:54,632 - INFO - Migración completada. Total registros procesados: 129517/129529. Tiempo: 50.43 segundos
+2026-01-05 17:52:03,154 - INFO - Iniciando migración de clientes
+2026-01-05 17:52:03,270 - INFO - Precargando relaciones en memoria...
+2026-01-05 17:52:03,811 - INFO - Relaciones precargadas en memoria
+2026-01-05 17:52:09,902 - INFO - DBF cargado en memoria. Total registros: 129529
+2026-01-05 17:52:19,303 - ERROR - Error procesando registro 69025: invalid literal for int() with base 10: '201000000000.0'
+2026-01-05 17:52:36,187 - ERROR - Error procesando registro 119962: invalid literal for int() with base 10: '307190000000.0'
+2026-01-05 17:52:40,473 - ERROR - Error procesando registro 132780: invalid literal for int() with base 10: '270000000000.0'
+2026-01-05 17:52:41,746 - ERROR - Error procesando registro 136688: invalid literal for int() with base 10: '270000000000.0'
+2026-01-05 17:52:43,730 - ERROR - Error procesando registro 142170: invalid literal for int() with base 10: '270000000000.0'
+2026-01-05 17:52:44,327 - ERROR - Error procesando registro 144339: invalid literal for int() with base 10: '2255500000000.0'
+2026-01-05 17:52:44,623 - ERROR - Error procesando registro 145266: invalid literal for int() with base 10: '101010000000.0'
+2026-01-05 17:52:45,356 - ERROR - Error procesando registro 147762: invalid literal for int() with base 10: '343430000000.0'
+2026-01-05 17:52:45,356 - ERROR - Error procesando registro 147763: invalid literal for int() with base 10: '121210000000000.0'
+2026-01-05 17:52:46,941 - ERROR - Error procesando registro 152471: invalid literal for int() with base 10: '27000000000000.0'
+2026-01-05 17:52:49,684 - ERROR - Error procesando registro 160291: invalid literal for int() with base 10: '2700000000000.0'
+2026-01-05 17:52:50,298 - ERROR - Error procesando registro 162911: invalid literal for int() with base 10: '309990000000.0'
+2026-01-05 17:52:52,802 - INFO - Migración completada. Total registros procesados: 129517/129529. Tiempo: 49.65 segundos
