@@ -1,0 +1,38 @@
+
+Structure for table:    D:\PROJECT_NEUMATIC\NEUMATIC\DATA_LOAD\DATAVFOX\CHEQUES.DBF
+Number of data records: 57565   
+Date of last update:    11/08/25
+Code Page:              1252    
+Field  Field Name      Type                Width    Dec   Index   Collate Nulls    Next    Step
+    1  IDCHEQUE        Numeric                 6            Asc   Machine    No
+    2  CAJA            Numeric                 8                             No
+    3  CODBCO          Numeric                 3                             No
+    4  SUCURSAL        Numeric                 3                             No
+    5  LOCALIDAD       Numeric                 4                             No
+    6  NUMERO          Numeric                 8            Asc   Machine    No
+    7  CUENTA          Numeric                11            Asc   Machine    No
+    8  CUIT            Numeric                11            Asc   Machine    No
+    9  EMISION         Date                    8                             No
+   10  FECHA           Date                    8                             No
+   11  IMPORTE         Numeric                12      2                      No
+   12  CLIENTE         Numeric                 6                             No
+   13  PROVEEDOR       Numeric                 5                             No
+   14  COMPROING       Character               3                             No
+   15  NROCOMPROING    Numeric                12                             No
+   16  DETAING         Character              30            Asc   Machine    No
+   17  COMPROSAL       Character               3                             No
+   18  NROCOMPROSAL    Numeric                12                             No
+   19  DETASAL         Character              30            Asc   Machine    No
+   20  DEPOSITADO      Numeric                 3                             No
+   21  FECDEPOSITO     Date                    8                             No
+   22  ACREDITADO      Date                    8                             No
+   23  PROPIO          Logical                 1                             No
+   24  RECHAZADO       Character              30                             No
+   25  DESCRIPCION     Character              40                             No
+   26  CARTERA         Logical                 1                             No
+   27  CARGO           Character              10                             No
+   28  IMPUTACION      Numeric                 5                             No
+   29  CANJE           Logical                 1                             No
+   30  MONEDA          Numeric                 2                             No
+   31  ELECTRONICO     Logical                 1                             No
+** Total **                                  294

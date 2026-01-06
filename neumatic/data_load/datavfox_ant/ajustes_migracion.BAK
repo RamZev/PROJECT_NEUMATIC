@@ -1,0 +1,153 @@
+CLOSE DATABASES
+CLEAR ALL
+SET exclusiv on
+SET DELETED OFF 
+CLEAR 
+
+* Antes de ejecutar el algoritmo, en la tabla DBF, se le asignó valor 7 al último registro  "SIN ACTIVIDAD DECLARADA " que estaba en blanco
+?'Actividades'
+USE actividad EXCLUSIVE 
+REPLACE codigo WITH 7 FOR codigo=0
+PACK
+USE 
+
+
+*Antes de ejecutar el algoritmo, en la tabla DBF, se eliminó un duplicado compro="EG" y se hizo un pack
+?"Codigos de Ventas"
+USE codven EXCLUSIVE
+BROWSE FOR compro='EG'
+PACK
+USE 
+
+
+* Antes de ejecutar el algoritmo, en la tabla DBF, se eliminaron los dos últimos registros uno blank otro sin nombre y se hizo un pack
+?"Operarios"
+USE operario EXCLUSIVE
+DELETE FOR codigo=0
+DELETE FOR EMPTY(nombre)
+PACK
+USE 
+
+* Eliminar los registro con el campo **lista.codigo** duplicados
+* Modificar valores del campo lista **lista.iva** mayores a 100
+?"Lista de precios, duplicados"
+USE lista EXCLUSIVE
+SELECT codigo, COUNT(*) AS cantidad FROM lista GROUP BY codigo HAVING COUNT(*) > 1
+LIST
+SELECT lista
+PACK
+USE 
+
+*  Antes de ejecutar el algoritmo, en la tabla DBF, se hizo un pack, había un archivo marcado para borrar
+USE depositos EXCLUSIVE
+PACK
+USE 
+
+* Antes de ejecutar el algoritmo, en la tabla DBF, en los CODIGO=30, 52, 210 se asignó Al campo moneda "P", porque estaban en blanco
+USE marcas EXCLUSIVE
+REPLACE moneda WITH 'P' FOR EMPTY(moneda)
+PACK
+USE 
+
+
+USE lista ORDER CODIGO
+
+* Eliminar los registros sin nombre de producto
+DELETE FOR EMPTY(nombre)
+
+* Reemplazar los tipos de productos en mayusculas y "O" por "P"
+REPLACE ALL TIPO WITH "P" FOR TIPO = "O"
+REPLACE ALL TIPO WITH UPPER(TIPO)
+
+* Reemplazar los tipos de productos en blanco (REPARACION)
+REPLACE ALL TIPO WITH "S" FOR (EMPTY(TIPO) AND LEFT(NOMBRE, 10) = "REPARACION")
+REPLACE ALL TIPO WITH "S" FOR NOMBRE = "REP  AUTOELEVADOR"
+REPLACE ALL TIPO WITH "S" FOR NOMBRE = "REPARACON"
+REPLACE ALL TIPO WITH "S" FOR NOMBRE = "NR AGRICOLA"
+REPLACE ALL TIPO WITH "S" FOR NOMBRE = "NR REPARACION AGRICOLA"
+REPLACE ALL TIPO WITH "P" FOR EMPTY(TIPO)
+
+
+* Asignar .F. a valores vacios de carrito
+REPLACE ALL carrito WITH .F. FOR EMPTY(carrito)
+
+* Reemplazar detalle con nmbre cuando este vacío
+REPLACE ALL detalle WITH nombre FOR EMPTY(detalle)
+
+* Reemplazar los valores numéricos vacios por cero
+REPLACE ALL costo WITH 0 FOR EMPTY(costo)
+REPLACE ALL stock WITH 0 FOR EMPTY(stock)
+REPLACE ALL minimo WITH 0 FOR EMPTY(minimo)
+REPLACE ALL precio WITH 0 FOR EMPTY(precio)
+REPLACE ALL descuento WITH 0 FOR EMPTY(descuento)
+
+* OJO hay dos registros con IVA = Cero verificar
+
+* Verificar los resgistros con CODIGO duplicado 
+* SELECT CODIGO, COUNT(*) AS repeticiones FROM lista GROUP BY CODIGO HAVING COUNT(*) > 1 ORDER BY repeticiones DESC
+GO TOP
+LOCATE FOR codigo = 336535
+SKIP
+DELETE
+
+GO TOP
+LOCATE FOR codigo = 14380
+SKIP
+DELETE
+
+GO TOP
+LOCATE FOR codigo = 102934
+SKIP
+DELETE
+
+PACK
+
+
+* Se asignó código 1 a SANTA FE MOSTRADOR. Hacer un pack. 
+USE vendedor EXCLUSIVE
+REPLACE codigo WITH 1 FOR codigo=0
+PACK
+USE 
+
+
+* Antes de ejecutar el algoritmo, en la tabla DBF, se hizo un pack, había un archivo marcado para borrar
+USE depositos EXCLUSIVE
+PACK
+USE
+
+
+* Eliminar todos los registros cuyos campos SITIVA y NOMBRE estén en blanco. Verificar que no haya duplicación del campo CODIGO
+?"clientes duplicados"
+USE clientes EXCLUSIVE
+REPLACE sitiva WITH 'CF' FOR EMPTY(sitiva)
+REPLACE nombre WITH 'SIN NOMBRE' FOR EMPTY(nombre)
+SELECT codigo, COUNT(*) as repeticiones FROM clientes GROUP BY codigo HAVING COUNT(*) > 1
+SELECT clientes 
+BROWSE 
+PACK
+USE 
+
+
+* Antes de migrar, eliminar ID que se repiten en factura.dbf: 1550326, 1551103, 1591230
+* corregir los id manualmente y en detven igual
+?"Facturas duplicadas"
+USE facturas EXCLUSIVE
+SELECT id, COUNT(*) as repeticiones FROM facturas GROUP BY id HAVING COUNT(*) > 1
+LIST 
+SELECT facturas
+SET ORDER TO id
+?'primer id', id
+
+
+
+
+* En la tabla origen detven.dbf hay que corregir en los 1566500 y 1569043 la inversón de PRECIO y CANTIDAD, se colocó el precio en la cantidad. También filtrar por el campo ALICIVA > 21 y reemplazar esos valores por 21
+USE detven EXCLUSIVE
+REPLACE precio WITH cantidad FOR cantidad>10000 AND precio<2
+REPLACE cantidad WITH 1 FOR cantidad>10000 AND precio=cantidad
+REPLACE aliciva WITH 21 FOR aliciva > 21
+PACK 
+USE 
+
+
+

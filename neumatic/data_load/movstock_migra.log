@@ -27793,3 +27793,42 @@
 2025-12-26 17:12:57,339 - INFO - Lote final guardado: 776 registros
 2025-12-26 17:12:57,339 - INFO - Migración completada. Registros: 776, Errores: 0
 2025-12-26 17:12:57,340 - INFO - Tiempo total: 1.56 segundos
+2025-12-29 16:25:08,377 - INFO - No se encontraron duplicados en el archivo DBF
+2025-12-29 16:25:08,677 - WARNING - Depósito ID=0 no encontrado en registro 422
+2025-12-29 16:25:08,838 - WARNING - No se encontró PuntoVenta para Sucursal ID=12 en registro 649
+2025-12-29 16:25:08,885 - WARNING - No se encontró PuntoVenta para Sucursal ID=12 en registro 712
+2025-12-29 16:25:08,916 - WARNING - No se encontró PuntoVenta para Sucursal ID=12 en registro 773
+2025-12-29 16:25:09,936 - INFO - Lote final guardado: 789 registros
+2025-12-29 16:25:09,936 - INFO - Migración completada. Registros: 789, Errores: 0
+2025-12-29 16:25:09,936 - INFO - Tiempo total: 1.57 segundos
+2025-12-30 16:35:39,796 - INFO - No se encontraron duplicados en el archivo DBF
+2025-12-30 16:35:40,145 - WARNING - Depósito ID=0 no encontrado en registro 422
+2025-12-30 16:35:40,320 - WARNING - No se encontró PuntoVenta para Sucursal ID=12 en registro 649
+2025-12-30 16:35:40,371 - WARNING - No se encontró PuntoVenta para Sucursal ID=12 en registro 712
+2025-12-30 16:35:40,416 - WARNING - No se encontró PuntoVenta para Sucursal ID=12 en registro 773
+2025-12-30 16:35:41,321 - INFO - Lote final guardado: 789 registros
+2025-12-30 16:35:41,322 - INFO - Migración completada. Registros: 789, Errores: 0
+2025-12-30 16:35:41,322 - INFO - Tiempo total: 1.56 segundos
+2026-01-05 11:56:05,744 - ERROR - Error fatal en cargar_datos_movstock: [Errno 13] Permission denied: 'D:\\PROJECT_NEUMATIC\\neumatic\\data_load\\datavfox\\movStock.DBF'
+2026-01-05 11:56:43,784 - INFO - No se encontraron duplicados en el archivo DBF
+2026-01-05 11:56:44,181 - WARNING - Depósito ID=0 no encontrado en registro 422
+2026-01-05 11:56:44,322 - WARNING - No se encontró PuntoVenta para Sucursal ID=12 en registro 649
+2026-01-05 11:56:44,361 - WARNING - No se encontró PuntoVenta para Sucursal ID=12 en registro 712
+2026-01-05 11:56:44,398 - WARNING - No se encontró PuntoVenta para Sucursal ID=12 en registro 773
+2026-01-05 11:56:45,010 - INFO - Lote final guardado: 794 registros
+2026-01-05 11:56:45,010 - INFO - Migración completada. Registros: 794, Errores: 0
+2026-01-05 11:56:45,011 - INFO - Tiempo total: 1.23 segundos
+2026-01-05 17:58:06,956 - INFO - No se encontraron duplicados en el archivo DBF
+2026-01-05 17:58:07,253 - WARNING - Depósito ID=0 no encontrado en registro 422
+2026-01-05 17:58:07,414 - WARNING - No se encontró PuntoVenta para Sucursal ID=12 en registro 649
+2026-01-05 17:58:07,455 - WARNING - No se encontró PuntoVenta para Sucursal ID=12 en registro 712
+2026-01-05 17:58:07,494 - WARNING - No se encontró PuntoVenta para Sucursal ID=12 en registro 773
+2026-01-05 17:58:08,064 - INFO - Lote final guardado: 794 registros
+2026-01-05 17:58:08,065 - INFO - Migración completada. Registros: 794, Errores: 0
+2026-01-05 17:58:08,065 - INFO - Tiempo total: 1.12 segundos
+2026-01-05 17:59:41,076 - INFO - No se encontraron duplicados en el archivo DBF
+2026-01-05 17:59:41,412 - WARNING - Depósito ID=0 no encontrado en registro 422
+2026-01-05 17:59:41,556 - WARNING - No se encontró PuntoVenta para Sucursal ID=12 en registro 649
+2026-01-05 17:59:41,605 - WARNING - No se encontró PuntoVenta para Sucursal ID=12 en registro 712
+2026-01-05 17:59:41,645 - WARNING - No se encontró PuntoVenta para Sucursal ID=12 en registro 773
+2026-01-05 17:59:41,681 - ERROR - Error fatal en cargar_datos_movstock: UNIQUE constraint failed: factura.id_factura

@@ -1,0 +1,14 @@
+Field  Field Name      Type                Width    Dec
+    1  ID              Numeric                 6       
+    2  CAJA            Numeric                 8       
+    3  TARJETA         Numeric                 2       
+    4  CUPON           Numeric                 8       
+    5  LOTE            Numeric                 8       
+    6  CUOTAS          Numeric                 3       
+    7  IMPORTE         Numeric                10      2
+    8  FECHA           Date                    8       
+    9  COMPROING       Character               2       
+   10  NROCOMPROING    Numeric                12       
+   11  CARTERA         Logical                 1       
+   12  PROPIA          Logical                 1       
+   13  IDVENTA         Numeric                 7       
