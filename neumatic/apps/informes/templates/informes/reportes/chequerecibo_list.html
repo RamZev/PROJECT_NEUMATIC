@@ -1,4 +1,4 @@
-<!-- neumatic\apps\informes\templates\informes\reportes\actividad_list.html -->
+<!-- neumatic\apps\informes\templates\informes\reportes\chequerecibo_list.html -->
 
 {% extends 'informes/reportes/base_reportes.html' %}
 {% load static %}
@@ -49,7 +49,7 @@
 						<strong>{% if tipo == "electrónico" %}Cheques Electrónicos{% else %}Cheques Físicos{% endif %}</strong>
 					</td>
 				</tr>
-
+				
 				{% for cheque in datos.cheques %}
 					<tr>
 						<td></td>
@@ -58,7 +58,7 @@
 						<td>{{ cheque.id_banco__nombre_banco }}</td>
 						<td class="numeric">{{ cheque.sucursal }}</td>
 						<td class="numeric" style="padding-right: 15px">{{ cheque.codigo_postal }}</td>
-						<td>{{ cheque.fecha_cheque1|date:"d-m-Y" }}</td>
+						<td>{{ cheque.fecha_cheque1|date:"d/m/Y" }}</td>
 						<td class="numeric">{{ cheque.numero_cheque_recibo }}</td>
 						<td class="numeric">{{ cheque.importe_cheque|formato_es_ar }}</td>
 					</tr>

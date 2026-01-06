@@ -79,10 +79,12 @@ def format_date(date_value):
 	if isinstance(date_value, str):
 		try:
 			return datetime.strptime(date_value, "%Y-%m-%d").strftime("%d/%m/%Y")
+			# return datetime.strptime(date_value, "%Y-%m-%d").strftime("%d-%m-%Y")
 		except ValueError:
 			return date_value
 	else:
 		return date_value.strftime("%d/%m/%Y")
+		# return date_value.strftime("%d-%m-%Y")
 
 
 def normalizar(nombre):

@@ -99,6 +99,10 @@ from apps.informes.views.vlcompraingresada_list_views import *
 
 #- Lote 7 (Caja):
 from apps.informes.views.chequerecibo_list_views import *
+from apps.informes.views.detallecupones_list_views import *
+from apps.informes.views.cuponesfecha_list_views import *
+from apps.informes.views.egresoscaja_list_views import *
+from apps.informes.views.cajaarqueo_list_views import *
 
 
 #-- Otras rutas.
@@ -1083,6 +1087,54 @@ urlpatterns = [
 		 name="chequerecibo_vista_excel"),
 	path("chequerecibo/vista-csv/", chequerecibo_vista_csv, 
 		 name="chequerecibo_vista_csv"),
+	
+	#-- Detalle de Cupones.
+	path('tarjetarecibo_informe/', TarjetaReciboInformeView.as_view(), 
+		 name='tarjetarecibo_informe_list'),
+	path('tarjetarecibo/vista-preliminar/', tarjetarecibo_vista_pantalla, 
+		 name="tarjetarecibo_vista_pantalla"),
+	path("tarjetarecibo/vista-pdf/", tarjetarecibo_vista_pdf, 
+		 name="tarjetarecibo_vista_pdf"),
+	path("tarjetarecibo/vista-excel/", tarjetarecibo_vista_excel, 
+		 name="tarjetarecibo_vista_excel"),
+	path("tarjetarecibo/vista-csv/", tarjetarecibo_vista_csv, 
+		 name="tarjetarecibo_vista_csv"),
+	
+	#-- Cupones Fecha.
+	path('cuponesfecha_informe/', CuponesFechaInformeView.as_view(), 
+		 name='cuponesfecha_informe_list'),
+	path('cuponesfecha/vista-preliminar/', cuponesfecha_vista_pantalla, 
+		 name="cuponesfecha_vista_pantalla"),
+	path("cuponesfecha/vista-pdf/", cuponesfecha_vista_pdf, 
+		 name="cuponesfecha_vista_pdf"),
+	path("cuponesfecha/vista-excel/", cuponesfecha_vista_excel, 
+		 name="cuponesfecha_vista_excel"),
+	path("cuponesfecha/vista-csv/", cuponesfecha_vista_csv, 
+		 name="cuponesfecha_vista_csv"),
+	
+	#-- Egresos de Caja.
+	path('egresoscaja_informe/', EgresosCajaInformeView.as_view(), 
+		 name='egresoscaja_informe_list'),
+	path('egresoscaja/vista-preliminar/', egresoscaja_vista_pantalla, 
+		 name="egresoscaja_vista_pantalla"),
+	path("egresoscaja/vista-pdf/", egresoscaja_vista_pdf, 
+		 name="egresoscaja_vista_pdf"),
+	path("egresoscaja/vista-excel/", egresoscaja_vista_excel, 
+		 name="egresoscaja_vista_excel"),
+	path("egresoscaja/vista-csv/", egresoscaja_vista_csv, 
+		 name="egresoscaja_vista_csv"),
+	
+	#-- Arqueo de Caja.
+	path('cajaarqueo_informe/', CajaArqueoInformeView.as_view(), 
+		 name='cajaarqueo_informe_list'),
+	path('cajaarqueo/vista-preliminar/', cajaarqueo_vista_pantalla, 
+		 name="cajaarqueo_vista_pantalla"),
+	path("cajaarqueo/vista-pdf/", cajaarqueo_vista_pdf, 
+		 name="cajaarqueo_vista_pdf"),
+	path("cajaarqueo/vista-excel/", cajaarqueo_vista_excel, 
+		 name="cajaarqueo_vista_excel"),
+	path("cajaarqueo/vista-csv/", cajaarqueo_vista_csv, 
+		 name="cajaarqueo_vista_csv"),
 	
 	
 	

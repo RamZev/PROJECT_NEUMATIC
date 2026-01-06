@@ -1,12 +1,13 @@
-# neumatic\apps\informes\forms\buscador_chequerecibo_forms.py
+# neumatic\apps\informes\forms\buscador_cuponesfecha_forms.py
 from django import forms
 from datetime import date
 
 from .informes_generics_forms import InformesGenericForm
-from diseno_base.diseno_bootstrap import (formclassdate, formclasstext)
+from apps.maestros.models.sucursal_models import Sucursal
+from diseno_base.diseno_bootstrap import (formclassselect, formclassdate)
 
 
-class BuscadorChequeReciboForm(InformesGenericForm):
+class BuscadorCuponesFechaForm(InformesGenericForm):
 	
 	fecha_desde = forms.DateField(
 		required=False, 
@@ -18,8 +19,20 @@ class BuscadorChequeReciboForm(InformesGenericForm):
 		label="Hasta Fecha",
 		widget=forms.TextInput(attrs={'type':'date', **formclassdate})
 	)
+	sucursal = forms.ModelChoiceField(
+		queryset=Sucursal.objects.filter(estatus_sucursal=True), 
+		required=False,
+		label="Sucursal",
+		widget=forms.Select(attrs={**formclassselect})
+	)
 	
 	def __init__(self, *args, **kwargs):
+		"""
+		Inicializa el formulario con valores predeterminados:
+		- `fecha_desde` se establece en el 1 del mes y año actual.
+		- `fecha_hasta` se establece en la fecha actual.
+		"""
+		
 		super().__init__(*args, **kwargs)
 		
 		if "fecha_desde" not in self.initial:
