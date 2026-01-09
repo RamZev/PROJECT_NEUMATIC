@@ -948,8 +948,70 @@
 				}
 			}
 			
+			///////////
 			// Configurar el botón "Aplicar Recuento"
 			const aplicarRecuentoBtn = document.getElementById('aplicarRecuento');
+			if (aplicarRecuentoBtn) {
+				aplicarRecuentoBtn.addEventListener('click', function() {
+					const totalRecuentoSpan = document.getElementById('totalRecuento');
+					const total = parseFloat(totalRecuentoSpan?.textContent) || 0;
+					
+					if (recuentoInput) {
+						recuentoInput.value = total.toFixed(2);
+						
+						// Calcular diferencia automáticamente
+						calcularDiferencia();
+						
+						console.log('Recuento aplicado:', total.toFixed(2));
+						
+						// RECOLECTAR DATOS DEL RECUENTO PARA ENVIAR AL SERVIDOR
+						const datosRecuento = [];
+						
+						for (let i = 1; i <= 15; i++) {
+							const inputCantidad = document.getElementById('cantidad-' + i);
+							const celdaValor = document.getElementById('valor-' + i);
+							
+							if (inputCantidad && celdaValor) {
+								const cantidad = parseInt(inputCantidad.value) || 0;
+								if (cantidad > 0) {
+									const valor = parseFloat(celdaValor.textContent) || 0;
+									const totalFila = valor * cantidad;
+									
+									datosRecuento.push({
+										fila: i,
+										cantidad: cantidad,
+										valor: valor,
+										detalle: valor.toFixed(2) + ' pesos',
+										total: totalFila
+									});
+								}
+							}
+						}
+						
+						// Crear campo hidden en el formulario con los datos
+						let inputHidden = document.querySelector('input[name="recuento_data"]');
+						if (!inputHidden) {
+							inputHidden = document.createElement('input');
+							inputHidden.type = 'hidden';
+							inputHidden.name = 'recuento_data';
+							document.getElementById('cajaForm').appendChild(inputHidden);
+						}
+						inputHidden.value = JSON.stringify(datosRecuento);
+						
+						console.log('Datos recuento para guardar:', datosRecuento);
+					}
+					
+					// Cerrar el modal
+					const modalElement = document.getElementById('recuentoModal');
+					const modal = bootstrap.Modal.getInstance(modalElement);
+					if (modal) {
+						modal.hide();
+					}
+				});
+			}
+			///////////
+			
+			/*
 			if (aplicarRecuentoBtn) {
 				aplicarRecuentoBtn.addEventListener('click', function() {
 					const totalRecuentoSpan = document.getElementById('totalRecuento');
@@ -973,6 +1035,7 @@
 					alert(`✓ Recuento aplicado: $${total.toFixed(2)}\nLa diferencia se ha recalculado automáticamente.`);
 				});
 			}
+			*/
 			
 			// Limpiar todos los inputs cuando se abre el modal
 			btnAbrirRecuento.addEventListener('click', function() {

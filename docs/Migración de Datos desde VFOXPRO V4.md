@@ -286,6 +286,8 @@ python 05_migra_recibo.py
 
 python 06_migra_compra.py
 
+python 07_migra_caja.py  
+
 De la carpeta data_load copie y ejecute los contenidos de los scripts SQL en SQLite3, luego de abrir la BD neumatic.
 
 Cada vez que ejecute un script grabe los cambios
@@ -294,23 +296,25 @@ Cada vez que ejecute un script grabe los cambios
 
 auth_group.sql
 
-auth_group_permissions.sql
+auth_group_permissions.sq
 
-usuarios_user.sql'
+usuarios_user.sql
 
-usuarios_user_groups.sql'
+usuarios_user_groups.sql
 
-menu_menuheading.sql'
+menu_menuheading.sql
 
-menu_menuitem.sql'
+menu_menuitem.sql
 
-menu_menuitem_groups.sql'
+menu_menuitem_groups.sql
 
 **Importante:**
 
 Estos scripts los debe generar desde la base de datos SQL 
 
 Cuando lo haga, en el script usuarios_user.sql, **elimine** el primer insert (usuario admin)  
+
+
 
 **Scripts Complementarios**
 
