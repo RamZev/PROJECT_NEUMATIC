@@ -1,13 +1,12 @@
-# neumatic\apps\informes\forms\buscador_chequerecibo_forms.py
+# neumatic\apps\informes\forms\buscador_detallecomprobantes_forms.py
 from django import forms
-from datetime import date
 
 from .informes_generics_forms import InformesGenericForm
 from apps.ventas.models.caja_models import Caja
-from diseno_base.diseno_bootstrap import formclasstext
+from diseno_base.diseno_bootstrap import (formclasstext)
 
 
-class BuscadorChequeReciboForm(InformesGenericForm):
+class BuscadorDetalleComprobantesForm(InformesGenericForm):
 	
 	caja = forms.IntegerField(
 		required=False,

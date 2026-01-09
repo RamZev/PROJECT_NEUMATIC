@@ -268,7 +268,7 @@ Cajas ejemplos:
  8000786 ==> T:6 E:1
  8000764 ==> T:19 E:4
  1001848 ==> T:9 E:44 *
- 1001815 ==> T:12 E:32 *
+ 1001815 ==> F:12 E:32 *
 
 *******************************************************
 
@@ -328,28 +328,6 @@ UPDATE caja_detalle SET tipo_movimiento=2 WHERE idventas=-2 AND tipo_movimiento<
 
 
 ##################################################################################################################################
-/* 2do. Reporte: Solo comprobantes de Contado (condicion_comprobante=1).
-  "2.- Esta Query muestra los comprobantes de una caja solo de contado, sirve para tomarlo como efectivo en caja, 
-   el filtro debe ser condición de la factura = 1 y no participar en estadísticas, El filtro por parámetros es por Fecha y Sucursal." */
-
---CREATE VIEW vlCajaComprobantes AS
-SELECT factura.id_factura,
-	factura.compro, factura.letra_comprobante, factura.numero_comprobante, factura.fecha_comprobante,
-	factura.id_cliente_id, factura.nombre_factura, factura.condicion_comprobante,
-	factura.total*comprobante_venta.mult_caja AS total, factura.id_user_id, usuarios_user.iniciales,
-	factura.id_sucursal_id, factura.no_estadist
-FROM factura
-	INNER JOIN comprobante_venta ON factura.id_comprobante_venta_id = comprobante_venta.id_comprobante_venta
-	INNER JOIN usuarios_user ON factura.id_user_id = usuarios_user.id
-	LEFT JOIN caja ON factura.id_caja_id = caja.id_caja
-WHERE comprobante_venta.mult_caja <> 0
-	AND factura.no_estadist = False
-	AND factura.condicion_comprobante = 1 
-	AND caja.numero_caja = 1001961
-ORDER by factura.compro, factura.letra_comprobante, factura.numero_comprobante
-
-
-
 /* 3er. Reporte: Todos los comprobantes (Contado y Cta. Cte.) es el que se emplea en "Planilla de Caja -> Imprimir detalle de Comprobantes"
    "3.- Esta consulta es igual a la anterior, pero incluye todos los comprobantes sin diferencias condición y no estadísticas." */
 
@@ -369,8 +347,27 @@ WHERE comprobante_venta.mult_caja <> 0
 ORDER by factura.compro, factura.letra_comprobante, factura.numero_comprobante
 
 
+SELECT 
+	comprobante_venta.nombre_comprobante_venta AS 'Comprobante',
+	factura.letra_comprobante, factura.numero_comprobante, factura.fecha_comprobante,
+	factura.id_cliente_id, cliente.nombre_cliente, factura.condicion_comprobante,
+	factura.total*comprobante_venta.mult_caja AS total,
+	factura.id_user_id, usuarios_user.iniciales,
+	factura.id_sucursal_id, sucursal.nombre_sucursal
+FROM factura
+	INNER JOIN comprobante_venta ON factura.id_comprobante_venta_id = comprobante_venta.id_comprobante_venta
+	INNER JOIN cliente ON factura.id_cliente_id = cliente.id_cliente
+	INNER JOIN sucursal ON factura.id_sucursal_id = sucursal.id_sucursal
+	LEFT JOIN usuarios_user ON factura.id_user_id = usuarios_user.id
+	LEFT JOIN caja ON factura.id_caja_id = caja.id_caja
+WHERE comprobante_venta.mult_caja <> 0 
+	AND factura.no_estadist = False
+	--AND caja.numero_caja = 1001963
+	AND caja.numero_caja = 1001668
+ORDER by factura.compro, factura.letra_comprobante, factura.numero_comprobante
 
-/* 4to. Reporte
+##################################################################################################################################
+/* 4to. Reporte: Este es el Detalle de Caja.
    "Esta consulta es por número de caja que se debe pasar por parámetro también y saca todo el detalle de comprobantes de la caja." */
  
 --CREATE VIEW vlCajaDetalle AS
@@ -387,6 +384,9 @@ FROM caja_detalle
 	JOIN cliente ON factura.id_cliente_id = cliente.id_cliente
 	LEFT JOIN forma_pago ON caja_detalle.id_forma_pago_id = forma_pago.id_forma_pago
 ORDER by factura.compro, factura.letra_comprobante, factura.numero_comprobante
+
+
+------------
 
 
 Consultas Control:
@@ -406,5 +406,47 @@ FROM factura
 WHERE numero_comprobante in (100144380, 100144381, 100144382, 100144383, 100144384, 100144385, 100144386, 100144387, 100144388, 100144389, 100144390, 100144391, 100144392, 100144393, 100144394, 100144395, 100144396, 100144397, 100144398, 100144399, 100144400, 100144387) 
 
 
+
+/* Vista vlMedioPagos (VFP): Determina resumen de montos en Planilla de Caja.
+   (Tarjeta Crédito, Tarjeta Débito, Depòsito, Dólares, Cheques, Retenciones, Compensa Facturas, Mercado Pago) 
+   Agrupando según la relación con la tabla formapago.dbf
+*/
+SELECT 
+	Mediopagos.idventa, Facturas.compro, Facturas.letra,;
+	Facturas.numero, Facturas.fecha, Facturas.cliente, Mediopagos.formapago,;
+	Facturas.sucursal, Facturas.usuario,;
+	Mediopagos.importe*Codven.mult_caja AS importe, Facturas.nombre;
+FROM mediopagos, facturas, codven;
+WHERE Mediopagos.idventa = Facturas.id;
+   AND Facturas.compro = Codven.compro;
+   AND (Facturas.sucursal = ?nSuc;
+   AND Facturas.fecha = ?dFecha;
+   AND Codven.mult_caja <> 0);
+ ORDER BY Mediopagos.formapago
+
+
+CONSIDERACIONES:
+- CajaDetalle: Falta migrar id_forma_pago desde la tabla cajadetalle.dbf
+
 ##################################################################################################################################
+##################################################################################################################################
+##################################################################################################################################
+
+-- Script para agregar nueva opción.
+INSERT INTO "main"."menu_menuitem" ("name", "url_name", "query_params", "icon", "is_collapse", "order", "heading_id", "parent_id") 
+	VALUES ('Arqueo de Caja', 'cajaarqueo_informe_list', '', '', '0', 1, NULL, 155);
+
+-- Script para modificar el orden de las opciones existentes.
+UPDATE "main"."menu_menuitem" SET
+	"order" = 2 WHERE "name" = 'Egresos de Caja';
+	
+UPDATE "main"."menu_menuitem" SET
+	"order" = 3 WHERE "name" = 'Detalle de Tarjetas Recibidas';
+	
+UPDATE "main"."menu_menuitem" SET
+	"order" = 4 WHERE "name" = 'Detalle de Cupones por Fechas';
+	
+UPDATE "main"."menu_menuitem" SET
+	"order" = 5 WHERE "name" = 'Detalle de Cheques Recibidos';
+
 

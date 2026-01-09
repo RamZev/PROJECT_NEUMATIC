@@ -1,9 +1,12 @@
-# neumatic\apps\informes\views\cajaarqueo_list_views.py
+# neumatic\apps\informes\views\detallecomprobantes_list_views.py
 
 from django.shortcuts import render
 from django.http import HttpResponse
 from datetime import datetime
 from django.templatetags.static import static
+from django.db.models import F, Value
+from django.db.models.functions import Concat, Substr, Cast, LPad
+from django.db.models import Value, CharField
 
 #-- ReportLab:
 from reportlab.lib import colors
@@ -11,29 +14,30 @@ from reportlab.lib.pagesizes import A4, landscape, portrait
 from reportlab.platypus import Paragraph
 
 from .report_views_generics import *
-from apps.ventas.models.caja_models import CajaArqueo
+from apps.ventas.models.factura_models import Factura
 from apps.ventas.models.caja_models import Caja
-from ..forms.buscador_cajaarqueo_forms import BuscadorCajaArqueoForm
-from utils.utils import deserializar_datos, normalizar, formato_argentino, formato_argentino_entero
+from ..forms.buscador_detallecomprobantes_forms import BuscadorDetalleComprobantesForm
+from utils.utils import deserializar_datos, normalizar, format_date, formato_argentino, formato_argentino_entero
 from utils.helpers.export_helpers import ExportHelper, PDFGenerator
 
 
 class ConfigViews:
 	
 	#-- Título del reporte.
-	report_title = "Arqueo de Caja"
+	report_title = "Comprobantes de Venta"
 	
 	#-- Modelo.
-	model = CajaArqueo
+	# model = Factura
 	
 	#-- Formulario asociado al modelo.
-	form_class = BuscadorCajaArqueoForm
+	form_class = BuscadorDetalleComprobantesForm
 	
 	#-- Aplicación asociada al modelo.
 	app_label = "informes"
 	
 	#-- Nombre del modelo en minúsculas.
-	model_string = model.__name__.lower()
+	# model_string = model.__name__.lower()
+	model_string = "detallecomprobantes"
 	
 	#-- Plantilla base.
 	template_list = f'{app_label}/maestro_informe.html'
@@ -61,46 +65,119 @@ class ConfigViews:
 	
 	#-- Establecer las columnas del reporte y sus atributos.
 	table_info = {
-		"cantidad": {
-			"label": "Cantidad",
-			"col_width_pdf": 60,
+		"id_comprobante_venta__nombre_comprobante_venta": {
+			"label": "Comprobante",
+			"col_width_pdf": 80,
 			"pdf_paragraph": False,
 			"date_format": None,
-			"pdf": True,
+			"pdf": False,
 			"excel": True,
 			"csv": True,
 		},
-		"valor": {
-			"label": "Valor",
-			"col_width_pdf": 80,
+		"fecha_comprobante": {
+			"label": "Fecha",
+			"col_width_pdf": 50,
 			"pdf_paragraph": False,
 			"date_format": None,
 			"pdf": True,
 			"excel": True,
 			"csv": True
 		},
-		"detalle": {
-			"label": "Detalle",
-			"col_width_pdf": 100,
+		"comprobante_completo": {
+			"label": "Comprobante",
+			"col_width_pdf": 70,
 			"pdf_paragraph": False,
 			"date_format": None,
 			"pdf": True,
 			"excel": True,
 			"csv": True
 		},
-		"total": {
+		"id_cliente": {
+			"label": "Cód.",
+			"col_width_pdf": 40,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
+		"id_cliente__nombre_cliente": {
+			"label": "Cliente",
+			"col_width_pdf": 220,
+			"pdf_paragraph": True,
+			"date_format": None,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
+		"condicion_comprobante": {
+			"label": "Condición",
+			"col_width_pdf": 40,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+		"total_calculado": {
 			"label": "Total",
-			"col_width_pdf": 80,
+			"col_width_pdf": 0,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+		"contado": {
+			"label": "Contado",
+			"col_width_pdf": 70,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"pdf": True,
+			"excel": False,
+			"csv": False
+		},
+		"cta_cte": {
+			"label": "Cta. Cte.",
+			"col_width_pdf": 70,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"pdf": True,
+			"excel": False,
+			"csv": False
+		},
+		"id_user__iniciales": {
+			"label": "Op.",
+			"col_width_pdf": 30,
 			"pdf_paragraph": False,
 			"date_format": None,
 			"pdf": True,
 			"excel": True,
 			"csv": True
 		},
+		"id_sucursal": {
+			"label": "ID Suc.",
+			"col_width_pdf": 0,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+		"id_sucursal__nombre_sucursal": {
+			"label": "Sucursal",
+			"col_width_pdf": 0,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+		
 	}
 
 
-class CajaArqueoInformeView(InformeFormView):
+class DetalleComprobantesInformeView(InformeFormView):
 	config = ConfigViews  #-- Ahora la configuración estará disponible en self.config.
 	form_class = ConfigViews.form_class
 	template_name = ConfigViews.template_list
@@ -119,15 +196,46 @@ class CajaArqueoInformeView(InformeFormView):
 		
 		caja_obj = Caja.objects.filter(numero_caja=caja).first()
 		
-		#-- Iniciar el queryset.
-		queryset = CajaArqueo.objects.filter(
-			id_caja=caja_obj.id_caja
+		queryset = Factura.objects.select_related(
+			'id_comprobante_venta',
+			'id_cliente',
+			'id_sucursal',
+			'id_user'
+		).filter(
+			no_estadist=False,
+			id_caja=caja_obj,
+		).exclude(
+			id_comprobante_venta__mult_caja=0
+		).annotate(
+			#-- Convertir número a texto con ceros.
+			numero_texto=LPad(
+				Cast(F('numero_comprobante'), CharField()),
+				12,
+				Value('0')
+			)
+		).annotate(
+			#-- Crear el formato final.
+			comprobante_completo=Concat(
+				F('letra_comprobante'),
+				Value('  '),
+				Substr(F('numero_texto'), 1, 4),
+				Value('-'),
+				Substr(F('numero_texto'), 5, 8)
+			)
+		).annotate(
+			total_calculado=F('total') * F('id_comprobante_venta__mult_caja')			
 		).values(
-			'cantidad',
-			'valor',
-			'detalle',
-			'total',
-		)
+			'id_comprobante_venta__nombre_comprobante_venta',
+			'comprobante_completo',
+			'fecha_comprobante',
+			'id_cliente',
+			'id_cliente__nombre_cliente',
+			'condicion_comprobante',
+			'total_calculado',
+			'id_user__iniciales',
+			'id_sucursal',
+			'id_sucursal__nombre_sucursal',
+		).order_by('id_comprobante_venta__nombre_comprobante_venta', 'comprobante_completo')
 		
 		return list(queryset)
 		
@@ -161,14 +269,42 @@ class CajaArqueoInformeView(InformeFormView):
 		
 		# **************************************************
 		
-		#-- Calcular el total general sumando los valores de la lista.
-		total_general = sum(item.get('total', 0) for item in queryset) if queryset else 0.0
-		
+		datos_estructurados = {}
+		total_contado = 0.0
+		total_cta_cte = 0.0
+		for item in queryset:
+			compro = item['id_comprobante_venta__nombre_comprobante_venta']
+			if compro not in datos_estructurados:
+				datos_estructurados[compro] = {
+					'comprobantes': [],
+					'subtotal_contado': 0.0,
+					'subtotal_cta_cte': 0.0
+				}
+			datos = {
+				'id_comprobante_venta__nombre_comprobante_venta': item['id_comprobante_venta__nombre_comprobante_venta'],
+				'comprobante_completo': item['comprobante_completo'],
+				'fecha_comprobante': item['fecha_comprobante'],
+				'id_cliente': item['id_cliente'],
+				'id_cliente__nombre_cliente': item['id_cliente__nombre_cliente'],
+				'condicion_comprobante': item['condicion_comprobante'],
+				'contado': float(item['total_calculado'] or 0.0) if item['condicion_comprobante'] == 1 else 0.0,
+				'cta_cte': float(item['total_calculado'] or 0.0) if item['condicion_comprobante'] == 2 else 0.0,
+				'id_user__iniciales': item['id_user__iniciales'],
+				'id_sucursal': item['id_sucursal'],
+				'id_sucursal__nombre_sucursal': item['id_sucursal__nombre_sucursal'],
+			}
+			datos_estructurados[compro]['comprobantes'].append(datos)
+			datos_estructurados[compro]['subtotal_contado'] += float(item['total_calculado'] or 0.0) if item['condicion_comprobante'] == 1 else 0.0
+			datos_estructurados[compro]['subtotal_cta_cte'] += float(item['total_calculado'] or 0.0) if item['condicion_comprobante'] == 2 else 0.0
+			total_contado += float(item['total_calculado'] or 0.0) if item['condicion_comprobante'] == 1 else 0.0
+			total_cta_cte += float(item['total_calculado'] or 0.0) if item['condicion_comprobante'] == 2 else 0.0
+
 		# **************************************************
 		#-- Se retorna un contexto que será consumido tanto para la vista en pantalla como para la generación del PDF.
 		return {
-			"objetos": queryset,
-			"total_general": total_general,
+			"objetos": datos_estructurados,
+			"total_contado": total_contado,
+			"total_cta_cte": total_cta_cte,
 			"parametros_i": param_left,
 			"parametros_d": param_right,
 			'fecha_hora_reporte': fecha_hora_reporte,
@@ -186,7 +322,7 @@ class CajaArqueoInformeView(InformeFormView):
 		return context
 
 
-def cajaarqueo_vista_pantalla(request):
+def detallecomprobantes_vista_pantalla(request):
 	#-- Obtener el token de la querystring.
 	token = request.GET.get("token")
 	
@@ -203,7 +339,7 @@ def cajaarqueo_vista_pantalla(request):
 	return render(request, ConfigViews.reporte_pantalla, contexto_reporte)
 
 
-def cajaarqueo_vista_pdf(request):
+def detallecomprobantes_vista_pdf(request):
 	#-- Obtener el token de la querystring.
 	token = request.GET.get("token")
 	
@@ -251,16 +387,18 @@ def generar_pdf(contexto_reporte):
 	
 	#-- Obtener los títulos de las columnas (headers).
 	headers_titles = [value['label'] for value in ConfigViews.table_info.values() if value['pdf']]
+	headers_titles.insert(0, "")
 	
 	#-- Extrae los anchos de las columnas de la estructura ConfigViews.table_info.
 	col_widths = [value['col_width_pdf'] for value in ConfigViews.table_info.values() if value['pdf']]
+	col_widths.insert(0, 10)
 	
 	table_data = [headers_titles]
 	
 	#-- Estilos específicos adicionales iniciales de la tabla.
 	table_style_config = [
-		('ALIGN', (0,0), (1,-1), 'RIGHT'),
 		('ALIGN', (3,0), (3,-1), 'RIGHT'),
+		('ALIGN', (5,0), (6,-1), 'RIGHT'),
 	]
 	
 	#-- Contador de filas (empezamos en 1 porque la 0 es el header).
@@ -268,33 +406,82 @@ def generar_pdf(contexto_reporte):
 	
 	#-- Agregar los datos a la tabla.
 	
-	for objeto in contexto_reporte.get("objetos", []):
-		
-		#-- Agregar filas del detalle.
+	for compro, datos in contexto_reporte.get("objetos", []).items():
+		#-- Datos agrupado por Tipo de Comprobante.
 		table_data.append([
-			formato_argentino_entero(objeto['cantidad']),
-			formato_argentino(objeto['valor']),
-			objeto['detalle'],
-			formato_argentino(objeto['total']),
+			f"{compro.upper()}",
+			"", "", "", "", "", "", ""
+		])
+		
+		#-- Aplicar estilos a la fila de agrupación (fila actual).
+		table_style_config.extend([
+			('SPAN', (0,current_row), (-1,current_row)),
+			('FONTNAME', (0,current_row), (-1,current_row), 'Helvetica-Bold')
 		])
 		
 		current_row += 1
+		
+		#-- Agregar filas del detalle.
+		for comprobante in datos['comprobantes']:
+			table_data.append([
+				'',
+				format_date(comprobante['fecha_comprobante']),
+				comprobante['comprobante_completo'],
+				comprobante['id_cliente'],
+				Paragraph(str(comprobante['id_cliente__nombre_cliente']), generator.styles['CellStyle']),
+				formato_argentino(comprobante['contado']),
+				formato_argentino(comprobante['cta_cte']),
+				comprobante['id_user__iniciales'],
+			])
+			current_row += 1
+		
+		#-- Fila Total por Tipo de Comprobante.
+		table_data.append([
+			f"Totales Comprobante {compro.upper()}:",
+			"", "", "", "",
+			formato_argentino(datos['subtotal_contado']),
+			formato_argentino(datos['subtotal_cta_cte']),
+			""
+		])
+		
+		#-- Aplicar estilos a la fila de total (fila actual).
+		table_style_config.extend([
+			('FONTNAME', (0,current_row), (-1,current_row), 'Helvetica-Bold'),
+			('SPAN', (0,current_row), (-4,current_row)),
+			('ALIGN', (0,current_row), (-1,current_row), 'RIGHT'),
+			# ('LINEABOVE', (0,current_row), (-1,current_row), 0.5, colors.black),
+		])
+		
+		current_row += 1
+		
+		#-- Fila divisoria.
+		table_data.append(["", "", "", "", "", "", "", ""])
+		table_style_config.append(
+			('LINEBELOW', (0,current_row), (-1,current_row), 0.5, colors.gray),
+		)
+		current_row += 1
 	
 	#-- Fila Total General.
-	table_data.append(["Total en Caja:", "", "",  formato_argentino(contexto_reporte.get('total_general'))])
+	table_data.append([
+		"Total General:",
+		"", "", "", "",
+		formato_argentino(contexto_reporte.get('total_contado')),
+		formato_argentino(contexto_reporte.get('total_cta_cte')),
+		""
+	])
 	
 	#-- Aplicar estilos a la fila de total (fila actual).
 	table_style_config.extend([
 		('FONTNAME', (0,current_row), (-1,current_row), 'Helvetica-Bold'),
-		('SPAN', (0,current_row), (-2,current_row)),
+		('SPAN', (0,current_row), (-4,current_row)),
 		('ALIGN', (0,current_row), (-1,current_row), 'RIGHT'),
-		('LINEABOVE', (0,current_row), (-1,current_row), 0.5, colors.black),
+		# ('LINEABOVE', (0,current_row), (-1,current_row), 0.5, colors.black),
 	])
 	
 	return generator.generate(table_data, col_widths, table_style_config)
 
 
-def cajaarqueo_vista_excel(request):
+def detallecomprobantes_vista_excel(request):
 	token = request.GET.get("token")
 	if not token:
 		return HttpResponse("Token no proporcionado", status=400)
@@ -308,7 +495,7 @@ def cajaarqueo_vista_excel(request):
 	# ---------------------------------------------
 	
 	#-- Instanciar la vista y obtener el queryset.
-	view_instance = CajaArqueoInformeView()
+	view_instance = DetalleComprobantesInformeView()
 	view_instance.request = request
 	queryset = view_instance.obtener_queryset(cleaned_data)
 	
@@ -332,7 +519,7 @@ def cajaarqueo_vista_excel(request):
 	return response
 
 
-def cajaarqueo_vista_csv(request):
+def detallecomprobantes_vista_csv(request):
 	token = request.GET.get("token")
 	if not token:
 		return HttpResponse("Token no proporcionado", status=400)
@@ -345,7 +532,7 @@ def cajaarqueo_vista_csv(request):
 	cleaned_data = data["cleaned_data"]
 	
 	#-- Instanciar la vista para reejecutar la consulta y obtener el queryset.
-	view_instance = CajaArqueoInformeView()
+	view_instance = DetalleComprobantesInformeView()
 	view_instance.request = request
 	queryset = view_instance.obtener_queryset(cleaned_data)
 	

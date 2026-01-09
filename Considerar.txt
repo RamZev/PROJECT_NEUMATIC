@@ -30,3 +30,10 @@ Sanear la tabla producto
 Tabla producto_stock
 ===============================================
 0.- Para el Producto con Id. 48776 están triplicados los registros.
+
+
+
+===============================================
+Otros
+===============================================
+*- En las búsquedas (por medida u otros), considerar el campo estatus o búsquedas exactas (pendiente por confirmar Mario).

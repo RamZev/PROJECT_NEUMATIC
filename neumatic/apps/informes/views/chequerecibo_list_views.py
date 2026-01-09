@@ -75,7 +75,7 @@ class ConfigViews:
 		},
 		"codigo_banco": {
 			"label": "Cód. Bco.",
-			"col_width_pdf": 60,
+			"col_width_pdf": 50,
 			"pdf_paragraph": False,
 			"date_format": None,
 			"pdf": True,
@@ -84,7 +84,7 @@ class ConfigViews:
 		},
 		"id_banco__nombre_banco": {
 			"label": "Nombre Banco",
-			"col_width_pdf": 180,
+			"col_width_pdf": 220,
 			"pdf_paragraph": False,
 			"date_format": None,
 			"pdf": True,
@@ -154,7 +154,7 @@ class ChequeReciboInformeView(InformeFormView):
 	template_name = ConfigViews.template_list
 	
 	extra_context = {
-		"master_title": f'Informes - {ConfigViews.model._meta.verbose_name_plural}',
+		"master_title": f'Informes - {ConfigViews.report_title}',
 		"home_view_name": ConfigViews.home_view_name,
 		"buscador_template": f"{ConfigViews.app_label}/buscador_{ConfigViews.model_string}.html",
 		"js_file": ConfigViews.js_file,
@@ -376,7 +376,7 @@ def generar_pdf(contexto_reporte):
 				'',
 				cheque['comprobante_completo'],
 				cheque['codigo_banco'],
-				Paragraph(str(cheque['id_banco__nombre_banco']), generator.styles['CellStyle']),
+				Paragraph(str(cheque['id_banco__nombre_banco']), generator.styles['CellStyle']) if cheque['id_banco__nombre_banco'] else '',
 				cheque['sucursal'],
 				cheque['codigo_postal'],
 				format_date(cheque['fecha_cheque1']),

@@ -103,6 +103,7 @@ from apps.informes.views.detallecupones_list_views import *
 from apps.informes.views.cuponesfecha_list_views import *
 from apps.informes.views.egresoscaja_list_views import *
 from apps.informes.views.cajaarqueo_list_views import *
+from apps.informes.views.detallecomprobantes_list_views import *
 
 
 #-- Otras rutas.
@@ -1135,6 +1136,18 @@ urlpatterns = [
 		 name="cajaarqueo_vista_excel"),
 	path("cajaarqueo/vista-csv/", cajaarqueo_vista_csv, 
 		 name="cajaarqueo_vista_csv"),
+	
+	#-- Detalle de Comprobantes.
+	path('detallecomprobantes_informe/', DetalleComprobantesInformeView.as_view(), 
+		 name='detallecomprobantes_informe_list'),
+	path('detallecomprobantes/vista-preliminar/', detallecomprobantes_vista_pantalla, 
+		 name="detallecomprobantes_vista_pantalla"),
+	path("detallecomprobantes/vista-pdf/", detallecomprobantes_vista_pdf, 
+		 name="detallecomprobantes_vista_pdf"),
+	path("detallecomprobantes/vista-excel/", detallecomprobantes_vista_excel, 
+		 name="detallecomprobantes_vista_excel"),
+	path("detallecomprobantes/vista-csv/", detallecomprobantes_vista_csv, 
+		 name="detallecomprobantes_vista_csv"),
 	
 	
 	

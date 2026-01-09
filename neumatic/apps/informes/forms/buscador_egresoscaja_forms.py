@@ -47,13 +47,13 @@ class BuscadorEgresosCajaForm(InformesGenericForm):
 	def clean(self):
 		cleaned_data = super().clean()
 		
-		sucursal = cleaned_data.get("sucursal")
+		# sucursal = cleaned_data.get("sucursal")
 		fecha_desde = cleaned_data.get("fecha_desde")
 		fecha_hasta = cleaned_data.get("fecha_hasta")
 		
 		#-- Validaciones.
-		if sucursal is None:
-			self.add_error("sucursal", "Debe seleccionar una sucursal.")
+		# if sucursal is None:
+		# 	self.add_error("sucursal", "Debe seleccionar una sucursal.")
 		
 		if not fecha_desde:
 			self.add_error("fecha_desde", "Debe indicar una fecha válida.")

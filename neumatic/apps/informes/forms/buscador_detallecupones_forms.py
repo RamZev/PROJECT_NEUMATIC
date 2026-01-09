@@ -9,7 +9,6 @@ from diseno_base.diseno_bootstrap import (formclasstext)
 class BuscadorDetalleCuponesForm(InformesGenericForm):
 	
 	caja = forms.IntegerField(
-		min_value=0,
 		required=False,
 		label="Número de Caja",
 		widget=forms.NumberInput(attrs={**formclasstext})
@@ -18,13 +17,12 @@ class BuscadorDetalleCuponesForm(InformesGenericForm):
 	def clean(self):
 		cleaned_data = super().clean()
 		
-		caja = cleaned_data.get('caja') or 0
+		caja = cleaned_data.get('caja')
 		
 		#-- Validaciones.
-		if caja and caja < 1:
+		if caja is None or caja < 1:
 			self.add_error("caja", "Debe indicar un Número de Caja válido.")
-		
-		if caja:
+		else:
 			existe_caja = Caja.objects.filter(
 				numero_caja=caja
 			).exists()

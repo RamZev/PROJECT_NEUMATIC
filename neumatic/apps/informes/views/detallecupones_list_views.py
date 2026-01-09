@@ -145,7 +145,7 @@ class TarjetaReciboInformeView(InformeFormView):
 	template_name = ConfigViews.template_list
 	
 	extra_context = {
-		"master_title": f'Informes - {ConfigViews.model._meta.verbose_name_plural}',
+		"master_title": f'Informes - {ConfigViews.report_title}',
 		"home_view_name": ConfigViews.home_view_name,
 		"buscador_template": f"{ConfigViews.app_label}/buscador_{ConfigViews.model_string}.html",
 		"js_file": ConfigViews.js_file,

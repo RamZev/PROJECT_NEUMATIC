@@ -136,7 +136,6 @@ class EgresosCajaInformeView(InformeFormView):
 	template_name = ConfigViews.template_list
 	
 	extra_context = {
-		# "master_title": f'Informes - {ConfigViews.model._meta.verbose_name_plural}',
 		"master_title": f'Informes - {ConfigViews.report_title}',
 		"home_view_name": ConfigViews.home_view_name,
 		"buscador_template": f"{ConfigViews.app_label}/buscador_{ConfigViews.model_string}.html",
@@ -156,9 +155,16 @@ class EgresosCajaInformeView(InformeFormView):
 		).filter(
 			#--Aplicar filtros obligatorios.
 			tipo_movimiento=2,
-			id_caja__id_sucursal=sucursal,
 			id_caja__fecha_caja__range=(fecha_desde, fecha_hasta)
-		).annotate(
+		)
+		
+		if sucursal:
+			#--Aplicar filtros opcionales.
+			queryset = queryset.filter(
+				id_caja__id_sucursal=sucursal,
+			)
+		
+		queryset = queryset.annotate(
 			#-- Convertir número a texto con ceros.
 			numero_texto=LPad(
 				Cast(F('id_caja__numero_caja'), CharField()),
@@ -201,7 +207,7 @@ class EgresosCajaInformeView(InformeFormView):
 		
 		param_left = {}
 		param_right = {
-			"Sucursal": sucursal.nombre_sucursal,
+			"Sucursal": sucursal.nombre_sucursal if sucursal else "Todas",
 			"Fecha desde": fecha_desde.strftime("%d/%m/%Y"),
 			"Fecha hasta": fecha_hasta.strftime("%d/%m/%Y"),
 		}
