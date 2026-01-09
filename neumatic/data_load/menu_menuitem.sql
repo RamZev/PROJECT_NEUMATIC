@@ -143,8 +143,9 @@ INSERT INTO "menu_menuitem" VALUES (153,'Mínimos por CAI','vlproductominimo_inf
 INSERT INTO "menu_menuitem" VALUES (154,'Movimientos de Caja','caja_detalle_list','','',0,1,9,NULL);
 INSERT INTO "menu_menuitem" VALUES (155,'Caja','','','',1,6,4,NULL);
 INSERT INTO "menu_menuitem" VALUES (156,'Planilla de Caja','','','',0,0,NULL,155);
-INSERT INTO "menu_menuitem" VALUES (157,'Gastos de Caja','egresoscaja_informe_list','','',0,1,NULL,155);
-INSERT INTO "menu_menuitem" VALUES (158,'Detalle de Tarjetas Recibidas','tarjetarecibo_informe_list','','',0,2,NULL,155);
-INSERT INTO "menu_menuitem" VALUES (159,'Detalle de Cupones por Fechas','cuponesfecha_informe_list','','',0,3,NULL,155);
-INSERT INTO "menu_menuitem" VALUES (160,'Detalle de Cheques Recibidos','chequerecibo_informe_list','','',0,4,NULL,155);
+INSERT INTO "menu_menuitem" VALUES (157,'Egresos de Caja','egresoscaja_informe_list','','',0,2,NULL,155);
+INSERT INTO "menu_menuitem" VALUES (158,'Detalle de Tarjetas Recibidas','tarjetarecibo_informe_list','','',0,3,NULL,155);
+INSERT INTO "menu_menuitem" VALUES (159,'Detalle de Cupones por Fechas','cuponesfecha_informe_list','','',0,4,NULL,155);
+INSERT INTO "menu_menuitem" VALUES (160,'Detalle de Cheques Recibidos','chequerecibo_informe_list','','',0,5,NULL,155);
+INSERT INTO "menu_menuitem" VALUES (161,'Arqueo de Caja','cajaarqueo_informe_list','','',0,1,NULL,155);
 COMMIT;

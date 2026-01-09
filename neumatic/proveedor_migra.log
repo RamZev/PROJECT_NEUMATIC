@@ -32,3 +32,13 @@
 2026-01-05 12:22:57,463 - INFO - Relaciones precargadas en memoria
 2026-01-05 12:22:57,474 - INFO - DBF cargado en memoria. Total registros: 181
 2026-01-05 12:22:57,646 - INFO - Migración completada. Total registros procesados: 181/181. Tiempo: 0.85 segundos
+2026-01-08 11:23:41,213 - INFO - Iniciando migración de proveedores
+2026-01-08 11:23:41,326 - INFO - Precargando relaciones en memoria...
+2026-01-08 11:23:42,011 - INFO - Relaciones precargadas en memoria
+2026-01-08 11:23:42,051 - INFO - DBF cargado en memoria. Total registros: 181
+2026-01-08 11:23:42,230 - INFO - Migración completada. Total registros procesados: 181/181. Tiempo: 1.02 segundos
+2026-01-08 15:27:58,555 - INFO - Iniciando migración de proveedores
+2026-01-08 15:27:58,664 - INFO - Precargando relaciones en memoria...
+2026-01-08 15:27:59,334 - INFO - Relaciones precargadas en memoria
+2026-01-08 15:27:59,347 - INFO - DBF cargado en memoria. Total registros: 181
+2026-01-08 15:27:59,541 - INFO - Migración completada. Total registros procesados: 181/181. Tiempo: 0.99 segundos

@@ -1,6 +1,2 @@
-2025-12-23 12:10:21,001 - INFO - Eliminados 57416 registros existentes de ChequeRecibo
-2025-12-23 12:10:31,626 - ERROR - Error fatal en cargar_datos_cheque_recibo: [Errno 13] Permission denied: 'D:\\PROJECT_NEUMATIC\\neumatic\\data_load\\datavfox\\cheques.DBF'
-2025-12-23 12:10:48,139 - INFO - Eliminados 0 registros existentes de ChequeRecibo
-2025-12-23 15:08:32,218 - INFO - Eliminados 57405 registros existentes de ChequeRecibo
-2025-12-23 16:24:56,475 - INFO - Eliminados 1 registros existentes de ChequeRecibo
-2026-01-05 12:11:32,236 - INFO - Eliminados 0 registros existentes de ChequeRecibo
+2026-01-08 11:12:54,685 - INFO - Eliminados 0 registros existentes de ChequeRecibo
+2026-01-08 15:21:17,468 - INFO - Eliminados 0 registros existentes de ChequeRecibo

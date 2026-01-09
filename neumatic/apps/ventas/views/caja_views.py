@@ -2,9 +2,11 @@
 from django.urls import reverse_lazy
 from django import forms
 from django.db.models import Max
+from decimal import Decimal
+import json
 
 from apps.maestros.views.cruds_views_generics import *
-from ..models.caja_models import Caja, CajaDetalle
+from ..models.caja_models import Caja, CajaDetalle, CajaArqueo
 from ..forms.caja_forms import CajaForm
 
 
@@ -472,17 +474,39 @@ class CajaUpdateView(MaestroUpdateView):
             # 5. Asignar usuario actual
             form.instance.id_usercierre = self.request.user
             
-            # 6. Mensaje de éxito
-            # messages.success(
-            #     self.request, 
-            #     f'✅ Caja #{caja.numero_caja} cerrada exitosamente.<br>'
-            #     f'• Ingresos: <strong>${total_ingresos:.2f}</strong><br>'
-            #     f'• Egresos: <strong>${total_egresos:.2f}</strong><br>'
-            #     f'• Recuento: <strong>${recuento:.2f}</strong><br>'
-            #     f'• Diferencia: <strong>${form.instance.diferencia:+.2f}</strong><br>'
-            #     f'• Cerrada por: <strong>{self.request.user.get_full_name() or self.request.user.username}</strong>',
-            #     extra_tags='safe'
-            # )
+            ##################################################
+            # 6. GUARDAR RECUENTO DEL MODAL (NUEVO - LO IMPORTANTE)
+            recuento_data_json = self.request.POST.get('recuento_data')
+            if recuento_data_json:
+                try:
+                    # Parsear JSON
+                    recuento_data = json.loads(recuento_data_json)
+                    
+                    # Eliminar arqueos anteriores de esta caja
+                    CajaArqueo.objects.filter(id_caja=caja).delete()
+                    
+                    # Guardar cada denominación
+                    for item in recuento_data:
+                        cantidad = Decimal(str(item.get('cantidad', 0)))
+                        if cantidad > 0:  # Solo guardar si hay cantidad
+                            CajaArqueo.objects.create(
+                                id_caja=caja,
+                                cantidad=cantidad,
+                                valor=Decimal(str(item.get('valor', 0))),
+                                detalle=item.get('detalle', ''),
+                                total=Decimal(str(item.get('total', 0)))
+                            )
+                            
+                except Exception as e:
+                    # Si falla el recuento detallado, igual se cierra la caja
+                    # pero mostramos advertencia
+                    messages.warning(
+                        self.request,
+                        f'Caja cerrada pero el recuento detallado no se guardó: {str(e)}'
+                    )
+            
+            ##################################################
+            
 
             messages.info(
                 self.request,

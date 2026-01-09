@@ -27542,3 +27542,377 @@ Productos no encontrados (2):
 2026-01-05 17:59:38,969 - WARNING -  - Código convertido: 37610 | Valor original: 37610
 2026-01-05 17:59:38,969 - INFO - 
 Tiempo total: 1 minutos 29 segundos
+2026-01-07 14:50:36,191 - INFO - Iniciando migración. Total registros: 272648
+2026-01-07 14:50:36,192 - INFO - Cargando cachés de referencia...
+2026-01-07 14:50:47,614 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:50:48,809 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:50:50,044 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:50:51,239 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:50:52,643 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:50:52,645 - INFO - Progreso: 10000 registros procesados
+2026-01-07 14:50:53,859 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:50:55,059 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:50:56,259 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:50:57,449 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:50:58,631 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:50:58,633 - INFO - Progreso: 20000 registros procesados
+2026-01-07 14:50:59,815 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:51:01,011 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:51:02,406 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:51:03,616 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:51:04,822 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:51:04,825 - INFO - Progreso: 30000 registros procesados
+2026-01-07 14:51:06,089 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:51:07,272 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:51:08,459 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:51:09,845 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:51:11,032 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:51:11,034 - INFO - Progreso: 40000 registros procesados
+2026-01-07 14:51:12,206 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:51:13,410 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:51:14,611 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:51:15,829 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:51:17,004 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:51:17,007 - INFO - Progreso: 50000 registros procesados
+2026-01-07 14:51:18,191 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:51:19,596 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:51:20,776 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:51:21,963 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:51:23,148 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:51:23,150 - INFO - Progreso: 60000 registros procesados
+2026-01-07 14:51:24,357 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:51:25,557 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:51:26,739 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:51:28,147 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:51:29,326 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:51:29,328 - INFO - Progreso: 70000 registros procesados
+2026-01-07 14:51:30,528 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:51:31,703 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:51:32,896 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:51:34,108 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:51:35,502 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:51:35,504 - INFO - Progreso: 80000 registros procesados
+2026-01-07 14:51:36,667 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:51:37,855 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:51:39,048 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:51:40,236 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:51:41,417 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:51:41,419 - INFO - Progreso: 90000 registros procesados
+2026-01-07 14:51:42,611 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:51:43,789 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:51:45,222 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:51:46,425 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:51:47,654 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:51:47,656 - INFO - Progreso: 100000 registros procesados
+2026-01-07 14:51:48,855 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:51:50,052 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:51:51,257 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:51:52,486 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:51:53,919 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:51:53,922 - INFO - Progreso: 110000 registros procesados
+2026-01-07 14:51:55,160 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:51:56,401 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:51:57,599 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:51:58,829 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:52:00,018 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:52:00,020 - INFO - Progreso: 120000 registros procesados
+2026-01-07 14:52:01,237 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:52:02,621 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:52:03,818 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:52:05,029 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:52:06,210 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:52:06,213 - INFO - Progreso: 130000 registros procesados
+2026-01-07 14:52:07,406 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:52:08,575 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:52:09,760 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:52:10,941 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:52:12,351 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:52:12,353 - INFO - Progreso: 140000 registros procesados
+2026-01-07 14:52:13,543 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:52:14,735 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:52:15,972 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:52:17,179 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:52:18,363 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:52:18,365 - INFO - Progreso: 150000 registros procesados
+2026-01-07 14:52:19,565 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:52:20,955 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:52:22,139 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:52:23,335 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:52:24,531 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:52:24,533 - INFO - Progreso: 160000 registros procesados
+2026-01-07 14:52:25,719 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:52:26,903 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:52:28,092 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:52:29,287 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:52:30,672 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:52:30,674 - INFO - Progreso: 170000 registros procesados
+2026-01-07 14:52:31,872 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:52:33,052 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:52:34,232 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:52:35,448 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:52:36,651 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:52:36,653 - INFO - Progreso: 180000 registros procesados
+2026-01-07 14:52:37,824 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:52:39,202 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:52:40,392 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:52:41,572 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:52:42,757 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:52:42,759 - INFO - Progreso: 190000 registros procesados
+2026-01-07 14:52:43,932 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:52:45,155 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:52:46,567 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:52:47,754 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:52:48,945 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:52:48,948 - INFO - Progreso: 200000 registros procesados
+2026-01-07 14:52:50,158 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:52:51,380 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:52:52,606 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:52:53,842 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:52:55,063 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:52:55,065 - INFO - Progreso: 210000 registros procesados
+2026-01-07 14:52:56,495 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:52:57,690 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:52:58,934 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:53:00,183 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:53:00,401 - WARNING - Factura no encontrada ID: 11370
+2026-01-07 14:53:01,401 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:53:01,403 - INFO - Progreso: 220000 registros procesados
+2026-01-07 14:53:02,630 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:53:03,830 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:53:05,266 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:53:06,473 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:53:07,682 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:53:07,684 - INFO - Progreso: 230000 registros procesados
+2026-01-07 14:53:08,881 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:53:10,102 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:53:11,283 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:53:12,689 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:53:12,919 - WARNING - Factura no encontrada ID: 11433
+2026-01-07 14:53:12,919 - WARNING - Factura no encontrada ID: 11433
+2026-01-07 14:53:12,919 - WARNING - Factura no encontrada ID: 11433
+2026-01-07 14:53:12,920 - WARNING - Factura no encontrada ID: 11433
+2026-01-07 14:53:12,920 - WARNING - Factura no encontrada ID: 11433
+2026-01-07 14:53:12,920 - WARNING - Factura no encontrada ID: 11433
+2026-01-07 14:53:12,921 - WARNING - Factura no encontrada ID: 11433
+2026-01-07 14:53:13,910 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:53:13,912 - INFO - Progreso: 240000 registros procesados
+2026-01-07 14:53:15,120 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:53:16,312 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:53:17,526 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:53:18,746 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:53:19,946 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:53:19,948 - INFO - Progreso: 250000 registros procesados
+2026-01-07 14:53:21,142 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:53:22,549 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:53:23,739 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:53:24,934 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:53:26,173 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:53:26,175 - INFO - Progreso: 260000 registros procesados
+2026-01-07 14:53:26,215 - WARNING - Factura no encontrada ID: 11494
+2026-01-07 14:53:26,216 - WARNING - Factura no encontrada ID: 11494
+2026-01-07 14:53:26,216 - WARNING - Factura no encontrada ID: 11494
+2026-01-07 14:53:27,391 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:53:28,587 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:53:29,782 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:53:31,189 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:53:32,354 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:53:32,357 - INFO - Progreso: 270000 registros procesados
+2026-01-07 14:53:33,539 - INFO - Lote guardado: 2000 registros
+2026-01-07 14:53:33,905 - INFO - Último lote guardado: 614 registros
+2026-01-07 14:53:33,906 - INFO - 
+=== REPORTE FINAL ===
+2026-01-07 14:53:33,906 - INFO - Total registros procesados: 272614
+2026-01-07 14:53:33,907 - INFO - Total errores: 0
+2026-01-07 14:53:33,907 - WARNING - 
+Productos no encontrados (2):
+2026-01-07 14:53:33,907 - WARNING -  - Código convertido: 0 | Valor original: 0
+2026-01-07 14:53:33,908 - WARNING -  - Código convertido: 37610 | Valor original: 37610
+2026-01-07 14:53:33,908 - INFO - 
+Tiempo total: 2 minutos 57 segundos
+2026-01-08 15:18:43,226 - INFO - Iniciando migración. Total registros: 272648
+2026-01-08 15:18:43,242 - INFO - Cargando cachés de referencia...
+2026-01-08 15:18:54,335 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:18:54,884 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:18:55,435 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:18:55,984 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:18:56,735 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:18:56,735 - INFO - Progreso: 10000 registros procesados
+2026-01-08 15:18:57,274 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:18:57,874 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:18:58,702 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:18:59,396 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:19:00,076 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:19:00,076 - INFO - Progreso: 20000 registros procesados
+2026-01-08 15:19:00,734 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:19:01,380 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:19:02,277 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:19:02,913 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:19:03,582 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:19:03,582 - INFO - Progreso: 30000 registros procesados
+2026-01-08 15:19:04,246 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:19:04,875 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:19:05,581 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:19:06,463 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:19:07,044 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:19:07,044 - INFO - Progreso: 40000 registros procesados
+2026-01-08 15:19:07,674 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:19:08,224 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:19:08,796 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:19:09,341 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:19:09,894 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:19:09,894 - INFO - Progreso: 50000 registros procesados
+2026-01-08 15:19:10,442 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:19:11,231 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:19:11,781 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:19:12,362 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:19:12,921 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:19:12,921 - INFO - Progreso: 60000 registros procesados
+2026-01-08 15:19:13,511 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:19:14,080 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:19:14,642 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:19:15,480 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:19:16,030 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:19:16,030 - INFO - Progreso: 70000 registros procesados
+2026-01-08 15:19:16,596 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:19:17,192 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:19:17,743 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:19:18,293 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:19:19,117 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:19:19,135 - INFO - Progreso: 80000 registros procesados
+2026-01-08 15:19:19,790 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:19:20,478 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:19:21,096 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:19:21,771 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:19:22,387 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:19:22,389 - INFO - Progreso: 90000 registros procesados
+2026-01-08 15:19:22,971 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:19:23,545 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:19:24,390 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:19:25,002 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:19:25,585 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:19:25,585 - INFO - Progreso: 100000 registros procesados
+2026-01-08 15:19:26,265 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:19:26,926 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:19:27,509 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:19:28,154 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:19:28,935 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:19:28,935 - INFO - Progreso: 110000 registros procesados
+2026-01-08 15:19:29,551 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:19:30,130 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:19:30,783 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:19:31,352 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:19:31,911 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:19:31,927 - INFO - Progreso: 120000 registros procesados
+2026-01-08 15:19:32,465 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:19:33,266 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:19:33,835 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:19:34,395 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:19:34,970 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:19:34,970 - INFO - Progreso: 130000 registros procesados
+2026-01-08 15:19:35,544 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:19:36,122 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:19:36,756 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:19:37,376 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:19:38,146 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:19:38,146 - INFO - Progreso: 140000 registros procesados
+2026-01-08 15:19:38,705 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:19:39,274 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:19:39,822 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:19:40,415 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:19:40,991 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:19:40,991 - INFO - Progreso: 150000 registros procesados
+2026-01-08 15:19:41,608 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:19:42,381 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:19:42,934 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:19:43,494 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:19:44,037 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:19:44,037 - INFO - Progreso: 160000 registros procesados
+2026-01-08 15:19:44,639 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:19:45,236 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:19:45,792 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:19:46,380 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:19:47,149 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:19:47,149 - INFO - Progreso: 170000 registros procesados
+2026-01-08 15:19:47,702 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:19:48,263 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:19:48,803 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:19:49,376 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:19:49,909 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:19:49,909 - INFO - Progreso: 180000 registros procesados
+2026-01-08 15:19:50,537 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:19:51,275 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:19:51,832 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:19:52,388 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:19:52,951 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:19:52,951 - INFO - Progreso: 190000 registros procesados
+2026-01-08 15:19:53,517 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:19:54,089 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:19:54,849 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:19:55,416 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:19:55,978 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:19:55,978 - INFO - Progreso: 200000 registros procesados
+2026-01-08 15:19:56,562 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:19:57,116 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:19:57,674 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:19:58,268 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:19:58,948 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:19:58,948 - INFO - Progreso: 210000 registros procesados
+2026-01-08 15:19:59,700 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:20:00,268 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:20:00,845 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:20:01,424 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:20:01,623 - WARNING - Factura no encontrada ID: 11370
+2026-01-08 15:20:01,980 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:20:01,980 - INFO - Progreso: 220000 registros procesados
+2026-01-08 15:20:02,554 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:20:03,121 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:20:04,003 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:20:04,697 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:20:05,307 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:20:05,312 - INFO - Progreso: 230000 registros procesados
+2026-01-08 15:20:05,925 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:20:06,512 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:20:07,062 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:20:07,856 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:20:08,119 - WARNING - Factura no encontrada ID: 11433
+2026-01-08 15:20:08,121 - WARNING - Factura no encontrada ID: 11433
+2026-01-08 15:20:08,121 - WARNING - Factura no encontrada ID: 11433
+2026-01-08 15:20:08,121 - WARNING - Factura no encontrada ID: 11433
+2026-01-08 15:20:08,121 - WARNING - Factura no encontrada ID: 11433
+2026-01-08 15:20:08,121 - WARNING - Factura no encontrada ID: 11433
+2026-01-08 15:20:08,121 - WARNING - Factura no encontrada ID: 11433
+2026-01-08 15:20:08,497 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:20:08,499 - INFO - Progreso: 240000 registros procesados
+2026-01-08 15:20:09,118 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:20:09,687 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:20:10,261 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:20:10,820 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:20:11,387 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:20:11,388 - INFO - Progreso: 250000 registros procesados
+2026-01-08 15:20:11,953 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:20:12,717 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:20:13,292 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:20:13,868 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:20:14,441 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:20:14,449 - INFO - Progreso: 260000 registros procesados
+2026-01-08 15:20:14,493 - WARNING - Factura no encontrada ID: 11494
+2026-01-08 15:20:14,493 - WARNING - Factura no encontrada ID: 11494
+2026-01-08 15:20:14,494 - WARNING - Factura no encontrada ID: 11494
+2026-01-08 15:20:15,011 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:20:15,609 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:20:16,199 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:20:16,985 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:20:17,567 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:20:17,575 - INFO - Progreso: 270000 registros procesados
+2026-01-08 15:20:18,179 - INFO - Lote guardado: 2000 registros
+2026-01-08 15:20:18,383 - INFO - Último lote guardado: 614 registros
+2026-01-08 15:20:18,383 - INFO - 
+=== REPORTE FINAL ===
+2026-01-08 15:20:18,383 - INFO - Total registros procesados: 272614
+2026-01-08 15:20:18,383 - INFO - Total errores: 0
+2026-01-08 15:20:18,383 - WARNING - 
+Productos no encontrados (2):
+2026-01-08 15:20:18,383 - WARNING -  - Código convertido: 0 | Valor original: 0
+2026-01-08 15:20:18,383 - WARNING -  - Código convertido: 37610 | Valor original: 37610
+2026-01-08 15:20:18,385 - INFO - 
+Tiempo total: 1 minutos 35 segundos

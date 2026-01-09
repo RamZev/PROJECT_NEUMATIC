@@ -27832,3 +27832,19 @@
 2026-01-05 17:59:41,605 - WARNING - No se encontró PuntoVenta para Sucursal ID=12 en registro 712
 2026-01-05 17:59:41,645 - WARNING - No se encontró PuntoVenta para Sucursal ID=12 en registro 773
 2026-01-05 17:59:41,681 - ERROR - Error fatal en cargar_datos_movstock: UNIQUE constraint failed: factura.id_factura
+2026-01-07 14:50:32,974 - INFO - No se encontraron duplicados en el archivo DBF
+2026-01-07 14:50:33,279 - WARNING - Depósito ID=0 no encontrado en registro 422
+2026-01-07 14:50:33,432 - WARNING - No se encontró PuntoVenta para Sucursal ID=12 en registro 649
+2026-01-07 14:50:33,475 - WARNING - No se encontró PuntoVenta para Sucursal ID=12 en registro 712
+2026-01-07 14:50:33,513 - WARNING - No se encontró PuntoVenta para Sucursal ID=12 en registro 773
+2026-01-07 14:50:34,090 - INFO - Lote final guardado: 794 registros
+2026-01-07 14:50:34,090 - INFO - Migración completada. Registros: 794, Errores: 0
+2026-01-07 14:50:34,090 - INFO - Tiempo total: 1.16 segundos
+2026-01-08 15:18:39,763 - INFO - No se encontraron duplicados en el archivo DBF
+2026-01-08 15:18:40,189 - WARNING - Depósito ID=0 no encontrado en registro 422
+2026-01-08 15:18:40,395 - WARNING - No se encontró PuntoVenta para Sucursal ID=12 en registro 649
+2026-01-08 15:18:40,442 - WARNING - No se encontró PuntoVenta para Sucursal ID=12 en registro 712
+2026-01-08 15:18:40,489 - WARNING - No se encontró PuntoVenta para Sucursal ID=12 en registro 773
+2026-01-08 15:18:41,086 - INFO - Lote final guardado: 794 registros
+2026-01-08 15:18:41,086 - INFO - Migración completada. Registros: 794, Errores: 0
+2026-01-08 15:18:41,086 - INFO - Tiempo total: 1.40 segundos
