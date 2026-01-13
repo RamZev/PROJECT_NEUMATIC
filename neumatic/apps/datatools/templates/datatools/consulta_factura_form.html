@@ -4,34 +4,98 @@
 {% load custom_tags %}
 
 {% block style %}
-	body {
-		background-color: rgb(0, 204, 255);
-	}
-	
-	.tbl-container {
-		
-	}
-	
-	.tbl-fixed {
-		overflow-x: scroll;
-		overflow-y: scroll;
-		height: fit-content;
-		max-height: 60vh;
-		margin-top: 0px;
-		font-size: 80%;
-	}
-	table {
-		min-width: max-content;
-	}
-	table th {
-		position: sticky;
-		top: 0px;
-	}
-	
-	.decimal {
-		text-align: right;
-		font-familily: monospace;
-	}
+    body {
+        background-color: rgb(0, 204, 255);
+    }
+    
+    /* ELIMINAR transform Y USAR SOLO REDUCCIÓN DE TAMAÑO */
+    .tbl-container {
+        /* QUITAR transform, scale, etc. */
+        width: 100%;
+        max-width: 100%;
+        margin: 0;
+        padding: 0;
+    }
+    
+    /* Reducir la tabla directamente */
+    .tbl-container table {
+        font-size: 0.85em;  /* 15% más pequeño */
+        width: 100%;
+        margin: 0;
+        padding: 0;
+    }
+    
+    /* Reducir padding de celdas */
+    .tbl-container th,
+    .tbl-container td {
+        padding: 0.3rem 0.5rem !important;  /* Más compacto */
+    }
+    
+    /* Reducir botones dentro de tabla */
+    .tbl-container .btn-sm {
+        padding: 0.15rem 0.3rem;
+        font-size: 0.8em;
+        line-height: 1.1;
+    }
+    
+    /* Ajustar badge */
+    .tbl-container .badge {
+        font-size: 0.7em;
+        padding: 0.1rem 0.3rem;
+    }
+    
+    /* Scroll fijo */
+    .tbl-fixed {
+        overflow-x: auto;
+        overflow-y: auto;
+        height: fit-content;
+        max-height: 65vh;
+        margin-top: 5px;
+        margin-left: 0 !important;  /* Forzar sin margen izquierdo */
+        padding-left: 0 !important;
+    }
+    
+    /* Quitar min-width si causa problemas */
+    table {
+        /* min-width: max-content; */ /* Comentar esta línea temporalmente */
+        width: 100%;
+    }
+    
+    table th {
+        position: sticky;
+        top: 0;
+        background-color: #0d6efd;
+        color: white;
+        z-index: 10;
+    }
+    
+    .decimal {
+        text-align: right;
+        font-family: monospace;
+    }
+
+    .pagination {
+        margin-top: 20px;
+        margin-bottom: 10px;
+    }
+    
+    .page-link {
+        padding: 0.4rem 0.75rem;
+        font-size: 0.9em;
+    }
+    
+    /* Mejorar separación entre tabla y paginación */
+    .table-responsive.tbl-container {
+        margin-bottom: 5px;  /* Reducir margen inferior del contenedor de tabla */
+    }
+    
+    /* Contenedor de paginación con buen espaciado */
+    .pagination-container {
+        padding-top: 15px;
+        border-top: 1px solid #dee2e6;
+        margin-top: 10px;
+    }
+
 {% endblock style %}
 
 {% block maincomponent %}
@@ -40,6 +104,30 @@
 			<main>
 				<div class="container-fluid">
 				<h4>Buscar Facturas por Cliente</h4>
+
+				<!-- === NUEVO: AÑADE ESTE BLOQUE PARA MOSTRAR MENSAJES === -->
+				{% if messages %}
+				<div class="messages mb-3">
+					{% for message in messages %}
+					<div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+						<strong>
+							{% if message.tags == 'success' %}
+								<i class="bi bi-check-circle"></i> Éxito:
+							{% elif message.tags == 'warning' %}
+								<i class="bi bi-exclamation-triangle"></i> Advertencia:
+							{% elif message.tags == 'error' %}
+								<i class="bi bi-x-circle"></i> Error:
+							{% else %}
+								<i class="bi bi-info-circle"></i> Información:
+							{% endif %}
+						</strong>
+						{{ message }}
+						<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+					</div>
+					{% endfor %}
+				</div>
+				{% endif %}
+                <!-- === FIN DEL BLOQUE DE MENSAJES === -->
 				
 				<!-- Formulario de búsqueda -->
 				<form method="get" class="row g-3 mb-4">
@@ -54,7 +142,7 @@
 				</form>
 
 				<!-- Tabla de facturas -->
-				<div class="table-responsive">
+				<div class="table-responsive tbl-container">
 					<table class="table table-bordered table-striped">
 					<thead class="table-primary">
 						<tr>
@@ -87,14 +175,14 @@
 								
 								<!-- Botón: Crear Stock Cliente -->
 								{% if not factura.tiene_stock_cliente %}
-									<form method="post" action="{% url 'crear_stock_cliente' factura.id_factura %}" style="display:inline;" class="ms-1">
-									{% csrf_token %}
-									<input type="hidden" name="buscar_por" value="{{ buscar_por }}">
-									<input type="hidden" name="page" value="{{ page_obj.number }}">
-									<button type="submit" class="btn btn-sm btn-success" 
-											onclick="return confirm('¿Desea generar el stock del cliente a partir de los productos de esta factura?');">
-										<i class="bi bi-box-seam"></i> Crear Stock
-									</button>
+									<form method="post" 
+										action="{% url 'crear_stock_cliente' factura.id_factura %}{% if request.GET.urlencode %}?{{ request.GET.urlencode }}{% endif %}"
+										style="display:inline;" class="ms-1">
+										{% csrf_token %}
+										<button type="submit" class="btn btn-sm btn-success" 
+												onclick="return confirm('¿Desea generar el stock del cliente a partir de los productos de esta factura?');">
+											<i class="bi bi-box-seam"></i> Crear Stock
+										</button>
 									</form>
 								{% else %}
 									<span class="badge bg-warning text-dark ms-1">Stock creado</span>
@@ -141,7 +229,9 @@
 						{% endfor %}
 					</tbody>
 					</table>
+				</div>
 
+				<div class="pagination-container mt-3 pt-3 border-top">
 					{% if page_obj.has_other_pages %}
 					<nav aria-label="Paginación">
 						<ul class="pagination justify-content-center">
@@ -173,7 +263,7 @@
 					{% endif %}
 
 				</div>
-				</div>
+				
 			</main>
 		</div>
 	{% endblock principalcomponent %}
