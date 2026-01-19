@@ -32,8 +32,16 @@ class BuscadorEgresosCajaForm(InformesGenericForm):
 		- `fecha_desde` se establece en el 1 del mes y año actual.
 		- `fecha_hasta` se establece en la fecha actual.
 		"""
-		
+		user = kwargs.pop('user', None)
 		super().__init__(*args, **kwargs)
+		
+		#-- Si la jerarquía del usuario es diferente a 'A' asiganar su sucural.
+		if user and user.jerarquia != "A":
+			#-- Fijar el campo sucursal del usuario.
+			self.fields['sucursal'].initial = user.id_sucursal
+			
+			#-- Deshabilitar el combo Sucursal.
+			self.fields['sucursal'].disabled = True
 		
 		if "fecha_desde" not in self.initial:
 			fecha_inicial = date(date.today().year, date.today().month, 1)

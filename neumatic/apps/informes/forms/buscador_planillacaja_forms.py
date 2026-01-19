@@ -1,4 +1,4 @@
-# neumatic\apps\informes\forms\buscador_cajaarqueo_forms.py
+# neumatic\apps\informes\forms\buscador_planillacaja_forms.py
 from django import forms
 
 from .informes_generics_forms import InformesGenericForm
@@ -7,7 +7,7 @@ from diseno_base.diseno_bootstrap import (formclasstext)
 from utils.helpers.export_helpers import JerarquiaSucursal
 
 
-class BuscadorCajaArqueoForm(InformesGenericForm):
+class BuscadorPlanillaCajaForm(InformesGenericForm):
 	
 	caja = forms.IntegerField(
 		required=False,

@@ -23,7 +23,7 @@ from utils.helpers.export_helpers import ExportHelper, PDFGenerator
 class ConfigViews:
 	
 	#-- Título del reporte.
-	report_title = "Detalle de Tarjetas"
+	report_title = "Detalle de Tarjetas por fecha"
 	
 	#-- Modelo.
 	model = TarjetaRecibo
@@ -65,6 +65,15 @@ class ConfigViews:
 	
 	#-- Establecer las columnas del reporte y sus atributos.
 	table_info = {
+		"id_factura__id_caja__numero_caja": {
+			"label": "Caja",
+			"col_width_pdf": 0,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"pdf": False,
+			"excel": True,
+			"csv": True,
+		},
 		"id_tarjeta": {
 			"label": "Cód. Tarjeta",
 			"col_width_pdf": 60,
@@ -137,6 +146,24 @@ class ConfigViews:
 			"excel": True,
 			"csv": True
 		},
+		"id_factura__id_sucursal": {
+			"label": "ID Suc.",
+			"col_width_pdf": 0,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+		"id_factura__id_sucursal__nombre_sucursal": {
+			"label": "Sucursal",
+			"col_width_pdf": 0,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
 	}
 
 
@@ -194,6 +221,7 @@ class CuponesFechaInformeView(InformeFormView):
 				Substr(F('numero_texto'), 5, 8)
 			)
 		).values(
+			'id_factura__id_caja__numero_caja',
 			'id_factura__fecha_comprobante',
 			'cupon',
 			'lote',
@@ -202,6 +230,8 @@ class CuponesFechaInformeView(InformeFormView):
 			'importe_tarjeta',
 			'id_tarjeta',
 			'id_tarjeta__nombre_tarjeta',
+			'id_factura__id_sucursal',
+			'id_factura__id_sucursal__nombre_sucursal',
 		).order_by('id_tarjeta','comprobante_completo')
 		
 		return list(queryset)
@@ -213,9 +243,9 @@ class CuponesFechaInformeView(InformeFormView):
 		"""
 		
 		#-- Parámetros del listado.
+		sucursal = cleaned_data.get("sucursal")
 		fecha_desde = cleaned_data.get("fecha_desde")
 		fecha_hasta = cleaned_data.get("fecha_hasta")
-		sucursal = cleaned_data.get("sucursal")
 		
 		fecha_hora_reporte = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
 		
@@ -223,9 +253,9 @@ class CuponesFechaInformeView(InformeFormView):
 		
 		param_left = {}
 		param_right = {
+			"Sucursal": sucursal.nombre_sucursal if sucursal else "Todas",
 			"Fecha desde": fecha_desde.strftime("%d/%m/%Y") if fecha_desde else "N/A",
 			"Fecha hasta": fecha_hasta.strftime("%d/%m/%Y") if fecha_hasta else "N/A",
-			"Sucursal": sucursal.nombre_sucursal if sucursal else "Todas"
 		}
 		
 		# **************************************************

@@ -13,11 +13,15 @@ from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from datetime import datetime
 from decimal import Decimal
 from functools import partial
+from django.core.exceptions import PermissionDenied
+
 from apps.maestros.templatetags.custom_tags import formato_es_ar
+from entorno.constantes_base import JERARQUIAS_CON_ACCESO_TOTAL
 from utils.utils import format_date, formato_argentino, formato_argentino_entero
 
 #-- Cargar las variables de entorno del archivo .env
 load_dotenv()
+
 
 class ExportHelper:
 	
@@ -764,11 +768,13 @@ class PDFGenerator:
 			('BOTTOMPADDING', (0,repeat_rows), (-1,-1), 1),
 			
 			#-- Estilos para la primera fila (headers).
-			('BACKGROUND', (0,0), (-1,(repeat_rows-1)), colors.gray),
+			# ('BACKGROUND', (0,0), (-1,(repeat_rows-1)), colors.gray),
+			('BACKGROUND', (0,0), (-1,(repeat_rows-1)), colors.lightgrey),
 			('FONTNAME', (0,0), (-1,(repeat_rows-1)), 'Helvetica-Bold'),
-			('TEXTCOLOR', (0,0), (-1,(repeat_rows-1)), colors.white),
-			('TOPPADDING', (0,0), (-1,(repeat_rows-1)), 2),
-			('BOTTOMPADDING', (0,0), (-1,(repeat_rows-1)), 2),
+			# ('TEXTCOLOR', (0,0), (-1,(repeat_rows-1)), colors.white),
+			('TEXTCOLOR', (0,0), (-1,(repeat_rows-1)), colors.black),
+			('TOPPADDING', (0,0), (-1,(repeat_rows-1)), 3),
+			('BOTTOMPADDING', (0,0), (-1,(repeat_rows-1)), 3),
 		])
 		
 		#-- Añadir configuraciones de estilo adicionales.
@@ -848,3 +854,54 @@ def add_row_table(table_data, objetos, fields, table_info, generator):
 					row.append(value if value else "")
 		
 		table_data.append(row)
+
+
+class JerarquiaSucursal:
+	
+	@staticmethod
+	def puede_consultar_caja(user, caja):
+		"""
+		Verifica si un usuario puede consultar una caja específica.
+		
+		Args:
+			user: Usuario autenticado
+			caja: Objeto Caja a consultar
+			
+		Returns:
+			bool: True si tiene permiso, False si no
+		"""
+		if not user or not caja:
+			return False
+		
+		jerarquia_usuario = getattr(user, 'jerarquia', 'Z')
+		
+		#-- Jerarquía 'A' tiene acceso total.
+		# if jerarquia_usuario == 'A':
+		if jerarquia_usuario in JERARQUIAS_CON_ACCESO_TOTAL:
+			return True
+		
+		#-- Para jerarquías menores, verificar sucursal.
+		sucursal_usuario = getattr(user, 'id_sucursal', None)
+		sucursal_caja = getattr(caja, 'id_sucursal', None)
+		
+		#-- Si el usuario no tiene sucursal asignada, no puede consultar.
+		if not sucursal_usuario:
+			return False
+		
+		#-- Si la caja no tiene sucursal, no se puede consultar.
+		if not sucursal_caja:
+			return False
+		
+		#-- Comparar las sucursales.
+		return sucursal_usuario.id_sucursal == sucursal_caja.id_sucursal
+	
+	@staticmethod
+	def verificar_permiso_caja(user, caja_obj):
+		"""
+		Versión que lanza excepción en lugar de retornar booleano.
+		"""
+		if not JerarquiaSucursal.puede_consultar_caja(user, caja_obj):
+			raise PermissionDenied(
+				"No tiene permisos para consultar esta caja. "
+				"Solo puede consultar cajas de su sucursal."
+			)		
