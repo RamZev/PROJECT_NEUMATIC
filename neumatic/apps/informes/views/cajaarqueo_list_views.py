@@ -61,6 +61,15 @@ class ConfigViews:
 	
 	#-- Establecer las columnas del reporte y sus atributos.
 	table_info = {
+		"id_caja__numero_caja": {
+			"label": "Caja",
+			"col_width_pdf": 0,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"pdf": False,
+			"excel": True,
+			"csv": True,
+		},
 		"cantidad": {
 			"label": "Cantidad",
 			"col_width_pdf": 60,
@@ -120,9 +129,12 @@ class CajaArqueoInformeView(InformeFormView):
 		caja_obj = Caja.objects.filter(numero_caja=caja).first()
 		
 		#-- Iniciar el queryset.
-		queryset = CajaArqueo.objects.filter(
+		queryset = CajaArqueo.objects.select_related(
+			'id_caja'
+		).filter(
 			id_caja=caja_obj.id_caja
 		).values(
+			'id_caja__numero_caja',
 			'cantidad',
 			'valor',
 			'detalle',

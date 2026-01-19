@@ -24,7 +24,7 @@ from utils.helpers.export_helpers import ExportHelper, PDFGenerator
 class ConfigViews:
 	
 	#-- Título del reporte.
-	report_title = "Detalle de Cheques"
+	report_title = "Detalle de Cheques por caja"
 	
 	#-- Modelo.
 	model = ChequeRecibo
@@ -64,6 +64,15 @@ class ConfigViews:
 	
 	#-- Establecer las columnas del reporte y sus atributos.
 	table_info = {
+		"id_factura__id_caja__numero_caja": {
+			"label": "Caja",
+			"col_width_pdf": 0,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
 		"comprobante_completo": {
 			"label": "Comprobante",
 			"col_width_pdf": 60,
@@ -193,6 +202,7 @@ class ChequeReciboInformeView(InformeFormView):
 				Substr(F('numero_texto'), 5, 8)
 			)
 		).values(
+			'id_factura__id_caja__numero_caja',
 			'codigo_banco',
 			'id_banco__nombre_banco',
 			'sucursal',

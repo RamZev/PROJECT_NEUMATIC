@@ -104,6 +104,8 @@ from apps.informes.views.cuponesfecha_list_views import *
 from apps.informes.views.egresoscaja_list_views import *
 from apps.informes.views.cajaarqueo_list_views import *
 from apps.informes.views.detallecomprobantes_list_views import *
+from apps.informes.views.planillacaja_list_views import *
+from apps.informes.views.chequesfecha_list_views import *
 
 
 #-- Otras rutas.
@@ -1101,7 +1103,7 @@ urlpatterns = [
 	path("tarjetarecibo/vista-csv/", tarjetarecibo_vista_csv, 
 		 name="tarjetarecibo_vista_csv"),
 	
-	#-- Cupones Fecha.
+	#-- Cupones por Fecha.
 	path('cuponesfecha_informe/', CuponesFechaInformeView.as_view(), 
 		 name='cuponesfecha_informe_list'),
 	path('cuponesfecha/vista-preliminar/', cuponesfecha_vista_pantalla, 
@@ -1148,6 +1150,30 @@ urlpatterns = [
 		 name="detallecomprobantes_vista_excel"),
 	path("detallecomprobantes/vista-csv/", detallecomprobantes_vista_csv, 
 		 name="detallecomprobantes_vista_csv"),
+	
+	#-- Planilla de Caja.
+	path('planillacaja_informe/', PlanillaCajaInformeView.as_view(), 
+		 name='planillacaja_informe_list'),
+	path('planillacaja/vista-preliminar/', planillacaja_vista_pantalla, 
+		 name="planillacaja_vista_pantalla"),
+	path("planillacaja/vista-pdf/", planillacaja_vista_pdf, 
+		 name="planillacaja_vista_pdf"),
+	path("planillacaja/vista-excel/", planillacaja_vista_excel, 
+		 name="planillacaja_vista_excel"),
+	path("planillacaja/vista-csv/", planillacaja_vista_csv, 
+		 name="planillacaja_vista_csv"),
+	
+	#-- Cheques por Fecha.
+	path('chequesfecha_informe/', ChequesFechaInformeView.as_view(), 
+		 name='chequesfecha_informe_list'),
+	path('chequesfecha/vista-preliminar/', chequesfecha_vista_pantalla, 
+		 name="chequesfecha_vista_pantalla"),
+	path("chequesfecha/vista-pdf/", chequesfecha_vista_pdf, 
+		 name="chequesfecha_vista_pdf"),
+	path("chequesfecha/vista-excel/", chequesfecha_vista_excel, 
+		 name="chequesfecha_vista_excel"),
+	path("chequesfecha/vista-csv/", chequesfecha_vista_csv, 
+		 name="chequesfecha_vista_csv"),
 	
 	
 	

@@ -126,3 +126,35 @@ def get_estatus(estatus):
 @register.filter
 def get_si_no(estatus):
 	return "Si" if estatus else "No"
+
+
+@register.filter
+def vacio_si_cero(value):
+	"""Retorna vacío si el valor es 0, sino retorna el valor"""
+	try:
+		if float(value) == 0 or Decimal(value) == 0 or int(value) == 0:
+			return ""
+	except (ValueError, TypeError):
+		pass
+	return value
+
+@register.filter
+def formatear_caja(numero_caja):
+	"""
+	Formatea el número de caja con el formato XX-XXXXXX
+	Completa con ceros a la izquierda hasta tener 8 dígitos.
+	
+	Args:
+		numero_caja (int/str): El número de caja a formatear
+		
+	Returns:
+		str: El número formateado como XX-XXXXXX
+	"""
+	try:
+		#-- Convertir a string y rellenar con ceros a la izquierda hasta 8 dígitos.
+		numero_formateado = str(numero_caja).zfill(8)
+		#-- Retornar con el formato XX-XXXXXX.
+		return f"{numero_formateado[:2]}-{numero_formateado[2:]}"
+	except (ValueError, TypeError, AttributeError):
+		#-- Devuelve el valor sin formatear si hay error.
+		return numero_caja

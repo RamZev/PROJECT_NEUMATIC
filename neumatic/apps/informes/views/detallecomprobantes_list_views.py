@@ -65,8 +65,17 @@ class ConfigViews:
 	
 	#-- Establecer las columnas del reporte y sus atributos.
 	table_info = {
+		"id_factura": {
+			"label": "ID",
+			"col_width_pdf": 0,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"pdf": False,
+			"excel": True,
+			"csv": True,
+		},
 		"id_comprobante_venta__nombre_comprobante_venta": {
-			"label": "Comprobante",
+			"label": "Compro",
 			"col_width_pdf": 80,
 			"pdf_paragraph": False,
 			"date_format": None,
@@ -74,18 +83,18 @@ class ConfigViews:
 			"excel": True,
 			"csv": True,
 		},
-		"fecha_comprobante": {
-			"label": "Fecha",
-			"col_width_pdf": 50,
+		"comprobante_completo": {
+			"label": "Comprobante",
+			"col_width_pdf": 70,
 			"pdf_paragraph": False,
 			"date_format": None,
 			"pdf": True,
 			"excel": True,
 			"csv": True
 		},
-		"comprobante_completo": {
-			"label": "Comprobante",
-			"col_width_pdf": 70,
+		"fecha_comprobante": {
+			"label": "Fecha",
+			"col_width_pdf": 50,
 			"pdf_paragraph": False,
 			"date_format": None,
 			"pdf": True,
@@ -173,7 +182,15 @@ class ConfigViews:
 			"excel": True,
 			"csv": True
 		},
-		
+		"no_estadist": {
+			"label": "No Estadística",
+			"col_width_pdf": 0,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
 	}
 
 
@@ -225,6 +242,7 @@ class DetalleComprobantesInformeView(InformeFormView):
 		).annotate(
 			total_calculado=F('total') * F('id_comprobante_venta__mult_caja')			
 		).values(
+			'id_factura',
 			'id_comprobante_venta__nombre_comprobante_venta',
 			'comprobante_completo',
 			'fecha_comprobante',
@@ -235,6 +253,7 @@ class DetalleComprobantesInformeView(InformeFormView):
 			'id_user__iniciales',
 			'id_sucursal',
 			'id_sucursal__nombre_sucursal',
+			'no_estadist',
 		).order_by('id_comprobante_venta__nombre_comprobante_venta', 'comprobante_completo')
 		
 		return list(queryset)

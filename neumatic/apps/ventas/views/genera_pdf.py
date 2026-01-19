@@ -51,8 +51,6 @@ class GeneraPDFView(View):
 	def generar_pdf_factura(self, factura):
 		#-- Obtener datos principales.
 		detalles = DetalleFactura.objects.filter(id_factura=factura)
-		print("facura:", factura)
-		print("Id facura:", factura.id_factura)
 		
 		empresa = Empresa.objects.first()
 		cliente = factura.id_cliente  # No necesitas consulta adicional
@@ -185,7 +183,6 @@ class GeneraPDFView(View):
 		y_box = y_header_top - box_heigth - 1*mm
 		
 		doc_fce = ("FC", "FT", "CE", "DE" )
-		print("factura.compro.upper:", factura.compro.upper())
 		if factura.compro.upper() in doc_fce:
 			c.rect(margin, y_box, width - 2*margin, box_heigth)
 			fecha_vcto = ""
@@ -329,8 +326,6 @@ class GeneraPDFView(View):
 		current_row = 1
 		
 		#-- Agregar los datos a la tabla.
-		for det in detalles:
-			print("det.id_producto:", det.id_producto)
 		for detalle in detalles:
 			detail_data.append([
 				Paragraph(str(detalle.id_producto.id_cai if detalle.id_producto and detalle.id_producto.id_cai else ""), style=paragraph_style_normal),
@@ -343,8 +338,6 @@ class GeneraPDFView(View):
 				f"{formato_argentino(detalle.total)}"
 			])
 			current_row += 1
-			print("detalle.id_producto.despacho_1", detalle.id_producto.despacho_1)
-			print("detalle.id_producto.despacho_2", detalle.id_producto.despacho_2)
 			if (detalle.id_producto.despacho_1 or detalle.id_producto.despacho_2) and factura.compro != "PR":
 				numero_despacho = detalle.id_producto.despacho_1 if detalle.id_producto.despacho_1 else detalle.id_producto.despacho_2
 				detail_data.append([
@@ -914,234 +907,6 @@ class GeneraPDFView(View):
 		response['Content-Disposition'] = f'inline; filename="{file}.pdf"'
 		return response
 	
-	"""	Genera Remitos con formato.
-	def generar_pdf_remito(self, request, remito):
-		#-- Obtener datos principales.
-		detalle_remito = DetalleFactura.objects.filter(id_factura=remito)
-		
-		cliente = remito.id_cliente  # No necesitas consulta adicional
-		
-		buffer = BytesIO()
-		c = canvas.Canvas(buffer, pagesize=portrait(A4))
-		width, height = portrait(A4)
-		margin = 10*mm
-		
-		y_position = height - margin
-		
-		#-- Dibujar recuadro header top left.
-		header_top_height = 20*mm
-		c.setLineWidth(0.5)
-		y_header_top = y_position - header_top_height
-		c.rect(margin, y_header_top, width - 2*margin, header_top_height)
-		
-		#-- Configuración inicial del logo.
-		logo_path = path.join(settings.BASE_DIR, 'static', 'img', 'logo_01.png')
-		logo_width = 30*mm
-		logo_height = 12*mm
-		
-		#-- Posicionamiento inicial.
-		y_position -= 10*mm  # Margen superior adicional
-		
-		#-- Posicionar el logo.
-		try:
-			c.drawImage(logo_path, 
-						x=margin + 5*mm,
-						y=y_position -5*mm,
-						width=logo_width,
-						height=logo_height,
-						preserveAspectRatio=True)
-		except:
-			print("Logo no cargado - espacio reservado se mantiene")
-		
-		#-- Mostrar datos del Remito en el header-top-right.
-		y_text_right = y_position + 5*mm
-		x_text_right = width/2 + 40*mm
-		
-		c.setFont("Helvetica-Bold", 10)
-		c.drawString(x_text_right, y_text_right, f"{remito.id_comprobante_venta.nombre_impresion}")
-		
-		c.setFont("Helvetica-Bold", 8)
-		y_text_right -= 4*mm
-		c.drawString(x_text_right, y_text_right, f"{datetime.now().strftime("%d/%m/%Y %I:%M:%S %p")}")
-		
-		c.setFont("Helvetica", 7)
-		y_text_right -= 6*mm
-		c.drawString(x_text_right, y_text_right, f"Depósito: {remito.id_deposito.id_producto_deposito}")
-		
-		y_text_right -= 3*mm
-		c.drawString(x_text_right, y_text_right, f"Control: {remito.compro_letra_numero_comprobante_formateado}")
-		
-		
-		
-		#-- Dibujar recuadro Datos del Cliente. --------------------------------------------------------------
-		box_heigth = 15*mm
-		y_box = y_header_top - box_heigth - 1*mm
-		c.rect(margin, y_box, width - 2*margin, box_heigth)
-		
-		x_text_left = margin + 5*mm
-		x_data_left = x_text_left + 10*mm
-		x_text_right = 92*mm
-		x_data_right = x_text_right + 1*mm
-		
-		y_text_left = y_header_top - 5*mm
-		
-		c.setFont("Helvetica-Bold", 8)
-		c.drawString(x_text_left, y_text_left, "Cuenta")
-		c.setFont("Helvetica", 8)
-		c.drawString(x_data_left, y_text_left, f": {cliente.id_cliente}")
-		c.setFont("Helvetica-Bold", 8)
-		c.drawRightString(x_text_right, y_text_left, "Ap. y Nombre/Razón Social:")
-		c.setFont("Helvetica", 8)
-		c.drawString(x_data_right, y_text_left, f" {cliente.nombre_cliente}")
-		
-		y_text_left -= 4*mm
-		c.setFont("Helvetica-Bold", 8)
-		c.drawString(x_text_left, y_text_left, "I.V.A.")
-		c.setFont("Helvetica", 8)
-		c.drawString(x_data_left, y_text_left, f": {cliente.id_tipo_iva.nombre_iva if cliente.id_tipo_iva else ''}")
-		c.setFont("Helvetica-Bold", 8)
-		c.drawRightString(x_text_right, y_text_left, "Domicilio:")
-		c.setFont("Helvetica", 8)
-		c.drawString(x_data_right, y_text_left, f" {cliente.domicilio_cliente}")
-		
-		y_text_left -= 4*mm
-		c.setFont("Helvetica-Bold", 8)
-		c.drawString(x_text_left, y_text_left, cliente.nombre_tipo_documento_identidad)
-		c.setFont("Helvetica", 8)
-		c.drawString(x_data_left, y_text_left, f": {cliente.cuit_formateado}")
-		c.setFont("Helvetica-Bold", 8)
-		c.drawRightString(x_text_right, y_text_left, "Localidad:")
-		c.setFont("Helvetica", 8)
-		c.drawString(x_data_right, y_text_left, f" {cliente.id_localidad} - {cliente.id_provincia}")
-		
-		#-- Imprimir el detalle del comprobante. -------------------------------------------------------------
-		
-		#-- Estilo de párrafo para la tabla.
-		paragraph_style_normal = ParagraphStyle(
-			name='Normal',
-			fontName='Helvetica',
-			fontSize=7,
-			leading=8,
-			textColor=colors.black,
-			alignment=TA_LEFT,
-		)
-		paragraph_style_bold = ParagraphStyle(
-			name='Normal',
-			fontName='Helvetica-Bold',
-			fontSize=7,
-			leading=8,
-			textColor=colors.black,
-			alignment=TA_LEFT,
-		)
-		
-		#-- Información de las columnas de la tabla.
-		table_info = [
-			("CAI", 25*mm),
-			("Medida", 25*mm),
-			("Descripción", 125*mm),
-			("Cantidad", 15*mm),
-		]
-		
-		#-- Establecer estilos iniciales de la tabla
-		table_style = [
-			#-- Estilo general.
-			('FONTSIZE', (0, 0), (-1, -1), 7),
-			('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
-			('TOPPADDING', (0, 0), (-1, -1), 0),
-			('BOTTOMPADDING', (0, 0), (-1, -1), 0),
-			('LEADING', (0, 0), (-1, -1), 8),
-			
-			#-- Estilo Headers.
-			('BACKGROUND', (0, 0), (-1, 0), colors.HexColor("#BDBDBD")),  # Gris claro para el encabezado
-			('TEXTCOLOR', (0, 0), (-1, 0), colors.black),
-			('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-			('TOPPADDING', (0, 0), (-1, 0), 3),
-			('BOTTOMPADDING', (0, 0), (-1, 0), 3),
-			#-- Solo borde exterior del header:
-			('LINEABOVE', (0, 0), (-1, 0), 0.5, colors.black),
-			('LINEBELOW', (0, 0), (-1, 0), 0.5, colors.black),
-			('LINEBEFORE', (0, 0), (0, 0), 0.5, colors.black),
-			('LINEAFTER', (-1, 0), (-1, 0), 0.5, colors.black),
-			
-			#-- Estilo específicos.
-			('ALIGN', (3, 0), (-1, -1), 'RIGHT'),
-			('TOPPADDING', (0, 1), (-1, -1), 2),
-		]
-		
-		#-- Extraer encabezados y ancho de columnas.
-		headers = [header for header, width in table_info]
-		col_widths = [width for header, width in table_info]
-		
-		#-- Agregar los Encabezados a la tabla.
-		detail_data = [headers]
-		
-		#-- Establecer un contador de filas agregadas a la tabla (empezando en 1 porque la 0 es el header).
-		current_row = 1
-		
-		#-- Agregar los datos a la tabla.
-		for detalle in detalle_remito:
-			detail_data.append([
-				Paragraph(str(detalle.id_producto.id_cai if detalle.id_producto and detalle.id_producto.id_cai else ""), style=paragraph_style_normal),
-				str(detalle.id_producto.medida if detalle.id_producto else ""),
-				Paragraph(str(detalle.producto_venta if detalle.producto_venta else ""), style=paragraph_style_normal),
-				formato_argentino(detalle.cantidad)
-			])
-			current_row += 1
-			# if detalle.id_producto.despacho_1 or detalle.id_producto.despacho_2:
-			# 	numero_despacho = detalle.id_producto.despacho_1 if detalle.id_producto.despacho_1 else detalle.id_producto.despacho_2
-			# 	detail_data.append([
-			# 		"",
-			# 		"",
-			# 		f"Nº Despacho: {numero_despacho}",
-			# 		"",
-			# 		"",
-			# 		"",
-			# 		"",
-			# 		""
-			# 	])
-			# 	current_row += 1
-		
-		#-- Agregar una línea de detalle en blaco como separador.
-		detail_data.append([
-			"",
-			"",
-			"",
-			""
-		])
-		current_row += 1
-		
-		#-- Agregar Observaciones si las tiene.
-		if remito.observa_comprobante:
-			detail_data.append([
-				Paragraph(f"Observaciones: {remito.observa_comprobante}", style=paragraph_style_normal),
-				"",
-				"",
-				""
-			])
-			
-			#-- Aplicar estilos a la fila actual.
-			table_style.extend([
-				('SPAN', (0,current_row), (-1,current_row)),
-			])
-			current_row += 1
-		
-		#-- Crear la tabla con sus parámetros.
-		tabla = Table(detail_data, colWidths=col_widths, style=table_style, repeatRows=1)
-		
-		#-- Dibujar tabla.
-		y_table = y_box - 1*mm  # posición fija debajo del recuadro cliente
-		tabla.wrapOn(c, width - 2*margin, height)
-		tabla.drawOn(c, margin, y_table - tabla._height)
-		
-		c.showPage()
-		c.save()
-		
-		buffer.seek(0)
-		response = HttpResponse(buffer, content_type='application/pdf')
-		file = f"{remito.compro}_{remito.letra_comprobante}_{remito.numero_comprobante_formateado}"
-		response['Content-Disposition'] = f'inline; filename="{file}.pdf"'
-		return response
-	"""	
 	def generar_pdf_remito(self, remito):
 		"""Se generan Remitos Sin formato para imprimir en formatos pre-impresos."""
 		#-- Obtener datos principales.

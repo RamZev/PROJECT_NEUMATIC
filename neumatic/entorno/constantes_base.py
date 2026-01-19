@@ -97,6 +97,8 @@ JERARQUIA = [
 	('Z', 'Z'),
 ]
 
+JERARQUIAS_CON_ACCESO_TOTAL = ['A', 'B', 'C']
+
 ESTATUS_CHOICES = [ 
 	('activos', 'Activos'),
 	('inactivos', 'Inactivos'), 

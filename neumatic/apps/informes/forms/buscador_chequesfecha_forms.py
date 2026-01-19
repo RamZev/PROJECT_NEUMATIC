@@ -1,4 +1,4 @@
-# neumatic\apps\informes\forms\buscador_cuponesfecha_forms.py
+# neumatic\apps\informes\forms\buscador_chequesfecha_forms.py
 from django import forms
 from datetime import date
 
@@ -7,8 +7,8 @@ from apps.maestros.models.sucursal_models import Sucursal
 from diseno_base.diseno_bootstrap import (formclassselect, formclassdate)
 
 
-class BuscadorCuponesFechaForm(InformesGenericForm):
-	
+class BuscadorChequesFechaForm(InformesGenericForm):
+
 	sucursal = forms.ModelChoiceField(
 		queryset=Sucursal.objects.filter(estatus_sucursal=True), 
 		required=False,

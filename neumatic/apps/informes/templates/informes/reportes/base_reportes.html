@@ -8,6 +8,7 @@
 		{% load custom_tags %}
 		<title>{% block title %}{{ titulo }}{% endblock %}</title>
 		<link rel="stylesheet" href="{{ css_url }}">
+		{% block extra_css %}{% endblock extra_css %}
 	</head>
 	<body>
 		

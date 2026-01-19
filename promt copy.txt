@@ -185,6 +185,32 @@ FROM cheque_recibo cr
 WHERE 
 	cv.mult_caja <> 0
 
+-- 7mo. Reporte: Cheques recibidos en Caja (Físicos/Electrónicos) por un período.
+--CREATE VIEW vlCajaCheques AS
+SELECT 
+	c.numero_caja,
+	c.fecha_caja,
+	cr.electronico,
+	cr.codigo_banco,
+	b.nombre_banco,
+	cr.codigo_postal,
+	cr.numero_cheque_recibo,
+	cr.fecha_cheque1,
+	cr.importe_cheque,
+	cv.codigo_comprobante_venta,
+	f.numero_comprobante
+FROM cheque_recibo cr
+	INNER JOIN factura f ON cr.id_factura_id = f.id_factura 
+	INNER JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
+	LEFT JOIN banco b ON cr.id_banco_id = b.id_banco
+	LEFT JOIN caja c ON f.id_caja_id = c.id_caja
+WHERE 
+	cv.mult_caja <> 0
+	--AND c.fecha_caja BETWEEN '2025-10-01' AND '2025-10-01'
+	AND c.fecha_caja BETWEEN '2024-10-08' AND '2024-10-08'
+ORDER by c.fecha_caja, c.numero_caja, cr.electronico, cv.codigo_comprobante_venta, f.numero_comprobante
+
+--------------------------------------------------------------------------------------------------
 
 -- 2do. Reporte: Comprobantes de Ventas de Contado de una caja en específico.
 --CREATE VIEW vlCajaComprobantes AS
@@ -215,20 +241,6 @@ WHERE comprobante_venta.mult_caja <> 0 AND
 	factura.no_estadist = False
 order by factura.compro, factura.letra_comprobante, factura.numero_comprobante
 
--- 4to. Reporte: Comprobantes de Ventas de una caja en específico (Planilla de Caja).
---CREATE VIEW vlCajaDetalle AS
-SELECT caja_detalle.id_caja_id, caja.numero_caja, 
-	caja_detalle.idventas, factura.compro, factura.letra_comprobante, factura.numero_comprobante, 
-	factura.id_cliente_id, cliente.nombre_cliente,
-	caja_detalle.importe, 
-	forma_pago.descripcion_forma_pago, 
-	caja_detalle.observacion
-FROM caja_detalle 
-	INNER JOIN caja on caja_detalle.id_caja_id = caja.id_caja
-	INNER JOIN factura on caja_detalle.idventas = factura.id_factura
-	INNER JOIN cliente on factura.id_cliente_id = cliente.id_cliente 
-	INNER JOIN forma_pago on caja_detalle.id_forma_pago_id = forma_pago.id_forma_pago
-order by factura.compro, factura.letra_comprobante, factura.numero_comprobante
 
 *******************************************************
 Consultas control: Cheques Recibidos en Caja
@@ -272,15 +284,7 @@ Cajas ejemplos:
 
 *******************************************************
 
---------------------------------------------------------
-Para los reportes de Caja se necesita:
-- Migrar los datos de cheque_recibo <== cheques.dbf
-- Migrar los datos de tarjeta_recibo <== cuponestarj.dbf
-- Migrar los dastos de Bancos <== codbco.dbf
 
-- Asociar la caja a los comprobantes.
-- Agregar campo booleano en cheque_recibo para indicar si el cheque es Electrónico.
---------------------------------------------------------
 
 
 ##################################################################################################################################
@@ -323,8 +327,12 @@ WHERE idventas = -2
 
 
 
--- caja_detalle: Script para asignar 2 a tipo_movimiento si idventas=-2.
+-- caja_detalle: Script para asignar 2 (Egreso) a tipo_movimiento si idventas = -2.
 UPDATE caja_detalle SET tipo_movimiento=2 WHERE idventas=-2 AND tipo_movimiento<>2
+
+-- caja_detalle: Script para asignar 1 (Ingreso) a tipo_movimiento si idventas <> -2.
+UPDATE caja_detalle SET tipo_movimiento=1 WHERE idventas<>-2
+
 
 
 ##################################################################################################################################
@@ -373,56 +381,95 @@ ORDER by factura.compro, factura.letra_comprobante, factura.numero_comprobante
 --CREATE VIEW vlCajaDetalle AS
 SELECT
 	caja_detalle.id_caja_id, caja.numero_caja,
-	caja_detalle.idventas, factura.compro, factura.letra_comprobante, factura.numero_comprobante,
+	caja_detalle.tipo_movimiento,
+--	caja_detalle.idventas, factura.compro, factura.letra_comprobante, factura.numero_comprobante,
+	caja_detalle.idventas, comprobante_venta.nombre_comprobante_venta, comprobante_venta.codigo_comprobante_venta, factura.letra_comprobante, factura.numero_comprobante,
 	factura.id_cliente_id, cliente.nombre_cliente,
 	caja_detalle.importe,
-	forma_pago.descripcion_forma_pago,
+	--forma_pago.descripcion_forma_pago,
 	caja_detalle.observacion
 FROM caja_detalle
 	JOIN caja ON caja_detalle.id_caja_id = caja.id_caja
-	JOIN factura ON caja_detalle.idventas = factura.id_factura
-	JOIN cliente ON factura.id_cliente_id = cliente.id_cliente
+	LEFT JOIN factura ON caja_detalle.idventas = factura.id_factura
+	LEFT JOIN cliente ON factura.id_cliente_id = cliente.id_cliente
 	LEFT JOIN forma_pago ON caja_detalle.id_forma_pago_id = forma_pago.id_forma_pago
-ORDER by factura.compro, factura.letra_comprobante, factura.numero_comprobante
+	LEFT JOIN comprobante_venta ON factura.id_comprobante_venta_id = comprobante_venta.id_comprobante_venta
+WHERE 
+	--caja.numero_caja=2001880
+	--caja.numero_caja=1001964
+	caja.numero_caja=1001668
+	--caja.numero_caja=1001966
+ORDER by 
+	factura.compro, factura.letra_comprobante, factura.numero_comprobante, caja_detalle.tipo_movimiento
+	--caja_detalle.idventas, caja_detalle.tipo_movimiento, factura.compro, factura.letra_comprobante, factura.numero_comprobante
+	--caja_detalle.idventas, caja_detalle.tipo_movimiento
+
 
 
 ------------
+-- Consultas para determinar los montos para el Resumen de Planilla de Caja.
+
+-- Monto de Cheques Recibidos. ----------------------------------------------
+SELECT cheque_recibo.codigo_banco, cheque_recibo.sucursal, cheque_recibo.codigo_postal, cheque_recibo.numero_cheque_recibo, cheque_recibo.fecha_cheque1, sum(cheque_recibo.importe_cheque)
+FROM cheque_recibo
+	JOIN factura ON cheque_recibo.id_factura_id = factura.id_factura
+	JOIN caja ON factura.id_caja_id = caja.id_caja
+WHERE caja.numero_caja=1001668
+-- Resultado: 13.325.090,09
+
+SELECT SUM(cheque_recibo.importe_cheque) AS importe_cheques
+FROM cheque_recibo
+	JOIN factura ON cheque_recibo.id_factura_id = factura.id_factura
+WHERE factura.id_caja_id=11458
+-- Resultado: 13.325.090,09
 
 
-Consultas Control:
-SELECT * FROM caja ORDER by numero_caja
-SELECT * FROM caja WHERE numero_caja like '1001%' ORDER by numero_caja
-SELECT * FROM caja WHERE numero_caja = 1001961
+-- Monto de Tarjetas.  ------------------------------------------------------
+SELECT tarjeta_recibo.cupon, tarjeta_recibo.lote, tarjeta_recibo.cuotas, sum(tarjeta_recibo.importe_tarjeta)
+FROM tarjeta_recibo
+	JOIN factura ON tarjeta_recibo.id_factura_id = factura.id_factura
+	JOIN caja ON factura.id_caja_id = caja.id_caja
+WHERE caja.numero_caja=1001668
+-- Resultado: 1.309.572,92
 
-SELECT * FROM factura WHERE numero_comprobante = 2100000683
-SELECT * FROM factura WHERE numero_comprobante in (2100000683, 2100015544, 100144399)
-
-SELECT * FROM caja_arqueo WHERE id_caja_id = 11458
-
-
--- Consulta control
-SELECT id_factura, compro, letra_comprobante, numero_comprobante, fecha_comprobante, nombre_factura, condicion_comprobante, total, id_comprobante_venta_id, no_estadist, id_caja_id
-FROM factura 
-WHERE numero_comprobante in (100144380, 100144381, 100144382, 100144383, 100144384, 100144385, 100144386, 100144387, 100144388, 100144389, 100144390, 100144391, 100144392, 100144393, 100144394, 100144395, 100144396, 100144397, 100144398, 100144399, 100144400, 100144387) 
+SELECT SUM(tarjeta_recibo.importe_tarjeta)
+FROM tarjeta_recibo
+	JOIN factura ON tarjeta_recibo.id_factura_id = factura.id_factura
+WHERE factura.id_caja_id=11458
+-- Resultado: 1.309.572,92
 
 
+-- Monto de Depósitos. ------------------------------------------------------
+SELECT deposito_recibo.fecha_deposito, deposito_recibo.detalle_deposito, sum(deposito_recibo.importe_deposito)
+FROM deposito_recibo
+	JOIN factura ON deposito_recibo.id_factura_id = factura.id_factura
+	JOIN caja ON factura.id_caja_id = caja.id_caja
+WHERE caja.numero_caja=1001668
+-- Resultado: NULL  debería ser 889.988,57 (no están los datos)
 
-/* Vista vlMedioPagos (VFP): Determina resumen de montos en Planilla de Caja.
-   (Tarjeta Crédito, Tarjeta Débito, Depòsito, Dólares, Cheques, Retenciones, Compensa Facturas, Mercado Pago) 
-   Agrupando según la relación con la tabla formapago.dbf
-*/
-SELECT 
-	Mediopagos.idventa, Facturas.compro, Facturas.letra,;
-	Facturas.numero, Facturas.fecha, Facturas.cliente, Mediopagos.formapago,;
-	Facturas.sucursal, Facturas.usuario,;
-	Mediopagos.importe*Codven.mult_caja AS importe, Facturas.nombre;
-FROM mediopagos, facturas, codven;
-WHERE Mediopagos.idventa = Facturas.id;
-   AND Facturas.compro = Codven.compro;
-   AND (Facturas.sucursal = ?nSuc;
-   AND Facturas.fecha = ?dFecha;
-   AND Codven.mult_caja <> 0);
- ORDER BY Mediopagos.formapago
+SELECT SUM(deposito_recibo.importe_deposito)
+FROM deposito_recibo
+	JOIN factura ON deposito_recibo.id_factura_id = factura.id_factura
+WHERE factura.id_caja_id=11458
+-- Resultado: NULL  debería ser 889.988,57 (no están los datos)
+
+
+-- Monto de Retenciones. ----------------------------------------------------
+SELECT retencion_recibo.certificado, retencion_recibo.fecha_retencion, retencion_recibo.id_codigo_retencion_id, sum(retencion_recibo.importe_retencion)
+FROM retencion_recibo
+	JOIN factura ON retencion_recibo.id_factura_id = factura.id_factura
+	JOIN caja ON factura.id_caja_id = caja.id_caja
+WHERE caja.numero_caja=1001668
+-- Resultado: NULL  debería ser 49.419,29 (no están los datos)
+
+SELECT SUM(retencion_recibo.importe_retencion)
+FROM retencion_recibo
+	JOIN factura ON retencion_recibo.id_factura_id = factura.id_factura
+WHERE factura.id_caja_id=11458
+-- Resultado: NULL  debería ser 49.419,29 (no están los datos)
+
+
+
 
 
 CONSIDERACIONES:
@@ -432,21 +479,68 @@ CONSIDERACIONES:
 ##################################################################################################################################
 ##################################################################################################################################
 
--- Script para agregar nueva opción.
-INSERT INTO "main"."menu_menuitem" ("name", "url_name", "query_params", "icon", "is_collapse", "order", "heading_id", "parent_id") 
-	VALUES ('Arqueo de Caja', 'cajaarqueo_informe_list', '', '', '0', 1, NULL, 155);
 
--- Script para modificar el orden de las opciones existentes.
-UPDATE "main"."menu_menuitem" SET
-	"order" = 2 WHERE "name" = 'Egresos de Caja';
-	
-UPDATE "main"."menu_menuitem" SET
-	"order" = 3 WHERE "name" = 'Detalle de Tarjetas Recibidas';
-	
-UPDATE "main"."menu_menuitem" SET
-	"order" = 4 WHERE "name" = 'Detalle de Cupones por Fechas';
-	
-UPDATE "main"."menu_menuitem" SET
-	"order" = 5 WHERE "name" = 'Detalle de Cheques Recibidos';
+--------------------------------------------------------
+Para los reportes de Caja se necesita:
+*- Migrar los datos de cheque_recibo <== cheques.dbf
+*- Migrar los datos de tarjeta_recibo <== cuponestarj.dbf
+- Migrar los datos de banco <== codbco.dbf
+
+- Asociar la caja a los comprobantes.
+  Todavía hay comprobantes que no tienen su caja asociada.
+*- Agregar campo booleano en cheque_recibo para indicar si el cheque es Electrónico y 
+   contemplar este dato en la migración.
+- Crear campo compesa_factura en Factura y considerarlo en el formulario y procesamiento(vistas)
+  contemplar este dato en la migración (desde mediopagos.dbf).
+
+--------------------------------------------------------
+
+Caja (Pendiente):
+*- Reporte Detalle Cheques por rango de fechas (unificado)
+*- Considerar la sucursal del usuario autenticado y su jerarquía.
+*- Terminar reporte Planila de Caja.
+
+Otros:
+- Considerar campo estatus en las búsquedas, listados y filtros.
+
+
+
+
+
+
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+SELECT
+	"caja_detalle"."tipo_movimiento",
+	"caja_detalle"."idventas",
+	"caja_detalle"."importe",
+	"caja_detalle"."observacion"
+FROM
+	"caja_detalle"
+WHERE
+	"caja_detalle"."id_caja_id" = 11458   -- Caja 1001668
+	--"caja_detalle"."id_caja_id" = 13803   -- Caja 1001964
+	--"caja_detalle"."id_caja_id" = 14013   -- Caja 2001880
+ORDER BY
+	"caja_detalle"."idventas" ASC, "caja_detalle"."tipo_movimiento" ASC
+
+
+[
+	{'tipo_movimiento': 2, 'idventas': -2, 'importe': Decimal('-400000.00'), 'observacion': 'VIATICOS PAOLONI MARCELO ROSARIO'},
+	{'tipo_movimiento': 2, 'idventas': -2, 'importe': Decimal('-4600.00'), 'observacion': 'TRAPOS DE PISO OIFICINA'},
+	{'tipo_movimiento': 2, 'idventas': -2, 'importe': Decimal('-2200.00'), 'observacion': 'SUPER'},
+	{'tipo_movimiento': 2, 'idventas': -2, 'importe': Decimal('-100000.00'), 'observacion': 'VIAJE DANIEL ROSARIO'},
+	{'tipo_movimiento': 2, 'idventas': -2, 'importe': Decimal('-81400.00'), 'observacion': 'RENDICION DE CAJA Nº 01-001964'},
+	{'tipo_movimiento': 1, 'idventas': -1, 'importe': Decimal('400000.00'), 'observacion': 'ADMINISTRACION'},
+	{'tipo_movimiento': 1, 'idventas': -1, 'importe': Decimal('7600.00'), 'observacion': 'VUELTO VIAJE TENO'},
+	{'tipo_movimiento': 1, 'idventas': -1, 'importe': Decimal('29700.00'), 'observacion': 'VUELTO VIAJE DANIEL'},
+	{'tipo_movimiento': 1, 'idventas': 1670831, 'importe': Decimal('41090.03'), 'observacion': 'FAISAL JORGELINA'},
+	{'tipo_movimiento': 1, 'idventas': 1670840, 'importe': Decimal('37799.41'), 'observacion': 'PERETI HECTOR DOMINGO'},
+	{'tipo_movimiento': 1, 'idventas': 1670852, 'importe': Decimal('71998.40'), 'observacion': 'TORNE EDGARDO'}
+]
+
+
 
 
