@@ -314,8 +314,6 @@ Estos scripts los debe generar desde la base de datos SQL
 
 Cuando lo haga, en el script usuarios_user.sql, **elimine** el primer insert (usuario admin)  
 
-
-
 **Scripts Complementarios**
 
 actualiza_color_producto_estado.sql  
