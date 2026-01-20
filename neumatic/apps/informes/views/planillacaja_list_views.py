@@ -200,11 +200,11 @@ class PlanillaCajaInformeView(InformeFormView):
 						'idventas': item['idventas'],
 						'comprobante': compro,
 						'descripcion': f"{comprobante.letra_numero_comprobante_formateado} - {comprobante.id_cliente.nombre_cliente}",
-						'ingresos': float(item['importe'] or 0.0) if item['importe'] >= 1 else 0.0,
+						'ingresos': float(item['importe'] or 0.0) if item['importe'] >= 0 else 0.0,
 						'egresos': float(item['importe'] or 0.0) if item['importe'] < 0 else 0.0,
 					}
 					datos_estructurados[compro]['comprobantes'].append(datos)
-					datos_estructurados[compro]['subtotal_ingresos'] += float(item['importe'] or 0.0) if item['importe'] >= 1 else 0.0
+					datos_estructurados[compro]['subtotal_ingresos'] += float(item['importe'] or 0.0) if item['importe'] >= 0 else 0.0
 					datos_estructurados[compro]['subtotal_egresos'] += float(item['importe'] or 0.0) if item['importe'] < 0 else 0.0
 		#---------------------------------------------------------------------------------
 		return datos_estructurados
@@ -436,9 +436,35 @@ def generar_pdf(contexto_reporte):
 		["Cheques:", formato_argentino(resumen_montos.get("cheques", 0) or 0), "Dólares:", formato_argentino(resumen_montos.get("dolares", 0) or 0)]
 	]
 	
-	tabla_cuerpo_resumen = LongTable(cuerpo_resumen_data, colWidths=[100, 85, 100, 85])
-	tabla_cuerpo_resumen.setStyle(tabla_cuerpo_caja_style)
+	if caja.get("observacion_caja"):
+		cuerpo_resumen_data.append(
+			["Observaciones:", Paragraph(caja.get("observacion_caja"), generator.styles['CellStyle']), "", ""]
+		)
 	
+	tabla_cuerpo_resumen = LongTable(cuerpo_resumen_data, colWidths=[100, 85, 100, 85])
+	tabla_cuerpo_resumen_style = TableStyle([
+		('FONTNAME', (0, 0), (-1, -1), 'Helvetica'),
+		('FONTSIZE', (0, 0), (-1, -1), 7),
+		('ALIGN', (0, 0), (-1, -1), 'RIGHT'),
+		('FONTNAME', (1, 0), (1, -1), 'Helvetica-Bold'),
+		('FONTNAME', (3, 0), (3, -1), 'Helvetica-Bold'),
+		('TOPPADDING', (0, 0), (-1, -1), 2),
+		('BOTTOMPADDING', (0, 0), (-1, -1), 2),
+		('LEADING', (0,0), (-1,-1), 8),
+		('LINEBELOW', (0, -1), (-1, -1), 0.5, colors.grey),
+		('VALIGN', (0, 0), (-1, -1), 'TOP'),  # Añadir alineación vertical
+	])
+	
+	#-- Si existe observación, agregar el span para que ocupe 3 columnas.
+	if caja.get("observacion_caja"):
+		fila_observacion = len(cuerpo_resumen_data) - 1
+		tabla_cuerpo_resumen_style.add('SPAN', (1, fila_observacion), (3, fila_observacion))
+		tabla_cuerpo_resumen_style.add('ALIGN', (1, fila_observacion), (3, fila_observacion), 'LEFT')
+		tabla_cuerpo_resumen_style.add('VALIGN', (1, fila_observacion), (3, fila_observacion), 'TOP')
+
+	tabla_cuerpo_caja.setStyle(tabla_cuerpo_caja_style)
+	tabla_cuerpo_resumen.setStyle(tabla_cuerpo_resumen_style)
+
 	# =========================================================================
 	# 3ra. Tabla: Tabla principal (Detalle de Caja)
 	# =========================================================================

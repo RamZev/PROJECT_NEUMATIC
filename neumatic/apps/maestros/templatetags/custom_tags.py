@@ -130,12 +130,21 @@ def get_si_no(estatus):
 
 @register.filter
 def vacio_si_cero(value):
-	"""Retorna vacío si el valor es 0, sino retorna el valor"""
+	"""
+	Retorna vacío si el valor es 0, sino retorna el valor.
+	Compatible con int, float, Decimal y string.
+	"""
 	try:
-		if float(value) == 0 or Decimal(value) == 0 or int(value) == 0:
+		# Convertir a float para hacer la comparación
+		valor_numerico = float(value)
+		
+		# Si es exactamente 0, retornar vacío
+		if valor_numerico == 0.0:
 			return ""
 	except (ValueError, TypeError):
+		# Si no se puede convertir a número, retornar el valor original
 		pass
+	
 	return value
 
 @register.filter
