@@ -13,6 +13,7 @@ SCRIPTS = [
     'caja_migra.py',
     'caja_detalle_migra.py',
     'caja_arqueo_migra.py',
+    'vincular_factura_caja.py',
     
 ]
 

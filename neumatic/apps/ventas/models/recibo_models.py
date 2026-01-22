@@ -5,8 +5,9 @@ from apps.maestros.models.base_gen_models import ModeloBaseGenerico
 from apps.maestros.models.base_models import (Banco, 
 											  CuentaBanco,
 											  ConceptoBanco, 
-											  CodigoRetencion, 
-											  Tarjeta)
+											  Tarjeta,
+											  CodigoRetencion)
+
 from .factura_models import Factura
 from entorno.constantes_base import ESTATUS_GEN, CONDICION_VENTA
 
@@ -68,13 +69,13 @@ class RetencionRecibo(ModeloBaseGenerico):
 		null=True,
 		blank=True
 	)
-	id_codigo_retencion	= models.ForeignKey(
-		CodigoRetencion,
-		on_delete=models.CASCADE,
-		verbose_name="Código Retención",
-		null=True,
-		blank=True
-	)
+	id_codigo_retencion = models.ForeignKey(
+        CodigoRetencion,
+        on_delete=models.CASCADE,
+        verbose_name="Código Retención",
+        null=True,
+        blank=True
+    )
 	certificado = models.CharField(
 		verbose_name="Certificado", 
 		max_length=20,
