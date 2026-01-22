@@ -374,6 +374,20 @@ WHERE comprobante_venta.mult_caja <> 0
 	AND caja.numero_caja = 1001668
 ORDER by factura.compro, factura.letra_comprobante, factura.numero_comprobante
 
+
+-- Script para comprobar los comprobates sin id_caja.
+SELECT 
+	f.id_factura, f.compro, f.letra_comprobante, f.numero_comprobante, f.fecha_comprobante, f.total,
+	f.id_caja_id, c.numero_caja, f.id_sucursal_id, cv.mult_caja
+FROM factura f
+	JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
+	LEFT JOIN caja c ON f.id_caja_id = c.id_caja
+WHERE 
+	cv.mult_caja <> 0
+	AND f.id_sucursal_id = 1
+	AND fecha_comprobante = '2024-10-08'
+ORDER by f.compro, f.letra_comprobante,f.numero_comprobante
+
 ##################################################################################################################################
 /* 4to. Reporte: Este es el Detalle de Caja.
    "Esta consulta es por número de caja que se debe pasar por parámetro también y saca todo el detalle de comprobantes de la caja." */
@@ -502,7 +516,9 @@ Caja (Pendiente):
 
 Otros:
 - Considerar campo estatus en las búsquedas, listados y filtros.
-
+- No permitir establecer más de 1 moneda como predeterminada.
+- No se ha migrado tipo_percep_ib desde tpercib.dbf
+- Revisar migración de producto_minimo
 
 
 Preguntas:
@@ -531,3 +547,28 @@ GROUP by c.numero_caja, cr.electronico
 ORDER by c.numero_caja ASC
 
 
+
+Productos con datos tipo BLOB (Ids):
+- 89830
+- 89890
+- 89920
+- 119700
+- 122361
+- 131630
+- 326835
+- 329020
+- 330440
+- 333065
+- 333075
+- 333330
+- 333345
+- 333425
+- 333430
+- 333870
+- 334135
+- 334425
+- 334445
+- 335375
+- 335855
+- 335860
+- 335865

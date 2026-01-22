@@ -1,3 +1,5 @@
+-- Modelo Producto:
+
 -- Caracter: 
 --SELECT id_producto, nombre_producto FROM producto WHERE nombre_producto like '%%'
 UPDATE producto SET nombre_producto = replace(nombre_producto, '', '');
@@ -15,11 +17,11 @@ UPDATE producto SET nombre_producto = replace(nombre_producto, '', '');
 UPDATE producto SET nombre_producto = replace(nombre_producto, 'ÿ', ' ');
 
 -- Caracter: ¥
---SELECT id_producto, nombre_producto FROM producto WHERE nombre_producto like '%Ñ%'
+--SELECT id_producto, nombre_producto FROM producto WHERE nombre_producto like '%¥%'
 UPDATE producto SET nombre_producto = replace(nombre_producto, '¥', 'Ñ');
 
 -- Caracter: à
 --SELECT id_producto, nombre_producto FROM producto WHERE nombre_producto like '%à%'
 UPDATE producto SET nombre_producto = replace(nombre_producto, 'à', 'Ó');
 
-
+-------------------------------------------------------------------------------------

@@ -41,7 +41,7 @@
 				<tr>
 					<td>{{ obj.estatus_banco|get_estatus }}</td>
 					<td>{{ obj.nombre_banco }}</td>
-					<td>{{ obj.cuit_banco }}</td>
+					<td>{{ obj.cuit_banco|default_if_none:"" }}</td>
 					<td class="numeric">{{ obj.codigo_banco }}</td>
 				</tr>
 			{% endfor %}

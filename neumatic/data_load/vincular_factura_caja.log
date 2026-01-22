@@ -1,6 +1,0 @@
-2026-01-20 16:46:49,627 - WARNING - id_caja_detalle=16302, idventa=1585046, id_caja=2197
-2026-01-20 16:46:56,845 - WARNING - id_caja_detalle=9622, idventa=1546129, id_caja=1292
-2026-01-20 16:47:07,515 - INFO - === RESUMEN FINAL ===
-2026-01-20 16:47:07,515 - INFO - Facturas actualizadas: 20979
-2026-01-20 16:47:07,515 - INFO - Facturas no encontradas: 2
-2026-01-20 16:47:07,515 - INFO - Errores: 0
