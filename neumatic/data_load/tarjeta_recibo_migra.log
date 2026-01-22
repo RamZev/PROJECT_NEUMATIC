@@ -8,3 +8,6 @@
 2026-01-07 15:12:40,980 - INFO - Eliminados 0 registros existentes de TarjetaRecibo
 2026-01-08 11:16:13,999 - INFO - Eliminados 0 registros existentes de TarjetaRecibo
 2026-01-08 15:23:11,848 - INFO - Eliminados 0 registros existentes de TarjetaRecibo
+2026-01-21 11:58:16,569 - INFO - Eliminados 80383 registros existentes de TarjetaRecibo
+2026-01-21 11:58:27,692 - ERROR - Error en reset_tarjeta_recibo: database is locked
+2026-01-21 11:58:27,693 - ERROR - Error fatal: database is locked
