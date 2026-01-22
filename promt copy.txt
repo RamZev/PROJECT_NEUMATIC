@@ -484,7 +484,7 @@ CONSIDERACIONES:
 Para los reportes de Caja se necesita:
 *- Migrar los datos de cheque_recibo <== cheques.dbf
 *- Migrar los datos de tarjeta_recibo <== cuponestarj.dbf
-- Migrar los datos de banco <== codbco.dbf
+*- Migrar los datos de banco <== codbco.dbf
 
 - Asociar la caja a los comprobantes.
   Todavía hay comprobantes que no tienen su caja asociada.
@@ -505,6 +505,15 @@ Otros:
 
 
 
+Preguntas:
+- Se permite generar los reportes de cajas abiertas?
+	Si
+- El orden el Planilla de Caja: Encabezado, Resumen y Detalle.
+	Indistinto
+- El orden en el Detalle de Planilla de Caja.
+	Indistinto
+- Los Medios o Formas de Pago en el Resumen.
+	
 
 
 
@@ -512,35 +521,13 @@ Otros:
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
-SELECT
-	"caja_detalle"."tipo_movimiento",
-	"caja_detalle"."idventas",
-	"caja_detalle"."importe",
-	"caja_detalle"."observacion"
-FROM
-	"caja_detalle"
-WHERE
-	"caja_detalle"."id_caja_id" = 11458   -- Caja 1001668
-	--"caja_detalle"."id_caja_id" = 13803   -- Caja 1001964
-	--"caja_detalle"."id_caja_id" = 14013   -- Caja 2001880
-ORDER BY
-	"caja_detalle"."idventas" ASC, "caja_detalle"."tipo_movimiento" ASC
-
-
-[
-	{'tipo_movimiento': 2, 'idventas': -2, 'importe': Decimal('-400000.00'), 'observacion': 'VIATICOS PAOLONI MARCELO ROSARIO'},
-	{'tipo_movimiento': 2, 'idventas': -2, 'importe': Decimal('-4600.00'), 'observacion': 'TRAPOS DE PISO OIFICINA'},
-	{'tipo_movimiento': 2, 'idventas': -2, 'importe': Decimal('-2200.00'), 'observacion': 'SUPER'},
-	{'tipo_movimiento': 2, 'idventas': -2, 'importe': Decimal('-100000.00'), 'observacion': 'VIAJE DANIEL ROSARIO'},
-	{'tipo_movimiento': 2, 'idventas': -2, 'importe': Decimal('-81400.00'), 'observacion': 'RENDICION DE CAJA Nº 01-001964'},
-	{'tipo_movimiento': 1, 'idventas': -1, 'importe': Decimal('400000.00'), 'observacion': 'ADMINISTRACION'},
-	{'tipo_movimiento': 1, 'idventas': -1, 'importe': Decimal('7600.00'), 'observacion': 'VUELTO VIAJE TENO'},
-	{'tipo_movimiento': 1, 'idventas': -1, 'importe': Decimal('29700.00'), 'observacion': 'VUELTO VIAJE DANIEL'},
-	{'tipo_movimiento': 1, 'idventas': 1670831, 'importe': Decimal('41090.03'), 'observacion': 'FAISAL JORGELINA'},
-	{'tipo_movimiento': 1, 'idventas': 1670840, 'importe': Decimal('37799.41'), 'observacion': 'PERETI HECTOR DOMINGO'},
-	{'tipo_movimiento': 1, 'idventas': 1670852, 'importe': Decimal('71998.40'), 'observacion': 'TORNE EDGARDO'}
-]
-
-
+-- Control cheques de cajas de la sucursal SF.
+SELECT f.compro, f.numero_comprobante, f.fecha_comprobante, c.numero_caja, cr.electronico, count(electronico), c.id_sucursal_id
+FROM cheque_recibo cr
+	JOIN factura f ON cr.id_factura_id = f.id_factura
+	JOIN caja c ON f.id_caja_id = c.id_caja
+WHERE c.id_sucursal_id = 2
+GROUP by c.numero_caja, cr.electronico
+ORDER by c.numero_caja ASC
 
 
