@@ -273,8 +273,15 @@ class PlanillaCajaInformeView(InformeFormView):
 		)
 		resumen_montos['retenciones'] = retenciones['importe_retencion']
 		
+		#-- Total Compensa Facturas.
+		compensa_facturas = Factura.objects.filter(
+			id_caja=caja_obj.id_caja
+		).aggregate(
+			compensa_facturas=Coalesce(Sum('compensa_factura'), Value(0), output_field=DecimalField(max_digits=12, decimal_places=2))
+		)
+		resumen_montos['compensa_facturas'] = compensa_facturas['compensa_facturas']
+		
 		#-- Otros Montos (que están faltando).
-		resumen_montos['compensa_facturas'] = 0.0
 		resumen_montos['tarjeta_debito'] = 0.0
 		resumen_montos['mercado_pago'] = 0.0
 		resumen_montos['dolares'] = 0.0
