@@ -23,13 +23,13 @@
 <!-- Bloque Content ------------------------------------------------------------------------ -->
 
 {% block content %}
-	<table>
+	<table style="max-width: 80%; margin: auto;">
 		
 		<thead>
 			<tr>
 				<th>Fecha</th>
 				<th>Comprobante</th>
-				<th>Cliente</th>
+				<th class="numeric" style="padding-right: 10px;">Cliente</th>
 				<th>Nombre</th>
 				<th class="numeric" style="padding-right: 15px;">Importe</th>
 				<th>Vendedor</th>
@@ -45,7 +45,7 @@
 					<tr>
 						<td>{{ comprobante.fecha_comprobante|date:'d/m/Y' }}</td>
 						<td>{{ comprobante.comprobante }}</td>
-						<td>{{ comprobante.id_cliente_id }}</td>
+						<td class="numeric" style="padding-right: 10px;">{{ comprobante.id_cliente_id }}</td>
 						<td>{{ comprobante.nombre_cliente }}</td>
 						<td class="numeric" style="padding-right: 15px;">{{ comprobante.total|formato_es_ar }}</td>
 						<td>{{ comprobante.nombre_vendedor }}</td>

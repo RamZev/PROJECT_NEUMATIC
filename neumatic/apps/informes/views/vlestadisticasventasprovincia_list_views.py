@@ -338,6 +338,7 @@ def generar_pdf(contexto_reporte):
 	
 	#-- Estilos específicos adicionales iniciales de la tabla.
 	table_style_config = [
+		('ALIGN', (0,0), (0,-1), 'RIGHT'),
 		('ALIGN', (-2,0), (-1,-1), 'RIGHT'),
 	]
 	

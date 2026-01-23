@@ -168,7 +168,7 @@ class ConfigViews:
 		},
 		"reventa": {
 			"label": "Rvta.",
-			"col_width_pdf": 20,
+			"col_width_pdf": 25,
 			"pdf_paragraph": False,
 			"date_format": False,
 			"pdf": True,
@@ -557,6 +557,7 @@ def generar_pdf(contexto_reporte):
 	
 	#-- Estilos específicos adicionales iniciales de la tabla.
 	table_style_config = [
+		('ALIGN', (4,0), (4,-1), 'RIGHT'),
 		('ALIGN', (7,0), (-1,-1), 'RIGHT'),
 	]
 	

@@ -82,7 +82,7 @@ class ConfigViews:
 		},
 		"id_cliente_id": {
 			"label": "Cliente",
-			"col_width_pdf": 30,
+			"col_width_pdf": 35,
 			"pdf": True,
 			"excel": True,
 			"csv": True
@@ -103,7 +103,7 @@ class ConfigViews:
 		},
 		"id_vendedor_id": {
 			"label": "Cód. Vendedor",
-			"col_width_pdf": 30,
+			"col_width_pdf": 0,
 			"pdf": False,
 			"excel": True,
 			"csv": True
@@ -311,6 +311,7 @@ def generar_pdf(contexto_reporte):
 	
 	#-- Estilos específicos adicionales iniciales de la tabla.
 	table_style_config = [
+		('ALIGN', (2,0), (2,-1), 'RIGHT'),
 		('ALIGN', (4,0), (4,-1), 'RIGHT'),
 	]
 	
@@ -322,7 +323,6 @@ def generar_pdf(contexto_reporte):
 	for obj in contexto_reporte.get("objetos", {}).values():
 		#-- Agregar filas del detalle.
 		for comprobante in obj['comprobantes']:
-			print("comprobante:", comprobante)
 			table_data.append([
 				format_date(comprobante['fecha_comprobante']),
 				comprobante['comprobante'],
