@@ -29,9 +29,9 @@
 			<tr>
 				<th>Comprobante</th>
 				<th>Fecha</th>
-				<th>Cliente</th>
+				<th class="numeric" style="padding-right: 10px;">Cliente</th>
 				<th>Nombre</th>
-				<th>Código</th>
+				<th class="numeric" style="padding-right: 10px;">Código</th>
 				<th>Detalle</th>
 				<th class="numeric">Cantidad</th>
 				<th class="numeric">Facturado</th>
@@ -56,9 +56,9 @@
 					<tr>
 						<td>{{ det.comprobante }}</td>
 						<td>{{ det.fecha }}</td>
-						<td>{{ det.id_cliente_id }}</td>
+						<td class="numeric" style="padding-right: 10px;">{{ det.id_cliente_id }}</td>
 						<td>{{ det.nombre_cliente }}</td>
-						<td>{{ det.id_producto_id }}</td>
+						<td class="numeric" style="padding-right: 10px;">{{ det.id_producto_id }}</td>
 						<td>{{ det.nombre_producto }}</td>
 						<td class="numeric">{{ det.cantidad|formato_es_ar }}</td>
 						<td class="numeric">{{ det.precio|formato_es_ar }}</td>
