@@ -16,7 +16,10 @@ SCRIPTS = [
     'codigo_retencion_migra.py',
     'concepto_banco_migra.py',
     'cheque_recibo_migra.py',
-    'tarjeta_recibo_migra.py'
+    'tarjeta_recibo_migra.py',
+    'retencion_recibo_migra.py',
+    'deposito_recibo_migra.py',
+    'compensa_factura_migra.py'
     
 ]
 

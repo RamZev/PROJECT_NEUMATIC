@@ -308,6 +308,14 @@ class Factura(ModeloBaseGenerico):
 		blank=True,
 		default=0.0
 	)
+	compensa_factura = models.DecimalField(
+		verbose_name="Compensa",
+		max_digits=14,
+		decimal_places=2,
+		null=True,
+		blank=True,
+		default=0.0
+	)
 	
 	class Meta:
 		db_table = "factura"
