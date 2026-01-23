@@ -4036,5 +4036,3 @@ id_caja_detalle	idventa	id_caja
 151447	1497846	8001287
 151494	1497942	1001437
 151560	1498105	1001437
-2026-01-23 15:49:50,399 - INFO - Eliminados 6906 registros existentes de RetencionRecibo
-2026-01-23 15:51:00,117 - INFO - Eliminados 3453 registros existentes de RetencionRecibo

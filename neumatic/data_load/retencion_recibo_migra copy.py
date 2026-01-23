@@ -5,7 +5,7 @@ import django
 import time
 import logging
 from dbfread import DBF
-from django.db import connection, transaction
+from django.db import transaction
 from django.core.exceptions import ObjectDoesNotExist
 from datetime import date
 from decimal import Decimal
@@ -21,7 +21,7 @@ django.setup()
 from apps.ventas.models.factura_models import Factura
 from apps.ventas.models.caja_models import Caja
 from apps.ventas.models.recibo_models import RetencionRecibo
-from apps.maestros.models.base_models import CodigoRetencion
+from apps.maestros.models.base_models import CodigoRetencion  # ✅ AHORA ES CodigoRetencion
 
 # Logging
 logging.basicConfig(
@@ -47,33 +47,11 @@ def safe_decimal(value, default=0.0):
     except (ValueError, TypeError):
         return Decimal(str(default))
 
-def reset_retencion_recibo():
-    """Elimina los datos existentes de manera controlada (estándar del proyecto)"""
-    try:
-        print("<info>Iniciando reset de RetencionRecibo...</info>")
-        with transaction.atomic():
-            count = RetencionRecibo.objects.count()
-            RetencionRecibo.objects.all().delete()
-            logger.info(f"Eliminados {count} registros existentes de RetencionRecibo")
-            print(f"<info>Eliminados {count} registros existentes de RetencionRecibo</info>")
-            
-            if 'sqlite' in connection.settings_dict['ENGINE']:
-                with connection.cursor() as cursor:
-                    cursor.execute("DELETE FROM sqlite_sequence WHERE name='retencion_recibo';")
-        print("<info>Reset de RetencionRecibo completado</info>")
-    except Exception as e:
-        logger.error(f"Error en reset_retencion_recibo: {e}")
-        print(f"<error>ERROR en reset_retencion_recibo: {e}</error>")
-        raise
-
 def retencion_recibo_migra():
     """Migración desde mediopagos.DBF a RetencionRecibo usando CodigoRetencion(pk=5)"""
     try:
         start_time = time.time()
         print("<info>Iniciando migración desde mediopagos.DBF...</info>")
-
-        # === LIMPIEZA INICIAL (tu estándar) ===
-        reset_retencion_recibo()
 
         # === 1. Instanciar CodigoRetencion con pk = 5 ===
         try:
@@ -107,7 +85,7 @@ def retencion_recibo_migra():
             return
 
         # === 5. Archivo .tag para facturas no encontradas ===
-        tag_file = os.path.join(BASE_DIR, 'data_load', 'retencion_no_encontradas.tag')
+        tag_file = os.path.join(BASE_DIR, 'data_load', 'retencion_recibo_migra.log')
         with open(tag_file, 'w', encoding='utf-8') as f:
             f.write("id_caja_detalle\tidventa\tid_caja\n")
 
@@ -146,7 +124,7 @@ def retencion_recibo_migra():
                 # Crear RetencionRecibo con CodigoRetencion(pk=5)
                 retencion = RetencionRecibo(
                     id_factura=factura,
-                    id_codigo_retencion=codigo_retencion_5,
+                    id_codigo_retencion=codigo_retencion_5,  # ✅ AHORA ES CodigoRetencion
                     certificado="Monto Resumen",
                     importe_retencion=importe,
                     fecha_retencion=date.today()
@@ -189,7 +167,6 @@ def retencion_recibo_migra():
         print(f"<info>Archivo de no encontradas: {tag_file}</info>")
 
     except Exception as e:
-        logger.error(f"Error fatal en retencion_recibo_migra: {str(e)}")
         print(f"<error>ERROR FATAL: {str(e)}</error>")
         raise
 
