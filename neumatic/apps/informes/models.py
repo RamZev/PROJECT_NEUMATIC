@@ -2952,7 +2952,7 @@ class VLStockUnico(models.Model):
 #-----------------------------------------------------------------------------
 class VLReposicionStockManager(models.Manager):
 	
-	def obtener_datos(self, id_deposito, id_familia_desde, id_familia_hasta, id_modelo_desde, id_modelo_hasta, id_marca_desde, id_marca_hasta, sucursales):
+	def obtener_datos(self, id_deposito, id_familia_desde, id_familia_hasta, id_marca_desde, id_marca_hasta, id_modelo_desde, id_modelo_hasta, sucursales):
 		from django.db import connection
 		from collections import namedtuple
 		
@@ -3030,7 +3030,7 @@ class VLReposicionStockManager(models.Manager):
 			('p.id_marca_id', id_marca_desde, id_marca_hasta),
 			('p.id_modelo_id', id_modelo_desde, id_modelo_hasta)
 		]
-		print("range_filters:", range_filters)
+		
 		for field, desde, hasta in range_filters:
 			if desde and hasta:
 				conditions.append(f"{field} BETWEEN %s AND %s")
@@ -3041,15 +3041,15 @@ class VLReposicionStockManager(models.Manager):
 			elif hasta:
 				conditions.append(f"{field} <= %s")
 				params.append(hasta)
-		print("conditions:", conditions)
+		
 		filters = "AND " + " AND ".join(conditions) if conditions else ""
-		print("filters:", filters)
+		
 		#-- Ensamblar consulta final.
 		final_query = query.format(
 			sucursal_columns=", ".join(sucursal_columns),
 			filters=filters
 		)
-		print(final_query)
+		
 		#-- Ejecutar con cursor y mapear a objetos del modelo.
 		with connection.cursor() as cursor:
 			cursor.execute(final_query, params)

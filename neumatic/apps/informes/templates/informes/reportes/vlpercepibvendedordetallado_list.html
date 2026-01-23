@@ -29,7 +29,7 @@
 			<tr>
 				<th>Comprobante</th>
 				<th>Fecha</th>
-				<th>Código</th>
+				<th class="numeric" style="padding-right: 10px">Código</th>
 				<th>Cliente</th>
 				<th>C.U.I.T.</th>
 				<th class="numeric">Neto</th>
@@ -43,9 +43,9 @@
 				<!-- Fila con los datos del Vendedor -->
 				<tr>
 					<td colspan="7" style="padding-top: 5px;">
-						<strong>Vendedor: </strong> 
-						<strong>[{{ id_vendedor }}]</strong> 
-						<strong>{{ data.vendedor }}</strong> 
+						<strong>Vendedor: </strong>
+						<strong>[{{ id_vendedor }}]</strong>
+						<strong>{{ data.vendedor }}</strong>
 					</td>
 				</tr>
 				
@@ -54,7 +54,7 @@
 					<tr>
 						<td style="white-space: pre">{{ comp.comprobante }}</td>
 						<td>{{ comp.fecha_comprobante|date:'d/m/Y' }}</td>
-						<td>{{ comp.id_cliente_id }}</td>
+						<td class="numeric" style="padding-right: 10px">{{ comp.id_cliente_id }}</td>
 						<td>{{ comp.nombre_cliente }}</td>
 						<td>{{ comp.cuit }}</td>
 						<td class="numeric">{{ comp.neto|formato_es_ar }}</td>
@@ -62,7 +62,8 @@
 					</tr>
 				{% endfor %}
 				<tr>
-					<td class="numeric" colspan="6"><strong>{{ data.total_neto|formato_es_ar }}</strong></td>
+					<td colspan="5"></td>
+					<td class="numeric"><strong>{{ data.total_neto|formato_es_ar }}</strong></td>
 					<td class="numeric"><strong>{{ data.total_percep|formato_es_ar }}</strong></td>
 				</tr>
 				

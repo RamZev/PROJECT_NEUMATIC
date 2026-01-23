@@ -522,15 +522,17 @@ Otros:
 
 
 Preguntas:
-- Se permite generar los reportes de cajas abiertas?
+*- Se permite generar los reportes de cajas abiertas?
 	Si
-- El orden el Planilla de Caja: Encabezado, Resumen y Detalle.
+*- El orden el Planilla de Caja: Encabezado, Resumen y Detalle.
 	Indistinto
-- El orden en el Detalle de Planilla de Caja.
+*- El orden en el Detalle de Planilla de Caja.
 	Indistinto
-- Los Medios o Formas de Pago en el Resumen.
-	
+*- Los Medios o Formas de Pago en el Resumen.
 
+- En el reporte Remitos Pendientes estoy mostrando los presupuestos que no afectan el Stock y se muestra el Total en 0 (cero).
+  Se deben mostrar o solo los comprobantes cuyo total sea diferente a cero?
+- Tengo dudas sobre los datos en el reporte "Camisiones a Vendedores según factura": Rvta, Prod. Marca Art.
 
 
 

@@ -189,7 +189,7 @@ class VLRemitosPendientesInformeView(InformeFormView):
 		# **************************************************
 		#-- Estructura para agrupar datos por cliente.
 		datos_por_cliente = {}
-		total_general = Decimal(0)
+		total_general = float(0)
 		
 		for obj in queryset:
 			#-- Identificar al cliente.
@@ -202,7 +202,7 @@ class VLRemitosPendientesInformeView(InformeFormView):
 					"id_cliente": cliente_id,
 					"cliente": nombre_cliente,
 					"comprobantes": {},
-					"total_cliente": Decimal(0),
+					"total_cliente": float(0),
 				}
 			
 			#-- Agrupar por comprobante dentro del cliente.
@@ -214,10 +214,11 @@ class VLRemitosPendientesInformeView(InformeFormView):
 					"numero_comprobante": num_comprobante,   # Para ordenar por número
 					"comprobante": obj.comprobante,
 					"productos": [],
-					"total_comprobante": Decimal(0),
+					"total_comprobante": float(0),
 				}
 			
 			#-- Crear el diccionario con los datos requeridos para el reporte.
+			total = float(obj.total) if obj.total else 0.0
 			producto_data = {
 				"fecha": obj.fecha_comprobante.strftime("%d/%m/%Y"),
 				"comprobante": obj.comprobante,
@@ -225,14 +226,14 @@ class VLRemitosPendientesInformeView(InformeFormView):
 				"medida": obj.medida,
 				"cantidad": obj.cantidad,
 				"precio": obj.precio,
-				"total": obj.total,
+				"total": total,
 			}
 			
 			#-- Agregar el producto a la lista del comprobante y acumular totales.
 			datos_por_cliente[cliente_id]["comprobantes"][num_comprobante]["productos"].append(producto_data)
-			datos_por_cliente[cliente_id]["comprobantes"][num_comprobante]["total_comprobante"] += obj.total
-			datos_por_cliente[cliente_id]["total_cliente"] += obj.total
-			total_general += obj.total
+			datos_por_cliente[cliente_id]["comprobantes"][num_comprobante]["total_comprobante"] += total
+			datos_por_cliente[cliente_id]["total_cliente"] += total
+			total_general += total
 		
 		#-- Convertir la estructura de diccionarios a listas ordenadas para iterar en el template.
 		datos = []
@@ -255,7 +256,7 @@ class VLRemitosPendientesInformeView(InformeFormView):
 		#-- Se retorna un contexto que será consumido tanto para la vista en pantalla como para la generación del PDF.
 		return {
 			"objetos": datos,
-			"total_general": float(total_general),
+			"total_general": total_general,
 			"parametros_i": param_left,
 			"parametros_d": param_right,
 			'fecha_hora_reporte': fecha_hora_reporte,

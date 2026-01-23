@@ -30,7 +30,7 @@
 				<th>Fecha</th>
 				<th class="numeric" style="padding-right: 10px;">Días</th>
 				<th>Comprobante</th>
-				<th>Cliente</th>
+				<th class="numeric" style="padding-right: 10px;">Cliente</th>
 				<th>Nombre</th>
 				<th class="numeric">Total Comprobante</th>
 				<th class="numeric">Entrega a Cuenta</th>
@@ -44,7 +44,7 @@
 					<td>{{ obj.fecha_comprobante|date:'d/m/Y' }}</td>
 					<td class="numeric" style="padding-right: 10px;">{{ obj.dias_vencidos }}</td>
 					<td>{{ obj.comprobante }}</td>
-					<td>{{ obj.id_cliente_id }}</td>
+					<td class="numeric" style="padding-right: 10px;">{{ obj.id_cliente_id }}</td>
 					<td>{{ obj.nombre_cliente }}</td>
 					<td class="numeric">{{ obj.total|formato_es_ar }}</td>
 					<td class="numeric">{{ obj.entrega|formato_es_ar }}</td>
