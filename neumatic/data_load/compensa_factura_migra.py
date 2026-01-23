@@ -53,7 +53,7 @@ def compensa_factura_migra():
         formapago = safe_int(record.get('FORMAPAGO'))
         idventa = safe_int(record.get('IDVENTA'))
         
-        if not (formapago == 5 and idventa > 0):
+        if not (formapago == 9 and idventa > 0):
             continue
 
         caja_numero = safe_int(record.get('CAJA'))
