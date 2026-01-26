@@ -24,9 +24,6 @@ from apps.ventas.models.caja_models import Caja, CajaDetalle
 
 from entorno.constantes_base import TIPO_VENTA
 
-from utils.afip_simple import AFIPSimpleClient
-from services.numeracion_cache import obtener_proximo_numero_afip
-
 modelo = Factura
 
 #-- Usar esta forma cuando el modelo esté compuesto de una sola palabra: Ej. Color.

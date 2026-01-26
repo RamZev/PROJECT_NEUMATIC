@@ -156,3 +156,16 @@ try:
     locale.setlocale(locale.LC_ALL, 'es_AR.UTF-8')  # Linux/Mac
 except locale.Error:
     locale.setlocale(locale.LC_ALL, 'spanish')      # Windows como fallback
+
+
+# Cache para numeración automática
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'unique-snowflake-afip',
+        'TIMEOUT': 300,  # 5 minutos
+        'OPTIONS': {
+            'MAX_ENTRIES': 1000
+        }
+    }
+}
