@@ -1,49 +1,78 @@
-# services/numeracion_simple.py
+# services/numeracion_cache.py
 import time
-from django.core.cache import cache
 import logging
+from django.core.cache import cache
 
 logger = logging.getLogger(__name__)
 
-def obtener_proximo_numero_seguro(pto_vta, cbte_tipo, afip_client):
+def obtener_proximo_numero_afip(pto_vta, cbte_tipo, afip_client):
     """
-    Obtiene el próximo número de manera segura
-    SOLUCIÓN SIMPLE: Lock vía cache + consulta AFIP
+    Obtiene el próximo número de AFIP con control de concurrencia
+    
+    Args:
+        pto_vta: Punto de venta (ej: "0001")
+        cbte_tipo: Tipo de comprobante (ej: 1)
+        afip_client: Instancia de AFIPSimpleClient
+    
+    Returns:
+        int: Próximo número a usar
+    
+    Raises:
+        Exception: Si no se puede obtener después de reintentos
     """
     max_intentos = 3
     
     for intento in range(max_intentos):
         try:
-            # 1. INTENTAR OBTENER LOCK (solución más simple)
-            lock_key = f"lock_afip_{pto_vta}_{cbte_tipo}"
+            # 1. Crear clave única para el lock
+            lock_key = f"afip_lock:{pto_vta}:{cbte_tipo}"
             
-            # cache.add es atómico: solo un proceso puede establecerlo
-            lock_obtenido = cache.add(lock_key, "locked", timeout=10)  # 10 segundos
+            # 2. Generar valor único para identificar quién tiene el lock
+            lock_valor = f"{time.time():.6f}"  # Timestamp con microsegundos
+            
+            # 3. INTENTAR OBTENER LOCK (operación atómica)
+            # cache.add() solo devuelve True si la clave NO existía
+            lock_obtenido = cache.add(lock_key, lock_valor, timeout=10)
             
             if not lock_obtenido:
-                # Alguien más tiene el lock, esperar un poco
-                time.sleep(0.1)
+                # Otro proceso tiene el lock, esperar un poco
+                tiempo_espera = 0.1 * (intento + 1)
+                logger.debug(f"Lock ocupado, esperando {tiempo_espera}s...")
+                time.sleep(tiempo_espera)
                 continue
             
+            # 4. ¡TENEMOS EL LOCK! Consultar AFIP
             try:
-                # 2. TENEMOS EL LOCK → Consultar AFIP
+                logger.info(f"Lock obtenido para {pto_vta}-{cbte_tipo:03d}")
+                
+                # Consultar último número autorizado por AFIP
                 ultimo_afip = afip_client.obtener_ultimo_autorizado(pto_vta, cbte_tipo)
                 
-                # 3. Calcular próximo
-                proximo = ultimo_afip + 1
+                # Calcular próximo número
+                proximo_numero = ultimo_afip + 1
                 
-                logger.info(f"Número obtenido: {pto_vta}-{proximo:08d}")
-                return proximo
+                logger.info(f"Número obtenido: {pto_vta}-{proximo_numero:08d}")
+                return proximo_numero
                 
             finally:
-                # 4. SIEMPRE liberar el lock
-                cache.delete(lock_key)
-                
+                # 5. LIBERAR LOCK (siempre se ejecuta, incluso con errores)
+                # Solo liberar si todavía somos los dueños
+                if cache.get(lock_key) == lock_valor:
+                    cache.delete(lock_key)
+                    logger.debug(f"Lock liberado para {pto_vta}-{cbte_tipo:03d}")
+                    
         except Exception as e:
-            logger.error(f"Intento {intento+1} falló: {e}")
+            logger.warning(f"Intento {intento + 1} falló: {str(e)}")
+            
             if intento < max_intentos - 1:
-                time.sleep(0.5)
+                # Esperar antes de reintentar (backoff exponencial)
+                tiempo_espera = 0.5 * (2 ** intento)
+                time.sleep(tiempo_espera)
                 continue
-            raise
+            
+            # Último intento falló
+            logger.error(f"No se pudo obtener número después de {max_intentos} intentos")
+            raise Exception(f"No se pudo obtener número: {str(e)}")
     
-    raise Exception("No se pudo obtener número después de reintentos")
+    # Nunca debería llegar aquí, pero por seguridad
+    raise Exception("Error inesperado en obtención de número")
