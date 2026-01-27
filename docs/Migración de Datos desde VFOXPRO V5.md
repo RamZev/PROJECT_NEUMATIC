@@ -296,7 +296,7 @@ Cada vez que ejecute un script grabe los cambios
 
 auth_group.sql
 
-auth_group_permissions.sq
+auth_group_permissions.sql
 
 usuarios_user.sql
 
