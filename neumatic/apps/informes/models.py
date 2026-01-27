@@ -1247,7 +1247,7 @@ class ComisionVendedorIBManager(models.Manager):
 			params.append(id_vendedor)
 		
 		#-- Unir las consultas.
-		query_full = f"{query1} UNION {query2} ORDER BY nombre_vendedor, fecha_comprobante, numero_comprobante"
+		query_full = f"{query1} UNION {query2} ORDER BY nombre_vendedor, consulta, fecha_comprobante, comprobante"
 		
 		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
 		return self.raw(query_full, params*2)

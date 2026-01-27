@@ -504,8 +504,8 @@ Para los reportes de Caja se necesita:
   Todavía hay comprobantes que no tienen su caja asociada.
 *- Agregar campo booleano en cheque_recibo para indicar si el cheque es Electrónico y 
    contemplar este dato en la migración.
-- Crear campo compesa_factura en Factura y considerarlo en el formulario y procesamiento(vistas)
-  contemplar este dato en la migración (desde mediopagos.dbf).
+*- Crear campo compesa_factura en Factura y considerarlo en el formulario y procesamiento(vistas)
+   contemplar este dato en la migración (desde mediopagos.dbf).
 
 --------------------------------------------------------
 
