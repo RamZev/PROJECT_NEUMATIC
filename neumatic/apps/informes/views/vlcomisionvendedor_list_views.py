@@ -95,6 +95,13 @@ class ConfigViews:
 			"excel": True,
 			"csv": True
 		},
+		"id_cliente_id": {
+			"label": "ID Cliente",
+			"col_width_pdf": 0,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
 		"nombre_cliente": {
 			"label": "Cliente",
 			"col_width_pdf": 160,
@@ -104,7 +111,7 @@ class ConfigViews:
 		},
 		"reventa": {
 			"label": "Rvta.",
-			"col_width_pdf": 20,
+			"col_width_pdf": 25,
 			"pdf": True,
 			"excel": True,
 			"csv": True
@@ -123,10 +130,24 @@ class ConfigViews:
 			"excel": True,
 			"csv": True
 		},
+		"id_marca_id": {
+			"label": "ID Marca",
+			"col_width_pdf": 0,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
 		"nombre_producto_marca": {
 			"label": "Marca",
 			"col_width_pdf": 120,
 			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
+		"id_familia_id": {
+			"label": "ID Familia",
+			"col_width_pdf": 0,
+			"pdf": False,
 			"excel": True,
 			"csv": True
 		},
@@ -137,10 +158,52 @@ class ConfigViews:
 			"excel": True,
 			"csv": True
 		},
+		"cantidad": {
+			"label": "Cantidad",
+			"col_width_pdf": 0,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+		"precio": {
+			"label": "Precio",
+			"col_width_pdf": 0,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+		"costo": {
+			"label": "Costo",
+			"col_width_pdf": 0,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+		"descuento": {
+			"label": "Descuento",
+			"col_width_pdf": 0,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
 		"gravado": {
 			"label": "Gravado",
 			"col_width_pdf": 60,
 			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
+		"total": {
+			"label": "Total",
+			"col_width_pdf": 0,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+		"no_estadist": {
+			"label": "No Estadíst.",
+			"col_width_pdf": 0,
+			"pdf": False,
 			"excel": True,
 			"csv": True
 		},
@@ -345,6 +408,7 @@ def generar_pdf(contexto_reporte):
 	
 	#-- Estilos específicos adicionales iniciales de la tabla.
 	table_style_config = [
+		('ALIGN', (4,0), (4,-1), 'RIGHT'),
 		('ALIGN', (8,0), (-1,-1), 'RIGHT'),
 	]
 	
@@ -375,7 +439,7 @@ def generar_pdf(contexto_reporte):
 				Paragraph(str(det['cliente']), generator.styles['CellStyle']),
 				det['reventa'],
 				det['id_producto'],
-				det['producto'],
+				Paragraph(str(det['producto']), generator.styles['CellStyle']),
 				Paragraph(str(det['marca']), generator.styles['CellStyle']),
 				Paragraph(str(det['articulo']), generator.styles['CellStyle']),
 				formato_argentino(det['gravado']),

@@ -548,41 +548,34 @@ DROP VIEW IF EXISTS "main"."VLComisionVendedor";
 CREATE VIEW "VLComisionVendedor" AS 
 	SELECT 
 		f.id_factura,
-		f.compro,
-		f.letra_comprobante,
-		f.numero_comprobante,
-		(f.compro || '  ' || f.letra_comprobante || '  ' || SUBSTR(printf('%012d', f.numero_comprobante), 1, 4) || '-' || SUBSTR(printf('%012d', f.numero_comprobante), 5)) AS comprobante,
+		(cv.codigo_comprobante_venta|| '  ' || f.letra_comprobante || '  ' || SUBSTR(printf('%012d', f.numero_comprobante), 1, 4) || '-' || SUBSTR(printf('%012d', f.numero_comprobante), 5)) AS comprobante,
 		f.fecha_comprobante,
-		--f.id_cliente_id,
+		f.id_cliente_id,
 		c.nombre_cliente,
-		--"R" AS reventa,
 		"" AS reventa,
-		--"id_producto_id" AS id_producto_id,
-		"" AS id_producto_id,
-		--"medida" AS medida,
+		0 AS id_producto_id,
 		"" AS medida,
-		--"nombre_producto_marca" AS nombre_producto_marca,
+		0 AS id_marca_id,
 		"" AS nombre_producto_marca,
-		--"nombre_producto_familia" AS nombre_producto_familia,
+		0 AS id_familia_id,
 		"" AS nombre_producto_familia,
+		0 AS cantidad,
+		0 AS precio,
+		0 AS costo,
+		0 AS descuento,
 		ROUND(f.total/(((SELECT alicuota_iva FROM codigo_alicuota WHERE codigo_alicuota = "0005")/100.0)+1),2) AS gravado,
---		f.total,
+		f.total,
+		0 AS no_estadist,
 		CASE
 			WHEN f.comision = "C" THEN v.pje_camion
 			ELSE v.pje_auto
 		END AS pje_comision,
---		v.pje_auto, 
---		v.pje_camion,
---		f.comision AS tipo_comision,
---		CASE
---			WHEN f.comision = "C" THEN ROUND(f.total/(((SELECT alicuota_iva FROM codigo_alicuota WHERE codigo_alicuota = "0005")/100.0)+1),2) * v.pje_camion/100.0
---			ELSE ROUND(f.total/(((SELECT alicuota_iva FROM codigo_alicuota WHERE codigo_alicuota = "0005")/100.0)+1),2) * v.pje_auto/100.0
---		END AS monto_comision,
 		c.id_vendedor_id,
 		v.nombre_vendedor,
 		"R" AS consulta
 	FROM
 		factura f
+		JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
 		JOIN cliente c ON f.id_cliente_id = c.id_cliente
 		JOIN vendedor v ON c.id_vendedor_id = v.id_vendedor
 	WHERE
@@ -597,43 +590,35 @@ DROP VIEW IF EXISTS "main"."VLComisionVendedorDetalle";
 CREATE VIEW "VLComisionVendedorDetalle" AS 
 	SELECT 
 		f.id_factura,
-		f.compro,
-		f.letra_comprobante,
-		f.numero_comprobante,
-		(f.compro || '  ' || f.letra_comprobante || '  ' || SUBSTR(printf('%012d', f.numero_comprobante), 1, 4) || '-' || SUBSTR(printf('%012d', f.numero_comprobante), 5)) AS comprobante,
+		(cv.codigo_comprobante_venta || '  ' || f.letra_comprobante || '  ' || SUBSTR(printf('%012d', f.numero_comprobante), 1, 4) || '-' || SUBSTR(printf('%012d', f.numero_comprobante), 5)) AS comprobante,
 		f.fecha_comprobante,
-		--f.id_cliente_id,
+		f.id_cliente_id,
 		c.nombre_cliente,
 		df.reventa,
 		df.id_producto_id,
 		p.medida,
-		--p.id_marca_id,
+		p.id_marca_id,
 		pm.nombre_producto_marca,
-		--p.id_familia_id,
+		p.id_familia_id,
 		pf.nombre_producto_familia,
-		--df.cantidad,
-		--df.precio,
-		--df.costo,
-		--df.descuento,
+		df.cantidad,
+		df.precio,
+		df.costo,
+		df.descuento,
 		df.gravado*cv.mult_comision AS gravado,
-		--df.total*comprobante_venta.mult_comision AS total,
-		--f.no_estadist,
-		--df.alic_iva*0 AS pje_auto,
+		df.total*cv.mult_comision AS total,
+		f.no_estadist,
 		COALESCE(ROUND((SELECT 
 				dvc.comision_porcentaje
 			FROM vendedor_comision vc
 				JOIN detalle_vendedor_comision dvc ON dvc.id_vendedor_comision_id = vc.id_vendedor_comision
-				--JOIN vendedor v ON vc.id_vendedor_id = v.id_vendedor
-				--JOIN producto_familia f ON dvc.id_familia_id = f.id_producto_familia
-				--JOIN producto_marca m ON dvc.id_marca_id = m.id_producto_marca
 			WHERE vc.id_vendedor_id = c.id_vendedor_id
 				AND dvc.id_familia_id = p.id_familia_id
 				AND dvc.id_marca_id = p.id_marca_id
 			LIMIT 1), 2), 0) AS pje_comision,
-		--df.alic_iva*0 AS comision,
 		c.id_vendedor_id,
 		v.nombre_vendedor,
-		"D" AS consulta
+		"C" AS consulta
 	FROM 
 		detalle_factura df
 		JOIN factura f ON df.id_factura_id = f.id_factura
