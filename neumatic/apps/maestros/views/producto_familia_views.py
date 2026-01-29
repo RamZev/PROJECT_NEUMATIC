@@ -6,13 +6,13 @@ from ..forms.producto_familia_forms import ProductoFamiliaForm
 
 
 class ConfigViews():
-	# Modelo
+	#-- Modelo.
 	model = ProductoFamilia
 	
-	# Formulario asociado al modelo
+	#-- Formulario asociado al modelo.
 	form_class = ProductoFamiliaForm
 	
-	# Aplicación asociada al modelo
+	#-- Aplicación asociada al modelo.
 	app_label = model._meta.app_label
 	
 	#-- Usar esta forma cuando el modelo esté compuesto de una sola palabra: Ej. Color.
@@ -21,33 +21,33 @@ class ConfigViews():
 	#-- Usar esta forma cuando el modelo esté compuesto por más de una palabra: Ej. TipoCambio colocar "tipo_cambio".
 	model_string = "producto_familia"
 	
-	# Permisos
+	#-- Permisos.
 	permission_add = f"{app_label}.add_{model.__name__.lower()}"
 	permission_change = f"{app_label}.change_{model.__name__.lower()}"
 	permission_delete = f"{app_label}.delete_{model.__name__.lower()}"
 	
-	# Vistas del CRUD del modelo
+	#-- Vistas del CRUD del modelo.
 	list_view_name = f"{model_string}_list"
 	create_view_name = f"{model_string}_create"
 	update_view_name = f"{model_string}_update"
 	delete_view_name = f"{model_string}_delete"
 	
-	# Plantilla para crear o actualizar el modelo
+	#-- Plantilla para crear o actualizar el modelo.
 	template_form = f"{app_label}/{model_string}_form.html"
 	
-	# Plantilla para confirmar eliminación de un registro
+	#-- Plantilla para confirmar eliminación de un registro.
 	template_delete = "base_confirm_delete.html"
 	
-	# Plantilla de la lista del CRUD
+	#-- Plantilla de la lista del CRUD.
 	template_list = f'{app_label}/maestro_list.html'
 	
-	# Contexto de los datos de la lista
+	#-- Contexto de los datos de la lista.
 	context_object_name	= 'objetos'
 	
-	# Vista del home del proyecto
+	#-- Vista del home del proyecto.
 	home_view_name = "home"
 	
-	# Nombre de la url 
+	#-- Nombre de la url.
 	success_url = reverse_lazy(list_view_name)
 
 
@@ -78,7 +78,6 @@ class DataViewList():
 	]
 
 
-# ActividadListView - Inicio
 class ProductoFamiliaListView(MaestroListView):
 	model = ConfigViews.model
 	template_name = ConfigViews.template_list

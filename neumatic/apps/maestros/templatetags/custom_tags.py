@@ -49,7 +49,7 @@ def get_columna(field, field_name):
 			int: El valor de la columna definido en los atributos extra del campo, o 12 si no se encuentra.
 	"""
 	extra_attrs = field.widget.attrs.get('extra_attrs', {})
-	return extra_attrs.get('columna', 12)  # Si no se encuentra, se devuelve 12 por defecto
+	return extra_attrs.get('columna', 12)  #-- Si no se encuentra, se devuelve 12 por defecto.
 
 
 @register.filter
@@ -83,27 +83,27 @@ def formato_es_ar(value):
 
 @register.filter
 def formato_es_ar_entero(value):
-    """
-    Formatea un número entero con el formato de Argentina:
-    - Separador de miles: punto (.)
-    - Sin decimales
-    - Compatible con int, float y Decimal.
-    """
-    try:
-        # Configura el locale para números en es_AR
-        locale.setlocale(locale.LC_NUMERIC, 'es_AR.UTF-8')
-        
-        # Convierte a float si es Decimal y luego a int
-        if isinstance(value, Decimal):
-            value = int(float(value))
-        elif isinstance(value, float):
-            value = int(value)
-            
-        # Formatea con separadores de miles y sin decimales
-        return locale.format_string('%d', value, grouping=True)
-    except (ValueError, TypeError):
-        # Devuelve el valor sin formatear si no es un número válido
-        return value
+	"""
+	Formatea un número entero con el formato de Argentina:
+	- Separador de miles: punto (.)
+	- Sin decimales
+	- Compatible con int, float y Decimal.
+	"""
+	try:
+		#-- Configura el locale para números en es_AR.
+		locale.setlocale(locale.LC_NUMERIC, 'es_AR.UTF-8')
+		
+		#-- Convierte a float si es Decimal y luego a int.
+		if isinstance(value, Decimal):
+			value = int(float(value))
+		elif isinstance(value, float):
+			value = int(value)
+			
+		#-- Formatea con separadores de miles y sin decimales.
+		return locale.format_string('%d', value, grouping=True)
+	except (ValueError, TypeError):
+		#-- Devuelve el valor sin formatear si no es un número válido.
+		return value
 
 
 @register.simple_tag
@@ -115,7 +115,7 @@ def get_color_estado(nombre_estado):
 	try:
 		return ProductoEstado.objects.get(nombre_producto_estado=nombre_estado).color
 	except ProductoEstado.DoesNotExist:
-		return '#FFFFFF'  # Color por defecto si no existe
+		return '#FFFFFF'  #-- Color por defecto si no existe.
 
 
 @register.filter
@@ -135,17 +135,18 @@ def vacio_si_cero(value):
 	Compatible con int, float, Decimal y string.
 	"""
 	try:
-		# Convertir a float para hacer la comparación
+		#-- Convertir a float para hacer la comparación.
 		valor_numerico = float(value)
 		
-		# Si es exactamente 0, retornar vacío
+		#-- Si es exactamente 0, retornar vacío.
 		if valor_numerico == 0.0:
 			return ""
 	except (ValueError, TypeError):
-		# Si no se puede convertir a número, retornar el valor original
+		#-- Si no se puede convertir a número, retornar el valor original.
 		pass
 	
 	return value
+
 
 @register.filter
 def formatear_caja(numero_caja):

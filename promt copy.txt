@@ -389,106 +389,6 @@ WHERE
 ORDER by f.compro, f.letra_comprobante,f.numero_comprobante
 
 ##################################################################################################################################
-/* 4to. Reporte: Este es el Detalle de Caja.
-   "Esta consulta es por número de caja que se debe pasar por parámetro también y saca todo el detalle de comprobantes de la caja." */
- 
---CREATE VIEW vlCajaDetalle AS
-SELECT
-	caja_detalle.id_caja_id, caja.numero_caja,
-	caja_detalle.tipo_movimiento,
---	caja_detalle.idventas, factura.compro, factura.letra_comprobante, factura.numero_comprobante,
-	caja_detalle.idventas, comprobante_venta.nombre_comprobante_venta, comprobante_venta.codigo_comprobante_venta, factura.letra_comprobante, factura.numero_comprobante,
-	factura.id_cliente_id, cliente.nombre_cliente,
-	caja_detalle.importe,
-	--forma_pago.descripcion_forma_pago,
-	caja_detalle.observacion
-FROM caja_detalle
-	JOIN caja ON caja_detalle.id_caja_id = caja.id_caja
-	LEFT JOIN factura ON caja_detalle.idventas = factura.id_factura
-	LEFT JOIN cliente ON factura.id_cliente_id = cliente.id_cliente
-	LEFT JOIN forma_pago ON caja_detalle.id_forma_pago_id = forma_pago.id_forma_pago
-	LEFT JOIN comprobante_venta ON factura.id_comprobante_venta_id = comprobante_venta.id_comprobante_venta
-WHERE 
-	--caja.numero_caja=2001880
-	--caja.numero_caja=1001964
-	caja.numero_caja=1001668
-	--caja.numero_caja=1001966
-ORDER by 
-	factura.compro, factura.letra_comprobante, factura.numero_comprobante, caja_detalle.tipo_movimiento
-	--caja_detalle.idventas, caja_detalle.tipo_movimiento, factura.compro, factura.letra_comprobante, factura.numero_comprobante
-	--caja_detalle.idventas, caja_detalle.tipo_movimiento
-
-
-
-------------
--- Consultas para determinar los montos para el Resumen de Planilla de Caja.
-
--- Monto de Cheques Recibidos. ----------------------------------------------
-SELECT cheque_recibo.codigo_banco, cheque_recibo.sucursal, cheque_recibo.codigo_postal, cheque_recibo.numero_cheque_recibo, cheque_recibo.fecha_cheque1, sum(cheque_recibo.importe_cheque)
-FROM cheque_recibo
-	JOIN factura ON cheque_recibo.id_factura_id = factura.id_factura
-	JOIN caja ON factura.id_caja_id = caja.id_caja
-WHERE caja.numero_caja=1001668
--- Resultado: 13.325.090,09
-
-SELECT SUM(cheque_recibo.importe_cheque) AS importe_cheques
-FROM cheque_recibo
-	JOIN factura ON cheque_recibo.id_factura_id = factura.id_factura
-WHERE factura.id_caja_id=11458
--- Resultado: 13.325.090,09
-
-
--- Monto de Tarjetas.  ------------------------------------------------------
-SELECT tarjeta_recibo.cupon, tarjeta_recibo.lote, tarjeta_recibo.cuotas, sum(tarjeta_recibo.importe_tarjeta)
-FROM tarjeta_recibo
-	JOIN factura ON tarjeta_recibo.id_factura_id = factura.id_factura
-	JOIN caja ON factura.id_caja_id = caja.id_caja
-WHERE caja.numero_caja=1001668
--- Resultado: 1.309.572,92
-
-SELECT SUM(tarjeta_recibo.importe_tarjeta)
-FROM tarjeta_recibo
-	JOIN factura ON tarjeta_recibo.id_factura_id = factura.id_factura
-WHERE factura.id_caja_id=11458
--- Resultado: 1.309.572,92
-
-
--- Monto de Depósitos. ------------------------------------------------------
-SELECT deposito_recibo.fecha_deposito, deposito_recibo.detalle_deposito, sum(deposito_recibo.importe_deposito)
-FROM deposito_recibo
-	JOIN factura ON deposito_recibo.id_factura_id = factura.id_factura
-	JOIN caja ON factura.id_caja_id = caja.id_caja
-WHERE caja.numero_caja=1001668
--- Resultado: NULL  debería ser 889.988,57 (no están los datos)
-
-SELECT SUM(deposito_recibo.importe_deposito)
-FROM deposito_recibo
-	JOIN factura ON deposito_recibo.id_factura_id = factura.id_factura
-WHERE factura.id_caja_id=11458
--- Resultado: NULL  debería ser 889.988,57 (no están los datos)
-
-
--- Monto de Retenciones. ----------------------------------------------------
-SELECT retencion_recibo.certificado, retencion_recibo.fecha_retencion, retencion_recibo.id_codigo_retencion_id, sum(retencion_recibo.importe_retencion)
-FROM retencion_recibo
-	JOIN factura ON retencion_recibo.id_factura_id = factura.id_factura
-	JOIN caja ON factura.id_caja_id = caja.id_caja
-WHERE caja.numero_caja=1001668
--- Resultado: NULL  debería ser 49.419,29 (no están los datos)
-
-SELECT SUM(retencion_recibo.importe_retencion)
-FROM retencion_recibo
-	JOIN factura ON retencion_recibo.id_factura_id = factura.id_factura
-WHERE factura.id_caja_id=11458
--- Resultado: NULL  debería ser 49.419,29 (no están los datos)
-
-
-
-
-
-CONSIDERACIONES:
-- CajaDetalle: Falta migrar id_forma_pago desde la tabla cajadetalle.dbf
-
 ##################################################################################################################################
 ##################################################################################################################################
 ##################################################################################################################################
@@ -519,6 +419,7 @@ Otros:
 - No permitir establecer más de 1 moneda como predeterminada.
 - No se ha migrado tipo_percep_ib desde tpercib.dbf
 - Revisar migración de producto_minimo
+- CajaDetalle: Falta migrar id_forma_pago desde la tabla cajadetalle.dbf
 
 
 Preguntas:
@@ -532,21 +433,12 @@ Preguntas:
 
 - En el reporte Remitos Pendientes estoy mostrando los presupuestos que no afectan el Stock y se muestra el Total en 0 (cero).
   Se deben mostrar o solo los comprobantes cuyo total sea diferente a cero?
-- Tengo dudas sobre los datos en el reporte "Camisiones a Vendedores según factura": Rvta, Prod. Marca Art.
 
 
 
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
--- Control cheques de cajas de la sucursal SF.
-SELECT f.compro, f.numero_comprobante, f.fecha_comprobante, c.numero_caja, cr.electronico, count(electronico), c.id_sucursal_id
-FROM cheque_recibo cr
-	JOIN factura f ON cr.id_factura_id = f.id_factura
-	JOIN caja c ON f.id_caja_id = c.id_caja
-WHERE c.id_sucursal_id = 2
-GROUP by c.numero_caja, cr.electronico
-ORDER by c.numero_caja ASC
 
 
 

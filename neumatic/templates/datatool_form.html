@@ -2,7 +2,12 @@
 {% extends 'base.html' %}
 {% load static %}
 
-<!-- Block Header  ---------------------------------------------------------->
+<!-- Block Title  -------------------------------------------------------- -->
+{% block title %}
+	{{ titulo }}
+{% endblock title %}
+
+<!-- Block Header  ------------------------------------------------------- -->
 {% block header %}
 	{% include 'top_nav.html' %}
 {% endblock header %}
@@ -32,4 +37,5 @@
 
 <!-- Block JavaScrip ----------------------------------------------------- -->
 {% block script %}
+	{{ block.super }}
 {% endblock script %}

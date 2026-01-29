@@ -54,17 +54,17 @@
 		</div>
 		
 		<div class="col col-1">
-			<form method="get">
-				<select class="form-select" name="paginate_by" id="pagination" onchange="this.form.submit()">
+			<form method="get" id="paginationForm">
+				<select class="form-select" name="paginate_by" id="pagination">
 					{% for option in pagination_options %}
 						<option value="{{ option }}" {% if selected_pagination == option %}selected{% endif %}>
 							{{ option }}
 						</option>
 					{% endfor %}
 				</select>
-				<!-- Mantener otros parámetros dinámicos -->
+				<!-- Mantener otros parámetros dinámicos EXCEPTO 'page' -->
 				{% for key, value in request.GET.items %}
-					{% if key != 'paginate_by' %}
+					{% if key != 'paginate_by' and key != 'page' %}
 						<input type="hidden" name="{{ key }}" value="{{ value }}">
 					{% endif %}
 				{% endfor %}
@@ -72,3 +72,24 @@
 		</div>
 	</div>
 </nav>
+
+<!-- Script para manejar el cambio de paginación -->
+<script>
+	document.addEventListener('DOMContentLoaded', function() {
+		const paginationSelect = document.getElementById('pagination');
+		const paginationForm = document.getElementById('paginationForm');
+		
+		if (paginationSelect && paginationForm) {
+			paginationSelect.addEventListener('change', function() {
+				// Remover explícitamente cualquier parámetro 'page' del formulario
+				const pageInputs = paginationForm.querySelectorAll('input[name="page"]');
+				pageInputs.forEach(input => {
+					input.parentNode.removeChild(input);
+				});
+				
+				// Enviar el formulario (irá a la página 1 automáticamente)
+				paginationForm.submit();
+			});
+		}
+	});
+</script>

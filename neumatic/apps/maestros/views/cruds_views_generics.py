@@ -133,7 +133,7 @@ class MaestroCreateView(PermissionRequiredMixin, CreateView):
 		context.update({
 			"accion": f"Crear {self.model._meta.verbose_name}",
 			"list_view_name": self.list_view_name,
-		})		
+		})
 		
 		#-- Asegurarse de que el formulario en el contexto sea el mismo que se validó
 		context['form'] = self.get_form()

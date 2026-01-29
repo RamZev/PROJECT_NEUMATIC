@@ -4,7 +4,7 @@ import json
 import glob
 from datetime import date
 from io import BytesIO
-from decimal import Decimal
+# from decimal import Decimal
 
 from django.http import HttpResponse
 from django.views.generic import TemplateView, View
@@ -154,6 +154,9 @@ class ConsultaProductosView(TemplateView):
 				#-- Construir filtros base.
 				filters = Q()
 				
+				#-- Añadir filtro de estatus - solo productos activos.
+				filters &= Q(estatus_producto=True)
+				
 				if medida:
 					filters &= Q(medida__icontains=medida)
 				if nombre:
@@ -249,7 +252,7 @@ class ConsultaProductosView(TemplateView):
 					}
 					
 					#-- Obtener depósitos.
-					depositos = ProductoDeposito.objects.all()
+					depositos = ProductoDeposito.objects.filter(estatus_producto_deposito=True)
 					
 					#-- Obtener stock para estos productos específicos.
 					stock_data = ProductoStock.objects.filter(
@@ -303,7 +306,8 @@ class ConsultaProductosView(TemplateView):
 			'cai': cai,
 			'filtro_marca': filtro_marca,
 			'error': error,
-			'fecha': timezone.now()
+			'fecha': timezone.now(),
+			'titulo': 'Consulta de Precios'
 		})
 		return context
 
@@ -506,6 +510,7 @@ def generar_entrega_cliente(request, factura_id):
     
     return JsonResponse({'success': False, 'error': 'Método no permitido'})
 
+
 def generar_pdf_entrega(datos_entrega):
 	response = HttpResponse(content_type='application/pdf')
 	
@@ -689,6 +694,7 @@ class CrearStockClienteView(View):
             redirect_url = base_url
         
         return redirect(redirect_url)
+
 
 class AdministrarStockClienteView(TemplateView):
 	template_name = 'datatools/stock_cliente_detalle.html'

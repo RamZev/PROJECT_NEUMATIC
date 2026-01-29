@@ -57,7 +57,7 @@ class DataViewList():
 	ordering = ['descripcion_actividad']
 	
 	paginate_by = 8
-	  
+	
 	table_headers = {
 		'estatus_actividad': (1, 'Estatus'),
 		# 'id_actividad': (1, 'ID'),
