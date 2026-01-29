@@ -2,8 +2,10 @@
 from django import forms
 from .crud_forms_generics import CrudGenericForm
 from ..models.numero_models import Numero
-from diseno_base.diseno_bootstrap import (
-	formclasstext, formclassselect)
+from diseno_base.diseno_bootstrap import(
+	formclasstext,
+	formclassselect
+)
 
 
 class NumeroForm(CrudGenericForm):

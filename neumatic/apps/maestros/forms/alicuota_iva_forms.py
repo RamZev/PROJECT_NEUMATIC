@@ -2,8 +2,11 @@
 from django import forms
 from .crud_forms_generics import CrudGenericForm
 from ..models.base_models import AlicuotaIva
-from diseno_base.diseno_bootstrap import (
-	formclasstext, formclassselect, formclassnumb)
+from diseno_base.diseno_bootstrap import(
+	formclasstext,
+	formclassselect,
+	formclassnumb
+)
 
 
 class AlicuotaIvaForm(CrudGenericForm):

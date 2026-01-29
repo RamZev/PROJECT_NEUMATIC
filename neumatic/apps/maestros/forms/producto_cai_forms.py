@@ -2,8 +2,10 @@
 from django import forms
 from .crud_forms_generics import CrudGenericForm
 from ..models.base_models import ProductoCai
-from diseno_base.diseno_bootstrap import (
-	formclasstext, formclassselect)
+from diseno_base.diseno_bootstrap import(
+	formclasstext,
+	formclassselect
+)
 
 
 class CaiForm(CrudGenericForm):
@@ -11,7 +13,7 @@ class CaiForm(CrudGenericForm):
 	class Meta:
 		model = ProductoCai
 		fields = '__all__'
-
+		
 		widgets = {
 		'estatus_cai': 
 				forms.Select(attrs={**formclassselect}), 

@@ -3,7 +3,9 @@ from django import forms
 from .crud_forms_generics import CrudGenericForm
 from ..models.base_models import MedioPago
 from diseno_base.diseno_bootstrap import (
-  formclasstext, formclassselect, formclassdate)
+	formclasstext,
+	formclassselect
+)
 
 
 class MedioPagoForm(CrudGenericForm):
@@ -11,7 +13,7 @@ class MedioPagoForm(CrudGenericForm):
 	class Meta:
 		model = MedioPago
 		fields = '__all__'
-
+		
 		widgets = {
 			'estatus_medio_pago': 
 				forms.Select(attrs={**formclassselect}), 

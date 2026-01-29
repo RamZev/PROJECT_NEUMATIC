@@ -39,7 +39,6 @@ class ProductoEstadoForm(CrudGenericForm):
 		if self.instance and self.instance.pk in self.registros_protegidos:
 			for field_name in ['estado_producto', 'nombre_producto_estado']:
 				self.fields[field_name].widget.attrs['readonly'] = True
-				# self.fields[field_name].widget.attrs['style'] = 'background-color: #D7D7D7;'
 				self.fields[field_name].widget.attrs['style'] = 'background-color: #d4eaff;'
 				self.fields[field_name].widget.attrs['title'] = 'Campo protegido, no se puede modificar.'
 	

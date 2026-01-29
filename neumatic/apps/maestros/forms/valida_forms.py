@@ -3,12 +3,14 @@ from django import forms
 from django.db.models import Q 
 from datetime import time
 
-
 from .crud_forms_generics import CrudGenericForm
 from ..models.valida_models import Valida
 from ..models.cliente_models import Cliente
-from diseno_base.diseno_bootstrap import (
-	formclasstext, formclassselect, formclassdate)
+from diseno_base.diseno_bootstrap import(
+	formclasstext,
+	formclassselect,
+	formclassdate
+)
 
 
 class ValidaForm(CrudGenericForm):
@@ -16,7 +18,7 @@ class ValidaForm(CrudGenericForm):
 	class Meta:
 		model = Valida
 		fields = '__all__'
-
+	
 		widgets = {
 			'estatus_valida': 
 				forms.Select(attrs={**formclassselect}), 
@@ -39,12 +41,12 @@ class ValidaForm(CrudGenericForm):
 			'hs':
 				forms.TextInput(attrs={**formclasstext, 'readonly': 'readonly'}),
 		}
-
+	
 	def __init__(self, *args, **kwargs):
 		super().__init__(*args, **kwargs)
 		self.fields['hora_valida'].input_formats = ['%H:%M']
 		self.fields['hs'].input_formats = ['%H:%M']
-  
+		
 		# Filtra los últimos 50 clientes (por id descendente)
 		# self.fields['id_cliente'].queryset = Cliente.objects.order_by('-id_cliente')[:50]
 		self.fields['id_cliente'].queryset = Cliente.objects.filter(
@@ -55,13 +57,13 @@ class ValidaForm(CrudGenericForm):
 		# for field in ['solicitado', 'comentario', 'compro', 'validacion']:
 		# 	if field in self.fields:
 		# 		self.fields[field].widget.attrs.update({'class': formclasstext})
-
+	
 	def clean_hora_valida(self):
 		hora_valida = self.cleaned_data.get('hora_valida')
 		if hora_valida:
 			return time(hora_valida.hour, hora_valida.minute)
 		return hora_valida
-
+	
 	def clean_hs(self):
 		hs = self.cleaned_data.get('hs')
 		if hs:

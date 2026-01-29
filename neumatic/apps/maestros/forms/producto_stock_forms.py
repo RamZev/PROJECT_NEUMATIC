@@ -2,8 +2,11 @@
 from django import forms
 from .crud_forms_generics import CrudGenericForm
 from ..models.base_models import ProductoStock
-from diseno_base.diseno_bootstrap import (
-	formclasstext, formclassselect, formclassdate)
+from diseno_base.diseno_bootstrap import(
+	formclasstext,
+	formclassselect,
+	formclassdate
+)
 
 
 class ProductoStockForm(CrudGenericForm):
@@ -11,7 +14,7 @@ class ProductoStockForm(CrudGenericForm):
 	class Meta:
 		model = ProductoStock
 		fields = '__all__'
-
+		
 		widgets = {
 			'id_producto': 
 				forms.Select(attrs={**formclassselect}),

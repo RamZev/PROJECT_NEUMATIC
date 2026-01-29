@@ -3,8 +3,11 @@ from django import forms
 from .crud_forms_generics import CrudGenericForm
 from ..models.base_models import *
 from ..models.cliente_models import Cliente
-from diseno_base.diseno_bootstrap import (
-	formclasstext, formclassselect, formclassdate)
+from diseno_base.diseno_bootstrap import(
+	formclasstext,
+	formclassselect,
+	formclassdate
+)
 
 
 class ClienteForm(CrudGenericForm):

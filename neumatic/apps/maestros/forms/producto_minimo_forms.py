@@ -2,8 +2,10 @@
 from django import forms
 from .crud_forms_generics import CrudGenericForm
 from ..models.base_models import ProductoMinimo
-from diseno_base.diseno_bootstrap import (
-	formclasstext, formclassselect)
+from diseno_base.diseno_bootstrap import(
+	formclasstext,
+	formclassselect
+)
 
 
 class ProductoMinimoForm(CrudGenericForm):
@@ -13,20 +15,20 @@ class ProductoMinimoForm(CrudGenericForm):
 		#-- Si se está editando un producto existente, deshabilitar el campo tipo_producto.
 		if self.instance and self.instance.pk:
 			self.fields['id_cai'].widget = forms.HiddenInput()
-			self.fields['id_cai'].required = False  # Desactiva la validación
-			self.initial['id_cai'] = self.instance.id_cai  # Asegurar valor inicial
+			self.fields['id_cai'].required = False  #-- Desactiva la validación.
+			self.initial['id_cai'] = self.instance.id_cai  #-- Asegurar valor inicial.
 			
 			self.fields['id_deposito'].widget = forms.HiddenInput()
-			self.fields['id_deposito'].required = False  # Desactiva la validación
-			self.initial['id_deposito'] = self.instance.id_deposito  # Asegurar valor inicial
+			self.fields['id_deposito'].required = False  #-- Desactiva la validación.
+			self.initial['id_deposito'] = self.instance.id_deposito  #-- Asegurar valor inicial.
 	
 	def clean(self):
 		cleaned_data = super().clean()
-		# Asignar automáticamente tipo_producto si el formulario está en modo edición
+		#-- Asignar automáticamente tipo_producto si el formulario está en modo edición.
 		if self.instance.pk:
 			cleaned_data['id_cai'] = self.instance.id_cai
 			cleaned_data['id_deposito'] = self.instance.id_deposito
-			# Remover tipo_producto de la validación en modo edición
+			#-- Remover tipo_producto de la validación en modo edición.
 			self._errors.pop('id_cai', None)
 			self._errors.pop('id_deposito', None)
 		return cleaned_data

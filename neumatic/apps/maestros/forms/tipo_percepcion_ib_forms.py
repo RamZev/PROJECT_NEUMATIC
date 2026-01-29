@@ -2,8 +2,12 @@
 from django import forms
 from .crud_forms_generics import CrudGenericForm
 from ..models.base_models import TipoPercepcionIb
-from diseno_base.diseno_bootstrap import (
-	formclasstext, formclassselect, formclasscheck, formclassnumb)
+from diseno_base.diseno_bootstrap import(
+	formclasstext,
+	formclassselect,
+	formclasscheck,
+	formclassnumb
+)
 
 
 class TipoPercepcionIbForm(CrudGenericForm):

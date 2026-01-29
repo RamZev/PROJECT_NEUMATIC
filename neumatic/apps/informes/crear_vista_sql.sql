@@ -304,7 +304,7 @@ CREATE VIEW "VLRemitosPendientes" AS
 		JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
 		JOIN cliente c ON f.id_cliente_id = c.id_cliente
 	WHERE
-		cv.mult_venta = 0
+		cv.mult_venta = 0 AND cv.remito = 1
 		AND f.estado = "";
 
 

@@ -2,8 +2,11 @@
 from django import forms
 from .crud_forms_generics import CrudGenericForm
 from ..models.base_models import Tarjeta
-from diseno_base.diseno_bootstrap import (
-	formclasstext, formclassselect, formclasscheck)
+from diseno_base.diseno_bootstrap import(
+	formclasstext,
+	formclassselect,
+	formclasscheck
+)
 
 
 class TarjetaForm(CrudGenericForm):

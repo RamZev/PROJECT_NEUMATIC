@@ -4,7 +4,10 @@ from .crud_forms_generics import CrudGenericForm
 from ..models.base_models import *
 from ..models.empresa_models import Empresa
 from diseno_base.diseno_bootstrap import(
-	formclasstext, formclassselect, formclassdate)
+	formclasstext,
+	formclassselect,
+	formclassdate
+)
 
 
 class EmpresaForm(CrudGenericForm):

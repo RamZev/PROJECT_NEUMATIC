@@ -122,7 +122,8 @@ class Moneda(ModeloBaseGenerico):
 		primary_key=True
 	)
 	estatus_moneda = models.BooleanField(
-		verbose_name="Estatus", default=True,
+		verbose_name="Estatus",
+		default=True,
 		choices=ESTATUS_GEN
 	)
 	nombre_moneda = models.CharField(
@@ -133,8 +134,10 @@ class Moneda(ModeloBaseGenerico):
 		verbose_name="Cotización",
 		max_digits=15,
 		decimal_places=4,
-		validators=[MinValueValidator(1),
-					MaxValueValidator(99999999999.9999)]
+		validators=[
+			MinValueValidator(1),
+			MaxValueValidator(99999999999.9999)
+		]
 	)
 	simbolo_moneda = models.CharField(
 		verbose_name="Símbolo",
@@ -159,6 +162,25 @@ class Moneda(ModeloBaseGenerico):
 	
 	def __str__(self):
 		return self.nombre_moneda
+	
+	def clean(self):
+		super().clean()
+		
+		#-- Diccionario contenedor de errores.
+		errors = {}
+		
+		#-- Validación para predeterminada.
+		if self.predeterminada:
+			#-- Buscar si ya existe otra moneda con predeterminada = True.
+			moneda_existente = Moneda.objects.filter(
+				predeterminada=True
+			).exclude(pk=self.pk).first()
+			
+			if moneda_existente:
+				errors['predeterminada'] = f'Ya existe una moneda marcada como predeterminada: {moneda_existente.nombre_moneda}. Solo puede haber una moneda predeterminada a la vez.'
+		
+		if errors:
+			raise ValidationError(errors)
 
 
 class ProductoMarca(ModeloBaseGenerico):
