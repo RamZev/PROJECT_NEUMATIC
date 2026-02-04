@@ -1074,7 +1074,8 @@ class MedioPago(ModeloBaseGenerico):
 		choices=CONDICION_PAGO
 	)
 	plazo_medio_pago = models.IntegerField(
-		verbose_name="Plazo medio de Pago"
+		verbose_name="Plazo medio de Pago",
+		default=0
 	)
 	
 	class Meta:
@@ -1222,12 +1223,14 @@ class Banco(ModeloBaseGenerico):
 	codigo_banco = models.SmallIntegerField(
 		verbose_name="Código Banco",
 		null=True,
-		blank=True
+		blank=True,
+		default=0
 	)
 	cuit_banco = models.IntegerField(
 		verbose_name="CUIT",
 		null=True,
-		blank=True
+		blank=True,
+		default=0
 	)
 	
 	class Meta:
@@ -1285,7 +1288,8 @@ class CuentaBanco(ModeloBaseGenerico):
 		verbose_name="Tipo de Cta.",
 		choices=TIPO_CUENTA,
 		null=True,
-		blank=True
+		blank=True,
+		default=0
 	)
 	cbu = models.CharField(
 		verbose_name="CBU",
@@ -1296,17 +1300,20 @@ class CuentaBanco(ModeloBaseGenerico):
 	sucursal = models.IntegerField(
 		verbose_name="Sucursal",
 		null=True,
-		blank=True
+		blank=True,
+		default=0
 	)
 	codigo_postal = models.IntegerField(
 		verbose_name="Código Postal",
 		null=True,
-		blank=True
+		blank=True,
+		default=0
 	)
 	codigo_imputacion = models.IntegerField(
 		verbose_name="Cód. Imputación",
 		null=True,
-		blank=True
+		blank=True,
+		default=0
 	)
 	tope_negociacion = models.DecimalField(
 		verbose_name="Tope Negociación",
@@ -1391,7 +1398,8 @@ class Tarjeta(ModeloBaseGenerico):
 	imputacion = models.IntegerField(
 		verbose_name="Cód. Imputación",
 		null=True,
-		blank=True
+		blank=True,
+		default=0
 	)
 	banco_acreditacion = models.IntegerField(
 		verbose_name="Banco",

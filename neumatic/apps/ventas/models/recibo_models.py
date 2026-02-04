@@ -2,12 +2,13 @@
 from django.db import models
 
 from apps.maestros.models.base_gen_models import ModeloBaseGenerico
-from apps.maestros.models.base_models import (Banco, 
-											  CuentaBanco,
-											  ConceptoBanco, 
-											  Tarjeta,
-											  CodigoRetencion)
-
+from apps.maestros.models.base_models import(
+	Banco,
+	CuentaBanco,
+	ConceptoBanco,
+	Tarjeta,
+	CodigoRetencion
+)
 from .factura_models import Factura
 from entorno.constantes_base import ESTATUS_GEN, CONDICION_VENTA
 
@@ -38,7 +39,8 @@ class DetalleRecibo(ModeloBaseGenerico):
 		max_digits=12,
 		decimal_places=2,
 		null=True,
-		blank=True
+		blank=True,
+		default=0.00
 	)
 	observaciones_recibo = models.CharField(
 		verbose_name="Observaciones", 
@@ -87,7 +89,8 @@ class RetencionRecibo(ModeloBaseGenerico):
 		max_digits=12,
 		decimal_places=2,
 		null=True,
-		blank=True
+		blank=True,
+		default=0.00
 	)
 	fecha_retencion = models.DateField(
 		verbose_name="Fecha Retención",
@@ -141,7 +144,8 @@ class DepositoRecibo(ModeloBaseGenerico):
 		max_digits=12,
 		decimal_places=2,
 		null=True,
-		blank=True
+		blank=True,
+		default=0.00
 	)
 	detalle_deposito = models.CharField(
 		verbose_name="Detalle", 
@@ -199,7 +203,8 @@ class TarjetaRecibo(ModeloBaseGenerico):
 		max_digits=12,
 		decimal_places=2,
 		null=True,
-		blank=True
+		blank=True,
+		default=0.00
 	)
 	
 	class Meta:
@@ -233,15 +238,18 @@ class ChequeRecibo(ModeloBaseGenerico):
 	)
 	codigo_banco = models.SmallIntegerField(
 		verbose_name="Código Banco", 
-		null=True, blank=True
+		null=True,
+		blank=True
 	)
 	sucursal = models.SmallIntegerField(
 		verbose_name="Sucursal", 
-		null=True, blank=True
+		null=True,
+		blank=True
 	)
 	codigo_postal = models.SmallIntegerField(
 		verbose_name="Código Postal",
-		null=True, blank=True
+		null=True,
+		blank=True
 	)
 	numero_cheque_recibo = models.SmallIntegerField(
 		verbose_name="Número",
@@ -273,12 +281,14 @@ class ChequeRecibo(ModeloBaseGenerico):
 		max_digits=12,
 		decimal_places=2,
 		null=True,
-		blank=True
+		blank=True,
+		default=0.00
 	)
 	electronico = models.BooleanField(
 		verbose_name="Estatus",
 		null=True,
-		blank=True
+		blank=True,
+		default=False
 	)
 	
 	class Meta:

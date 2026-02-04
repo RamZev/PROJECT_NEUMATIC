@@ -12,6 +12,7 @@ Actualizar Estados de Productos - Consideraciones
 ##################################################################################################################################
 ##################################################################################################################################
 ##################################################################################################################################
+REPORTES DE CAJA
 /* 3er. Reporte: Todos los comprobantes (Contado y Cta. Cte.) es el que se emplea en "Planilla de Caja -> Imprimir detalle de Comprobantes"
    "3.- Esta consulta es igual a la anterior, pero incluye todos los comprobantes sin diferencias condición y no estadísticas." */
 
@@ -91,10 +92,10 @@ Caja (Pendiente):
 *- Terminar reporte Planila de Caja.
 
 Otros:
-- Considerar campo estatus en las búsquedas, listados y filtros.
+·- Considerar campo estatus en las búsquedas, listados y filtros.
 *- No permitir establecer más de 1 moneda como predeterminada.
 - No se ha migrado tipo_percep_ib desde tpercib.dbf
-- Revisar migración de producto_minimo
+·- Revisar migración de producto_minimo
 - CajaDetalle: Falta migrar id_forma_pago desde la tabla cajadetalle.dbf
 
 
@@ -110,35 +111,3 @@ Preguntas:
 *- En el reporte Remitos Pendientes estoy mostrando los presupuestos que no afectan el Stock y se muestra el Total en 0 (cero).
    Se deben mostrar o solo los comprobantes cuyo total sea diferente a cero?
 
-
-
-
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-
-Productos con datos tipo BLOB (Ids):
-- 89830
-- 89890
-- 89920
-- 119700
-- 122361
-- 131630
-- 326835
-- 329020
-- 330440
-- 333065
-- 333075
-- 333330
-- 333345
-- 333425
-- 333430
-- 333870
-- 334135
-- 334425
-- 334445
-- 335375
-- 335855
-- 335860
-- 335865
