@@ -12,7 +12,7 @@ Configura qué modelos y campos limpiar, y qué caracteres reemplazar o eliminar
 MODELOS_CAMPOS = {
 	
 	#-- App: maestros.
-	# 'maestros.Cliente': ['nombre_cliente', 'domicilio_cliente'],
+	'maestros.Cliente': ['nombre_cliente', 'domicilio_cliente'],
 	'maestros.Proveedor': ['nombre_proveedor', 'domicilio_proveedor'],
 	'maestros.Vendedor': ['nombre_vendedor', 'domicilio_vendedor'],
 	'maestros.Producto': ['nombre_producto', 'medida', 'descripcion_producto'],
@@ -23,6 +23,7 @@ MODELOS_CAMPOS = {
 	'maestros.ProductoMarca': ['nombre_producto_marca'],
 	'maestros.ProductoModelo': ['nombre_modelo'],
 	
+	#-- App: ventas.
 	'ventas.Factura': ['observa_comprobante'],
 	'ventas.DetalleFactura': ['producto_venta'],
 	

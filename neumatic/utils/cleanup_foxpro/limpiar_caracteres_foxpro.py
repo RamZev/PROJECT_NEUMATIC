@@ -43,7 +43,7 @@ try:
 	django.setup()
 	print("✅ Django configurado correctamente")
 	
-	# Verificar que puede importar apps
+	#-- Verificar que puede importar apps.
 	from django.apps import apps
 	print(f"✅ Apps cargadas: {len(apps.get_app_configs())}")
 	
@@ -51,7 +51,7 @@ except Exception as e:
 	print(f"❌ Error al configurar Django: {e}")
 	print("\n🔍 Posible solución: Verifica el archivo settings.py")
 	
-	# Verificar contenido de settings.py
+	#-- Verificar contenido de settings.py.
 	settings_path = os.path.join(project_root, 'neumatic', 'neumatic', 'settings.py')
 	if os.path.exists(settings_path):
 		with open(settings_path, 'r', encoding='utf-8') as f:
@@ -113,7 +113,7 @@ class LimpiadorCaracteresFoxPro:
 		self.modelos_campos = modelos_campos or MODELOS_CAMPOS
 		self.logger = logging.getLogger(__name__)
 		
-		# Estadísticas
+		#-- Estadísticas.
 		self.estadisticas = {
 			'modelos_procesados': 0,
 			'registros_procesados': 0,
@@ -126,7 +126,7 @@ class LimpiadorCaracteresFoxPro:
 			'registros_problematicos': [],
 		}
 		
-		# Parsear modelos
+		#-- Parsear modelos.
 		self.modelos_parseados = self._parsear_modelos()
 	
 	def _parsear_modelos(self):
@@ -162,7 +162,7 @@ class LimpiadorCaracteresFoxPro:
 		original = texto
 		texto_limpio = texto
 		
-		# Lista para almacenar información de caracteres eliminados
+		#-- Lista para almacenar información de caracteres eliminados.
 		caracteres_eliminados_info = []
 		
 		#-- 1. Eliminar caracteres basura.
@@ -217,33 +217,33 @@ class LimpiadorCaracteresFoxPro:
 		"""Detecta qué caracteres específicos fueron cambiados usando la configuración centralizada"""
 		cambios = []
 		
-		# Verificar patrones compuestos primero (como "N§", "C§")
+		#-- Verificar patrones compuestos primero (como "N§", "C§").
 		for char_malo, char_bueno in CARACTERES_REEMPLAZO:
 			if len(char_malo) > 1:  # Patrones compuestos
 				if char_malo in original and char_bueno in corregido and char_malo not in corregido:
 					descripcion = CARACTERES_DESCRIPCIONES.get(char_malo, f'{char_malo} → {char_bueno}')
 					cambios.append(descripcion)
 		
-		# Verificar caracteres individuales
+		#-- Verificar caracteres individuales.
 		for char_malo, char_bueno in CARACTERES_REEMPLAZO:
-			if len(char_malo) == 1:  # Caracteres individuales
+			if len(char_malo) == 1:  #-- Caracteres individuales.
 				if char_malo in original and char_bueno in corregido and char_malo not in corregido:
 					descripcion = CARACTERES_DESCRIPCIONES.get(char_malo, f'{char_malo} → {char_bueno}')
-					if descripcion not in cambios:  # Evitar duplicados
+					if descripcion not in cambios:  #-- Evitar duplicados.
 						cambios.append(descripcion)
 		
 		if cambios:
-			# Limitar a 3 descripciones para no hacerlo muy largo
+			#-- Limitar a 3 descripciones para no hacerlo muy largo.
 			return ", ".join(cambios[:3])
 		
-		# Si no encontramos coincidencias específicas, buscar cambios generales
+		#-- Si no encontramos coincidencias específicas, buscar cambios generales.
 		if original != corregido:
-			# Contar cuántos caracteres no-ASCII fueron cambiados
+			#-- Contar cuántos caracteres no-ASCII fueron cambiados.
 			chars_original = set(original)
 			chars_corregido = set(corregido)
 			caracteres_cambiados = chars_original - chars_corregido
 			
-			# Filtrar solo caracteres no-ASCII
+			#-- Filtrar solo caracteres no-ASCII.
 			caracteres_especiales = [c for c in caracteres_cambiados if ord(c) > 127]
 			if caracteres_especiales:
 				return f"{len(caracteres_especiales)} caracter(es) especial(es)"
@@ -255,7 +255,7 @@ class LimpiadorCaracteresFoxPro:
 		self.logger.info(f"{'[ANALIZANDO]' if modo_check else '[LIMPIANDO]'} " f"{app_label}.{Model.__name__}")
 		
 		try:
-			# Verificar campos existentes
+			#-- Verificar campos existentes.
 			campos_validos = []
 			for campo in campos:
 				try:
@@ -271,7 +271,7 @@ class LimpiadorCaracteresFoxPro:
 				self.logger.warning("  No hay campos válidos para procesar")
 				return
 			
-			# Obtener registros
+			#-- Obtener registros.
 			total_registros = Model.objects.count()
 			
 			if total_registros == 0:
@@ -284,15 +284,15 @@ class LimpiadorCaracteresFoxPro:
 			registros_modificados = 0
 			campos_modificados = 0
 			
-			# Procesar en lotes
+			#-- Procesar en lotes.
 			batch_size = 2000
 			for i in range(0, total_registros, batch_size):
 				batch = Model.objects.all()[i:i + batch_size]
 				
 				for registro in batch:
 					cambios = {}
-					cambios_por_campo = {}  # Para almacenar info de cada cambio
-					todos_caracteres_eliminados = []  # Para almacenar todos los caracteres eliminados en este registro
+					cambios_por_campo = {}  #-- Para almacenar info de cada cambio.
+					todos_caracteres_eliminados = []  #-- Para almacenar todos los caracteres eliminados en este registro.
 					
 					for campo in campos_validos:
 						valor_actual = getattr(registro, campo)
@@ -303,7 +303,7 @@ class LimpiadorCaracteresFoxPro:
 								campo
 							)
 							
-							# Guardar caracteres eliminados
+							#-- Guardar caracteres eliminados.
 							if caracteres_eliminados:
 								for info in caracteres_eliminados:
 									todos_caracteres_eliminados.append({
@@ -315,7 +315,7 @@ class LimpiadorCaracteresFoxPro:
 								cambios[campo] = valor_limpio
 								campos_modificados += 1
 								
-								# Guardar información detallada del cambio
+								#-- Guardar información detallada del cambio.
 								cambios_por_campo[campo] = {
 									'original': valor_actual,
 									'corregido': valor_limpio,
@@ -326,7 +326,7 @@ class LimpiadorCaracteresFoxPro:
 						registros_modificados += 1
 						registro_id = registro.pk
 						
-						# 📍 MOSTRAR DETALLES DEL REGISTRO CON PROBLEMAS
+						#-- 📍 MOSTRAR DETALLES DEL REGISTRO CON PROBLEMAS.
 						self.logger.info(f"  🔍 REGISTRO CON PROBLEMAS: -----------------------------------------")
 						self.logger.info(f"    • Modelo: {Model.__name__}")
 						self.logger.info(f"    • ID: {registro_id}")
@@ -339,7 +339,7 @@ class LimpiadorCaracteresFoxPro:
 							self.logger.info(f"      Original: {info['original'][:70]}")
 							self.logger.info(f"      Corregido: {info['corregido'][:70]}")
 						
-						# Mostrar caracteres eliminados si los hay
+						#-- Mostrar caracteres eliminados si los hay.
 						if todos_caracteres_eliminados:
 							self.logger.info(f"    ⚠️  CARACTERES A ELIMINAR ENCONTRADOS:")
 							for elim_info in todos_caracteres_eliminados:
@@ -348,7 +348,7 @@ class LimpiadorCaracteresFoxPro:
 								self.logger.info(f"      Carácter: '{info['codigo_hex']}' ({info['codigo_unicode']})")
 								self.logger.info(f"      Contexto: {info['contexto']}")
 						
-						# Guardar en estadísticas para resumen
+						#-- Guardar en estadísticas para resumen.
 						self.estadisticas['registros_problematicos'].append({
 							'modelo': Model.__name__,
 							'id': registro_id,
@@ -357,24 +357,24 @@ class LimpiadorCaracteresFoxPro:
 							'caracteres_eliminados': len(todos_caracteres_eliminados)
 						})
 						
-						# Si no es modo check, guardar cambios
+						#-- Si no es modo check, guardar cambios.
 						if not modo_check:
 							Model.objects.filter(pk=registro.pk).update(**cambios)
 				
-				# Mostrar progreso
+				#-- Mostrar progreso.
 				progreso = min(i + batch_size, total_registros)
 				if progreso % 5000 == 0:
 					self.logger.info(f"    Procesados: {progreso}/{total_registros}")
 					if modo_check:
 						self.logger.info(f"    Registros problemáticos encontrados: {registros_modificados}")
 			
-			# Actualizar estadísticas
+			#-- Actualizar estadísticas.
 			self.estadisticas['modelos_procesados'] += 1
 			self.estadisticas['registros_procesados'] += total_registros
 			self.estadisticas['registros_modificados'] += registros_modificados
 			self.estadisticas['campos_modificados'] += campos_modificados
 			
-			# Resumen del modelo
+			#-- Resumen del modelo.
 			if registros_modificados > 0:
 				porcentaje = (registros_modificados / total_registros) * 100
 				self.logger.info(f"  📊 RESUMEN {Model.__name__}:")
@@ -400,10 +400,10 @@ class LimpiadorCaracteresFoxPro:
 		
 		self.mostrar_estadisticas(modo_check=True)
 		
-		# Mostrar resumen de registros problemáticos
+		#-- Mostrar resumen de registros problemáticos.
 		self.mostrar_resumen_registros_problematicos()
 		
-		# Recomendación basada en análisis
+		#-- Recomendación basada en análisis.
 		if self.estadisticas['registros_modificados'] > 0:
 			self.logger.info("=" * 70)
 			self.logger.info("RECOMENDACIÓN:")
@@ -411,7 +411,7 @@ class LimpiadorCaracteresFoxPro:
 			self.logger.info(f"Para corregirlos ejecuta: python {sys.argv[0]} --fix")
 			self.logger.info("=" * 70)
 		else:
-			self.logger.info("\n✓ No se encontraron caracteres problemáticos")
+			self.logger.info("✓ No se encontraron caracteres problemáticos")
 	
 	def mostrar_resumen_registros_problematicos(self):
 		"""Muestra un resumen de todos los registros con problemas"""
@@ -422,7 +422,7 @@ class LimpiadorCaracteresFoxPro:
 		self.logger.info("📋 RESUMEN DE REGISTROS CON PROBLEMAS")
 		self.logger.info("=" * 70)
 		
-		# Agrupar por modelo
+		#-- Agrupar por modelo.
 		modelos = {}
 		for registro in self.estadisticas['registros_problematicos']:
 			modelo = registro['modelo']
@@ -434,7 +434,7 @@ class LimpiadorCaracteresFoxPro:
 			self.logger.info(f"📁 Modelo: {modelo}")
 			self.logger.info(f"  Registros: {len(registros)}")
 			
-			# Contar campos problemáticos
+			#-- Contar campos problemáticos.
 			campos_count = {}
 			for r in registros:
 				for campo in r['campos']:
@@ -445,7 +445,7 @@ class LimpiadorCaracteresFoxPro:
 				for campo, count in sorted(campos_count.items(), key=lambda x: x[1], reverse=True):
 					self.logger.info(f"    • {campo}: {count} registros")
 			
-			# Mostrar caracteres eliminados totales
+			#-- Mostrar caracteres eliminados totales.
 			total_eliminados = sum(r.get('caracteres_eliminados', 0) for r in registros)
 			if total_eliminados > 0:
 				self.logger.info(f"  Caracteres a eliminar: {total_eliminados}")
@@ -453,7 +453,7 @@ class LimpiadorCaracteresFoxPro:
 	@transaction.atomic
 	def ejecutar_limpieza(self):
 		"""Ejecuta limpieza real (modifica datos)"""
-		self.logger.info("\n" + "=" * 70)
+		self.logger.info("=" * 70)
 		self.logger.info("INICIANDO LIMPIEZA DE CARACTERES FOXPRO")
 		self.logger.info("ADVERTENCIA: Se modificarán datos en la base de datos")
 		self.logger.info("=" * 70)
@@ -465,9 +465,9 @@ class LimpiadorCaracteresFoxPro:
 		
 		self.mostrar_estadisticas(modo_check=False)
 		
-		# Mostrar resumen de lo que se modificó
+		#-- Mostrar resumen de lo que se modificó.
 		if self.estadisticas['registros_modificados'] > 0:
-			self.logger.info("\n" + "=" * 70)
+			self.logger.info("=" * 70)
 			self.logger.info("✅ RESUMEN DE MODIFICACIONES")
 			self.logger.info("=" * 70)
 			self.logger.info(f"• Registros modificados: {self.estadisticas['registros_modificados']}")
@@ -476,7 +476,7 @@ class LimpiadorCaracteresFoxPro:
 			self.logger.info(f"• Caracteres eliminados: {self.estadisticas['caracteres_eliminados']}")
 			self.logger.info("=" * 70)
 		
-		self.logger.info("\n" + "=" * 70)
+		self.logger.info("=" * 70)
 		self.logger.info("LIMPIEZA COMPLETADA")
 		self.logger.info("=" * 70)
 	
@@ -513,17 +513,17 @@ def buscar_caracteres_problematicos():
 	"""Busca caracteres específicos en la base de datos usando la configuración centralizada"""
 	logger = logging.getLogger(__name__)
 	
-	logger.info("\n" + "=" * 70)
+	logger.info("=" * 70)
 	logger.info("BÚSQUEDA DE CARACTERES PROBLEMÁTICOS")
 	logger.info("=" * 70)
 	
-	# Usar la configuración centralizada - solo caracteres individuales (largo 1)
+	#-- Usar la configuración centralizada - solo caracteres individuales (largo 1).
 	caracteres_buscar = []
 	for malo, bueno, desc in CARACTERES_REEMPLAZO_CON_DESCRIPCION:
 		if len(malo) == 1:  # Solo caracteres individuales
 			caracteres_buscar.append((malo, bueno, desc))
 	
-	# Limitar a los primeros 15 para no hacerlo muy largo
+	#-- Limitar a los primeros 15 para no hacerlo muy largo.
 	caracteres_buscar = caracteres_buscar[:15]
 	
 	if not caracteres_buscar:
@@ -580,7 +580,6 @@ def verificar_configuracion():
 	logger.info("MODELOS CONFIGURADOS:")
 	
 	for clave, campos in MODELOS_CAMPOS.items():
-		# logger.info(f"\n  {clave}:")
 		logger.info(f"  {clave}:")
 		
 		if '.' not in clave:
@@ -594,7 +593,7 @@ def verificar_configuracion():
 			logger.info(f"    ✓ Modelo encontrado")
 			logger.info(f"    Campos: {len(campos)}")
 			
-			# Verificar campos
+			#-- Verificar campos.
 			campos_validos = 0
 			for campo in campos:
 				try:
@@ -614,18 +613,17 @@ def verificar_configuracion():
 		except Exception as e:
 			logger.error(f"    ✗ Error: {e}")
 	
-	# Verificar caracteres a reemplazar
+	#-- Verificar caracteres a reemplazar.
 	logger.info("CARACTERES A REEMPLAZAR (con descripción):")
 	
-	# Primero mostrar caracteres individuales
+	#-- Primero mostrar caracteres individuales.
 	caracteres_individuales = [c for c in CARACTERES_REEMPLAZO_CON_DESCRIPCION if len(c[0]) == 1]
 	patrones_compuestos = [c for c in CARACTERES_REEMPLAZO_CON_DESCRIPCION if len(c[0]) > 1]
 	
-	# logger.info(f"\n  Caracteres individuales ({len(caracteres_individuales)}):")
 	logger.info(f"  Caracteres individuales ({len(caracteres_individuales)}):")
 	for char_malo, char_bueno, descripcion in caracteres_individuales[:20]:  # Mostrar primeros 20
 		try:
-			# Mostrar en formato legible
+			#-- Mostrar en formato legible.
 			if char_malo == ' ' or ord(char_malo) < 32:
 				hex_code = f'\\x{ord(char_malo):02x}'
 				logger.info(f"    {hex_code} → '{char_bueno}' - {descripcion}")
@@ -683,11 +681,11 @@ Ejemplos:
 	
 	args = parser.parse_args()
 	
-	# Configurar logging
+	#-- Configurar logging.
 	logger, log_file = setup_logging(modo_check=not args.fix)
 	logger.info(f"Log file: {log_file}")
 	
-	# Modos especiales
+	#-- Modos especiales.
 	if args.verify:
 		verificar_configuracion()
 		return
@@ -696,9 +694,9 @@ Ejemplos:
 		buscar_caracteres_problematicos()
 		return
 	
-	# Preparar configuración
+	#-- Preparar configuración.
 	if args.model:
-		# Usar solo el modelo especificado
+		#-- Usar solo el modelo especificado.
 		if args.model not in MODELOS_CAMPOS:
 			logger.error(f"Modelo {args.model} no encontrado en configuración")
 			logger.info("Modelos disponibles:")
@@ -709,36 +707,36 @@ Ejemplos:
 		modelos_campos = {args.model: MODELOS_CAMPOS[args.model]}
 		logger.info(f"Procesando solo: {args.model}")
 	else:
-		# Usar todos los modelos configurados
+		#-- Usar todos los modelos configurados.
 		modelos_campos = None
 	
-	# Crear limpiador
+	#-- Crear limpiador.
 	limpiador = LimpiadorCaracteresFoxPro(modelos_campos)
 	
-	# Verificar que hay modelos
+	#-- Verificar que hay modelos.
 	if not limpiador.modelos_parseados:
 		logger.error("No se encontraron modelos válidos para procesar")
 		logger.info("Verifica la configuración en cleanup_config.py")
 		return
 	
-	# Solicitar confirmación para modo fix
+	#-- Solicitar confirmación para modo fix.
 	if args.fix:
-		logger.warning("\n" + "!" * 70)
+		logger.warning("!" * 70)
 		logger.warning("ADVERTENCIA: Se modificarán datos en la base de datos")
 		logger.warning("!" * 70)
 		
 		respuesta = input("\n¿Continuar con la limpieza? (sí/no): ")
-		if respuesta.lower() not in ['si', 'sí', 'yes', 'y']:
+		if respuesta.lower() not in ['si', 'sí', 's', 'yes', 'y']:
 			logger.info("Limpieza cancelada")
 			return
 	
-	# Ejecutar
+	#-- Ejecutar.
 	if args.fix:
 		limpiador.ejecutar_limpieza()
 	else:
 		limpiador.ejecutar_analisis()
 	
-	# Información final
+	#-- Información final.
 	logger.info(f"Log completo guardado en: {log_file}")
 	
 	if args.fix:
