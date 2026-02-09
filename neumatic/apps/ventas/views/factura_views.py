@@ -292,6 +292,33 @@ class FacturaCreateView(MaestroDetalleCreateView):
 					form.add_error('id_deposito', 'Debe seleccionar un depósito')
 					return self.form_invalid(form)
 
+				# =========================================================
+				# NUEVA VALIDACIÓN TEMPRANA: Verificación de caja ABIERTA para mult_caja ≠ 0
+				# =========================================================
+				comprobante_venta = form.cleaned_data['id_comprobante_venta']
+
+				if comprobante_venta.mult_caja != 0:
+					sucursal = form.cleaned_data['id_sucursal']
+					fecha_comprobante = form.cleaned_data['fecha_comprobante']
+					
+					# Verificar si existe una caja ABIERTA para esta sucursal y fecha
+					existe_caja_abierta = Caja.objects.filter(
+						id_sucursal=sucursal,
+						fecha_caja=fecha_comprobante,
+						caja_cerrada=False  # SOLO CAJAS ABIERTAS
+					).exists()
+					
+					if not existe_caja_abierta:
+						form.add_error(
+							None,
+							f"❌ No hay caja ABIERTA para la sucursal '{sucursal}' "
+							f"y fecha {fecha_comprobante.strftime('%d/%m/%Y')}. "
+							f"Este comprobante requiere registro en caja (mult_caja={comprobante_venta.mult_caja}). "
+							f"Debe abrir una caja antes de crear este documento."
+						)
+						return self.form_invalid(form)
+				# =========================================================
+
 				# 2. Validación para documentos pendientes
 				comprobante_venta = form.cleaned_data['id_comprobante_venta']
 				if comprobante_venta.pendiente:
@@ -682,6 +709,49 @@ class FacturaCreateView(MaestroDetalleCreateView):
 
 				# 4. Guardado en el modelo Factura
 				self.object = form.save()
+
+				# =========================================================
+				# NUEVA LÓGICA: Asignación de id_caja basado en mult_caja (CAJA ABIERTA)
+				# =========================================================
+				comprobante_venta = form.cleaned_data['id_comprobante_venta']
+
+				# Solo procesar si mult_caja es distinto de cero
+				if comprobante_venta.mult_caja != 0:
+					try:
+						# Obtener valores del documento
+						sucursal = form.cleaned_data['id_sucursal']
+						fecha_comprobante = form.cleaned_data['fecha_comprobante']
+						
+						# Buscar Caja ABIERTA específica
+						caja_encontrada = Caja.objects.get(
+							id_sucursal=sucursal,
+							fecha_caja=fecha_comprobante,
+							caja_cerrada=False  # SOLO CAJAS ABIERTAS
+						)
+						
+						# Asignar id_caja al modelo Factura
+						self.object.id_caja = caja_encontrada
+						self.object.save(update_fields=['id_caja'])  # Solo actualizar este campo
+						
+						print(f"DEBUG - Caja ABIERTA #{caja_encontrada.id_caja} asignada a factura #{self.object.id_factura}")
+						
+					except Caja.DoesNotExist:
+						# Esto no debería ocurrir gracias a la validación temprana
+						messages.error(
+							self.request,
+							f"❌ Error: No se encontró caja ABIERTA para la sucursal {sucursal} "
+							f"y fecha {fecha_comprobante.strftime('%d/%m/%Y')}."
+						)
+						raise DatabaseError("Caja abierta no encontrada después de validación temprana")
+						
+					except Exception as e:
+						messages.error(
+							self.request,
+							f"❌ Error al asignar caja: {str(e)}"
+						)
+						raise DatabaseError(f"Error en asignación de caja: {str(e)}")
+				# =========================================================
+
 
 				# =========================================================
 				# REGISTRAR EN CAJA DETALLE PARA VENTA DE CONTADO (DESPUÉS DE GUARDAR)

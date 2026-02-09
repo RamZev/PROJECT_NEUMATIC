@@ -692,14 +692,20 @@ def obtener_numero_comprobante3(request):
     id_sucursal = request.GET.get('id_sucursal')
     id_punto_venta = request.GET.get('id_punto_venta')
     comprobante = request.GET.get('comprobante')
-    id_discrimina_iva = request.GET.get('id_discrimina_iva') == 'on' 
-    
-    comprobante_ini = comprobante
+    # id_discrimina_iva = request.GET.get('id_discrimina_iva') == 'on' 
+    id_discrimina_iva = request.GET.get('id_discrimina_iva')
 
     if not all([id_sucursal, id_punto_venta, comprobante, id_discrimina_iva]):
+        print("=============1")
         return JsonResponse({'error': 'Faltan parámetros requeridos'}, status=400)
 
     try:
+        print("=============2")
+        if id_discrimina_iva == "false":
+            id_discrimina_iva = False
+        else:
+            id_discrimina_iva = True
+
         # Buscar en ComprobanteVenta los códigos AFIP
         comprobante_data = ComprobanteVenta.objects.filter(
             codigo_comprobante_venta=comprobante
@@ -714,8 +720,8 @@ def obtener_numero_comprobante3(request):
         codigo_afip_a = comprobante_data.codigo_afip_a
         codigo_afip_b = comprobante_data.codigo_afip_b
 
-        # print("codigo_afip_a", codigo_afip_a)
-        # print("codigo_afip_b", codigo_afip_b)
+        print("codigo_afip_a", codigo_afip_a)
+        print("codigo_afip_b", codigo_afip_b)
 
         # Validar que los códigos AFIP A y B no estén vacíos
         if not codigo_afip_a or not codigo_afip_b:
@@ -730,11 +736,18 @@ def obtener_numero_comprobante3(request):
             # Caso codigo_afip_a, codigo_afip_b
             if id_discrimina_iva:
                 comprobante = codigo_afip_a
+                print("codigo_afip_a ***", codigo_afip_a)
             else:
-                comprobante = codigo_afip_a
+                # comprobante = codigo_afip_a
+                comprobante = codigo_afip_b
+                print("codigo_afip_b ***", codigo_afip_b)
         else:
             # Caso NO codigo_afip_a, codigo_afip_b
             comprobante = codigo_afip_a
+        
+        print("========")
+        print("Comprobante", comprobante)
+        print("========")
 
         # print("codigo_afip_definitivo", codigo_afip_a)
         # print("id_sucusal", id_sucursal)
