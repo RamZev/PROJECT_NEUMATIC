@@ -1,0 +1,27 @@
+VENTAS
+===============================================================================
+Comprobante Electrónico.
+	- Facturas: Tomar en cuenta el campo estatus_producto en las búsqueda. ????
+	- Determinar el número de factura correctamente según condiciones del cliente: Si el cliente es Consum. Final muestra Letra A y debe ser B
+	- Al registrar más de 1 serial y al borrar alguno, igual los guarda todos, incluído elo los eliminados.
+	
+	
+
+Comprobante Manual.
+
+Recibo.
+
+Presupuesto.
+
+Movimiento Interno.
+
+
+
+===============================================================================
+===============================================================================
+===============================================================================
+
+
+
+
+
