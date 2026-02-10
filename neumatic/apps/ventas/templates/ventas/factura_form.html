@@ -2689,8 +2689,12 @@
                 const id_sucursal = document.getElementById('id_id_sucursal').value;
                 const id_punto_venta = document.getElementById('id_id_punto_venta').value;
                 const compro = document.getElementById('id_compro').value;
-                const id_discrimina_iva = document.getElementById('id_discrimina_iva').value;
+                // const id_discrimina_iva = document.getElementById('id_discrimina_iva').value;
+                const id_discrimina_iva = document.getElementById('id_discrimina_iva').checked;
+                // alert('id_discrimina_iva');
+                // alert(id_discrimina_iva);
 
+                
                 // Habilitar el número de comprobante y asignarle valor en blanco
                 // const comprobanteSelect = document.getElementById('id_id_comprobante_venta');
                 const comprobanteId = document.getElementById('id_id_comprobante_venta').value;
@@ -2728,9 +2732,12 @@
                     document.getElementById('id_numero_comprobante').readOnly = true;
                 }
 
+                
+
                 if (id_sucursal && id_punto_venta && compro) {
                     ///
                     // alert('obtener-numero-comprobante3***');
+                    
                     const url = new URL('/ventas/obtener-numero-comprobante3/', window.location.origin);
                     url.searchParams.append('id_sucursal', id_sucursal);
                     url.searchParams.append('id_punto_venta', id_punto_venta);
@@ -2902,6 +2909,8 @@
             const buscarClienteInput = document.getElementById('buscar_cliente');
             buscarClienteInput.addEventListener('blur', function () {
                 let busqueda = buscarClienteInput.value.trim();
+
+                // alert("Aquí es");
         
                 // Si está vacío, no hacer nada
                 if (!busqueda) return;

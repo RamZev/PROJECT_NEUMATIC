@@ -181,6 +181,7 @@ class ReciboCreateView(MaestroDetalleCreateView):
                     self.request,
                     "❌ No hay caja activa para registrar el efectivo. "
                     "Active una caja antes de crear un recibo con efectivo."
+                    "Verifique la Fecha de Comprobante y Fecha de Caja."
                 )
                 return redirect(self.list_view_name)
 
