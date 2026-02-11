@@ -336,6 +336,8 @@ actualizar_camion_factura.sql
 
 actualiza_cliente.sql
 
+**actualiza_ventas_null.sql**
+
 **Al finalizar las migraciones:**
 
 1. Ejecute la actualización del superusuario (OBLIGATORIO)

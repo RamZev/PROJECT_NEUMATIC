@@ -696,11 +696,9 @@ def obtener_numero_comprobante3(request):
     id_discrimina_iva = request.GET.get('id_discrimina_iva')
 
     if not all([id_sucursal, id_punto_venta, comprobante, id_discrimina_iva]):
-        print("=============1")
         return JsonResponse({'error': 'Faltan parámetros requeridos'}, status=400)
 
     try:
-        print("=============2")
         if id_discrimina_iva == "false":
             id_discrimina_iva = False
         else:

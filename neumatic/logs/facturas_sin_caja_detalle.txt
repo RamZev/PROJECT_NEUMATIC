@@ -1,6 +1,6 @@
 FACTURAS SIN CAJA ASIGNADA - DETALLE
 ================================================================================
-Fecha: 2026-02-09 13:09:01
+Fecha: 2026-02-10 14:32:46
 ================================================================================
 
 Factura ID: 1097572
@@ -11809,8 +11809,8 @@ Comprobante mult_caja: 1
 ================================================================================
 RESUMEN DEL PROCESO
 ================================================================================
-Total facturas procesadas: 1768
-Facturas actualizadas: 82
+Total facturas procesadas: 1686
+Facturas actualizadas: 0
 Facturas sin caja encontrada: 1686
 Errores: 0
-Fecha finalización: 2026-02-09 13:09:15
+Fecha finalización: 2026-02-10 14:32:54
