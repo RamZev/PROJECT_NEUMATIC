@@ -1,6 +1,6 @@
 FACTURAS SIN CAJA ASIGNADA - DETALLE
 ================================================================================
-Fecha: 2026-02-10 14:32:46
+Fecha: 2026-02-10 09:26:16
 ================================================================================
 
 Factura ID: 1097572
@@ -14,7 +14,7 @@ Factura ID: 1118855
 Comprobante: FF - 2700002690
 Fecha: 2019-03-11
 Sucursal: 8 - RQTA
-Cliente: IBA¥EZ PABLO
+Cliente: IBAÑEZ PABLO
 Comprobante mult_caja: 1
 ----------------------------------------
 Factura ID: 1158012
@@ -770,7 +770,7 @@ Factura ID: 1451400
 Comprobante: FF - 2300013563
 Fecha: 2023-05-08
 Sucursal: 3 - PAR
-Cliente: NU¥EZ MIHURA  BELISARIO
+Cliente: NUÑEZ MIHURA  BELISARIO
 Comprobante mult_caja: 1
 ----------------------------------------
 Factura ID: 1452035
@@ -1057,7 +1057,7 @@ Factura ID: 1472474
 Comprobante: FF - 2200032614
 Fecha: 2023-08-16
 Sucursal: 2 - SF
-Cliente: BA¥OS HECTOR
+Cliente: BAÑOS HECTOR
 Comprobante mult_caja: 1
 ----------------------------------------
 Factura ID: 1473933
@@ -1141,7 +1141,7 @@ Factura ID: 1476984
 Comprobante: FF - 2200032904
 Fecha: 2023-09-09
 Sucursal: 2 - SF
-Cliente: NU¥EZ OSCAR LUIS
+Cliente: NUÑEZ OSCAR LUIS
 Comprobante mult_caja: 1
 ----------------------------------------
 Factura ID: 1477300
@@ -3395,7 +3395,7 @@ Factura ID: 1588432
 Comprobante: FR - 3700008554
 Fecha: 2024-12-24
 Sucursal: 6 - BAIG
-Cliente: PE¥A AGUSTINA YSABEL
+Cliente: PEÑA AGUSTINA YSABEL
 Comprobante mult_caja: 1
 ----------------------------------------
 Factura ID: 1588451
@@ -3521,7 +3521,7 @@ Factura ID: 1590738
 Comprobante: FR - 4600000016
 Fecha: 2024-12-31
 Sucursal: 11 - ROS S
-Cliente: MUNICIPALIDAD DE ICA¥O
+Cliente: MUNICIPALIDAD DE ICAÑO
 Comprobante mult_caja: 1
 ----------------------------------------
 Factura ID: 1591685
@@ -3591,7 +3591,7 @@ Factura ID: 1593101
 Comprobante: FR - 4600000021
 Fecha: 2025-01-08
 Sucursal: 11 - ROS S
-Cliente: MUNICIPALIDAD DE ICA¥O
+Cliente: MUNICIPALIDAD DE ICAÑO
 Comprobante mult_caja: 1
 ----------------------------------------
 Factura ID: 1593104
@@ -4893,7 +4893,7 @@ Factura ID: 1618759
 Comprobante: FR - 2600025523
 Fecha: 2025-04-05
 Sucursal: 7 - RAF
-Cliente: U¥AC RAFAEL HORACIO
+Cliente: UÑAC RAFAEL HORACIO
 Comprobante mult_caja: 1
 ----------------------------------------
 Factura ID: 1618801
@@ -5600,7 +5600,7 @@ Factura ID: 1636136
 Comprobante: FR - 2600026203
 Fecha: 2025-06-05
 Sucursal: 7 - RAF
-Cliente: U¥AC RAFAEL HORACIO
+Cliente: UÑAC RAFAEL HORACIO
 Comprobante mult_caja: 1
 ----------------------------------------
 Factura ID: 1636159
@@ -5880,7 +5880,7 @@ Factura ID: 1642245
 Comprobante: FF - 2600026423
 Fecha: 2025-06-28
 Sucursal: 7 - RAF
-Cliente: BUCCARI MARCELO JOS CEFERINO
+Cliente: BUCCARI MARCELO JOSÉ CEFERINO
 Comprobante mult_caja: 1
 ----------------------------------------
 Factura ID: 1642267
@@ -6979,7 +6979,7 @@ Factura ID: 1673775
 Comprobante: FR - 4600000194
 Fecha: 2025-10-15
 Sucursal: 11 - ROS S
-Cliente: VI¥OLO JUAN PABLO
+Cliente: VIÑOLO JUAN PABLO
 Comprobante mult_caja: 1
 ----------------------------------------
 Factura ID: 1673789
@@ -7301,7 +7301,7 @@ Factura ID: 1680719
 Comprobante: FR - 2600027793
 Fecha: 2025-11-08
 Sucursal: 7 - RAF
-Cliente: TRANSPORTE EL ARA¥ADO S.A.
+Cliente: TRANSPORTE EL ARAÑADO S.A.
 Comprobante mult_caja: 1
 ----------------------------------------
 Factura ID: 1680730
@@ -7651,7 +7651,7 @@ Factura ID: 1689256
 Comprobante: FF - 2600006231
 Fecha: 2025-12-06
 Sucursal: 7 - RAF
-Cliente: MATÖAS NICOLµS ROMERO
+Cliente: MATÍAS NICOLÁS ROMERO
 Comprobante mult_caja: 1
 ----------------------------------------
 Factura ID: 1689263
@@ -7721,7 +7721,7 @@ Factura ID: 1691214
 Comprobante: FR - 4600000233
 Fecha: 2025-12-13
 Sucursal: 11 - ROS S
-Cliente: VI¥OLO JUAN PABLO
+Cliente: VIÑOLO JUAN PABLO
 Comprobante mult_caja: 1
 ----------------------------------------
 Factura ID: 1691217
@@ -7805,7 +7805,7 @@ Factura ID: 1691844
 Comprobante: FR - 4600000237
 Fecha: 2025-12-16
 Sucursal: 11 - ROS S
-Cliente: VI¥OLO JUAN PABLO
+Cliente: VIÑOLO JUAN PABLO
 Comprobante mult_caja: 1
 ----------------------------------------
 Factura ID: 1692624
@@ -8589,7 +8589,7 @@ Factura ID: 1697101
 Comprobante: ND - 78
 Fecha: 2024-01-01
 Sucursal: 1 - SJ
-Cliente: PE¥ALBA EDGARDO
+Cliente: PEÑALBA EDGARDO
 Comprobante mult_caja: 1
 ----------------------------------------
 Factura ID: 1697102
@@ -10031,7 +10031,7 @@ Factura ID: 1697307
 Comprobante: ND - 284
 Fecha: 2024-01-01
 Sucursal: 1 - SJ
-Cliente: HERE¥U EMANUEL DIEGO
+Cliente: HEREÑU EMANUEL DIEGO
 Comprobante mult_caja: 1
 ----------------------------------------
 Factura ID: 1697308
@@ -10381,7 +10381,7 @@ Factura ID: 1697357
 Comprobante: ND - 334
 Fecha: 2024-01-01
 Sucursal: 1 - SJ
-Cliente: LUDUE¥A GUSTAVO ALEJANDRO
+Cliente: LUDUEÑA GUSTAVO ALEJANDRO
 Comprobante mult_caja: 1
 ----------------------------------------
 Factura ID: 1697358
@@ -11130,7 +11130,7 @@ Factura ID: 1697464
 Comprobante: ND - 441
 Fecha: 2024-01-01
 Sucursal: 1 - SJ
-Cliente: SOULIER MARÖA GUILLERMINA
+Cliente: SOULIER MARÍA GUILLERMINA
 Comprobante mult_caja: 1
 ----------------------------------------
 Factura ID: 1697465
@@ -11158,7 +11158,7 @@ Factura ID: 1697468
 Comprobante: ND - 445
 Fecha: 2024-01-01
 Sucursal: 1 - SJ
-Cliente: VELAZQUEZ SANTACRUZ JULIO CSA
+Cliente: VELAZQUEZ SANTACRUZ JULIO CÉSA
 Comprobante mult_caja: 1
 ----------------------------------------
 Factura ID: 1697469
@@ -11809,8 +11809,8 @@ Comprobante mult_caja: 1
 ================================================================================
 RESUMEN DEL PROCESO
 ================================================================================
-Total facturas procesadas: 1686
-Facturas actualizadas: 0
+Total facturas procesadas: 94909
+Facturas actualizadas: 93223
 Facturas sin caja encontrada: 1686
 Errores: 0
-Fecha finalización: 2026-02-10 14:32:54
+Fecha finalización: 2026-02-10 13:53:14
