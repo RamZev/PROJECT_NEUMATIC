@@ -270,6 +270,9 @@ class Cliente(ModeloBaseGenerico):
 		elif sub_cuenta_str and not buscar_cliente_id(self.sub_cuenta):
 			errors.update({'sub_cuenta': 'No existe un cliente con la Sub Cuenta indicada.'})
 		
+		if not self.id_vendedor:
+			errors.update({'id_vendedor': 'Debe seleccionar un Vendedor.'})
+		
 		if errors:
 			#-- Lanza el conjunto de excepciones.
 			raise ValidationError(errors)

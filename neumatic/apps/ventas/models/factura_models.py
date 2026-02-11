@@ -3,10 +3,12 @@ from django.db import models
 
 from apps.maestros.models.base_gen_models import ModeloBaseGenerico
 from entorno.constantes_base import ESTATUS_GEN, CONDICION_VENTA
-from apps.maestros.models.base_models import (ComprobanteVenta, 
-											  ProductoDeposito, 
-											  Operario, 
-											  PuntoVenta)
+from apps.maestros.models.base_models import (
+	ComprobanteVenta,
+	ProductoDeposito,
+	Operario,
+	PuntoVenta
+)
 from apps.maestros.models.sucursal_models import Sucursal
 from apps.maestros.models.cliente_models import Cliente
 from apps.maestros.models.producto_models import Producto
@@ -395,49 +397,56 @@ class DetalleFactura(ModeloBaseGenerico):
 		max_digits=7,
 		decimal_places=2,
 		null=True,
-		blank=True
+		blank=True,
+		default=0.0
 	)
 	costo = models.DecimalField(
 		verbose_name="Costo",
 		max_digits=12,
 		decimal_places=2,
 		null=True,
-		blank=True
+		blank=True,
+		default=0.0
 	)
 	precio_lista = models.DecimalField(
 		verbose_name="Precio",
 		max_digits=12,
 		decimal_places=2,
 		null=True,
-		blank=True
+		blank=True,
+		default=0.0
 	)
 	precio = models.DecimalField(
 		verbose_name="Precio",
 		max_digits=12,
 		decimal_places=2,
 		null=True,
-		blank=True
+		blank=True,
+		default=0.0
 	)
 	descuento = models.DecimalField(
 		verbose_name="Descuento(%)",
 		max_digits=6,
 		decimal_places=2,
 		null=True,
-		blank=True
+		blank=True,
+		default=0.0
 	)
 	desc_vendedor = models.DecimalField(
 		verbose_name="Descuento(%)",
 		max_digits=6,
 		decimal_places=2,
 		null=True,
-		blank=True
+		blank=True,
+		default=0.0
 	)
 	gravado = models.DecimalField(
 		verbose_name="Gravado",
 		max_digits=14,
 		decimal_places=2,
 		null=True,
-		blank=True
+		blank=True,
+		default=0.0
 	)
 	no_gravado = models.DecimalField(
 		verbose_name="No Gravado",
@@ -452,21 +461,24 @@ class DetalleFactura(ModeloBaseGenerico):
 		max_digits=6,
 		decimal_places=2,
 		null=True,
-		blank=True
+		blank=True,
+		default=0.0
 	)
 	iva = models.DecimalField(
 		verbose_name="IVA",
 		max_digits=14,
 		decimal_places=2,
 		null=True,
-		blank=True
+		blank=True,
+		default=0.0
 	)
 	total = models.DecimalField(
 		verbose_name="Total",
 		max_digits=14,
 		decimal_places=2,
 		null=True,
-		blank=True
+		blank=True,
+		default=0.0
 	)
 	reventa = models.CharField(
 		verbose_name="Reventa",
@@ -479,12 +491,14 @@ class DetalleFactura(ModeloBaseGenerico):
 		max_digits=10,
 		decimal_places=2,
 		null=True,
-		blank=True
+		blank=True,
+		default=0.0
 	)
 	act_stock = models.BooleanField(
 		verbose_name="Act. Stock",
 		null=True,
-		blank=True
+		blank=True,
+		default=False
 	)
 	id_operario = models.ForeignKey(
 		Operario,

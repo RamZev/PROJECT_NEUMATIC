@@ -1,14 +1,14 @@
 COMPROBANTES ELECTRÓNICOS
 ===============================================================================
 Facturas:
-	*- Comp. Elect. -> Nuevo: No permite agregar detall para todos los clientes seleccionados.
+*	*- Comp. Elect. -> Nuevo: No permite agregar detall para todos los clientes seleccionados.
 		*Corregido: declarar la variable cv antes de la línea 76 en consultas_factura_views.py: dv = None
-	*- Comp. Elect. -> Nuevo: No está guardando las observaciones del comprobante (observa_comprobante).
+*	*- Comp. Elect. -> Nuevo: No está guardando las observaciones del comprobante (observa_comprobante).
 		*Corregido.
-	- Comp. Elect. -> Editar: No permite modificar nada, pero si permite eliminar detalle y los seriales y agregar seriales.
-	- Comp. Elect. -> Nuevo: Al agregar los Seriales si se le da enter cierra el modal y blanquea el formulario del comprobante.
+*	- Comp. Elect. -> Editar: No permite modificar nada, pero si permite eliminar detalle y los seriales y agregar seriales.
+*	- Comp. Elect. -> Nuevo: Al agregar los Seriales si se le da enter cierra el modal y blanquea el formulario del comprobante.
 	
-	- Detalle del Comprobante: los inputs numéricos deben mostrarse con su plantilla.
+*	- Detalle del Comprobante: los inputs numéricos deben mostrarse con su plantilla.
 	
 Notas de Crédito/Débito:
 	- No obliga a indicar el comprobante asociado.

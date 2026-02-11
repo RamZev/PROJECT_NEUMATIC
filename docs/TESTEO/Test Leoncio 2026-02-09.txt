@@ -1,11 +1,21 @@
-VENTAS
-===============================================================================
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+- VENTAS
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 Comprobante Electrónico.
+	FACTURA ELECTRÓNICA:
 	- Facturas: Tomar en cuenta el campo estatus_producto en las búsqueda. ????
-	- Determinar el número de factura correctamente según condiciones del cliente: Si el cliente es Consum. Final muestra Letra A y debe ser B
-	- Al registrar más de 1 serial y al borrar alguno, igual los guarda todos, incluído elo los eliminados.
+*	- Determinar el número de factura correctamente según condiciones del cliente: Si el cliente es Consum. Final muestra Letra A y debe ser B
+	- Mostrar aviso cuando la caja no esté abierta y/o la fecha del comprobante no corresponda a la de la caja.
+	- Al Editar un comprobante hay que deshabilitar el botón Actualizar, porque al pulsarlo da error.
+	
+	FACTURA REMITO:
+	- Al indicar el Remito asociado sale un Alert Error al conectar con el servidor.
+	- Se contemplará hacer Factura Remito a un Remito Interno (RM)???
+	- Al momento de editar no muestra el tipo de remito asociado (compro) en el combobox.
+	- Se está permitiendo hacer Factura Remito de un cliente asociando un Remito de otro cliente.
 	
 	
+	CONTEMPLAR LOS CAMPOS NULL.
 
 Comprobante Manual.
 
@@ -17,11 +27,18 @@ Movimiento Interno.
 
 
 
-===============================================================================
-===============================================================================
-===============================================================================
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+- COMPRAS
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Remitos
 
+Retenciones
 
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+- CAJA
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Caja
 
+Movimiento de Caja
 
 
