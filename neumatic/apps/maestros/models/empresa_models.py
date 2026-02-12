@@ -85,39 +85,66 @@ class Empresa(ModeloBaseGenerico):
 		max_length=50,
 		null=True, blank=True
 	)
-
+	
 	logo_empresa = models.BinaryField()  # Para el campo 'image'
-
-	ws_archivo_crt = models.CharField(
-		verbose_name="Archivo CRT WSAFIP*",
-		max_length=50
-	)
-	ws_archivo_key = models.CharField(
-		verbose_name="Archivo KEY WSAFIP*",
-		max_length=50
-	)
+	
 	ws_archivo_crt2 = models.TextField(
-		verbose_name="CRT",
+		verbose_name="CRT Homologación",
 		null=True,
 		blank=True
 	)
 	ws_archivo_key2 = models.TextField(
-		verbose_name="KEY",
+		verbose_name="KEY Homologación",
 		null=True,
 		blank=True
 	)
-	ws_token = models.TextField(
-		verbose_name="Token",
+	ws_vence_h = models.DateTimeField(
+		verbose_name="Vcto. Certificado H",
 		null=True,
 		blank=True
 	)
-	ws_sign = models.TextField(
-		verbose_name="Sign",
+	ws_archivo_crt_p = models.TextField(
+		verbose_name="CRT Producción",
 		null=True,
 		blank=True
 	)
-	ws_expiracion = models.DateField(
-		verbose_name="Expiración Ticket WS",
+	ws_archivo_key_p = models.TextField(
+		verbose_name="KEY Producción",
+		null=True,
+		blank=True
+	)
+	ws_vence_p = models.DateTimeField(
+		verbose_name="Vcto. Certificado P",
+		null=True,
+		blank=True
+	)
+	ws_token_h = models.TextField(
+		verbose_name="Token Homologación",
+		null=True,
+		blank=True
+	)
+	ws_sign_h = models.TextField(
+		verbose_name="Sign Homologación",
+		null=True,
+		blank=True
+	)
+	ws_expiracion_h = models.DateTimeField(
+		verbose_name="Expiración Ticket WS H",
+		null=True,
+		blank=True
+	)
+	ws_token_p = models.TextField(
+		verbose_name="Token Producción",
+		null=True,
+		blank=True
+	)
+	ws_sign_p = models.TextField(
+		verbose_name="Sign Producción",
+		null=True,
+		blank=True
+	)
+	ws_expiracion_p = models.DateTimeField(
+		verbose_name="Expiración Ticket WS P",
 		null=True,
 		blank=True
 	)
@@ -125,10 +152,7 @@ class Empresa(ModeloBaseGenerico):
 		verbose_name="Modo*",
 		choices=WS_MODO
 	)
-	ws_vence = models.DateField(
-		verbose_name="Vcto. Certificado*"
-	)
-
+	
 	#-- Parámetros.
 	interes = models.DecimalField(
 		verbose_name="Intereses(%)",

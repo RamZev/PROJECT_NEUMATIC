@@ -9,10 +9,21 @@ Comprobante Electrónico.
 	- Al Editar un comprobante hay que deshabilitar el botón Actualizar, porque al pulsarlo da error.
 	
 	FACTURA REMITO:
-	- Al indicar el Remito asociado sale un Alert Error al conectar con el servidor.
-	- Se contemplará hacer Factura Remito a un Remito Interno (RM)???
+*	- Al indicar el Remito asociado sale un Alert Error al conectar con el servidor.
+*	- Se contemplará hacer Factura Remito a un Remito Interno (RM)??? [No, solo a Remito (RF) y Remito Manual (RT)]
 	- Al momento de editar no muestra el tipo de remito asociado (compro) en el combobox.
-	- Se está permitiendo hacer Factura Remito de un cliente asociando un Remito de otro cliente.
+*	- Se está permitiendo hacer Factura Remito de un cliente asociando un Remito de otro cliente. [Si es permitido]
+	
+	NOTA DE CRÉDITO/DÉBITO:
+	- El Comprobante Asociado solo debe ser Factura elect. (FF) y Factura Remito elect. (FR)???
+	- Al indicar el número del Comp. Asoc. y no lo encuentra, luego no deja escribir otro número, queda deshabilitado el campo. y si 
+	  el Comp. Asoc. indicado pertenece a otro cliente, se debe mostrar un mensaje alusivo y no deshabilitar el campo para poder indicar otro.
+	- Si se intenta guardar (Botón Guardar) y no se ha agregado ningún detalle, no deja guardar el comprobante (eso es correcto) pero debería notificarse
+	  con un mensaje al operador. Además, si se han agregado seriales y se borra alguno antes de guardar, al volver renderizar el formulario por el error,
+	  se vuelven a mostrar todos los seriales incluso los eliminados previamente.
+	- Al editar el comprobante, no muestra el número de comprobante asociado.
+	
+	
 	
 	
 	CONTEMPLAR LOS CAMPOS NULL.

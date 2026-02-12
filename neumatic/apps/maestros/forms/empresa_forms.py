@@ -57,25 +57,48 @@ class EmpresaForm(CrudGenericForm):
 			'logo_empresa':
 				forms.TextInput(attrs={**formclasstext,}),
 			
-			'ws_archivo_crt':
-				forms.TextInput(attrs={**formclasstext}),
-			'ws_archivo_key':
-				forms.TextInput(attrs={**formclasstext}),
-			'ws_token':
+			'ws_archivo_crt2':
 				forms.Textarea(attrs={**formclasstext, 
 							'rows': 3, 'readonly': True}),
-			'ws_sign':
+			'ws_archivo_key2':
 				forms.Textarea(attrs={**formclasstext, 
 							'rows': 3, 'readonly': True}),
-			'ws_expiracion':
+			'ws_vence_h':
+				forms.TextInput(attrs={**formclassdate,
+										'type': 'date' }),
+			
+			'ws_archivo_crt_p':
+				forms.Textarea(attrs={**formclasstext, 
+							'rows': 3, 'readonly': True}),
+			'ws_archivo_key_p':
+				forms.Textarea(attrs={**formclasstext, 
+							'rows': 3, 'readonly': True}),
+			'ws_vence_p':
+				forms.TextInput(attrs={**formclassdate,
+										'type': 'date' }),
+			
+			'ws_token_h':
+				forms.Textarea(attrs={**formclasstext, 
+							'rows': 3, 'readonly': True}),
+			'ws_sign_h':
+				forms.Textarea(attrs={**formclasstext, 
+							'rows': 3, 'readonly': True}),
+			'ws_expiracion_h':
+				forms.TextInput(attrs={**formclassdate,
+										'type': 'date', 
+										'readonly': True}),
+			'ws_token_p':
+				forms.Textarea(attrs={**formclasstext, 
+							'rows': 3, 'readonly': True}),
+			'ws_sign_p':
+				forms.Textarea(attrs={**formclasstext, 
+							'rows': 3, 'readonly': True}),
+			'ws_expiracion_p':
 				forms.TextInput(attrs={**formclassdate,
 										'type': 'date', 
 										'readonly': True}),
 			'ws_modo':
 				forms.Select(attrs={**formclassselect}),
-			'ws_vence':
-				forms.TextInput(attrs={**formclassdate,
-										'type': 'date' }),
 			'interes':
 				forms.NumberInput(
 					attrs={**formclasstext,

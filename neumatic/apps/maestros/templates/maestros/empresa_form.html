@@ -181,6 +181,8 @@
 													</div>
 												</div>
 												
+												<!-- INI ************************************************************************************* -->
+												{% comment %}
 												<div class="row">
 													<div class="col-md-4">
 														<label class="form-label text-primary mb-0">
@@ -203,39 +205,130 @@
 														{{ form.ws_vence }}
 													</div>
 												</div>
+												{% endcomment %}
 												
+												<!-- Certificado de Homologación -->
 												<div class="row">
 													<div class="col-md-2">
 														<label class="form-label text-primary mb-0">
-															{{ form.ws_expiracion.label }}
+															{{ form.ws_vence_h.label }}
 														</label>
-														{{ form.ws_expiracion }}
+														{{ form.ws_vence_h }}
 														
 														<div class="col-md-2 d-flex align-items-end">
-															<!-- Botón para limpiar el campo ws_expiracion -->
+															<!-- Botón para Cargar el Certificado de Homologación. -->
+															<button type="button" class="btn btn-outline-secondary">
+																	Cargar
+															</button>
+														</div>
+													</div>
+													
+													<div class="col-md-4">
+														<label class="form-label text-primary mb-0">
+															{{ form.ws_archivo_crt2.label }}
+														</label>
+														{{ form.ws_archivo_crt2 }}
+													</div>
+													
+													<div class="col-md-4">
+														<label class="form-label text-primary mb-0">
+															{{ form.ws_archivo_key2.label }}
+														</label>
+														{{ form.ws_archivo_key2 }}
+													</div>
+												</div>
+												<!-- Certificado de Producción -->
+												<div class="row">
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0">
+															{{ form.ws_vence_p.label }}
+														</label>
+														{{ form.ws_vence_p }}
+														
+														<div class="col-md-2 d-flex align-items-end">
+															<!-- Botón para Cargar el Certificado de Homologación. -->
+															<button type="button" class="btn btn-outline-secondary">
+																	Cargar
+															</button>
+														</div>
+													</div>
+													
+													<div class="col-md-4">
+														<label class="form-label text-primary mb-0">
+															{{ form.ws_archivo_crt_p.label }}
+														</label>
+														{{ form.ws_archivo_crt_p }}
+													</div>
+													
+													<div class="col-md-4">
+														<label class="form-label text-primary mb-0">
+															{{ form.ws_archivo_key_p.label }}
+														</label>
+														{{ form.ws_archivo_key_p }}
+													</div>
+												</div>
+												<!-- Token y Firma de Homologación -->
+												<div class="row">
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0">
+															{{ form.ws_expiracion_h.label }}
+														</label>
+														{{ form.ws_expiracion_h }}
+														
+														<div class="col-md-2 d-flex align-items-end">
+															<!-- Botón para limpiar el campo ws_expiracion_h -->
 															<button type="button" class="btn btn-outline-secondary" onclick="clearWsExpiracion()">
 																	Limpiar
 															</button>
 														</div>
-														
 													</div>
 													
 													<div class="col-md-4">
 														<label class="form-label text-primary mb-0">
-															{{ form.ws_token.label }}
+															{{ form.ws_token_h.label }}
 														</label>
-														{{ form.ws_token }}
+														{{ form.ws_token_h }}
 													</div>
 													
 													<div class="col-md-4">
 														<label class="form-label text-primary mb-0">
-															{{ form.ws_sign.label }}
+															{{ form.ws_sign_h.label }}
 														</label>
-														{{ form.ws_sign }}
+														{{ form.ws_sign_h }}
 													</div>
-													
 												</div>
-												
+												<!-- Token y Firma de Producción -->
+												<div class="row">
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0">
+															{{ form.ws_expiracion_p.label }}
+														</label>
+														{{ form.ws_expiracion_p }}
+														
+														<div class="col-md-2 d-flex align-items-end">
+															<!-- Botón para limpiar el campo ws_expiracion_p -->
+															<button type="button" class="btn btn-outline-secondary" onclick="clearWsExpiracionP()">
+																	Limpiar
+															</button>
+														</div>
+													</div>
+													
+													<div class="col-md-4">
+														<label class="form-label text-primary mb-0">
+															{{ form.ws_token_p.label }}
+														</label>
+														{{ form.ws_token_p }}
+													</div>
+													
+													<div class="col-md-4">
+														<label class="form-label text-primary mb-0">
+															{{ form.ws_sign_p.label }}
+														</label>
+														{{ form.ws_sign_p }}
+													</div>
+												</div>
+												<!-- END ************************************************************************************* -->
+												 
 												<div class="row">
 													<div class="col-md-2">
 														<label class="form-label text-primary mb-0">
