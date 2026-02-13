@@ -217,7 +217,8 @@ class Factura(ModeloBaseGenerico):
 		verbose_name="Estado",
 		max_length=1,
 		null=True,
-		blank=True
+		blank=True,
+		default=""
 	)
 	marca = models.CharField(
 		verbose_name="Marca",

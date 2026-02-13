@@ -23,6 +23,8 @@ Comprobante Electrónico.
 	  se vuelven a mostrar todos los seriales incluso los eliminados previamente.
 	- Al editar el comprobante, no muestra el número de comprobante asociado.
 	
+	REMITO / REMITO DE MICHELIN / NOTA DE DÉBITO ELECT.
+	- El campo 'estado' queda en null, debería ser vacío.
 	
 	
 	
