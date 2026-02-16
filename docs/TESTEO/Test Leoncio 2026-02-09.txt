@@ -55,3 +55,9 @@ Caja
 Movimiento de Caja
 
 
+*************************************************************************************
+SELECT f.id_factura, f.compro, cv.nombre_comprobante_venta, f.numero_comprobante, f.fecha_comprobante, f.estado
+FROM factura f
+JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
+WHERE f.compro = 'RF' AND f.estado = 'C'
+*************************************************************************************
