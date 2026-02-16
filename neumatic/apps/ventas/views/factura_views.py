@@ -293,7 +293,7 @@ class FacturaCreateView(MaestroDetalleCreateView):
 					return self.form_invalid(form)
 
 				# =========================================================
-				# NUEVA VALIDACIÓN TEMPRANA: Verificación de caja ABIERTA para mult_caja ≠ 0
+				# VALIDACIÓN DE CAJA ABIERTA PARA COMPROBANTES CON MULT_CAJA ≠ 0
 				# =========================================================
 				comprobante_venta = form.cleaned_data['id_comprobante_venta']
 
@@ -301,22 +301,32 @@ class FacturaCreateView(MaestroDetalleCreateView):
 					sucursal = form.cleaned_data['id_sucursal']
 					fecha_comprobante = form.cleaned_data['fecha_comprobante']
 					
-					# Verificar si existe una caja ABIERTA para esta sucursal y fecha
-					existe_caja_abierta = Caja.objects.filter(
+					# 1. Verificar si existe una caja para esta sucursal y fecha (abierta o cerrada)
+					caja = Caja.objects.filter(
 						id_sucursal=sucursal,
-						fecha_caja=fecha_comprobante,
-						caja_cerrada=False  # SOLO CAJAS ABIERTAS
-					).exists()
+						fecha_caja=fecha_comprobante
+					).first()
 					
-					if not existe_caja_abierta:
-						form.add_error(
-							None,
-							f"❌ No hay caja ABIERTA para la sucursal '{sucursal}' "
-							f"y fecha {fecha_comprobante.strftime('%d/%m/%Y')}. "
-							f"Este comprobante requiere registro en caja (mult_caja={comprobante_venta.mult_caja}). "
-							f"Debe abrir una caja antes de crear este documento."
+					# 2. Validar existencia de caja
+					if not caja:
+						messages.error(
+							self.request,
+							f"❌ No existe caja para la sucursal '{sucursal}' y fecha {fecha_comprobante.strftime('%d/%m/%Y')}. "
+							f"Debe crear una caja antes de generar este comprobante."
 						)
-						return self.form_invalid(form)
+						return redirect(self.list_view_name)  # Redirige a la lista
+					
+					# 3. Validar si la caja está abierta
+					if caja.caja_cerrada:
+						messages.error(
+							self.request,
+							f"❌ La caja de la sucursal '{sucursal}' para la fecha {fecha_comprobante.strftime('%d/%m/%Y')} "
+							f"se encuentra CERRADA. Debe abrir la caja antes de generar este comprobante."
+						)
+						return redirect(self.list_view_name)  # Redirige a la lista
+					
+					# 4. Si pasó ambas validaciones, la caja existe y está abierta
+					# (El código continúa normalmente)
 				# =========================================================
 
 				# 2. Validación para documentos pendientes
