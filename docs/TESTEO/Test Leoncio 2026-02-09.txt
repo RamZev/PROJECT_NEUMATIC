@@ -3,34 +3,58 @@
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 Comprobante Electrónico.
 	FACTURA ELECTRÓNICA:
-	- Facturas: Tomar en cuenta el campo estatus_producto en las búsqueda. ????
 *	- Determinar el número de factura correctamente según condiciones del cliente: Si el cliente es Consum. Final muestra Letra A y debe ser B
-	- Mostrar aviso cuando la caja no esté abierta y/o la fecha del comprobante no corresponda a la de la caja.
-	- Al Editar un comprobante hay que deshabilitar el botón Actualizar, porque al pulsarlo da error.
+	  [Solucionado: En la plantilla se estaba preguntando por un valor booleano y era string.]
+	- Facturas: Tomar en cuenta el campo estatus_producto en las búsqueda. ????
+	- Mostrar aviso cuando la caja no esté abierta y/o la fecha del comprobante no corresponda a la de la caja abierta.
+	- Al Editar un comprobante desde el listado de comprobantes hay que deshabilitar el botón Actualizar, porque al pulsarlo da error.
 	
 	FACTURA REMITO:
 *	- Al indicar el Remito asociado sale un Alert Error al conectar con el servidor.
-*	- Se contemplará hacer Factura Remito a un Remito Interno (RM)??? [No, solo a Remito (RF) y Remito Manual (RT)]
-	- Al momento de editar no muestra el tipo de remito asociado (compro) en el combobox.
-*	- Se está permitiendo hacer Factura Remito de un cliente asociando un Remito de otro cliente. [Si es permitido]
+	  [El alert sale cuando no consigue el comprobante asociado, bien sea porque no existe el número o no pertenece al mismo cliente.]
+	  [Mostrar mensajes más alusivos]
+*	- Se contemplará hacer Factura Remito a un Remito Interno (RM)???
+	  [No, solo a Remito (RF) y Remito Manual (RT)]
+*	- Se está permitiendo hacer Factura Remito de un cliente asociando un Remito de otro cliente.
+	  [Si es permitido]
+	- Al momento de editar desde el listado de comprobantes no muestra el tipo de remito asociado (compro) en el combobox.
+	- Al cargar los datos del Remito asociado, permite modificar el detalle en la factura. Se debe deshabilitar la edición???
 	
 	NOTA DE CRÉDITO/DÉBITO:
 	- El Comprobante Asociado solo debe ser Factura elect. (FF) y Factura Remito elect. (FR)???
 	- Al indicar el número del Comp. Asoc. y no lo encuentra, luego no deja escribir otro número, queda deshabilitado el campo. y si 
 	  el Comp. Asoc. indicado pertenece a otro cliente, se debe mostrar un mensaje alusivo y no deshabilitar el campo para poder indicar otro.
 	- Si se intenta guardar (Botón Guardar) y no se ha agregado ningún detalle, no deja guardar el comprobante (eso es correcto) pero debería notificarse
-	  con un mensaje al operador. Además, si se han agregado seriales y se borra alguno antes de guardar, al volver renderizar el formulario por el error,
+	  con un mensaje al usuario. Además, si se han agregado seriales y se borra alguno antes de guardar, al volver renderizar el formulario por el error,
 	  se vuelven a mostrar todos los seriales incluso los eliminados previamente.
 	- Al editar el comprobante, no muestra el número de comprobante asociado.
 	
 	REMITO / REMITO DE MICHELIN / NOTA DE DÉBITO ELECT.
-	- El campo 'estado' queda en null, debería ser vacío.
+*	- El campo 'estado' queda en null, debería ser vacío.
+	  [Arreglado, modificado el modelo Factura para que ese campo tenga un valor por defecto '']
 	
 	
 	
-	CONTEMPLAR LOS CAMPOS NULL.
+	· CONTEMPLAR LOS CAMPOS NULL.
+	· SUSTITUIR LOS ARLET POR MODAL O MENSAJES EN LA PLANTILLA.
+	
 
 Comprobante Manual.
+	· Controlar si la caja no esté abierta y/o la fecha del comprobante no corresponda a la de la caja abierta.
+	
+	FACTURA (FA):
+	- Los número son manuales, tendrán alguna restricción, validación o condición???
+	- Está permitiendo crear Factura con el mismo número y misma letra, ej. A 111 ó B 111.
+	
+	FACTURA REMITO(MF):
+	- Al crear una nueva e indicar el Remito Asociado, si no lo encuentra mostrar un mensaje apropiado.
+	- Al crearla no arrastra las observaciones ni los seriales.
+	
+	REMITO MANUAL (RT)
+	- El campo número de comprobante está habilitado para indicar el número manualmente, pero no toma este sino que lo determina automáticamente desde del modelo Numero.
+	- Al crear uno nuevo y la condición de venta es 'Contado' el campo estado tiene el valor 'C' y debería ser vacío (valor por defecto según modelo).
+	
+
 
 Recibo.
 
