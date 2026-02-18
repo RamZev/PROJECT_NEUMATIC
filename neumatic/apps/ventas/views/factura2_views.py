@@ -20,6 +20,7 @@ from ...maestros.models.cliente_models import Cliente
 # OJO: es nuevo 25/08/2025
 from ...maestros.models.empresa_models import Empresa
 from ...maestros.models.base_models import AlicuotaIva
+from apps.ventas.models.caja_models import Caja, CajaDetalle
 
 from entorno.constantes_base import TIPO_VENTA
 
@@ -139,6 +140,53 @@ class FacturaManualListView(MaestroDetalleListView):
 		
 		# Agregar model_string al contexto
 		context['model_string'] = model_string  # Esto devolverá 'factura'
+
+		# =========================================================
+		# ALERTA DE CAJA - Solo para FacturaListView
+		# =========================================================
+		try:
+			from datetime import date
+			from apps.ventas.models.caja_models import Caja
+			
+			usuario = self.request.user
+			
+			fecha_actual = date.today()
+			
+			# Solo validar si el usuario tiene sucursal asignada
+			if usuario.id_sucursal:
+				# Verificar si existe caja para hoy
+				caja_hoy = Caja.objects.filter(
+					id_sucursal=usuario.id_sucursal,
+					fecha_caja=fecha_actual
+				).first()
+				
+				if not caja_hoy:
+					context['alerta_vista'] = {
+						'tipo': 'error',
+						'titulo': '⚠️ No hay caja disponible',
+						'mensaje': f'No existe caja para la sucursal y fecha {fecha_actual.strftime("%d/%m/%Y")}.',
+						'accion': 'Debe crear una caja antes de generar comprobantes.'
+					}
+				elif caja_hoy.caja_cerrada:
+					context['alerta_vista'] = {
+						'tipo': 'error',
+						'titulo': '⚠️ Caja cerrada',
+						'mensaje': f'La caja de la sucursal para fecha {fecha_actual.strftime("%d/%m/%Y")} se encuentra CERRADA.',
+						'accion': 'Debe abrir la caja antes de generar comprobantes.'
+					}
+
+				else:
+					print("✅ CASO: Caja OK - No se crea alerta")
+			else:
+				print("⚠️ Usuario sin sucursal asignada")
+				
+		except Exception as e:
+			import traceback
+			traceback.print_exc()
+		
+		if 'alerta_vista' in context:
+			print(f"📤 Contenido de alerta_vista: {context['alerta_vista']}")
+		# =========================================================
 		
 		# Mantener todos los valores de extra_context
 		if hasattr(self, 'extra_context'):
@@ -291,6 +339,43 @@ class FacturaManualCreateView(MaestroDetalleCreateView):
 				if not deposito:
 						form.add_error('id_deposito', 'Debe seleccionar un depósito')
 						return self.form_invalid(form)
+				
+				# =========================================================
+				# VALIDACIÓN DE CAJA ABIERTA PARA COMPROBANTES CON MULT_CAJA ≠ 0
+				# =========================================================
+				comprobante_venta = form.cleaned_data['id_comprobante_venta']
+
+				if comprobante_venta.mult_caja != 0:
+					sucursal = form.cleaned_data['id_sucursal']
+					fecha_comprobante = form.cleaned_data['fecha_comprobante']
+					
+					# 1. Verificar si existe una caja para esta sucursal y fecha (abierta o cerrada)
+					caja = Caja.objects.filter(
+						id_sucursal=sucursal,
+						fecha_caja=fecha_comprobante
+					).first()
+					
+					# 2. Validar existencia de caja
+					if not caja:
+						messages.error(
+							self.request,
+							f"❌ No existe caja para la sucursal '{sucursal}' y fecha {fecha_comprobante.strftime('%d/%m/%Y')}. "
+							f"Debe crear una caja antes de generar este comprobante."
+						)
+						return redirect(self.list_view_name)  # Redirige a la lista
+					
+					# 3. Validar si la caja está abierta
+					if caja.caja_cerrada:
+						messages.error(
+							self.request,
+							f"❌ La caja de la sucursal '{sucursal}' para la fecha {fecha_comprobante.strftime('%d/%m/%Y')} "
+							f"se encuentra CERRADA. Debe abrir la caja antes de generar este comprobante."
+						)
+						return redirect(self.list_view_name)  # Redirige a la lista
+					
+					# 4. Si pasó ambas validaciones, la caja existe y está abierta
+					# (El código continúa normalmente)
+				# =========================================================
 
 				# 2. Validación para documentos pendientes
 				comprobante_venta = form.cleaned_data['id_comprobante_venta']
@@ -625,6 +710,30 @@ class FacturaManualCreateView(MaestroDetalleCreateView):
 					form.instance.entrega = form.instance.total  # Asignar el total a entrega
 					form.instance.estado = "C"  # Marcar como cobrado ("C")
 
+					# =========================================================
+					# VALIDAR CAJA Y REGISTRAR EN CajaDetalle PARA VENTA DE CONTADO
+					# =========================================================
+					usuario = self.request.user
+					monto_factura = form.instance.total
+					fecha_comprobante = form.cleaned_data['fecha_comprobante']
+					
+					# Buscar caja ABIERTA (caja_cerrada=False) con fecha coincidente
+					caja_activa = Caja.objects.filter(
+						id_sucursal=usuario.id_sucursal,
+						caja_cerrada=False,  # Caja abierta
+						fecha_caja=fecha_comprobante  # Fecha debe coincidir
+					).first()
+					
+					if not caja_activa:
+						# No hay caja activa para factura de contado
+						messages.error(
+							self.request,
+							"❌ No hay caja activa para registrar la venta de contado. "
+							"Active una caja antes de crear una factura de contado."
+						)
+						return redirect(self.list_view_name)  # Redirecciona a la lista de facturas
+					# =========================================================
+
 				# Verificación de Nota de Crédito
 				comprobante_venta = form.cleaned_data['id_comprobante_venta']
 				if comprobante_venta.libro_iva and comprobante_venta.mult_venta < 0:
@@ -657,6 +766,105 @@ class FacturaManualCreateView(MaestroDetalleCreateView):
 
 				# 4. Guardado en el modelo Factura
 				self.object = form.save()
+
+				# =========================================================
+				# NUEVA LÓGICA: Asignación de id_caja basado en mult_caja (CAJA ABIERTA)
+				# =========================================================
+				comprobante_venta = form.cleaned_data['id_comprobante_venta']
+
+				# Solo procesar si mult_caja es distinto de cero
+				if comprobante_venta.mult_caja != 0:
+					try:
+						# Obtener valores del documento
+						sucursal = form.cleaned_data['id_sucursal']
+						fecha_comprobante = form.cleaned_data['fecha_comprobante']
+						
+						# Buscar Caja ABIERTA específica
+						caja_encontrada = Caja.objects.get(
+							id_sucursal=sucursal,
+							fecha_caja=fecha_comprobante,
+							caja_cerrada=False  # SOLO CAJAS ABIERTAS
+						)
+						
+						# Asignar id_caja al modelo Factura
+						self.object.id_caja = caja_encontrada
+						self.object.save(update_fields=['id_caja'])  # Solo actualizar este campo
+						
+						print(f"DEBUG - Caja ABIERTA #{caja_encontrada.id_caja} asignada a factura #{self.object.id_factura}")
+						
+					except Caja.DoesNotExist:
+						# Esto no debería ocurrir gracias a la validación temprana
+						messages.error(
+							self.request,
+							f"❌ Error: No se encontró caja ABIERTA para la sucursal {sucursal} "
+							f"y fecha {fecha_comprobante.strftime('%d/%m/%Y')}."
+						)
+						raise DatabaseError("Caja abierta no encontrada después de validación temprana")
+						
+					except Exception as e:
+						messages.error(
+							self.request,
+							f"❌ Error al asignar caja: {str(e)}"
+						)
+						raise DatabaseError(f"Error en asignación de caja: {str(e)}")
+				# =========================================================
+
+				# =========================================================
+				# REGISTRAR EN CAJA DETALLE PARA VENTA DE CONTADO (DESPUÉS DE GUARDAR)
+				# =========================================================
+				if condicion_comprobante == 1:
+					try:
+						usuario = self.request.user
+						fecha_comprobante = form.cleaned_data['fecha_comprobante']
+						
+						# Buscar caja ABIERTA nuevamente (en contexto de transacción)
+						caja_activa = Caja.objects.filter(
+							id_sucursal=usuario.id_sucursal,
+							caja_cerrada=False,  # Caja abierta
+							fecha_caja=fecha_comprobante  # Fecha debe coincidir
+						).first()
+						
+						if caja_activa:
+							# Importar FormaPago para el campo id_forma_pago
+							from apps.maestros.models.base_models import FormaPago
+							forma_pago_efectivo = FormaPago.objects.get(id_forma_pago=1)
+							
+							# Crear detalle de caja
+							CajaDetalle.objects.create(
+								id_caja=caja_activa,
+								idventas=self.object.id_factura,
+								tipo_movimiento=1,  # 1 para Ingreso
+								id_forma_pago=forma_pago_efectivo,
+								importe=self.object.total,  # Total de la factura
+								observacion=f"Factura #{self.object.numero_comprobante}"
+							)
+							
+							messages.info(
+								self.request,
+								f'💰 Se registró venta de contado de ${self.object.total:.2f} '
+								f'en la Caja #{caja_activa.numero_caja}'
+							)
+						else:
+							# Esto no debería pasar porque ya validamos arriba, pero por seguridad
+							messages.warning(
+								self.request,
+								f'⚠️ Venta de contado de ${self.object.total:.2f} no se registró en caja '
+								f'(caja no disponible para fecha {fecha_comprobante.strftime("%d/%m/%Y")})'
+							)
+							
+					except FormaPago.DoesNotExist:
+						messages.warning(
+							self.request,
+							f'⚠️ No se encontró forma de pago efectivo (ID 1) para registrar en caja'
+						)
+					except Exception as e:
+						print(f"DEBUG - ERROR al crear CajaDetalle para factura: {str(e)}")
+						# Continuar sin registrar en caja pero mostrar advertencia
+						messages.warning(
+							self.request,
+							f'⚠️ No se pudo registrar en caja: {str(e)}'
+						)
+				# =========================================================
 
 				# 5. ACTUALIZACIÓN DEL DOCUMENTO ASOCIADO (PARTE CLAVE)
 				if comprobante_venta.pendiente:

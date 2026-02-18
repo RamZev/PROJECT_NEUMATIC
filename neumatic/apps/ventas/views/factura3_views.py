@@ -1,4 +1,4 @@
-# neumatic\apps\ventas\views\factura_views.py
+# neumatic\apps\ventas\views\factura3_views.py
 from django.urls import reverse_lazy, reverse
 from django.shortcuts import redirect
 from django.db import transaction
@@ -20,6 +20,7 @@ from ...maestros.models.cliente_models import Cliente
 # OJO: es nuevo 25/08/2025
 from ...maestros.models.empresa_models import Empresa
 from ...maestros.models.base_models import AlicuotaIva
+# from apps.ventas.models.caja_models import Caja, CajaDetalle
 
 from entorno.constantes_base import TIPO_VENTA
 
