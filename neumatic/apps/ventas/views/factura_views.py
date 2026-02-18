@@ -707,7 +707,6 @@ class FacturaCreateView(MaestroDetalleCreateView):
 				# Final 3. Numeración (nueva versión) ----------------------->
 
 				# Condición de Venta
-				# if condicion_comprobante == 1:
 				condicion_comprobante = form.cleaned_data['condicion_comprobante']
 				comprobante_venta_obj = form.cleaned_data['id_comprobante_venta']
 				if condicion_comprobante == 1 and not comprobante_venta_obj.remito:
