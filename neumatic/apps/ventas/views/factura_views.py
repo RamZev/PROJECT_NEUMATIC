@@ -139,6 +139,53 @@ class FacturaListView(MaestroDetalleListView):
 		
 		# Agregar model_string al contexto
 		context['model_string'] = model_string  # Esto devolverá 'factura'
+
+		# =========================================================
+		# ALERTA DE CAJA - Solo para FacturaListView
+		# =========================================================
+		try:
+			from datetime import date
+			from apps.ventas.models.caja_models import Caja
+			
+			usuario = self.request.user
+			
+			fecha_actual = date.today()
+			
+			# Solo validar si el usuario tiene sucursal asignada
+			if usuario.id_sucursal:
+				# Verificar si existe caja para hoy
+				caja_hoy = Caja.objects.filter(
+					id_sucursal=usuario.id_sucursal,
+					fecha_caja=fecha_actual
+				).first()
+				
+				if not caja_hoy:
+					context['alerta_vista'] = {
+						'tipo': 'error',
+						'titulo': '⚠️ No hay caja disponible',
+						'mensaje': f'No existe caja para la sucursal y fecha {fecha_actual.strftime("%d/%m/%Y")}.',
+						'accion': 'Debe crear una caja antes de generar comprobantes.'
+					}
+				elif caja_hoy.caja_cerrada:
+					context['alerta_vista'] = {
+						'tipo': 'error',
+						'titulo': '⚠️ Caja cerrada',
+						'mensaje': f'La caja de la sucursal para fecha {fecha_actual.strftime("%d/%m/%Y")} se encuentra CERRADA.',
+						'accion': 'Debe abrir la caja antes de generar comprobantes.'
+					}
+
+				else:
+					print("✅ CASO: Caja OK - No se crea alerta")
+			else:
+				print("⚠️ Usuario sin sucursal asignada")
+				
+		except Exception as e:
+			import traceback
+			traceback.print_exc()
+		
+		if 'alerta_vista' in context:
+			print(f"📤 Contenido de alerta_vista: {context['alerta_vista']}")
+		# =========================================================
 		
 		# Mantener todos los valores de extra_context
 		if hasattr(self, 'extra_context'):
@@ -660,8 +707,10 @@ class FacturaCreateView(MaestroDetalleCreateView):
 				# Final 3. Numeración (nueva versión) ----------------------->
 
 				# Condición de Venta
+				# if condicion_comprobante == 1:
 				condicion_comprobante = form.cleaned_data['condicion_comprobante']
-				if condicion_comprobante == 1:
+				comprobante_venta_obj = form.cleaned_data['id_comprobante_venta']
+				if condicion_comprobante == 1 and not comprobante_venta_obj.remito:
 					# Venta de contado
 					form.instance.entrega = form.instance.total  # Asignar el total a entrega
 					form.instance.estado = "C"  # Marcar como cobrado ("C")
@@ -765,7 +814,6 @@ class FacturaCreateView(MaestroDetalleCreateView):
 						raise DatabaseError(f"Error en asignación de caja: {str(e)}")
 				# =========================================================
 
-
 				# =========================================================
 				# REGISTRAR EN CAJA DETALLE PARA VENTA DE CONTADO (DESPUÉS DE GUARDAR)
 				# =========================================================
@@ -822,7 +870,6 @@ class FacturaCreateView(MaestroDetalleCreateView):
 							f'⚠️ No se pudo registrar en caja: {str(e)}'
 						)
 				# =========================================================
-
 
 				# 5. ACTUALIZACIÓN DEL DOCUMENTO ASOCIADO (PARTE CLAVE)
 				if comprobante_venta.pendiente:

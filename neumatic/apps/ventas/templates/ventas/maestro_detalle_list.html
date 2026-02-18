@@ -56,6 +56,7 @@
 			
 		<!-- Main principalcomponent Start -->
 		{% block principalcomponent %}
+		
 		<div id="layoutSidenav_content">
 			<main>
 				<div class="container-fluid tbl-container">
@@ -227,6 +228,52 @@
 	
 	<!-- Modal para el manejo de los mensajes de error sobre los permisos de usuario. -->
 	{% include 'maestros/modal.html' %}
+
+	<!-- ===== MODAL SOBRIO PARA ALERTA DE CAJA ===== -->
+	{% if alerta_vista %}
+	<div class="modal fade" id="modalAlertaCaja" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header" style="background-color: #f8d7da; color: #721c24; border-bottom: 1px solid #f5c6cb;">
+					<h5 class="modal-title">
+						
+						{{ alerta_vista.titulo }}
+					</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<p class="mb-2">{{ alerta_vista.mensaje }}</p>
+					{% if alerta_vista.accion %}
+					<p class="mb-0 fw-bold">{{ alerta_vista.accion }}</p>
+					{% endif %}
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script>
+		document.addEventListener('DOMContentLoaded', function() {
+			// Mostrar el modal
+			var modal = new bootstrap.Modal(document.getElementById('modalAlertaCaja'));
+			modal.show();
+			
+			// Deshabilitar el botón Nuevo - Usando la clase exacta
+			var btnNuevo = document.querySelector('.col.col-2 a.btn-primary');
+			if (btnNuevo) {
+				btnNuevo.classList.add('disabled');
+				btnNuevo.style.pointerEvents = 'none';
+				btnNuevo.style.opacity = '0.5';
+				btnNuevo.style.backgroundColor = '#6c757d';
+				btnNuevo.style.borderColor = '#6c757d';
+				btnNuevo.removeAttribute('href');
+			}
+			});
+	</script>
+	{% endif %}
+	<!-- ===== FIN MODAL SOBRIO ===== -->
 	
 {% endblock modals %}
 
