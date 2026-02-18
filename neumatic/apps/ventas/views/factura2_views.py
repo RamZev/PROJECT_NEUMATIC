@@ -708,7 +708,8 @@ class FacturaManualCreateView(MaestroDetalleCreateView):
 
 				# Condición de Venta
 				condicion_comprobante = form.cleaned_data['condicion_comprobante']
-				if condicion_comprobante == 1:
+				comprobante_venta_obj = form.cleaned_data['id_comprobante_venta']
+				if condicion_comprobante == 1 and not comprobante_venta_obj.remito:
 					# Venta de contado
 					form.instance.entrega = form.instance.total  # Asignar el total a entrega
 					form.instance.estado = "C"  # Marcar como cobrado ("C")
