@@ -228,6 +228,9 @@ class PresupuestoCreateView(MaestroDetalleCreateView):
 
 		# Tipo de Comprobante
 		data['tipo_comprobante'] = self.tipo_comprobante
+		
+		#-- Título de la página.
+		data['titulo'] = "Crear Comprobante"
 
 		return data
 
@@ -1036,6 +1039,9 @@ class PresupuestoUpdateView(MaestroDetalleUpdateView):
 
 		# Tipo de Comprobante
 		data['tipo_comprobante'] = self.tipo_comprobante
+		
+		#-- Título de la página.
+		data['titulo'] = "Ver Comprobante"
 
 		return data
 

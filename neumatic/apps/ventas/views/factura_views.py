@@ -279,7 +279,10 @@ class FacturaCreateView(MaestroDetalleCreateView):
 
 		# Tipo de Comprobante
 		data['tipo_comprobante'] = self.tipo_comprobante
-
+		
+		#-- Título de la página.
+		data['titulo'] = "Crear Comprobante"
+		
 		return data
 
 	def form_valid(self, form):
@@ -1267,7 +1270,10 @@ class FacturaUpdateView(MaestroDetalleUpdateView):
 
 		# Tipo de Comprobante
 		data['tipo_comprobante'] = self.tipo_comprobante
-
+		
+		#-- Título de la página.
+		data['titulo'] = "Ver Comprobante"
+		
 		return data
 
 	def form_valid(self, form):
