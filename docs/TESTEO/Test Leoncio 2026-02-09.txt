@@ -37,6 +37,9 @@ Comprobante Electrónico.
 	
 	· CONTEMPLAR LOS CAMPOS NULL.
 	· SUSTITUIR LOS ARLET POR MODAL O MENSAJES EN LA PLANTILLA.
+	· CUANDO SE HACE UNA FACTURA (ELECT/MANUAL) Y LA CONDICIÓN ES 'CONTADO' ASIGNA EL MONTO A LOS CAMPOS TOTAL Y ENTREGA Y CUANDO SE HACE UNA NCR
+	  DUPLICA EL MONTO EN EL CAMPO 'ENTREGA'.
+	· GENERAR EL CÓDIGO QR PARA LOS PDFs.
 	
 
 Comprobante Manual.
@@ -56,8 +59,12 @@ Comprobante Manual.
 	
 	NOTA DE CRÉDITO (NC)
 	- En la tabla comprobante_venta no tiene asociado ningún comprobante, le he asociado FACTURA (FA) y FACTURA REMITO (MF).
-	- El combobox de Compro. Asociado ya por defecto tiene seleccionado un comprobante.
 	- Al indicar un número de comprobante asociado y no lo encuentra, deshabilita el campo no permitiendo intentar con otro número.
+	
+	REMITO INT. MANUAL (MR)
+	- El campo número de comprobante está habilitado para indicar el número manualmente, pero no toma este sino que lo determina automáticamente desde el modelo Numero.
+	
+
 	
 
 
