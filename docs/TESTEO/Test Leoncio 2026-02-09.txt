@@ -40,19 +40,24 @@ Comprobante Electrónico.
 	
 
 Comprobante Manual.
-	· Controlar si la caja no esté abierta y/o la fecha del comprobante no corresponda a la de la caja abierta.
+	· Controlar si la caja no está abierta y/o la fecha del comprobante no corresponda a la de la caja abierta.
 	
 	FACTURA (FA):
 	- Los número son manuales, tendrán alguna restricción, validación o condición???
-	- Está permitiendo crear Factura con el mismo número y misma letra, ej. A 111 ó B 111.
+	- Está permitiendo crear (duplicando) Factura con el mismo número y misma letra. Se debe validar que no exista un comprobante con la misma letra y número.
 	
-	FACTURA REMITO(MF):
-	- Al crear una nueva e indicar el Remito Asociado, si no lo encuentra mostrar un mensaje apropiado.
-	- Al crearla no arrastra las observaciones ni los seriales.
+	FACTURA REMITO (MF):
+	- Al crear una nueva e indicar el Remito Asociado, si no lo encuentra mostrar un mensaje apropiado. No está mostrando mensaje alguno y solo renderiza nuevamente el formulario.
+	- Al crearla no arrastra las observaciones ni los seriales desde el remito asociado.
 	
 	REMITO MANUAL (RT)
-	- El campo número de comprobante está habilitado para indicar el número manualmente, pero no toma este sino que lo determina automáticamente desde del modelo Numero.
+	- El campo número de comprobante está habilitado para indicar el número manualmente, pero no toma este sino que lo determina automáticamente desde el modelo Numero.
 	- Al crear uno nuevo y la condición de venta es 'Contado' el campo estado tiene el valor 'C' y debería ser vacío (valor por defecto según modelo).
+	
+	NOTA DE CRÉDITO (NC)
+	- En la tabla comprobante_venta no tiene asociado ningún comprobante, le he asociado FACTURA (FA) y FACTURA REMITO (MF).
+	- El combobox de Compro. Asociado ya por defecto tiene seleccionado un comprobante.
+	- Al indicar un número de comprobante asociado y no lo encuentra, deshabilita el campo no permitiendo intentar con otro número.
 	
 
 
