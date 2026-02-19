@@ -57,13 +57,23 @@ Comprobante Manual.
 	- El campo número de comprobante está habilitado para indicar el número manualmente, pero no toma este sino que lo determina automáticamente desde el modelo Numero.
 	- Al crear uno nuevo y la condición de venta es 'Contado' el campo estado tiene el valor 'C' y debería ser vacío (valor por defecto según modelo).
 	
-	NOTA DE CRÉDITO (NC)
+	NOTA DE CRÉDITO (NC) / NOTA DE DÉBITO (ND)
 	- En la tabla comprobante_venta no tiene asociado ningún comprobante, le he asociado FACTURA (FA) y FACTURA REMITO (MF).
-	- Al indicar un número de comprobante asociado y no lo encuentra, deshabilita el campo no permitiendo intentar con otro número.
+	- Al indicar el número del Comp. Asoc. y no lo encuentra, deshabilita el campo no permitiendo intentar con otro número y si 
+	  el Comp. Asoc. indicado pertenece a otro cliente, se debe mostrar un mensaje alusivo y no deshabilitar el campo para poder indicar otro.
+	
 	
 	REMITO INT. MANUAL (MR)
 	- El campo número de comprobante está habilitado para indicar el número manualmente, pero no toma este sino que lo determina automáticamente desde el modelo Numero.
+	- Permite modificar la REVENTA y el PRECIO en el detalle.
 	
+	REMITO DEV. MANUAL (MD)
+	- El campo número de comprobante está habilitado para indicar el número manualmente, pero no toma este sino que lo determina automáticamente desde el modelo Numero.
+	- Permite modificar la REVENTA y el PRECIO en el detalle.
+	
+	REMITO INT.DEV. MANUAL (MS)
+	- Permite agregar y modificar detalle.
+	- No obliga asociar un remito (MR)
 
 	
 
@@ -90,10 +100,3 @@ Caja
 
 Movimiento de Caja
 
-
-*************************************************************************************
-SELECT f.id_factura, f.compro, cv.nombre_comprobante_venta, f.numero_comprobante, f.fecha_comprobante, f.estado
-FROM factura f
-JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
-WHERE f.compro = 'RF' AND f.estado = 'C'
-*************************************************************************************
