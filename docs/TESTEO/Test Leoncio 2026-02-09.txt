@@ -80,8 +80,10 @@ Comprobante Manual.
 
 
 Recibo.
+· Recibo Manula:  Cuando no hay número registrado en Numero no debe permitir hacer el recibo, debe mostrar un mensaje.
+  Presupuesto.
 
-Presupuesto.
+
 
 Movimiento Interno.
 
