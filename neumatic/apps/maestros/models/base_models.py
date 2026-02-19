@@ -8,7 +8,7 @@ import re
 
 from utils.validator.validaciones import validar_cuit
 from .base_gen_models import ModeloBaseGenerico
-from entorno.constantes_base import ESTATUS_GEN, CONDICION_PAGO, TIPO_CUENTA, TIPO_COMPROBANTE
+from entorno.constantes_base import ESTATUS_GEN, CONDICION_PAGO, TIPO_CUENTA, TIPO_COMPROBANTE, TIPO_NUMERACION
 
 
 class Actividad(ModeloBaseGenerico):
@@ -441,8 +441,14 @@ class ComprobanteVenta(ModeloBaseGenerico):
 		blank=True,
 		choices=TIPO_COMPROBANTE
 	)
+	tipo_numeracion = models.IntegerField(
+		verbose_name="Tipo Numeración",
+		null=True,
+		blank=True,
+		choices=TIPO_NUMERACION
+	)
 	compro_asociado = models.CharField(
-		verbose_name="Comprobate Asociado",
+		verbose_name="Comprobante Asociado",
 		max_length=20,
 		null=True,
 		blank=True
