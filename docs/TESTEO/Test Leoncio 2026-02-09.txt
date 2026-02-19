@@ -43,7 +43,7 @@ Comprobante Electrónico.
 	
 
 Comprobante Manual.
-	· Controlar si la caja no está abierta y/o la fecha del comprobante no corresponda a la de la caja abierta.
+*	· Controlar si la caja no está abierta y/o la fecha del comprobante no corresponda a la de la caja abierta.
 	
 	FACTURA (FA):
 	- Los número son manuales, tendrán alguna restricción, validación o condición???
@@ -73,7 +73,8 @@ Comprobante Manual.
 	
 	REMITO INT.DEV. MANUAL (MS)
 	- Permite agregar y modificar detalle.
-	- No obliga asociar un remito (MR)
+	- No marca es estado del comprobante asociado como cargado (estado='C' o estado='F') cuando se graba el Remito.
+	
 
 	
 
