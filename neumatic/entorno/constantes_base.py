@@ -170,3 +170,9 @@ TIPO_COMPROBANTE = [
 	("EGRESO DE CAJA","EGRESO DE CAJA"),
 	("INGRESO DE CAJA","INGRESO DE CAJA"),
 ]
+
+TIPO_NUMERACION = [
+	(1, 'Manual'),
+	(2, 'Automática Sistema'),
+	(3, 'Automática ARCA'),
+]
