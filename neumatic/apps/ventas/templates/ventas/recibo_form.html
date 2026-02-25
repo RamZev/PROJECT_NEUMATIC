@@ -420,7 +420,7 @@
                                     
                                     <div>
                                         {{ form.total_retenciones|formato_es_ar }}
-                                        <span class="formatted-number">{{ form.total_retenciones.value|default:"0.00" }}</span>
+                                        {% comment %} <span class="formatted-number">{{ form.total_retenciones.value|default:"0.00" }}</span> {% endcomment %}
                                     </div>
                                 </div>
                                 <div class="col-md-2">
@@ -429,7 +429,7 @@
                                     </label>
                                     <div>
                                         {{ form.efectivo_recibo }}
-                                        <span class="formatted-number">{{ form.efectivo_recibo.value|default:"0.00" }}</span>
+                                        {% comment %} <span class="formatted-number">{{ form.efectivo_recibo.value|default:"0.00" }}</span> {% endcomment %}
                                     </div>
                                 </div>
                                 <div class="col-md-2">
@@ -438,7 +438,7 @@
                                     </label>
                                     <div>
                                         {{ form.total_depositos }}
-                                        <span class="formatted-number">{{ form.total_depositos.value|default:"0.00" }}</span>
+                                        {% comment %} <span class="formatted-number">{{ form.total_depositos.value|default:"0.00" }}</span> {% endcomment %}
                                     </div>
                                 </div>
                                 <div class="col-md-2">
@@ -447,7 +447,7 @@
                                     </label>
                                     <div>
                                         {{ form.total_tarjetas }}
-                                        <span class="formatted-number">{{ form.total_tarjetas.value|default:"0.00" }}</span>
+                                        {% comment %} <span class="formatted-number">{{ form.total_tarjetas.value|default:"0.00" }}</span> {% endcomment %}
                                     </div>
                                 </div>
                                 <div class="col-md-2">
@@ -456,7 +456,7 @@
                                     </label>
                                     <div>
                                         {{ form.total_cheques }}
-                                        <span class="formatted-number">{{ form.total_cheques.value|default:"0.00" }}</span>
+                                        {% comment %} <span class="formatted-number">{{ form.total_cheques.value|default:"0.00" }}</span> {% endcomment %}
                                     </div>
                                 </div>
                                 <div class="col-md-2">
@@ -465,7 +465,7 @@
                                     </label>
                                     <div>
                                         {{ form.total_formas_pago }}
-                                        <span class="formatted-number">{{ form.total_formas_pago.value|default:"0.00" }}</span>
+                                        {% comment %} <span class="formatted-number">{{ form.total_formas_pago.value|default:"0.00" }}</span> {% endcomment %}
                                     </div>
                                 </div>
                             </div>
@@ -477,7 +477,7 @@
                                     </label>
                                     <div>
                                         {{ form.total }}
-                                        <span class="formatted-number">{{ form.total.value|default:"0.00" }}</span>
+                                        {% comment %} <span class="formatted-number">{{ form.total.value|default:"0.00" }}</span> {% endcomment %}
                                     </div>
                                 </div>
 
@@ -487,7 +487,7 @@
                                     </label>
                                     <div>
                                         {{ form.total_cobrado }}
-                                        <span class="formatted-number">{{ form.total_cobrado.value|default:"0.00" }}</span>
+                                        {% comment %} <span class="formatted-number">{{ form.total_cobrado.value|default:"0.00" }}</span> {% endcomment %}
                                     </div>
                                 </div>
                                 
@@ -497,7 +497,7 @@
                                     </label>
                                     <div>
                                         {{ form.resto_cobrar }}
-                                        <span class="formatted-number">{{ form.resto_cobrar.value|default:"0.00" }}</span>
+                                        {% comment %} <span class="formatted-number">{{ form.resto_cobrar.value|default:"0.00" }}</span> {% endcomment %}
                                     </div>
                                 </div>
                             </div>
