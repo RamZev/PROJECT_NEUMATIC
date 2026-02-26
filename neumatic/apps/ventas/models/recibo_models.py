@@ -2,7 +2,7 @@
 from django.db import models
 
 from apps.maestros.models.base_gen_models import ModeloBaseGenerico
-from apps.maestros.models.base_models import(
+from apps.maestros.models.base_models import (
 	Banco,
 	CuentaBanco,
 	ConceptoBanco,
@@ -10,7 +10,6 @@ from apps.maestros.models.base_models import(
 	CodigoRetencion
 )
 from .factura_models import Factura
-from entorno.constantes_base import ESTATUS_GEN, CONDICION_VENTA
 
 
 #-- Detalle del Recibo (I).

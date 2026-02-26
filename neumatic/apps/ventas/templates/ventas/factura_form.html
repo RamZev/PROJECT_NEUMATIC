@@ -560,7 +560,8 @@
                                                                         {% if is_edit %}Actualizar{% else %}Guardar{% endif %}
                                                                         <i class="bi bi-floppy"></i>
                                                                     </button>
-                                                                    <a href="{% url 'factura_list' %}" class="btn btn-outline-secondary btn-sm">
+                                                                    {% comment %} <a href="{% url 'factura_list' %}" class="btn btn-outline-secondary btn-sm"> {% endcomment %}
+                                                                    <a href="{% url list_view_name %}" class="btn btn-outline-secondary btn-sm">  <!-- Retorna a la lista de origen -->
                                                                         Cancelar
                                                                         <i class="bi bi-x-circle"></i>
                                                                     </a>
