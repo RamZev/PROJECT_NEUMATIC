@@ -457,10 +457,9 @@ class FacturaCreateView(MaestroDetalleCreateView):
 				# Manejar la numeración según el tipo
 				if tipo_numeracion == 'electronica':
 					#------------------------------------------->
-					# Facturación Electrónica con ARCA - SOLICITUD DE CAE COMPLETA
-					from datetime import datetime, timedelta
+					# Facturación Electrónica con ARCA - OBTENER NÚMERO Y GENERAR XML
+					
 					from pathlib import Path
-					import time
 					
 					# Obtener token y sign
 					token, sign, expiration = self.obtener_token_afiparca()
@@ -479,267 +478,196 @@ class FacturaCreateView(MaestroDetalleCreateView):
 					pto_vta = f"{punto_venta_entero:04d}"  # Para AFIP: 4 dígitos con ceros (Ej: "0022")
 					cbte_tipo = comprobante_afip
 
-					# Crear facturador
+					# Obtener el próximo número de ARCA
 					arca = FacturadorARCA(empresa=empresa)
+					proximo_numero, ultimo_numero = arca.obtener_proximo_numero(
+						punto_venta_entero,  # Usar el valor entero (sin ceros)
+						int(cbte_tipo), 
+						token, 
+						sign, 
+						empresa.cuit
+					)
 					
-					# ===== BUCLE DE REINTENTOS (hasta 4 veces para error 10016) =====
-					cae_obtenido = False
-					for intento in range(4):
-						if intento > 0:
-							print(f"🔄 Reintento #{intento + 1} por error 10016")
-						
-						# Obtener el próximo número de ARCA
-						proximo_numero, ultimo_numero = arca.obtener_proximo_numero(
-							punto_venta_entero,
-							int(cbte_tipo), 
-							token, 
-							sign, 
-							empresa.cuit
-						)
-						
-						# ===== FORMAR EL NÚMERO DE COMPROBANTE PARA FACTURA =====
-						# Formato: 2 dígitos (punto de venta) + 8 dígitos (número ARCA con ceros)
-						pv_2d = f"{punto_venta_entero:02d}"          # Ej: "22"
-						num_8d = f"{proximo_numero:08d}"             # Ej: "00000003"
-						nuevo_numero = f"{pv_2d}{num_8d}"             # Ej: "2200000003"
-						
-						print(f"✅ Número obtenido de ARCA: {proximo_numero}")
-						print(f"✅ Número formado para Factura: {nuevo_numero}")
-						
-						# ===== PARA EL XML DE ARCA, USAR NÚMERO COMO ENTERO =====
-						cbte_desde = str(proximo_numero)  # Ej: "3"
-						cbte_hasta = cbte_desde            # Ej: "3"
-						
-						# FECAEDetRequest
-						concepto = 3
+					# ===== FORMAR EL NÚMERO DE COMPROBANTE PARA FACTURA =====
+					# Formato: 2 dígitos (punto de venta) + 8 dígitos (número ARCA con ceros)
+					pv_2d = f"{punto_venta_entero:02d}"          # Ej: "22"
+					num_8d = f"{proximo_numero:08d}"             # Ej: "00245433"
+					nuevo_numero = f"{pv_2d}{num_8d}"             # Ej: "2200245433"
+					
+					print(f"✅ Número obtenido de ARCA: {proximo_numero}")
+					print(f"✅ Punto de venta: {punto_venta_entero}")
+					print(f"✅ Número formado para Factura: {nuevo_numero}")
+					# ========================================================
 
-						cliente_obj = form.cleaned_data['id_cliente']
-						doc_tipo = cliente_obj.id_tipo_documento_identidad.ws_afip
-						doc_nro = cliente_obj.cuit
-						
-						fecha_comprobante = form.cleaned_data['fecha_comprobante']
-						cbte_fch = fecha_comprobante.strftime('%Y%m%d')
-						
-						# Importes generales
-						imp_total = form.cleaned_data['total']
-						imp_tot_conc = form.cleaned_data['exento']
-						imp_neto = form.cleaned_data['gravado']
-						imp_op_ex = '0.00'
-						imp_trib = '0.00'
-						imp_iva = form.cleaned_data['iva']
+					# ===== PARA EL XML DE ARCA, USAR NÚMERO COMO ENTERO =====
+					cbte_desde = str(proximo_numero)  # Ej: "54873"
+					cbte_hasta = cbte_desde            # Ej: "54873"
+					# ========================================================
+					
+					# FECAEDetRequest
+					concepto = 3
 
-						# Fechas de Servicio y vencimiento
-						fecha_vto = fecha_comprobante + timedelta(days=30)
-						fch_vto_pago = fecha_vto.strftime('%Y%m%d')
-						
-						# Moneda, tipo de cambio y forma de pago
-						mon_id = 'PES'
-						mon_cotiz = '1.000'
-						can_mis_mon_ext = 'N'
+					cliente_obj = form.cleaned_data['id_cliente']
+					doc_tipo = cliente_obj.id_tipo_documento_identidad.ws_afip
+					doc_nro = cliente_obj.cuit
+					
+					fecha_comprobante = form.cleaned_data['fecha_comprobante']
+					cbte_fch = fecha_comprobante.strftime('%Y%m%d')
+					
+					# Importes generales
+					imp_total = form.cleaned_data['total']
+					imp_tot_conc = form.cleaned_data['exento']
+					imp_neto = form.cleaned_data['gravado']
+					imp_op_ex = '0.00'
+					imp_trib = '0.00'
+					imp_iva = form.cleaned_data['iva']
 
-						# Condición de IVA del receptor
-						condicion_iva_receptor_id = cliente_obj.id_tipo_iva.codigo_afip_responsable
+					# Fechas de Servicio y vencimiento
+					fecha_vto = fecha_comprobante + timedelta(days=30)
+					fch_vto_pago = fecha_vto.strftime('%Y%m%d')
+					
+					# Moneda, tipo de cambio y forma de pago
+					mon_id = 'PES'
+					mon_cotiz = '1.000'
+					can_mis_mon_ext = 'N'
 
-						# Diccionario del IVA
-						alicuotas = AlicuotaIva.objects.filter(
-							estatus_alicuota_iva=True
-						).values('codigo_alicuota', 'alicuota_iva')
-						
-						diccionario_alicuotas = {}
-						for alicuota in alicuotas:
-							try:
-								codigo = int(alicuota['codigo_alicuota'])
-								diccionario_alicuotas[codigo] = alicuota['alicuota_iva']
-							except (ValueError, TypeError):
-								continue
+					# Condición de IVA del receptor
+					condicion_iva_receptor_id = cliente_obj.id_tipo_iva.codigo_afip_responsable
 
-						mapeo_porcentaje_a_codigo = {}
-						for codigo, porcentaje in diccionario_alicuotas.items():
-							mapeo_porcentaje_a_codigo[float(porcentaje)] = codigo
+					# Diccionario del IVA
+					alicuotas = AlicuotaIva.objects.filter(
+						estatus_alicuota_iva=True
+					).values('codigo_alicuota', 'alicuota_iva')
+					
+					diccionario_alicuotas = {}
+					for alicuota in alicuotas:
+						try:
+							codigo = int(alicuota['codigo_alicuota'])
+							diccionario_alicuotas[codigo] = alicuota['alicuota_iva']
+						except (ValueError, TypeError):
+							continue
+
+					mapeo_porcentaje_a_codigo = {}
+					for codigo, porcentaje in diccionario_alicuotas.items():
+						mapeo_porcentaje_a_codigo[float(porcentaje)] = codigo
+					
+					acumuladores = {}
+					
+					for form_detalle in formset_detalle:
+						detalle_data = form_detalle.cleaned_data
 						
-						acumuladores = {}
+						porcentaje_iva = float(detalle_data.get('alic_iva', 0))
+						gravado = float(detalle_data.get('gravado', 0) or 0)
+						iva = float(detalle_data.get('iva', 0) or 0)
 						
-						for form_detalle in formset_detalle:
-							detalle_data = form_detalle.cleaned_data
+						codigo_afip = None
+						for porcentaje, codigo in mapeo_porcentaje_a_codigo.items():
+							if abs(porcentaje - porcentaje_iva) < 0.1:
+								codigo_afip = codigo
+								break
+						
+						if codigo_afip is not None:
+							if codigo_afip not in acumuladores:
+								acumuladores[codigo_afip] = {'iva_base_imp': 0.0, 'iva_importe': 0.0}
 							
-							porcentaje_iva = float(detalle_data.get('alic_iva', 0))
-							gravado = float(detalle_data.get('gravado', 0) or 0)
-							iva = float(detalle_data.get('iva', 0) or 0)
-							
-							codigo_afip = None
-							for porcentaje, codigo in mapeo_porcentaje_a_codigo.items():
-								if abs(porcentaje - porcentaje_iva) < 0.1:
-									codigo_afip = codigo
-									break
-							
-							if codigo_afip is not None:
-								if codigo_afip not in acumuladores:
-									acumuladores[codigo_afip] = {'iva_base_imp': 0.0, 'iva_importe': 0.0}
-								
-								acumuladores[codigo_afip]['iva_base_imp'] += gravado
-								acumuladores[codigo_afip]['iva_importe'] += iva
-						
-						datos_impuestos = []
-						for codigo, montos in acumuladores.items():
-							datos_impuestos.append({
-								'iva_id': str(codigo),
-								'iva_base_imp': f"{montos['iva_base_imp']:.2f}",
-								'iva_importe': f"{montos['iva_importe']:.2f}"
-							})
+							acumuladores[codigo_afip]['iva_base_imp'] += gravado
+							acumuladores[codigo_afip]['iva_importe'] += iva
+					
+					datos_impuestos = []
+					for codigo, montos in acumuladores.items():
+						datos_impuestos.append({
+							'iva_id': str(codigo),
+							'iva_base_imp': f"{montos['iva_base_imp']:.2f}",
+							'iva_importe': f"{montos['iva_importe']:.2f}"
+						})
 
-						# ===== VERIFICAR COHERENCIA DE VALORES =====
-						# Calcular totales desde los detalles
-						total_gravado_calc = sum(float(item['iva_base_imp']) for item in datos_impuestos)
-						total_iva_calc = sum(float(item['iva_importe']) for item in datos_impuestos)
-						
-						# Usar los valores calculados (no los del formulario)
-						# Convertir imp_tot_conc a float para la suma
-						imp_tot_conc_float = float(imp_tot_conc)
-						
-						# Usar los valores calculados
-						imp_neto = total_gravado_calc
-						imp_iva = total_iva_calc
-						imp_total = imp_neto + imp_iva + imp_tot_conc_float
-						
-						print(f"✅ Valores recalculados - Neto: {imp_neto:.2f}, IVA: {imp_iva:.2f}, Total: {imp_total:.2f}")
-						# =============================================
+					# Datos de cabecera del comprobante
+					datos_comprobante = {
+						'cant_reg': cant_reg,
+						'pto_vta': pto_vta,  # Para AFIP: 4 dígitos
+						'cbte_tipo': cbte_tipo,
+						'concepto': concepto,
+						'doc_tipo': doc_tipo,
+						'doc_nro': doc_nro,
+						'cbte_desde': cbte_desde,  # String sin formato: "54873"
+						'cbte_hasta': cbte_hasta,  # String sin formato: "54873"
+						'cbte_fch': cbte_fch,
+						'imp_total': imp_total,
+						'imp_tot_conc': imp_tot_conc,
+						'imp_neto': imp_neto,
+						'imp_op_ex': imp_op_ex,
+						'imp_trib': imp_trib,
+						'imp_iva': imp_iva,
+						'fch_serv_desde': cbte_fch,
+						'fch_serv_hasta': cbte_fch,
+						'fch_vto_pago': fch_vto_pago,
+						'mon_id': mon_id,
+						'mon_cotiz': mon_cotiz,
+						'can_mis_mon_ext': can_mis_mon_ext,
+						'condicion_iva_receptor_id': condicion_iva_receptor_id
+					}
 
-						# Datos de cabecera del comprobante
-						datos_comprobante = {
-							'cant_reg': cant_reg,
-							'pto_vta': pto_vta,
-							'cbte_tipo': cbte_tipo,
-							'concepto': concepto,
-							'doc_tipo': doc_tipo,
-							'doc_nro': doc_nro,
-							'cbte_desde': cbte_desde,
-							'cbte_hasta': cbte_hasta,
-							'cbte_fch': cbte_fch,
-							'imp_total': imp_total,
-							'imp_tot_conc': imp_tot_conc,
-							'imp_neto': imp_neto,
-							'imp_op_ex': imp_op_ex,
-							'imp_trib': imp_trib,
-							'imp_iva': imp_iva,
-							'fch_serv_desde': cbte_fch,
-							'fch_serv_hasta': cbte_fch,
-							'fch_vto_pago': fch_vto_pago,
-							'mon_id': mon_id,
-							'mon_cotiz': mon_cotiz,
-							'can_mis_mon_ext': can_mis_mon_ext,
-							'condicion_iva_receptor_id': condicion_iva_receptor_id
-						}
+					# ojo cambiar por las referencias
+					datos_cliente = {
+						'nombre': 'CLIENTE GENERICO',
+						'domicilio': 'DIRECCION GENERICA 123',
+						'localidad': 'CIUDAD',
+						'cp': '1000'
+					}
 
-						# ===== DATOS DEL CLIENTE (desde el modelo) =====
-						datos_cliente = {
-							'nombre': cliente_obj.nombre_cliente or cliente_obj.nombre_fantasia or 'CLIENTE GENERICO',
-							'domicilio': cliente_obj.domicilio_cliente or 'DIRECCION GENERICA 123',
-							'localidad': cliente_obj.id_localidad.nombre_localidad if cliente_obj.id_localidad else 'CIUDAD',
-							'cp': cliente_obj.codigo_postal or '1000'
-						}
+					# Generar el XML
+					xml_content = self.generar_xml_afiparca(
+						datos_auth={
+							'token': token,
+							'sign': sign,
+							'cuit': empresa.cuit
+						},
+						comprobante=datos_comprobante,
+						cliente=datos_cliente,
+						impuestos=datos_impuestos
+					)
 
-						# Generar el XML
-						xml_content = self.generar_xml_afiparca(
-							auth={
-								'token': token,
-								'sign': sign,
-								'cuit': str(empresa.cuit)
-							},
-							comprobante=datos_comprobante,
-							cliente=datos_cliente,
-							impuestos=datos_impuestos
-						)
+					# Guardar archivo XML
+					BASE_DIR = Path(__file__).resolve().parent.parent.parent.parent
+					xml_dir = BASE_DIR / "xml_arca"
+					xml_dir.mkdir(exist_ok=True, parents=True)
 
-						# ===== ENVIAR SOLICITUD DE CAE A ARCA =====
-						print(f"\n🚀 ENVIANDO SOLICITUD DE CAE A ARCA ({arca.entorno.upper()})...")
-						respuesta = arca.enviar_solicitud_cae(xml_content)
-						print(f"✅ Respuesta recibida")
-						
-						# Procesar respuesta usando el método de arca
-						resultado = arca.procesar_respuesta_cae(respuesta)
-						
-						# ===== GUARDAR XML DE RESPUESTA =====
-						BASE_DIR = Path(__file__).resolve().parent.parent.parent.parent
-						xml_dir = BASE_DIR / "xml_afiparca"
-						xml_dir.mkdir(exist_ok=True, parents=True)
+					archivo_xml = f"{cbte_tipo}_{pto_vta}_{proximo_numero:08d}_Solicitud.xml"
+					xml_path = xml_dir / archivo_xml
 
-						# Guardar XML de solicitud
-						archivo_xml = f"{cbte_tipo}_{pto_vta}_{proximo_numero:08d}_Solicitud.xml"
-						xml_path = xml_dir / archivo_xml
-						
+					try:
 						with open(xml_path, 'w', encoding='utf-8') as f:
 							f.write(xml_content)
-						print(f"✅ XML Solicitud guardado en: {xml_path.resolve()}")
-						
-						# Guardar XML de respuesta formateado
-						archivo_respuesta = xml_dir / f"{cbte_tipo}_{pto_vta}_{proximo_numero:08d}_Respuesta.xml"
-						with open(archivo_respuesta, 'w', encoding='utf-8') as f:
-							f.write(arca.formatear_xml(respuesta))
-						print(f"✅ XML Respuesta guardado en: {archivo_respuesta}")
-						
-						# ===== VERIFICAR RESULTADO Y ACTUALIZAR CAMPOS =====
-						if resultado['aprobado']:
-							print(f"✅ CAE OBTENIDO: {resultado['cae']}")
-							print(f"📅 Vencimiento: {resultado['vencimiento']}")
-							
-							# ===== ASIGNAR VALORES AL MODELO FACTURA =====
-							form.instance.numero_comprobante = nuevo_numero  # Formato 10 dígitos
-							form.instance.cae = int(resultado['cae'])        # CAE como entero
-							form.instance.cae_vto = datetime.strptime(resultado['vencimiento'], '%Y%m%d').date()
-							# ==============================================
-							
-							if resultado['eventos']:
-								print("\n📢 Eventos/Observaciones:")
-								for evento in resultado['eventos']:
-									print(f"   • {evento}")
-							
-							cae_obtenido = True
-							break  # Salir del bucle de reintentos
-						
-						# Si hay error 10016, reintentar
-						if any("10016" in error for error in resultado.get('errores', [])):
-							print(f"⚠️ Error 10016 detectado, reintentando...")
-							if intento < 3:
-								espera = 0.5 * (intento + 1)
-								print(f"⏳ Esperando {espera}s...")
-								time.sleep(espera)
-								continue
-						
-						# Otros errores - mostrar y salir
-						print("\n❌ ERRORES ARCA:")
-						for error in resultado.get('errores', []):
-							print(f"   • {error}")
-							form.add_error(None, f"Error ARCA: {error}")
-						
-						return self.form_invalid(form)
-					
-					# ===== FIN BUCLE DE REINTENTOS =====
-					
-					if not cae_obtenido:
-						form.add_error(None, "No se pudo obtener CAE después de 4 intentos")
-						return self.form_invalid(form)
+						print(f"✅ Archivo XML guardado en: {xml_path.resolve()}")
+					except Exception as e:
+						print(f"❌ Error al guardar el archivo: {e}")
 
-					# ===== ACTUALIZAR MODELO NUMERO (OPCIONAL) =====
-					# Actualizar el modelo Numero con el número obtenido de ARCA
-					'''
+					print(f"✅ XML generado con número ARCA: {proximo_numero}")
+
+					# Actualizar el modelo Numero con el número obtenido de ARCA (guardamos el número de 8 dígitos)
 					numero_obj, created = Numero.objects.select_for_update(nowait=True).get_or_create(
 						id_sucursal=sucursal,
 						id_punto_venta=punto_venta,
 						comprobante=comprobante_afip,
 						letra=letra,
-						defaults={'numero': proximo_numero}
+						defaults={'numero': proximo_numero}  # Guardamos el número de 8 dígitos
 					)
 					
+					if not created:
+						print("El número No fue actualizado")
+
+					# Si ya existe, actualizar solo si el número de ARCA es mayor
 					if not created and proximo_numero > numero_obj.numero:
 						Numero.objects.filter(pk=numero_obj.pk).update(numero=proximo_numero)
+					
+					# Validar que el número no sea menor que el actual
 					elif not created and proximo_numero <= numero_obj.numero:
 						form.add_error('numero_comprobante', 
 									f'Error: El número {proximo_numero} debe ser mayor al último usado ({numero_obj.numero})')
 						return self.form_invalid(form)
 
-					print(f"✅ Número {proximo_numero} registrado en modelo Numero")
-					'''
-					#------------------------------------------->				
+					#------------------------------------------->
+				
 				elif tipo_numeracion == 'manual':
 					print("tipo_numeracion**:", tipo_numeracion)
 					nuevo_numero = numero_plantilla
@@ -1096,14 +1024,6 @@ class FacturaCreateView(MaestroDetalleCreateView):
 		envelope.set("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance")
 		envelope.set("xmlns:xsd", "http://www.w3.org/2001/XMLSchema")
 		envelope.set("soap:encodingStyle", SOAP_ENV + "encoding/")
-
-		# === Envelope con namespaces correctos ===
-		# envelope = Element(f"{{{SOAP_ENV}}}Envelope")
-		# envelope.set("xmlns:ns0", SOAP_ENV)  # Cambiado de soap a ns0
-		# envelope.set("xmlns:soap", SOAP_ENV)
-		# envelope.set("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance")
-		# envelope.set("xmlns:xsd", "http://www.w3.org/2001/XMLSchema")
-		# envelope.set("soap:encodingStyle", SOAP_ENV + "encoding/")
 
 		# Header
 		header = SubElement(envelope, "soap:Header")

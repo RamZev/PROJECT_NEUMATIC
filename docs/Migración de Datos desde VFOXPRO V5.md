@@ -338,6 +338,8 @@ actualiza_cliente.sql
 
 **actualiza_ventas_null.sql**
 
+**actualiza_comprobante_venta.sql**
+
 **Al finalizar las migraciones:**
 
 1. Ejecute la actualización del superusuario (OBLIGATORIO)
