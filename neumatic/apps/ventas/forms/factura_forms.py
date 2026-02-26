@@ -185,16 +185,19 @@ class FacturaForm(forms.ModelForm):
             self.fields['id_comprobante_venta'].queryset = ComprobanteVenta.objects.filter(
                 manual=True,
                 recibo=False,
+                estatus_comprobante_venta=True  # Solo comprobantes activos
             ).order_by('nombre_comprobante_venta')
 
             print("Tipo de comprobante: Manual***")
         elif tipo_comprobante == 'presupuesto':
             self.fields['id_comprobante_venta'].queryset = ComprobanteVenta.objects.filter(
-                presupuesto=True
+                presupuesto=True,
+                estatus_comprobante_venta=True  # Solo comprobantes activos
             ).order_by('nombre_comprobante_venta')
         elif tipo_comprobante == 'interno':
             self.fields['id_comprobante_venta'].queryset = ComprobanteVenta.objects.filter(
-                interno=True
+                interno=True,
+                estatus_comprobante_venta=True  # Solo comprobantes activos
             ).order_by('nombre_comprobante_venta')
 
     def clean_discrimina_iva(self):

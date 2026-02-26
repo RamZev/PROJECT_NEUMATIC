@@ -7,9 +7,6 @@ from django.db import DatabaseError
 from django.utils import timezone
 from django.utils.safestring import mark_safe
 
-from datetime import datetime, timedelta
-import time
-
 import json
 
 from .msdt_views_generics import *
@@ -457,289 +454,231 @@ class FacturaCreateView(MaestroDetalleCreateView):
 				# Manejar la numeración según el tipo
 				if tipo_numeracion == 'electronica':
 					#------------------------------------------->
-					# Facturación Electrónica con ARCA - SOLICITUD DE CAE COMPLETA
+					# Facturación Electrónica
 					from datetime import datetime, timedelta
-					from pathlib import Path
-					import time
 					
-					# Obtener token y sign
+					# Obtener token, sign y expiration
 					token, sign, expiration = self.obtener_token_afiparca()
 
-					# Obtener empresa
-					empresa = Empresa.objects.first()
-					
+					# Datos de autenticación por defecto
+					datos_auth= {
+						'token': token,
+						'sign': sign,
+						'cuit': '30692402363'
+					}
+
 					# FeCabReq
 					cant_reg = 1
 					punto_venta_obj = form.cleaned_data['id_punto_venta']
-					punto_venta_valor = punto_venta_obj.punto_venta  # Ej: "00022"
-					
-					# Obtener el valor entero del punto de venta (sin ceros a la izquierda)
-					punto_venta_entero = int(punto_venta_valor)  # Ej: 22
-					
-					pto_vta = f"{punto_venta_entero:04d}"  # Para AFIP: 4 dígitos con ceros (Ej: "0022")
+					punto_venta_valor = punto_venta_obj.punto_venta
+					pto_vta = f"{int(punto_venta_valor):04d}"
 					cbte_tipo = comprobante_afip
 
-					# Crear facturador
-					arca = FacturadorARCA(empresa=empresa)
+					# FECAEDetRequest
+					concepto = 3
+
+					cliente_obj = form.cleaned_data['id_cliente']
+					doc_tipo = cliente_obj.id_tipo_documento_identidad.ws_afip
+					doc_nro = cliente_obj.cuit
+					# Números que deben ser btenidos por el ws
+					# Temporalmente se usa el que está en la plantilla
+					cbte_desde = str(numero_plantilla)[-8:]
+					cbte_hasta = cbte_desde
 					
-					# ===== BUCLE DE REINTENTOS (hasta 4 veces para error 10016) =====
-					cae_obtenido = False
-					for intento in range(4):
-						if intento > 0:
-							print(f"🔄 Reintento #{intento + 1} por error 10016")
-						
-						# Obtener el próximo número de ARCA
-						proximo_numero, ultimo_numero = arca.obtener_proximo_numero(
-							punto_venta_entero,
-							int(cbte_tipo), 
-							token, 
-							sign, 
-							empresa.cuit
-						)
-						
-						# ===== FORMAR EL NÚMERO DE COMPROBANTE PARA FACTURA =====
-						# Formato: 2 dígitos (punto de venta) + 8 dígitos (número ARCA con ceros)
-						pv_2d = f"{punto_venta_entero:02d}"          # Ej: "22"
-						num_8d = f"{proximo_numero:08d}"             # Ej: "00000003"
-						nuevo_numero = f"{pv_2d}{num_8d}"             # Ej: "2200000003"
-						
-						print(f"✅ Número obtenido de ARCA: {proximo_numero}")
-						print(f"✅ Número formado para Factura: {nuevo_numero}")
-						
-						# ===== PARA EL XML DE ARCA, USAR NÚMERO COMO ENTERO =====
-						cbte_desde = str(proximo_numero)  # Ej: "3"
-						cbte_hasta = cbte_desde            # Ej: "3"
-						
-						# FECAEDetRequest
-						concepto = 3
+					fecha_comprobante = form.cleaned_data['fecha_comprobante']
+					# Formatear fecha comprobante
+					cbte_fch = fecha_comprobante.strftime('%Y%m%d')
+					
+					# Importes generales
+					imp_total = form.cleaned_data['total']
+					imp_tot_conc = form.cleaned_data['exento']
+					imp_neto = form.cleaned_data['gravado']
+					imp_op_ex = '0.00'
+					imp_trib = '0.00'
+					imp_iva = form.cleaned_data['iva']
 
-						cliente_obj = form.cleaned_data['id_cliente']
-						doc_tipo = cliente_obj.id_tipo_documento_identidad.ws_afip
-						doc_nro = cliente_obj.cuit
-						
-						fecha_comprobante = form.cleaned_data['fecha_comprobante']
-						cbte_fch = fecha_comprobante.strftime('%Y%m%d')
-						
-						# Importes generales
-						imp_total = form.cleaned_data['total']
-						imp_tot_conc = form.cleaned_data['exento']
-						imp_neto = form.cleaned_data['gravado']
-						imp_op_ex = '0.00'
-						imp_trib = '0.00'
-						imp_iva = form.cleaned_data['iva']
+					# Fechas de Servicio y vencimiento
+					fecha_vto = fecha_comprobante + timedelta(days=30)
+					fch_vto_pago = fecha_vto.strftime('%Y%m%d')
+					
+					# Moneda, tipo de cambio y forma de pago
+					mon_id = 'PES'
+					mon_cotiz = '1.000'
+					can_mis_mon_ext = 'N'
 
-						# Fechas de Servicio y vencimiento
-						fecha_vto = fecha_comprobante + timedelta(days=30)
-						fch_vto_pago = fecha_vto.strftime('%Y%m%d')
-						
-						# Moneda, tipo de cambio y forma de pago
-						mon_id = 'PES'
-						mon_cotiz = '1.000'
-						can_mis_mon_ext = 'N'
+					# Condición de IVA del receptor
+					condicion_iva_receptor_id = cliente_obj.id_tipo_iva.codigo_afip_responsable
 
-						# Condición de IVA del receptor
-						condicion_iva_receptor_id = cliente_obj.id_tipo_iva.codigo_afip_responsable
+					# Diccionario del IVA
+					# Obtener todas las alícuotas activas
+					alicuotas = AlicuotaIva.objects.filter(
+						estatus_alicuota_iva=True
+					).values('codigo_alicuota', 'alicuota_iva')
+					
+					# Crear diccionario {código: porcentaje}
+					diccionario_alicuotas = {}
+					for alicuota in alicuotas:
+						try:
+							codigo = int(alicuota['codigo_alicuota'])
+							diccionario_alicuotas[codigo] = alicuota['alicuota_iva']
+						except (ValueError, TypeError):
+							# Saltar códigos no válidos
+							continue
 
-						# Diccionario del IVA
-						alicuotas = AlicuotaIva.objects.filter(
-							estatus_alicuota_iva=True
-						).values('codigo_alicuota', 'alicuota_iva')
+					## print("diccionario_alicuotas", diccionario_alicuotas)
+					
+					# Recorrer cada alícuota del diccionario
+					datos_impuestos = []
+    
+					# Crear diccionario de mapeo: porcentaje -> código AFIP
+					mapeo_porcentaje_a_codigo = {}
+					for codigo, porcentaje in diccionario_alicuotas.items():
+						# Convertir Decimal a float para comparación
+						mapeo_porcentaje_a_codigo[float(porcentaje)] = codigo
+					
+					print("Mapeo porcentaje->código:", mapeo_porcentaje_a_codigo)
+					
+					# Diccionario para acumular por código AFIP
+					acumuladores = {}
+					
+					# Recorrer todos los items del detalle
+					for form_detalle in formset_detalle:
+						detalle_data = form_detalle.cleaned_data
 						
-						diccionario_alicuotas = {}
-						for alicuota in alicuotas:
-							try:
-								codigo = int(alicuota['codigo_alicuota'])
-								diccionario_alicuotas[codigo] = alicuota['alicuota_iva']
-							except (ValueError, TypeError):
-								continue
-
-						mapeo_porcentaje_a_codigo = {}
-						for codigo, porcentaje in diccionario_alicuotas.items():
-							mapeo_porcentaje_a_codigo[float(porcentaje)] = codigo
+						# Obtener valores del item
+						porcentaje_iva = float(detalle_data.get('alic_iva', 0))
+						gravado = float(detalle_data.get('gravado', 0) or 0)
+						iva = float(detalle_data.get('iva', 0) or 0)
 						
-						acumuladores = {}
+						print(f"Procesando: {porcentaje_iva}% -> gravado: {gravado}, iva: {iva}")
 						
-						for form_detalle in formset_detalle:
-							detalle_data = form_detalle.cleaned_data
+						# Encontrar el código AFIP que corresponde a este porcentaje
+						codigo_afip = None
+						for porcentaje, codigo in mapeo_porcentaje_a_codigo.items():
+							# Comparar con tolerancia para decimales
+							if abs(porcentaje - porcentaje_iva) < 0.1:
+								codigo_afip = codigo
+								break
+						
+						if codigo_afip is not None:
+							if codigo_afip not in acumuladores:
+								acumuladores[codigo_afip] = {'iva_base_imp': 0.0, 'iva_importe': 0.0}
 							
-							porcentaje_iva = float(detalle_data.get('alic_iva', 0))
-							gravado = float(detalle_data.get('gravado', 0) or 0)
-							iva = float(detalle_data.get('iva', 0) or 0)
-							
-							codigo_afip = None
-							for porcentaje, codigo in mapeo_porcentaje_a_codigo.items():
-								if abs(porcentaje - porcentaje_iva) < 0.1:
-									codigo_afip = codigo
-									break
-							
-							if codigo_afip is not None:
-								if codigo_afip not in acumuladores:
-									acumuladores[codigo_afip] = {'iva_base_imp': 0.0, 'iva_importe': 0.0}
-								
-								acumuladores[codigo_afip]['iva_base_imp'] += gravado
-								acumuladores[codigo_afip]['iva_importe'] += iva
-						
-						datos_impuestos = []
-						for codigo, montos in acumuladores.items():
-							datos_impuestos.append({
-								'iva_id': str(codigo),
-								'iva_base_imp': f"{montos['iva_base_imp']:.2f}",
-								'iva_importe': f"{montos['iva_importe']:.2f}"
-							})
+							acumuladores[codigo_afip]['iva_base_imp'] += gravado
+							acumuladores[codigo_afip]['iva_importe'] += iva
+					
+					# Convertir a la estructura final
+					for codigo, montos in acumuladores.items():
+						datos_impuestos.append({
+							'iva_id': str(codigo),
+							'iva_base_imp': f"{montos['iva_base_imp']:.2f}",
+							'iva_importe': f"{montos['iva_importe']:.2f}"
+						})
+					
+					print("Datos impuestos finales:", datos_impuestos)
 
-						# ===== VERIFICAR COHERENCIA DE VALORES =====
-						# Calcular totales desde los detalles
-						total_gravado_calc = sum(float(item['iva_base_imp']) for item in datos_impuestos)
-						total_iva_calc = sum(float(item['iva_importe']) for item in datos_impuestos)
-						
-						# Usar los valores calculados (no los del formulario)
-						# Convertir imp_tot_conc a float para la suma
-						imp_tot_conc_float = float(imp_tot_conc)
-						
-						# Usar los valores calculados
-						imp_neto = total_gravado_calc
-						imp_iva = total_iva_calc
-						imp_total = imp_neto + imp_iva + imp_tot_conc_float
-						
-						print(f"✅ Valores recalculados - Neto: {imp_neto:.2f}, IVA: {imp_iva:.2f}, Total: {imp_total:.2f}")
-						# =============================================
+					# Datos de cabecera del comprobante por defecto
+					datos_comprobante = {
+						'cant_reg': cant_reg,
+						'pto_vta': pto_vta,
+						'cbte_tipo': cbte_tipo,
+						'concepto': concepto,
+						'doc_tipo': doc_tipo,
+						'doc_nro': doc_nro,
+						'cbte_desde': cbte_desde,
+						'cbte_hasta': cbte_hasta,
+						'cbte_fch': cbte_fch,
+						'imp_total': imp_total,
+						'imp_tot_conc': imp_tot_conc,
+						'imp_neto': imp_neto,
+						'imp_op_ex': imp_op_ex,
+						'imp_trib': imp_trib,
+						'imp_iva': imp_iva,
+						'fch_serv_desde': cbte_fch,
+						'fch_serv_hasta': cbte_fch,
+						'fch_vto_pago': fch_vto_pago,
+						'mon_id': mon_id,
+						'mon_cotiz': mon_cotiz,
+						'can_mis_mon_ext': can_mis_mon_ext,
+						'condicion_iva_receptor_id': condicion_iva_receptor_id
+					}
 
-						# Datos de cabecera del comprobante
-						datos_comprobante = {
-							'cant_reg': cant_reg,
-							'pto_vta': pto_vta,
-							'cbte_tipo': cbte_tipo,
-							'concepto': concepto,
-							'doc_tipo': doc_tipo,
-							'doc_nro': doc_nro,
-							'cbte_desde': cbte_desde,
-							'cbte_hasta': cbte_hasta,
-							'cbte_fch': cbte_fch,
-							'imp_total': imp_total,
-							'imp_tot_conc': imp_tot_conc,
-							'imp_neto': imp_neto,
-							'imp_op_ex': imp_op_ex,
-							'imp_trib': imp_trib,
-							'imp_iva': imp_iva,
-							'fch_serv_desde': cbte_fch,
-							'fch_serv_hasta': cbte_fch,
-							'fch_vto_pago': fch_vto_pago,
-							'mon_id': mon_id,
-							'mon_cotiz': mon_cotiz,
-							'can_mis_mon_ext': can_mis_mon_ext,
-							'condicion_iva_receptor_id': condicion_iva_receptor_id
-						}
+					datos_cliente = {
+						'nombre': 'CLIENTE GENERICO',
+						'domicilio': 'DIRECCION GENERICA 123',
+						'localidad': 'CIUDAD',
+						'cp': '1000'
+					}
 
-						# ===== DATOS DEL CLIENTE (desde el modelo) =====
-						datos_cliente = {
-							'nombre': cliente_obj.nombre_cliente or cliente_obj.nombre_fantasia or 'CLIENTE GENERICO',
-							'domicilio': cliente_obj.domicilio_cliente or 'DIRECCION GENERICA 123',
-							'localidad': cliente_obj.id_localidad.nombre_localidad if cliente_obj.id_localidad else 'CIUDAD',
-							'cp': cliente_obj.codigo_postal or '1000'
-						}
+					# Si no se proporcionan impuestos, usar uno por defecto
+					# datos_impuestos = [{
+					# 		'iva_id': '5',
+					# 		'iva_base_imp': '82.64',
+					# 		'iva_importe': '17.36'
+					# 	}]
 
-						# Generar el XML
-						xml_content = self.generar_xml_afiparca(
-							auth={
-								'token': token,
-								'sign': sign,
-								'cuit': str(empresa.cuit)
-							},
-							comprobante=datos_comprobante,
-							cliente=datos_cliente,
-							impuestos=datos_impuestos
+					# Generar el XML
+					xml_content = self.generar_xml_afiparca(
+						datos_auth, 
+						datos_comprobante, 
+						datos_cliente,
+						datos_impuestos
 						)
 
-						# ===== ENVIAR SOLICITUD DE CAE A ARCA =====
-						print(f"\n🚀 ENVIANDO SOLICITUD DE CAE A ARCA ({arca.entorno.upper()})...")
-						respuesta = arca.enviar_solicitud_cae(xml_content)
-						print(f"✅ Respuesta recibida")
-						
-						# Procesar respuesta usando el método de arca
-						resultado = arca.procesar_respuesta_cae(respuesta)
-						
-						# ===== GUARDAR XML DE RESPUESTA =====
-						BASE_DIR = Path(__file__).resolve().parent.parent.parent.parent
-						xml_dir = BASE_DIR / "xml_afiparca"
-						xml_dir.mkdir(exist_ok=True, parents=True)
+					# Guardar en archivo prueba.xml
+					from pathlib import Path
 
-						# Guardar XML de solicitud
-						archivo_xml = f"{cbte_tipo}_{pto_vta}_{proximo_numero:08d}_Solicitud.xml"
-						xml_path = xml_dir / archivo_xml
-						
+					# Establecer el nombre del archivo
+					
+					nuevo_numero = str(numero_plantilla)[-8:]
+					archivo_xml = f"{comprobante_afip}_{pto_vta}_{nuevo_numero}_Solicitud.xml"
+					# print(archivo_xml)
+
+					# === Construir ruta: neumatic/xml_afiparca/prueba.xml ===
+					BASE_DIR = Path(__file__).resolve().parent.parent.parent.parent
+					xml_dir = BASE_DIR / "xml_afiparca"
+
+					# Asegurar que la carpeta exista
+					xml_dir.mkdir(exist_ok=True, parents=True)  # `parents=True` por si hay subcarpetas
+
+					xml_path = xml_dir / archivo_xml
+
+					try:
 						with open(xml_path, 'w', encoding='utf-8') as f:
 							f.write(xml_content)
-						print(f"✅ XML Solicitud guardado en: {xml_path.resolve()}")
-						
-						# Guardar XML de respuesta formateado
-						archivo_respuesta = xml_dir / f"{cbte_tipo}_{pto_vta}_{proximo_numero:08d}_Respuesta.xml"
-						with open(archivo_respuesta, 'w', encoding='utf-8') as f:
-							f.write(arca.formatear_xml(respuesta))
-						print(f"✅ XML Respuesta guardado en: {archivo_respuesta}")
-						
-						# ===== VERIFICAR RESULTADO Y ACTUALIZAR CAMPOS =====
-						if resultado['aprobado']:
-							print(f"✅ CAE OBTENIDO: {resultado['cae']}")
-							print(f"📅 Vencimiento: {resultado['vencimiento']}")
-							
-							# ===== ASIGNAR VALORES AL MODELO FACTURA =====
-							form.instance.numero_comprobante = nuevo_numero  # Formato 10 dígitos
-							form.instance.cae = int(resultado['cae'])        # CAE como entero
-							form.instance.cae_vto = datetime.strptime(resultado['vencimiento'], '%Y%m%d').date()
-							# ==============================================
-							
-							if resultado['eventos']:
-								print("\n📢 Eventos/Observaciones:")
-								for evento in resultado['eventos']:
-									print(f"   • {evento}")
-							
-							cae_obtenido = True
-							break  # Salir del bucle de reintentos
-						
-						# Si hay error 10016, reintentar
-						if any("10016" in error for error in resultado.get('errores', [])):
-							print(f"⚠️ Error 10016 detectado, reintentando...")
-							if intento < 3:
-								espera = 0.5 * (intento + 1)
-								print(f"⏳ Esperando {espera}s...")
-								time.sleep(espera)
-								continue
-						
-						# Otros errores - mostrar y salir
-						print("\n❌ ERRORES ARCA:")
-						for error in resultado.get('errores', []):
-							print(f"   • {error}")
-							form.add_error(None, f"Error ARCA: {error}")
-						
-						return self.form_invalid(form)
-					
-					# ===== FIN BUCLE DE REINTENTOS =====
-					
-					if not cae_obtenido:
-						form.add_error(None, "No se pudo obtener CAE después de 4 intentos")
-						return self.form_invalid(form)
+						print(f"✅ Archivo XML guardado en: {xml_path.resolve()}")
+					except Exception as e:
+						print(f"❌ Error al guardar el archivo: {e}")
 
-					# ===== ACTUALIZAR MODELO NUMERO (OPCIONAL) =====
-					# Actualizar el modelo Numero con el número obtenido de ARCA
-					'''
+					print(f"Archivo {archivo_xml} creado con éxito.")
+
+					#------------------------------------------->
+					
+					# Caso auxiliar: Usar el número proporcionado por el usuario
+					nuevo_numero = numero_plantilla
+					
+					# Actualizar el modelo Numero con este número (si es mayor al actual)
 					numero_obj, created = Numero.objects.select_for_update(nowait=True).get_or_create(
 						id_sucursal=sucursal,
 						id_punto_venta=punto_venta,
 						comprobante=comprobante_afip,
 						letra=letra,
-						defaults={'numero': proximo_numero}
+						defaults={'numero': numero_plantilla}  # Valor inicial
 					)
 					
-					if not created and proximo_numero > numero_obj.numero:
-						Numero.objects.filter(pk=numero_obj.pk).update(numero=proximo_numero)
-					elif not created and proximo_numero <= numero_obj.numero:
+					if not created:
+						print("Elnúmerto No fue actualizado")
+
+					# Si ya existe, actualizar solo si el número manual es mayor
+					if not created and numero_plantilla > numero_obj.numero:
+						Numero.objects.filter(pk=numero_obj.pk).update(numero=numero_plantilla)
+					
+					# Validar que el número manual no sea menor que el actual
+					elif not created and numero_plantilla <= numero_obj.numero:
 						form.add_error('numero_comprobante', 
-									f'Error: El número {proximo_numero} debe ser mayor al último usado ({numero_obj.numero})')
+									f'Error: El número {numero_plantilla} debe ser mayor al último usado ({numero_obj.numero})')
 						return self.form_invalid(form)
 
-					print(f"✅ Número {proximo_numero} registrado en modelo Numero")
-					'''
-					#------------------------------------------->				
 				elif tipo_numeracion == 'manual':
 					print("tipo_numeracion**:", tipo_numeracion)
 					nuevo_numero = numero_plantilla
@@ -1059,28 +998,108 @@ class FacturaCreateView(MaestroDetalleCreateView):
 		return kwargs
 
 	def obtener_token_afiparca(self):
-		"""
-		Obtiene token y sign de ARCA usando FacturadorARCA
-		"""
-		try:
-			# Obtener la empresa
-			empresa = Empresa.objects.first()
-			if not empresa:
-				raise ValueError("No se encontró configuración de empresa")
-			
-			# Crear facturador con la empresa
-			arca = FacturadorARCA(empresa=empresa)
-			
-			# Obtener token y sign (usa caché automáticamente)
-			token, sign = arca.obtener_token_sign()
-			
-			print(f"✅ Token ARCA obtenido correctamente ({arca.entorno})")
-			return token, sign, None  # ARCA no usa expiration separado
-			
-		except Exception as e:
-			print(f"❌ Error al obtener token ARCA: {str(e)}")
-			raise
+		from afip import Afip
+		from pathlib import Path
+		from dotenv import load_dotenv
+		from os import getenv
 
+		load_dotenv()
+		afip_token = getenv('AFIP_TOKEN')
+
+		# Obteber Datos del modelo Empresa
+		empresa = Empresa.objects.first()
+
+		if not empresa:
+			raise ValueError("No se encontró configuración de empresa")
+		else:
+			print("se instancio empresa y tenemos el primer registro!!!")
+
+		BASE_DIR = Path(__file__).resolve().parent.parent.parent.parent  # Sube 4 niveles
+		cert_dir = BASE_DIR / "certif"
+
+		# Certificado (Puede estar guardado en archivos, DB, etc)
+		# cert = (cert_dir / "MAASDEMO.crt").read_text()
+		# key = (cert_dir / "MAASDEMO.key").read_text()
+
+		# Certificado
+		cert = empresa.ws_archivo_crt2
+		# Clave privada
+		key = empresa.ws_archivo_key2
+		# CUIT
+		tax_id = empresa.cuit
+		print("CUIT de la empresa:", tax_id)
+
+		# CUIT del certificado (Mario)
+		# Es temporal porque los certificados 
+		# Son de mario y no de Debona
+		# tax_id = 20207882950 # CUIT de Mario
+
+		# Instanciamos la clase Afip con las credenciales
+		afip = Afip({
+			"CUIT": tax_id,
+			"cert": cert,
+			"key": key,
+			"access_token": afip_token
+		})
+
+		# Esta URL la podes encontrar en el manual del web service
+		WSDL_TEST = "https://fwshomo.afip.gov.ar/wsct/CTService?wsdl"
+
+		# URL al archivo WSDL de produccion
+		#
+		# Esta URL la podes encontrar en el manual del web service
+		WSDL = "https://serviciosjava.afip.gob.ar/wsct/CTService?wsdl"
+
+		# URL del Web service de produccion
+		#
+		# Esta URL la podes encontrar en el manual del web service
+		URL = "https://serviciosjava.afip.gob.ar/wsct/CTService"
+
+		# URL del Web service de test
+		#
+		# Esta URL la podes encontrar en el manual del web service
+		URL_TEST = "https://fwshomo.afip.gov.ar/wsct/CTService"
+
+		# Seterar en true si el web service requiere usar soap v1.2
+		#
+		# Si no estas seguro de que necesita v1.2 proba con ambas opciones
+		soapV1_2 = True
+
+		# Nombre del web service.
+		#
+		# El nombre por el cual se llama al web service en ARCA.
+		# Esto lo podes encontrar en el manual correspondiente.
+		# Por ej. el de factura electronica se llama "wsfe", el de
+		# comprobantes T se llama "wsct"
+		# servicio = "wsct"
+		servicio = "wsfe"
+
+		# A partir de aca ya no debes cambiar ninguna variable
+
+		# Preparamos las opciones para el web service
+		options = {
+		"WSDL": WSDL,
+		"WSDL_TEST": WSDL_TEST,
+		"URL": URL,
+		"URL_TEST": URL_TEST,
+		"soapV1_2": soapV1_2
+		}
+
+		# Consumimos el web service con el objeto sfip
+		genericWebService = afip.webService(servicio, options)
+
+		# Obtenemos el Token Authorizataion
+		ta = genericWebService.getTokenAuthorization()
+		
+		print('token', ta['token'])
+		print('sign', ta['sign'])
+		print('expiration', ta['expiration'])
+
+		token = ta['token']
+		sign = ta['sign']
+		expiration = ta['expiration']
+
+		return token, sign, expiration
 
 	def generar_xml_afiparca(self, auth, comprobante, cliente, impuestos):
 		from xml.etree.ElementTree import Element, SubElement, tostring
@@ -1096,14 +1115,6 @@ class FacturaCreateView(MaestroDetalleCreateView):
 		envelope.set("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance")
 		envelope.set("xmlns:xsd", "http://www.w3.org/2001/XMLSchema")
 		envelope.set("soap:encodingStyle", SOAP_ENV + "encoding/")
-
-		# === Envelope con namespaces correctos ===
-		# envelope = Element(f"{{{SOAP_ENV}}}Envelope")
-		# envelope.set("xmlns:ns0", SOAP_ENV)  # Cambiado de soap a ns0
-		# envelope.set("xmlns:soap", SOAP_ENV)
-		# envelope.set("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance")
-		# envelope.set("xmlns:xsd", "http://www.w3.org/2001/XMLSchema")
-		# envelope.set("soap:encodingStyle", SOAP_ENV + "encoding/")
 
 		# Header
 		header = SubElement(envelope, "soap:Header")

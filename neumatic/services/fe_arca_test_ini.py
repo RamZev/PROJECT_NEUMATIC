@@ -1,3 +1,4 @@
+# neumatic\services\fe_arca_test.py
 import os
 import re
 import time
@@ -8,7 +9,7 @@ from fe_arca import FacturadorARCA
 load_dotenv()
 
 MODO_HOMOLOGACION = True
-XML_FILE = os.getenv("XML_FILE", "001_0021_00058812_Solicitud.xml")
+XML_FILE = os.getenv("XML_FILE", "001_0021_00058812_Solicitud2.xml")
 CUIT = os.getenv("CUIT_CERTIFICADO")
 CERT = os.getenv("CERT_PATH") if MODO_HOMOLOGACION else os.getenv("CERT_PATH_P")
 KEY = os.getenv("KEY_PATH") if MODO_HOMOLOGACION else os.getenv("KEY_PATH_P")
