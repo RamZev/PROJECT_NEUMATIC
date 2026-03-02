@@ -119,7 +119,10 @@ Presupuesto.
 
 
 Movimiento Interno.
-
+	1 - El título del acordeón debería decir "Detalle del Movimiento Interno" y no "Detalle del Comprobante de Venta". Aplicar generalidad.
+	2 - Al crear un MI y agregar detalle, no se debería pemitir modificar: Reventa, Descuento y Operario.
+	3 - No debería exigir Operario en el caso de servicio ya que es un presupuesto y no vaya a afectar los reportes.
+	4 - El combobox Operario debería estar ordenado.
 
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
