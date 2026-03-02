@@ -224,3 +224,40 @@ class DescuentoVendedor(ModeloBaseGenerico):
 	
 	def __str__(self):
 		return f'{self.id_marca} - {self.id_familia}'
+
+
+class DescuentoRevendedor(ModeloBaseGenerico):
+	id_descuento_revendedor = models.AutoField(
+		primary_key=True
+	)
+	estatus_descuento_revendedor = models.BooleanField(
+		verbose_name="Estatus", default=True,
+		choices=ESTATUS_GEN
+	)
+	id_marca = models.ForeignKey(
+		ProductoMarca,
+		on_delete=models.PROTECT,
+		verbose_name="Marca"
+	)
+	id_familia = models.ForeignKey(
+		ProductoFamilia,
+		on_delete=models.PROTECT,
+		verbose_name="Familia"
+	)
+	descuento = models.DecimalField(
+		verbose_name="Descuento",
+		max_digits=4,
+		decimal_places=2,
+		null=True, blank=True,
+		validators=[MinValueValidator(0.00),
+					MaxValueValidator(99.99)],
+		default=0.00,)
+	
+	class Meta:
+		db_table = 'descuento_revendedor'
+		verbose_name = 'Descuento Revendedor'
+		verbose_name_plural = 'Descuentos Revendedores'
+		ordering = ['id_marca', 'id_familia']
+	
+	def __str__(self):
+		return f'{self.id_marca} - {self.id_familia}'

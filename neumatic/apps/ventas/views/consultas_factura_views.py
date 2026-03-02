@@ -47,8 +47,6 @@ def buscar_producto(request):
 
 	# Realizar la consulta inicial
 	# productos = Producto.objects.all()
-	
-	#-- Consultar solo productos activos.
 	productos = Producto.objects.filter(estatus_producto=True)
 
 	# Aplicar filtros dinámicamente
