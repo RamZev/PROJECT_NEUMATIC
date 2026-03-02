@@ -49,7 +49,8 @@ def buscar_producto(request):
             print("col_descuento", col_descuento)
 
     # Realizar la consulta inicial
-    productos = Producto.objects.all()
+    # productos = Producto.objects.all()
+    productos = Producto.objects.filter(estatus_producto=True)
 
     # Aplicar filtros dinámicamente
     if medida:

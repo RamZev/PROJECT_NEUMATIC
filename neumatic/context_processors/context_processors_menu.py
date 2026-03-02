@@ -1,5 +1,5 @@
 # neumatic\apps\menu\context_processors.py
-from .models import MenuHeading, MenuItem
+from apps.menu.models import MenuHeading, MenuItem
 
 # En tu archivo context_processors.py - TEMPORAL
 def menu_context(request):
