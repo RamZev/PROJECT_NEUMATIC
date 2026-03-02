@@ -1054,6 +1054,8 @@ CREATE VIEW "VLTablaDinamicaVentas" AS
 		END AS condicion_comprobante,
 		f.id_cliente_id,
 		c.nombre_cliente,
+		ti.codigo_iva AS sitiva,
+		c.cuit,
 		c.mayorista,
 		f.gravado*cv.mult_venta AS gravado,
 		f.exento*cv.mult_venta AS exento,
@@ -1076,7 +1078,8 @@ CREATE VIEW "VLTablaDinamicaVentas" AS
 		LEFT JOIN vendedor v ON c.id_vendedor_id = v.id_vendedor
 		LEFT JOIN sucursal s ON f.id_sucursal_id = s.id_sucursal
 		LEFT JOIN localidad l ON c.id_localidad_id = l.id_localidad
-		LEFT JOIN provincia p ON l.id_provincia_id = p.id_provincia;
+		LEFT JOIN provincia p ON l.id_provincia_id = p.id_provincia
+		LEFT JOIN tipo_iva ti ON c.id_tipo_iva_id = ti.id_tipo_iva;
 
 
 -- ---------------------------------------------------------------------------
@@ -1100,6 +1103,8 @@ CREATE VIEW "VLTablaDinamicaDetalleVentas" AS
 		END AS condicion_comprobante,
 		f.id_cliente_id,
 		c.nombre_cliente,
+		ti.codigo_iva AS sitiva,
+		c.cuit,
 		c.mayorista,
 		df.reventa,
 		df.id_producto_id,
@@ -1114,6 +1119,7 @@ CREATE VIEW "VLTablaDinamicaDetalleVentas" AS
 		df.descuento,
 		df.gravado*cv.mult_venta AS gravado,
 		df.no_gravado*cv.mult_venta AS no_gravado,
+		df.alic_iva,
 		df.iva*cv.mult_venta AS iva,
 		df.total*cv.mult_venta AS total,
 		f.no_estadist,
@@ -1140,7 +1146,8 @@ CREATE VIEW "VLTablaDinamicaDetalleVentas" AS
 		LEFT JOIN sucursal s ON f.id_sucursal_id = s.id_sucursal
 		LEFT JOIN localidad l ON c.id_localidad_id = l.id_localidad
 		LEFT JOIN provincia pr ON l.id_provincia_id = pr.id_provincia
-		LEFT JOIN producto_cai pc ON p.id_cai_id = pc.id_cai;
+		LEFT JOIN producto_cai pc ON p.id_cai_id = pc.id_cai
+		LEFT JOIN tipo_iva ti ON c.id_tipo_iva_id = ti.id_tipo_iva;
 
 
 -- ---------------------------------------------------------------------------
@@ -1164,6 +1171,8 @@ CREATE VIEW "VLTablaDinamicaEstadistica" AS
 		END AS condicion_comprobante,
 		f.id_cliente_id,
 		c.nombre_cliente,
+		ti.codigo_iva AS sitiva,
+		c.cuit,
 		c.mayorista,
 		df.reventa,
 		df.id_producto_id,
@@ -1177,7 +1186,9 @@ CREATE VIEW "VLTablaDinamicaEstadistica" AS
 		df.precio,
 		df.descuento,
 		df.gravado*cv.mult_estadistica AS gravado,
-		df.no_gravado*cv.estadistica AS no_gravado,
+		df.no_gravado*cv.mult_estadistica AS no_gravado,
+		df.alic_iva,
+		df.iva*cv.mult_estadistica AS iva,
 		df.total*cv.mult_estadistica AS total,
 		f.no_estadist,
 		f.id_user_id,
@@ -1204,6 +1215,7 @@ CREATE VIEW "VLTablaDinamicaEstadistica" AS
 		LEFT JOIN localidad l ON c.id_localidad_id = l.id_localidad
 		LEFT JOIN provincia pr ON l.id_provincia_id = pr.id_provincia
 		LEFT JOIN producto_cai pc ON p.id_cai_id = pc.id_cai
+		LEFT JOIN tipo_iva ti ON c.id_tipo_iva_id = ti.id_tipo_iva
 	WHERE
 		cv.mult_estadistica<>0
 		AND f.no_estadist=False;

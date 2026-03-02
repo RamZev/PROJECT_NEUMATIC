@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+	'django.contrib.humanize',
     'apps.maestros',
     'apps.usuarios',
     'apps.ventas',
@@ -112,9 +113,14 @@ LANGUAGE_CODE = 'es-ar'
 TIME_ZONE = 'America/Argentina/Buenos_Aires'
 
 USE_I18N = True  # Internacionalización.
-USE_L10N = True  # Localización.
-
 USE_TZ = True
+
+USE_L10N = True  # Localización.
+USE_THOUSAND_SEPARATOR = True
+DECIMAL_SEPARATOR = ','  # Fuerza la coma para decimales
+THOUSAND_SEPARATOR = '.' # Fuerza el punto para miles
+NUMBER_GROUPING = 3      # Agrupa de a 3 dígitos
+
 
 
 # Static files (CSS, JavaScript, Images)

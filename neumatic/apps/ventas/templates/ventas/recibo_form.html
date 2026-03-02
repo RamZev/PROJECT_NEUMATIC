@@ -1,6 +1,7 @@
 {% extends 'proceso_form.html' %}
 {% load static %}
 {% load custom_tags %}
+{% load humanize %}
 
 {% block style %}
     body {
@@ -465,6 +466,7 @@
                                     </label>
                                     <div>
                                         {{ form.total_formas_pago }}
+                                        {% comment %} {{ form.total_formas_pago|intcomma }} {% endcomment %}
                                         {% comment %} <span class="formatted-number">{{ form.total_formas_pago.value|default:"0.00" }}</span> {% endcomment %}
                                     </div>
                                 </div>

@@ -3,7 +3,7 @@ from django import forms
 from decimal import Decimal
 from .crud_forms_generics import CrudGenericForm
 from ..models.base_models import Moneda
-from diseno_base.diseno_bootstrap import(
+from diseno_base.diseno_bootstrap import (
 	formclasstext,
 	formclassselect,
 	formclasscheck,

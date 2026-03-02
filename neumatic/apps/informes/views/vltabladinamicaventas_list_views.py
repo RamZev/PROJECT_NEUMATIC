@@ -148,6 +148,24 @@ class ConfigViews:
 			"excel": True,
 			"csv": True
 		},
+		"sitiva": {
+			"label": "SITIVA",
+			"col_width_pdf": 0,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+		"cuit": {
+			"label": "CUIT",
+			"col_width_pdf": 0,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
 		"mayorista": {
 			"label": "Mayorista",
 			"col_width_pdf": 0,

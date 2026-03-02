@@ -1,6 +1,5 @@
 # neumatic\apps\maestros\views\moneda_views.py
 from django.urls import reverse_lazy
-from decimal import Decimal
 from ..views.cruds_views_generics import *
 from ..models.base_models import Moneda
 from ..forms.moneda_forms import MonedaForm
