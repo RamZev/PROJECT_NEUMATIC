@@ -3,7 +3,7 @@ from django import forms
 from django.forms import inlineformset_factory
 from datetime import date
 from django.db.models import Q
-# from django.forms import DecimalField
+from django.forms import DecimalField, NumberInput
 
 from ..models.factura_models import *
 from ..models.recibo_models import (
@@ -14,23 +14,20 @@ from ..models.recibo_models import (
     ChequeRecibo
 )
 from ..models.factura_models import Factura
-from apps.maestros.models.base_models import (
-    CodigoRetencion,
-    Banco,
-    CuentaBanco,
-    ConceptoBanco,
-    Tarjeta
-)
+from apps.maestros.models.base_models import (CodigoRetencion,
+                                              Banco,
+                                              CuentaBanco, 
+                                              ConceptoBanco,
+                                              Tarjeta)
+
 from diseno_base.diseno_bootstrap import (
     formclasstext, 
     formclassnumb2,
     formclassselect, 
     formclassdate, 
-    formclasscheck,
-    formclassnumb
+    formclasscheck
 )
 
-"""
 # Clase para normalizar valores a dos decimales
 class FixedDecimalField(DecimalField):
     def to_python(self, value):
@@ -44,7 +41,7 @@ class FixedDecimalField(DecimalField):
         attrs = super().widget_attrs(widget)
         attrs.update({'step': '0.01'})  # Añadir step para compatibilidad
         return attrs
-"""
+
 
 # Encabezado de Recibo
 class FacturaReciboForm(forms.ModelForm):
@@ -146,8 +143,7 @@ class FacturaReciboForm(forms.ModelForm):
     total_formas_pago = forms.DecimalField(
         max_digits=15, decimal_places=2, required=False, initial=0.00,
         widget=forms.NumberInput(attrs={
-            # **formclassnumb2,
-            **formclassnumb,
+            **formclassnumb2,
             'readonly': 'readonly',
             'style': 'font-size: 0.8rem; padding: 0.25rem; background-color: #E6F6FF;'
         })

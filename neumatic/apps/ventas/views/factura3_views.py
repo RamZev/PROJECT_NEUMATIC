@@ -111,7 +111,7 @@ class PresupuestoListView(MaestroDetalleListView):
 
 		# Si el usuario no es superusuario, filtrar por sucursal
 		if not user.is_superuser:
-				queryset = queryset.filter(id_sucursal=user.id_sucursal)
+			queryset = queryset.filter(id_sucursal=user.id_sucursal)
 		
 		# 2. NUEVO FILTRO: Presupuestos
 		queryset = queryset.filter(
@@ -121,10 +121,10 @@ class PresupuestoListView(MaestroDetalleListView):
 		# Aplicar búsqueda y ordenación
 		query = self.request.GET.get('busqueda', None)
 		if query:
-				search_conditions = Q()
-				for field in self.search_fields:
-						search_conditions |= Q(**{f"{field}__icontains": query})
-				queryset = queryset.filter(search_conditions)
+			search_conditions = Q()
+			for field in self.search_fields:
+				search_conditions |= Q(**{f"{field}__icontains": query})
+			queryset = queryset.filter(search_conditions)
 
 		return queryset.order_by(*self.ordering)
  
@@ -138,7 +138,7 @@ class PresupuestoListView(MaestroDetalleListView):
 		
 		# Mantener todos los valores de extra_context
 		if hasattr(self, 'extra_context'):
-				context.update(self.extra_context)
+			context.update(self.extra_context)
 				
 		return context
 
@@ -288,18 +288,18 @@ class PresupuestoCreateView(MaestroDetalleCreateView):
 				# 1. Validación mínima necesaria
 				deposito = form.cleaned_data.get('id_deposito')
 				if not deposito:
-						form.add_error('id_deposito', 'Debe seleccionar un depósito')
-						return self.form_invalid(form)
+					form.add_error('id_deposito', 'Debe seleccionar un depósito')
+					return self.form_invalid(form)
 
 				# 2. Validación para documentos pendientes
 				comprobante_venta = form.cleaned_data['id_comprobante_venta']
 				if comprobante_venta.pendiente:
-						comprobante_remito = form.cleaned_data.get('comprobante_remito')
-						remito = form.cleaned_data.get('remito')
-						
-						if not all([comprobante_remito, remito]):
-								form.add_error(None, 'Para este tipo de comprobante debe especificar el documento asociado')
-								return self.form_invalid(form)
+					comprobante_remito = form.cleaned_data.get('comprobante_remito')
+					remito = form.cleaned_data.get('remito')
+					
+					if not all([comprobante_remito, remito]):
+						form.add_error(None, 'Para este tipo de comprobante debe especificar el documento asociado')
+						return self.form_invalid(form)
 
 				# 3. Numeración - Inicio  ----------------------->
 				sucursal = form.cleaned_data['id_sucursal']
@@ -334,6 +334,8 @@ class PresupuestoCreateView(MaestroDetalleCreateView):
 					tipo_numeracion = 'manual'
 					print("Entró")
 				elif comprobante_data.remito:
+					tipo_numeracion = 'automatica'
+				elif comprobante_data.presupuesto:
 					tipo_numeracion = 'automatica'
 				else:
 					pass
@@ -538,7 +540,7 @@ class PresupuestoCreateView(MaestroDetalleCreateView):
 						datos_comprobante, 
 						datos_cliente,
 						datos_impuestos
-						)
+					)
 
 					# Guardar en archivo prueba.xml
 					from pathlib import Path
@@ -587,8 +589,10 @@ class PresupuestoCreateView(MaestroDetalleCreateView):
 					
 					# Validar que el número manual no sea menor que el actual
 					elif not created and numero_plantilla <= numero_obj.numero:
-						form.add_error('numero_comprobante', 
-									f'Error: El número {numero_plantilla} debe ser mayor al último usado ({numero_obj.numero})')
+						form.add_error(
+							'numero_comprobante',
+							f'Error: El número {numero_plantilla} debe ser mayor al último usado ({numero_obj.numero})'
+						)
 						return self.form_invalid(form)
 
 				elif tipo_numeracion == 'manual':
@@ -662,19 +666,19 @@ class PresupuestoCreateView(MaestroDetalleCreateView):
 						try:
 							# Buscar el documento asociado (remito) con estado NULL o vacío
 							documento_asociado = Factura.objects.filter(
-									Q(compro=form.cleaned_data['comprobante_remito']) &
-									Q(numero_comprobante=form.cleaned_data['remito']) &
-									(Q(estado="") | Q(estado__isnull=True))
+								Q(compro=form.cleaned_data['comprobante_remito']) &
+								Q(numero_comprobante=form.cleaned_data['remito']) &
+								(Q(estado="") | Q(estado__isnull=True))
 							).select_for_update().first()
 							
 							if documento_asociado:
-									# Actualización directa y eficiente
-									Factura.objects.filter(pk=documento_asociado.pk).update(
-											estado="F"
-									)
-									print(f"Documento {documento_asociado.compro}-{documento_asociado.numero_comprobante} actualizado a estado 'F'")
+								# Actualización directa y eficiente
+								Factura.objects.filter(pk=documento_asociado.pk).update(
+									estado="F"
+								)
+								print(f"Documento {documento_asociado.compro}-{documento_asociado.numero_comprobante} actualizado a estado 'F'")
 							else:
-									print("Advertencia: No se encontró el documento asociado para actualizar")
+								print("Advertencia: No se encontró el documento asociado para actualizar")
 						except Exception as e:
 							print(f"Error al actualizar documento asociado: {str(e)}")
 							# No hacemos return para no impedir la creación de la factura principal
@@ -683,9 +687,9 @@ class PresupuestoCreateView(MaestroDetalleCreateView):
 				if form.cleaned_data.get('id_valida'):  # Si tiene autorización asociada
 					autorizacion = form.cleaned_data['id_valida']
 					Valida.objects.filter(pk=autorizacion.pk).update(
-							hs=timezone.now().time(),
-							estatus_valida=False,
-							# fecha_uso=timezone.now().date()  # Campo adicional para auditoría
+						hs=timezone.now().time(),
+						estatus_valida=False,
+						# fecha_uso=timezone.now().date()  # Campo adicional para auditoría
 					)
 					print(f"Autorización {autorizacion.id_valida} marcada como utilizada")
 
@@ -710,12 +714,12 @@ class PresupuestoCreateView(MaestroDetalleCreateView):
 						
 						''' Código Original Ricardo
 						ProductoStock.objects.select_for_update().filter(
-								id_producto=detalle.id_producto,
-								id_deposito=deposito
+							id_producto=detalle.id_producto,
+							id_deposito=deposito
 						).update(
-								#stock=F('stock') - detalle.cantidad,
-								stock=F('stock') + (detalle.cantidad * self.object.id_comprobante_venta.mult_stock),
-								fecha_producto_stock=fecha_comprobante
+							#stock=F('stock') - detalle.cantidad,
+							stock=F('stock') + (detalle.cantidad * self.object.id_comprobante_venta.mult_stock),
+							fecha_producto_stock=fecha_comprobante
 						)
 						'''
 						#-- Código Modificado por Leoncio (para que se active el signal).
@@ -740,49 +744,48 @@ class PresupuestoCreateView(MaestroDetalleCreateView):
 		except Exception as e:
 			messages.error(self.request, f"Error inesperado: {str(e)}")
 			return self.form_invalid(form)
-		
+	
 	def form_invalid(self, form):
 		print("Entro a form_invalid")
 		print("Errores del formulario principal:", form.errors)
-
+		
 		context = self.get_context_data()
 		formset_detalle = context['formset_detalle']
-
+		
 		if formset_detalle:
 			print("Errores del formset:", formset_detalle.errors)
-
+		
 		return super().form_invalid(form)
-
-
+	
 	def get_success_url(self):
 		return reverse(list_view_name)
-
+	
 	def get_initial(self):
 		initial = super().get_initial()
 		usuario = self.request.user  # Obtener el usuario autenticado
-
+		
 		# Establecer valores iniciales basados en el usuario
 		initial['id_sucursal'] = usuario.id_sucursal
 		initial['id_punto_venta'] = usuario.id_punto_venta
 		initial['cambia_precio_descripcion'] = usuario.cambia_precio_descripcion
 		#initial['jerarquia'] = usuario.jerarquia
-
+		
 		return initial
-
+	
 	def get_form_kwargs(self):
 		kwargs = super().get_form_kwargs()
 		kwargs['tipo_comprobante'] = self.tipo_comprobante  # Pasar tipo al formulario
 		kwargs['usuario'] = self.request.user  # Pasar el usuario autenticado
-
+		
 		return kwargs
-
+	
 	def obtener_token_afiparca(self):
 		from afip import Afip
 		from pathlib import Path
-
+		
 		# Obteber Datos del modelo Empresa
 		empresa = Empresa.objects.first()
-
+		
 		if not empresa:
 			raise ValueError("No se encontró configuración de empresa")
 		else:
@@ -790,11 +793,11 @@ class PresupuestoCreateView(MaestroDetalleCreateView):
 
 		BASE_DIR = Path(__file__).resolve().parent.parent.parent.parent  # Sube 4 niveles
 		cert_dir = BASE_DIR / "certif"
-
+		
 		# Certificado (Puede estar guardado en archivos, DB, etc)
 		# cert = (cert_dir / "MAASDEMO.crt").read_text()
 		# key = (cert_dir / "MAASDEMO.key").read_text()
-
+		
 		# Certificado
 		cert = empresa.ws_archivo_crt2
 		# Clave privada
@@ -802,42 +805,42 @@ class PresupuestoCreateView(MaestroDetalleCreateView):
 		# CUIT
 		tax_id = empresa.cuit
 		print("CUIT de la empresa:", tax_id)
-
+		
 		# CUIT del certificado (Mario)
 		# Es temporal porque los certificados 
 		# Son de mario y no de Debona
 		tax_id = 20207882950
-
+		
 		# Instanciamos la clase Afip con las credenciales
 		afip = Afip({
 			"CUIT": tax_id,
 			"cert": cert,
 			"key": key
 		})
-
+		
 		# Esta URL la podes encontrar en el manual del web service
 		WSDL_TEST = "https://fwshomo.afip.gov.ar/wsct/CTService?wsdl"
-
+		
 		# URL al archivo WSDL de produccion
 		#
 		# Esta URL la podes encontrar en el manual del web service
 		WSDL = "https://serviciosjava.afip.gob.ar/wsct/CTService?wsdl"
-
+		
 		# URL del Web service de produccion
 		#
 		# Esta URL la podes encontrar en el manual del web service
 		URL = "https://serviciosjava.afip.gob.ar/wsct/CTService"
-
+		
 		# URL del Web service de test
 		#
 		# Esta URL la podes encontrar en el manual del web service
 		URL_TEST = "https://fwshomo.afip.gov.ar/wsct/CTService"
-
+		
 		# Seterar en true si el web service requiere usar soap v1.2
 		#
 		# Si no estas seguro de que necesita v1.2 proba con ambas opciones
 		soapV1_2 = True
-
+		
 		# Nombre del web service.
 		#
 		# El nombre por el cual se llama al web service en ARCA.
@@ -846,68 +849,68 @@ class PresupuestoCreateView(MaestroDetalleCreateView):
 		# comprobantes T se llama "wsct"
 		# servicio = "wsct"
 		servicio = "wsfe"
-
+		
 		# A partir de aca ya no debes cambiar ninguna variable
-
+		
 		# Preparamos las opciones para el web service
 		options = {
-		"WSDL": WSDL,
-		"WSDL_TEST": WSDL_TEST,
-		"URL": URL,
-		"URL_TEST": URL_TEST,
-		"soapV1_2": soapV1_2
+			"WSDL": WSDL,
+			"WSDL_TEST": WSDL_TEST,
+			"URL": URL,
+			"URL_TEST": URL_TEST,
+			"soapV1_2": soapV1_2
 		}
-
+		
 		# Consumimos el web service con el objeto sfip
 		genericWebService = afip.webService(servicio, options)
-
+		
 		# Obtenemos el Token Authorizataion
 		ta = genericWebService.getTokenAuthorization()
 		
 		print('token', ta['token'])
 		print('sign', ta['sign'])
 		print('expiration', ta['expiration'])
-
+		
 		token = ta['token']
 		sign = ta['sign']
 		expiration = ta['expiration']
-
+		
 		return token, sign, expiration
-
+	
 	def generar_xml_afiparca(self, auth, comprobante, cliente, impuestos):
 		from xml.etree.ElementTree import Element, SubElement, tostring
 		from xml.dom import minidom
-
+		
 		# Namespaces
 		SOAP_ENV = "http://schemas.xmlsoap.org/soap/envelope/"
 		FE_NS = "http://ar.gov.afip.dif.FEV1/"
-
+		
 		# === Envelope con namespaces correctos ===
 		envelope = Element(f"{{{SOAP_ENV}}}Envelope")
 		envelope.set("xmlns:soap", SOAP_ENV)
 		envelope.set("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance")
 		envelope.set("xmlns:xsd", "http://www.w3.org/2001/XMLSchema")
 		envelope.set("soap:encodingStyle", SOAP_ENV + "encoding/")
-
+		
 		# Header
 		header = SubElement(envelope, "soap:Header")
-
+		
 		# Body
 		body = SubElement(envelope, "soap:Body")
-
+		
 		# FECAESolicitar (con namespace correcto)
 		fe_cae_solicitar = SubElement(body, "FECAESolicitar")
 		fe_cae_solicitar.set("xmlns", FE_NS)  # Así se pone el xmlns en el elemento
-
+		
 		# === Auth ===
 		auth_node = SubElement(fe_cae_solicitar, "Auth")
 		SubElement(auth_node, "Token").text = auth['token']
 		SubElement(auth_node, "Sign").text = auth['sign']
 		SubElement(auth_node, "Cuit").text = auth['cuit']
-
+		
 		# === FeCAEReq ===
 		fe_cae_req = SubElement(fe_cae_solicitar, "FeCAEReq")
-
+		
 		# FeCabReq
 		cab = SubElement(fe_cae_req, "FeCabReq")
 		SubElement(cab, "CantReg").text = str(comprobante.get('cant_reg', '1'))
@@ -1069,23 +1072,23 @@ class PresupuestoUpdateView(MaestroDetalleUpdateView):
 	def form_invalid(self, form):
 		print("Entro a form_invalid")
 		print("Errores del formulario principal:", form.errors)
-
+		
 		context = self.get_context_data()
 		formset_detalle = context['formset_detalle']
-
+		
 		if formset_detalle:
 			print("Errores del formset:", formset_detalle.errors)
-
+		
 		return super().form_invalid(form)
-
+	
 	def get_success_url(self):
 		return self.success_url
-
+	
 	def get_form_kwargs(self):
 		kwargs = super().get_form_kwargs()
 		kwargs['tipo_comprobante'] = self.tipo_comprobante  # Pasar tipo al formulario
 		kwargs['usuario'] = self.request.user  # Pasar el usuario autenticado
-
+		
 		return kwargs
 
 
@@ -1095,19 +1098,19 @@ class PresupuestoDeleteView(MaestroDetalleDeleteView):
 	list_view_name = list_view_name
 	template_name = "base_confirm_delete.html"
 	success_url = reverse_lazy(list_view_name) # Nombre de la url.
-
+	
 	#-- Indicar el permiso que requiere para ejecutar la acción:
 	# Obtener el nombre de la aplicación a la que pertenece el modelo.
 	app_label = model._meta.app_label
 	# Indicar el permiso en el formato: <app_name>.<permiso>_<modelo>
 	permission_required = f"{app_label}.delete_{model.__name__.lower()}"
-
+	
 	extra_context = {
 		"accion": f"Eliminar {model._meta.verbose_name}",
 		"list_view_name" : list_view_name,
 		"mensaje": "Estás seguro que deseas eliminar el Registro"
 	}
-
+	
 	# Sobrescritura del método Post
 	def post(self, request, *args, **kwargs):
 		"""
