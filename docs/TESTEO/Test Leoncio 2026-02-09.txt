@@ -111,13 +111,15 @@ Recibo.
 	
 
 Presupuesto.
-	1 - No deja guardar un presupuesto, está haciendo una validación sobre "Comprobante Interno NO Seleccionado". Este mensaje sale en la consola del navegador. Y cuando se devuelve a 
+*	1 - No deja guardar un presupuesto, está haciendo una validación sobre "Comprobante Interno NO Seleccionado". Este mensaje sale en la consola del navegador. Y cuando se devuelve a 
 		la lista de los presupuesto aparece un modal con este mensaje: "Error inesperado: cannot access local variable 'tipo_numeracion' where it is not associated with a value"
+		[Solucionado, no se inicializaba la variable tipo_numeracion para los presupuestos]
 	2 - Al "Ver Registro" (Editar) desde la lista de Presupuestos hay que deshabilitar el botón "Actualizar" porque si se pulsa revienta un error.
 *	3 - Al "Ver Registro" (Editar) desde la lista de Presupuestos hay que controlar el redireccionamiento del botón "Cancelar" porque está redireccionando al listado de Comprobantes Electrónicos.
 		[Corregido: Cambié la plantilla usando la variable de entorno 'list_vie_name']
 	4 - Revisar los títulos de los acordeones, deberían ser cónsonos con el comprobante. Ej, si se crea un Presupuesto dice "Detalle del Comprobante de Venta". Esto es igual para otros comprobantes.
-
+	5 - Permite borrar Presupuesto. Se permitirá???
+	
 
 Movimiento Interno.
 	1 - El título del acordeón debería decir "Detalle del Movimiento Interno" y no "Detalle del Comprobante de Venta". Aplicar generalidad.

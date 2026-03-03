@@ -189,7 +189,8 @@
 
 										<div class="row my-1">
 											<div class="col-md-3">
-												<label for="{{ form.id_sucursal.id_for_label }}">Sucursal</label>
+												{% comment %} <label for="{{ form.id_sucursal.id_for_label }}">Sucursal</label> {% endcomment %}
+												<label for="{{ form.nombre_sucursal.id_for_label }}">Sucursal</label>
 											</div>
 											
 											<div class="col-md-5">
@@ -571,7 +572,7 @@
 															<!-- Gravado (2 columnas) -->
 															<div class="col-md-2">
 																<div class="text-center">
-																	<label class="form-label mb-0 text-primary">
+																	<label class="form-label mb-0 text-primary" for="{{ form.gravado.id_for_label }}">
 																		<strong>Gravado</strong>
 																	</label>
 																	<div>
@@ -584,7 +585,7 @@
 															<!-- Exento (2 columnas) -->
 															<div class="col-md-2">
 																<div class="text-center">
-																	<label class="form-label mb-0 text-primary">
+																	<label class="form-label mb-0 text-primary" for ="{{ form.exento.id_for_label }}">
 																		<strong>Exento</strong>
 																	</label>
 																	<div>
@@ -597,7 +598,7 @@
 															<!-- IVA (2 columnas) -->
 															<div class="col-md-2">
 																<div class="text-center">
-																	<label class="form-label mb-0 text-primary">
+																	<label class="form-label mb-0 text-primary" for ="{{ form.iva.id_for_label }}">
 																		<strong>I.V.A.</strong>
 																	</label>
 																	<div>
@@ -610,7 +611,7 @@
 															<!-- IIBB (2 columnas) -->
 															<div class="col-md-2">
 																<div class="text-center">
-																	<label class="form-label mb-0 text-primary">
+																	<label class="form-label mb-0 text-primary" for ="{{ form.percep_ib.id_for_label }}">
 																		<strong>IIBB PERCEPCION</strong>
 																	</label>
 																	<div>
@@ -623,7 +624,7 @@
 															<!-- Total (3 columnas) -->
 															<div class="col-md-2">
 																<div class="text-center">
-																	<label class="form-label mb-0 text-primary">
+																	<label class="form-label mb-0 text-primary" for ="{{ form.total.id_for_label }}">
 																		<strong>TOTAL</strong>
 																	</label>
 																	<div>
@@ -740,7 +741,9 @@
 					<form method="post" id="detalleForm">
 						{% csrf_token %}
 						
+						<!-- **************************************************************************************************************************** -->
 						<!-- Opciones de filtro adicionales -->
+						{% comment %} Estructura original Ricardo.
 						<div class="row mb-3">
 							<div class="col-md-12 d-flex justify-content-start align-items-center flex-wrap">
 								<label class="me-3 fw-bold">Filtrar por:</label>
@@ -761,6 +764,54 @@
 								</div>
 							</div>
 						</div>
+						{% endcomment %}
+						{% comment %} Opción con sieldset (más semantico)
+						<div class="row mb-3">
+							<div class="col-md-12">
+								<fieldset class="d-flex justify-content-start align-items-center flex-wrap border-0 p-0 m-0">
+									<legend class="me-3 fw-bold float-none w-auto mb-0 fs-6">Filtrar por (grok):</legend>
+									
+									<div class="form-check form-check-inline">
+										<input class="form-check-input" type="radio" name="filtro_marca" id="filtro_primeras" value="primeras" checked>
+										<label class="form-check-label" for="filtro_primeras">Primeras Marcas</label>
+									</div>
+									
+									<div class="form-check form-check-inline">
+										<input class="form-check-input" type="radio" name="filtro_marca" id="filtro_otras" value="otras">
+										<label class="form-check-label" for="filtro_otras">Otras Marcas</label>
+									</div>
+									
+									<div class="form-check form-check-inline">
+										<input class="form-check-input" type="radio" name="filtro_marca" id="filtro_stock" value="stock">
+										<label class="form-check-label" for="filtro_stock">Solo en Stock</label>
+									</div>
+								</fieldset>
+							</div>
+						</div>
+						{% endcomment %}
+						<div class="row mb-3">
+							<div class="col-md-12">
+								<div class="d-flex align-items-center flex-wrap">
+									<span class="me-3 fw-bold">Filtrar por:</span>
+									
+									<div class="form-check form-check-inline">
+										<input class="form-check-input" type="radio" name="filtro_marca" id="filtro_primeras" value="primeras" checked>
+										<label class="form-check-label" for="filtro_primeras">Primeras Marcas</label>
+									</div>
+									
+									<div class="form-check form-check-inline">
+										<input class="form-check-input" type="radio" name="filtro_marca" id="filtro_otras" value="otras">
+										<label class="form-check-label" for="filtro_otras">Otras Marcas</label>
+									</div>
+									
+									<div class="form-check form-check-inline">
+										<input class="form-check-input" type="radio" name="filtro_marca" id="filtro_stock" value="stock">
+										<label class="form-check-label" for="filtro_stock">Solo en Stock</label>
+									</div>
+								</div>
+							</div>
+						</div>
+						<!-- **************************************************************************************************************************** -->
 						
 						<div class="row mb-3">
 							<div class="col-md-3">
