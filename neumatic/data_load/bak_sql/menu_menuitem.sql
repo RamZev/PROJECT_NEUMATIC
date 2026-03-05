@@ -27,14 +27,14 @@ INSERT INTO "menu_menuitem" VALUES (25,'Alícuotas IVA','alicuota_iva_list','','
 INSERT INTO "menu_menuitem" VALUES (26,'Tipo Percepción','tipo_percepcion_ib_list','','',0,16,NULL,1);
 INSERT INTO "menu_menuitem" VALUES (27,'Tipo Retención','tipo_retencion_ib_list','','',0,17,NULL,1);
 INSERT INTO "menu_menuitem" VALUES (28,'Operarios','operario_list','','',0,18,NULL,135);
-INSERT INTO "menu_menuitem" VALUES (29,'Medios de Pagos','medio_pago_list','','',0,20,NULL,135);
-INSERT INTO "menu_menuitem" VALUES (30,'Puntos de Venta','punto_venta_list','','',0,21,NULL,135);
+INSERT INTO "menu_menuitem" VALUES (29,'Medios de Pagos','medio_pago_list','','',0,19,NULL,135);
+INSERT INTO "menu_menuitem" VALUES (30,'Puntos de Venta','punto_venta_list','','',0,20,NULL,135);
 INSERT INTO "menu_menuitem" VALUES (31,'Bancos Nacionales','banco_list','','',0,21,NULL,9);
 INSERT INTO "menu_menuitem" VALUES (32,'Cuentas de Bancos','cuenta_banco_list','','',0,22,NULL,9);
 INSERT INTO "menu_menuitem" VALUES (33,'Tarjetas','tarjeta_list','','',0,23,NULL,9);
 INSERT INTO "menu_menuitem" VALUES (34,'Códigos de Retención','codigo_retencion_list','','',0,24,NULL,1);
 INSERT INTO "menu_menuitem" VALUES (35,'Conceptos de Bancos','concepto_banco_list','','',0,25,NULL,9);
-INSERT INTO "menu_menuitem" VALUES (36,'Marketins Origen','marketing_origen_list','','',0,27,NULL,135);
+INSERT INTO "menu_menuitem" VALUES (36,'Marketins Origen','marketing_origen_list','','',0,26,NULL,135);
 INSERT INTO "menu_menuitem" VALUES (37,'Comprobante Electrónico','factura_list','','',0,0,2,NULL);
 INSERT INTO "menu_menuitem" VALUES (38,'Comprobante Manual','factura_manual_list','','',0,1,2,NULL);
 INSERT INTO "menu_menuitem" VALUES (39,'Recibo','recibo_list','','',0,2,2,NULL);
@@ -150,5 +150,4 @@ INSERT INTO "menu_menuitem" VALUES (160,'Detalle de Cheques Recibidos','chequere
 INSERT INTO "menu_menuitem" VALUES (161,'Arqueo de Caja','cajaarqueo_informe_list','','',0,1,NULL,155);
 INSERT INTO "menu_menuitem" VALUES (162,'Detalle de Comprobantes','detallecomprobantes_informe_list','','',0,7,NULL,155);
 INSERT INTO "menu_menuitem" VALUES (163,'Detalle de Cheques por Fecha','chequesfecha_informe_list','','',0,6,NULL,155);
-INSERT INTO "menu_menuitem" VALUES (166,'Formas de Pago','forma_pago_list','','',0,19,NULL,135);
 COMMIT;

@@ -834,16 +834,15 @@
 						<div class="table-responsive tbl-fixed" style="max-height: 30vh; overflow-y: auto;">
 							<table class="table table-striped small-text" id="tabla-resultados">
 								<thead class="table-primary fs-7">
-									<th style="width: 8%;">ID</th>  <!-- NUEVA COLUMNA -->
-									<th style="width: 10%;">Marca</th>
-									<th style="width: 10%;">Medida</th>
-									<th style="width: 8%;">CAI</th>
-									<th style="width: 20%;">Nombre</th>
-									<th style="width: 8%;">Precio</th>
+									<th style="width: 12%;">Marca</th>
+									<th style="width: 12%;">Medida</th>
+									<th style="width: 10%;">CAI</th>
+									<th style="width: 25%;">Nombre</th>
+									<th style="width: 10%;">Precio</th>
 									<th style="width: 8%;">Stock</th>
 									<th style="width: 8%;">Mínimo</th>
 									<th style="width: 8%;">Detalle</th>
-									<th style="width: 8%;">Selec.</th>  <!-- Cambiar "..." por "Selec." -->
+									<th style="width: 8%;">...</th>
 								</thead>
 								
 								<tbody>
@@ -1182,9 +1181,7 @@
 			
 			// Recalcular total general dinámicamente
 			formsetContainer.addEventListener('input', function (event) {
-				// alert("LISTENER 1 - INPUT: " + event.target.name);  // ← PONER AQUÍ
-				//if (['cantidad', 'precio', 'descuento'].some(field => event.target.name.includes(field))) {
-				if (['cantidad', 'precio'].some(field => event.target.name.includes(field))) {
+				if (['cantidad', 'precio', 'descuento'].some(field => event.target.name.includes(field))) {
 					const row = event.target.closest('tr');
 					const cantidad = parseFloat(row.querySelector('[name*="-cantidad"]').value) || 0;
 					const precio = parseFloat(row.querySelector('[name*="-precio"]').value) || 0;
@@ -1212,48 +1209,6 @@
 					actualizarTotalFactura();
 				}
 			});
-
-			// Capturar eventos blur en la fase de captura (funciona con elementos dinámicos)
-			formsetContainer.addEventListener('blur', function(event) {
-				// Verificar si el elemento que perdió el foco es un input de descuento
-				if (event.target.matches && event.target.matches('input[name*="descuento"]')) {
-					
-					// alert("✅ Blur detectado en descuento (fase de captura)");
-					
-					const descuentoInput = event.target;
-					const row = descuentoInput.closest('tr');
-					//const precioInput = row.querySelector('input[name*="precio"]');
-					const precioInput = row.querySelector('input[name*="-precio"][type="number"]');
-					const descuentoManual = parseFloat(descuentoInput.value) || 0;
-					
-					// Validar el descuento
-					if (descuentoManual < 0 || descuentoManual > 99) {
-						alert("❌ El descuento manual debe estar entre 0 y 99.");
-						descuentoInput.value = "0";
-						descuentoInput.focus();
-						return;
-					}
-					
-					// Solo proceder si hay un descuento válido mayor a 0
-					if (descuentoManual > 0) {
-						const precioActual = parseFloat(precioInput.value) || 0;
-						
-						// 1. Modificar el PRECIO (aplica el descuento UNA VEZ)
-						const nuevoPrecio = precioActual * (1 - descuentoManual/100);
-						precioInput.value = nuevoPrecio.toFixed(2);
-						
-						// 2. Poner el DESCUENTO EN CERO
-						descuentoInput.value = "0";
-						
-						// 3. Forzar RECÁLCULO de la fila
-						const inputEvent = new Event('input', { bubbles: true });
-						precioInput.dispatchEvent(inputEvent);
-						
-						// 4. Mostrar confirmación
-						alert(`✅ Descuento del ${descuentoManual}% aplicado correctamente`);
-					}
-				}
-			}, true); // ← El TRUE es crucial para capturar en fase de captura
 			
 			////////////
 			// Manejo de eliminación de Detalle de Factura
@@ -1331,7 +1286,6 @@
 			
 			// Listener principal para cambios en los inputs
 			formsetContainer.addEventListener('input', function(event) {
-				// alert("LISTENER 2 - INPUT: " + event.target.name);  // ← PONER AQUÍ
 				const target = event.target;
 				const row = target.closest('tr');
 				
@@ -1356,14 +1310,13 @@
 				}
 				
 				// Recalcular solo si es un campo relevante
-				if (target.matches('[name*="-cantidad"], [name*="-precio"]')) {
+				if (target.matches('[name*="-cantidad"], [name*="-precio"], [name*="-descuento"]')) {
 					recalcularFilaCompleta(row);
 					actualizarTotalFactura();
 				}
 			});
 			
 			formsetContainer.addEventListener('change', function(event) {
-				// alert("LISTENER 3 - CHANGE: " + event.target.name);  // ← PONER AQUÍ
 				if (event.target.name.includes('reventa')) {
 					const oldValue = event.target.getAttribute('data-prev-value') || 'M';
 					const newValue = event.target.value;
@@ -1425,17 +1378,6 @@
 				productosSeleccionados.forEach(producto => {
 					const currentIndex = formsetContainer.querySelectorAll('.detalle-form tbody tr').length;
 					
-					// ===== OBTENER TIPO DE COMPROBANTE =====
-					const tipoComprobanteDict = JSON.parse(document.getElementById('tipocomprobante-data').dataset.tipocomprobante);
-					const comprobanteId = document.getElementById('id_id_comprobante_venta').value;
-					const tipoComprobante = tipoComprobanteDict[comprobanteId] || '';
-					alert("comprobanteId: " + comprobanteId + "\ntipoComprobante: " + tipoComprobante);
-					
-					// Detectar si es FACTURA
-					const esFactura = (tipoComprobante === "FACTURA");
-					const precioEditable = esFactura ? '' : 'readonly';
-					// ========================================
-					
 					// Cálculos iniciales
 					const precioListaOriginal = parseFloat(producto.precio); // Precio SIN descuento
 					//alert(`Precio Lista Original: ${precioListaOriginal}`)
@@ -1492,7 +1434,7 @@
 					
 					// Clase reutilizable
 					const formControlClass = 'form-control form-control-sm border border-primary small-font';
-
+					
 					// Crear y insertar la fila de detalle de factura
 					const newFormHTML = `
 					<tr data-form-index="${currentIndex}" class="small-font">
@@ -1530,7 +1472,7 @@
 						</td>
 						<td>
 							<input type="number" name="detallefactura_set-${currentIndex}-precio" 
-								class="${formControlClass} text-end" value="${precioFinal}" ${precioEditable}
+								class="${formControlClass} text-end" value="${precioFinal}" ${nombreInputAttributes}
 								min="0" step="0.01">
 						</td>
 						<td>
@@ -1714,7 +1656,6 @@
 			
 			// Mantener el evento de cambio para reventa si es necesario
 			formsetContainer.addEventListener('change', function(event) {
-				// alert("LISTENER 5 - CHANGE: " + event.target.name);  // ← PONER AQUÍ
 				if (event.target.matches('[name*="-reventa"]')) {
 					const row = event.target.closest('tr');
 					const nombreProducto = row.querySelector('[name*="-nombre"]').value;
@@ -1775,13 +1716,15 @@
 					});
 					
 					data.forEach(producto => {
-						const precioNumerico = parseFloat(producto.precio);
+						const precioNumerico = parseFloat(producto.precio); // Asegura que sea número
 						const precioFormateado = formateadorPrecio.format(producto.precio);
 						const descuentoVendedor = parseFloat(producto.descuento_vendedor);
+
+						// alert(`Precio numérico: ${precioNumerico}`);
+						// alert(`Descuento: ${descuentoVendedor}`);
 						
 						const fila = `
 							<tr>
-								<td class="text-center">${producto.id}</td>  <!-- NUEVA COLUMNA: ID -->
 								<td>${producto.marca}</td>
 								<td>${producto.medida}</td>
 								<td>${producto.cai || 'N/A'}</td>
@@ -1795,11 +1738,12 @@
 										data-id="${producto.id}" 
 										data-nombre="${producto.nombre}"
 										data-cai="${producto.cai || 'N/A'}">
-										<i class="bi bi-eye"></i>
+										
+										<i class="bi bi-eye"></i> <!-- Icono de Bootstrap -->
 									</button>
 								</td>
 						
-								<td class="text-center">
+								<td>
 									<input type="checkbox" class="seleccionar-producto"
 											data-id="${producto.id}" 
 											data-codigo="${producto.codigo}" 
@@ -1813,11 +1757,12 @@
 											data-alicuota-iva="${producto.alicuota_iva}"
 											data-tipo-producto="${producto.tipo_producto}"
 											data-obliga-operario="${producto.obliga_operario}">
+											
 								</td>
 							</tr>
 						`;
 						tablaResultados.insertAdjacentHTML('beforeend', fila);
-					});					
+					});
 					
 					// Agregar eventos a los nuevos botones de actualización
 					document.querySelectorAll('.actualizar-detalle').forEach(button => {
