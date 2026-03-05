@@ -9,8 +9,7 @@
 				<div class="container-fluid">
 					
 					<div class="card border-light mb-3 mt-2">
-						<div class="card-header text-white bg-primary opacity-75 d-flex 
-									justify-content-between">
+						<div class="card-header text-white bg-primary opacity-75 d-flex justify-content-between">
 							{{ accion }}
 							<div class="flex align-items-center">
 								<a 
@@ -18,7 +17,7 @@
 									data-bs-toggle="modal" 
 									data-bs-target="#helpModal" 
 									style="cursor: pointer;">
-									<i class="bi bi-question-lg"></i></a>
+								<i class="bi bi-question-lg"></i></a>
 								
 								<button type="button" class="btn-close btn-close-white" 
 									aria-label="Close"
@@ -32,7 +31,7 @@
 								{% csrf_token %}
 								<div class="accordion" id="accordionPanelsStayOpenExample">
 									<!-- Estructura generada -->
-
+									
 									<div class="accordion-item">
 										<h2 class="accordion-header">
 											<button 
@@ -48,127 +47,127 @@
 										<div class="accordion-collapse collapse show"
 											id="Información_Vendedor">
 											<div class="accordion-body bg-secondary-subtle">
-		
-														<div class="row">
-															<div class="col-md-2">
-																<label class="form-label text-primary mb-0">
-																	{{ form.estatus_vendedor.label }}
-																</label>
-																{{ form.estatus_vendedor }}
-															</div>
-								
-															<div class="col-md-3">
-																<label class="form-label text-primary mb-0">
-																	{{ form.nombre_vendedor.label }}
-																</label>
-																{{ form.nombre_vendedor }}
-															</div>
+												
+												<div class="row">
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.estatus_vendedor.id_for_label }}">
+															{{ form.estatus_vendedor.label }}
+														</label>
+														{{ form.estatus_vendedor }}
+													</div>
+													
+													<div class="col-md-3">
+														<label class="form-label text-primary mb-0" for="{{ form.nombre_vendedor.id_for_label }}">
+															{{ form.nombre_vendedor.label }}
+														</label>
+														{{ form.nombre_vendedor }}
+													</div>
+												</div>
+												<div class="row">
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.telefono_vendedor.id_for_label }}">
+															{{ form.telefono_vendedor.label }}
+														</label>
+														{{ form.telefono_vendedor }}
+													</div>
+													
+													<div class="col-md-3">
+														<label class="form-label text-primary mb-0" for="{{ form.domicilio_vendedor.id_for_label }}">
+															{{ form.domicilio_vendedor.label }}
+														</label>
+														{{ form.domicilio_vendedor }}
+													</div>
+													
+													<div class="col-md-4">
+														<label class="form-label text-primary mb-0" for="{{ form.email_vendedor.id_for_label }}">
+															{{ form.email_vendedor.label }}
+														</label>
+														{{ form.email_vendedor }}
+													</div>
+												</div>
+												<div class="row">
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.pje_auto.id_for_label }}">
+															{{ form.pje_auto.label }}
+														</label>
+														{{ form.pje_auto }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.pje_camion.id_for_label }}">
+															{{ form.pje_camion.label }}
+														</label>
+														{{ form.pje_camion }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.vence_factura.id_for_label }}">
+															{{ form.vence_factura.label }}
+														</label>
+														{{ form.vence_factura }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.vence_remito.id_for_label }}">
+															{{ form.vence_remito.label }}
+														</label>
+														{{ form.vence_remito }}
+													</div>
+												</div>
+												<div class="row">
+													<div class="col-md-4">
+														<label class="form-label text-primary mb-0" for="{{ form.id_sucursal.id_for_label }}">
+															{{ form.id_sucursal.label }}
+														</label>
+														{{ form.id_sucursal }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.tipo_venta.id_for_label }}">
+															{{ form.tipo_venta.label }}
+														</label>
+														{{ form.tipo_venta }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.col_descuento.id_for_label }}">
+															{{ form.col_descuento.label }}
+														</label>
+														{{ form.col_descuento }}
+													</div>
+												</div>
+												<div class="row">
+													<div class="col-md-4 d-flex align-items-center">
+														<div class="form-check mt-lg-4">
+															<label class="form-check-label form-label text-primary">
+																{{ form.email_venta }}
+																{{ form.email_venta.label }}
+															</label>
 														</div>
-														<div class="row">
-															<div class="col-md-2">
-																<label class="form-label text-primary mb-0">
-																	{{ form.telefono_vendedor.label }}
-																</label>
-																{{ form.telefono_vendedor }}
-															</div>
-								
-															<div class="col-md-3">
-																<label class="form-label text-primary mb-0">
-																	{{ form.domicilio_vendedor.label }}
-																</label>
-																{{ form.domicilio_vendedor }}
-															</div>
-								
-															<div class="col-md-4">
-																<label class="form-label text-primary mb-0">
-																	{{ form.email_vendedor.label }}
-																</label>
-																{{ form.email_vendedor }}
-															</div>
+													</div>
+													
+													<div class="col-md-4 d-flex align-items-center">
+														<div class="form-check mt-lg-4">
+															<label class="form-check-label form-label text-primary">
+																{{ form.info_saldo }}
+																{{ form.info_saldo.label }}
+															</label>
 														</div>
-														<div class="row">
-															<div class="col-md-2">
-																<label class="form-label text-primary mb-0">
-																	{{ form.pje_auto.label }}
-																</label>
-																{{ form.pje_auto }}
-															</div>
-								
-															<div class="col-md-2">
-																<label class="form-label text-primary mb-0">
-																	{{ form.pje_camion.label }}
-																</label>
-																{{ form.pje_camion }}
-															</div>
-								
-															<div class="col-md-2">
-																<label class="form-label text-primary mb-0">
-																	{{ form.vence_factura.label }}
-																</label>
-																{{ form.vence_factura }}
-															</div>
-								
-															<div class="col-md-2">
-																<label class="form-label text-primary mb-0">
-																	{{ form.vence_remito.label }}
-																</label>
-																{{ form.vence_remito }}
-															</div>
+													</div>
+													
+													<div class="col-md-4 d-flex align-items-center">
+														<div class="form-check mt-lg-4">
+															<label class="form-check-label form-label text-primary">
+																{{ form.info_estadistica }}
+																{{ form.info_estadistica.label }}
+															</label>
 														</div>
-														<div class="row">
-															<div class="col-md-4">
-																<label class="form-label text-primary mb-0">
-																	{{ form.id_sucursal.label }}
-																</label>
-																{{ form.id_sucursal }}
-															</div>
-								
-															<div class="col-md-2">
-																<label class="form-label text-primary mb-0">
-																	{{ form.tipo_venta.label }}
-																</label>
-																{{ form.tipo_venta }}
-															</div>
-								
-															<div class="col-md-2">
-																<label class="form-label text-primary mb-0">
-																	{{ form.col_descuento.label }}
-																</label>
-																{{ form.col_descuento }}
-															</div>
-														</div>
-														<div class="row">
-															<div class="col-md-4 d-flex align-items-center">
-																<div class="form-check mt-lg-4">
-																	<label class="form-check-label form-label text-primary">
-																		{{ form.email_venta }}
-																		{{ form.email_venta.label }}
-																	</label>
-																</div>
-															</div>
-								
-															<div class="col-md-4 d-flex align-items-center">
-																<div class="form-check mt-lg-4">
-																	<label class="form-check-label form-label text-primary">
-																		{{ form.info_saldo }}
-																		{{ form.info_saldo.label }}
-																	</label>
-																</div>
-															</div>
-								
-															<div class="col-md-4 d-flex align-items-center">
-																<div class="form-check mt-lg-4">
-																	<label class="form-check-label form-label text-primary">
-																		{{ form.info_estadistica }}
-																		{{ form.info_estadistica.label }}
-																	</label>
-																</div>
-															</div>
-														</div>
+													</div>
+												</div>
 											</div>
 										</div>
 									</div>
-		
+									
 								</div>
 								
 								<div class="container mt-3">

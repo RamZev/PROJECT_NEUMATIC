@@ -18,7 +18,7 @@
 									data-bs-toggle="modal" 
 									data-bs-target="#helpModal" 
 									style="cursor: pointer;">
-									<i class="bi bi-question-lg"></i></a>
+								<i class="bi bi-question-lg"></i></a>
 								
 								<button type="button" class="btn-close btn-close-white" 
 									aria-label="Close"
@@ -32,7 +32,7 @@
 								{% csrf_token %}
 								<div class="accordion" id="accordionPanelsStayOpenExample">
 									<!-- Estructura generada -->
-
+									
 									<div class="accordion-item">
 										<h2 class="accordion-header">
 											<button 
@@ -50,35 +50,35 @@
 											<div class="accordion-body bg-secondary-subtle">
 												<div class="row">
 													<div class="col-md-3">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.id_producto.id_for_label }}">
 															{{ form.id_producto.label }}
 														</label>
 														{{ form.id_producto }}
 													</div>
-						
+													
 													<div class="col-md-3">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.id_deposito.id_for_label }}">
 															{{ form.id_deposito.label }}
 														</label>
 														{{ form.id_deposito }}
 													</div>
-						
+													
 													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.stock.id_for_label }}">
 															{{ form.stock.label }}
 														</label>
 														{{ form.stock }}
 													</div>
-						
+													
 													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.minimo.id_for_label }}">
 															{{ form.minimo.label }}
 														</label>
 														{{ form.minimo }}
 													</div>
-						
+													
 													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.fecha_producto_stock.id_for_label }}">
 															{{ form.fecha_producto_stock.label }}
 														</label>
 														{{ form.fecha_producto_stock }}
@@ -87,7 +87,7 @@
 											</div>
 										</div>
 									</div>
-		
+									
 								</div>
 								
 								<div class="container mt-3">

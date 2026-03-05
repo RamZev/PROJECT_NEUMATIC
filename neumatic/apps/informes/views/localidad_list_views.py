@@ -183,12 +183,17 @@ class LocalidadInformeView(InformeFormView):
 		
 		dominio = f"http://{self.request.get_host()}"
 		
+		orden_dict = {
+			"nombre": "Nombre",
+			"codigo": "Código"
+		}
+		
 		param_left = {
 			"Provincia": provincia.nombre_provincia if provincia else "Todas",
 		}
 		param_right = {
-			"Estatus": estatus,
-			"Ordenado por": orden,
+			"Estatus": estatus.capitalize(),
+			"Ordenado por": orden_dict.get(orden),
 		}
 		
 		# **************************************************

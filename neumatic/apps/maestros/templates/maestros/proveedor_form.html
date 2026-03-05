@@ -18,7 +18,7 @@
 									data-bs-toggle="modal" 
 									data-bs-target="#helpModal" 
 									style="cursor: pointer;">
-									<i class="bi bi-question-lg"></i></a>
+								<i class="bi bi-question-lg"></i></a>
 								
 								<button type="button" class="btn-close btn-close-white" 
 									aria-label="Close"
@@ -32,7 +32,7 @@
 								{% csrf_token %}
 								<div class="accordion" id="accordionPanelsStayOpenExample">
 									<!-- Estructura generada -->
-
+									
 									<div class="accordion-item">
 										<h2 class="accordion-header">
 											<button 
@@ -48,142 +48,141 @@
 										<div class="accordion-collapse collapse show"
 											id="Información_Proveedor">
 											<div class="accordion-body bg-secondary-subtle">
-		
-														<div class="row">
-															<div class="col-md-2">
-																<label class="form-label text-primary mb-0">
-																	{{ form.estatus_proveedor.label }}
-																</label>
-																{{ form.estatus_proveedor }}
-															</div>
-								
-															<div class="col-md-4">
-																<label class="form-label text-primary mb-0">
-																	{{ form.nombre_proveedor.label }}
-																</label>
-																{{ form.nombre_proveedor }}
-															</div>
-
-															<div class="col-md-4">
-																<label class="form-label text-primary mb-0">
-																	{{ form.domicilio_proveedor.label }}
-																</label>
-																{{ form.domicilio_proveedor }}
-															</div>
+												
+												<div class="row">
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.estatus_proveedor.id_for_label }}">
+															{{ form.estatus_proveedor.label }}
+														</label>
+														{{ form.estatus_proveedor }}
+													</div>
+													
+													<div class="col-md-4">
+														<label class="form-label text-primary mb-0" for="{{ form.nombre_proveedor.id_for_label }}">
+															{{ form.nombre_proveedor.label }}
+														</label>
+														{{ form.nombre_proveedor }}
+													</div>
+													
+													<div class="col-md-4">
+														<label class="form-label text-primary mb-0" for="{{ form.domicilio_proveedor.id_for_label }}">
+															{{ form.domicilio_proveedor.label }}
+														</label>
+														{{ form.domicilio_proveedor }}
+													</div>
+												</div>
+												<div class="row">
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.codigo_postal.id_for_label }}">
+															{{ form.codigo_postal.label }}
+														</label>
+														{{ form.codigo_postal }}
+													</div>
+													
+													<div class="col-md-4">
+														<label class="form-label text-primary mb-0" for="{{ form.id_provincia.id_for_label }}">
+															{{ form.id_provincia.label }}
+														</label>
+														{{ form.id_provincia }}
+													</div>
+													
+													<div class="col-md-3">
+														<label class="form-label text-primary mb-0" for="{{ form.id_localidad.id_for_label }}">
+															{{ form.id_localidad.label }}
+														</label>
+														{{ form.id_localidad }}
+													</div>
+													
+												</div>
+												<div class="row">
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.telefono_proveedor.id_for_label }}">
+															{{ form.telefono_proveedor.label }}
+														</label>
+														{{ form.telefono_proveedor }}
+													</div>
+						
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.movil_proveedor.id_for_label }}">
+															{{ form.movil_proveedor.label }}
+														</label>
+														{{ form.movil_proveedor }}
+													</div>
+													
+													<div class="col-md-4">
+														<label class="form-label text-primary mb-0" for="{{ form.email_proveedor.id_for_label }}">
+															{{ form.email_proveedor.label }}
+														</label>
+														{{ form.email_proveedor }}
+													</div>
+												</div>
+												<div class="row">
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.ib_numero.id_for_label }}">
+															{{ form.ib_numero.label }}
+														</label>
+														{{ form.ib_numero }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.cuit.id_for_label }}">
+															{{ form.cuit.label }}
+														</label>
+														{{ form.cuit }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.id_tipo_iva.id_for_label }}">
+															{{ form.id_tipo_iva.label }}
+														</label>
+														{{ form.id_tipo_iva }}
+													</div>
+												</div>
+												<div class="row">
+													<div class="col-md-4">
+														<label class="form-label text-primary mb-0" for="{{ form.id_tipo_retencion_ib.id_for_label }}">
+															{{ form.id_tipo_retencion_ib.label }}
+														</label>
+														{{ form.id_tipo_retencion_ib }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.ib_alicuota.id_for_label }}">
+															{{ form.ib_alicuota.label }}
+														</label>
+														{{ form.ib_alicuota }}
+													</div>
+													
+													<div class="col-md-2 d-flex align-items-center">
+														<div class="form-check mt-lg-4">
+															<label class="form-check-label form-label text-primary">
+																{{ form.ib_exento }}
+																{{ form.ib_exento.label }}
+															</label>
 														</div>
-														<div class="row">
-															<div class="col-md-2">
-																<label class="form-label text-primary mb-0">
-																	{{ form.codigo_postal.label }}
-																</label>
-																{{ form.codigo_postal }}
-															</div>
-
-															<div class="col-md-4">
-																<label class="form-label text-primary mb-0">
-																	{{ form.id_provincia.label }}
-																</label>
-																{{ form.id_provincia }}
-															</div>
-								
-															<div class="col-md-3">
-																<label class="form-label text-primary mb-0">
-																	{{ form.id_localidad.label }}
-																</label>
-																{{ form.id_localidad }}
-															</div>
-								
-															
+													</div>
+													
+													<div class="col-md-3 d-flex align-items-center">
+														<div class="form-check mt-lg-4">
+															<label class="form-check-label form-label text-primary">
+																{{ form.multilateral }}
+																{{ form.multilateral.label }}
+															</label>
 														</div>
-														<div class="row">
-															<div class="col-md-2">
-																<label class="form-label text-primary mb-0">
-																	{{ form.telefono_proveedor.label }}
-																</label>
-																{{ form.telefono_proveedor }}
-															</div>
-								
-															<div class="col-md-2">
-																<label class="form-label text-primary mb-0">
-																	{{ form.movil_proveedor.label }}
-																</label>
-																{{ form.movil_proveedor }}
-															</div>
-								
-															<div class="col-md-4">
-																<label class="form-label text-primary mb-0">
-																	{{ form.email_proveedor.label }}
-																</label>
-																{{ form.email_proveedor }}
-															</div>
-														</div>
-														<div class="row">
-															<div class="col-md-2">
-																<label class="form-label text-primary mb-0">
-																	{{ form.ib_numero.label }}
-																</label>
-																{{ form.ib_numero }}
-															</div>
-								
-															<div class="col-md-2">
-																<label class="form-label text-primary mb-0">
-																	{{ form.cuit.label }}
-																</label>
-																{{ form.cuit }}
-															</div>
-								
-															<div class="col-md-2">
-																<label class="form-label text-primary mb-0">
-																	{{ form.id_tipo_iva.label }}
-																</label>
-																{{ form.id_tipo_iva }}
-															</div>
-														</div>
-														<div class="row">
-															<div class="col-md-4">
-																<label class="form-label text-primary mb-0">
-																	{{ form.id_tipo_retencion_ib.label }}
-																</label>
-																{{ form.id_tipo_retencion_ib }}
-															</div>
-								
-															<div class="col-md-2">
-																<label class="form-label text-primary mb-0">
-																	{{ form.ib_alicuota.label }}
-																</label>
-																{{ form.ib_alicuota }}
-															</div>
-								
-															<div class="col-md-2 d-flex align-items-center">
-																<div class="form-check mt-lg-4">
-																	<label class="form-check-label form-label text-primary">
-																		{{ form.ib_exento }}
-																		{{ form.ib_exento.label }}
-																	</label>
-																</div>
-															</div>
-								
-															<div class="col-md-3 d-flex align-items-center">
-																<div class="form-check mt-lg-4">
-																	<label class="form-check-label form-label text-primary">
-																		{{ form.multilateral }}
-																		{{ form.multilateral.label }}
-																	</label>
-																</div>
-															</div>
-														</div>
-														<div class="row">
-															<div class="col-md-10">
-																<label class="form-label text-primary mb-0">
-																	{{ form.observacion_proveedor.label }}
-																</label>
-																{{ form.observacion_proveedor }}
-															</div>
-														</div>
+													</div>
+												</div>
+												<div class="row">
+													<div class="col-md-10">
+														<label class="form-label text-primary mb-0" for="{{ form.observacion_proveedor.id_for_label }}">
+															{{ form.observacion_proveedor.label }}
+														</label>
+														{{ form.observacion_proveedor }}
+													</div>
+												</div>
 											</div>
 										</div>
 									</div>
-		
+									
 								</div>
 								
 								<div class="container mt-3">

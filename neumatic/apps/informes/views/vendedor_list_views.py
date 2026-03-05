@@ -244,7 +244,7 @@ class VendedorInformeView(InformeFormView):
 		dominio = f"http://{self.request.get_host()}"
 		
 		param_left = {
-			"Estatus": estatus,
+			"Estatus": estatus.capitalize(),
 		}
 		param_right = {
 			"Ordenado por": orden,

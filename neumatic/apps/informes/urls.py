@@ -36,6 +36,8 @@ from .views.codigoretencion_list_views import *
 from .views.conceptobanco_list_views import *
 from .views.marketingorigen_list_views import *
 from .views.vlproductominimo_list_views import *
+from .views.descuentovendedor_list_views import *
+from .views.descuentorevendedor_list_views import *
 
 #-- Procesos.
 #- Lote 1:
@@ -498,6 +500,30 @@ urlpatterns = [
 		 name="vlproductominimo_vista_excel"),
 	path("vlproductominimo/vista-csv/", vlproductominimo_vista_csv, 
 		 name="vlproductominimo_vista_csv"),
+	
+	#-- Descuento Revendedor.
+	path('descuentovendedor_informe/', DescuentoVendedorInformeView.as_view(), 
+		 name='descuentovendedor_informe_list'),
+	path('descuentovendedor/vista-preliminar/', descuentovendedor_vista_pantalla, 
+		 name="descuentovendedor_vista_pantalla"),
+	path("descuentovendedor/vista-pdf/", descuentovendedor_vista_pdf, 
+		 name="descuentovendedor_vista_pdf"),
+	path("descuentovendedor/vista-excel/", descuentovendedor_vista_excel, 
+		 name="descuentovendedor_vista_excel"),
+	path("descuentovendedor/vista-csv/", descuentovendedor_vista_csv, 
+		 name="descuentovendedor_vista_csv"),
+	
+	#-- Descuento Revendedor.
+	path('descuentorevendedor_informe/', DescuentoRevendedorInformeView.as_view(), 
+		 name='descuentorevendedor_informe_list'),
+	path('descuentorevendedor/vista-preliminar/', descuentorevendedor_vista_pantalla, 
+		 name="descuentorevendedor_vista_pantalla"),
+	path("descuentorevendedor/vista-pdf/", descuentorevendedor_vista_pdf, 
+		 name="descuentorevendedor_vista_pdf"),
+	path("descuentorevendedor/vista-excel/", descuentorevendedor_vista_excel, 
+		 name="descuentorevendedor_vista_excel"),
+	path("descuentorevendedor/vista-csv/", descuentorevendedor_vista_csv, 
+		 name="descuentorevendedor_vista_csv"),
 	
 	#-- Informes-Procesos. --------------------------------------------------------
 	

@@ -18,7 +18,7 @@
 									data-bs-toggle="modal" 
 									data-bs-target="#helpModal" 
 									style="cursor: pointer;">
-									<i class="bi bi-question-lg"></i></a>
+								<i class="bi bi-question-lg"></i></a>
 								
 								<button type="button" class="btn-close btn-close-white" 
 									aria-label="Close"
@@ -51,28 +51,28 @@
 												
 												<div class="row">
 													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.estatus_alicuota_iva.id_for_label }}">
 															{{ form.estatus_alicuota_iva.label }}
 														</label>
 														{{ form.estatus_alicuota_iva }}
 													</div>
 													
 													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.codigo_alicuota.id_for_label }}">
 															{{ form.codigo_alicuota.label }}
 														</label>
 														{{ form.codigo_alicuota }}
 													</div>
 													
 													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.alicuota_iva.id_for_label }}">
 															{{ form.alicuota_iva.label }}
 														</label>
 														{{ form.alicuota_iva }}
 													</div>
 													
 													<div class="col-md-4">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.descripcion_alicuota_iva.id_for_label }}">
 															{{ form.descripcion_alicuota_iva.label }}
 														</label>
 														{{ form.descripcion_alicuota_iva }}

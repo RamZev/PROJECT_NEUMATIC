@@ -18,7 +18,7 @@
 									data-bs-toggle="modal" 
 									data-bs-target="#helpModal" 
 									style="cursor: pointer;">
-									<i class="bi bi-question-lg"></i></a>
+								<i class="bi bi-question-lg"></i></a>
 								
 								<button type="button" class="btn-close btn-close-white" 
 									aria-label="Close"
@@ -51,28 +51,28 @@
 												
 												<div class="row">
 													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.estatus_producto_estado.id_for_label }}">
 															{{ form.estatus_producto_estado.label }}
 														</label>
 														{{ form.estatus_producto_estado }}
 													</div>
 													
 													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.estado_producto.id_for_label }}">
 															{{ form.estado_producto.label }}
 														</label>
 														{{ form.estado_producto }}
 													</div>
 													
 													<div class="col-md-3">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.nombre_producto_estado.id_for_label }}">
 															{{ form.nombre_producto_estado.label }}
 														</label>
 														{{ form.nombre_producto_estado }}
 													</div>
 													
 													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.color.id_for_label }}">
 															{{ form.color.label }}
 														</label>
 														{{ form.color }}

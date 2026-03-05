@@ -273,7 +273,7 @@ class ClienteInformeView(InformeFormView):
 			"Localidad": localidad.nombre_localidad if localidad else "Todas",
 		}
 		param_right = {
-			"Estatus": estatus,
+			"Estatus": estatus.capitalize(),
 			"Ordenado por": orden,
 		}
 		if desde and hasta:

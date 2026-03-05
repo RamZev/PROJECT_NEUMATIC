@@ -18,7 +18,7 @@
 									data-bs-toggle="modal" 
 									data-bs-target="#helpModal" 
 									style="cursor: pointer;">
-									<i class="bi bi-question-lg"></i></a>
+								<i class="bi bi-question-lg"></i></a>
 								
 								<button type="button" class="btn-close btn-close-white" 
 									aria-label="Close"
@@ -33,7 +33,7 @@
 								
 								<div class="accordion" id="accordionPanelsStayOpenExample">
 									<!-- Estructura generada -->
-
+									
 									<div class="accordion-item">
 										<h2 class="accordion-header">
 											<button 
@@ -48,31 +48,31 @@
 										</h2>
 										<div class="accordion-collapse collapse show" id="Información_General">
 											<div class="accordion-body bg-secondary-subtle">
-		
+												
 												<div class="row">
 													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.estatus_cliente.id_for_label }}">
 															{{ form.estatus_cliente.label }}
 														</label>
 														{{ form.estatus_cliente }}
 													</div>
-						
+													
 													<div class="col-md-4">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.nombre_cliente.id_for_label }}">
 															{{ form.nombre_cliente.label }}
 														</label>
 														{{ form.nombre_cliente }}
 													</div>
-						
+													
 													<div class="col-md-4">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.domicilio_cliente.id_for_label }}">
 															{{ form.domicilio_cliente.label }}
 														</label>
 														{{ form.domicilio_cliente }}
 													</div>
 													
 													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.cliente_empresa.id_for_label }}">
 															{{ form.cliente_empresa.label }}
 														</label>
 														{{ form.cliente_empresa }}
@@ -82,21 +82,21 @@
 												<!-- *********************************************************** -->
 												<div class="row">
 													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.codigo_postal.id_for_label }}">
 															{{ form.codigo_postal.label }}
 														</label>
 														{{ form.codigo_postal }}
 													</div>
 													
 													<div class="col-md-4">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.id_provincia.id_for_label }}">
 															{{ form.id_provincia.label }}
 														</label>
 														{{ form.id_provincia }}
 													</div>
 													
 													<div class="col-md-4">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.id_localidad.id_for_label }}">
 															{{ form.id_localidad.label }}
 														</label>
 														{{ form.id_localidad }}
@@ -106,35 +106,35 @@
 												
 												<div class="row">
 													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.tipo_persona.id_for_label }}">
 															{{ form.tipo_persona.label }}
 														</label>
 														{{ form.tipo_persona }}
 													</div>
-						
+													
 													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.id_tipo_documento_identidad.id_for_label }}">
 															{{ form.id_tipo_documento_identidad.label }}
 														</label>
 														{{ form.id_tipo_documento_identidad }}
 													</div>
-						
+													
 													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.cuit.id_for_label }}">
 															{{ form.cuit.label }}
 														</label>
 														{{ form.cuit }}
 													</div>
-						
+													
 													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.id_tipo_iva.id_for_label }}">
 															{{ form.id_tipo_iva.label }}
 														</label>
 														{{ form.id_tipo_iva }}
 													</div>
-						
+													
 													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.condicion_venta.id_for_label }}">
 															{{ form.condicion_venta.label }}
 														</label>
 														{{ form.condicion_venta }}
@@ -143,35 +143,35 @@
 												<div class="row">
 													
 													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.telefono_cliente.id_for_label }}">
 															{{ form.telefono_cliente.label }}
 														</label>
 														{{ form.telefono_cliente }}
 													</div>
 													
 													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.fax_cliente.id_for_label }}">
 															{{ form.fax_cliente.label }}
 														</label>
 														{{ form.fax_cliente }}
 													</div>
 													
 													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.movil_cliente.id_for_label }}">
 															{{ form.movil_cliente.label }}
 														</label>
 														{{ form.movil_cliente }}
 													</div>
-						
+													
 													<div class="col-md-3">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.email_cliente.id_for_label }}">
 															{{ form.email_cliente.label }}
 														</label>
 														{{ form.email_cliente }}
 													</div>
-						
+													
 													<div class="col-md-3">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.email2_cliente.id_for_label }}">
 															{{ form.email2_cliente.label }}
 														</label>
 														{{ form.email2_cliente }}
@@ -179,35 +179,35 @@
 												</div>
 												<div class="row">
 													<div class="col-md-3">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.transporte_cliente.id_for_label }}">
 															{{ form.transporte_cliente.label }}
 														</label>
 														{{ form.transporte_cliente }}
 													</div>
-						
+													
 													<div class="col-md-3">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.id_vendedor.id_for_label }}">
 															{{ form.id_vendedor.label }}
 														</label>
 														{{ form.id_vendedor }}
 													</div>
-						
+													
 													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.fecha_nacimiento.id_for_label }}">
 															{{ form.fecha_nacimiento.label }}
 														</label>
 														{{ form.fecha_nacimiento }}
 													</div>
-						
+													
 													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.fecha_alta.id_for_label }}">
 															{{ form.fecha_alta.label }}
 														</label>
 														{{ form.fecha_alta }}
 													</div>
-						
+													
 													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.sexo.id_for_label }}">
 															{{ form.sexo.label }}
 														</label>
 														{{ form.sexo }}
@@ -215,7 +215,7 @@
 												</div>
 												<div class="row">
 													<div class="col-md-3">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.id_actividad.id_for_label }}">
 															{{ form.id_actividad.label }}
 														</label>
 														{{ form.id_actividad }}
@@ -224,31 +224,31 @@
 													<!--  -->
 													{% if form.instance.pk %}
 														<div class="col-md-3">
-															<label class="form-label text-primary mb-0">
+															<label class="form-label text-primary mb-0" for="{{ form.id_sucursal.id_for_label }}">
 																{{ form.id_sucursal.label }}
 															</label>
-															<input type="text" name="tp" value="{{ form.instance.id_sucursal }}" class="form-control form-control-sm border border-primary mb-2" disabled>
+															<input type="text" name="tp" id="{{ form.id_sucursal.id_for_label }}" value="{{ form.instance.id_sucursal }}" class="form-control form-control-sm border border-primary mb-2" disabled>
 														</div>
 													{% else %}
 														<div class="col-md-3">
-															<label class="form-label text-primary mb-0">
+															<label class="form-label text-primary mb-0" for="{{ form.id_sucursal.id_for_label }}">
 																{{ form.id_sucursal.label }}
 															</label>
 															{{ form.id_sucursal }}
-															<input type="hidden" name="id_sucursal" value="{{ form.id_sucursal.value }}">
+															<input type="hidden" name="id_sucursal" id="{{ form.id_sucursal.id_for_label }}" value="{{ form.id_sucursal.value }}">
 														</div>
 													{% endif %}
 													
 													<!--  -->
 													<div class="col-md-3">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.id_percepcion_ib.id_for_label }}">
 															{{ form.id_percepcion_ib.label }}
 														</label>
 														{{ form.id_percepcion_ib }}
 													</div>
-						
+													
 													<div class="col-md-3">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.numero_ib.id_for_label }}">
 															{{ form.numero_ib.label }}
 														</label>
 														{{ form.numero_ib }}
@@ -256,28 +256,28 @@
 												</div>
 												<div class="row">
 													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.vip.id_for_label }}">
 															{{ form.vip.label }}
 														</label>
 														{{ form.vip }}
 													</div>
-						
+													
 													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.mayorista.id_for_label }}">
 															{{ form.mayorista.label }}
 														</label>
 														{{ form.mayorista }}
 													</div>
-						
+													
 													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.sub_cuenta.id_for_label }}">
 															{{ form.sub_cuenta.label }}
 														</label>
 														{{ form.sub_cuenta }}
 													</div>
-						
+													
 													<div class="col-md-6">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.observaciones_cliente.id_for_label }}">
 															{{ form.observaciones_cliente.label }}
 														</label>
 														{{ form.observaciones_cliente }}
@@ -286,7 +286,7 @@
 											</div>
 										</div>
 									</div>
-		
+									
 									<div class="accordion-item">
 										<h2 class="accordion-header">
 											<button 
@@ -302,31 +302,31 @@
 										<div class="accordion-collapse collapse "
 											id="Black_List">
 											<div class="accordion-body bg-secondary-subtle">
-		
+												
 												<div class="row">
 													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.black_list.id_for_label }}">
 															{{ form.black_list.label }}
 														</label>
 														{{ form.black_list }}
 													</div>
-						
+													
 													<div class="col-md-5">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.black_list_motivo.id_for_label }}">
 															{{ form.black_list_motivo.label }}
 														</label>
 														{{ form.black_list_motivo }}
 													</div>
-						
+													
 													<div class="col-md-3">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.black_list_usuario.id_for_label }}">
 															{{ form.black_list_usuario.label }}
 														</label>
 														{{ form.black_list_usuario }}
 													</div>
-						
+													
 													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.fecha_baja.id_for_label }}">
 															{{ form.fecha_baja.label }}
 														</label>
 														{{ form.fecha_baja }}
@@ -335,7 +335,7 @@
 											</div>
 										</div>
 									</div>
-		
+									
 								</div>
 								
 								<div class="container mt-3">

@@ -168,7 +168,7 @@ class ProductoDepositoInformeView(InformeFormView):
 		
 		param_left = {}
 		param_right = {
-			"Estatus": estatus,
+			"Estatus": estatus.capitalize(),
 			"Sucursal": sucursal.nombre_sucursal if sucursal else "Todas"
 		}
 		

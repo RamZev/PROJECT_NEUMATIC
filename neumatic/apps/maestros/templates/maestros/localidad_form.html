@@ -18,7 +18,7 @@
 									data-bs-toggle="modal" 
 									data-bs-target="#helpModal" 
 									style="cursor: pointer;">
-									<i class="bi bi-question-lg"></i></a>
+								<i class="bi bi-question-lg"></i></a>
 								
 								<button type="button" class="btn-close btn-close-white" 
 									aria-label="Close"
@@ -32,7 +32,7 @@
 								{% csrf_token %}
 								<div class="accordion" id="accordionPanelsStayOpenExample">
 									<!-- Estructura generada -->
-
+									
 									<div class="accordion-item">
 										<h2 class="accordion-header">
 											<button 
@@ -51,28 +51,28 @@
 												
 												<div class="row">
 													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.estatus_localidad.id_for_label }}">
 															{{ form.estatus_localidad.label }}
 														</label>
 														{{ form.estatus_localidad }}
 													</div>
 													
 													<div class="col-md-3">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.nombre_localidad.id_for_label }}">
 															{{ form.nombre_localidad.label }}
 														</label>
 														{{ form.nombre_localidad }}
 													</div>
 													
 													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.codigo_postal.id_for_label }}">
 															{{ form.codigo_postal.label }}
 														</label>
 														{{ form.codigo_postal }}
 													</div>
 													
 													<div class="col-md-3">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.id_provincia.id_for_label }}">
 															{{ form.id_provincia.label }}
 														</label>
 														{{ form.id_provincia }}
@@ -81,7 +81,7 @@
 											</div>
 										</div>
 									</div>
-		
+									
 								</div>
 								
 								<div class="container mt-3">

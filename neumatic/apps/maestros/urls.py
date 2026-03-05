@@ -32,6 +32,8 @@ from .views.concepto_banco_views import *
 from .views.marketing_origen_views import *
 from .views.medidas_estados_views import *
 from .views.forma_pago_views import *
+from .views.descuento_vendedor_views import *
+from .views.descuento_revendedor_views import *
 
 #-- Catálogos
 from .views.cliente_views import *
@@ -281,12 +283,24 @@ urlpatterns = [
 	path('medidas_estados/nueva/', MedidasEstadosCreateView.as_view(), name='medidas_estados_create'),
 	path('medidas_estados/<int:pk>/editar/', MedidasEstadosUpdateView.as_view(), name='medidas_estados_update'),
 	path('medidas_estados/<int:pk>/eliminar/', MedidasEstadosDeleteView.as_view(), name='medidas_estados_delete'),
-
+	
 	#-- FormaPago.
 	path('forma_pago/', FormaPagoListView.as_view(), name='forma_pago_list'),
 	path('forma_pago/nueva/', FormaPagoCreateView.as_view(), name='forma_pago_create'),
 	path('forma_pago/<int:pk>/editar/', FormaPagoUpdateView.as_view(), name='forma_pago_update'),
 	path('forma_pago/<int:pk>/eliminar/', FormaPagoDeleteView.as_view(), name='forma_pago_delete'),	
+	
+	#-- Descuento Vendedor.
+	path('descuento_vendedor/', DescuentoVendedorListView.as_view(), name='descuento_vendedor_list'),
+	path('descuento_vendedor/nueva/', DescuentoVendedorCreateView.as_view(), name='descuento_vendedor_create'),
+	path('descuento_vendedor/<int:pk>/editar/', DescuentoVendedorUpdateView.as_view(), name='descuento_vendedor_update'),
+	path('descuento_vendedor/<int:pk>/eliminar/', DescuentoVendedorDeleteView.as_view(), name='descuento_vendedor_delete'),	
+
+	#-- Descuento Revendedor.
+	path('descuento_revendedor/', DescuentoRevendedorListView.as_view(), name='descuento_revendedor_list'),
+	path('descuento_revendedor/nueva/', DescuentoRevendedorCreateView.as_view(), name='descuento_revendedor_create'),
+	path('descuento_revendedor/<int:pk>/editar/', DescuentoRevendedorUpdateView.as_view(), name='descuento_revendedor_update'),
+	path('descuento_revendedor/<int:pk>/eliminar/', DescuentoRevendedorDeleteView.as_view(), name='descuento_revendedor_delete'),	
 
 
 	#-- Otras rutas.

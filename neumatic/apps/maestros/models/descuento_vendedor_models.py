@@ -1,6 +1,8 @@
 # neumatic\apps\maestros\models\descuento_vendedor_models.py
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
+from decimal import Decimal
+from django.core.exceptions import ValidationError
 
 from .base_gen_models import ModeloBaseGenerico
 from .base_models import ProductoMarca, ProductoFamilia
@@ -201,20 +203,6 @@ class DescuentoVendedor(ModeloBaseGenerico):
 		null=True, blank=True,
 		validators=[MinValueValidator(0.00),
 					MaxValueValidator(99.99)])
-	desc24 = models.DecimalField(
-		verbose_name="Desc. Col24",
-		max_digits=4,
-		decimal_places=2,
-		null=True, blank=True,
-		validators=[MinValueValidator(0.00),
-					MaxValueValidator(99.99)])
-	desc25 = models.DecimalField(
-		verbose_name="Desc. Col25",
-		max_digits=4,
-		decimal_places=2,
-		null=True, blank=True,
-		validators=[MinValueValidator(0.00),
-					MaxValueValidator(99.99)])
 	
 	class Meta:
 		db_table = 'descuento_vendedor'
@@ -248,10 +236,11 @@ class DescuentoRevendedor(ModeloBaseGenerico):
 		verbose_name="Descuento",
 		max_digits=4,
 		decimal_places=2,
-		null=True, blank=True,
-		validators=[MinValueValidator(0.00),
-					MaxValueValidator(99.99)],
-		default=0.00,)
+		null=True,
+		blank=True,
+		validators=[MinValueValidator(Decimal('0.01')),
+					MaxValueValidator(Decimal('99.99'))]
+	)
 	
 	class Meta:
 		db_table = 'descuento_revendedor'
@@ -261,3 +250,4 @@ class DescuentoRevendedor(ModeloBaseGenerico):
 	
 	def __str__(self):
 		return f'{self.id_marca} - {self.id_familia}'
+

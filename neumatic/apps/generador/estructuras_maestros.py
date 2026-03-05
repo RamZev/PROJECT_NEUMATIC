@@ -772,53 +772,60 @@ estructura_campos = {
 			],
 		}
 	},	
+	
+	'descuento_revendedor': {
+		'Información Descuento Revendedor': {
+			'fila_1': [
+				{'field_name': 'estatus_descuento_revendedor', 'columna': 2, 'design': None},
+				{'field_name': 'id_marca', 'columna': 4, 'design': None},
+				{'field_name': 'id_familia', 'columna': 4, 'design': None},
+				{'field_name': 'descuento', 'columna': 2, 'design': None},
+			],
+		}
+	},	
+	
+	'descuento_vendedor': {
+		'Información Descuento Vendedor': {
+			'fila_1': [
+				{'field_name': 'estatus_descuento_vendedor', 'columna': 2, 'design': None},
+				{'field_name': 'id_marca', 'columna': 4, 'design': None},
+				{'field_name': 'id_familia', 'columna': 4, 'design': None},
+			],
+			'fila_2': [
+				{'field_name': 'desc1', 'columna': 2, 'design': None},
+				{'field_name': 'desc2', 'columna': 2, 'design': None},
+				{'field_name': 'desc3', 'columna': 2, 'design': None},
+				{'field_name': 'desc4', 'columna': 2, 'design': None},
+				{'field_name': 'desc5', 'columna': 2, 'design': None},
+			],
+			'fila_3': [
+				{'field_name': 'desc6', 'columna': 2, 'design': None},
+				{'field_name': 'desc7', 'columna': 2, 'design': None},
+				{'field_name': 'desc8', 'columna': 2, 'design': None},
+				{'field_name': 'desc9', 'columna': 2, 'design': None},
+				{'field_name': 'desc10', 'columna': 2, 'design': None},
+			],
+			'fila_4': [
+				{'field_name': 'desc11', 'columna': 2, 'design': None},
+				{'field_name': 'desc12', 'columna': 2, 'design': None},
+				{'field_name': 'desc13', 'columna': 2, 'design': None},
+				{'field_name': 'desc14', 'columna': 2, 'design': None},
+				{'field_name': 'desc15', 'columna': 2, 'design': None},
+			],
+			'fila_5': [
+				{'field_name': 'desc16', 'columna': 2, 'design': None},
+				{'field_name': 'desc17', 'columna': 2, 'design': None},
+				{'field_name': 'desc18', 'columna': 2, 'design': None},
+				{'field_name': 'desc19', 'columna': 2, 'design': None},
+				{'field_name': 'desc20', 'columna': 2, 'design': None},
+			],
+			'fila_6': [
+				{'field_name': 'desc21', 'columna': 2, 'design': None},
+				{'field_name': 'desc22', 'columna': 2, 'design': None},
+				{'field_name': 'desc23', 'columna': 2, 'design': None},
+				{'field_name': 'desc24', 'columna': 2, 'design': None},
+				{'field_name': 'desc25', 'columna': 2, 'design': None},
+			],
+		}
+	},	
 }
-
-
-'''
-Acordeón 1: Información Compras - Otros
-	Linea 1
-		estatus_comprabante = models.BooleanField(verbose_name="Estatus",default=True,choices=ESTATUS_GEN)
-		id_sucursal = models.ForeignKey(Sucursal,on_delete=models.PROTECT,verbose_name="Sucursal",null=True,blank=True)
-		id_punto_venta = models.ForeignKey(PuntoVenta,on_delete=models.PROTECT,verbose_name="Punto de Venta",null=True,blank=True)
-		id_deposito = models.ForeignKey(ProductoDeposito,on_delete=models.PROTECT,verbose_name="Depósito",null=True,blank=True)
-
-	Linea 2
-		id_comprobante_compra = models.ForeignKey(ComprobanteCompra,on_delete=models.PROTECT,verbose_name="Comprobante",null=True,blank=True)
-		compro = models.CharField(verbose_name="Compro",max_length=3,null=True,blank=True) 
-		letra_comprobante = models.CharField(verbose_name="Letra",max_length=1,null=True,blank=True)
-		numero_comprobante = models.IntegerField(verbose_name="Número",null=True,blank=True)
-		fecha_comprobante = models.DateField(verbose_name="Fecha Emisión",null=True,blank=True)
-		
-	Linea 3
-		id_proveedor = models.ForeignKey(Proveedor,on_delete=models.PROTECT,verbose_name="Proveedor",null=True,blank=True)
-		condicion_comprobante = models.IntegerField(verbose_name="Condición de Compra",default=1,choices=CONDICION_VENTA)
-		fecha_registro = models.DateField(verbose_name="Fecha Registro",null=True,blank=True)
-		fecha_vencimiento = models.DateField(verbose_name="Fecha Vencimiento",null=True,blank=True)
-	
-	Linea 4
-		id_comprobante_venta = models.ForeignKey(ComprobanteVenta,on_delete=models.PROTECT,verbose_name="Comp. Compra",null=True,blank=True)
-		numero_comprobante_venta = models.IntegerField(verbose_name="Número C/Compra",null=True,blank=True)
-		fecha_comprobante_venta = models.DateField(verbose_name="Fecha C/Compra",null=True,blank=True)
-    	total_comprobante_venta = models.DecimalField(verbose_name="Total C/Compra",max_digits=14,decimal_places=2,null=True,blank=True,default=0.0)
-	
-	Linea 5 (Montos)
-		exento = models.DecimalField(verbose_name="Exento",max_digits=14,decimal_places=2,null=True,blank=True,default=0.0)
-		alicuota_iva = models.DecimalField(verbose_name="Alicuota IVA",max_digits=4,decimal_places=2,null=True,blank=True,default=0.0)
-		retencion_ingreso_bruto = models.DecimalField(verbose_name="Retención Ingreso Bruto",max_digits=14,decimal_places=2,null=True,blank=True,default=0.0)
-		total = models.DecimalField(verbose_name="Total",max_digits=14,decimal_places=2,null=True,blank=True,default=0.0)
-
-
-
-retencion_iva = models.DecimalField(verbose_name="Retención IVA",max_digits=14,decimal_places=2,null=True,blank=True,default=0.0)
-retencion_ganancia = models.DecimalField(verbose_name="Retención Ganancia",max_digits=14,decimal_places=2,null=True,blank=True,default=0.0)
-sellado = models.DecimalField(verbose_name="Sellado",max_digits=14,decimal_places=2,null=True,blank=True,default=0.0)
-percepcion_iva = models.DecimalField(verbose_name="Percepción IVA",max_digits=14,decimal_places=2,null=True,blank=True,default=0.0)
-percepcion_ingreso_bruto = models.DecimalField(verbose_name="Percepción Ingreso Bruto",max_digits=14,decimal_places=2,null=True,blank=True,default=0.0)
-iva = models.DecimalField(verbose_name="Iva",max_digits=14,decimal_places=2,null=True,blank=True,default=0.0)
-entrega = models.DecimalField(verbose_name="Entrega",max_digits=14,decimal_places=2,null=True,blank=True,default=0.0)
-
-documento_asociado = models.CharField(verbose_name="Documento Asociado",max_length=2,default="",null=True,blank=True)
-observa_comprobante = models.TextField(verbose_name="Observaciones",null=True,blank=True)
-
-'''
