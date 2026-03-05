@@ -98,7 +98,7 @@ for seccion, filas in estructura_campos.items():
 								html_code += f"""					
 													<div class="col-md-{columna} d-flex align-items-center">
 														<div class="form-check mt-lg-3">
-															<label class="form-check-label form-label text-primary">
+															<label class="form-check-label form-label text-primary" for="{{{{ form.{field_name}.id_for_label }}}}">
 																{{{{ form.{field_name} }}}}
 																{{{{ form.{field_name}.label }}}}
 															</label>
@@ -108,7 +108,7 @@ for seccion, filas in estructura_campos.items():
 							case _:
 								html_code += f"""					
 													<div class="col-md-{columna}">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{{{ form.{field_name}.id_for_label }}}}">
 															{{{{ form.{field_name}.label }}}}
 														</label>
 														{{{{ form.{field_name} }}}}

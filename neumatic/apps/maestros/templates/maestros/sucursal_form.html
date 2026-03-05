@@ -18,7 +18,7 @@
 									data-bs-toggle="modal" 
 									data-bs-target="#helpModal" 
 									style="cursor: pointer;">
-									<i class="bi bi-question-lg"></i></a>
+								<i class="bi bi-question-lg"></i></a>
 								
 								<button type="button" class="btn-close btn-close-white" 
 									aria-label="Close"
@@ -32,7 +32,7 @@
 								{% csrf_token %}
 								<div class="accordion" id="accordionPanelsStayOpenExample">
 									<!-- Estructura generada -->
-
+									
 									<div class="accordion-item">
 										<h2 class="accordion-header">
 											<button 
@@ -48,24 +48,24 @@
 										<div class="accordion-collapse collapse show"
 											id="Información_Sucursal">
 											<div class="accordion-body bg-secondary-subtle">
-		
+												
 												<div class="row">
 													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.estatus_sucursal.id_for_label }}">
 															{{ form.estatus_sucursal.label }}
 														</label>
 														{{ form.estatus_sucursal }}
 													</div>
-						
+													
 													<div class="col-md-4">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.nombre_sucursal.id_for_label }}">
 															{{ form.nombre_sucursal.label }}
 														</label>
 														{{ form.nombre_sucursal }}
 													</div>
-						
+													
 													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.codigo_michelin.id_for_label }}">
 															{{ form.codigo_michelin.label }}
 														</label>
 														{{ form.codigo_michelin }}
@@ -73,28 +73,28 @@
 												</div>
 												<div class="row">
 													<div class="col-md-4">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.domicilio_sucursal.id_for_label }}">
 															{{ form.domicilio_sucursal.label }}
 														</label>
 														{{ form.domicilio_sucursal }}
 													</div>
-
+													
 													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.codigo_postal.id_for_label }}">
 															{{ form.codigo_postal.label }}
 														</label>
 														{{ form.codigo_postal }}
 													</div>
-
+													
 													<div class="col-md-3">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.id_provincia.id_for_label }}">
 															{{ form.id_provincia.label }}
 														</label>
 														{{ form.id_provincia }}
 													</div>
-						
+													
 													<div class="col-md-3">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.id_localidad.id_for_label }}">
 															{{ form.id_localidad.label }}
 														</label>
 														{{ form.id_localidad }}
@@ -102,21 +102,21 @@
 												</div>
 												<div class="row">
 													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.telefono_sucursal.id_for_label }}">
 															{{ form.telefono_sucursal.label }}
 														</label>
 														{{ form.telefono_sucursal }}
 													</div>
-						
+													
 													<div class="col-md-4">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.email_sucursal.id_for_label }}">
 															{{ form.email_sucursal.label }}
 														</label>
 														{{ form.email_sucursal }}
 													</div>
-						
+													
 													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.inicio_actividad.id_for_label }}">
 															{{ form.inicio_actividad.label }}
 														</label>
 														{{ form.inicio_actividad }}
@@ -125,7 +125,7 @@
 											</div>
 										</div>
 									</div>
-		
+									
 								</div>
 								
 								<div class="container mt-3">

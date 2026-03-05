@@ -18,7 +18,7 @@
 									data-bs-toggle="modal" 
 									data-bs-target="#helpModal" 
 									style="cursor: pointer;">
-									<i class="bi bi-question-lg"></i></a>
+								<i class="bi bi-question-lg"></i></a>
 								
 								<button type="button" class="btn-close btn-close-white" 
 									aria-label="Close"
@@ -32,7 +32,7 @@
 								{% csrf_token %}
 								<div class="accordion" id="accordionPanelsStayOpenExample">
 									<!-- Estructura generada -->
-
+									
 									<div class="accordion-item">
 										<h2 class="accordion-header">
 											<button 
@@ -48,17 +48,17 @@
 										<div class="accordion-collapse collapse show"
 											id="Información_General">
 											<div class="accordion-body bg-secondary-subtle">
-		
+												
 												<div class="row">
 													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.estatus_operario.id_for_label }}">
 															{{ form.estatus_operario.label }}
 														</label>
 														{{ form.estatus_operario }}
 													</div>
-						
+													
 													<div class="col-md-4">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.nombre_operario.id_for_label }}">
 															{{ form.nombre_operario.label }}
 														</label>
 														{{ form.nombre_operario }}
@@ -66,14 +66,14 @@
 												</div>
 												<div class="row">
 													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.telefono_operario.id_for_label }}">
 															{{ form.telefono_operario.label }}
 														</label>
 														{{ form.telefono_operario }}
 													</div>
-						
+													
 													<div class="col-md-4">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.email_operario.id_for_label }}">
 															{{ form.email_operario.label }}
 														</label>
 														{{ form.email_operario }}

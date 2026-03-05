@@ -102,6 +102,12 @@ table th, table td {
 table th.numeric, table td.numeric {
 	text-align: right;
 }
+table th.pl-15, table td.pl-15 {
+	padding-left: 15px;
+}
+table th.pl-10, table td.pl-10 {
+	padding-left: 10px;
+}
 .compact-line-spacing {
 	line-height: 1.1;
 }

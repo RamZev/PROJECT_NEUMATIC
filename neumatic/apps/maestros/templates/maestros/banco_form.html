@@ -18,7 +18,7 @@
 									data-bs-toggle="modal" 
 									data-bs-target="#helpModal" 
 									style="cursor: pointer;">
-									<i class="bi bi-question-lg"></i></a>
+								<i class="bi bi-question-lg"></i></a>
 								
 								<button type="button" class="btn-close btn-close-white" 
 									aria-label="Close"
@@ -52,28 +52,28 @@
 												<div class="row">
 													
 													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.estatus_banco.id_for_label }}">
 															{{ form.estatus_banco.label }}
 														</label>
 														{{ form.estatus_banco }}
 													</div>
 													
 													<div class="col-md-4">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.nombre_banco.id_for_label }}">
 															{{ form.nombre_banco.label }}
 														</label>
 														{{ form.nombre_banco }}
 													</div>
 													
 													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.codigo_banco.id_for_label }}">
 															{{ form.codigo_banco.label }}
 														</label>
 														{{ form.codigo_banco }}
 													</div>
 													
 													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.cuit_banco.id_for_label }}">
 															{{ form.cuit_banco.label }}
 														</label>
 														{{ form.cuit_banco }}

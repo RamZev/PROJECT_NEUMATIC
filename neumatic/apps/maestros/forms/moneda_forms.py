@@ -1,6 +1,5 @@
 # neumatic\apps\maestros\forms\moneda_forms.py
 from django import forms
-from decimal import Decimal
 from .crud_forms_generics import CrudGenericForm
 from ..models.base_models import Moneda
 from diseno_base.diseno_bootstrap import (

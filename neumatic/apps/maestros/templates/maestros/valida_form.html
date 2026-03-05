@@ -18,7 +18,7 @@
 									data-bs-toggle="modal" 
 									data-bs-target="#helpModal" 
 									style="cursor: pointer;">
-									<i class="bi bi-question-lg"></i></a>
+								<i class="bi bi-question-lg"></i></a>
 								
 								<button type="button" class="btn-close btn-close-white" 
 									aria-label="Close"
@@ -50,75 +50,75 @@
 											<div class="accordion-body bg-secondary-subtle">
 												<div class="row">
 													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.estatus_valida.id_for_label }}">
 															{{ form.estatus_valida.label }}
 														</label>
 														{{ form.estatus_valida }}
 													</div>
-
+													
 													<div class="col-md-4">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.id_sucursal.id_for_label }}">
 															{{ form.id_sucursal.label }}
 														</label>
 														{{ form.id_sucursal }}
 													</div>
 													
 													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.fecha_valida.id_for_label }}">
 															{{ form.fecha_valida.label }}
 														</label>
 														{{ form.fecha_valida }}
 													</div>
-
+													
 													<div class="col-md-1">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.hora_valida.id_for_label }}">
 															{{ form.hora_valida.label }}
 														</label>
 														{{ form.hora_valida }}
 													</div>
-
+													
 													<div class="col-md-3">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.solicitado.id_for_label }}">
 															{{ form.solicitado.label }}
 														</label>
 														{{ form.solicitado }}
 													</div>
 													
 												</div>
-
+												
 												<div class="row">
 													<div class="col-md-6">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.comentario.id_for_label }}">
 															{{ form.comentario.label }}
 														</label>
 														{{ form.comentario }}
 													</div>
-
+													
 													<div class="col-md-6">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.id_cliente.id_for_label }}">
 															{{ form.id_cliente.label }}
 														</label>
 														{{ form.id_cliente }}
 													</div>
 												</div>
-
+												
 												<div class="row">
 													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.compro.id_for_label }}">
 															{{ form.compro.label }}
 														</label>
 														{{ form.compro }}
 													</div>
-
+													
 													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.numero_comprobante.id_for_label }}">
 															{{ form.numero_comprobante.label }}
 														</label>
 														{{ form.numero_comprobante }}
 													</div>
-
+													
 													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.hs.id_for_label }}">
 															{{ form.hs.label }}
 														</label>
 														{{ form.hs }}

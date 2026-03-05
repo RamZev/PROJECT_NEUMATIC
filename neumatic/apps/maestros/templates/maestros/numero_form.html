@@ -18,7 +18,7 @@
 									data-bs-toggle="modal" 
 									data-bs-target="#helpModal" 
 									style="cursor: pointer;">
-									<i class="bi bi-question-lg"></i></a>
+								<i class="bi bi-question-lg"></i></a>
 								
 								<button type="button" class="btn-close btn-close-white" 
 									aria-label="Close"
@@ -32,7 +32,7 @@
 								{% csrf_token %}
 								<div class="accordion" id="accordionPanelsStayOpenExample">
 									<!-- Estructura generada -->
-
+									
 									<div class="accordion-item">
 										<h2 class="accordion-header">
 											<button 
@@ -48,24 +48,24 @@
 										<div class="accordion-collapse collapse show"
 											id="Información_Numeración_de_Comprobantes">
 											<div class="accordion-body bg-secondary-subtle">
-		
+												
 												<div class="row">
 													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.estatus_numero.id_for_label }}">
 															{{ form.estatus_numero.label }}
 														</label>
 														{{ form.estatus_numero }}
 													</div>
-						
+													
 													<div class="col-md-4">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.id_sucursal.id_for_label }}">
 															{{ form.id_sucursal.label }}
 														</label>
 														{{ form.id_sucursal }}
 													</div>
-						
+													
 													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.id_punto_venta.id_for_label }}">
 															{{ form.id_punto_venta.label }}
 														</label>
 														{{ form.id_punto_venta }}
@@ -73,35 +73,35 @@
 												</div>
 												<div class="row">
 													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.comprobante.id_for_label }}">
 															{{ form.comprobante.label }}
 														</label>
 														{{ form.comprobante }}
 													</div>
-						
+													
 													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.letra.id_for_label }}">
 															{{ form.letra.label }}
 														</label>
 														{{ form.letra }}
 													</div>
-						
+													
 													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.numero.id_for_label }}">
 															{{ form.numero.label }}
 														</label>
 														{{ form.numero }}
 													</div>
-						
+													
 													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.lineas.id_for_label }}">
 															{{ form.lineas.label }}
 														</label>
 														{{ form.lineas }}
 													</div>
-						
+													
 													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.copias.id_for_label }}">
 															{{ form.copias.label }}
 														</label>
 														{{ form.copias }}
@@ -110,7 +110,7 @@
 											</div>
 										</div>
 									</div>
-		
+									
 								</div>
 								
 								<div class="container mt-3">

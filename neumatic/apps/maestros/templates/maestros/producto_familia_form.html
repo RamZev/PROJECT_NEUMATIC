@@ -18,7 +18,7 @@
 									data-bs-toggle="modal" 
 									data-bs-target="#helpModal" 
 									style="cursor: pointer;">
-									<i class="bi bi-question-lg"></i></a>
+								<i class="bi bi-question-lg"></i></a>
 								
 								<button type="button" class="btn-close btn-close-white" 
 									aria-label="Close"
@@ -32,7 +32,7 @@
 								{% csrf_token %}
 								<div class="accordion" id="accordionPanelsStayOpenExample">
 									<!-- Estructura generada -->
-
+									
 									<div class="accordion-item">
 										<h2 class="accordion-header">
 											<button 
@@ -48,52 +48,52 @@
 										<div class="accordion-collapse collapse show"
 											id="Información_Producto_Familia">
 											<div class="accordion-body bg-secondary-subtle">
-		
-														<div class="row">
-															<div class="col-md-2">
-																<label class="form-label text-primary mb-0">
-																	{{ form.estatus_producto_familia.label }}
-																</label>
-																{{ form.estatus_producto_familia }}
-															</div>
-								
-															<div class="col-md-4">
-																<label class="form-label text-primary mb-0">
-																	{{ form.nombre_producto_familia.label }}
-																</label>
-																{{ form.nombre_producto_familia }}
-															</div>
-								
-															<div class="col-md-2">
-																<label class="form-label text-primary mb-0">
-																	{{ form.comision_operario.label }}
-																</label>
-																{{ form.comision_operario }}
-															</div>
+												
+												<div class="row">
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.estatus_producto_familia.id_for_label }}">
+															{{ form.estatus_producto_familia.label }}
+														</label>
+														{{ form.estatus_producto_familia }}
+													</div>
+													
+													<div class="col-md-4">
+														<label class="form-label text-primary mb-0" for="{{ form.nombre_producto_familia.id_for_label }}">
+															{{ form.nombre_producto_familia.label }}
+														</label>
+														{{ form.nombre_producto_familia }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.comision_operario.id_for_label }}">
+															{{ form.comision_operario.label }}
+														</label>
+														{{ form.comision_operario }}
+													</div>
+												</div>
+												<div class="row">
+													<div class="col-md-2 d-flex align-items-center">
+														<div class="form-check mt-lg-4">
+															<label class="form-check-label form-label text-primary">
+																{{ form.info_michelin_auto }}
+																{{ form.info_michelin_auto.label }}
+															</label>
 														</div>
-														<div class="row">
-															<div class="col-md-2 d-flex align-items-center">
-																<div class="form-check mt-lg-4">
-																	<label class="form-check-label form-label text-primary">
-																		{{ form.info_michelin_auto }}
-																		{{ form.info_michelin_auto.label }}
-																	</label>
-																</div>
-															</div>
-								
-															<div class="col-md-2 d-flex align-items-center">
-																<div class="form-check mt-lg-4">
-																	<label class="form-check-label form-label text-primary">
-																		{{ form.info_michelin_camion }}
-																		{{ form.info_michelin_camion.label }}
-																	</label>
-																</div>
-															</div>
+													</div>
+													
+													<div class="col-md-2 d-flex align-items-center">
+														<div class="form-check mt-lg-4">
+															<label class="form-check-label form-label text-primary">
+																{{ form.info_michelin_camion }}
+																{{ form.info_michelin_camion.label }}
+															</label>
 														</div>
+													</div>
+												</div>
 											</div>
 										</div>
 									</div>
-		
+									
 								</div>
 								
 								<div class="container mt-3">

@@ -19,7 +19,7 @@
 									data-bs-target="#helpModal" 
 									title="Ayuda"
 									style="cursor: pointer;">
-									<i class="bi bi-question-lg"></i></a>
+								<i class="bi bi-question-lg"></i></a>
 								
 								<button type="button" 
 									class="btn-close btn-close-white" 
@@ -35,7 +35,7 @@
 								{% csrf_token %}
 								<div class="accordion" id="accordionPanelsStayOpenExample">
 									<!-- Estructura generada -->
-
+									
 									<div class="accordion-item">
 										<h2 class="accordion-header">
 											<button 
@@ -54,21 +54,21 @@
 												
 												<div class="row">
 													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.estatus_producto.id_for_label }}">
 															{{ form.estatus_producto.label }}
 														</label>
 														{{ form.estatus_producto }}
 													</div>
-						
+													
 													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.codigo_producto.id_for_label }}">
 															{{ form.codigo_producto.label }}
 														</label>
 														{{ form.codigo_producto }}
 													</div>
-						
+													
 													<div class="col-md-4">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.nombre_producto.id_for_label }}">
 															{{ form.nombre_producto.label }}
 														</label>
 														{{ form.nombre_producto }}
@@ -78,7 +78,7 @@
 													 
 													{% if form.instance.pk %}
 														<div class="col-md-2">
-															<label class="form-label text-primary mb-0">
+															<label class="form-label text-primary mb-0" for="{{ form.tipo_producto.id_for_label }}">
 																{{ form.tipo_producto.label }}
 															</label>
 															<!-- Campo oculto para el valor real -->
@@ -91,7 +91,7 @@
 														</div>
 													{% else %}
 														<div class="col-md-2">
-															<label class="form-label text-primary mb-0">
+															<label class="form-label text-primary mb-0" for="{{ form.tipo_producto.id_for_label }}">
 																{{ form.tipo_producto.label }}
 															</label>
 															{{ form.tipo_producto }}
@@ -101,7 +101,7 @@
 													<!-- ******** -->
 													 
 													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.id_producto_estado.id_for_label }}">
 															{{ form.id_producto_estado.label }}
 														</label>
 														{{ form.id_producto_estado }}
@@ -110,21 +110,21 @@
 												</div>
 												<div class="row">
 													<div class="col-md-4">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.id_familia.id_for_label }}">
 															{{ form.id_familia.label }}
 														</label>
 														{{ form.id_familia }}
 													</div>
-						
+													
 													<div class="col-md-4">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.id_marca.id_for_label }}">
 															{{ form.id_marca.label }}
 														</label>
 														{{ form.id_marca }}
 													</div>
-						
+													
 													<div class="col-md-4">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.id_modelo.id_for_label }}">
 															{{ form.id_modelo.label }}
 														</label>
 														{{ form.id_modelo }}
@@ -132,35 +132,35 @@
 												</div>
 												<div class="row">
 													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.id_cai.id_for_label }}">
 															{{ form.id_cai.label }}
 														</label>
 														{{ form.id_cai }}
 													</div>
-						
+													
 													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.medida.id_for_label }}">
 															{{ form.medida.label }}
 														</label>
 														{{ form.medida }}
 													</div>
-						
+													
 													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.segmento.id_for_label }}">
 															{{ form.segmento.label }}
 														</label>
 														{{ form.segmento }}
 													</div>
-						
+													
 													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.unidad.id_for_label }}">
 															{{ form.unidad.label }}
 														</label>
 														{{ form.unidad }}
 													</div>
-						
+													
 													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.fecha_fabricacion.id_for_label }}">
 															{{ form.fecha_fabricacion.label }}
 														</label>
 														{{ form.fecha_fabricacion }}
@@ -168,28 +168,28 @@
 												</div>
 												<div class="row">
 													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.costo.id_for_label }}">
 															{{ form.costo.label }}
 														</label>
 														{{ form.costo }}
 													</div>
 													
 													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.id_alicuota_iva.id_for_label }}">
 															{{ form.id_alicuota_iva.label }}
 														</label>
 														{{ form.id_alicuota_iva }}
 													</div>
 													
 													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.precio.id_for_label }}">
 															{{ form.precio.label }}
 														</label>
 														{{ form.precio }}
 													</div>
 													
 													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.descuento.id_for_label }}">
 															{{ form.descuento.label }}
 														</label>
 														{{ form.descuento }}
@@ -197,28 +197,28 @@
 												</div>
 												<div class="row">
 													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.stock.id_for_label }}">
 															{{ form.stock.label }}
 														</label>
 														{{ form.stock }}
 													</div>
 													
 													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.minimo.id_for_label }}">
 															{{ form.minimo.label }}
 														</label>
 														{{ form.minimo }}
 													</div>
 													
 													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.despacho_1.id_for_label }}">
 															{{ form.despacho_1.label }}
 														</label>
 														{{ form.despacho_1 }}
 													</div>
 													
 													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.despacho_2.id_for_label }}">
 															{{ form.despacho_2.label }}
 														</label>
 														{{ form.despacho_2 }}
@@ -226,7 +226,7 @@
 												</div>
 												<div class="row">
 													<div class="col-md-4">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.descripcion_producto.id_for_label }}">
 															{{ form.descripcion_producto.label }}
 														</label>
 														{{ form.descripcion_producto }}
@@ -549,7 +549,7 @@
 			
 			// Inicializa el estado en función del valor actual.
 			toggleObligaOperario();
-
+			
 			// Escucha cambios en el campo tipo_producto (solo en modo creación)
 			let tipoProductoSelect = document.getElementById("id_tipo_producto");
 			if (tipoProductoSelect) {

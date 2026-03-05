@@ -18,7 +18,7 @@
 									data-bs-toggle="modal" 
 									data-bs-target="#helpModal" 
 									style="cursor: pointer;">
-									<i class="bi bi-question-lg"></i></a>
+								<i class="bi bi-question-lg"></i></a>
 								
 								<button type="button" class="btn-close btn-close-white" 
 									aria-label="Close"
@@ -32,7 +32,7 @@
 								{% csrf_token %}
 								<div class="accordion" id="accordionPanelsStayOpenExample">
 									<!-- Estructura generada -->
-
+									
 									<div class="accordion-item">
 										<h2 class="accordion-header">
 											<button 
@@ -48,17 +48,17 @@
 										<div class="accordion-collapse collapse show"
 											id="Información_Parámetros">
 											<div class="accordion-body bg-secondary-subtle">
-		
+												
 												<div class="row">
 													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.estatus_parametro.id_for_label }}">
 															{{ form.estatus_parametro.label }}
 														</label>
 														{{ form.estatus_parametro }}
 													</div>
-						
+													
 													<div class="col-md-8">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.id_empresa.id_for_label }}">
 															{{ form.id_empresa.label }}
 														</label>
 														{{ form.id_empresa }}
@@ -66,35 +66,35 @@
 												</div>
 												<div class="row">
 													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.interes.id_for_label }}">
 															{{ form.interes.label }}
 														</label>
 														{{ form.interes }}
 													</div>
-						
+													
 													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.interes_dolar.id_for_label }}">
 															{{ form.interes_dolar.label }}
 														</label>
 														{{ form.interes_dolar }}
 													</div>
-						
+													
 													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.cotizacion_dolar.id_for_label }}">
 															{{ form.cotizacion_dolar.label }}
 														</label>
 														{{ form.cotizacion_dolar }}
 													</div>
-						
+													
 													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.dias_vencimiento.id_for_label }}">
 															{{ form.dias_vencimiento.label }}
 														</label>
 														{{ form.dias_vencimiento }}
 													</div>
-						
+													
 													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.descuento_maximo.id_for_label }}">
 															{{ form.descuento_maximo.label }}
 														</label>
 														{{ form.descuento_maximo }}
@@ -103,7 +103,7 @@
 											</div>
 										</div>
 									</div>
-		
+									
 								</div>
 								
 								<div class="container mt-3">

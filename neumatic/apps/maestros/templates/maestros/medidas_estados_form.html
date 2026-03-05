@@ -19,7 +19,7 @@
 									data-bs-toggle="modal" 
 									data-bs-target="#helpModal" 
 									style="cursor: pointer;">
-									<i class="bi bi-question-lg"></i></a>
+								<i class="bi bi-question-lg"></i></a>
 								
 								<button type="button" class="btn-close btn-close-white" 
 									aria-label="Close"
@@ -53,7 +53,7 @@
 												<div class="row">
 													
 													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.id_cai.id_for_label }}">
 															{{ form.id_cai.label }}
 														</label>
 														{{ form.id_cai }}
@@ -61,7 +61,7 @@
 													
 													<!-- Campos de solo lectura que se llenarán con JavaScript -->
 													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="medida-display">
 															Medida
 														</label>
 														<input type="text" class="form-control form-control-sm border border-primary mb-2" 
@@ -70,7 +70,7 @@
 													</div>
 													
 													<div class="col-md-4">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="nombre-producto-display">
 															Descripción Producto
 														</label>
 														<input type="text" class="form-control form-control-sm border border-primary mb-2" 
@@ -82,14 +82,14 @@
 												<div class="row">
 													
 													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.stock_desde.id_for_label }}">
 															{{ form.stock_desde.label }}
 														</label>
 														{{ form.stock_desde }}
 													</div>
 													
 													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="{{ form.stock_hasta.id_for_label }}">
 															{{ form.stock_hasta.label }}
 														</label>
 														{{ form.stock_hasta }}
@@ -100,10 +100,11 @@
 													
 													<!-- Mostrar el estado como campo de solo lectura -->
 													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="estado-display">
 															Estado
 														</label>
 														<input type="text" class="form-control form-control-sm border border-primary mb-2 estado-color fw-bold" 
+															id="estado-display"
 															value="POCAS" readonly 
 															style="background-color: {% get_color_estado 'POCAS' %};">
 													</div>
@@ -113,21 +114,22 @@
 												<div class="row align-items-center">
 													
 													<div class="col-md-2 text-end">
-														<label class="form-label text-primary mb-0 mt-3">
+														<span class="form-label text-primary mb-0 mt-3">
 															<b>Menos de :</b>
-														</label>
+														</span>
 													</div>
 													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="stock_desde_display">
 															{{ form.stock_desde.label }}
 														</label>
 														<input type="number" id="stock_desde_display" readonly class="form-control form-control-sm border border-primary mb-2" style="background-color: #d4eaff;">
 													</div>
 													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
-																Estado
+														<label class="form-label text-primary mb-0" for="estado-faltantes-display">
+															Estado
 														</label>
 														<input type="text" class="form-control form-control-sm border border-primary mb-2 estado-color fw-bold"
+															id="estado-faltantes-display"
 															value="FALTANTES" readonly  
 															style="background-color: {% get_color_estado 'FALTANTES' %};">
 													</div>
@@ -137,21 +139,22 @@
 												<div class="row align-items-center">
 													
 													<div class="col-md-2 text-end">
-														<label class="form-label text-primary mb-0 mt-3">
+														<span class="form-label text-primary mb-0 mt-3">
 															<b>Más de :</b>
-														</label>
+														</span>
 													</div>
 													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="stock_hasta_display">
 															{{ form.stock_hasta.label }}
 														</label>
 														<input type="number" id="stock_hasta_display" readonly class="form-control form-control-sm border border-primary mb-2" style="background-color: #d4eaff;">
 													</div>
 													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
+														<label class="form-label text-primary mb-0" for="estado-disponibles-display">
 															Estado
 														</label>
 														<input type="text" class="form-control form-control-sm border border-primary mb-2 estado-color fw-bold" 
+															id="estado-disponibles-display"
 															value="DISPONIBLES" readonly  
 															style="background-color: {% get_color_estado 'DISPONIBLES' %};">
 													</div>

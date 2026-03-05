@@ -163,7 +163,7 @@ class MonedaInformeView(InformeFormView):
 		
 		param_left = {}
 		param_right = {
-			"Estatus": estatus,
+			"Estatus": estatus.capitalize(),
 		}
 		
 		# **************************************************
