@@ -21,6 +21,7 @@ from ...maestros.models.cliente_models import Cliente
 from ...maestros.models.empresa_models import Empresa
 from ...maestros.models.base_models import AlicuotaIva
 from apps.ventas.models.caja_models import Caja, CajaDetalle
+from ...maestros.models.descuento_vendedor_models import DescuentoRevendedor
 
 from entorno.constantes_base import TIPO_VENTA
 
@@ -277,6 +278,17 @@ class FacturaManualCreateView(MaestroDetalleCreateView):
 		# Obtener todos los operarios con sus id
 		operario_dict = {str(o.id_operario): o.nombre_operario for o in Operario.objects.all()}
 		data['operario_dict'] = json.dumps(operario_dict)
+
+		# Obtener los descuentos de revendedor
+		descuento_revendedor_dict = {}
+		descuentos = DescuentoRevendedor.objects.filter(estatus_descuento_revendedor=True)
+
+		for desc in descuentos:
+			# Crear una clave compuesta "marca_id-familia_id" para búsqueda rápida
+			key = f"{desc.id_marca_id}-{desc.id_familia_id}"
+			descuento_revendedor_dict[key] = float(desc.descuento)
+
+		data['descuento_revendedor_dict'] = json.dumps(descuento_revendedor_dict)
 
 		# Tipo de Comprobante
 		data['tipo_comprobante'] = self.tipo_comprobante
