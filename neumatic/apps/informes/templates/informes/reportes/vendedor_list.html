@@ -37,6 +37,8 @@
 				<th class="numeric">% Camión</th>
 				<th class="numeric">Vto. Fact.</th>
 				<th class="numeric">Vto. Remito</th>
+				<th class="pl-15">Tipo V.</th>
+				<th class="numeric">Col Dcto.</th>
 			</tr>
 		</thead>
 		
@@ -53,6 +55,8 @@
 					<td class="numeric">{{ obj.pje_camion|formato_es_ar }}</td>
 					<td class="numeric">{{ obj.vence_factura|formato_es_ar_entero }}</td>
 					<td class="numeric">{{ obj.vence_remito|formato_es_ar_entero }}</td>
+					<td class="pl-15">{{ obj.tipo_venta|default_if_none:"" }}</td>
+					<td class="numeric">{{ obj.col_descuento|formato_es_ar_entero }}</td>
 				</tr>
 			{% endfor %}
 			

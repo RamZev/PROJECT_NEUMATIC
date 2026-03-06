@@ -52,3 +52,12 @@ class VendedorForm(CrudGenericForm):
 			'info_estadistica':
 				forms.CheckboxInput(attrs={**formclasscheck})
 		}
+	
+	def __init__(self, *args, **kwargs):
+		self.request = kwargs.pop('request', None)
+		super().__init__(*args, **kwargs)
+	
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
+		context['request'] = self.request
+		return context
