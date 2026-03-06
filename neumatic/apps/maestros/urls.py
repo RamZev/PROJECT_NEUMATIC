@@ -311,4 +311,5 @@ urlpatterns = [
 	path('buscar-cliente-id/', buscar_cliente_id_view, name='buscar_cliente_id'),
 	path('api/cai/<int:pk>/datos/', CAIDatosAPIView.as_view(), name='cai-datos-api'),
 	path('actualizar-estados-productos/', ActualizarEstadosProductosView.as_view(), name='actualizar_estados_productos'),
+	path('get-descuentos-columna/<str:columna>/', get_descuentos_columna, name='get_descuentos_columna'),
 ]

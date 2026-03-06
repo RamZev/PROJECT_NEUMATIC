@@ -83,7 +83,7 @@ class ConfigViews:
 		},
 		"nombre_vendedor":{
 			"label": "Nombre Vendedor",
-			"col_width_pdf": 190,
+			"col_width_pdf": 180,
 			"pdf_paragraph": True,
 			"date_format": None,
 			"pdf": True,
@@ -92,7 +92,7 @@ class ConfigViews:
 		},
 		"domicilio_vendedor": {
 			"label": "Domicilio",
-			"col_width_pdf": 160,
+			"col_width_pdf": 150,
 			"pdf_paragraph": True,
 			"date_format": None,
 			"pdf": True,
@@ -141,6 +141,25 @@ class ConfigViews:
 		"vence_remito": {
 			"label": "Vcto. Remito",
 			"col_width_pdf": 60,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"pdf": True,
+			"excel": True,
+			"csv": True,
+			"type": "int"
+		},
+		"tipo_venta": {
+			"label": "Tipo V.",
+			"col_width_pdf": 30,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
+		"col_descuento": {
+			"label": "Col. Dcto.",
+			"col_width_pdf": 50,
 			"pdf_paragraph": False,
 			"date_format": None,
 			"pdf": True,
@@ -223,6 +242,8 @@ class VendedorInformeView(InformeFormView):
 			'pje_camion',
 			'vence_factura',
 			'vence_remito',
+			'tipo_venta',
+			'col_descuento',
 		)
 		
 		return queryset
@@ -243,11 +264,16 @@ class VendedorInformeView(InformeFormView):
 		
 		dominio = f"http://{self.request.get_host()}"
 		
+		orden_dict = {
+			'nombre': 'Nombre',
+			'codigo': 'Código'
+		}
+		
 		param_left = {
 			"Estatus": estatus.capitalize(),
 		}
 		param_right = {
-			"Ordenado por": orden,
+			"Ordenado por": orden_dict.get(orden),
 		}
 		if desde and hasta:
 			param_right.update({
@@ -359,7 +385,8 @@ def generar_pdf(contexto_reporte):
 	#-- Estilos específicos adicionales iniciales de la tabla.
 	table_style_config = [
 		('ALIGN', (1,0), (1,-1), 'RIGHT'),
-		('ALIGN', (4,0), (-1,-1), 'RIGHT'),
+		('ALIGN', (5,0), (8,-1), 'RIGHT'),
+		('ALIGN', (-1,0), (-1,-1), 'RIGHT'),
 	]
 	
 	#-- Agregar los datos a la tabla.
