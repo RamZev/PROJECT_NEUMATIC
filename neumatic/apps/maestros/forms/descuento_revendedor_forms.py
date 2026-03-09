@@ -31,3 +31,34 @@ class DescuentoRevendedorForm(CrudGenericForm):
 				'invalid': 'Ingrese un número válido',
 			}
 		}
+		
+	def clean(self):
+		cleaned_data = super().clean()
+		id_marca = cleaned_data.get('id_marca')
+		id_familia = cleaned_data.get('id_familia')
+		
+		if id_marca and id_familia:
+			#-- Verificar si ya existe un registro con esta combinación.
+			instance_pk = self.instance.pk if self.instance else None
+			
+			existe = DescuentoRevendedor.objects.filter(
+				id_marca=id_marca,
+				id_familia=id_familia
+			).exclude(pk=instance_pk).exists()
+			
+			if existe:
+				#-- Agregar error al formulario.
+				self.add_error(
+					'id_marca', 
+					'Esta combinación de Marca y Familia ya existe.'
+				)
+				self.add_error(
+					'id_familia', 
+					'Esta combinación de Marca y Familia ya existe.'
+				)
+				# #-- También se puede agregar un error no asociado a campo.
+				# raise forms.ValidationError(
+				# 	'Ya existe una configuración de descuento para esta combinación de Marca y Familia.'
+				# )
+		
+		return cleaned_data

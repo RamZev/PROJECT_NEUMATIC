@@ -85,8 +85,6 @@ class DataViewList():
 		{'field_name': 'nombre_vendedor', 'date_format': None},
 		{'field_name': 'telefono_vendedor', 'date_format': None},
 		{'field_name': 'id_sucursal', 'date_format': None},
-		
-		  
 	]
 
 

@@ -2,7 +2,6 @@
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from decimal import Decimal
-from django.core.exceptions import ValidationError
 
 from .base_gen_models import ModeloBaseGenerico
 from .base_models import ProductoMarca, ProductoFamilia
@@ -209,6 +208,14 @@ class DescuentoVendedor(ModeloBaseGenerico):
 		verbose_name = 'Descuento Vendedor'
 		verbose_name_plural = 'Descuentos Vendedor'
 		ordering = ['id_marca', 'id_familia']
+		unique_together = ['id_marca', 'id_familia']
+		constraints = [
+			models.UniqueConstraint(
+				fields=['id_marca', 'id_familia'],
+				name='unique_marca_familia_vendedor',
+				violation_error_message="Ya existe una configuración de descuento para esta combinación de Marca y Familia."
+			)
+		]
 	
 	def __str__(self):
 		return f'{self.id_marca} - {self.id_familia}'
@@ -247,6 +254,14 @@ class DescuentoRevendedor(ModeloBaseGenerico):
 		verbose_name = 'Descuento Revendedor'
 		verbose_name_plural = 'Descuentos Revendedores'
 		ordering = ['id_marca', 'id_familia']
+		unique_together = ['id_marca', 'id_familia']
+		constraints = [
+			models.UniqueConstraint(
+				fields=['id_marca', 'id_familia'],
+				name='unique_marca_familia_revendedor',
+				violation_error_message="Ya existe una configuración de descuento para esta combinación de Marca y Familia."
+			)
+		]
 	
 	def __str__(self):
 		return f'{self.id_marca} - {self.id_familia}'
