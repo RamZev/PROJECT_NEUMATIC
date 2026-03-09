@@ -77,5 +77,40 @@ class DescuentoVendedorForm(CrudGenericForm):
 				'min_value': 'El descuento debe ser mayor o igual a 0.00',
 				'max_value': 'El descuento debe ser menor o igual a 99.99',
 				'invalid': 'Ingrese un número válido',
+			},
+			#-- Para errores no asociados a campos específicos.
+			'__all__': {
+				'unique_together': 'Ya existe una configuración de descuento para esta combinación de Marca y Familia.',
 			}
 		}
+		
+	def clean(self):
+		cleaned_data = super().clean()
+		id_marca = cleaned_data.get('id_marca')
+		id_familia = cleaned_data.get('id_familia')
+		
+		if id_marca and id_familia:
+			#-- Verificar si ya existe un registro con esta combinación.
+			instance_pk = self.instance.pk if self.instance else None
+			
+			existe = DescuentoVendedor.objects.filter(
+				id_marca=id_marca,
+				id_familia=id_familia
+			).exclude(pk=instance_pk).exists()
+			
+			if existe:
+				#-- Agregar error al formulario.
+				self.add_error(
+					'id_marca', 
+					'Esta combinación de Marca y Familia ya existe.'
+				)
+				self.add_error(
+					'id_familia', 
+					'Esta combinación de Marca y Familia ya existe.'
+				)
+				# #-- También se puede agregar un error no asociado a campo.
+				# raise forms.ValidationError(
+				# 	'Ya existe una configuración de descuento para esta combinación de Marca y Familia.'
+				# )
+		
+		return cleaned_data

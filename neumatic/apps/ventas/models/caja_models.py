@@ -1,6 +1,5 @@
 from django.db import models
 from django.forms import ValidationError
-from django.utils import timezone
 from django.core.validators import MinValueValidator
 
 from apps.maestros.models.base_gen_models import ModeloBaseGenerico
