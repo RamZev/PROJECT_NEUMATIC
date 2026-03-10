@@ -4,7 +4,7 @@ from django.db.models import Q
 from django.http import JsonResponse
 from django.db import transaction
 from django.db.models import ProtectedError
-
+from django.utils import timezone
 
 #-- Recursos necesarios para proteger las rutas.
 from django.utils.decorators import method_decorator
@@ -14,8 +14,6 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.contrib import messages
 from django.shortcuts import redirect
-
-from django.utils import timezone
 
 
 # -- Vistas Genéricas Basada en Clases -----------------------------------------------
@@ -60,25 +58,6 @@ class MaestroDetalleListView(ListView):
 			queryset = queryset.filter(search_conditions)
 		
 		return queryset.order_by(*self.ordering)
-		
-		''' Método original de Ricardo y Leoncio. (No seguro)
-		#-- Crear la cadena de filtro en base a la lista search_fields-
-		cadena_filtro = ""
-		for field in self.search_fields:
-			expression = f"Q({field}__icontains='{query}')"
-			cadena_filtro += expression + " | "
-		
-		#-- Eliminar el último " | " en la cadena de filtro.
-		cadena_filtro = "(" + cadena_filtro[:-3] + ")"
-		
-		#-- Ejecutar la consulta.
-		if query and cadena_filtro:
-			queryset = queryset.filter(eval(cadena_filtro))
-		
-		# Ordenar el queryset según la lista ordering
-		queryset = queryset.order_by(*self.ordering)
-		
-		return queryset'''
 	
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
@@ -94,11 +73,9 @@ class MaestroDetalleListView(ListView):
 		
 		context['query_params'] = query_params.urlencode()
 		
-		
 		#-- Agregar valores de paginación y valor seleccionado.
 		context['pagination_options'] = self.pagination_options
 		context['selected_pagination'] = int(self.paginate_by)
-		# Para pasar la fecha a la lista del maestro		
 		context['fecha'] = timezone.now()
 
 		return context
@@ -136,7 +113,7 @@ class MaestroDetalleCreateView(PermissionRequiredMixin, CreateView):
 		#-- Asigna el usuario directamente en el modelo.
 		form.instance.id_user = user
 		form.instance.usuario = user.username
-  
+		
 		try:
 			#-- Manejo de transacciones.
 			with transaction.atomic():
@@ -148,32 +125,17 @@ class MaestroDetalleCreateView(PermissionRequiredMixin, CreateView):
 			context['transaction_error'] = str(e)
 			return self.render_to_response(context)
 	
-	# def form_invalid(self, form):
-	# 	"""
-	# 	Si el formulario no es válido, renderiza el formulario con los errores.
-	# 	"""
-	# 	
-	# 	context = self.get_context_data(form=form)
-	# 	context['data_has_errors'] = True
-	# 	
-	# 	return self.render_to_response(context)
-	
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
 		
 		#-- Agregar datos comunes al contexto.
-		context.update({
-			"accion": f"Crear {self.model._meta.verbose_name}",
-			"list_view_name": self.list_view_name,
-		})		
-		
-		# #-- Controlar mostrar o no el modal con los errors de validación.
-		# #-- Inicialmente, no hay errores.
-		# context['data_has_errors'] = False
+		context['accion'] = f"Crear {self.model._meta.verbose_name}"
+		context['list_view_name'] = self.list_view_name
+		context['fecha'] = timezone.now()
+		context['requerimientos'] = obtener_requerimientos_modelo(self.model)
 		
 		#-- Asegurarse de que el formulario en el contexto sea el mismo que se validó
 		context['form'] = self.get_form()
-		context['requerimientos'] = obtener_requerimientos_modelo(self.model)
 		
 		return context
 	
@@ -195,7 +157,7 @@ class MaestroDetalleUpdateView(PermissionRequiredMixin, UpdateView):
 		
 		#-- Verificar si el formulario soporta el argumento 'user'.
 		if hasattr(self.form_class, '__ini__') and 'user' in self.form_class.__init__.__code__.co_varnames:
-			kwargs['user'] = self.request.user  # Pasar el usuario autenticado al formulario
+			kwargs['user'] = self.request.user  #-- Pasar el usuario autenticado al formulario.
 		
 		return kwargs
 	
@@ -209,18 +171,6 @@ class MaestroDetalleUpdateView(PermissionRequiredMixin, UpdateView):
 		
 		return super().form_valid(form)
 	
-	# def form_invalid(self, form):
-	# 	"""
-	# 	Si el formulario no es válido, renderiza el formulario con los errores.
-	# 	"""
-	# 	
-	# 	#-- Establecer el contexto con la información sobre errores.
-	# 	context = self.get_context_data(form=form)
-	# 	#-- Indicar que hay errores.
-	# 	context['data_has_errors'] = True
-	# 	
-	# 	return self.render_to_response(context)
-	
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
 		
@@ -228,18 +178,13 @@ class MaestroDetalleUpdateView(PermissionRequiredMixin, UpdateView):
 		registro = self.get_object()
 		
 		#-- Agregar información personalizada al contexto.
-		context.update({
-			"accion": f"Editar {self.model._meta.verbose_name} - {registro.pk}",
-			"list_view_name": self.list_view_name,
-		})
-		
-		# #-- Controlar mostrar o no el modal con los errors de validación.
-		# #-- Inicialmente, no hay errores.
-		# context['data_has_errors'] = False
+		context['accion'] = f"Editar {self.model._meta.verbose_name} - {registro.pk}"
+		context['list_view_name'] = self.list_view_name
+		context['fecha'] = timezone.now()
+		context['requerimientos'] = obtener_requerimientos_modelo(self.model)
 		
 		#-- Asegurarse de que el formulario en el contexto sea el mismo que se validó
 		context['form'] = self.get_form()
-		context['requerimientos'] = obtener_requerimientos_modelo(self.model)
 		
 		return context
 	
@@ -252,22 +197,6 @@ class MaestroDetalleUpdateView(PermissionRequiredMixin, UpdateView):
 @method_decorator(login_required, name='dispatch')
 class MaestroDetalleDeleteView(PermissionRequiredMixin, DeleteView):
 	list_view_name = None
-	
-	# def get_context_data(self, **kwargs):
-	# 	#-- Llamar al contexto base.
-	# 	context = super().get_context_data(**kwargs)
-	# 	
-	# 	#-- Obtener el objeto que se está eliminando.
-	# 	registro = self.get_object()
-	# 	
-	# 	#-- Agregar datos comunes al contexto.
-	# 	context.update({
-	# 		"accion": f"Eliminar {self.model._meta.verbose_name} - {registro.pk}",
-	# 		"list_view_name": self.list_view_name,
-	# 		"mensaje": "Estás seguro de eliminar el Registro"
-	# 	})
-	# 	
-	# 	return context	
 	
 	#-- Método que agrega mensaje cuando no tiene permiso de eliminar.
 	def handle_no_permission(self):

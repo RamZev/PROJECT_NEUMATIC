@@ -117,10 +117,10 @@ USE_I18N = True  # Internacionalización.
 USE_TZ = True
 
 USE_L10N = True  # Localización.
-USE_THOUSAND_SEPARATOR = True
-DECIMAL_SEPARATOR = ','  # Fuerza la coma para decimales
-THOUSAND_SEPARATOR = '.' # Fuerza el punto para miles
-NUMBER_GROUPING = 3      # Agrupa de a 3 dígitos
+# USE_THOUSAND_SEPARATOR = True  #-- Activa el separador de miles. Cuidado porque formatea los IDs
+# DECIMAL_SEPARATOR = ','  # Fuerza la coma para decimales
+# THOUSAND_SEPARATOR = '.' # Fuerza el punto para miles
+# NUMBER_GROUPING = 3      # Agrupa de a 3 dígitos
 
 
 
