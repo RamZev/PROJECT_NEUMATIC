@@ -1070,7 +1070,8 @@ CREATE VIEW "VLTablaDinamicaVentas" AS
 		v.nombre_vendedor,
 		f.comision,
 		f.promo,
-		cv.libro_iva
+		cv.libro_iva,
+		mo.nombre_marketing_origen
 	FROM
 		factura f
 		LEFT JOIN cliente c ON f.id_cliente_id = c.id_cliente
@@ -1079,7 +1080,8 @@ CREATE VIEW "VLTablaDinamicaVentas" AS
 		LEFT JOIN sucursal s ON f.id_sucursal_id = s.id_sucursal
 		LEFT JOIN localidad l ON c.id_localidad_id = l.id_localidad
 		LEFT JOIN provincia p ON l.id_provincia_id = p.id_provincia
-		LEFT JOIN tipo_iva ti ON c.id_tipo_iva_id = ti.id_tipo_iva;
+		LEFT JOIN tipo_iva ti ON c.id_tipo_iva_id = ti.id_tipo_iva
+		LEFT JOIN marketing_origen mo ON f.id_marketing_origen_id = mo.id_marketing_origen;
 
 
 -- ---------------------------------------------------------------------------
@@ -1132,7 +1134,8 @@ CREATE VIEW "VLTablaDinamicaDetalleVentas" AS
 		df.id_operario_id,
 		o.nombre_operario,
 		f.promo,
-		cv.libro_iva
+		cv.libro_iva,
+		mo.nombre_marketing_origen
 	FROM
 		detalle_factura df
 		LEFT JOIN factura f ON df.id_factura_id = f.id_factura
@@ -1147,7 +1150,8 @@ CREATE VIEW "VLTablaDinamicaDetalleVentas" AS
 		LEFT JOIN localidad l ON c.id_localidad_id = l.id_localidad
 		LEFT JOIN provincia pr ON l.id_provincia_id = pr.id_provincia
 		LEFT JOIN producto_cai pc ON p.id_cai_id = pc.id_cai
-		LEFT JOIN tipo_iva ti ON c.id_tipo_iva_id = ti.id_tipo_iva;
+		LEFT JOIN tipo_iva ti ON c.id_tipo_iva_id = ti.id_tipo_iva
+		LEFT JOIN marketing_origen mo ON f.id_marketing_origen_id = mo.id_marketing_origen;
 
 
 -- ---------------------------------------------------------------------------
@@ -1200,7 +1204,8 @@ CREATE VIEW "VLTablaDinamicaEstadistica" AS
 		df.id_operario_id,
 		o.nombre_operario,
 		f.promo,
-		cv.libro_iva
+		cv.libro_iva,
+		mo.nombre_marketing_origen
 	FROM
 		detalle_factura df
 		LEFT JOIN factura f ON df.id_factura_id = f.id_factura
@@ -1216,6 +1221,7 @@ CREATE VIEW "VLTablaDinamicaEstadistica" AS
 		LEFT JOIN provincia pr ON l.id_provincia_id = pr.id_provincia
 		LEFT JOIN producto_cai pc ON p.id_cai_id = pc.id_cai
 		LEFT JOIN tipo_iva ti ON c.id_tipo_iva_id = ti.id_tipo_iva
+		LEFT JOIN marketing_origen mo ON f.id_marketing_origen_id = mo.id_marketing_origen
 	WHERE
 		cv.mult_estadistica<>0
 		AND f.no_estadist=False;

@@ -2167,6 +2167,7 @@ class VLTablaDinamicaVentas(models.Model):
 	comision = models.CharField(max_length=1)
 	promo = models.BooleanField()
 	libro_iva = models.BooleanField()
+	nombre_marketing_origen = models.CharField(max_length=30)
 	
 	objects = VLTablaDinamicaVentasManager()
 	
@@ -2248,6 +2249,7 @@ class VLTablaDinamicaDetalleVentas(models.Model):
 	nombre_operario = models.CharField(max_length=50)
 	promo = models.BooleanField()
 	libro_iva = models.BooleanField()
+	nombre_marketing_origen = models.CharField(max_length=30)
 	
 	objects = VLTablaDinamicaDetalleVentasManager()
 	
@@ -2327,6 +2329,7 @@ class VLTablaDinamicaEstadistica(models.Model):
 	id_operario_id = models.IntegerField()
 	nombre_operario = models.CharField(max_length=50)
 	promo = models.BooleanField()
+	nombre_marketing_origen = models.CharField(max_length=30)
 	
 	objects = VLTablaDinamicaEstadisticaManager()
 	

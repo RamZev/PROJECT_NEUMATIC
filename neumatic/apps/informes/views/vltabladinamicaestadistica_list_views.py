@@ -427,6 +427,15 @@ class ConfigViews:
 			"excel": True,
 			"csv": True
 		},
+		"nombre_marketing_origen": {
+			"label": "Marketing",
+			"col_width_pdf": 0,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
 	}
 
 
