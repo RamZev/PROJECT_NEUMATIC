@@ -7,7 +7,8 @@ from apps.maestros.models.base_models import (
 	ComprobanteVenta,
 	ProductoDeposito,
 	Operario,
-	PuntoVenta
+	PuntoVenta,
+	MarketingOrigen,
 )
 from apps.maestros.models.sucursal_models import Sucursal
 from apps.maestros.models.cliente_models import Cliente
@@ -30,6 +31,12 @@ class Factura(ModeloBaseGenerico):
 		verbose_name="Estatus",
 		default=True,
 		choices=ESTATUS_GEN
+	)
+	id_marketing_origen = models.ForeignKey(
+		MarketingOrigen,
+		on_delete=models.PROTECT,
+		verbose_name="Marketing",
+		default=1
 	)
 	id_sucursal = models.ForeignKey(
 		Sucursal,
