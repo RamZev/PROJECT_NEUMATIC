@@ -80,7 +80,7 @@ class FacturaForm(forms.ModelForm):
             "id_factura": forms.HiddenInput(),
             "id_valida": forms.HiddenInput(),
             "estatus_comprobante": forms.Select(attrs={**formclassselect}),
-            
+            "id_marketing_origen": forms.Select(attrs={**formclassselect}),
             "id_sucursal": forms.HiddenInput(),
             "id_punto_venta": forms.HiddenInput(),
             "jerarquia": forms.HiddenInput(),
