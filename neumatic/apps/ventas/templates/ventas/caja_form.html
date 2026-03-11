@@ -191,250 +191,245 @@
 								</div>
 								{% endif %}
 
-												<div class="row mb-3">
-													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
-															{{ form.estatus_caja.label }}
-														</label>
-														{{ form.estatus_caja }}
-													</div>
-								
-													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
-															{{ form.numero_caja.label }}
-														</label>
-														{{ form.numero_caja }}
-														<small class="form-text text-muted d-block">
-															<i class="bi bi-arrow-repeat"></i> 
-															{% if not form.instance.pk %}
-															Se generará automáticamente
-															{% else %}
-															Número de caja
-															{% endif %}
-														</small>
-													</div>
+								<div class="row mb-3">
+									<div class="col-md-2">
+										<label class="form-label text-primary mb-0">
+											{{ form.estatus_caja.label }}
+										</label>
+										{{ form.estatus_caja }}
+									</div>
+				
+									<div class="col-md-2">
+										<label class="form-label text-primary mb-0">
+											{{ form.numero_caja.label }}
+										</label>
+										{{ form.numero_caja }}
+										<small class="form-text text-muted d-block">
+											<i class="bi bi-arrow-repeat"></i> 
+											{% if not form.instance.pk %}
+											Se generará automáticamente
+											{% else %}
+											Número de caja
+											{% endif %}
+										</small>
+									</div>
 
-													<div class="col-md-2">
-														<label class="form-label text-primary mb-0">
-															{{ form.fecha_caja.label }}
-														</label>
-														{{ form.fecha_caja }}
-														<small class="form-text text-muted">
-															{% if not form.instance.pk %}
-															Fecha de apertura de la caja
-															{% else %}
-															Fecha de la caja
-															{% endif %}
-														</small>
-													</div>
+									<div class="col-md-2">
+										<label class="form-label text-primary mb-0">
+											{{ form.fecha_caja.label }}
+										</label>
+										{{ form.fecha_caja }}
+										<small class="form-text text-muted">
+											{% if not form.instance.pk %}
+											Fecha de apertura de la caja
+											{% else %}
+											Fecha de la caja
+											{% endif %}
+										</small>
+									</div>
 
-													<div class="col-md-3">
-														<label class="form-label text-primary mb-0">
-															Sucursal
-														</label>
-														{{ form.nombre_sucursal }}
-														<small class="form-text text-muted">
-															Sucursal asignada a su usuario
-														</small>
-													</div>
+									<div class="col-md-3">
+										<label class="form-label text-primary mb-0">
+											Sucursal
+										</label>
+										{{ form.nombre_sucursal }}
+										<small class="form-text text-muted">
+											Sucursal asignada a su usuario
+										</small>
+									</div>
 
-													<div class="col-md-3">
-														<label class="form-label text-primary mb-0">
-															{{ form.caja_cerrada.label }}
-														</label>
-														<div class="mt-2 form-check form-switch">
-															{{ form.caja_cerrada }}
-															<small class="form-text text-muted d-block">
-																{% if not form.instance.pk %}
-																Las nuevas cajas se crean abiertas
-																{% elif form.instance.caja_cerrada %}
-																<i class="bi bi-lock-fill text-danger"></i> Caja cerrada
-																{% else %}
-																<i class="bi bi-unlock-fill text-success"></i> Caja abierta
-																{% endif %}
-															</small>
-														</div>
-													</div>
-												</div>
-
-												<!-- ========== SECCIÓN DE SALDOS ========== -->
-												<div class="row mb-3">
-													<div class="col-md-3">
-														<label class="form-label text-primary mb-0">
-															{{ form.saldoanterior.label }}
-														</label>
-														{{ form.saldoanterior }}
-														<small class="form-text text-muted">
-															Saldo inicial de la caja
-														</small>
-													</div>
-
-													<div class="col-md-3">
-														<label class="form-label text-primary mb-0">
-															{{ form.ingresos.label }}
-															{% if form.instance.pk and not form.instance.caja_cerrada and total_detalles > 0 %}
-															<span class="badge bg-info ms-1" title="Calculado desde {{ total_detalles }} movimiento(s)">
-																<i class="bi bi-calculator"></i>
-															</span>
-															{% endif %}
-														</label>
-														{{ form.ingresos }}
-														<small class="form-text text-muted">
-															{% if form.instance.pk and not form.instance.caja_cerrada %}
-																{% if total_detalles > 0 %}
-																Calculado desde {{ total_detalles }} movimiento(s)
-																{% else %}
-																No hay movimientos registrados
-																{% endif %}
-															{% else %}
-																{% if form.instance.pk and form.instance.caja_cerrada %}
-																Ingresos registrados
-																{% else %}
-																Se calculará con los movimientos
-																{% endif %}
-															{% endif %}
-														</small>
-													</div>
-
-													<div class="col-md-3">
-														<label class="form-label text-primary mb-0">
-															{{ form.egresos.label }}
-															{% if form.instance.pk and not form.instance.caja_cerrada and total_detalles > 0 %}
-															<span class="badge bg-info ms-1" title="Calculado desde {{ total_detalles }} movimiento(s)">
-																<i class="bi bi-calculator"></i>
-															</span>
-															{% endif %}
-														</label>
-														{{ form.egresos }}
-														<small class="form-text text-muted">
-															{% if form.instance.pk and not form.instance.caja_cerrada %}
-																{% if total_detalles > 0 %}
-																Calculado desde {{ total_detalles }} movimiento(s)
-																{% else %}
-																No hay movimientos registrados
-																{% endif %}
-															{% else %}
-																{% if form.instance.pk and form.instance.caja_cerrada %}
-																Egresos registrados
-																{% else %}
-																Se calculará con los movimientos
-																{% endif %}
-															{% endif %}
-														</small>
-													</div>
-
-													<div class="col-md-3">
-														<label class="form-label text-primary mb-0">
-															{{ form.saldo.label }}
-															{% if form.instance.pk and not form.instance.caja_cerrada %}
-															<span class="badge bg-success ms-1" title="Calculado automáticamente">
-																<i class="bi bi-calculator"></i>
-															</span>
-															{% endif %}
-														</label>
-														{{ form.saldo }}
-														<small class="form-text text-muted">
-															{% if form.instance.pk and not form.instance.caja_cerrada %}
-															Se establecerá en 0 al cerrar la caja
-															{% else %}
-															Saldo = Anterior + Ingresos - Egresos
-															{% endif %}
-														</small>
-													</div>
-												</div>
-
-												<div class="row mb-3">
-													<div class="col-md-3">
-														<label class="form-label text-primary mb-0">
-															{{ form.recuento.label }}
-														</label>
-														<div class="input-group">
-															{{ form.recuento }}
-															{% if not form.instance.caja_cerrada %}
-															<button type="button" 
-																	class="btn btn-outline-primary" 
-																	id="btnAbrirRecuento"
-																	data-bs-toggle="modal" 
-																	data-bs-target="#recuentoModal"
-																	title="Abrir calculadora de recuento"
-																	style="height: 32px;">
-																	
-																<i class="bi bi-calculator"></i>
-															</button>
-															{% endif %}
-														</div>
-														<small class="form-text text-muted">
-															Recuento físico al cerrar la caja
-															{% if not form.instance.caja_cerrada %}
-															<br><i class="bi bi-info-circle"></i> Use el botón <i class="bi bi-calculator"></i> para contar efectivo
-															{% endif %}
-														</small>
-													</div>
-
-													<div class="col-md-3">
-														<label class="form-label text-primary mb-0">
-															{{ form.diferencia.label }}
-														</label>
-														{{ form.diferencia }}
-														<small class="form-text text-muted">
-															Diferencia = Saldo Anterior + Ingresos - (Egresos + Recuento)
-														</small>
-													</div>
-
-													<div class="col-md-3">
-														<label class="form-label text-primary mb-0">
-															{% if form.instance.pk and form.instance.caja_cerrada %}
-															Fecha y hora de cierre
-															{% else %}
-															{{ form.hora_cierre.label }}
-															{% endif %}
-														</label>
-														{{ form.hora_cierre }}
-														<small class="form-text text-muted">
-															{% if form.instance.pk and form.instance.caja_cerrada %}
-															<i class="bi bi-clock-history"></i> 
-															Cerró el {{ form.instance.hora_cierre|date:"d/m/Y H:i"|default:"-" }}
-															{% else %}
-															Se registrará al cerrar la caja
-															{% endif %}
-														</small>
-													</div>
-								
-													<div class="col-md-3">
-														<label class="form-label text-primary mb-0">
-															{% if form.instance.pk and form.instance.caja_cerrada %}
-															Usuario que cerró
-															{% else %}
-															{{ form.id_usercierre.label }}
-															{% endif %}
-														</label>
-														{{ form.id_usercierre }}
-														<small class="form-text text-muted">
-															{% if not form.instance.pk %}
-															<i class="bi bi-info-circle"></i> Se asignará automáticamente al cerrar
-															{% elif form.instance.caja_cerrada %}
-															<i class="bi bi-clock-history"></i> 
-															Cerró el {{ form.instance.hora_cierre|date:"d/m/Y H:i"|default:"-" }}
-															{% endif %}
-														</small>
-													</div>
-												</div>
-
-												<div class="row">
-													<div class="col-md-12">
-														<label class="form-label text-primary mb-0">
-															{{ form.observacion_caja.label }}
-														</label>
-														{{ form.observacion_caja }}
-														<small class="form-text text-muted">
-															Observaciones adicionales sobre la caja
-														</small>
-													</div>
-												</div>
-											</div>
+									<div class="col-md-3">
+										<label class="form-label text-primary mb-0">
+											{{ form.caja_cerrada.label }}
+										</label>
+										<div class="mt-2 form-check form-switch">
+											{{ form.caja_cerrada }}
+											<small class="form-text text-muted d-block">
+												{% if not form.instance.pk %}
+												Las nuevas cajas se crean abiertas
+												{% elif form.instance.caja_cerrada %}
+												<i class="bi bi-lock-fill text-danger"></i> Caja cerrada
+												{% else %}
+												<i class="bi bi-unlock-fill text-success"></i> Caja abierta
+												{% endif %}
+											</small>
 										</div>
 									</div>
-			
+								</div>
+
+								<!-- ========== SECCIÓN DE SALDOS ========== -->
+								<div class="row mb-3">
+									<div class="col-md-3">
+										<label class="form-label text-primary mb-0">
+											{{ form.saldoanterior.label }}
+										</label>
+										{{ form.saldoanterior }}
+										<small class="form-text text-muted">
+											Saldo inicial de la caja
+										</small>
+									</div>
+
+									<div class="col-md-3">
+										<label class="form-label text-primary mb-0">
+											{{ form.ingresos.label }}
+											{% if form.instance.pk and not form.instance.caja_cerrada and total_detalles > 0 %}
+											<span class="badge bg-info ms-1" title="Calculado desde {{ total_detalles }} movimiento(s)">
+												<i class="bi bi-calculator"></i>
+											</span>
+											{% endif %}
+										</label>
+										{{ form.ingresos }}
+										<small class="form-text text-muted">
+											{% if form.instance.pk and not form.instance.caja_cerrada %}
+												{% if total_detalles > 0 %}
+												Calculado desde {{ total_detalles }} movimiento(s)
+												{% else %}
+												No hay movimientos registrados
+												{% endif %}
+											{% else %}
+												{% if form.instance.pk and form.instance.caja_cerrada %}
+												Ingresos registrados
+												{% else %}
+												Se calculará con los movimientos
+												{% endif %}
+											{% endif %}
+										</small>
+									</div>
+
+									<div class="col-md-3">
+										<label class="form-label text-primary mb-0">
+											{{ form.egresos.label }}
+											{% if form.instance.pk and not form.instance.caja_cerrada and total_detalles > 0 %}
+											<span class="badge bg-info ms-1" title="Calculado desde {{ total_detalles }} movimiento(s)">
+												<i class="bi bi-calculator"></i>
+											</span>
+											{% endif %}
+										</label>
+										{{ form.egresos }}
+										<small class="form-text text-muted">
+											{% if form.instance.pk and not form.instance.caja_cerrada %}
+												{% if total_detalles > 0 %}
+												Calculado desde {{ total_detalles }} movimiento(s)
+												{% else %}
+												No hay movimientos registrados
+												{% endif %}
+											{% else %}
+												{% if form.instance.pk and form.instance.caja_cerrada %}
+												Egresos registrados
+												{% else %}
+												Se calculará con los movimientos
+												{% endif %}
+											{% endif %}
+										</small>
+									</div>
+
+									<div class="col-md-3">
+										<label class="form-label text-primary mb-0">
+											{{ form.saldo.label }}
+											{% if form.instance.pk and not form.instance.caja_cerrada %}
+											<span class="badge bg-success ms-1" title="Calculado automáticamente">
+												<i class="bi bi-calculator"></i>
+											</span>
+											{% endif %}
+										</label>
+										{{ form.saldo }}
+										<small class="form-text text-muted">
+											{% if form.instance.pk and not form.instance.caja_cerrada %}
+											Se establecerá en 0 al cerrar la caja
+											{% else %}
+											Saldo = Anterior + Ingresos - Egresos
+											{% endif %}
+										</small>
+									</div>
+								</div>
+
+								<div class="row mb-3">
+									<div class="col-md-3">
+										<label class="form-label text-primary mb-0">
+											{{ form.recuento.label }}
+										</label>
+										<div class="input-group">
+											{{ form.recuento }}
+											{% if not form.instance.caja_cerrada %}
+											<button type="button" 
+													class="btn btn-outline-primary" 
+													id="btnAbrirRecuento"
+													data-bs-toggle="modal" 
+													data-bs-target="#recuentoModal"
+													title="Abrir calculadora de recuento"
+													style="height: 32px;">
+													
+												<i class="bi bi-calculator"></i>
+											</button>
+											{% endif %}
+										</div>
+										<small class="form-text text-muted">
+											Recuento físico al cerrar la caja
+											{% if not form.instance.caja_cerrada %}
+											<br><i class="bi bi-info-circle"></i> Use el botón <i class="bi bi-calculator"></i> para contar efectivo
+											{% endif %}
+										</small>
+									</div>
+
+									<div class="col-md-3">
+										<label class="form-label text-primary mb-0">
+											{{ form.diferencia.label }}
+										</label>
+										{{ form.diferencia }}
+										<small class="form-text text-muted">
+											Diferencia = Saldo Anterior + Ingresos - (Egresos + Recuento)
+										</small>
+									</div>
+
+									<div class="col-md-3">
+										<label class="form-label text-primary mb-0">
+											{% if form.instance.pk and form.instance.caja_cerrada %}
+											Fecha y hora de cierre
+											{% else %}
+											{{ form.hora_cierre.label }}
+											{% endif %}
+										</label>
+										{{ form.hora_cierre }}
+										<small class="form-text text-muted">
+											{% if form.instance.pk and form.instance.caja_cerrada %}
+											<i class="bi bi-clock-history"></i> 
+											Cerró el {{ form.instance.hora_cierre|date:"d/m/Y H:i"|default:"-" }}
+											{% else %}
+											Se registrará al cerrar la caja
+											{% endif %}
+										</small>
+									</div>
+				
+									{% comment %} <div class="col-md-3">
+										<label class="form-label text-primary mb-0">
+											{% if form.instance.pk and form.instance.caja_cerrada %}
+												Usuario que cerró
+											{% else %}
+												{{ form.id_usercierre.label }}
+											{% endif %}
+										</label>
+										{{ form.id_usercierre }}
+										<small class="form-text text-muted">
+											{% if not form.instance.pk %}
+												<i class="bi bi-info-circle"></i> Se asignará automáticamente al cerrar
+											{% elif form.instance.caja_cerrada %}
+												<i class="bi bi-clock-history"></i> 
+												Cerró el {{ form.instance.hora_cierre|date:"d/m/Y H:i"|default:"-" }}
+											{% endif %}
+										</small>
+									</div> {% endcomment %}
+								</div>
+
+								<div class="row">
+									<div class="col-md-12">
+										<label class="form-label text-primary mb-0">
+											{{ form.observacion_caja.label }}
+										</label>
+										{{ form.observacion_caja }}
+										<small class="form-text text-muted">
+											Observaciones adicionales sobre la caja
+										</small>
+									</div>
 								</div>
 								
 								<div class="container mt-3">
@@ -1153,4 +1148,33 @@
 		console.log('=== FORMULARIO COMPLETAMENTE INICIALIZADO ===');
 	});
 </script>
+
+<script>
+	// Control simple - SOLO para cajas abiertas en edición
+	document.addEventListener('DOMContentLoaded', function() {
+		// Elementos
+		const btn = document.getElementById('guardarBtn');
+		const chkCierre = document.querySelector('[name="caja_cerrada"]');
+		const inputRecuento = document.querySelector('[name="recuento"]');
+		
+		// Detectar si es una caja abierta en edición
+		const esCajaAbierta = {% if form.instance.pk and not form.instance.caja_cerrada %}true{% else %}false{% endif %};
+		
+		// Solo aplica la lógica si es una caja abierta en edición
+		if (esCajaAbierta && btn && chkCierre && inputRecuento) {
+			
+			function actualizarBoton() {
+				// Habilita SOLO si el checkbox está marcado Y hay recuento > 0
+				btn.disabled = !(chkCierre.checked && parseFloat(inputRecuento.value) > 0);
+			}
+			
+			// Eventos
+			chkCierre.addEventListener('change', actualizarBoton);
+			inputRecuento.addEventListener('input', actualizarBoton);
+			
+			// Estado inicial
+			actualizarBoton();
+		}
+	});
+	</script>
 {% endblock script %}
