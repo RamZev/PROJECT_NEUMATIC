@@ -312,16 +312,19 @@ class CajaCreateView(MaestroCreateView):
         # 8. GUARDAR
         try:
             # Llamar al padre para guardar
-            response = super().form_valid(form)
+            # response = super().form_valid(form)
+            self.object = form.save()
             
             # Mensaje de éxito
-            messages.success(
-                self.request,
-                f'Caja #{form.instance.numero_caja} creada exitosamente. '
-                f'Saldo inicial: ${form.instance.saldoanterior:.2f}'
-            )
+            # messages.success(
+            #     self.request,
+            #     f'Caja #{self.object.numero_caja} creada exitosamente. '
+            #     f'Saldo inicial: ${self.object.saldoanterior:.2f}',
+            #     extra_tags='success'  # Forzar la etiqueta
+            # )
             
-            return response
+            # return response
+            return redirect(self.success_url)
             
         except Exception as e:
             # Manejar cualquier error durante el guardado

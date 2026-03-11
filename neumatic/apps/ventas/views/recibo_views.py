@@ -116,6 +116,60 @@ class ReciboListView(MaestroDetalleListView):
 
 		return queryset.order_by(*self.ordering)
 
+	# ===== NUEVO MÉTODO A AGREGAR =====
+	def get_context_data(self, **kwargs):
+		"""Agrega alerta de caja al contexto para deshabilitar botón Nuevo"""
+		# Obtener el contexto base
+		context = super().get_context_data(**kwargs)
+		
+		# =========================================================
+		# ALERTA DE CAJA - Copiado exactamente de FacturaListView
+		# =========================================================
+		try:
+			from datetime import date
+			from apps.ventas.models.caja_models import Caja
+			
+			usuario = self.request.user
+			fecha_actual = date.today()
+			
+			# Solo validar si el usuario tiene sucursal asignada
+			if usuario.id_sucursal:
+				# Verificar si existe caja para hoy
+				caja_hoy = Caja.objects.filter(
+					id_sucursal=usuario.id_sucursal,
+					fecha_caja=fecha_actual
+				).first()
+				
+				if not caja_hoy:
+					context['alerta_vista'] = {
+						'tipo': 'error',
+						'titulo': '⚠️ No hay caja disponible',
+						'mensaje': f'No existe caja para la sucursal y fecha {fecha_actual.strftime("%d/%m/%Y")}.',
+						'accion': 'Debe crear una caja antes de generar recibos.'
+					}
+				elif caja_hoy.caja_cerrada:
+					context['alerta_vista'] = {
+						'tipo': 'error',
+						'titulo': '⚠️ Caja cerrada',
+						'mensaje': f'La caja de la sucursal para fecha {fecha_actual.strftime("%d/%m/%Y")} se encuentra CERRADA.',
+						'accion': 'Debe abrir la caja antes de generar recibos.'
+					}
+				else:
+					print("✅ CASO: Caja OK - No se crea alerta")
+			else:
+				print("⚠️ Usuario sin sucursal asignada")
+				
+		except Exception as e:
+			import traceback
+			traceback.print_exc()
+		
+		# Mantener todos los valores de extra_context
+		if hasattr(self, 'extra_context'):
+			context.update(self.extra_context)
+			
+		return context
+	# ===== FIN DEL NUEVO MÉTODO =====
+
 
 class ReciboCreateView(MaestroDetalleCreateView):
 	model = modelo

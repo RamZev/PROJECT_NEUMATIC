@@ -502,6 +502,17 @@
                                         {% comment %} <span class="formatted-number">{{ form.resto_cobrar.value|default:"0.00" }}</span> {% endcomment %}
                                     </div>
                                 </div>
+
+                                <div class="col-md-2">
+                                    <label class="form-label mb-0 text-primary">
+                                        <strong>Compensa</strong>
+                                    </label>
+                                    <div>
+                                        {{ form.compensa_factura }}
+                                        {% comment %} <span class="formatted-number">{{ form.resto_cobrar.value|default:"0.00" }}</span> {% endcomment %}
+                                    </div>
+                                </div>
+
                             </div>
 
                         </div>
@@ -1441,6 +1452,7 @@
             function actualizarResumenPagos() {
                 const totals = {
                     efectivo: parseNumber(document.getElementById('id_efectivo_recibo')?.value) || 0,
+                    compensa: parseNumber(document.getElementById('id_compensa_factura')?.value) || 0,
                     retenciones: parseNumber(document.getElementById('id_total_retenciones')?.value) || 0,
                     depositos: parseNumber(document.getElementById('id_total_depositos')?.value) || 0,
                     tarjetas: parseNumber(document.getElementById('id_total_tarjetas')?.value) || 0,
@@ -1542,6 +1554,11 @@
 
             // Manejar cambios en efectivo_recibo
             document.getElementById('id_efectivo_recibo').addEventListener('input', function () {
+                actualizarResumenPagos();
+            });
+
+            // Manejar cambios en compensa_factura
+            document.getElementById('id_compensa_factura').addEventListener('input', function () {
                 actualizarResumenPagos();
             });
 
@@ -3338,5 +3355,31 @@
         });
     </script>
 
-
+    <script>
+    // Script para seleccionar texto al hacer foco en los tres campos del recibo
+    document.addEventListener('DOMContentLoaded', function() {
+        // Solo estos tres campos
+        const campos = [
+            'id_efectivo_recibo', 
+            'id_compensa_factura', 
+            'id_total'
+        ];
+        
+        campos.forEach(function(campoId) {
+            const input = document.getElementById(campoId);
+            if (input) {
+                // Al hacer focus, seleccionar todo el contenido
+                input.addEventListener('focus', function() {
+                    this.select();
+                });
+                
+                // Al hacer click, también seleccionar todo
+                input.addEventListener('click', function() {
+                    this.select();
+                });
+            }
+        });
+    });
+    </script>
+    
 {% endblock script %}

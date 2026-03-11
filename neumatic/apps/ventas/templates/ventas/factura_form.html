@@ -565,20 +565,21 @@
 													<td colspan="100%">
 														<!-- Fila de Totales - Mismo estilo que el encabezado -->
 														<div class="row align-items-center g-2 py-2" style="background-color: #f8f9fa; border-top: 2px solid #dee2e6;">
-															<!-- Botones (3 columnas) -->
-															<div class="col-md-2">
-																<div class="d-flex flex-column gap-2">
-																	<button type="submit" class="btn btn-outline-success btn-sm">
-																		{% if is_edit %}Actualizar{% else %}Guardar{% endif %}
-																		<i class="bi bi-floppy"></i>
-																	</button>
-																	{% comment %} <a href="{% url 'factura_list' %}" class="btn btn-outline-secondary btn-sm"> {% endcomment %}
-																	<a href="{% url list_view_name %}" class="btn btn-outline-secondary btn-sm">  <!-- Retorna a la lista de origen -->
-																		Cancelar
-																		<i class="bi bi-x-circle"></i>
-																	</a>
-																</div>
+														<!-- Botones (3 columnas) -->
+														<div class="col-md-2">
+															<div class="d-flex flex-column gap-2">
+																<button type="submit" class="btn btn-outline-success btn-sm" 
+																	{% if is_edit %}disabled{% endif %}>
+																	{% if is_edit %}Actualizar{% else %}Guardar{% endif %}
+																	<i class="bi bi-floppy"></i>
+																</button>
+																{% comment %} <a href="{% url 'factura_list' %}" class="btn btn-outline-secondary btn-sm"> {% endcomment %}
+																<a href="{% url list_view_name %}" class="btn btn-outline-secondary btn-sm">  <!-- Retorna a la lista de origen -->
+																	Cancelar
+																	<i class="bi bi-x-circle"></i>
+																</a>
 															</div>
+														</div>
 															
 															<!-- Gravado (2 columnas) -->
 															<div class="col-md-2">
@@ -2491,6 +2492,16 @@
 			
 			// Captura del submit de todo el formulario
 			facturaForm.addEventListener('submit', function(e) {
+				 // ===== VALIDACIÓN PRIORITARIA: Verificar si hay detalles =====
+				const filasDetalle = document.querySelectorAll('.detalle-form tbody tr:not([style*="display: none"])');
+				
+				if (filasDetalle.length === 0) {
+					e.preventDefault(); // Detener el envío del formulario
+					alert('❌ No se puede guardar el comprobante\n\nDebe agregar al menos un detalle al comprobante antes de guardar.');
+					return false; // Salir del evento inmediatamente
+				}
+				// ===== FIN VALIDACIÓN PRIORITARIA =====
+				
 				const numeroComprobante = document.getElementById('id_numero_comprobante').value.trim();
 				
 				// No se ejecuta porque numeroComprobante tiene required

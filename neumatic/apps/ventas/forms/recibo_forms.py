@@ -160,7 +160,6 @@ class FacturaReciboForm(forms.ModelForm):
             'style': 'font-size: 0.8rem; padding: 0.25rem; background-color: #E6F6FF;'
         })
     )
-    
 
     class Meta:
         model = Factura
@@ -193,7 +192,8 @@ class FacturaReciboForm(forms.ModelForm):
                   'email_factura',
                   'stock_clie',
                   'total',
-                  'efectivo_recibo']
+                  'efectivo_recibo',
+                  'compensa_factura']
         
         widgets = {
             'id_factura': forms.HiddenInput(),
@@ -232,6 +232,9 @@ class FacturaReciboForm(forms.ModelForm):
                 **formclassnumb2, 
             }),
             'efectivo_recibo': forms.NumberInput(attrs={
+                **formclassnumb2, 
+            }),
+            'compensa_factura': forms.NumberInput(attrs={
                 **formclassnumb2, 
             }),
         }
