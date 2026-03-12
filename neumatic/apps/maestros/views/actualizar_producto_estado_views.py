@@ -28,10 +28,13 @@ class ActualizarEstadosProductosView(MaestroCustomView):
 	
 	def post(self, request, *args, **kwargs):
 		"""Ejecuta la actualización - con soporte para AJAX"""
+		#-- Obtener el valor del checkbox (viene como 'on' si está marcado, o None si no)
+		actualizar_todos = request.POST.get('actualizar_todos') == 'on'
+		
 		#-- Si es una petición AJAX, devolver JSON.
 		if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
 			try:
-				resultado = actualizar_estados_productos()
+				resultado = actualizar_estados_productos(actualizar_todos=actualizar_todos)
 				return JsonResponse({
 					'success': True,
 					'message': f"{resultado['message']}.",
@@ -45,7 +48,7 @@ class ActualizarEstadosProductosView(MaestroCustomView):
 		else:
 			#-- Comportamiento normal para navegadores sin JavaScript.
 			try:
-				resultado = actualizar_estados_productos()
+				resultado = actualizar_estados_productos(actualizar_todos=actualizar_todos)
 				messages.success(
 					request, 
 					f"{resultado['message']}."

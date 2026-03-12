@@ -1,14 +1,23 @@
-/* Script para actualizar(resetear) la tabla empresa. */
-
--- Resetear la secuencia de ids.
-DELETE FROM sqlite_sequence WHERE name='empresa';
-
--- Eliminar los registros de la tabla.
-DELETE FROM empresa;
-
-
-INSERT INTO "main"."empresa" ("estatus_empresa", "nombre_fiscal", "nombre_comercial", "domicilio_empresa", "codigo_postal", "cuit", "ingresos_bruto", "inicio_actividad", "cbu", "cbu_alias", "cbu_vence", "telefono", "email_empresa", "web_empresa", "logo_empresa", "ws_archivo_crt2", "ws_archivo_key2", "ws_modo", "interes", "interes_dolar", "cotizacion_dolar", "dias_vencimiento", "descuento_maximo", "id_user_id", "id_localidad_id", "id_provincia_id", "id_iva_id", "ws_archivo_crt_p", "ws_archivo_key_p", "ws_expiracion_h", "ws_expiracion_p", "ws_sign_h", "ws_sign_p", "ws_token_h", "ws_token_p", "ws_vence_h", "ws_vence_p") 
-VALUES ('1', 'DEBONA MARCELO FABIAN Y DEBONA VICTOR HUGO S.H.', 'NEUMATICOS DEBONA', 'INDEPENDENCIA 2994', '3040', '30692402363', '921-746351-8', '1998-01-15', '1910334555033400499532', 'TRANVI.CLARIN.FRANJA', '2025-03-09', '5555555', 'neumaticosdebona@arnet.com.ar', NULL, '', '-----BEGIN CERTIFICATE-----
+UPDATE "main"."empresa" SET
+    "usuario" = 'admin',
+    "estacion" = 'Leoncio',
+    "fcontrol" = '2026-02-12 15:21:33',
+    "estatus_empresa" = '1',
+    "nombre_fiscal" = 'DEBONA MARCELO FABIAN Y DEBONA VICTOR HUGO S.H.',
+    "nombre_comercial" = 'NEUMATICOS DEBONA',
+    "domicilio_empresa" = 'INDEPENDENCIA 2994',
+    "codigo_postal" = '3040',
+    "cuit" = 30692402363,
+    "ingresos_bruto" = '921-746351-8',
+    "inicio_actividad" = '1998-01-15',
+    "cbu" = '1910334555033400499532',
+    "cbu_alias" = 'TRANVI.CLARIN.FRANJA',
+    "cbu_vence" = '2025-03-09',
+    "telefono" = '5555555',
+    "email_empresa" = 'neumaticosdebona@arnet.com.ar',
+    "web_empresa" = NULL,
+    "logo_empresa" = '',
+    "ws_archivo_crt2" = '-----BEGIN CERTIFICATE-----
 MIIDTzCCAjegAwIBAgIIOV9xwld+lxcwDQYJKoZIhvcNAQENBQAwODEaMBgGA1UEAwwRQ29tcHV0
 YWRvcmVzIFRlc3QxDTALBgNVBAoMBEFGSVAxCzAJBgNVBAYTAkFSMB4XDTI1MDkyNjAyNTg1MloX
 DTI3MDkyNjAyNTg1MlowNTEYMBYGA1UEAwwPRGVib25hU0hERU1PTmV3MRkwFwYDVQQFExBDVUlU
@@ -24,7 +33,8 @@ EAiBxo34xI1bLQQskGrjGLFDZSNnJ4m9EWYH+nhMW6AAhHB+L6tzUg7yxmfe9QsP0KzryLhdXxDP
 Wsa9AYpkuLTlp34i5UMtX/3Cj6PmsUyaeWFcmDZjWSRVPi7MgyE82KZMigtFroMy9W/VLm3MOj3n
 +Y7QxnFrtbA6HnfZmut+KyaStsFUpVvVsO0QarDcj+xEJCnTPtlfZ42bJL22AJvS8x7dmZUQBHnA
 DppEpVz8T2hrrXgUezi29Zd4cGz673aH1q6B+JtXExsUIV7fCcAEhLS7h+B3Zt29zU8hgPo=
------END CERTIFICATE-----', '-----BEGIN PRIVATE KEY-----
+-----END CERTIFICATE-----',
+	"ws_archivo_key2" = '-----BEGIN PRIVATE KEY-----
 MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDd4T0KiIdey6kR
 p90XrPz2g9G5UiawE2HT5Bm2C0pDgG5T+eYEQdDen9U7usj3msWAKp9UMK+XXV1l
 z8xedH3GYpSnGlPH86FPZLMdNfzXIlR07XyiTOK+qKnSnfr3kfY5lvYchisulg7L
@@ -51,4 +61,25 @@ degqW/XMD/Fg9DjDTusg2jqsF29LWdSX6fVFvEXo3tZygS7hzrUEXLOhqQKBgBHk
 CYInh04Q8pOHwwe1/pWZDdNydhspZ5yklcqg4pY+8tNWK2+YATlaUH3AuEPfqzgu
 00NtkMp1tSOONX0m+1h0q+Ca5Sb82h5Fv7zKCXhedCYkrZjlp465Kp6DVQ2UGSQm
 wAmAA7glCS8r1mfdr/lPTcE=
------END PRIVATE KEY-----', '1', '0', '0', '0', '0', '0', '1', '2349', '13', '4', '', '', '2026-03-11 03:34:50.682291', NULL, 'QgreUb6bFrQynQPKzAjs6Boq5v7j6+5oFOBEuMnUmVtUS71ww6KwbmH5kHxaMy6dznTc1xT+Mp9Ol6rXkg5ohxUZHfJbLwzcXlsENBcY6bHc6OSVs9FWCSsKMxsF0sYjUPhGVxD+A3pD4CuuUU7wdLX0QrEXmy5aYg2nhCz4FN4=', '', 'PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgZHN0PSJDTj13c2ZlLCBPPUFGSVAsIEM9QVIiIHVuaXF1ZV9pZD0iMTg1NjQ3NDU1NSIgZ2VuX3RpbWU9IjE3NzMxNjQzMzQiIGV4cF90aW1lPSIxNzczMjA3NTk0Ii8+CiAgICA8b3BlcmF0aW9uIHR5cGU9ImxvZ2luIiB2YWx1ZT0iZ3JhbnRlZCI+CiAgICAgICAgPGxvZ2luIGVudGl0eT0iMzM2OTM0NTAyMzkiIHNlcnZpY2U9IndzZmUiIHVpZD0iU0VSSUFMTlVNQkVSPUNVSVQgMjAxNzM2MTE5ODcsIENOPWRlYm9uYXNoZGVtb25ldyIgYXV0aG1ldGhvZD0iY21zIiByZWdtZXRob2Q9IjIyIj4KICAgICAgICAgICAgPHJlbGF0aW9ucz4KICAgICAgICAgICAgICAgIDxyZWxhdGlvbiBrZXk9IjMwNjkyNDAyMzYzIiByZWx0eXBlPSI0Ii8+CiAgICAgICAgICAgIDwvcmVsYXRpb25zPgogICAgICAgIDwvbG9naW4+CiAgICA8L29wZXJhdGlvbj4KPC9zc28+Cg==', '', NULL, NULL);
+-----END PRIVATE KEY-----',
+    "ws_modo" = 1,
+    "interes" = 0,
+    "interes_dolar" = 0,
+    "cotizacion_dolar" = 0,
+    "dias_vencimiento" = 0,
+    "descuento_maximo" = 0,
+    "id_user_id" = 1,
+    "id_localidad_id" = 2349,
+    "id_provincia_id" = 13,
+    "id_iva_id" = 4,
+    "ws_archivo_crt_p" = '',
+    "ws_archivo_key_p" = '',
+    "ws_expiracion_h" = NULL,
+    "ws_expiracion_p" = NULL,
+    "ws_sign_h" = 'KcA/dd3N3imbTtHvs9O+F1AaNcFxGN82DAn8QeVf6k4J9RSEAjNla20GD4/VlY+KgBQOUyZOWAH9X6RSd0qoC/7eCxcw1gbBnBladbwOI+KNzuVWisU+cl+FyVYn1dMCiK7OdWSntq8grQegeOUXNKn1MlBVcVX+UFWFqmdcITs=',
+    "ws_sign_p" = '',
+    "ws_token_h" = 'PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgZHN0PSJDTj13c2ZlLCBPPUFGSVAsIEM9QVIiIHVuaXF1ZV9pZD0iMzQ3NjY1MTI1MyIgZ2VuX3RpbWU9IjE3NzIxMjI4MjQiIGV4cF90aW1lPSIxNzcyMTY2MDg0Ii8+CiAgICA8b3BlcmF0aW9uIHR5cGU9ImxvZ2luIiB2YWx1ZT0iZ3JhbnRlZCI+CiAgICAgICAgPGxvZ2luIGVudGl0eT0iMzM2OTM0NTAyMzkiIHNlcnZpY2U9IndzZmUiIHVpZD0iU0VSSUFMTlVNQkVSPUNVSVQgMjAxNzM2MTE5ODcsIENOPWRlYm9uYXNoZGVtb25ldyIgYXV0aG1ldGhvZD0iY21zIiByZWdtZXRob2Q9IjIyIj4KICAgICAgICAgICAgPHJlbGF0aW9ucz4KICAgICAgICAgICAgICAgIDxyZWxhdGlvbiBrZXk9IjMwNjkyNDAyMzYzIiByZWx0eXBlPSI0Ii8+CiAgICAgICAgICAgIDwvcmVsYXRpb25zPgogICAgICAgIDwvbG9naW4+CiAgICA8L29wZXJhdGlvbj4KPC9zc28+Cg==',
+    "ws_token_p" = '',
+    "ws_vence_h" = NULL,
+    "ws_vence_p" = NULL
+WHERE "id_empresa" = 1;

@@ -55,8 +55,25 @@ def get_columna(field, field_name):
 @register.filter
 def get_type(value):
 	""" Devuelve el tipo de valor en formato string."""
+	# print(f"🔍 Valor: {repr(value)} | Tipo: {type(value).__name__} | Clase: {type(value)}")
 	return type(value).__name__
 
+@register.filter
+def in_list(value, arg_list):
+	"""
+	Verifica si un valor está en una lista.
+	Maneja casos donde arg_list es None o no es una lista.
+	"""
+	if arg_list is None:
+		return False
+	if not isinstance(arg_list, (list, tuple, set)):
+		#-- Si no es una lista, convertir a lista o tratar como lista de un elemento.
+		try:
+			arg_list = list(arg_list)
+		except TypeError:
+			#-- Si no se puede iterar, asumir que es un solo valor.
+			return value == arg_list
+	return value in arg_list
 
 @register.filter
 def formato_es_ar(value):

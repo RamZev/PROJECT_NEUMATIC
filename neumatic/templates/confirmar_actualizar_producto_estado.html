@@ -23,6 +23,20 @@
 						</div>
 						<div class="card-body">
 							<p>Esta acción actualizará los estados a: <strong>FALTANTES, DISPONIBLES o POCAS</strong> según el stock en depósitos.</p>
+							
+							<!-- CHECKBOX PARA CONTROLAR EL ALCANCE DE LA ACTUALIZACIÓN -->
+							<div class="form-check mb-3">
+								<input class="form-check-input" type="checkbox" name="actualizar_todos" id="actualizarTodos">
+								<label class="form-check-label" for="actualizarTodos">
+									<strong>Actualizar todos los estados</strong> (incluye estados asignados manualmente como OFERTAS, etc.)
+								</label>
+								<div class="form-text text-muted">
+									<i class="bi bi-info-circle"></i> 
+									Si no marca esta opción, solo se actualizarán los productos que actualmente tengan estado FALTANTES, DISPONIBLES o POCAS.
+								</div>
+							</div>
+							<!-- FIN DEL CHECKBOX -->
+							
 							<p>{{ mensaje }}</p>
 							
 							<!-- Mensaje de carga (inicialmente oculto) -->
@@ -39,6 +53,10 @@
 							<!-- Formulario normal como fallback -->
 							<form method="post" id="actualizarForm">
 								{% csrf_token %}
+								<!-- Importante: incluir el checkbox dentro del formulario -->
+								<div class="mb-3">
+									<!-- El checkbox se replicará aquí vía JavaScript para el envío AJAX -->
+								</div>
 								<button type="button" class="btn btn-primary" id="procesar-btn">
 									<i class="bi bi-check-lg"></i>
 									Sí, Actualizar Estados
@@ -67,6 +85,7 @@
 			const mensajeCarga = document.getElementById('mensaje-carga');
 			const resultadoDiv = document.getElementById('resultado');
 			const formulario = document.getElementById('actualizarForm');
+			const checkbox = document.getElementById('actualizarTodos');
 			
 			if (procesarBtn) {
 				procesarBtn.addEventListener('click', function() {
@@ -86,14 +105,20 @@
 					//-- Obtener el token CSRF.
 					const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
 					
+					//-- Crear FormData y agregar el valor del checkbox
+					const formData = new FormData();
+					formData.append('csrfmiddlewaretoken', csrfToken);
+					formData.append('actualizar_todos', checkbox.checked ? 'on' : 'off');
+					
 					//-- Enviar solicitud AJAX.
 					fetch('', {  // URL vacía = misma URL actual
 						method: 'POST',
 						headers: {
 							'X-Requested-With': 'XMLHttpRequest',
-							'X-CSRFToken': csrfToken
+							// No establecer 'X-CSRFToken' en headers cuando usamos FormData
+							// Django lo espera en el cuerpo del formulario
 						},
-						body: new FormData(formulario)
+						body: formData
 					})
 					.then(response => {
 						if (!response.ok) {

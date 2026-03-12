@@ -2,18 +2,14 @@
 from django.urls import reverse_lazy, reverse
 from django.shortcuts import redirect
 from django.db import transaction
-from django.db.models import F
 from django.utils import timezone
-from django.utils.safestring import mark_safe
 import json
 
 # Importar tus vistas genéricas base
 from .msdt_views_generics import *
 from ..models.compra_models import Compra
-from ...maestros.models.numero_models import Numero
 from ..forms.compra_forms import CompraForm, DetalleCompraFormSet
 from ...maestros.models.base_models import ProductoStock, ComprobanteCompra
-from ...maestros.models.proveedor_models import Proveedor
 from ...maestros.models.producto_models import Producto
 
 # Configuración del modelo
@@ -42,10 +38,9 @@ class CompraListView(MaestroDetalleListView):
 		'compro',
 		'numero_comprobante',
 		'id_proveedor__nombre_proveedor',
-
 	]
 	ordering = ['-id_compra']
-
+	
 	# Encabezado de la tabla
 	table_headers = {
 		'id_compra': (1, 'ID'),
@@ -57,7 +52,7 @@ class CompraListView(MaestroDetalleListView):
 		'total': (2, 'Total'),
 		'opciones': (1, 'Opciones'),
 	}
-
+	
 	# Columnas de la tabla
 	table_data = [
 		{'field_name': 'id_compra', 'date_format': None},
@@ -68,7 +63,7 @@ class CompraListView(MaestroDetalleListView):
 		{'field_name': 'id_proveedor', 'date_format': None},
 		{'field_name': 'total', 'date_format': None, 'decimal_places': 2},
 	]
-
+	
 	extra_context = {
 		"master_title": "Compras",
 		"home_view_name": home_view_name,
@@ -80,18 +75,18 @@ class CompraListView(MaestroDetalleListView):
 		"table_data": table_data,
 		"model_string": model_string,
 	}
-
+	
 	def get_queryset(self):
 		queryset = super().get_queryset()
 		user = self.request.user
-
+		
 		# 🔥 FILTRAR POR COMPROBANTES CON REMITO = TRUE
 		queryset = queryset.filter(id_comprobante_compra__remito=True)
-
+		
 		# Filtrar por sucursal si no es superusuario
 		if not user.is_superuser:
 			queryset = queryset.filter(id_sucursal=user.id_sucursal)
-
+		
 		# Aplicar búsqueda
 		query = self.request.GET.get('busqueda', None)
 		if query:
@@ -99,9 +94,9 @@ class CompraListView(MaestroDetalleListView):
 			for field in self.search_fields:
 				search_conditions |= Q(**{f"{field}__icontains": query})
 			queryset = queryset.filter(search_conditions)
-
+		
 		return queryset.order_by(*self.ordering)
-
+	
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
 		context['model_string'] = model_string
@@ -119,52 +114,54 @@ class CompraCreateView(MaestroDetalleCreateView):
 	form_class = formulario
 	template_name = f"ventas/{template_form}"
 	success_url = reverse_lazy(list_view_name)
-
+	
 	# Permiso
 	app_label = model._meta.app_label
 	permission_required = f"{app_label}.add_{model.__name__.lower()}"
-
+	
 	def get_context_data(self, **kwargs):
 		data = super().get_context_data(**kwargs)
 		usuario = self.request.user
 		data['cambia_precio_descripcion'] = usuario.cambia_precio_descripcion  # Ajusta si aplica
-
+		
 		if self.request.POST:
 			data['formset_detalle'] = DetalleCompraFormSet(self.request.POST)
 		else:
 			data['formset_detalle'] = DetalleCompraFormSet(instance=self.object)
-
+		
 		data['is_edit'] = False
-
+		
 		# Diccionarios para frontend (similares a factura)
 		libro_iva_dict = {str(c.id_comprobante_compra): c.libro_iva for c in ComprobanteCompra.objects.all()}
 		data['libro_iva_dict'] = json.dumps(libro_iva_dict)
-
+		
 		mult_compra_dict = {str(c.id_comprobante_compra): c.mult_compra for c in ComprobanteCompra.objects.all()}
 		data['mult_compra_dict'] = json.dumps(mult_compra_dict)
-
+		
 		# DICCIONARIO DE CÓDIGOS DE COMPROBANTES
 		comprobante_codigos = {
 			str(c.id_comprobante_compra): c.codigo_comprobante_compra 
 			for c in ComprobanteCompra.objects.all()
 		}
 		data['comprobante_codigos'] = json.dumps(comprobante_codigos)
-
-
+		
 		# Si necesitas datos de ComprobanteCompra, descomenta:
 		# tipo_comp_compra_dict = {str(c.id_comprobante_compra): c.nombre_comprobante_compra for c in ComprobanteCompra.objects.all()}
 		# data['tipo_comp_compra_dict'] = mark_safe(json.dumps(tipo_comp_compra_dict, ensure_ascii=False))
-
+		
+		#-- Título de la página.
+		data['titulo'] = "Crear Comprobante"
+		
 		return data
-
+	
 	######
 	def form_valid(self, form):
 		context = self.get_context_data()
 		formset_detalle = context['formset_detalle']
-
+		
 		if not formset_detalle.is_valid():
 			return self.form_invalid(form)
-
+		
 		try:
 			with transaction.atomic():
 				# 1. Validación básica de depósito
@@ -172,17 +169,17 @@ class CompraCreateView(MaestroDetalleCreateView):
 				if not deposito:
 					form.add_error('id_deposito', 'Debe seleccionar un depósito')
 					return self.form_invalid(form)
-
+				
 				# 🔥 ELIMINAR TODA LA LÓGICA DE NUMERACIÓN COMPLEJA
 				# Los campos vienen directamente del formulario
 				
 				# 2. Guardar Compra
 				self.object = form.save()
-
+				
 				# 3. Guardar Detalles
 				formset_detalle.instance = self.object
 				detalles = formset_detalle.save()
-
+				
 				# 4. Actualizar Stock
 				for detalle in detalles:
 					if (hasattr(detalle.id_producto, 'tipo_producto') and
@@ -219,15 +216,15 @@ class CompraCreateView(MaestroDetalleCreateView):
 								despacho_2=producto_obj.despacho_1,  # 1. Pasar despacho_1 a despacho_2
 								despacho_1=detalle.despacho          # 2. Reemplazar despacho_1 por despacho del detalle
 							)
-
+				
 				messages.success(self.request, f"Compra {self.object.numero_comprobante} creada correctamente")
 				return redirect(self.get_success_url())
-
+		
 		except Exception as e:
 			messages.error(self.request, f"Error inesperado: {str(e)}")
 			return self.form_invalid(form)
 	######
-
+	
 	def form_invalid(self, form):
 		print("Errores del formulario principal:", form.errors)
 		context = self.get_context_data()
@@ -236,12 +233,12 @@ class CompraCreateView(MaestroDetalleCreateView):
 			print("Errores del formset detalle:")
 			for i, form_d in enumerate(formset_detalle):
 				print(f"Form {i}:", form_d.errors)
-
+		
 		return super().form_invalid(form)
-
+	
 	def get_success_url(self):
 		return reverse(list_view_name)
-
+	
 	def get_initial(self):
 		initial = super().get_initial()
 		usuario = self.request.user
@@ -250,7 +247,7 @@ class CompraCreateView(MaestroDetalleCreateView):
 		initial['fecha_comprobante'] = timezone.now().date()
 		initial['fecha_registro'] = timezone.now().date()
 		return initial
-
+	
 	def get_form_kwargs(self):
 		kwargs = super().get_form_kwargs()
 		kwargs['usuario'] = self.request.user
@@ -266,43 +263,46 @@ class CompraUpdateView(MaestroDetalleUpdateView):
 	form_class = formulario
 	template_name = f"ventas/{template_form}"
 	success_url = reverse_lazy(list_view_name)
-
+	
 	app_label = model._meta.app_label
 	permission_required = f"{app_label}.change_{model.__name__.lower()}"
-
+	
 	def get_context_data(self, **kwargs):
 		data = super().get_context_data(**kwargs)
 		data['request'] = self.request
 		usuario = self.request.user
 		data['cambia_precio_descripcion'] = usuario.cambia_precio_descripcion
-
+		
 		if self.request.POST:
 			data['formset_detalle'] = DetalleCompraFormSet(self.request.POST, instance=self.object)
 		else:
 			data['formset_detalle'] = DetalleCompraFormSet(instance=self.object)
-
+		
 		data['is_edit'] = True
-
+		
 		# Mismos diccionarios que en CreateView
 		libro_iva_dict = {str(c.id_comprobante_compra): c.libro_iva for c in ComprobanteCompra.objects.all()}
 		data['libro_iva_dict'] = json.dumps(libro_iva_dict)
-
+		
 		mult_compra_dict = {str(c.id_comprobante_compra): c.mult_compra for c in ComprobanteCompra.objects.all()}
 		data['mult_compra_dict'] = json.dumps(mult_compra_dict)
-
+		
 		# DICCIONARIO DE CÓDIGOS DE COMPROBANTES
 		comprobante_codigos = {
 			str(c.id_comprobante_compra): c.codigo_comprobante_compra 
 			for c in ComprobanteCompra.objects.all()
 		}
 		data['comprobante_codigos'] = json.dumps(comprobante_codigos)
-
+		
+		#-- Título de la página.
+		data['titulo'] = "Crear Comprobante"
+		
 		return data
-
+	
 	def form_valid(self, form):
 		context = self.get_context_data()
 		formset_detalle = context['formset_detalle']
-
+		
 		if formset_detalle.is_valid():
 			try:
 				with transaction.atomic():
@@ -317,7 +317,7 @@ class CompraUpdateView(MaestroDetalleUpdateView):
 		else:
 			messages.error(self.request, "Error en el detalle de la compra. Revise los datos.")
 			return self.form_invalid(form)
-
+	
 	def form_invalid(self, form):
 		print("Errores del formulario principal:", form.errors)
 		context = self.get_context_data()
@@ -325,10 +325,10 @@ class CompraUpdateView(MaestroDetalleUpdateView):
 		if formset_detalle:
 			print("Errores del formset:", formset_detalle.errors)
 		return super().form_invalid(form)
-
+	
 	def get_success_url(self):
 		return self.success_url
-
+	
 	def get_form_kwargs(self):
 		kwargs = super().get_form_kwargs()
 		kwargs['usuario'] = self.request.user
@@ -343,16 +343,16 @@ class CompraDeleteView(MaestroDetalleDeleteView):
 	list_view_name = list_view_name
 	template_name = "base_confirm_delete.html"
 	success_url = reverse_lazy(list_view_name)
-
+	
 	app_label = model._meta.app_label
 	permission_required = f"{app_label}.delete_{model.__name__.lower()}"
-
+	
 	extra_context = {
 		"accion": f"Eliminar {model._meta.verbose_name}",
 		"list_view_name": list_view_name,
 		"mensaje": "Estás seguro que deseas eliminar el Registro"
 	}
-
+	
 	def post(self, request, *args, **kwargs):
 		self.object = self.get_object()
 		try:

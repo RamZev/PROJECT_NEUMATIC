@@ -118,8 +118,10 @@ Presupuesto.
 *	3 - Al "Ver Registro" (Editar) desde la lista de Presupuestos hay que controlar el redireccionamiento del botón "Cancelar" porque está redireccionando al listado de Comprobantes Electrónicos.
 		[Corregido: Cambié la plantilla usando la variable de entorno 'list_vie_name']
 	4 - Revisar los títulos de los acordeones, deberían ser cónsonos con el comprobante. Ej, si se crea un Presupuesto dice "Detalle del Comprobante de Venta". Esto es igual para otros comprobantes.
-	5 - Permite borrar Presupuesto. Se permitirá???
-	6 - No debería exigir Operario en el caso de servicio ya que es un presupuesto y no vaya a afectar los reportes.
+*	5 - Permite borrar Presupuesto. Se permitirá???
+		[No es relevanta, se puede eliminar, o tal vez lo puede hacer un usuario con jerarquía]
+*	6 - No debería exigir Operario en el caso de servicio ya que es un presupuesto y no vaya a afectar los reportes.
+		[Indistinto, pueden asignar cualquier operario ya que los reportes es sobre facturas no sobre presupuestos]
 
 Movimiento Interno.
 	1 - El título del acordeón debería decir "Detalle del Movimiento Interno" y no "Detalle del Comprobante de Venta". Aplicar generalidad.
@@ -141,3 +143,13 @@ Caja
 
 Movimiento de Caja
 
+
+
+
+######################################################################################################################################################################################
+RESUELTO
+######################################################################################################################################################################################
+- Formato (separador de miles) en los campos de tipo enteros (IDs, CUIT, Nro. Comprob.).
+- Agregado el combobox "Marketing" en formularios de Comprobantes de Ventas.
+- Agregado el campo "Marketing" en los reportes (Excel) de Tablas Dinámicas.
+- Acordeón "Detalle de Comprobante" ya aparece desplegado.
