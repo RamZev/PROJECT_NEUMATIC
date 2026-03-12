@@ -334,7 +334,11 @@
 														</label>
 														{{ form.saldo }}
 														<small class="form-text text-muted">
+															{% if form.instance.pk and not form.instance.caja_cerrada %}
+															Se establecerá en 0 al cerrar la caja
+															{% else %}
 															Saldo = Anterior + Ingresos - Egresos
+															{% endif %}
 														</small>
 													</div>
 												</div>
@@ -373,7 +377,7 @@
 														</label>
 														{{ form.diferencia }}
 														<small class="form-text text-muted">
-															Diferencia = Recuento - Saldo
+															Diferencia = Saldo Anterior + Ingresos - (Egresos + Recuento)
 														</small>
 													</div>
 
@@ -761,51 +765,73 @@
 		const egresosInput = document.querySelector('[name="egresos"]');
 		const saldoAnteriorInput = document.querySelector('[name="saldoanterior"]');
 		
-		// Función para calcular saldo automáticamente
-		function calcularSaldo() {
-			if (saldoAnteriorInput && ingresosInput && egresosInput && saldoInput) {
+		// Función para calcular diferencia según la nueva fórmula
+		// diferencia = saldoanterior + ingresos - (egresos + recuento)
+		function calcularDiferencia() {
+			if (saldoAnteriorInput && ingresosInput && egresosInput && 
+				recuentoInput && diferenciaInput && saldoInput) {
+				
 				const saldoAnterior = parseFloat(saldoAnteriorInput.value) || 0;
 				const ingresos = parseFloat(ingresosInput.value) || 0;
 				const egresos = parseFloat(egresosInput.value) || 0;
-				const saldoCalculado = saldoAnterior + ingresos - egresos;
+				const recuento = parseFloat(recuentoInput.value) || 0;
 				
-				// Actualizar el campo saldo
-				saldoInput.value = saldoCalculado.toFixed(2);
+				console.log('Valores para cálculo:', {
+					saldoAnterior, ingresos, egresos, recuento
+				});
 				
-				// Si hay recuento, calcular diferencia
-				if (recuentoInput && diferenciaInput) {
-					const recuento = parseFloat(recuentoInput.value) || 0;
-					diferenciaInput.value = (recuento - saldoCalculado).toFixed(2);
+				// Nueva fórmula: diferencia = saldoanterior + ingresos - (egresos + recuento)
+				const diferencia = saldoAnterior + ingresos - (egresos + recuento);
+				
+				console.log('Diferencia calculada:', diferencia);
+				
+				// Actualizar campo de diferencia
+				diferenciaInput.value = diferencia.toFixed(2);
+				
+				// El saldo siempre será 0 cuando se calcula la diferencia
+				saldoInput.value = '0.00';
+				
+				// Actualizar visualización de la diferencia
+				if (diferencia > 0) {
+					diferenciaInput.style.color = '#198754'; // Verde para sobrante
+					diferenciaInput.style.fontWeight = 'bold';
+				} else if (diferencia < 0) {
+					diferenciaInput.style.color = '#dc3545'; // Rojo para faltante
+					diferenciaInput.style.fontWeight = 'bold';
+				} else {
+					diferenciaInput.style.color = '#6c757d'; // Gris para cero
+					diferenciaInput.style.fontWeight = 'normal';
 				}
 				
-				return saldoCalculado;
+				return diferencia;
 			}
 			return 0;
 		}
 		
-		// Configurar eventos para calcular saldo cuando cambien ingresos o egresos
+		// Configurar eventos para calcular diferencia cuando cambien los valores
 		// Solo si los campos no son readonly
+		if (saldoAnteriorInput && !saldoAnteriorInput.readOnly) {
+			saldoAnteriorInput.addEventListener('change', calcularDiferencia);
+			saldoAnteriorInput.addEventListener('input', calcularDiferencia);
+		}
+		
 		if (ingresosInput && !ingresosInput.readOnly) {
-			ingresosInput.addEventListener('change', calcularSaldo);
-			ingresosInput.addEventListener('input', calcularSaldo);
+			ingresosInput.addEventListener('change', calcularDiferencia);
+			ingresosInput.addEventListener('input', calcularDiferencia);
 		}
 		
 		if (egresosInput && !egresosInput.readOnly) {
-			egresosInput.addEventListener('change', calcularSaldo);
-			egresosInput.addEventListener('input', calcularSaldo);
+			egresosInput.addEventListener('change', calcularDiferencia);
+			egresosInput.addEventListener('input', calcularDiferencia);
 		}
 		
-		// Calcular saldo inicial
-		calcularSaldo();
-		
-		// Cálculo de diferencia cuando cambia recuento
-		if (recuentoInput && diferenciaInput && saldoInput) {
-			recuentoInput.addEventListener('change', function() {
-				const recuento = parseFloat(this.value) || 0;
-				const saldo = parseFloat(saldoInput.value) || 0;
-				diferenciaInput.value = (recuento - saldo).toFixed(2);
-			});
+		if (recuentoInput && !recuentoInput.readOnly) {
+			recuentoInput.addEventListener('change', calcularDiferencia);
+			recuentoInput.addEventListener('input', calcularDiferencia);
 		}
+		
+		// Calcular diferencia inicial
+		calcularDiferencia();
 		
 		// ========== VALIDACIÓN DE FECHA ==========
 		const fechaInput = document.querySelector('[name="fecha_caja"]');
@@ -922,6 +948,7 @@
 				}
 			}
 			
+			///////////
 			// Configurar el botón "Aplicar Recuento"
 			const aplicarRecuentoBtn = document.getElementById('aplicarRecuento');
 			if (aplicarRecuentoBtn) {
@@ -931,8 +958,72 @@
 					
 					if (recuentoInput) {
 						recuentoInput.value = total.toFixed(2);
-						const eventoChange = new Event('change', { bubbles: true });
-						recuentoInput.dispatchEvent(eventoChange);
+						
+						// Calcular diferencia automáticamente
+						calcularDiferencia();
+						
+						console.log('Recuento aplicado:', total.toFixed(2));
+						
+						// RECOLECTAR DATOS DEL RECUENTO PARA ENVIAR AL SERVIDOR
+						const datosRecuento = [];
+						
+						for (let i = 1; i <= 15; i++) {
+							const inputCantidad = document.getElementById('cantidad-' + i);
+							const celdaValor = document.getElementById('valor-' + i);
+							
+							if (inputCantidad && celdaValor) {
+								const cantidad = parseInt(inputCantidad.value) || 0;
+								if (cantidad > 0) {
+									const valor = parseFloat(celdaValor.textContent) || 0;
+									const totalFila = valor * cantidad;
+									
+									datosRecuento.push({
+										fila: i,
+										cantidad: cantidad,
+										valor: valor,
+										detalle: valor.toFixed(2) + ' pesos',
+										total: totalFila
+									});
+								}
+							}
+						}
+						
+						// Crear campo hidden en el formulario con los datos
+						let inputHidden = document.querySelector('input[name="recuento_data"]');
+						if (!inputHidden) {
+							inputHidden = document.createElement('input');
+							inputHidden.type = 'hidden';
+							inputHidden.name = 'recuento_data';
+							document.getElementById('cajaForm').appendChild(inputHidden);
+						}
+						inputHidden.value = JSON.stringify(datosRecuento);
+						
+						console.log('Datos recuento para guardar:', datosRecuento);
+					}
+					
+					// Cerrar el modal
+					const modalElement = document.getElementById('recuentoModal');
+					const modal = bootstrap.Modal.getInstance(modalElement);
+					if (modal) {
+						modal.hide();
+					}
+				});
+			}
+			///////////
+			
+			/*
+			if (aplicarRecuentoBtn) {
+				aplicarRecuentoBtn.addEventListener('click', function() {
+					const totalRecuentoSpan = document.getElementById('totalRecuento');
+					const total = parseFloat(totalRecuentoSpan?.textContent) || 0;
+					
+					if (recuentoInput) {
+						recuentoInput.value = total.toFixed(2);
+						
+						// Calcular diferencia automáticamente
+						calcularDiferencia();
+						
+						console.log('Recuento aplicado:', total.toFixed(2));
 					}
 					
 					const modalElement = document.getElementById('recuentoModal');
@@ -941,9 +1032,10 @@
 						modal.hide();
 					}
 					
-					alert(`✓ Recuento aplicado: $${total.toFixed(2)}`);
+					alert(`✓ Recuento aplicado: $${total.toFixed(2)}\nLa diferencia se ha recalculado automáticamente.`);
 				});
 			}
+			*/
 			
 			// Limpiar todos los inputs cuando se abre el modal
 			btnAbrirRecuento.addEventListener('click', function() {
@@ -985,8 +1077,52 @@
 		// ========== VALIDACIÓN PARA CIERRE DE CAJA ==========
 		const form = document.getElementById('cajaForm');
 		const cajaCerradaCheckbox = document.querySelector('[name="caja_cerrada"]');
+		const guardarBtn = document.getElementById('guardarBtn');
 		
-		if (form && cajaCerradaCheckbox) {
+		if (form && cajaCerradaCheckbox && guardarBtn) {
+			// Manejar cambio en el checkbox de cierre
+			cajaCerradaCheckbox.addEventListener('change', function() {
+				if (this.checked) {
+					// Cambiar texto del botón
+					guardarBtn.innerHTML = '<i class="bi bi-lock-fill me-1"></i> Confirmar Cierre de Caja';
+					
+					// Validar que haya recuento
+					const recuento = recuentoInput ? parseFloat(recuentoInput.value) || 0 : 0;
+					
+					if (recuento <= 0) {
+						alert('⚠️ Para cerrar la caja, debe ingresar el recuento físico primero.');
+						this.checked = false;
+						guardarBtn.innerHTML = '<i class="bi bi-save me-1"></i> Cerrar Caja';
+						if (recuentoInput) {
+							recuentoInput.focus();
+						}
+						return;
+					}
+					
+					// Calcular diferencia actual
+					const diferencia = calcularDiferencia();
+					
+					// Mostrar confirmación basada en la diferencia
+					let mensaje = '';
+					if (diferencia > 0) {
+						mensaje = `⚠️ Hay un SOBRANTE de $${diferencia.toFixed(2)}. ¿Continuar con el cierre?`;
+					} else if (diferencia < 0) {
+						mensaje = `⚠️ Hay un FALTANTE de $${Math.abs(diferencia).toFixed(2)}. ¿Continuar con el cierre?`;
+					} else {
+						mensaje = '✅ La caja cuadra exactamente. ¿Continuar con el cierre?';
+					}
+					
+					if (!confirm(mensaje)) {
+						this.checked = false;
+						guardarBtn.innerHTML = '<i class="bi bi-save me-1"></i> Cerrar Caja';
+					}
+				} else {
+					// Restaurar texto del botón
+					guardarBtn.innerHTML = '<i class="bi bi-save me-1"></i> Cerrar Caja';
+				}
+			});
+			
+			// Validar al enviar el formulario
 			form.addEventListener('submit', function(event) {
 				if (cajaCerradaCheckbox.checked) {
 					const recuento = recuentoInput ? parseFloat(recuentoInput.value) || 0 : 0;
@@ -1000,13 +1136,9 @@
 						return false;
 					}
 					
-					const saldo = calcularSaldo();
-					
+					// Mostrar confirmación final
 					const confirmacion = confirm(
 						`⚠️ ¿Está seguro de que desea cerrar la caja #{{ form.instance.numero_caja|default:"NUEVA" }}?\n\n` +
-						`• Saldo calculado: $${saldo.toFixed(2)}\n` +
-						`• Recuento ingresado: $${recuento.toFixed(2)}\n` +
-						`• Diferencia: $${(recuento - saldo).toFixed(2)}\n\n` +
 						`Una vez cerrada, no podrá realizar modificaciones.`
 					);
 					
