@@ -761,7 +761,7 @@
 		const saldoAnteriorInput = document.querySelector('[name="saldoanterior"]');
 		
 		// Función para calcular diferencia según la nueva fórmula
-		// diferencia = saldoanterior + ingresos - (egresos + recuento)
+		// diferencia = recuento - (saldoanterior + ingresos - egresos)
 		function calcularDiferencia() {
 			if (saldoAnteriorInput && ingresosInput && egresosInput && 
 				recuentoInput && diferenciaInput && saldoInput) {
@@ -775,9 +775,11 @@
 					saldoAnterior, ingresos, egresos, recuento
 				});
 				
-				// Nueva fórmula: diferencia = saldoanterior + ingresos - (egresos + recuento)
-				const diferencia = saldoAnterior + ingresos - (egresos + recuento);
+				// NUEVA FÓRMULA: diferencia = recuento - (saldoanterior + ingresos - egresos)
+				const saldoEsperado = saldoAnterior + ingresos - egresos;
+				const diferencia = recuento - saldoEsperado;
 				
+				console.log('Saldo esperado:', saldoEsperado);
 				console.log('Diferencia calculada:', diferencia);
 				
 				// Actualizar campo de diferencia

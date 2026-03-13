@@ -263,29 +263,67 @@ class CajaCreateView(MaestroCreateView):
         caja_abierta = Caja.objects.filter(
             id_sucursal=sucursal,
             caja_cerrada=False
-        ).select_for_update().exists()  # Bloquear para evitar concurrencia
+        ).select_for_update().exists()
         
         if caja_abierta:
-            form.add_error(
-                None,
+            messages.error(
+                self.request,
                 f'Existe una caja abierta en la sucursal {sucursal.nombre_sucursal}. '
                 f'Debe cerrarla antes de crear una nueva.'
             )
-            return self.form_invalid(form)
+            return redirect(self.list_view_name)
         
-        # 3. FORZAR valores críticos
+        # ===== NUEVAS VALIDACIONES DE FECHA =====
+        fecha_caja = form.cleaned_data.get('fecha_caja')
+        
+        # 3. Validar que no exista caja en la misma fecha para esta sucursal
+        caja_misma_fecha = Caja.objects.filter(
+            id_sucursal=sucursal,
+            fecha_caja=fecha_caja
+        ).exists()
+        
+        if caja_misma_fecha:
+            messages.error(
+                self.request,
+                f'Ya existe una caja para la fecha {fecha_caja.strftime("%d/%m/%Y")} en la sucursal {sucursal.nombre_sucursal}.'
+            )
+            return redirect(self.list_view_name)
+        
+        # 4. Validar que la fecha no sea anterior a la última caja creada
+        ultima_caja = Caja.objects.filter(
+            id_sucursal=sucursal
+        ).order_by('-fecha_caja', '-id_caja').first()
+        
+        if ultima_caja and fecha_caja < ultima_caja.fecha_caja:
+            messages.error(
+                self.request,
+                f'La fecha de la nueva caja ({fecha_caja.strftime("%d/%m/%Y")}) no puede ser anterior '
+                f'a la última caja creada ({ultima_caja.fecha_caja.strftime("%d/%m/%Y")}) en la sucursal {sucursal.nombre_sucursal}.'
+            )
+            return redirect(self.list_view_name)
+        
+        # 5. Validar fecha no puede ser futura
+        if fecha_caja and fecha_caja > timezone.now().date():
+            messages.error(
+                self.request,
+                f'La fecha de la caja ({fecha_caja.strftime("%d/%m/%Y")}) no puede ser futura.'
+            )
+            return redirect(self.list_view_name)
+        # ===== FIN DE NUEVAS VALIDACIONES =====
+        
+        # 6. FORZAR valores críticos
         form.instance.id_sucursal = sucursal
-        form.instance.caja_cerrada = False  # Nueva caja siempre abierta
+        form.instance.caja_cerrada = False
         
-        # 4. GENERAR NÚMERO DE CAJA
+        # 7. GENERAR NÚMERO DE CAJA
         try:
             numero_generado = self.generar_numero_caja(sucursal)
             form.instance.numero_caja = numero_generado
         except forms.ValidationError as e:
-            form.add_error('numero_caja', str(e))
-            return self.form_invalid(form)
+            messages.error(self.request, str(e))
+            return redirect(self.list_view_name)
         
-        # 5. CALCULAR SALDO ANTERIOR
+        # 8. CALCULAR SALDO ANTERIOR
         ultima_caja_cerrada = Caja.objects.filter(
             id_sucursal=sucursal,
             caja_cerrada=True
@@ -296,40 +334,113 @@ class CajaCreateView(MaestroCreateView):
         else:
             form.instance.saldoanterior = 0
         
-        # 6. INICIALIZAR OTROS CAMPOS
+        # 9. INICIALIZAR OTROS CAMPOS
         form.instance.ingresos = 0
         form.instance.egresos = 0
         form.instance.saldo = form.instance.saldoanterior
         form.instance.diferencia = 0
         form.instance.recuento = 0
         
-        # 7. VALIDAR FECHA (no puede ser futura)
-        fecha_caja = form.cleaned_data.get('fecha_caja')
-        if fecha_caja and fecha_caja > timezone.now().date():
-            form.add_error('fecha_caja', 'La fecha de la caja no puede ser futura')
-            return self.form_invalid(form)
-        
-        # 8. GUARDAR
+        # 10. GUARDAR
         try:
-            # Llamar al padre para guardar
-            # response = super().form_valid(form)
             self.object = form.save()
             
-            # Mensaje de éxito
             # messages.success(
             #     self.request,
             #     f'Caja #{self.object.numero_caja} creada exitosamente. '
             #     f'Saldo inicial: ${self.object.saldoanterior:.2f}',
-            #     extra_tags='success'  # Forzar la etiqueta
+            #     extra_tags='success'
             # )
             
-            # return response
             return redirect(self.success_url)
             
         except Exception as e:
-            # Manejar cualquier error durante el guardado
-            form.add_error(None, f'Error al guardar la caja: {str(e)}')
-            return self.form_invalid(form)
+            messages.error(self.request, f'Error al guardar la caja: {str(e)}')
+            return redirect(self.list_view_name)
+
+        # def form_valid(self, form):
+        #     """
+        #     CONTROL COMPLETO DE LA GRABACIÓN EN LA VISTA
+        #     """
+        #     user = self.request.user
+            
+        #     # 1. Validar que el usuario tenga sucursal
+        #     sucursal = user.id_sucursal
+        #     if not sucursal:
+        #         form.add_error(None, 'No tiene una sucursal asignada')
+        #         return self.form_invalid(form)
+            
+        #     # 2. Validar que no haya caja abierta en la sucursal
+        #     caja_abierta = Caja.objects.filter(
+        #         id_sucursal=sucursal,
+        #         caja_cerrada=False
+        #     ).select_for_update().exists()  # Bloquear para evitar concurrencia
+            
+        #     if caja_abierta:
+        #         form.add_error(
+        #             None,
+        #             f'Existe una caja abierta en la sucursal {sucursal.nombre_sucursal}. '
+        #             f'Debe cerrarla antes de crear una nueva.'
+        #         )
+        #         return self.form_invalid(form)
+            
+        #     # 3. FORZAR valores críticos
+        #     form.instance.id_sucursal = sucursal
+        #     form.instance.caja_cerrada = False  # Nueva caja siempre abierta
+            
+        #     # 4. GENERAR NÚMERO DE CAJA
+        #     try:
+        #         numero_generado = self.generar_numero_caja(sucursal)
+        #         form.instance.numero_caja = numero_generado
+        #     except forms.ValidationError as e:
+        #         form.add_error('numero_caja', str(e))
+        #         return self.form_invalid(form)
+            
+        #     # 5. CALCULAR SALDO ANTERIOR
+        #     ultima_caja_cerrada = Caja.objects.filter(
+        #         id_sucursal=sucursal,
+        #         caja_cerrada=True
+        #     ).order_by('-fecha_caja', '-id_caja').first()
+            
+        #     if ultima_caja_cerrada:
+        #         form.instance.saldoanterior = ultima_caja_cerrada.saldo
+        #     else:
+        #         form.instance.saldoanterior = 0
+            
+        #     # 6. INICIALIZAR OTROS CAMPOS
+        #     form.instance.ingresos = 0
+        #     form.instance.egresos = 0
+        #     form.instance.saldo = form.instance.saldoanterior
+        #     form.instance.diferencia = 0
+        #     form.instance.recuento = 0
+            
+        #     # 7. VALIDAR FECHA (no puede ser futura)
+        #     fecha_caja = form.cleaned_data.get('fecha_caja')
+        #     if fecha_caja and fecha_caja > timezone.now().date():
+        #         form.add_error('fecha_caja', 'La fecha de la caja no puede ser futura')
+        #         return self.form_invalid(form)
+            
+        #     # 8. GUARDAR
+        #     try:
+        #         # Llamar al padre para guardar
+        #         # response = super().form_valid(form)
+        #         self.object = form.save()
+                
+        #         # Mensaje de éxito
+        #         # messages.success(
+        #         #     self.request,
+        #         #     f'Caja #{self.object.numero_caja} creada exitosamente. '
+        #         #     f'Saldo inicial: ${self.object.saldoanterior:.2f}',
+        #         #     extra_tags='success'  # Forzar la etiqueta
+        #         # )
+                
+        #         # return response
+        #         return redirect(self.success_url)
+                
+        #     except Exception as e:
+        #         # Manejar cualquier error durante el guardado
+        #         form.add_error(None, f'Error al guardar la caja: {str(e)}')
+        #         return self.form_invalid(form)
 
 
 # En neumatic\apps\ventas\views\caja_views.py
