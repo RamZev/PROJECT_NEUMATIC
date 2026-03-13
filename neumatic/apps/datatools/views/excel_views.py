@@ -58,33 +58,34 @@ class ExcelUploadView(FormView):
 				df_headers = pd.read_excel(archivo, nrows=0)
 				columnas_excel = df_headers.columns.tolist()
 				
-				#-- Identificar tipos de campos
+				#-- Identificar tipos de campos.
+				columnas_id = []
 				columnas_como_texto = []
 				columnas_booleanas = []
 				columnas_decimales = []
+				columnas_enteras = []
 				
 				for key, value in ConfigViews.table_info.items():
 					if value.get('excel') and value['label'] in columnas_excel:
 						try:
 							campo_obj = Producto._meta.get_field(key)
-							if isinstance(campo_obj, (CharField, TextField)):
+							
+							if isinstance(campo_obj, (ForeignKey, AutoField)):
+								columnas_id.append(value['label'])
+							elif isinstance(campo_obj, (CharField, TextField)):
 								columnas_como_texto.append(value['label'])
 							elif isinstance(campo_obj, BooleanField):
 								columnas_booleanas.append(value['label'])
 							elif isinstance(campo_obj, (DecimalField, FloatField)):
 								columnas_decimales.append(value['label'])
+							elif isinstance(campo_obj, (IntegerField, BigIntegerField)):
+								columnas_enteras.append(value['label'])
+							
 						except FieldDoesNotExist:
 							continue
 				
-				#-- SEGUNDO: Leer Excel forzando las columnas string como texto.
-				dtype_dict = {col: str for col in columnas_como_texto}
-				
-				#-- Para decimales, leer como float para preservar formato numérico.
-				for columna in columnas_decimales:
-					if columna in df_headers.columns:
-						dtype_dict[columna] = float
-				
-				df = pd.read_excel(archivo, na_filter=False, dtype=dtype_dict, keep_default_na=False)
+				#-- Leer el Excel con todas las columnas como string.
+				df = pd.read_excel(archivo, na_filter=False, dtype=str, keep_default_na=False)
 				
 				#-- Verificar si el DataFrame está vacío.
 				if df.empty:
@@ -92,45 +93,51 @@ class ExcelUploadView(FormView):
 					return self.form_invalid(form)
 				
 				#-- Verificar que las columnas coincidan con las esperadas.
-				columnas_esperadas = [value['label'] for value in ConfigViews.table_info.values() if value['excel'] ]
+				columnas_esperadas = [value['label'] for value in ConfigViews.table_info.values() if value['excel']]
 				if set(columnas_esperadas) != set(columnas_excel):
-					form.add_error('archivo_excel', f'Las columnas del archivo no coinciden con las esperadas. ')
+					form.add_error('archivo_excel', f'Las columnas del archivo no coinciden con las esperadas.')
 					return self.form_invalid(form)
 				
-				#-- TERCERO: Asegurar que los campos string mantengan formato exacto.
+				#-- AHORA: Convertir y limpiar los datos según el tipo.
+				
+				#-- 1. Procesar columnas decimales: convertir a float o 0.0 si está vacío.
+				for columna in columnas_decimales:
+					if columna in df.columns:
+						df[columna] = df[columna].apply(self._convertir_decimal_seguro)
+				
+				#-- 2. Procesar columnas enteras (no ID): convertir a int o 0 si está vacío.
+				for columna in columnas_enteras:
+					if columna in df.columns:
+						df[columna] = df[columna].apply(self._convertir_entero_seguro)
+				
+				#-- 3. Asegurar que los campos string mantengan formato exacto.
 				for columna in columnas_como_texto:
 					if columna in df.columns:
-						#-- Preservar strings exactos, incluyendo ceros iniciales.
 						df[columna] = df[columna].apply(lambda x: self._preservar_formato_exacto(x))
 				
-				#-- CUARTO: Convertir campos booleanos a formato Si/No
+				#-- 4. Convertir campos booleanos a formato Si/No.
 				for columna in columnas_booleanas:
 					if columna in df.columns:
 						df[columna] = df[columna].apply(lambda x: self._convertir_booleano_a_si_no(x))
 				
-				#-- QUINTO: Procesar campos decimales para preservar formato
-				for columna in columnas_decimales:
-					if columna in df.columns:
-						df[columna] = df[columna].apply(lambda x: self._preservar_formato_decimal(x))
-				
-				#-- SEXTO: Convertir campos específicos a mayúsculas.
+				#-- 5. Convertir campos específicos a mayúsculas.
 				campos_a_mayusculas = ['Tipo Producto']
 				
 				for columna in campos_a_mayusculas:
 					if columna in df.columns:
 						df[columna] = df[columna].apply(
-							lambda x: str(x).strip().upper() if x and pd.notna(x) else x
+							lambda x: str(x).strip().upper() if x and pd.notna(x) and str(x).strip() else x
 						)
 				
 				#-- Generar lista de campos protegidos y sus etiquetas.
-				campos_portegidos = [campo for campo, info in ConfigViews.table_info.items() if info.get('protected', False)]
-				etiquetas_portegidas = [info['label'] for info in ConfigViews.table_info.values() if info.get('protected', False)]
+				campos_protegidos = [campo for campo, info in ConfigViews.table_info.items() if info.get('protected', False)]
+				etiquetas_protegidas = [info['label'] for info in ConfigViews.table_info.values() if info.get('protected', False)]
 				
 				#-- Mapear Columnas del Excel a nombres de campos {"label": producto.campo}.
 				label_to_field_map = {value['label']: key for key, value in ConfigViews.table_info.items() if value['label'] in columnas_excel}
 				
 				#-- Limpiar datos (solo valores específicos, no formato).
-				df = df.replace(['nan', 'NaN', 'NAN', 'NULL', 'null'], None)
+				df = df.replace(['nan', 'NaN', 'NAN', 'NULL', 'null', 'None'], None)
 				
 				#-- Convertir a lista de diccionarios y guardar en sesión.
 				todos_los_datos = df.to_dict('records')
@@ -142,9 +149,11 @@ class ExcelUploadView(FormView):
 					'todos_los_datos': todos_los_datos,
 					'total_filas': total_filas,
 					'nombre_archivo': archivo.name,
-					'campos_protegidos': campos_portegidos,
-					'etiquetas_protegidas': etiquetas_portegidas,
+					'campos_protegidos': campos_protegidos,
+					'etiquetas_protegidas': etiquetas_protegidas,
 					'etiquetas_a_campos_map': label_to_field_map,
+					'columnas_id': columnas_id,
+					'columnas_booleanas': columnas_booleanas,
 					'proceso': self.request.GET.get('proceso', 'actualizar')
 				}
 				
@@ -156,7 +165,48 @@ class ExcelUploadView(FormView):
 		except Exception as e:
 			form.add_error('archivo_excel', f'Error al procesar el archivo: {str(e)}')
 			return self.form_invalid(form)
+	
+	def _convertir_decimal_seguro(self, valor):
+		"""
+		Convierte valores a float, devolviendo 0.0 para valores vacíos.
+		"""
+		if valor is None or pd.isna(valor) or valor == '' or valor in ['nan', 'NaN', 'NAN', 'NULL', 'null', 'None']:
+			return 0.0
 		
+		if isinstance(valor, (int, float)):
+			return float(valor)
+		
+		if isinstance(valor, str):
+			#-- Limpiar el string: reemplazar coma por punto y eliminar espacios.
+			valor_limpio = valor.replace(',', '.').strip()
+			try:
+				return float(valor_limpio)
+			except (ValueError, TypeError):
+				return 0.0
+		
+		return 0.0
+	
+	def _convertir_entero_seguro(self, valor):
+		"""
+		Convierte valores a int, devolviendo 0 para valores vacíos.
+		"""
+		if valor is None or pd.isna(valor) or valor == '' or valor in ['nan', 'NaN', 'NAN', 'NULL', 'null', 'None']:
+			return 0
+		
+		if isinstance(valor, (int, float)):
+			return int(valor)
+		
+		if isinstance(valor, str):
+			#-- Limpiar el string.
+			valor_limpio = valor.strip()
+			try:
+				#-- Intentar convertir a float primero (por si tiene decimales).
+				return int(float(valor_limpio))
+			except (ValueError, TypeError):
+				return 0
+		
+		return 0
+	
 	def _preservar_formato_exacto(self, valor):
 		"""
 		Preserva el formato exacto del valor tal como está en Excel.
@@ -190,17 +240,17 @@ class ExcelUploadView(FormView):
 		"""
 		Convierte valores booleanos a formato Si/No específicamente para campos booleanos del modelo
 		"""
-		#-- Para valores vacíos o nulos, devolver "No"
+		#-- Para valores vacíos o nulos, devolver "No".
 		if valor is None or pd.isna(valor) or valor == '':
 			return "No"
 		
-		#-- Si ya es string, verificar si representa un booleano
+		#-- Si ya es string, verificar si representa un booleano.
 		if isinstance(valor, str):
 			#-- Manejar casos especiales de pandas/Excel.
 			if valor in ['nan', 'NaN', 'NAN', 'NULL', 'null']:
 				return "No"
 			
-			#-- Convertir representaciones de booleanos a Si/No
+			#-- Convertir representaciones de booleanos a Si/No.
 			valor_lower = valor.lower().strip()
 			true_values = ['true', 'yes', 'sí', 'si', 'verdadero', 'x', '✔', 'verdad', '1']
 			false_values = ['false', 'no', 'not', 'falso', 'f', 'n', '0']
@@ -210,52 +260,19 @@ class ExcelUploadView(FormView):
 			elif valor_lower in false_values:
 				return "No"
 			
-			#-- Si no coincide con ningún valor booleano conocido, devolver "No" por defecto
+			#-- Si no coincide con ningún valor booleano conocido, devolver "No" por defecto.
 			return "No"
 		
 		#-- Para booleanos Python explícitos, convertir a Si/No.
 		if isinstance(valor, bool):
 			return "Si" if valor else "No"
 		
-		#-- Para números, considerar 1 como Si y otros como No
+		#-- Para números, considerar 1 como Si y otros como No.
 		if isinstance(valor, (int, float)):
 			return "Si" if valor == 1 else "No"
 		
-		#-- Para cualquier otro tipo, devolver "No" por defecto
+		#-- Para cualquier otro tipo, devolver "No" por defecto.
 		return "No"
-	
-	def _preservar_formato_decimal(self, valor):
-		"""
-		Preserva el formato de campos decimales, manejando valores vacíos y conversiones.
-		"""
-		if valor is None or pd.isna(valor) or valor == '':
-			return None
-		
-		#-- Si ya es numérico (float, int, Decimal), mantener como está.
-		if isinstance(valor, (int, float, Decimal)):
-			return valor
-		
-		#-- Si es string, intentar convertir a numérico
-		if isinstance(valor, str):
-			#-- Manejar casos especiales
-			if valor in ['nan', 'NaN', 'NAN', 'NULL', 'null']:
-				return None
-			
-			#-- Limpiar el string: reemplazar coma por punto y eliminar espacios.
-			valor_limpio = valor.replace(',', '.').strip()
-			
-			#-- Intentar convertir a float
-			try:
-				return float(valor_limpio)
-			except (ValueError, TypeError):
-				#-- Si no se puede convertir, devolver el valor original.
-				return valor
-		
-		#-- Para cualquier otro tipo, intentar convertir a float.
-		try:
-			return float(valor)
-		except (ValueError, TypeError):
-			return valor
 
 
 class ExcelPreviewView(TemplateView):
@@ -308,6 +325,8 @@ class ExcelPreviewView(TemplateView):
 		context['pagina_actual'] = pagina_num
 		context['total_paginas'] = paginator.num_pages
 		context['proceso'] = excel_data.get('proceso', 'actualizar')
+		context['columnas_id'] = excel_data.get('columnas_id', [])
+		context['columnas_booleanas'] = excel_data.get('columnas_booleanas', [])
 		
 		#-- Calcular rango de páginas.
 		pagina_actual_num = context['pagina_actual']
@@ -1121,6 +1140,10 @@ def validar_integer(valor, campo_obj, especificaciones):
 def validar_decimal(valor, campo_obj, especificaciones):
 	"""Validar campo decimal"""
 	try:
+		#-- Si el valor está vacío, retornar 0.00
+		if valor in ['', None, 'NULL', 'null', 'NaN', 'nan'] or pd.isna(valor):
+			return Decimal('0.00')
+		
 		#-- Convertir a Decimal.
 		if isinstance(valor, str):
 			#-- Reemplazar coma por punto para formato argentino.

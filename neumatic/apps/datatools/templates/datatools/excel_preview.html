@@ -76,7 +76,7 @@
 		/*--- Estilo para números alineados a la derecha ---*/
 		.number-cell {
 			text-align: right;
-			font-family: monospace;
+			/*font-family: monospace;*/
 		}
 		
 		/*--- Estilos para el panel de la derecha ---*/
@@ -233,24 +233,40 @@
 											<thead>
 												<tr>
 													{% for columna in columnas %}
-														<th>{{ columna }}</th>
+														<th>
+															{{ columna }}
+															{% if columna in columnas_booleanas %}
+																<span class="badge bg-info" 
+																	data-bs-toggle="tooltip" 
+																	data-bs-html="true"
+																	title="<small>Valores para SI: true, 1, yes, sí, si, verdadero, x, ✔, t, v<br>Valores para NO: false, 0, no, not, falso, (vacío), null, none, f, n</small>">
+																	<i class="fas fa-question-circle"></i>
+																</span>
+																
+															{% endif %}
+														</th>
 													{% endfor %}
 												</tr>
 											</thead>
 											<tbody>
 												{% for fila in datos %}
 													<tr>
-														{% for key, valor in fila.items %}
+														{% for columna, valor in fila.items %}
 															{% with valor_tipo=valor|get_type %}
-																<td data-content="{{ valor|default:'' }}" 
-																	title="{{ valor|default:'' }}"
-																	{% if valor_tipo == 'float' or valor_tipo == 'Decimal' %}class="number-cell"{% endif %}>
-																	{% if valor_tipo == 'float' or valor_tipo == 'Decimal' %}
-																		{{ valor|formato_es_ar }}
-																	{% else %}
-																		{{ valor|default:'' }}
-																	{% endif %}
-																</td>
+																{% with es_id=columna|in_list:columnas_id %}
+																	<td data-content="{{ valor|default:'' }}" 
+																		title="{{ valor|default:'' }}"
+																		{% if valor_tipo == 'int' or valor_tipo == 'float' or valor_tipo == 'Decimal' or es_id %}class="number-cell"{% endif %}>
+																		
+																		{% if valor_tipo == 'float' or valor_tipo == 'Decimal' %}
+																			{{ valor|formato_es_ar }}
+																		{% elif valor_tipo == 'int' and not es_id %}
+																			{{ valor|formato_es_ar_entero }}
+																		{% else %}
+																			{{ valor|default:'' }}
+																		{% endif %}
+																	</td>
+																{% endwith %}
 															{% endwith %}
 														{% endfor %}
 													</tr>
@@ -396,10 +412,11 @@
 			window.addEventListener('resize', adjustColumnWidths);
 			
 			//-- Inicializar tooltips de Bootstrap si los usas.
-			var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-			var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+			let tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+			let tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
 				return new bootstrap.Tooltip(tooltipTriggerEl);
 			});
 		});
 	</script>
+
 {% endblock script %}

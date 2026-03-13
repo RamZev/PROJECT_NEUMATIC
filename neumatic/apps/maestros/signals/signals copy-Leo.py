@@ -16,7 +16,7 @@ from ..models.base_models import (
 	MedidasEstados
 )
 
-BATCH_SIZE = 1000  #-- Tamaño del lote para inserción masiva.
+BATCH_SIZE = 1000  # Tamaño del lote para inserción masiva
 
 
 @receiver(post_save, sender=ProductoDeposito)
@@ -24,7 +24,7 @@ def trasladar_productos_a_stock_y_minimo(sender, instance, created, **kwargs):
 	if created:
 		
 		try:
-			#-- Inicia una transacción para las operaciones en el signal.
+			# Inicia una transacción para las operaciones en el signal
 			with transaction.atomic():
 				#-- Obtener el usuario autenticado.
 				usuario_autenticado = instance.id_user
@@ -35,10 +35,10 @@ def trasladar_productos_a_stock_y_minimo(sender, instance, created, **kwargs):
 				fecha_actual = timezone.now().strftime("%Y-%m-%d %H:%M:%S")		
 				
 				
-				#-- Paso 1: Obtener productos tipo "P" para ProductoStock.
+				# Paso 1: Obtener productos tipo "P" para ProductoStock
 				productos_stock = Producto.objects.filter(tipo_producto="P")
 				
-				#-- Crear registros para ProductoStock.
+				# Crear registros para ProductoStock
 				producto_stock_instances = [
 					ProductoStock(
 						id_producto=producto,
@@ -54,13 +54,13 @@ def trasladar_productos_a_stock_y_minimo(sender, instance, created, **kwargs):
 					for producto in productos_stock
 				]
 				
-				#-- Guardar en ProductoStock en lotes.
+				# Guardar en ProductoStock en lotes
 				ProductoStock.objects.bulk_create(producto_stock_instances, batch_size=BATCH_SIZE)
 				
-				#-- Paso 2: Obtener productos con id_cai único para ProductoMinimo.
+				# Paso 2: Obtener productos con id_cai único para ProductoMinimo
 				productos_minimo = Producto.objects.exclude(id_cai=None).values("id_cai").distinct()
 				
-				#-- Crear registros para ProductoMinimo.
+				# Crear registros para ProductoMinimo
 				producto_minimo_instances = [
 					ProductoMinimo(
 						id_deposito=instance,
@@ -74,7 +74,7 @@ def trasladar_productos_a_stock_y_minimo(sender, instance, created, **kwargs):
 					for producto in productos_minimo
 				]
 				
-				#-- Guardar en ProductoMinimo en lotes.
+				# Guardar en ProductoMinimo en lotes
 				ProductoMinimo.objects.bulk_create(producto_minimo_instances, batch_size=BATCH_SIZE)
 				
 		except Exception as e:
@@ -88,7 +88,6 @@ def actualizar_estado_producto_por_stock(sender, instance, **kwargs):
 	"""
 	Signal que programa la actualización del estado para después del commit.
 	Esto evita bloqueos extendidos y posibles deadlocks.
-	Solo actualiza si el producto tiene estado automático (FALTANTES, DISPONIBLES, POCAS).
 	"""
 	#-- Programar para ejecutar después que se libere el bloqueo de la transacción actual.
 	transaction.on_commit(lambda: _procesar_estado_producto(instance))
@@ -97,7 +96,6 @@ def actualizar_estado_producto_por_stock(sender, instance, **kwargs):
 def _procesar_estado_producto(instance):
 	"""
 	Función que se ejecuta después del commit para actualizar el estado del producto.
-	Solo actualiza si el producto tiene estado automático (FALTANTES, DISPONIBLES, POCAS).
 	"""
 	try:
 		with transaction.atomic():
@@ -124,14 +122,6 @@ def _procesar_estado_producto(instance):
 				if not estado_disponibles: estados_faltantes.append('DISPONIBLES')
 				if not estado_pocas: estados_faltantes.append('POCAS')
 				raise ValueError(f"No se encontraron los estados: {', '.join(estados_faltantes)}")
-			
-			#-- Solo proceder si el producto tiene un estado automático
-			estados_auto_ids = [e.id_producto_estado for e in [estado_faltantes, estado_disponibles, estado_pocas] if e]
-			
-			if producto.id_producto_estado_id not in estados_auto_ids:
-				#-- El producto tiene un estado manual (OFERTAS, etc.), no actualizar
-				print(f"Producto {producto.id_producto} tiene estado manual. No se actualiza.")
-				return
 			
 			#-- Calcular stock total sumando todos los depósitos.
 			stock_total = ProductoStock.objects.filter(
@@ -164,7 +154,6 @@ def _procesar_estado_producto(instance):
 				Producto.objects.filter(pk=producto.pk).update(
 					id_producto_estado=nuevo_estado
 				)
-				print(f"Producto {producto.id_producto} actualizado a {nuevo_estado.nombre_producto_estado}")
 				
 	except Exception as e:
 		import logging

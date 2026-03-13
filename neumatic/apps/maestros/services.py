@@ -4,9 +4,14 @@ from apps.maestros.models.producto_models import Producto
 from apps.maestros.models.base_models import ProductoEstado, MedidasEstados
 
 
-def actualizar_estados_productos():
+def actualizar_estados_productos(actualizar_todos=False):
 	"""
 	Actualiza el estado de los productos basado en stock y rangos de MedidasEstados.
+	
+	Args:
+		actualizar_todos (bool): Si es True, actualiza todos los productos.
+								Si es False, solo actualiza los que tienen estado
+								FALTANTES, DISPONIBLES o POCAS.
 	"""
 	#-- Obtener los estados una vez para eficiencia.
 	estados = ProductoEstado.objects.filter(
@@ -24,11 +29,28 @@ def actualizar_estados_productos():
 		if not estado_pocas: estados_faltantes.append('POCAS')
 		raise ValueError(f"No se encontraron los estados: {', '.join(estados_faltantes)}")
 	
-	#-- Obtener productos a actualizar con prefetch_related para optimización.
-	productos = (Producto.objects
+	#-- Obtener rangos de MedidasEstados para eficiencia
+	rangos_por_cai = {
+		rango.id_cai_id: rango 
+		for rango in MedidasEstados.objects.select_related('id_cai').all()
+	}
+	
+	#-- Construir queryset base
+	queryset_base = Producto.objects.filter(tipo_producto='P')
+	
+	#-- Aplicar filtro según la opción elegida
+	if not actualizar_todos:
+		# Solo actualizar productos que tengan estados automáticos
+		estados_auto = [estado_faltantes, estado_disponibles, estado_pocas]
+		queryset_base = queryset_base.filter(
+			id_producto_estado__in=estados_auto
+		)
+		print(f"Filtrando productos con estados automáticos: {[e.nombre_producto_estado for e in estados_auto]}")
+	
+	#-- Optimizar consultas
+	productos = (queryset_base
 		.select_related('id_cai')
 		.prefetch_related('productostock_set')
-		.filter(tipo_producto='P')
 	)
 	
 	productos_actualizados = 0
@@ -39,12 +61,12 @@ def actualizar_estados_productos():
 			#-- Calcular stock total.
 			stock_total = sum(stock.stock for stock in producto.productostock_set.all())
 			
-			#-- Obtener medidas_estados relacionadas.
-			medidas_estados = MedidasEstados.objects.filter(id_cai=producto.id_cai).first()
+			#-- Obtener rango para este CAI si existe
+			rango = rangos_por_cai.get(producto.id_cai_id)
 			
-			if medidas_estados:
-				stock_desde = medidas_estados.stock_desde or 0
-				stock_hasta = medidas_estados.stock_hasta or 999999
+			if rango:
+				stock_desde = rango.stock_desde or 0
+				stock_hasta = rango.stock_hasta or 999999
 				
 				#-- Determinar el estado basado en el stock.
 				if stock_total < stock_desde:
@@ -54,11 +76,8 @@ def actualizar_estados_productos():
 				else:
 					nuevo_estado = estado_pocas
 			else:
-				#-- Si no hay medidas_estados, usar estado por defecto.
-				if stock_total > 0:
-					nuevo_estado = estado_disponibles
-				else:
-					nuevo_estado = estado_faltantes
+				#-- Si no hay rango, usar estado por defecto.
+				nuevo_estado = estado_disponibles if stock_total > 0 else estado_faltantes
 			
 			#-- Actualizar solo si cambió el estado.
 			if producto.id_producto_estado != nuevo_estado:
@@ -66,12 +85,16 @@ def actualizar_estados_productos():
 				actualizaciones.append(producto)
 				productos_actualizados += 1
 		
-		#-- Bulk update para mejor performance si hay muchas actualizaciones.
+		#-- Bulk update para mejor performance.
 		if actualizaciones:
 			Producto.objects.bulk_update(actualizaciones, ['id_producto_estado'])
+	
+	#-- Mensaje informativo sobre el alcance
+	tipo_actualizacion = "TODOS los productos" if actualizar_todos else "solo productos con estados automáticos"
 	
 	return {
 		'total_productos': productos.count(),
 		'productos_actualizados': productos_actualizados,
-		'message': f"Se actualizaron {productos_actualizados} de {productos.count()} productos"
+		'tipo_actualizacion': tipo_actualizacion,
+		'message': f"Se actualizaron {productos_actualizados} de {productos.count()} productos ({tipo_actualizacion})"
 	}
