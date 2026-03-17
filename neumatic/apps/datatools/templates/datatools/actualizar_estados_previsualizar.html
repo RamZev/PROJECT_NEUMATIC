@@ -1,4 +1,4 @@
-<!-- neumatic\apps\datatools\templates\datatools\actualizar_minimo_previsualizar.html -->
+<!-- neumatic\apps\datatools\templates\datatools\actualizar_estados_previsualizar.html -->
 {% extends 'base.html' %}
 {% load static %}
 {% load custom_tags %}
@@ -187,7 +187,7 @@
 					<h3 class="mt-4">Previsualización del Archivo</h3>
 					<ol class="breadcrumb mb-4">
 						<li class="breadcrumb-item"><a href="{% url 'home' %}">Panel</a></li>
-						<li class="breadcrumb-item"><a href="{% url 'actualizar_minimo_cargar' %}">Cargar Excel</a></li>
+						<li class="breadcrumb-item"><a href="{% url 'actualizar_estados_cargar' %}">Cargar Excel</a></li>
 						<li class="breadcrumb-item active">Previsualización</li>
 					</ol>
 					
@@ -240,7 +240,7 @@
 											<tbody>
 												{% for fila in datos %}
 													<tr>
-														{% for key, valor in fila.items %}
+														{% for valor in fila.values %}
 															{% with valor_tipo=valor|get_type %}
 																<td data-content="{{ valor|default:'' }}" 
 																	title="{% if valor_tipo == 'float' or valor_tipo == 'Decimal' %}{{ valor|default:'0.00' }}{% else %}{{ valor|default:'0' }}{% endif %}"
@@ -275,8 +275,7 @@
 						</div>
 						
 						<!--***********************************-->
-						{% comment %} <form method="post" id="formAgregar" action="{% url 'actualizar_minimo' %}?pagina={{ pagina_actual }}"> {% endcomment %}
-						<form method="post" id="formAgregar" action="{% url 'actualizar_minimo' %}">
+						<form method="post" id="formAgregar" action="{% url 'actualizar_estados' %}">
 							{% csrf_token %}
 							<div class="text-center">
 								
@@ -284,7 +283,7 @@
 									<i class="bi bi-database-add me-1"></i>
 									Actualizar
 								</button>
-								<a href="{% url 'actualizar_minimo_cargar' %}" class="btn btn-secondary">
+								<a href="{% url 'actualizar_estados_cargar' %}" class="btn btn-secondary">
 									<i class="fas fa-arrow-left me-1"></i>
 									Volver a Cargar
 								</a>

@@ -2,8 +2,11 @@
 from django.urls import reverse_lazy
 from django.views import View
 from django.http import JsonResponse
+from django.db.models import OuterRef, Subquery
+
 from ..views.cruds_views_generics import *
 from ..models.base_models import MedidasEstados, ProductoCai
+from ..models.producto_models import Producto
 from ..forms.medidas_estados_forms import MedidasEstadosForm
 
 
@@ -54,7 +57,7 @@ class ConfigViews():
 
 
 class DataViewList():
-	search_fields = ['id_cai__cai']
+	search_fields = ['id_cai__cai', 'id_cai__producto__medida', 'id_cai__producto__nombre_producto']
 	
 	ordering = ['id_cai__cai']
 	
@@ -104,8 +107,16 @@ class MedidasEstadosListView(MaestroListView):
 	
 	def get_queryset(self):
 		queryset = super().get_queryset()
-		#-- Optimiza las consultas relacionadas.
-		return queryset.select_related('id_cai', 'id_estado')
+		
+		#-- Optimizar consultas y eliminar duplicados.
+		queryset = queryset.select_related(
+			'id_cai', 
+			'id_estado'
+		).prefetch_related(
+			'id_cai__producto_set'
+		).distinct()
+		
+		return queryset
 
 
 class MedidasEstadosCreateView(MaestroCreateView):

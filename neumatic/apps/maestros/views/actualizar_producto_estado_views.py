@@ -16,7 +16,7 @@ class ActualizarEstadosProductosView(MaestroCustomView):
 	
 	#-- Contexto específico.
 	accion = "Actualizar Estados de Productos"
-	master_title = "Actualización Masiva de Estados"
+	master_title = "Actualización Masiva de Estados de Productos"
 	
 	def get(self, request, *args, **kwargs):
 		"""Muestra la página de confirmación"""

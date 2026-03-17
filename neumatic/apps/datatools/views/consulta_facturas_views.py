@@ -27,8 +27,8 @@ from reportlab.lib import colors
 
 from apps.maestros.models.cliente_models import Cliente
 from apps.ventas.models.factura_models import Factura, DetalleFactura
-from apps.maestros.models.producto_models import Producto, ProductoStock
-from apps.maestros.models.base_models import ProductoDeposito
+from apps.maestros.models.producto_models import Producto
+from apps.maestros.models.base_models import ProductoDeposito, ProductoStock
 from apps.ventas.models.venta_models import StockCliente
 
 

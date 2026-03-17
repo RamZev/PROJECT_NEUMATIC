@@ -36,13 +36,13 @@ class BuscadorClienteForm(InformesGenericForm):
 		widget=forms.TextInput(attrs={**formclasstext})
 	)
 	vendedor = forms.ModelChoiceField(
-		queryset=Vendedor.objects.all(), 
+		queryset=Vendedor.objects.filter(estatus_vendedor=True),
 		required=False,
 		label="Vendedor", 
 		widget=forms.Select(attrs={**formclassselect})
 	)
 	provincia = forms.ModelChoiceField(
-		queryset=Provincia.objects.all(), 
+		queryset=Provincia.objects.filter(estatus_provincia=True), 
 		required=False,
 		label="Provincia",
 		widget=forms.Select(attrs={**formclassselect})

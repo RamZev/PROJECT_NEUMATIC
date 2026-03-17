@@ -1646,10 +1646,10 @@ class MedidasEstados(ModeloBaseGenerico):
 			errors.update({'id_cai': "Debe indicar un CAI."})
 		
 		if self.stock_desde and self.stock_desde < 0:
-			errors.update({'stock_desde': "El valor no puedes ser negativo."})
+			errors.update({'stock_desde': "El valor no puede ser negativo."})
 		
 		if self.stock_hasta and self.stock_hasta < 0:
-			errors.update({'stock_hasta': "El valor no puedes ser negativo."})
+			errors.update({'stock_hasta': "El valor no puede ser negativo."})
 		
 		if self.stock_desde and self.stock_hasta and self.stock_hasta < self.stock_desde:
 			errors.update({'stock_hasta': "La cantidad del Hasta Stock no puede ser menor que la del Desde Stock."})

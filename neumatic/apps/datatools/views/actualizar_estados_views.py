@@ -1,4 +1,4 @@
-# neumatic\apps\datatools\views\actualizar_minimo_views.py
+# neumatic\apps\datatools\views\actualizar_estados_views.py
 import pandas as pd
 from django.core.paginator import Paginator
 from django.views.generic import FormView, TemplateView
@@ -10,18 +10,18 @@ from django.core.exceptions import ValidationError
 from decimal import Decimal
 from django.db import transaction
 
-from ..forms.actualizar_minimo_forms import ActualizarMinimoForm
-from apps.maestros.models.base_models import ProductoCai, ProductoDeposito, ProductoMinimo
+from ..forms.actualizar_estados_forms import ActualizarEstadosForm
+from apps.maestros.models.base_models import MedidasEstados, ProductoCai, ProductoEstado
 
 
-class ActualizarMinimoCargarView(FormView):
-	template_name = 'datatools/actualizar_minimo_cargar.html'
-	form_class = ActualizarMinimoForm
-	success_url = reverse_lazy('actualizar_minimo_previsualizar')
-
+class ActualizarEstadosCargarView(FormView):
+	template_name = 'datatools/actualizar_estados_cargar.html'
+	form_class = ActualizarEstadosForm
+	success_url = reverse_lazy('actualizar_estados_previsualizar')
+	
 	def get(self, request, *args, **kwargs):
 		#-- Limpiar datos anteriores al mostrar el formulario
-		keys_to_remove = ['actualizar_minimo_excel_data', 'actualizar_minimo_errores_procesamiento']
+		keys_to_remove = ['actualizar_estados_excel_data', 'actualizar_estados_errores_procesamiento']
 		for key in keys_to_remove:
 			if key in self.request.session:
 				del self.request.session[key]
@@ -34,10 +34,10 @@ class ActualizarMinimoCargarView(FormView):
 		return context
 	
 	def form_valid(self, form):
-		from apps.informes.views.vlproductominimo_list_views import ConfigViews
+		from apps.informes.views.medidasestados_list_views import ConfigViews
 		
 		#-- LIMPIAR datos anteriores antes de guardar nuevos.
-		keys_to_remove = ['actualizar_minimo_excel_data', 'actualizar_minimo_errores_procesamiento']
+		keys_to_remove = ['actualizar_estados_excel_data', 'actualizar_estados_errores_procesamiento']
 		for key in keys_to_remove:
 			if key in self.request.session:
 				del self.request.session[key]
@@ -126,7 +126,7 @@ class ActualizarMinimoCargarView(FormView):
 				total_filas = len(todos_los_datos)
 				
 				#-- Guardar en sesión - optimizado para grandes volúmenes.
-				self.request.session['actualizar_minimo_excel_data'] = {
+				self.request.session['actualizar_estados_excel_data'] = {
 					'columnas': list(df.columns),
 					'todos_los_datos': todos_los_datos,
 					'total_filas': total_filas,
@@ -279,20 +279,20 @@ class ActualizarMinimoCargarView(FormView):
 			return valor
 
 
-class ActualizarMinimoPrevisualizarView(TemplateView):
-	template_name = 'datatools/actualizar_minimo_previsualizar.html'
+class ActualizarEstadosPrevisualizarView(TemplateView):
+	template_name = 'datatools/actualizar_estados_previsualizar.html'
 	
 	def get(self, request, *args, **kwargs):
 		#-- Verificar que hay datos en la sesión antes de mostrar la previsualización.
-		if 'actualizar_minimo_excel_data' not in request.session:
+		if 'actualizar_estados_excel_data' not in request.session:
 			messages.error(request, 'No hay datos para previsualizar. Por favor, cargue un archivo Excel primero.')
-			return redirect('actualizar_minimo_cargar_excel')
+			return redirect('actualizar_estados_cargar_excel')
 		
 		#-- Verificar que los datos no estén vacíos.
-		actualizar_minimo_excel_data = request.session.get('actualizar_minimo_excel_data', {})
-		if not actualizar_minimo_excel_data.get('todos_los_datos'):
+		actualizar_estados_excel_data = request.session.get('actualizar_estados_excel_data', {})
+		if not actualizar_estados_excel_data.get('todos_los_datos'):
 			messages.error(request, 'El archivo cargado está vacío. Por favor, cargue un archivo con datos.')
-			return redirect('actualizar_minimo_cargar_excel')
+			return redirect('actualizar_estados_cargar_excel')
 		
 		return super().get(request, *args, **kwargs)
 	
@@ -300,8 +300,8 @@ class ActualizarMinimoPrevisualizarView(TemplateView):
 		context = super().get_context_data(**kwargs)
 		
 		#-- Recuperar datos de la sesión.
-		actualizar_minimo_excel_data = self.request.session.get('actualizar_minimo_excel_data', {})
-		todos_los_datos = actualizar_minimo_excel_data.get('todos_los_datos', [])
+		actualizar_estados_excel_data = self.request.session.get('actualizar_estados_excel_data', {})
+		todos_los_datos = actualizar_estados_excel_data.get('todos_los_datos', [])
 		
 		#-- Obtener número de página del request.
 		pagina_num = self.request.GET.get('pagina', 1)
@@ -319,12 +319,12 @@ class ActualizarMinimoPrevisualizarView(TemplateView):
 			pagina_datos = paginator.page(1)
 			pagina_num = 1
 		
-		context['nombre_archivo'] = actualizar_minimo_excel_data.get('nombre_archivo', '')
-		context['columnas'] = actualizar_minimo_excel_data.get('columnas', [])
+		context['nombre_archivo'] = actualizar_estados_excel_data.get('nombre_archivo', '')
+		context['columnas'] = actualizar_estados_excel_data.get('columnas', [])
 		context['datos'] = pagina_datos.object_list
-		context['total_filas'] = actualizar_minimo_excel_data.get('total_filas', 0)
-		context['campos_protegidos'] = actualizar_minimo_excel_data.get('campos_protegidos', [])
-		context['etiquetas_protegidas'] = actualizar_minimo_excel_data.get('etiquetas_protegidas', [])
+		context['total_filas'] = actualizar_estados_excel_data.get('total_filas', 0)
+		context['campos_protegidos'] = actualizar_estados_excel_data.get('campos_protegidos', [])
+		context['etiquetas_protegidas'] = actualizar_estados_excel_data.get('etiquetas_protegidas', [])
 		context['fecha'] = timezone.now()
 		context['pagina_actual'] = pagina_num
 		context['total_paginas'] = paginator.num_pages
@@ -345,22 +345,22 @@ class ActualizarMinimoPrevisualizarView(TemplateView):
 		return context
 
 
-class ActualizarMinimoErroresView(TemplateView):
-	template_name = 'datatools/actualizar_minimo_errores.html'
+class ActualizarEstadosErroresView(TemplateView):
+	template_name = 'datatools/actualizar_estados_errores.html'
 	
 	def get(self, request, *args, **kwargs):
 		#-- Verificar que hay datos de errores en la sesión.
-		if 'actualizar_minimo_errores_procesamiento' not in request.session:
+		if 'actualizar_estados_errores_procesamiento' not in request.session:
 			messages.error(request, 'No hay datos de errores para mostrar.')
-			return redirect('actualizar_minimo_cargar_excel')
+			return redirect('actualizar_estados_cargar_excel')
 		
 		#-- Obtener los datos.
-		errores_data = request.session.get('actualizar_minimo_errores_procesamiento', {})
+		errores_data = request.session.get('actualizar_estados_errores_procesamiento', {})
 		
 		#-- Verificar si hay errores.
 		if not errores_data.get('errores'):
 			messages.error(request, 'No hay errores para mostrar.')
-			return redirect('actualizar_minimo_cargar_excel')
+			return redirect('actualizar_estados_cargar_excel')
 		
 		return super().get(request, *args, **kwargs)
 	
@@ -368,7 +368,7 @@ class ActualizarMinimoErroresView(TemplateView):
 		context = super().get_context_data(**kwargs)
 		
 		#-- Recuperar datos de errores de la sesión.
-		errores_data = self.request.session.get('actualizar_minimo_errores_procesamiento', {})
+		errores_data = self.request.session.get('actualizar_estados_errores_procesamiento', {})
 		
 		context['errores'] = errores_data.get('errores', [])
 		context['columnas'] = errores_data.get('columnas', [])
@@ -419,25 +419,25 @@ class ActualizarMinimoErroresView(TemplateView):
 		return context
 
 
-class ActualizarMinimoView(TemplateView):
-	template_name = 'datatools/actualizar_minimo_resultado.html'
+class ActualizarEstadosView(TemplateView):
+	template_name = 'datatools/actualizar_estados_resultado.html'
 	
 	def post(self, request, *args, **kwargs):
 		#-- Obtener datos de la sesión.
-		actualizar_minimo_excel_data = request.session.get('actualizar_minimo_excel_data', {})
+		actualizar_estados_excel_data = request.session.get('actualizar_estados_excel_data', {})
 		
 		#-- Verificar que hay datos en la sesión.
-		if not actualizar_minimo_excel_data:
+		if not actualizar_estados_excel_data:
 			messages.error(request, 'No hay datos para procesar. Por favor, cargue un archivo Excel primero.')
-			return redirect('actualizar_minimo_cargar_excel')
+			return redirect('actualizar_estados_cargar_excel')
 		
 		#-- Obtener TODOS los datos de la sesión (ya procesados).
-		todos_los_datos = actualizar_minimo_excel_data.get('todos_los_datos', [])
-		columnas_excel = actualizar_minimo_excel_data.get('columnas', [])
+		todos_los_datos = actualizar_estados_excel_data.get('todos_los_datos', [])
+		columnas_excel = actualizar_estados_excel_data.get('columnas', [])
 		
 		if not todos_los_datos:
 			messages.error(request, 'No hay datos para procesar.')
-			return redirect('actualizar_minimo_cargar_excel')
+			return redirect('actualizar_estados_cargar_excel')
 		
 		#-- Procesar los datos dentro de una transacción.
 		try:
@@ -446,13 +446,19 @@ class ActualizarMinimoView(TemplateView):
 				creados = 0
 				filas_con_errores = []
 				errores = []
+				estado_pocas = ProductoEstado.objects.get(nombre_producto_estado="POCAS")
 				
 				for index, fila in enumerate(todos_los_datos, 2):
 					try:
 						errores_en_fila = []
 						
 						# ========== VALIDACIÓN 1: CAI ==========
-						cai = fila.get('CAI', '').strip()
+						cai = fila.get('CAI', '')
+						# Asegurar que cai sea string y limpiarlo
+						if cai is None:
+							cai = ''
+						else:
+							cai = str(cai).strip()
 						
 						if not cai:
 							errores_en_fila.append("El campo CAI es obligatorio y no puede estar vacío")
@@ -464,33 +470,59 @@ class ActualizarMinimoView(TemplateView):
 							except Exception as e:
 								errores_en_fila.append(f"Error al buscar CAI '{cai}': {str(e)}")
 						
-						# ========== VALIDACIÓN 2: ID DEPÓSITO ==========
-						id_deposito = fila.get('Id. Depósito')
+						# ========== VALIDACIÓN 2: Stock Desde ==========
+						stock_desde_valor = fila.get('Stock Desde', 0)
 						
-						if id_deposito is None or id_deposito == '':
-							errores_en_fila.append("El campo ID Depósito es obligatorio")
+						# Convertir a string primero para manejar cualquier tipo de dato
+						if stock_desde_valor is None:
+							stock_desde_str = ''
+						else:
+							stock_desde_str = str(stock_desde_valor).strip()
+						
+						# Validar que no esté vacío después de limpiar
+						if stock_desde_str == '':
+							errores_en_fila.append("El campo Stock Desde no puede estar vacío")
 						else:
 							try:
-								id_deposito = int(id_deposito)
-								deposito = ProductoDeposito.objects.get(pk=id_deposito)
+								# Intentar convertir a entero
+								stock_desde = int(float(stock_desde_str)) if '.' in stock_desde_str else int(stock_desde_str)
+								
+								if stock_desde < 0:
+									errores_en_fila.append("El Stock Desde no puede ser negativo")
 							except (ValueError, TypeError):
-								errores_en_fila.append(f"El ID Depósito '{id_deposito}' debe ser un número entero")
-							except ProductoDeposito.DoesNotExist:
-								errores_en_fila.append(f"No existe un Depósito con ID '{id_deposito}'")
+								errores_en_fila.append(f"El Stock Desde '{stock_desde_valor}' debe ser un número entero válido")
 							except Exception as e:
-								errores_en_fila.append(f"Error al buscar depósito: {str(e)}")
+								errores_en_fila.append(f"Error al leer el Stock Desde: {str(e)}")
 						
-						# ========== VALIDACIÓN 3: MÍNIMO ==========
-						minimo = fila.get('Mínimo', 0)
+						# ========== VALIDACIÓN 3: Stock Hasta ==========
+						stock_hasta_valor = fila.get('Stock Hasta', 0)
 						
-						try:
-							minimo = int(minimo)
-							if minimo < 0:
-								errores_en_fila.append("El Mínimo no puede ser negativo")
-						except (ValueError, TypeError):
-							errores_en_fila.append(f"El Mínimo '{minimo}' debe ser un número entero válido")
-						except Exception as e:
-							errores_en_fila.append(f"Error al leer el Mínimo: {str(e)}")
+						# Convertir a string primero para manejar cualquier tipo de dato
+						if stock_hasta_valor is None:
+							stock_hasta_str = ''
+						else:
+							stock_hasta_str = str(stock_hasta_valor).strip()
+						
+						# Validar que no esté vacío después de limpiar
+						if stock_hasta_str == '':
+							errores_en_fila.append("El campo Stock Hasta no puede estar vacío")
+						else:
+							try:
+								# Intentar convertir a entero
+								stock_hasta = int(float(stock_hasta_str)) if '.' in stock_hasta_str else int(stock_hasta_str)
+								
+								if stock_hasta < 0:
+									errores_en_fila.append("El Stock Hasta no puede ser negativo")
+							except (ValueError, TypeError):
+								errores_en_fila.append(f"El Stock Hasta '{stock_hasta_valor}' debe ser un número entero válido")
+							except Exception as e:
+								errores_en_fila.append(f"Error al leer el Stock Hasta: {str(e)}")
+						
+						# ========== VALIDACIÓN 4: Stock Hasta <= Stock Desde ==========
+						# Solo validar si no hay errores previos en estos campos
+						if not any("Stock Desde" in error or "Stock Hasta" in error for error in errores_en_fila):
+							if stock_hasta < stock_desde:
+								errores_en_fila.append("El Stock Hasta no puede ser menor que el Stock Desde")						
 						
 						# ========== Si hay errores, guardar fila con error ==========
 						if errores_en_fila:
@@ -505,18 +537,23 @@ class ActualizarMinimoView(TemplateView):
 						# ========== PROCESAR SI NO HAY ERRORES ==========
 						try:
 							#-- Buscar si ya existe el registro.
-							producto_minimo, creado = ProductoMinimo.objects.get_or_create(
+							medida_estado, creado = MedidasEstados.objects.get_or_create(
 								id_cai=producto_cai,
-								id_deposito=deposito,
-								defaults={'minimo': minimo}
+								id_estado=estado_pocas,
+								defaults={
+									'stock_desde': stock_desde,
+									'stock_hasta': stock_hasta
+								}
 							)
 							
 							if not creado:
-								#-- Si ya existe, actualizar el mínimo si cambió.
-								if producto_minimo.minimo != minimo:
-									producto_minimo.minimo = minimo
-									producto_minimo.save()
+								#-- Si ya existe, actualizar los valores si cambiaron.
+								if medida_estado.stock_desde != stock_desde or medida_estado.stock_hasta != stock_hasta:
+									medida_estado.stock_desde = stock_desde
+									medida_estado.stock_hasta = stock_hasta
+									medida_estado.save()
 									actualizados += 1
+									print(f"Registro actualizado para CAI {cai}: Stock Desde {stock_desde}, Stock Hasta {stock_hasta}")
 								#-- Si no cambió, no contar como actualizado.
 							else:
 								#-- Si fue creado nuevo.
@@ -546,12 +583,12 @@ class ActualizarMinimoView(TemplateView):
 				
 				# ========== Si hay errores, revertir transacción ==========
 				if errores:
-					request.session['actualizar_minimo_errores_procesamiento'] = {
+					request.session['actualizar_estados_errores_procesamiento'] = {
 						'errores': errores,
 						'filas_con_errores': filas_con_errores,
 						'columnas': columnas_excel,
 						'total_registros': len(todos_los_datos),
-						'nombre_archivo': actualizar_minimo_excel_data.get('nombre_archivo', '')
+						'nombre_archivo': actualizar_estados_excel_data.get('nombre_archivo', '')
 					}
 					request.session.modified = True
 					raise ValidationError("Errores encontrados durante el procesamiento")
@@ -565,7 +602,7 @@ class ActualizarMinimoView(TemplateView):
 				context['mensaje_exito'] = f"Procesamiento completado: {creados} nuevos registros creados, {actualizados} registros actualizados"
 				
 				#-- Limpiar sesión.
-				keys_to_remove = ['actualizar_minimo_excel_data']
+				keys_to_remove = ['actualizar_estados_excel_data']
 				for key in keys_to_remove:
 					if key in request.session:
 						del request.session[key]
@@ -574,13 +611,13 @@ class ActualizarMinimoView(TemplateView):
 		
 		except ValidationError as e:
 			#-- Redirigir a la vista de errores.
-			return redirect('actualizar_minimo_errores')
+			return redirect('actualizar_estados_errores')
 		
 		except Exception as e:
 			#-- Error inesperado.
 			error_clean = str(e).replace("['", "").replace("']", "").replace("'", "")
 			messages.error(request, f'Error inesperado durante el procesamiento: {error_clean}')
-			return redirect('actualizar_minimo_cargar_excel')
+			return redirect('actualizar_estados_cargar_excel')
 	
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
