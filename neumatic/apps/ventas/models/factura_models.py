@@ -441,7 +441,15 @@ class DetalleFactura(ModeloBaseGenerico):
 		default=0.0
 	)
 	desc_vendedor = models.DecimalField(
-		verbose_name="Descuento(%)",
+		verbose_name="Desc. Vend(%)",
+		max_digits=6,
+		decimal_places=2,
+		null=True,
+		blank=True,
+		default=0.0
+	)
+	desc_revendedor = models.DecimalField(
+		verbose_name="Desc. Rev(%)",
 		max_digits=6,
 		decimal_places=2,
 		null=True,
