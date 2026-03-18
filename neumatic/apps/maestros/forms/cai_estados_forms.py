@@ -1,4 +1,4 @@
-# apps\maestros\forms\medidas_estados_forms.py
+# neumatic\apps\maestros\forms\cai_estados_forms.py
 from django import forms
 from .crud_forms_generics import CrudGenericForm
 from ..models.base_models import MedidasEstados, ProductoEstado, ProductoCai
@@ -8,7 +8,7 @@ from diseno_base.diseno_bootstrap import(
 )
 
 
-class MedidasEstadosForm(CrudGenericForm):
+class CaiEstadosForm(CrudGenericForm):
 	
 	#-- Campo oculto para el estado (siempre será POCAS).
 	id_estado = forms.ModelChoiceField(

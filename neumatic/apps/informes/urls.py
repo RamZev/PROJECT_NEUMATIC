@@ -38,7 +38,7 @@ from .views.marketingorigen_list_views import *
 from .views.vlproductominimo_list_views import *
 from .views.descuentovendedor_list_views import *
 from .views.descuentorevendedor_list_views import *
-from .views.medidasestados_list_views import *
+from .views.caiestados_list_views import *
 
 #-- Procesos.
 #- Lote 1:
@@ -526,17 +526,17 @@ urlpatterns = [
 	path("descuentorevendedor/vista-csv/", descuentorevendedor_vista_csv, 
 		 name="descuentorevendedor_vista_csv"),
 	
-	#-- Medidas Estados.
-	path('medidasestados_informe/', MedidasEstadosInformeView.as_view(), 
-		 name='medidasestados_informe_list'),
-	path('medidasestados/vista-preliminar/', medidasestados_vista_pantalla, 
-		 name="medidasestados_vista_pantalla"),
-	path("medidasestados/vista-pdf/", medidasestados_vista_pdf, 
-		 name="medidasestados_vista_pdf"),
-	path("medidasestados/vista-excel/", medidasestados_vista_excel, 
-		 name="medidasestados_vista_excel"),
-	path("medidasestados/vista-csv/", medidasestados_vista_csv, 
-		 name="medidasestados_vista_csv"),
+	#-- Cai Estados.
+	path('caiestados_informe/', CaiEstadosInformeView.as_view(), 
+		 name='caiestados_informe_list'),
+	path('caiestados/vista-preliminar/', caiestados_vista_pantalla, 
+		 name="caiestados_vista_pantalla"),
+	path("caiestados/vista-pdf/", caiestados_vista_pdf, 
+		 name="caiestados_vista_pdf"),
+	path("caiestados/vista-excel/", caiestados_vista_excel, 
+		 name="caiestados_vista_excel"),
+	path("caiestados/vista-csv/", caiestados_vista_csv, 
+		 name="caiestados_vista_csv"),
 	
 	#-- Informes-Procesos. --------------------------------------------------------
 	

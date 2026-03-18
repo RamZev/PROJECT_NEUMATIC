@@ -1631,8 +1631,10 @@ class MedidasEstados(ModeloBaseGenerico):
 	
 	class Meta:
 		db_table = 'medidas_estados'
-		verbose_name = 'Estado por Medida'
-		verbose_name_plural = 'Estados por Medidas'
+		# verbose_name = 'Estado por Medida'
+		# verbose_name_plural = 'Estados por Medidas'
+		verbose_name = 'Estado por CAI'
+		verbose_name_plural = 'Estados por CAI'
 	
 	def __str__(self):
 		return f"{self.id_cai} - {self.medida} - {self.nombre_producto}"

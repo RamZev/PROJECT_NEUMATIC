@@ -34,7 +34,7 @@ class ActualizarEstadosCargarView(FormView):
 		return context
 	
 	def form_valid(self, form):
-		from apps.informes.views.medidasestados_list_views import ConfigViews
+		from apps.informes.views.caiestados_list_views import ConfigViews
 		
 		#-- LIMPIAR datos anteriores antes de guardar nuevos.
 		keys_to_remove = ['actualizar_estados_excel_data', 'actualizar_estados_errores_procesamiento']
@@ -454,7 +454,7 @@ class ActualizarEstadosView(TemplateView):
 						
 						# ========== VALIDACIÓN 1: CAI ==========
 						cai = fila.get('CAI', '')
-						# Asegurar que cai sea string y limpiarlo
+						#-- Asegurar que cai sea string y limpiarlo.
 						if cai is None:
 							cai = ''
 						else:
@@ -473,18 +473,18 @@ class ActualizarEstadosView(TemplateView):
 						# ========== VALIDACIÓN 2: Stock Desde ==========
 						stock_desde_valor = fila.get('Stock Desde', 0)
 						
-						# Convertir a string primero para manejar cualquier tipo de dato
+						#-- Convertir a string primero para manejar cualquier tipo de dato.
 						if stock_desde_valor is None:
 							stock_desde_str = ''
 						else:
 							stock_desde_str = str(stock_desde_valor).strip()
 						
-						# Validar que no esté vacío después de limpiar
+						#-- Validar que no esté vacío después de limpiar.
 						if stock_desde_str == '':
 							errores_en_fila.append("El campo Stock Desde no puede estar vacío")
 						else:
 							try:
-								# Intentar convertir a entero
+								#-- Intentar convertir a entero.
 								stock_desde = int(float(stock_desde_str)) if '.' in stock_desde_str else int(stock_desde_str)
 								
 								if stock_desde < 0:
@@ -497,18 +497,18 @@ class ActualizarEstadosView(TemplateView):
 						# ========== VALIDACIÓN 3: Stock Hasta ==========
 						stock_hasta_valor = fila.get('Stock Hasta', 0)
 						
-						# Convertir a string primero para manejar cualquier tipo de dato
+						#-- Convertir a string primero para manejar cualquier tipo de dato.
 						if stock_hasta_valor is None:
 							stock_hasta_str = ''
 						else:
 							stock_hasta_str = str(stock_hasta_valor).strip()
 						
-						# Validar que no esté vacío después de limpiar
+						#-- Validar que no esté vacío después de limpiar.
 						if stock_hasta_str == '':
 							errores_en_fila.append("El campo Stock Hasta no puede estar vacío")
 						else:
 							try:
-								# Intentar convertir a entero
+								#-- Intentar convertir a entero.
 								stock_hasta = int(float(stock_hasta_str)) if '.' in stock_hasta_str else int(stock_hasta_str)
 								
 								if stock_hasta < 0:
@@ -519,7 +519,7 @@ class ActualizarEstadosView(TemplateView):
 								errores_en_fila.append(f"Error al leer el Stock Hasta: {str(e)}")
 						
 						# ========== VALIDACIÓN 4: Stock Hasta <= Stock Desde ==========
-						# Solo validar si no hay errores previos en estos campos
+						#-- Solo validar si no hay errores previos en estos campos.
 						if not any("Stock Desde" in error or "Stock Hasta" in error for error in errores_en_fila):
 							if stock_hasta < stock_desde:
 								errores_en_fila.append("El Stock Hasta no puede ser menor que el Stock Desde")						

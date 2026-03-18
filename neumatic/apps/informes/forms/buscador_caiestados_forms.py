@@ -1,12 +1,12 @@
-# neumatic\apps\informes\forms\buscador_medidasestados_forms.py
+# neumatic\apps\informes\forms\buscador_caiestados_forms.py
 from django import forms
 
 from .informes_generics_forms import InformesGenericForm
 from diseno_base.diseno_bootstrap import formclassselect, formclasstext
 from entorno.constantes_base import ESTATUS_CHOICES
+	
 
-
-class BuscadorMedidasEstadosForm(InformesGenericForm):
+class BuscadorCaiEstadosForm(InformesGenericForm):
 	
 	estatus = forms.ChoiceField(
 		choices=ESTATUS_CHOICES, 
