@@ -1425,7 +1425,8 @@
 						descuento_vendedor: parseFloat(checkbox.dataset.descuentoVendedor),
 						alicuota_iva: parseFloat(checkbox.dataset.alicuotaIva).toFixed(2),
 						tipo_producto: checkbox.dataset.tipoProducto,
-						obliga_operario: checkbox.dataset.obligaOperario === 'true'
+						obliga_operario: checkbox.dataset.obligaOperario === 'true',
+						descuento_revendedor: parseFloat(checkbox.dataset.descuentoRevendedor || 0)
 					});
 				});
 				
@@ -1441,7 +1442,7 @@
 					const tipoComprobanteDict = JSON.parse(document.getElementById('tipocomprobante-data').dataset.tipocomprobante);
 					const comprobanteId = document.getElementById('id_id_comprobante_venta').value;
 					const tipoComprobante = tipoComprobanteDict[comprobanteId] || '';
-					alert("comprobanteId: " + comprobanteId + "\ntipoComprobante: " + tipoComprobante);
+					// alert("comprobanteId: " + comprobanteId + "\ntipoComprobante: " + tipoComprobante);
 					
 					// Detectar si es FACTURA
 					const esFactura = (tipoComprobante === "FACTURA");
@@ -1452,7 +1453,17 @@
 					const precioListaOriginal = parseFloat(producto.precio); // Precio SIN descuento
 					//alert(`Precio Lista Original: ${precioListaOriginal}`)
 					const descVendedor = parseFloat(producto.descuento_vendedor);
-					const precioConDescuento = precioListaOriginal * (1 - (descVendedor / 100));
+					let precioConDescuento = precioListaOriginal * (1 - (descVendedor / 100));
+
+					// alert(descVendedor);
+					// alert(precioConDescuento);
+					
+					// 👇 NUEVO: aplicar descuento de revendedor si existe
+					const descRevendedor = parseFloat(producto.descuento_revendedor || 0);
+					alert(descRevendedor);
+					if (descRevendedor > 0) {
+						precioConDescuento = precioConDescuento * (1 - (descRevendedor / 100));
+					}
 					
 					const precioFinal = parseFloat(precioConDescuento.toFixed(2));
 					
@@ -1665,23 +1676,28 @@
 				if (event.target.matches('input[name*="-precio"]')) {
 					event.preventDefault();
 					const row = event.target.closest('tr');
-					
+
 					// 1. Obtener valores base
 					const precioLista = parseFloat(row.querySelector('[name*="-precio_lista"]').value);
 					const descVendedor = parseFloat(row.querySelector('[name*="-desc_vendedor"]').value);
+					// ===== NUEVO: Obtener descuento de revendedor ===== INICIO
+					const descRevendedor = parseFloat(row.querySelector('[name*="-desc_revendedor"]')?.value || 0);
+					// ===== NUEVO: Obtener descuento de revendedor ===== FIN
 					const precioFinal = parseFloat(event.target.value);
 					const cantidad = parseFloat(row.querySelector('[name*="-cantidad"]').value) || 1;
 					
 					// 2. Calcular precios intermedios
 					const precioConDescuentoVendedor = precioLista * (1 - descVendedor/100);
+					// ===== NUEVO: Calcular precio con ambos descuentos ===== INICIO
+					const precioConAmbosDescuentos = precioConDescuentoVendedor * (1 - (descRevendedor / 100));
+					// ===== NUEVO: Calcular precio con ambos descuentos ===== FIN
 					
-					// 3. Calcular diferencias REALES (pueden ser + o -)
-					const difLista = precioFinal - precioLista;
-					const difVendedor = precioFinal - precioConDescuentoVendedor;
+					// 3. Calcular total fila
+					const totalFila = cantidad * precioFinal;
 					
-					// 4. Calcular porcentajes
-					const pctLista = (difLista / precioLista) * 100;
-					const pctVendedor = (difVendedor / precioConDescuentoVendedor) * 100;
+					// 4. Calcular descuento total
+					const montoDescuentoTotal = (precioLista - precioFinal) * cantidad;
+					const porcentajeDescuentoTotal = ((precioLista - precioFinal) / precioLista) * 100;
 					
 					// 5. Formateador
 					const formatNumber = (num) => num.toLocaleString('es-AR', {
@@ -1689,38 +1705,40 @@
 						maximumFractionDigits: 2
 					});
 					
-					// 6. Construir mensaje
+					// 6. Construir mensaje (AHORA CON DESCUENTO REVENDEDOR)
 					let mensaje = `📊 Diferencias Reales de Precio\n\n`;
 					mensaje += `Precio Lista: $ ${formatNumber(precioLista)}\n`;
 					mensaje += `Descuento Vendedor: ${descVendedor}%\n`;
 					mensaje += `Precio c/desc. vendedor: $ ${formatNumber(precioConDescuentoVendedor)}\n`;
+					// ===== NUEVO: Mostrar descuento de revendedor si existe ===== INICIO
+					if (descRevendedor > 0) {
+						mensaje += `Descuento Revendedor: ${descRevendedor}%\n`;
+						mensaje += `Precio c/ambos descuentos: $ ${formatNumber(precioConAmbosDescuentos)}\n`;
+					}
+					// ===== NUEVO: Mostrar descuento de revendedor si existe ===== FIN
 					mensaje += `Precio Actual: $ ${formatNumber(precioFinal)}\n`;
 					mensaje += `Cantidad: ${cantidad}\n`;
-					mensaje += `Total Fila: $ ${formatNumber(cantidad * precioFinal)}\n\n`;
-					
-					mensaje += `🔷 Comparación con Precio Lista:\n`;
-					mensaje += `• Diferencia: $ ${difLista >= 0 ? '+' : ''}${formatNumber(difLista)}\n`;
-					mensaje += `• Porcentaje: ${pctLista >= 0 ? '+' : ''}${pctLista.toFixed(2)}%\n\n`;
-					
-					mensaje += `🔶 Comparación con Precio Vendedor:\n`;
-					mensaje += `• Diferencia: $ ${difVendedor >= 0 ? '+' : ''}${formatNumber(difVendedor)}\n`;
-					mensaje += `• Porcentaje: ${pctVendedor >= 0 ? '+' : ''}${pctVendedor.toFixed(2)}%`;
+					mensaje += `Total Fila: $ ${formatNumber(totalFila)}\n\n`;
+					mensaje += `━━━━━━━━━━━━━━━━━━━━━\n`;
+					mensaje += `💰 DESCUENTO TOTAL\n`;
+					mensaje += `Monto Descuento: $ ${formatNumber(montoDescuentoTotal)}\n`;
+					mensaje += `% Descuento Total: ${porcentajeDescuentoTotal.toFixed(2)}%`;
 					
 					// 7. Actualizar el total de la fila (por si hubo cambios)
-					const total = cantidad * precioFinal;
-					row.querySelector('[name*="-total"]').value = total.toFixed(2);
+					row.querySelector('[name*="-total"]').value = totalFila.toFixed(2);
 					
 					// 8. Actualizar campos relacionados (IVA, gravado)
 					const alicIva = parseFloat(row.querySelector('[name*="-alic_iva"]').value) || 0;
-					const gravado = total / (1 + (alicIva / 100));
+					const gravado = totalFila / (1 + (alicIva / 100));
 					row.querySelector('[name*="-gravado"]').value = gravado.toFixed(2);
-					row.querySelector('[name*="-iva"]').value = (total - gravado).toFixed(2);
+					row.querySelector('[name*="-iva"]').value = (totalFila - gravado).toFixed(2);
 					
 					// 9. Actualizar total general de la factura
 					actualizarTotalFactura();
 					
-					// 10. Mostrar alerta con toda la información
+					// 10. Mostrar alerta
 					alert(mensaje);
+					
 				}
 			});
 			
@@ -1824,7 +1842,8 @@
 											data-id-alicuota-iva="${producto.id_alicuota_iva}"
 											data-alicuota-iva="${producto.alicuota_iva}"
 											data-tipo-producto="${producto.tipo_producto}"
-											data-obliga-operario="${producto.obliga_operario}">
+											data-obliga-operario="${producto.obliga_operario}"
+											data-descuento-revendedor="${producto.descuento_revendedor || 0}">
 								</td>
 							</tr>
 						`;
