@@ -20,7 +20,7 @@ from apps.ventas.models.factura_models import Factura, DetalleFactura
 from apps.maestros.models.producto_models import Producto
 from apps.maestros.models.cliente_models import Cliente
 from apps.maestros.models.base_models import ComprobanteVenta
-from apps.maestros.models.descuento_vendedor_models import DescuentoVendedor, DescuentoRevendedor
+from apps.maestros.models.descuento_vendedor_models import DescuentoVendedor
 from apps.maestros.models.numero_models import Numero
 from apps.maestros.models.valida_models import Valida
 
@@ -37,13 +37,11 @@ def buscar_producto(request):
 	# Obtener el vendedor asociado al cliente
 	vendedor = None
 	col_descuento = 0  # Valor por defecto
-	tipo_venta = None
 	if id_cliente:
 		cliente = Cliente.objects.filter(id_cliente=id_cliente).select_related("id_vendedor").first()
 		if cliente and cliente.id_vendedor:
 			vendedor = cliente.id_vendedor
 			col_descuento = vendedor.col_descuento  # Obtener columna de descuento
-			tipo_venta = vendedor.tipo_venta 
 			
 			print("col_descuento", col_descuento)
 
@@ -86,24 +84,6 @@ def buscar_producto(request):
 			descuento_field = f"desc{col_descuento}"
 			descuento = getattr(dv, descuento_field, 0)  # Devuelve 0 si el campo no existe
 
-		# NUEVO: Descuento de revendedor (solo si tipo_venta == "R")
-		descuento_revendedor = 0
-		
-		# print("tipo_venta:", tipo_venta)
-		# print("producto.id_marca.id_producto_marca:", producto.id_marca.id_producto_marca)
-		# print("producto.id_familia.id_producto_familia:", producto.id_familia.id_producto_familia)
-		if tipo_venta == "R":  # Solo para revendedores
-			dr = DescuentoRevendedor.objects.filter(
-				id_marca=producto.id_marca.id_producto_marca,
-				id_familia=producto.id_familia.id_producto_familia,
-				estatus_descuento_revendedor=True
-			).first()
-			
-			if dr and dr.descuento:
-				# print("tipo_venta2:", tipo_venta)
-				descuento_revendedor = float(dr.descuento)
-		# Descuento de revendedor FIN
-
 		resultados.append({
 			'id': producto.id_producto,
 			'codigo': producto.codigo_producto,
@@ -117,16 +97,16 @@ def buscar_producto(request):
 			'id_marca': producto.id_marca.id_producto_marca if producto.id_marca else None,
 			'id_familia': producto.id_familia.id_producto_familia if producto.id_familia else None,
 			'descuento_vendedor': descuento,
-			'descuento_revendedor': descuento_revendedor,
 			'id_alicuota_iva': producto.id_alicuota_iva_id if producto.id_alicuota_iva else None,
 			'alicuota_iva': producto.alicuota_iva,
 			'tipo_producto': producto.tipo_producto,
 			'obliga_operario': producto.obliga_operario,
 		})
 
-	print("Productos:", resultados)
+	# print("Productos:", resultados)
 	# Devolver los resultados como JSON
 	return JsonResponse(resultados, safe=False)
+
 
 def detalle_producto(request, id_producto):
 	producto = get_object_or_404(Producto, id_producto=id_producto)
