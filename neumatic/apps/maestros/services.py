@@ -10,8 +10,8 @@ def actualizar_estados_productos(actualizar_todos=False):
 	
 	Args:
 		actualizar_todos (bool): Si es True, actualiza todos los productos.
-								Si es False, solo actualiza los que tienen estado
-								FALTANTES, DISPONIBLES o POCAS.
+								 Si es False, solo actualiza los que tienen estado
+								 FALTANTES, DISPONIBLES o POCAS.
 	"""
 	#-- Obtener los estados una vez para eficiencia.
 	estados = ProductoEstado.objects.filter(
@@ -29,25 +29,24 @@ def actualizar_estados_productos(actualizar_todos=False):
 		if not estado_pocas: estados_faltantes.append('POCAS')
 		raise ValueError(f"No se encontraron los estados: {', '.join(estados_faltantes)}")
 	
-	#-- Obtener rangos de MedidasEstados para eficiencia
+	#-- Obtener rangos de MedidasEstados para eficiencia.
 	rangos_por_cai = {
 		rango.id_cai_id: rango 
 		for rango in MedidasEstados.objects.select_related('id_cai').all()
 	}
 	
-	#-- Construir queryset base
+	#-- Construir queryset base.
 	queryset_base = Producto.objects.filter(tipo_producto='P')
 	
-	#-- Aplicar filtro según la opción elegida
+	#-- Aplicar filtro según la opción elegida.
 	if not actualizar_todos:
-		# Solo actualizar productos que tengan estados automáticos
+		#-- Solo actualizar productos que tengan estados automáticos.
 		estados_auto = [estado_faltantes, estado_disponibles, estado_pocas]
 		queryset_base = queryset_base.filter(
 			id_producto_estado__in=estados_auto
 		)
-		print(f"Filtrando productos con estados automáticos: {[e.nombre_producto_estado for e in estados_auto]}")
 	
-	#-- Optimizar consultas
+	#-- Optimizar consultas.
 	productos = (queryset_base
 		.select_related('id_cai')
 		.prefetch_related('productostock_set')
@@ -61,7 +60,7 @@ def actualizar_estados_productos(actualizar_todos=False):
 			#-- Calcular stock total.
 			stock_total = sum(stock.stock for stock in producto.productostock_set.all())
 			
-			#-- Obtener rango para este CAI si existe
+			#-- Obtener rango para este CAI si existe.
 			rango = rangos_por_cai.get(producto.id_cai_id)
 			
 			if rango:
@@ -89,7 +88,7 @@ def actualizar_estados_productos(actualizar_todos=False):
 		if actualizaciones:
 			Producto.objects.bulk_update(actualizaciones, ['id_producto_estado'])
 	
-	#-- Mensaje informativo sobre el alcance
+	#-- Mensaje informativo sobre el alcance.
 	tipo_actualizacion = "TODOS los productos" if actualizar_todos else "solo productos con estados automáticos"
 	
 	return {

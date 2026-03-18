@@ -18,7 +18,8 @@ from django.db.models import (
 )
 
 from ..forms.excel_forms import ExcelUploadForm, CamposActualizacionForm
-from apps.maestros.models.producto_models import Producto, ProductoCai, AlicuotaIva
+from apps.maestros.models.producto_models import Producto
+from apps.maestros.models.base_models import ProductoCai, AlicuotaIva
 
 
 class ExcelUploadView(FormView):

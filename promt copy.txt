@@ -68,7 +68,6 @@ ORDER by f.compro, f.letra_comprobante,f.numero_comprobante
 ##################################################################################################################################
 ##################################################################################################################################
 ##################################################################################################################################
-##################################################################################################################################
 
 
 --------------------------------------------------------
@@ -110,4 +109,16 @@ Preguntas:
 
 *- En el reporte Remitos Pendientes estoy mostrando los presupuestos que no afectan el Stock y se muestra el Total en 0 (cero).
    Se deben mostrar o solo los comprobantes cuyo total sea diferente a cero?
+
+
+##################################################################################################################################
+Script para comprobar Estados de Productos
+
+SELECT p.id_producto, p.id_cai_id, pc.cai, p.medida, p.nombre_producto, sum(ps.stock) AS 'Stock'
+FROM producto p
+JOIN producto_cai pc ON p.id_cai_id = pc.id_cai
+JOIN producto_stock ps ON p.id_producto = ps.id_producto_id
+WHERE p.id_cai_id = 4069
+
+##################################################################################################################################
 

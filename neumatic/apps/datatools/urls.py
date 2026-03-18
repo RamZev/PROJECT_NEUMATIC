@@ -23,7 +23,12 @@ from .views.actualizar_minimo_views import (
 	ActualizarMinimoErroresView,
 	ActualizarMinimoView
 )
-
+from .views.actualizar_estados_views import (
+	ActualizarEstadosCargarView,
+	ActualizarEstadosPrevisualizarView,
+	ActualizarEstadosErroresView,
+	ActualizarEstadosView
+)
 
 urlpatterns = [
     path('facturas-cliente/', ConsultaFacturasClienteView.as_view(), name='consulta_facturas_cliente'),
@@ -39,15 +44,21 @@ urlpatterns = [
     path('stock/cliente/<int:factura_id>/descargar-pdf/', descargar_pdf_entrega, name='descargar_pdf_entrega'),
 	
 	#-- Actualizar/Agregar Productos (Excel).
-	path('cargar-excel/', ExcelUploadView.as_view(), name='cargar_excel'),
-	path('previsualizar-excel/', ExcelPreviewView.as_view(), name='excel_preview'),
-	path('mostrar-errores-excel/', MostrarErroresExcelView.as_view(), name='mostrar_errores_excel'),
-	path('actualizar-productos/', ActualizarProductosView.as_view(), name='actualizar_productos'),
-	path('agregar-productos/', AgregarProductosView.as_view(), name='agregar_productos'),
+	path('cargar/excel/', ExcelUploadView.as_view(), name='cargar_excel'),
+	path('previsualizar/excel/', ExcelPreviewView.as_view(), name='excel_preview'),
+	path('mostrar-errores/excel/', MostrarErroresExcelView.as_view(), name='mostrar_errores_excel'),
+	path('actualizar/productos/', ActualizarProductosView.as_view(), name='actualizar_productos'),
+	path('agregar/productos/', AgregarProductosView.as_view(), name='agregar_productos'),
 	
-	#-- Actualizar/Agregar Mínimo por CAI (Excel).
-	path('actualizar-minimo-cargar/', ActualizarMinimoCargarView.as_view(), name='actualizar_minimo_cargar'),
-	path('actualizar-minimo-previsualizar/', ActualizarMinimoPrevisualizarView.as_view(), name='actualizar_minimo_previsualizar'),
-	path('actualizar-minimo-errores/', ActualizarMinimoErroresView.as_view(), name='actualizar_minimo_errores'),
-	path('actualizar-minimo/', ActualizarMinimoView.as_view(), name='actualizar_minimo'),
+	#-- Actualizar Mínimo por CAI (Excel).
+	path('actualizar/minimo/cargar/', ActualizarMinimoCargarView.as_view(), name='actualizar_minimo_cargar'),
+	path('actualizar/minimo/previsualizar/', ActualizarMinimoPrevisualizarView.as_view(), name='actualizar_minimo_previsualizar'),
+	path('actualizar/minimo/errores/', ActualizarMinimoErroresView.as_view(), name='actualizar_minimo_errores'),
+	path('actualizar/minimo/', ActualizarMinimoView.as_view(), name='actualizar_minimo'),
+	
+	#-- Actualizar Estados de Productos por CAI (Excel).
+	path('actualizar/estados/cargar/', ActualizarEstadosCargarView.as_view(), name='actualizar_estados_cargar'),
+	path('actualizar/estados/previsualizar/', ActualizarEstadosPrevisualizarView.as_view(), name='actualizar_estados_previsualizar'),
+	path('actualizar/estados/errores/', ActualizarEstadosErroresView.as_view(), name='actualizar_estados_errores'),
+	path('actualizar/estados/', ActualizarEstadosView.as_view(), name='actualizar_estados'),
 ]

@@ -86,7 +86,7 @@ def trasladar_productos_a_stock_y_minimo(sender, instance, created, **kwargs):
 @receiver(post_save, sender=ProductoStock)
 def actualizar_estado_producto_por_stock(sender, instance, **kwargs):
 	"""
-	Signal que programa la actualización del estado para después del commit.
+	Signal que programa la actualización del Estado del Producto para después del commit.
 	Esto evita bloqueos extendidos y posibles deadlocks.
 	Solo actualiza si el producto tiene estado automático (FALTANTES, DISPONIBLES, POCAS).
 	"""
@@ -125,12 +125,11 @@ def _procesar_estado_producto(instance):
 				if not estado_pocas: estados_faltantes.append('POCAS')
 				raise ValueError(f"No se encontraron los estados: {', '.join(estados_faltantes)}")
 			
-			#-- Solo proceder si el producto tiene un estado automático
+			#-- Solo proceder si el producto tiene un estado automático.
 			estados_auto_ids = [e.id_producto_estado for e in [estado_faltantes, estado_disponibles, estado_pocas] if e]
 			
 			if producto.id_producto_estado_id not in estados_auto_ids:
-				#-- El producto tiene un estado manual (OFERTAS, etc.), no actualizar
-				print(f"Producto {producto.id_producto} tiene estado manual. No se actualiza.")
+				#-- El producto tiene un estado manual (OFERTAS, etc.), no actualizar.
 				return
 			
 			#-- Calcular stock total sumando todos los depósitos.
@@ -164,7 +163,6 @@ def _procesar_estado_producto(instance):
 				Producto.objects.filter(pk=producto.pk).update(
 					id_producto_estado=nuevo_estado
 				)
-				print(f"Producto {producto.id_producto} actualizado a {nuevo_estado.nombre_producto_estado}")
 				
 	except Exception as e:
 		import logging

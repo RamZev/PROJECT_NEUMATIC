@@ -4,6 +4,47 @@
 
 {% block title %}Actualizar Estados de Productos{% endblock %}
 
+{% block style %}
+	{{ block.super }}
+	<style>
+		/* Estilo base del checkbox */
+		.form-check-input {
+			width: 1.2em;
+			height: 1.2em;
+			margin-top: 0.15em;
+			transition: all 0.2s ease-in-out;
+		}
+		
+		/* Efecto hover - opción 1: Sombra suave */
+		.form-check-input:hover {
+			border-color: #0d6efd;
+			box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+			cursor: pointer;
+			transform: scale(1.05);
+		}
+		
+		/* Efecto cuando el checkbox está marcado y en hover */
+		.form-check-input:checked:hover {
+			background-color: #0b5ed7;
+			border-color: #0b5ed7;
+			box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.5);
+		}
+		
+		/* Efecto focus para accesibilidad */
+		.form-check-input:focus {
+			border-color: #86b7fe;
+			box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+		}
+		
+		/* Efecto para el label también */
+		.form-check-label:hover {
+			cursor: pointer;
+			color: #0d6efd;
+			transition: color 0.2s ease;
+		}
+	</style>
+{% endblock %}
+
 {% block maincomponent %}
 	{% block principalcomponent %}
 		<div id="layoutSidenav_content">
@@ -26,7 +67,7 @@
 							
 							<!-- CHECKBOX PARA CONTROLAR EL ALCANCE DE LA ACTUALIZACIÓN -->
 							<div class="form-check mb-3">
-								<input class="form-check-input" type="checkbox" name="actualizar_todos" id="actualizarTodos">
+								<input class="form-check-input" type="checkbox" name="actualizar_todos" id="actualizarTodos" role="switch" style="border-color: #0d6efd; accent-color: #0d6efd">
 								<label class="form-check-label" for="actualizarTodos">
 									<strong>Actualizar todos los estados</strong> (incluye estados asignados manualmente como OFERTAS, etc.)
 								</label>
