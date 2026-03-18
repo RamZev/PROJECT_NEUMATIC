@@ -1,13 +1,11 @@
-# apps\maestros\views\medidas_estados_views.py
+# neumatic\apps\maestros\views\cai_estados_views.py
 from django.urls import reverse_lazy
 from django.views import View
 from django.http import JsonResponse
-from django.db.models import OuterRef, Subquery
 
 from ..views.cruds_views_generics import *
 from ..models.base_models import MedidasEstados, ProductoCai
-from ..models.producto_models import Producto
-from ..forms.medidas_estados_forms import MedidasEstadosForm
+from ..forms.cai_estados_forms import CaiEstadosForm
 
 
 class ConfigViews():
@@ -15,7 +13,7 @@ class ConfigViews():
 	model = MedidasEstados
 	
 	#-- Formulario asociado al modelo.
-	form_class = MedidasEstadosForm
+	form_class = CaiEstadosForm
 	
 	#-- Aplicación asociada al modelo.
 	app_label = model._meta.app_label
@@ -24,7 +22,8 @@ class ConfigViews():
 	# model_string = model.__name__.lower()  #-- Usar esta forma cuando el modelo esté compuesto de una sola palabra: Ej. Color.
 	
 	#-- Usar esta forma cuando el modelo esté compuesto por más de una palabra: Ej. TipoCambio colocar "tipo_cambio".
-	model_string = "medidas_estados"
+	# model_string = "medidas_estados"
+	model_string = "cai_estados"
 	
 	#-- Permisos.
 	permission_add = f"{app_label}.add_{model.__name__.lower()}"
@@ -86,7 +85,7 @@ class DataViewList():
 	]
 
 
-class MedidasEstadosListView(MaestroListView):
+class CaiEstadosListView(MaestroListView):
 	model = ConfigViews.model
 	template_name = ConfigViews.template_list
 	context_object_name = ConfigViews.context_object_name
@@ -119,7 +118,7 @@ class MedidasEstadosListView(MaestroListView):
 		return queryset
 
 
-class MedidasEstadosCreateView(MaestroCreateView):
+class CaiEstadosCreateView(MaestroCreateView):
 	model = ConfigViews.model
 	list_view_name = ConfigViews.list_view_name
 	form_class = ConfigViews.form_class
@@ -130,7 +129,7 @@ class MedidasEstadosCreateView(MaestroCreateView):
 	permission_required = ConfigViews.permission_add
 
 
-class MedidasEstadosUpdateView(MaestroUpdateView):
+class CaiEstadosUpdateView(MaestroUpdateView):
 	model = ConfigViews.model
 	list_view_name = ConfigViews.list_view_name
 	form_class = ConfigViews.form_class
@@ -141,7 +140,7 @@ class MedidasEstadosUpdateView(MaestroUpdateView):
 	permission_required = ConfigViews.permission_change
 
 
-class MedidasEstadosDeleteView (MaestroDeleteView):
+class CaiEstadosDeleteView (MaestroDeleteView):
 	model = ConfigViews.model
 	list_view_name = ConfigViews.list_view_name
 	template_name = ConfigViews.template_delete

@@ -1,4 +1,4 @@
-# neumatic\apps\informes\views\medidasestados_list_views.py
+# neumatic\apps\informes\views\caiestados_list_views.py
 
 from django.shortcuts import render
 from django.http import HttpResponse
@@ -15,7 +15,7 @@ from reportlab.platypus import Paragraph
 from .report_views_generics import *
 from apps.maestros.models.base_models import MedidasEstados, ProductoCai, ProductoEstado
 from apps.maestros.models.producto_models import Producto
-from ..forms.buscador_medidasestados_forms import BuscadorMedidasEstadosForm
+from ..forms.buscador_caiestados_forms import BuscadorCaiEstadosForm
 from utils.utils import deserializar_datos, normalizar, raw_to_dict
 from utils.helpers.export_helpers import ExportHelper, PDFGenerator, add_row_table
 
@@ -23,19 +23,20 @@ from utils.helpers.export_helpers import ExportHelper, PDFGenerator, add_row_tab
 class ConfigViews:
 	
 	#-- Título del reporte.
-	report_title = "Reporte de Medidas Estados"
+	report_title = "Reporte de CAIs Estados"
 	
 	#-- Modelo.
 	model = MedidasEstados
 	
 	#-- Formulario asociado al modelo.
-	form_class = BuscadorMedidasEstadosForm
+	form_class = BuscadorCaiEstadosForm
 	
 	#-- Aplicación asociada al modelo.
 	app_label = "informes"
 	
 	#-- Nombre del modelo en minúsculas.
-	model_string = model.__name__.lower()
+	# model_string = model.__name__.lower()
+	model_string = "caiestados"
 	
 	#-- Plantilla base.
 	template_list = f'{app_label}/maestro_informe.html'
@@ -136,7 +137,7 @@ class ConfigViews:
 	}
 
 
-class MedidasEstadosInformeView(InformeFormView):
+class CaiEstadosInformeView(InformeFormView):
 	config = ConfigViews  #-- Ahora la configuración estará disponible en self.config.
 	form_class = ConfigViews.form_class
 	template_name = ConfigViews.template_list
@@ -244,7 +245,7 @@ class MedidasEstadosInformeView(InformeFormView):
 		return context
 
 
-def medidasestados_vista_pantalla(request):
+def caiestados_vista_pantalla(request):
 	#-- Obtener el token de la querystring.
 	token = request.GET.get("token")
 	
@@ -261,7 +262,7 @@ def medidasestados_vista_pantalla(request):
 	return render(request, ConfigViews.reporte_pantalla, contexto_reporte)
 
 
-def medidasestados_vista_pdf(request):
+def caiestados_vista_pdf(request):
 	#-- Obtener el token de la querystring.
 	token = request.GET.get("token")
 	
@@ -329,7 +330,7 @@ def generar_pdf(contexto_reporte):
 	return generator.generate(table_data, col_widths, table_style_config)		
 
 
-def medidasestados_vista_excel(request):
+def caiestados_vista_excel(request):
 	token = request.GET.get("token")
 	if not token:
 		return HttpResponse("Token no proporcionado", status=400)
@@ -343,7 +344,7 @@ def medidasestados_vista_excel(request):
 	# ---------------------------------------------
 	
 	#-- Instanciar la vista y obtener el queryset.
-	view_instance = MedidasEstadosInformeView()
+	view_instance = CaiEstadosInformeView()
 	view_instance.request = request
 	queryset = view_instance.obtener_queryset(cleaned_data)
 	
@@ -367,7 +368,7 @@ def medidasestados_vista_excel(request):
 	return response
 
 
-def medidasestados_vista_csv(request):
+def caiestados_vista_csv(request):
 	token = request.GET.get("token")
 	if not token:
 		return HttpResponse("Token no proporcionado", status=400)
@@ -380,7 +381,7 @@ def medidasestados_vista_csv(request):
 	cleaned_data = data["cleaned_data"]
 	
 	#-- Instanciar la vista para reejecutar la consulta y obtener el queryset.
-	view_instance = MedidasEstadosInformeView()
+	view_instance = CaiEstadosInformeView()
 	view_instance.request = request
 	queryset = view_instance.obtener_queryset(cleaned_data)
 	

@@ -18,8 +18,6 @@ INSERT INTO "main"."menu_menuitem" ("name", "url_name", "query_params", "icon", 
 	VALUES ('Descuento Revendedor', 'descuento_revendedor_list', '', '', '0', 3, NULL, 135);
 
 
-
-
 -- Reordenar los números para que sean consecutivos de las opciones de: Informes -> Ventas
 UPDATE "main"."menu_menuitem" SET "order" =  7 WHERE parent_id = 80 AND "name" = 'Remitos por Cliente';
 UPDATE "main"."menu_menuitem" SET "order" =  8 WHERE parent_id = 80 AND "name" = 'Totales de Remitos por Cliente';
@@ -47,3 +45,37 @@ INSERT INTO "main"."menu_menuitem" ("name", "url_name", "query_params", "icon", 
 	VALUES ('Descuento Vendedor', 'descuentovendedor_informe_list', '', '', '0', 5, NULL, 80);
 INSERT INTO "main"."menu_menuitem" ("name", "url_name", "query_params", "icon", "is_collapse", "order", "heading_id", "parent_id")
 	VALUES ('Descuento Revendedor', 'descuentorevendedor_informe_list', '', '', '0', 6, NULL, 80);
+
+
+-----------------------------------------------------------------------------------------------------------------------------------------------
+
+
+-- Script para crear nueva opción en: Archivos -> Productos -> Actualizaciones.
+INSERT INTO "main"."menu_menuitem" ("name", "url_name", "query_params", "icon", "is_collapse", "order", "heading_id", "parent_id")
+VALUES ('Actualizar Estados de Productos por CAI', 'actualizar_estados_cargar', '', '', '0', 3, NULL, 138);
+
+
+-- Script para modificar el nombre de la opción: Archivos -> Productos.
+UPDATE "main"."menu_menuitem" SET "name" = 'Estados de Productos por CAI' WHERE parent_id = 136 AND "name" = 'Estados de Productos por Medidas';
+
+
+-- Script para reordenar las opciones en: Informes -> Productos:
+UPDATE "main"."menu_menuitem" SET "order" =  9 WHERE parent_id = 53 AND "name" = 'Depósitos';
+UPDATE "main"."menu_menuitem" SET "order" = 10 WHERE parent_id = 53 AND "name" = 'Mínimos por CAI';
+UPDATE "main"."menu_menuitem" SET "order" = 11 WHERE parent_id = 53 AND "name" = 'Stock';
+
+
+-- Script para agregar nueva opción en: Informes -> Productos.
+INSERT INTO "main"."menu_menuitem" ("name", "url_name", "query_params", "icon", "is_collapse", "order", "heading_id", "parent_id")
+VALUES ('Estados de Productos por CAI', 'medidasestados_informe_list', '', '', '0', 8, NULL, 53);
+
+
+-----------------------------------------------------------------------------------------------------------------------------------------------
+
+
+-- Script para actualizar la url de la opción: Archivos -> Productos.
+UPDATE "main"."menu_menuitem" SET "url_name" = 'cai_estados_list' WHERE parent_id = 136 AND "name" = 'Estados de Productos por CAI';
+
+
+-- Script para actualizar la url de la opción: Informes -> Productos.
+UPDATE "main"."menu_menuitem" SET "url_name" = 'caiestados_informe_list' WHERE parent_id = 53 AND "name" = 'Estados de Productos por CAI';

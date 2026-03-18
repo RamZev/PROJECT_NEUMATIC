@@ -30,7 +30,7 @@ from .views.tarjeta_views import *
 from .views.codigo_retencion_views import *
 from .views.concepto_banco_views import *
 from .views.marketing_origen_views import *
-from .views.medidas_estados_views import *
+from .views.cai_estados_views import *
 from .views.forma_pago_views import *
 from .views.descuento_vendedor_views import *
 from .views.descuento_revendedor_views import *
@@ -278,11 +278,11 @@ urlpatterns = [
 	path('marketing_origen/<int:pk>/editar/', MarketingOrigenUpdateView.as_view(), name='marketing_origen_update'),
 	path('marketing_origen/<int:pk>/eliminar/', MarketingOrigenDeleteView.as_view(), name='marketing_origen_delete'),
 	
-	#-- Medidas Estados.
-	path('medidas_estados/', MedidasEstadosListView.as_view(), name='medidas_estados_list'),
-	path('medidas_estados/nueva/', MedidasEstadosCreateView.as_view(), name='medidas_estados_create'),
-	path('medidas_estados/<int:pk>/editar/', MedidasEstadosUpdateView.as_view(), name='medidas_estados_update'),
-	path('medidas_estados/<int:pk>/eliminar/', MedidasEstadosDeleteView.as_view(), name='medidas_estados_delete'),
+	#-- Cai Estados.
+	path('cai-estados/', CaiEstadosListView.as_view(), name='cai_estados_list'),
+	path('cai-estados/nueva/', CaiEstadosCreateView.as_view(), name='cai_estados_create'),
+	path('cai-estados/<int:pk>/editar/', CaiEstadosUpdateView.as_view(), name='cai_estados_update'),
+	path('cai-estados/<int:pk>/eliminar/', CaiEstadosDeleteView.as_view(), name='cai_estados_delete'),
 	
 	#-- FormaPago.
 	path('forma_pago/', FormaPagoListView.as_view(), name='forma_pago_list'),
