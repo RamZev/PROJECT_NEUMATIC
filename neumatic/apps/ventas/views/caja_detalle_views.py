@@ -50,7 +50,7 @@ class ConfigViews():
 
 
 class DataViewList():
-    search_fields = ['numero_caja']
+    search_fields = ['id_caja__numero_caja']
     
     ordering = ['-id_caja']
     
