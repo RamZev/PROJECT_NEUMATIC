@@ -312,4 +312,8 @@ urlpatterns = [
 	path('api/cai/<int:pk>/datos/', CAIDatosAPIView.as_view(), name='cai-datos-api'),
 	path('actualizar-estados-productos/', ActualizarEstadosProductosView.as_view(), name='actualizar_estados_productos'),
 	path('get-descuentos-columna/<str:columna>/', get_descuentos_columna, name='get_descuentos_columna'),
+	
+	#-- URLs para carga de certificados.
+	path('empresa/cargar-certificado/', CargarCertificadoView.as_view(), name='cargar_certificado'),
+	path('empresa/cargar-clave/', CargarClaveView.as_view(), name='cargar_clave'),
 ]

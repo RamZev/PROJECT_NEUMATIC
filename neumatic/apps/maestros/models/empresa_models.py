@@ -83,10 +83,15 @@ class Empresa(ModeloBaseGenerico):
 	web_empresa = models.CharField(
 		verbose_name="Web",
 		max_length=50,
-		null=True, blank=True
+		null=True,
+		blank=True
 	)
 	
-	logo_empresa = models.BinaryField()  # Para el campo 'image'
+	logo_empresa = models.BinaryField(
+		verbose_name="Logo",
+		null=True,
+		blank=True
+	)  # Para el campo 'image'
 	
 	ws_archivo_crt2 = models.TextField(
 		verbose_name="CRT Homologación",
@@ -99,7 +104,7 @@ class Empresa(ModeloBaseGenerico):
 		blank=True
 	)
 	ws_vence_h = models.DateTimeField(
-		verbose_name="Vcto. Certificado H",
+		verbose_name="Vcto. CRT. H.",
 		null=True,
 		blank=True
 	)
@@ -114,7 +119,7 @@ class Empresa(ModeloBaseGenerico):
 		blank=True
 	)
 	ws_vence_p = models.DateTimeField(
-		verbose_name="Vcto. Certificado P",
+		verbose_name="Vcto. Cert. P.",
 		null=True,
 		blank=True
 	)
@@ -129,7 +134,7 @@ class Empresa(ModeloBaseGenerico):
 		blank=True
 	)
 	ws_expiracion_h = models.DateTimeField(
-		verbose_name="Expiración Ticket WS H",
+		verbose_name="Exp. Ticket WS H",
 		null=True,
 		blank=True
 	)
@@ -144,7 +149,7 @@ class Empresa(ModeloBaseGenerico):
 		blank=True
 	)
 	ws_expiracion_p = models.DateTimeField(
-		verbose_name="Expiración Ticket WS P",
+		verbose_name="Exp. Ticket WS P",
 		null=True,
 		blank=True
 	)
@@ -241,4 +246,3 @@ class Empresa(ModeloBaseGenerico):
 	def cuit_formateado(self):
 		cuit = str(self.cuit)
 		return f"{cuit[:2]}-{cuit[2:-1]}-{cuit[-1:]}"
-

@@ -11,7 +11,15 @@ from diseno_base.diseno_bootstrap import(
 
 
 class EmpresaForm(CrudGenericForm):
-	
+	# Agregar este campo para manejar la carga del logo
+	logo_file = forms.FileField(
+		required=False,
+		label="Logo",
+		widget=forms.FileInput(attrs={
+			'class': 'form-control',
+			'accept': 'image/*'
+		})
+	)	
 	class Meta:
 		model = Empresa
 		fields ='__all__'
@@ -54,28 +62,43 @@ class EmpresaForm(CrudGenericForm):
 			'web_empresa':
 				forms.TextInput(attrs={**formclasstext}),
 			
+			# 'logo_empresa':
+			# 	forms.TextInput(attrs={**formclasstext,}),
+			# Ocultar el campo logo_empresa porque usaremos logo_file
 			'logo_empresa':
-				forms.TextInput(attrs={**formclasstext,}),
-			
+				forms.HiddenInput(),
+							
 			'ws_archivo_crt2':
 				forms.Textarea(attrs={**formclasstext, 
-							'rows': 3, 'readonly': True}),
+							'rows': 5, 'readonly': True}),
 			'ws_archivo_key2':
 				forms.Textarea(attrs={**formclasstext, 
-							'rows': 3, 'readonly': True}),
+							'rows': 5, 'readonly': True}),
+			# 'ws_vence_h':
+			# 	forms.TextInput(attrs={**formclassdate,
+			# 							'type': 'datetime-local' }),
 			'ws_vence_h':
-				forms.TextInput(attrs={**formclassdate,
-										'type': 'date' }),
+				forms.TextInput(attrs={
+					**formclasstext, 
+					'readonly': True,
+					'style': 'background-color: #d4eaff;'
+				}),
 			
 			'ws_archivo_crt_p':
 				forms.Textarea(attrs={**formclasstext, 
-							'rows': 3, 'readonly': True}),
+							'rows': 5, 'readonly': True}),
 			'ws_archivo_key_p':
 				forms.Textarea(attrs={**formclasstext, 
-							'rows': 3, 'readonly': True}),
+							'rows': 5, 'readonly': True}),
+			# 'ws_vence_p':
+			# 	forms.TextInput(attrs={**formclassdate,
+			# 							'type': 'datetime-local' }),
 			'ws_vence_p':
-				forms.TextInput(attrs={**formclassdate,
-										'type': 'date' }),
+				forms.TextInput(attrs={
+					**formclasstext, 
+					'readonly': True,
+					'style': 'background-color: #d4eaff;'
+				}),
 			
 			'ws_token_h':
 				forms.Textarea(attrs={**formclasstext, 
@@ -83,20 +106,34 @@ class EmpresaForm(CrudGenericForm):
 			'ws_sign_h':
 				forms.Textarea(attrs={**formclasstext, 
 							'rows': 3, 'readonly': True}),
+			# 'ws_expiracion_h':
+			# 	forms.TextInput(attrs={**formclassdate,
+			# 							'type': 'datetime-local', 
+			# 							'readonly': True}),
 			'ws_expiracion_h':
-				forms.TextInput(attrs={**formclassdate,
-										'type': 'date', 
-										'readonly': True}),
+				forms.TextInput(attrs={
+					**formclasstext, 
+					'readonly': True,
+					'style': 'background-color: #d4eaff;'
+				}),
+			
 			'ws_token_p':
 				forms.Textarea(attrs={**formclasstext, 
 							'rows': 3, 'readonly': True}),
 			'ws_sign_p':
 				forms.Textarea(attrs={**formclasstext, 
 							'rows': 3, 'readonly': True}),
+			# 'ws_expiracion_p':
+			# 	forms.TextInput(attrs={**formclassdate,
+			# 							'type': 'datetime-local', 
+			# 							'readonly': True}),
 			'ws_expiracion_p':
-				forms.TextInput(attrs={**formclassdate,
-										'type': 'date', 
-										'readonly': True}),
+				forms.TextInput(attrs={
+					**formclasstext, 
+					'readonly': True,
+					'style': 'background-color: #d4eaff;'
+				}),
+			
 			'ws_modo':
 				forms.Select(attrs={**formclassselect}),
 			'interes':
@@ -123,6 +160,17 @@ class EmpresaForm(CrudGenericForm):
 	
 	def __init__(self, *args, **kwargs):
 		super().__init__(*args, **kwargs)
+		
+		#-- Formatear fechas para datetime-local si existen.
+		if self.instance and self.instance.pk:
+			if self.instance.ws_vence_h:
+				self.initial['ws_vence_h'] = self.instance.ws_vence_h.strftime('%d/%m/%Y %H:%M:%S')
+			if self.instance.ws_vence_p:
+				self.initial['ws_vence_p'] = self.instance.ws_vence_p.strftime('%d/%m/%Y %H:%M:%S')
+			if self.instance.ws_expiracion_h:
+				self.initial['ws_expiracion_h'] = self.instance.ws_expiracion_h.strftime('%d/%m/%Y %H:%M:%S')
+			if self.instance.ws_expiracion_p:
+				self.initial['ws_expiracion_p'] = self.instance.ws_expiracion_p.strftime('%d/%m/%Y %H:%M:%S')
 		
 		self.fields['id_localidad'].choices = []
 		
@@ -156,3 +204,52 @@ class EmpresaForm(CrudGenericForm):
 		
 		#-- Asegurar que exista una opción inicial en cualquier caso.
 		self.fields['id_localidad'].choices.insert(0, ("", "Seleccione una localidad"))
+		
+		#-- Si hay un logo guardado, mostrar información.
+		if self.instance and self.instance.pk and self.instance.logo_empresa:
+			self.fields['logo_file'].help_text = "Logo actual cargado. Seleccione uno nuevo para reemplazarlo."
+	
+	def clean_logo_file(self):
+		"""Validar y procesar el archivo de logo"""
+		logo = self.cleaned_data.get('logo_file')
+		
+		if logo:
+			#-- Validar tipo de archivo.
+			if not logo.content_type.startswith('image/'):
+				raise forms.ValidationError('El archivo debe ser una imagen.')
+			
+			#-- Validar tamaño máximo (por ejemplo, 2MB).
+			if logo.size > 2 * 1024 * 1024:
+				raise forms.ValidationError('La imagen no debe exceder los 2MB.')
+			
+			#-- Leer y guardar como bytes.
+			return logo.read()
+		
+		return None
+	
+	def clean(self):
+		"""Validación general del formulario"""
+		cleaned_data = super().clean()
+		
+		# Asegurar que el logo_empresa sea bytes si existe
+		if 'logo_empresa' in cleaned_data and cleaned_data['logo_empresa']:
+			logo = cleaned_data['logo_empresa']
+			if isinstance(logo, str):
+				cleaned_data['logo_empresa'] = logo.encode('utf-8')
+		
+		return cleaned_data
+	
+	def save(self, commit=True):
+		"""Sobrescribir save para manejar el logo"""
+		instance = super().save(commit=False)
+		
+		#-- Procesar el logo si se subió uno nuevo.
+		logo_data = self.cleaned_data.get('logo_file')
+		if logo_data is not None:
+			instance.logo_empresa = logo_data
+		
+		if commit:
+			instance.save()
+			self.save_m2m()
+		
+		return instance

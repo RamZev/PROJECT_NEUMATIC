@@ -27,7 +27,7 @@
 						</div>
 						
 						<div class="card-body bg-body-secondary">
-							<form method="post" enctype="multipart/form-data" novalidate id="empresaForm">
+							<form method="post" enctype="multipart/form-data" novalidate>
 								{% csrf_token %}
 								<div class="accordion" id="accordionPanelsStayOpenExample">
 									<!-- Estructura generada -->
@@ -44,7 +44,8 @@
 												<strong>Información Empresa</strong>
 											</button>
 										</h2>
-										<div class="accordion-collapse collapse show" id="Información_Empresa">
+										<div class="accordion-collapse collapse show"
+											id="Información_Empresa">
 											<div class="accordion-body bg-secondary-subtle">
 												
 												<div class="row">
@@ -120,27 +121,12 @@
 														{{ form.web_empresa }}
 													</div>
 													
-													{% comment %}
 													<div class="col-md-2">
 														<label class="form-label text-primary mb-0" for="{{ form.logo_empresa.id_for_label }}">
 															{{ form.logo_empresa.label }}
 														</label>
 														{{ form.logo_empresa }}
 													</div>
-													{% endcomment %}
-													{% comment %}
-													<div class="col-md-2">
-														<label class="form-label text-primary mb-0" for="{{ form.logo_file.id_for_label }}">
-															{{ form.logo_file.label }}
-														</label>
-														{{ form.logo_file }}
-														{% if form.logo_file.help_text %}
-															<small class="form-text text-muted">{{ form.logo_file.help_text }}</small>
-														{% endif %}
-													</div>
-													<!-- Ocultar el campo original de logo_empresa -->
-													{{ form.logo_empresa }}													
-													{% endcomment %}
 												</div>
 												<div class="row">
 													<div class="col-md-3">
@@ -194,6 +180,68 @@
 													</div>
 												</div>
 												
+												<!-- INI ************************************************************************************* -->
+												
+												<!-- Certificado de Homologación -->
+												<div class="row">
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.ws_vence_h.id_for_label }}">
+															{{ form.ws_vence_h.label }}
+														</label>
+														{{ form.ws_vence_h }}
+														
+														<div class="col-md-2 d-flex align-items-end">
+															<!-- Botón para Cargar el Certificado de Homologación. -->
+															<button type="button" class="btn btn-outline-secondary">
+																	Cargar
+															</button>
+														</div>
+													</div>
+													
+													<div class="col-md-4">
+														<label class="form-label text-primary mb-0" for="{{ form.ws_archivo_crt2.id_for_label }}">
+															{{ form.ws_archivo_crt2.label }}
+														</label>
+														{{ form.ws_archivo_crt2 }}
+													</div>
+													
+													<div class="col-md-4">
+														<label class="form-label text-primary mb-0" for="{{ form.ws_archivo_key2.id_for_label }}">
+															{{ form.ws_archivo_key2.label }}
+														</label>
+														{{ form.ws_archivo_key2 }}
+													</div>
+												</div>
+												<!-- Certificado de Producción -->
+												<div class="row">
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.ws_vence_p.id_for_label }}">
+															{{ form.ws_vence_p.label }}
+														</label>
+														{{ form.ws_vence_p }}
+														
+														<div class="col-md-2 d-flex align-items-end">
+															<!-- Botón para Cargar el Certificado de Producción. -->
+															<button type="button" class="btn btn-outline-secondary">
+																	Cargar
+															</button>
+														</div>
+													</div>
+													
+													<div class="col-md-4">
+														<label class="form-label text-primary mb-0" for="{{ form.ws_archivo_crt_p.id_for_label }}">
+															{{ form.ws_archivo_crt_p.label }}
+														</label>
+														{{ form.ws_archivo_crt_p }}
+													</div>
+													
+													<div class="col-md-4">
+														<label class="form-label text-primary mb-0" for="{{ form.ws_archivo_key_p.id_for_label }}">
+															{{ form.ws_archivo_key_p.label }}
+														</label>
+														{{ form.ws_archivo_key_p }}
+													</div>
+												</div>
 												<!-- Token y Firma de Homologación -->
 												<div class="row">
 													<div class="col-md-2">
@@ -202,20 +250,22 @@
 														</label>
 														{{ form.ws_expiracion_h }}
 														
-														<!-- Botón para limpiar el campo ws_expiracion_h -->
-														<button type="button" class="btn btn-outline-primary btn-sm w-100" onclick="clearWsExpiracion('h')">
-															Limpiar
-														</button>
+														<div class="col-md-2 d-flex align-items-end">
+															<!-- Botón para limpiar el campo ws_expiracion_h -->
+															<button type="button" class="btn btn-outline-secondary" onclick="clearWsExpiracion()">
+																	Limpiar
+															</button>
+														</div>
 													</div>
 													
-													<div class="col-md-5">
+													<div class="col-md-4">
 														<label class="form-label text-primary mb-0" for="{{ form.ws_token_h.id_for_label }}">
 															{{ form.ws_token_h.label }}
 														</label>
 														{{ form.ws_token_h }}
 													</div>
 													
-													<div class="col-md-5">
+													<div class="col-md-4">
 														<label class="form-label text-primary mb-0" for="{{ form.ws_sign_h.id_for_label }}">
 															{{ form.ws_sign_h.label }}
 														</label>
@@ -230,26 +280,30 @@
 														</label>
 														{{ form.ws_expiracion_p }}
 														
-														<!-- Botón para limpiar el campo ws_expiracion_p -->
-														<button type="button" class="btn btn-outline-primary btn-sm w-100" onclick="clearWsExpiracion('p')">
-															Limpiar
-														</button>
+														<div class="col-md-2 d-flex align-items-end">
+															<!-- Botón para limpiar el campo ws_expiracion_p -->
+															<button type="button" class="btn btn-outline-secondary" onclick="clearWsExpiracionP()">
+																	Limpiar
+															</button>
+														</div>
 													</div>
 													
-													<div class="col-md-5">
+													<div class="col-md-4">
 														<label class="form-label text-primary mb-0" for="{{ form.ws_token_p.id_for_label }}">
 															{{ form.ws_token_p.label }}
 														</label>
 														{{ form.ws_token_p }}
 													</div>
 													
-													<div class="col-md-5">
+													<div class="col-md-4">
 														<label class="form-label text-primary mb-0" for="{{ form.ws_sign_p.id_for_label }}">
 															{{ form.ws_sign_p.label }}
 														</label>
 														{{ form.ws_sign_p }}
 													</div>
 												</div>
+												<!-- END ************************************************************************************* -->
+												 
 												<div class="row">
 													<div class="col-md-2">
 														<label class="form-label text-primary mb-0" for="{{ form.ws_modo.id_for_label }}">
@@ -258,99 +312,6 @@
 														{{ form.ws_modo }}
 													</div>
 												</div>
-												
-											</div>
-										</div>
-									</div>
-									<!-- INI ************************************************************************************* -->
-									<div class="accordion-item">
-										<h2 class="accordion-header">
-											<button 
-												class="accordion-button py-2 collapsed" 
-												type="button" 
-												data-bs-toggle="collapse" 
-												data-bs-target="#Certificados" 
-												aria-expanded="false" 
-												aria-controls="Certificados">
-												<strong>Certificados</strong>
-											</button>
-										</h2>
-										<div class="accordion-collapse collapse" id="Certificados">
-											<div class="accordion-body bg-secondary-subtle">
-												
-												<!-- Certificado de Homologación -->
-												<div class="row mb-3">
-													<div class="col-md-2">
-														<label class="form-label text-primary mb-0" for="{{ form.ws_vence_h.id_for_label }}">
-															{{ form.ws_vence_h.label }}
-														</label>
-														{{ form.ws_vence_h }}
-														
-														<!-- Botón para Cargar el Certificado de Homologación -->
-														<button type="button" class="btn btn-outline-primary btn-sm mb-2 w-100"
-																onclick="cargarCertificado('homologacion')">
-															Cargar CRT Homologación
-														</button>
-														
-														<!-- Botón para Cargar la Clave de Homologación -->
-														<button type="button" class="btn btn-outline-primary btn-sm w-100"
-																onclick="cargarClave('homologacion')">
-															Cargar KEY Homologación
-														</button>
-													</div>
-													
-													<div class="col-md-5">
-														<label class="form-label text-primary mb-0" for="{{ form.ws_archivo_crt2.id_for_label }}">
-															{{ form.ws_archivo_crt2.label }}
-														</label>
-														{{ form.ws_archivo_crt2 }}
-													</div>
-													
-													<div class="col-md-5">
-														<label class="form-label text-primary mb-0" for="{{ form.ws_archivo_key2.id_for_label }}">
-															{{ form.ws_archivo_key2.label }}
-														</label>
-														{{ form.ws_archivo_key2 }}
-													</div>
-												</div>
-												
-												<!-- Certificado de Producción -->
-												<div class="row mt-3 mb-3">
-													<div class="col-md-2">
-														<label class="form-label text-primary mb-0" for="{{ form.ws_vence_p.id_for_label }}">
-															{{ form.ws_vence_p.label }}
-														</label>
-														{{ form.ws_vence_p }}
-														
-														<!-- Botón para Cargar el Certificado de Producción -->
-														<button type="button" class="btn btn-outline-primary btn-sm mb-2 w-100"
-																onclick="cargarCertificado('produccion')">
-															Cargar CRT Producción
-														</button>
-														
-														<!-- Botón para Cargar la Clave de Producción -->
-														<button type="button" class="btn btn-outline-primary btn-sm w-100"
-																onclick="cargarClave('produccion')">
-															Cargar KEY Producción
-														</button>
-													</div>
-													
-													<div class="col-md-5">
-														<label class="form-label text-primary mb-0" for="{{ form.ws_archivo_crt_p.id_for_label }}">
-															{{ form.ws_archivo_crt_p.label }}
-														</label>
-														{{ form.ws_archivo_crt_p }}
-													</div>
-													
-													<div class="col-md-5">
-														<label class="form-label text-primary mb-0" for="{{ form.ws_archivo_key_p.id_for_label }}">
-															{{ form.ws_archivo_key_p.label }}
-														</label>
-														{{ form.ws_archivo_key_p }}
-													</div>
-												</div>
-											
-												<!-- END ************************************************************************************* -->
 											</div>
 										</div>
 									</div>
@@ -367,7 +328,8 @@
 												<strong>Parámetros</strong>
 											</button>
 										</h2>
-										<div class="accordion-collapse collapse" id="Parámetros">
+										<div class="accordion-collapse collapse "
+											id="Parámetros">
 											<div class="accordion-body bg-secondary-subtle">
 												
 												<div class="row">
@@ -441,204 +403,12 @@
 {% block script %}
 	{{ block.super }}
 	<script>
-		//-- Función para cargar certificado.
-		async function cargarCertificado(tipo) {
-			//-- Crear input file oculto.
-			const input = document.createElement('input');
-			input.type = 'file';
-			input.accept = '.crt';
-			
-			input.onchange = async (event) => {
-				const file = event.target.files[0];
-				if (!file) return;
-				
-				try {
-					//-- Leer contenido del archivo.
-					const content = await readFileContent(file);
-					
-					//-- Determinar campos según tipo.
-					let campoCrt, campoVencimiento;
-					if (tipo === 'homologacion') {
-						campoCrt = document.getElementById('id_ws_archivo_crt2');
-						campoVencimiento = document.getElementById('id_ws_vence_h');
-					} else {
-						campoCrt = document.getElementById('id_ws_archivo_crt_p');
-						campoVencimiento = document.getElementById('id_ws_vence_p');
-					}
-					
-					//-- Guardar contenido en el campo textarea.
-					campoCrt.value = content;
-					
-					//-- Enviar a servidor para extraer fecha de vencimiento.
-					const response = await fetch('{% url "cargar_certificado" %}', {
-						method: 'POST',
-						headers: {
-							'Content-Type': 'application/json',
-							'X-CSRFToken': getCookie('csrftoken')
-						},
-						body: JSON.stringify({
-							certificado: content,
-							tipo: tipo
-						})
-					});
-					
-					const result = await response.json();
-					
-					if (result.success) {
-						//-- Actualizar fecha de vencimiento.
-						campoVencimiento.value = result.fecha_vencimiento;
-						showMessage('success', result.mensaje);
-					} else {
-						showMessage('error', result.error);
-						campoVencimiento.value = '';
-					}
-					
-				} catch (error) {
-					console.error('Error:', error);
-					showMessage('error', 'Error al procesar el certificado');
-				}
-			};
-			
-			input.click();
-		}
-		
-		//-- Función para cargar clave privada.
-		async function cargarClave(tipo) {
-			//-- Crear input file oculto.
-			const input = document.createElement('input');
-			input.type = 'file';
-			input.accept = '.key';
-			
-			input.onchange = async (event) => {
-				const file = event.target.files[0];
-				if (!file) return;
-				
-				try {
-					//-- Leer contenido del archivo.
-					const content = await readFileContent(file);
-					
-					//-- Determinar campo según tipo.
-					let campoKey;
-					if (tipo === 'homologacion') {
-						campoKey = document.getElementById('id_ws_archivo_key2');
-					} else {
-						campoKey = document.getElementById('id_ws_archivo_key_p');
-					}
-					
-					//-- Guardar contenido en el campo textarea.
-					campoKey.value = content;
-					
-					//-- Validar formato de clave.
-					const response = await fetch('{% url "cargar_clave" %}', {
-						method: 'POST',
-						headers: {
-							'Content-Type': 'application/json',
-							'X-CSRFToken': getCookie('csrftoken')
-						},
-						body: JSON.stringify({
-							clave: content,
-							tipo: tipo
-						})
-					});
-					
-					const result = await response.json();
-					
-					if (result.success) {
-						showMessage('success', result.mensaje);
-					} else {
-						showMessage('error', result.error);
-						campoKey.value = '';
-					}
-					
-				} catch (error) {
-					console.error('Error:', error);
-					showMessage('error', 'Error al procesar la clave');
-				}
-			};
-			
-			input.click();
-		}
-		
-		//-- Función para leer contenido de archivo.
-		function readFileContent(file) {
-			return new Promise((resolve, reject) => {
-				const reader = new FileReader();
-				reader.onload = (event) => resolve(event.target.result);
-				reader.onerror = (error) => reject(error);
-				reader.readAsText(file);
-			});
-		}
-		
-		//-- Función para limpiar campos de expiración.
-		function clearWsExpiracion(tipo) {
-			let campoExpiracion;
-			let campoTokens;
-			let campoSign;
-			
-			if (tipo === 'h') {
-				campoExpiracion = document.getElementById('id_ws_expiracion_h');
-				campoTokens = document.getElementById('id_ws_token_h');
-				campoSign = document.getElementById('id_ws_sign_h');
-			} else {
-				campoExpiracion = document.getElementById('id_ws_expiracion_p');
-				campoTokens = document.getElementById('id_ws_token_p');
-				campoSign = document.getElementById('id_ws_sign_p');
-			}
-			
-			if (campoExpiracion) campoExpiracion.value = '';
-			if (campoTokens) campoTokens.value = '';
-			if (campoSign) campoSign.value = '';
-			
-			showMessage('info', 'Campos de token y signatura limpiados');
-		}
-		
-		//-- Función para obtener cookie CSRF.
-		function getCookie(name) {
-			let cookieValue = null;
-			if (document.cookie && document.cookie !== '') {
-				const cookies = document.cookie.split(';');
-				for (let i = 0; i < cookies.length; i++) {
-					const cookie = cookies[i].trim();
-					if (cookie.substring(0, name.length + 1) === (name + '=')) {
-						cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-						break;
-					}
-				}
-			}
-			return cookieValue;
-		}
-		
-		//-- Función para mostrar mensajes.
-		function showMessage(type, message) {
-			//-- Crear elemento de alerta.
-			const alertDiv = document.createElement('div');
-			alertDiv.className = `alert alert-${type === 'error' ? 'danger' : type === 'success' ? 'success' : 'info'} alert-dismissible fade show`;
-			alertDiv.role = 'alert';
-			alertDiv.innerHTML = `
-				${message}
-				<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-			`;
-			
-			//-- Insertar al inicio del formulario.
-			const form = document.getElementById('empresaForm');
-			form.insertBefore(alertDiv, form.firstChild);
-			
-			//-- Auto-cerrar después de 5 segundos.
-			if (type !== 'error') {
-				setTimeout(() => {
-					alertDiv.remove();
-				}, 5000);
-			};
-		}
-		
-		//-- Funcionalidad para manejar la lógica de Provincia, Localidad y Código Postal. -------------------------------------------------
-		
 		document.addEventListener("DOMContentLoaded", function () {
 			const codigoPostalText = document.getElementById("id_codigo_postal");
 			const provinciaSelect = document.getElementById("id_id_provincia");
 			const localidadSelect = document.getElementById("id_id_localidad");
 			
-			//-- Validar si se obtuvieron correctamente los elementos.
+			// Validar si se obtuvieron correctamente los elementos
 			if (!codigoPostalText) {
 				console.log('El elemento con id "id_codigo_postal" no se encontró');
 				return;
@@ -654,17 +424,17 @@
 				return;
 			}
 			
-			//-- Función para resetear el select de localidad y el campo de código postal.
+			// Función para resetear el select de localidad y el campo de código postal
 			function resetLocalidadSelect(defaultText) {
 				localidadSelect.innerHTML = `<option value="">${defaultText}</option>`;
 				localidadSelect.disabled = true;
 				codigoPostalText.value = "";  // Limpiar el código postal
 			}
 			
-			//-- Almacena el código postal de cada localidad.
+			// Almacena el código postal de cada localidad
 			let localidadesData = {};
 			
-			//-- Función para cargar las localidades y seleccionar la correcta.
+			// Función para cargar las localidades y seleccionar la correcta
 			function cargarLocalidades(provinciaId, localidadSeleccionadaId = null) {
 				const url = "{% url 'filtrar_localidad' %}?id_provincia=" + provinciaId;
 				resetLocalidadSelect("Seleccione una localidad");
@@ -674,9 +444,9 @@
 						.then(response => response.json())
 						.then(data => {
 							localidadSelect.disabled = false;
-							localidadesData = {}; //-- Reiniciar datos de localidad.
+							localidadesData = {}; // Reiniciar datos de localidad
 							
-							//-- Insertar la opción inicial.
+							// Insertar la opción inicial
 							localidadSelect.innerHTML = `<option value="">Seleccione una localidad</option>`;
 							
 							data.localidad.forEach(localidad => {
@@ -685,7 +455,7 @@
 								localidadSelect.add(option);
 							});
 							
-							//-- Si hay una localidad seleccionada (al editar o al volver de la modal).
+							// Si hay una localidad seleccionada (al editar o al volver de la modal)
 							if (localidadSeleccionadaId && localidadesData[localidadSeleccionadaId]) {
 								localidadSelect.value = localidadSeleccionadaId;
 								codigoPostalText.value = localidadesData[localidadSeleccionadaId];
@@ -694,13 +464,13 @@
 				}
 			}
 			
-			//-- Escucha el cambio en Provincia y carga las localidades correspondientes.
+			// Escucha el cambio en Provincia y carga las localidades correspondientes
 			provinciaSelect.addEventListener("change", function () {
 				const provinciaId = this.value;
 				cargarLocalidades(provinciaId);  // Llamar sin localidad seleccionada
 			});
 			
-			//-- Escucha el cambio en Localidad y actualiza el código postal.
+			// Escucha el cambio en Localidad y actualiza el código postal
 			localidadSelect.addEventListener("change", function () {
 				const localidadId = this.value;
 				
@@ -711,19 +481,19 @@
 				}
 			});
 			
-			//-- Detectar valores iniciales (para el caso de actualizar o volver de la modal).
+			// Detectar valores iniciales (para el caso de actualizar o volver de la modal)
 			const provinciaSeleccionada = provinciaSelect.value;
 			const localidadSeleccionada = localidadSelect.value;
 			const codigoPostalSeleccionado = codigoPostalText.value;
 			
-			//-- Cargar localidades y seleccionar automáticamente la localidad al cargar la página.
+			// Cargar localidades y seleccionar automáticamente la localidad al cargar la página
 			if (provinciaSeleccionada) {
 				cargarLocalidades(provinciaSeleccionada, localidadSeleccionada);
 				codigoPostalText.value = codigoPostalSeleccionado;  // Setear el código postal guardado
 			}
 			else{
-				//-- Si no hay una provincia seleccionada, deshabilitar el combo de localidades.
-				cargarLocalidades(provinciaSeleccionada);  //-- Llamar sin localidad seleccionada.
+				// Si no hay una provincia seleccionada, deshabilitar el combo de localidades
+				cargarLocalidades(provinciaSeleccionada);  // Llamar sin localidad seleccionada
 			}
 		});
 	</script>
