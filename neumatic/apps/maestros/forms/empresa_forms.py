@@ -18,6 +18,7 @@ class EmpresaForm(CrudGenericForm):
 	logo_file = forms.ImageField(
 		required=False,
 		label="Logo",
+		help_text="Formatos permitidos: JPG, PNG, GIF. Tamaño máximo: 2MB",
 		widget=forms.FileInput(attrs={
 			# 'class': 'form-control',
 			**formclasstext,
