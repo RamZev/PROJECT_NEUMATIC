@@ -11,7 +11,7 @@ class ActualizarEstadosProductosView(MaestroCustomView):
 	Vista para actualizar estados de productos.
 	"""
 	permission_required = 'maestros.change_producto'
-	template_name = 'confirmar_actualizar_producto_estado.html'
+	template_name = 'maestros/confirmar_actualizar_producto_estado.html'
 	home_view_name = 'home'
 	
 	#-- Contexto específico.

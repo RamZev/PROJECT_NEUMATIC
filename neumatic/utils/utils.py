@@ -7,11 +7,13 @@ from django.forms.models import model_to_dict
 
 def es_numero_valido(valor):
 	"""Verifica si un string es un número decimal válido."""
+	
 	return bool(re.fullmatch(r"-?\d+(\.\d+)?", valor))  #-- Acepta "10", "-5.5", "3.14".
 
 
 def serializar_datos(datos):
 	"""Convierte datos no serializables a formatos compatibles con JSON para guardarlos en la sesión."""
+	
 	if isinstance(datos, Decimal):
 		return str(datos)  # Convertir Decimal a str
 	elif isinstance(datos, (date, datetime)):
@@ -25,6 +27,7 @@ def serializar_datos(datos):
 
 def deserializar_datos(datos):
 	"""Restaura los datos serializados desde la sesión a sus tipos originales."""
+	
 	if isinstance(datos, str):
 		#-- EXCEPCIÓN: Si el string tiene ceros a la izquierda, preservarlo como string (es probablemente un código).
 		if (datos.startswith('0') and len(datos) > 1 and datos != '0' and'.' not in datos):  #-- NUEVA CONDICIÓN: excluir decimales.
@@ -47,11 +50,14 @@ def deserializar_datos(datos):
 
 
 def serializar_queryset(queryset):
+	"""Convierte un queryset a una lista de diccionarios para su almacenamiento en la sesión."""
+	
 	return [model_to_dict(obj) for obj in queryset]
 
 
 def raw_to_dict(instance):
 	"""Convierte una instancia de ModelProxy (namedtuple) o modelo a un diccionario."""
+	
 	if hasattr(instance, '_asdict'):  #-- Para namedtuple (ModelProxy).
 		return instance._asdict()
 	elif hasattr(instance, '__dict__'):  #-- Para modelos normales.
@@ -64,15 +70,20 @@ def raw_to_dict(instance):
 
 
 def formato_argentino(valor):
+	"""Formatea un número decimal con separadores de miles y coma como separador decimal, según el formato argentino."""
+	
 	return locale.format_string('%.2f', valor, grouping=True)
 
 
 def formato_argentino_entero(valor):
+	"""Formatea un número entero con separadores de miles según el formato argentino."""
+	
 	return locale.format_string('%d', valor, grouping=True)
 
 
 def format_date(date_value):
 	"""Helper para formatear fechas en formato dd/mm/yyyy."""
+	
 	if not date_value:
 		return ""
 	
@@ -125,6 +136,7 @@ def normalizar(nombre):
 	>>> normalizar('perfíl-user@2025!.md')
 	'perfil-user2025.md'
 	"""
+	
 	#-- Normaliza los caracteres Unicode (descompone acentos en caracteres base + acento).
 	nombre_normalizado = unicodedata.normalize('NFKD', nombre)
 	
@@ -162,15 +174,16 @@ def numero_a_letras(numero):
 	Returns:
 		str: Representación del número en letras con formato XX/100
 	"""
-	# Verificar si es negativo
+	
+	#-- Verificar si es negativo.
 	if numero < 0:
 		return "menos " + numero_a_letras(abs(numero))
 	
-	# Separar parte entera y decimal
+	#-- Separar parte entera y decimal.
 	entero = int(numero)
 	decimal = int(round((numero - entero) * 100))
 	
-	# Conversión de la parte entera
+	#-- Conversión de la parte entera.
 	if entero == 0:
 		resultado_entero = "cero"
 	elif entero < 100:
@@ -184,13 +197,14 @@ def numero_a_letras(numero):
 	else:
 		resultado_entero = "número demasiado grande"
 	
-	# Formatear siempre con dos dígitos para los decimales
+	#-- Formatear siempre con dos dígitos para los decimales.
 	decimal_str = f"{decimal:02d}"
 	return f"{resultado_entero} con {decimal_str}/100"
 
 
 def convertir_decenas(numero):
 	"""Convierte números entre 1-99 a letras"""
+	
 	unidades = ["", "uno", "dos", "tres", "cuatro", "cinco", 
 				"seis", "siete", "ocho", "nueve"]
 	especiales = ["diez", "once", "doce", "trece", "catorce", "quince",
@@ -213,6 +227,7 @@ def convertir_decenas(numero):
 
 def convertir_centenas(numero):
 	"""Convierte números entre 100-999 a letras"""
+	
 	if numero == 100:
 		return "cien"
 	centenas = ["", "ciento", "doscientos", "trescientos", "cuatrocientos",
@@ -228,6 +243,7 @@ def convertir_centenas(numero):
 
 def convertir_miles(numero):
 	"""Convierte números entre 1000-999999 a letras"""
+	
 	miles = numero // 1000
 	resto = numero % 1000
 	
@@ -244,6 +260,7 @@ def convertir_miles(numero):
 
 def convertir_millones(numero):
 	"""Convierte números entre 1000000-999999999 a letras"""
+	
 	millones = numero // 1000000
 	resto = numero % 1000000
 	
@@ -256,3 +273,22 @@ def convertir_millones(numero):
 		return resultado_millon
 	else:
 		return f"{resultado_millon} {numero_a_letras(resto).replace(' con 00/100', '')}"
+
+
+def obtener_logo():
+	"""Método auxiliar para obtener el logo de la empresa de forma segura"""
+	
+	from apps.maestros.models.empresa_models import Empresa
+	
+	logo_url = None
+	logo_path = None
+	
+	try:
+		empresa = Empresa.objects.first()
+		if empresa:
+			logo_url = empresa.logo_url_safe
+			logo_path = empresa.logo_path_safe
+	except Exception:
+		pass
+	
+	return logo_url, logo_path

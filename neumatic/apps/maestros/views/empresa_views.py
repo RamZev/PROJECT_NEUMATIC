@@ -1,17 +1,12 @@
 # neumatic\apps\maestros\views\localidad_views.py
 import os
 import tempfile
-# import subprocess
+import json
 from cryptography import x509
 from cryptography.hazmat.backends import default_backend
-# from datetime import datetime
 from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-# from django.utils.decorators import method_decorator
-# from django.views import View
-import json
-
 from django.urls import reverse_lazy
+
 from ..views.cruds_views_generics import *
 from ..models.empresa_models import Empresa
 from ..forms.empresa_forms import EmpresaForm
@@ -66,7 +61,7 @@ class ConfigViews():
 class DataViewList():
 	search_fields = [
 		'nombre_fiscal',
-		 'nombre_comercial'
+		'nombre_comercial'
 	]
 	
 	ordering = ['nombre_fiscal']
@@ -157,7 +152,6 @@ class CargarCertificadoView(View):
 			#-- Obtener datos del request.
 			data = json.loads(request.body)
 			certificado_content = data.get('certificado', '')
-			tipo = data.get('tipo', 'homologacion')  #-- 'homologacion' o 'produccion'.
 			
 			if not certificado_content:
 				return JsonResponse({
@@ -165,28 +159,36 @@ class CargarCertificadoView(View):
 					'error': 'No se proporcionó contenido del certificado'
 				})
 			
-			#-- Validar formato del certificado.
+			#-- 1. Validar formato del certificado.
 			if not self.validar_certificado(certificado_content):
 				return JsonResponse({
 					'success': False,
 					'error': 'El formato del certificado no es válido. Debe ser un certificado X.509 en formato PEM.'
 				})
 			
-			else:
-				#-- Extraer fecha de vencimiento del certificado.
-				fecha_vencimiento = self.extraer_fecha_vencimiento(certificado_content)
-				
-				if fecha_vencimiento:
-					return JsonResponse({
-						'success': True,
-						'fecha_vencimiento': fecha_vencimiento.strftime('%d/%m/%Y %H:%M:%S'),
-						'mensaje': 'Certificado cargado correctamente'
-					})
-				else:
-					return JsonResponse({
-						'success': False,
-						'error': 'No se pudo extraer la fecha de vencimiento del certificado'
-					})
+			#-- 2. Extraer fecha de vencimiento del certificado.
+			fecha_vencimiento = self.extraer_fecha_vencimiento(certificado_content)
+			
+			if not fecha_vencimiento:
+				return JsonResponse({
+					'success': False,
+					'error': 'No se pudo extraer la fecha de vencimiento del certificado'
+				})
+			
+			#-- 3. Validar que el certificado no esté vencido.
+			es_valido, mensaje = self.validar_certificado_no_vencido(fecha_vencimiento)
+			if not es_valido:
+				return JsonResponse({
+					'success': False,
+					'error': mensaje
+				})
+			
+			#-- Todo correcto.
+			return JsonResponse({
+				'success': True,
+				'fecha_vencimiento': fecha_vencimiento.strftime('%d/%m/%Y %H:%M:%S'),
+				'mensaje': 'Certificado cargado correctamente'
+			})
 		
 		except json.JSONDecodeError:
 			return JsonResponse({
@@ -198,11 +200,12 @@ class CargarCertificadoView(View):
 				'success': False,
 				'error': f'Error al procesar el certificado: {str(e)}'
 			})
-	
+		
 	def validar_certificado(self, certificado_content):
 		"""
 		Valida que el contenido sea un certificado X.509 válido en formato PEM
 		"""
+		
 		#-- Verificar que tenga los marcadores de certificado.
 		if 'BEGIN CERTIFICATE' not in certificado_content or 'END CERTIFICATE' not in certificado_content:
 			return False
@@ -232,6 +235,39 @@ class CargarCertificadoView(View):
 			print(f"Error al validar certificado: {e}")
 			return False
 	
+	def validar_certificado_no_vencido(self, fecha_vencimiento):
+		"""
+		Verifica que el certificado no esté vencido
+		"""
+		
+		from django.utils import timezone
+		
+		#-- Obtener fecha actual.
+		fecha_actual = timezone.now()
+		
+		#-- Asegurar que ambas fechas estén en el mismo formato (ambas naive o ambas aware).
+		#-- Opción 1: Convertir fecha_actual a naive (recomendado para guardar en DB).
+		if fecha_actual.tzinfo is not None:
+			fecha_actual = fecha_actual.replace(tzinfo=None)
+		
+		#-- Opción 2: Convertir fecha_vencimiento a aware (alternativa).
+		# if fecha_vencimiento.tzinfo is None:
+		#     from datetime import timezone as tz
+		#     fecha_vencimiento = fecha_vencimiento.replace(tzinfo=tz.utc)
+		
+		#-- Ahora ambas fechas son naive y se pueden comparar.
+		if fecha_vencimiento < fecha_actual:
+			#-- Calcular días de vencimiento.
+			dias_vencido = (fecha_actual - fecha_vencimiento).days
+			return False, f"El certificado está vencido desde hace {dias_vencido} días"
+		
+		#-- Calcular días restantes.
+		dias_restantes = (fecha_vencimiento - fecha_actual).days
+		if dias_restantes <= 30:
+			return True, f"Advertencia: El certificado vence en {dias_restantes} días"
+		
+		return True, "Certificado válido"
+	
 	def extraer_fecha_vencimiento(self, certificado_content):
 		"""
 		Extrae la fecha de vencimiento del certificado usando cryptography
@@ -257,23 +293,15 @@ class CargarCertificadoView(View):
 			#-- Intentar cargar el certificado en formato PEM.
 			try:
 				cert = x509.load_pem_x509_certificate(cert_data, default_backend())
-				print("**-- Certificado cargado en formato PEM.")
 			except Exception as e:
 				#-- Si falla, intentar con DER.
 				try:
 					cert = x509.load_der_x509_certificate(cert_data, default_backend())
-					print("**-- Certificado cargado en formato DER.")
 				except:
 					raise Exception(f"No se pudo parsear el certificado: {e}")
 			
 			#-- Obtener fecha de vencimiento.
 			fecha_vencimiento = cert.not_valid_after
-			
-			#-- Convertir a datetime de Python (ya que not_valid_after es datetime).
-			#-- Asegurarse de que sea timezone-naive para guardar en DB.
-			if fecha_vencimiento.tzinfo is not None:
-				#-- Si tiene timezone, convertirlo a naive.
-				fecha_vencimiento = fecha_vencimiento.replace(tzinfo=None)
 			
 			return fecha_vencimiento
 			
@@ -331,26 +359,11 @@ class CargarClaveView(View):
 				'error': f'Error al procesar la clave: {str(e)}'
 			})
 	
-	'''
 	def validar_clave_privada(self, clave_content):
 		"""
 		Valida que el contenido sea una clave privada válida
 		"""
 		
-		#-- Verificar que tenga los marcadores de clave privada.
-		if 'BEGIN PRIVATE KEY' in clave_content and 'END PRIVATE KEY' in clave_content:
-			return True
-		if 'BEGIN RSA PRIVATE KEY' in clave_content and 'END RSA PRIVATE KEY' in clave_content:
-			return True
-		if 'BEGIN ENCRYPTED PRIVATE KEY' in clave_content and 'END ENCRYPTED PRIVATE KEY' in clave_content:
-			return True
-		
-		return False
-	'''
-	def validar_clave_privada(self, clave_content):
-		"""
-		Valida que el contenido sea una clave privada válida
-		"""
 		#-- Verificar que tenga los marcadores de clave privada.
 		if not any([
 			'BEGIN PRIVATE KEY' in clave_content and 'END PRIVATE KEY' in clave_content,
@@ -362,7 +375,6 @@ class CargarClaveView(View):
 		#-- Intentar parsear la clave (validación más profunda).
 		try:
 			from cryptography.hazmat.primitives import serialization
-			from cryptography.hazmat.backends import default_backend
 			
 			if isinstance(clave_content, str):
 				clave_bytes = clave_content.encode('utf-8')
@@ -378,8 +390,8 @@ class CargarClaveView(View):
 			)
 			return True
 		except Exception as e:
-			#-- Si falla, podría ser porque tiene contraseña, pero al menos el formato es válido.
-			#-- Si tiene BEGIN/END, consideramos válido.
-			print(f"Advertencia: No se pudo cargar la clave privada completamente: {e}")
-			return True  #-- Retornamos True porque tiene la estructura correcta.
-
+			#-- Si el error es por contraseña, la clave es válida.
+			if "password" in str(e).lower() or "encrypted" in str(e).lower():
+				return True
+			print(f"Error al validar clave: {e}")
+			return False

@@ -215,8 +215,6 @@ class VLStockGeneralSucursalInformeView(InformeFormView):
 			
 			fecha_hora_reporte = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
 			
-			dominio = f"http://{self.request.get_host()}"
-			
 			familia = "Todas"
 			if id_familia_desde and id_familia_hasta:
 				familia = f"Desde: {id_familia_desde} - Hasta: {id_familia_hasta}"
@@ -350,8 +348,7 @@ class VLStockGeneralSucursalInformeView(InformeFormView):
 				"parametros_d": param_right,
 				'fecha_hora_reporte': fecha_hora_reporte,
 				'titulo': ConfigViews.report_title,
-				'logo_url': f"{dominio}{static('img/logo_01.png')}",
-				'css_url': f"{dominio}{static('css/reportes.css')}",
+				'css_url': static('css/reportes.css')
 			}
 		
 		else:

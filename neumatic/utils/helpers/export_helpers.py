@@ -1,5 +1,5 @@
 # neumatic\utils\helpers\export_helpers.py
-from os import getenv
+import os
 from dotenv import load_dotenv
 from io import BytesIO, TextIOWrapper
 from reportlab.platypus import BaseDocTemplate, SimpleDocTemplate, Frame, PageTemplate, LongTable, TableStyle, Paragraph, Spacer
@@ -16,8 +16,8 @@ from functools import partial
 from django.core.exceptions import PermissionDenied
 
 from apps.maestros.templatetags.custom_tags import formato_es_ar
-from entorno.constantes_base import JERARQUIAS_CON_ACCESO_TOTAL
 from utils.utils import format_date, formato_argentino, formato_argentino_entero
+from entorno.constantes_base import JERARQUIAS_CON_ACCESO_TOTAL
 
 #-- Cargar las variables de entorno del archivo .env
 load_dotenv()
@@ -363,8 +363,8 @@ class ExportHelper:
 			# ws.protection.autoFilter = False           # No permitir filtros automáticos.
 			# ws.protection.pivotTables = False          # No permitir tablas dinámicas.
 			
-			if getenv('EXCEL_KEY'):
-				ws.protection.password = getenv('EXCEL_KEY')
+			if os.getenv('EXCEL_KEY'):
+				ws.protection.password = os.getenv('EXCEL_KEY')
 		
 		buffer = BytesIO()
 		wb.save(buffer)
@@ -646,30 +646,36 @@ class PDFGenerator:
 		
 	def _render_header_top(self, canvas_obj, doc, width_total, height_total):
 		# --- Header-top -------------------------------------------------------------------
-		header_top_height = 50  #-- Altura fija de la sección header-top.
+		
+		#-- Altura fija de la sección header-top.
+		header_top_height = 50
 		
 		#-- Sección Superior Izquierda: logotipo.
-		logo_path = doc.contexto_reporte.get("logo_url", "")
+		
+		#-- Obtener la URL del logo del contexto.
+		logo_path = doc.contexto_reporte.get("logo_path", "")
+		
+		#-- Coordenadas para renderizar el logo.
 		logo_height = 30
 		logo_width = 100
-		
-		logo_x = doc.leftMargin - 10
+		logo_x = doc.leftMargin
 		logo_y = height_total - header_top_height + (header_top_height - logo_height) / 2
 		
-		try:
-			canvas_obj.drawImage(
-				logo_path, 
-				logo_x, 
-				logo_y, 
-				width=logo_width, 
-				height=logo_height, 
-				preserveAspectRatio=True, 
-				mask='auto'
-			)
-		except Exception:
-			canvas_obj.setFont("Helvetica", 10)
-			# canvas_obj.drawString(logo_x, logo_y, "[Logo]")
-			canvas_obj.drawString(logo_x, logo_y, "")
+		#-- Usar la ruta del logo si existe.
+		if logo_path and os.path.exists(logo_path):
+			try:
+				canvas_obj.drawImage(
+					logo_path, 
+					logo_x, 
+					logo_y, 
+					width=logo_width, 
+					height=logo_height, 
+					preserveAspectRatio=True, 
+					mask='auto'
+				)
+			except Exception:
+				#-- Si falla, no mostrar nada
+				pass
 		
 		#-- Sección Superior Perecha: título.
 		titulo = doc.contexto_reporte.get("titulo", "Reporte")
@@ -703,9 +709,6 @@ class PDFGenerator:
 	
 	def _render_footer(self, canvas_obj, doc, width):
 		# --- Footer -----------------------------------------------------------------------
-		
-		# # Guardar el número de página actual para usarlo en los headers
-		# self._pageNumber = canvas_obj._pageNumber
 		
 		footer_y = 15
 		
@@ -821,6 +824,7 @@ def add_row_table(table_data, objetos, fields, table_info, generator):
 		table_info (dict): Configuración para cada campo, incluyendo opciones de formato.
 		generator: Instancia del generador PDF que proporciona estilos para los Párrafos.
 	"""
+	
 	for obj in objetos:
 		row = []
 		
@@ -869,13 +873,13 @@ class JerarquiaSucursal:
 		Returns:
 			bool: True si tiene permiso, False si no
 		"""
+		
 		if not user or not caja:
 			return False
 		
 		jerarquia_usuario = getattr(user, 'jerarquia', 'Z')
 		
 		#-- Jerarquía 'A' tiene acceso total.
-		# if jerarquia_usuario == 'A':
 		if jerarquia_usuario in JERARQUIAS_CON_ACCESO_TOTAL:
 			return True
 		
@@ -899,6 +903,7 @@ class JerarquiaSucursal:
 		"""
 		Versión que lanza excepción en lugar de retornar booleano.
 		"""
+		
 		if not JerarquiaSucursal.puede_consultar_caja(user, caja_obj):
 			raise PermissionDenied(
 				"No tiene permisos para consultar esta caja. "

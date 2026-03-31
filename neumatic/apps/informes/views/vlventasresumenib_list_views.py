@@ -19,6 +19,7 @@ from ..forms.buscador_vlventasresumenib_forms import BuscadorVLVentasResumenIBFo
 from utils.utils import deserializar_datos, formato_argentino, normalizar
 from apps.maestros.templatetags.custom_tags import formato_es_ar
 from utils.helpers.export_helpers import ExportHelper, PDFGenerator
+from entorno.constantes_base import MESES
 
 
 class ConfigViews:
@@ -145,7 +146,6 @@ class VLVentasResumenIBInformeView(InformeFormView):
 		provincias = cleaned_data.get("provincias")
 		
 		id_sucursal = sucursal.id_sucursal if sucursal else None
-		
 		
 		queryset = VLVentasResumenIB.objects.obtener_datos(anno, mes, id_sucursal)
 		
@@ -281,7 +281,6 @@ class VLVentasResumenIBInformeView(InformeFormView):
 			tg_iva += v["iva"]
 			tg_total += v["total"]
 		
-		
 		#========================================================================
 		
 		return totales
@@ -298,31 +297,17 @@ class VLVentasResumenIBInformeView(InformeFormView):
 		mes = cleaned_data.get("mes")
 		importe_max = cleaned_data.get("importe_max") or 0
 		
-		meses = {
-			"01": "Enero",
-			"02": "Febrero",
-			"03": "Marzo",
-			"04": "Abril",
-			"05": "Mayo",
-			"06": "Junio",
-			"07": "Julio",
-			"08": "Agosto",
-			"09": "Septiembre",
-			"10": "Octubre",
-			"11": "Noviembre",
-			"12": "Diciembre",
-		}
+		MESES_DICT = dict(MESES)
+		
 		param_left = {
 			"Sucursal": sucursal.nombre_sucursal,
 		}
 		param_right = {
-			"Período": f"{meses[mes]}/{anno}",
+			"Período": f"{MESES_DICT[mes]}/{anno}",
 			"Imp. máx. P/menor": formato_argentino(importe_max),
 		}
 		
 		fecha_hora_reporte = datetime.now().strftime("%d/%m/%Y %H:%M:%S")		
-		
-		dominio = f"http://{self.request.get_host()}"
 		
 		# **************************************************
 		#-- Inicializar los totales como Decimals.
@@ -333,7 +318,7 @@ class VLVentasResumenIBInformeView(InformeFormView):
 		tg_iva = Decimal(0)
 		tg_total = Decimal(0)
 		
-		for p, v in queryset.items():
+		for v in queryset.values():
 			tg_pmenor += v["por_menor"]
 			tg_reparacion += v["reparacion"]
 			tg_pmayor += v["por_mayor"]
@@ -362,8 +347,7 @@ class VLVentasResumenIBInformeView(InformeFormView):
 			"parametros_d": param_right,
 			'fecha_hora_reporte': fecha_hora_reporte,
 			'titulo': ConfigViews.report_title,
-			'logo_url': f"{dominio}{static('img/logo_01.png')}",
-			'css_url': f"{dominio}{static('css/reportes.css')}",
+			'css_url': static('css/reportes.css')
 		}
 	
 	def get_context_data(self, **kwargs):

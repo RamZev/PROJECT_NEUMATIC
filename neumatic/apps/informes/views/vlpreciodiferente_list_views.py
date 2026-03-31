@@ -224,8 +224,6 @@ class VLPrecioDiferenteInformeView(InformeFormView):
 		
 		fecha_hora_reporte = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
 		
-		dominio = f"http://{self.request.get_host()}"
-		
 		# **************************************************
 		#-- Estructura para agrupar datos por Vendedor.
 		datos_por_vendedor = {}
@@ -271,8 +269,7 @@ class VLPrecioDiferenteInformeView(InformeFormView):
 			"parametros_d": param_right,
 			'fecha_hora_reporte': fecha_hora_reporte,
 			'titulo': ConfigViews.report_title,
-			'logo_url': f"{dominio}{static('img/logo_01.png')}",
-			'css_url': f"{dominio}{static('css/reportes.css')}",
+			'css_url': static('css/reportes.css'),
 		}
 	
 	def get_context_data(self, **kwargs):

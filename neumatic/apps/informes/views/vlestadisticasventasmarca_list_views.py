@@ -217,8 +217,6 @@ class VLEstadisticasVentasMarcaInformeView(InformeFormView):
 		
 		fecha_hora_reporte = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
 		
-		dominio = f"http://{self.request.get_host()}"
-		
 		param_left = {
 			"Sucursal": sucursal.nombre_sucursal if sucursal else "Todas",
 			"Marca": marca.nombre_producto_marca if marca else "Todas",
@@ -307,8 +305,7 @@ class VLEstadisticasVentasMarcaInformeView(InformeFormView):
 			"parametros_d": param_right,
 			'fecha_hora_reporte': fecha_hora_reporte,
 			'titulo': ConfigViews.report_title,
-			'logo_url': f"{dominio}{static('img/logo_01.png')}",
-			'css_url': f"{dominio}{static('css/reportes.css')}",
+			'css_url': static('css/reportes.css'),
 		}
 	
 	def get_context_data(self, **kwargs):

@@ -4,7 +4,7 @@ from django import forms
 from .informes_generics_forms import InformesGenericForm
 from diseno_base.diseno_bootstrap import formclassselect, formclasstext
 from entorno.constantes_base import ESTATUS_CHOICES
-	
+
 
 class BuscadorCaiEstadosForm(InformesGenericForm):
 	

@@ -1,25 +1,37 @@
 # neumatic\apps\maestros\forms\empresa_forms.py
 from django import forms
+from PIL import Image
+import os
+
 from .crud_forms_generics import CrudGenericForm
 from ..models.base_models import *
 from ..models.empresa_models import Empresa
-from diseno_base.diseno_bootstrap import(
+from diseno_base.diseno_bootstrap import (
 	formclasstext,
 	formclassselect,
-	formclassdate
+	formclassdate,
 )
 
 
 class EmpresaForm(CrudGenericForm):
-	# Agregar este campo para manejar la carga del logo
-	logo_file = forms.FileField(
+	#-- Campo para manejar la carga del logo.
+	logo_file = forms.ImageField(
 		required=False,
 		label="Logo",
 		widget=forms.FileInput(attrs={
-			'class': 'form-control',
+			# 'class': 'form-control',
+			**formclasstext,
 			'accept': 'image/*'
 		})
-	)	
+	)
+	
+	#-- Campo oculto para indicar eliminación de logo
+	eliminar_logo_flag = forms.BooleanField(
+		required=False,
+		widget=forms.HiddenInput(),
+		initial=False
+	)
+	
 	class Meta:
 		model = Empresa
 		fields ='__all__'
@@ -34,7 +46,10 @@ class EmpresaForm(CrudGenericForm):
 			'domicilio_empresa':
 				forms.TextInput(attrs={**formclasstext}),
 			'codigo_postal':
-				forms.TextInput(attrs={**formclasstext, 'readonly': True}),
+				forms.TextInput(attrs={
+					**formclasstext,
+					'readonly': True
+				}),
 			'id_localidad':
 				forms.Select(attrs={**formclassselect}),
 			'id_provincia':
@@ -46,15 +61,21 @@ class EmpresaForm(CrudGenericForm):
 			'ingresos_bruto':
 				forms.TextInput(attrs={**formclasstext}),
 			'inicio_actividad': 
-				forms.TextInput(attrs={**formclassdate,
-										'type': 'date' }),
+				forms.TextInput(attrs={
+					**formclassdate,
+					'type':
+					'date'
+				}),
 			'cbu':
 				forms.TextInput(attrs={**formclasstext}),
 			'cbu_alias':
 				forms.TextInput(attrs={**formclasstext}),
 			'cbu_vence': 
-				forms.TextInput(attrs={**formclassdate,
-										'type': 'date' }),
+				forms.TextInput(attrs={
+					**formclassdate,
+					'type':
+					'date'
+				}),
 			'telefono':
 				forms.TextInput(attrs={**formclasstext}),
 			'email_empresa':
@@ -62,21 +83,21 @@ class EmpresaForm(CrudGenericForm):
 			'web_empresa':
 				forms.TextInput(attrs={**formclasstext}),
 			
-			# 'logo_empresa':
-			# 	forms.TextInput(attrs={**formclasstext,}),
-			# Ocultar el campo logo_empresa porque usaremos logo_file
 			'logo_empresa':
 				forms.HiddenInput(),
 							
 			'ws_archivo_crt2':
-				forms.Textarea(attrs={**formclasstext, 
-							'rows': 5, 'readonly': True}),
+				forms.Textarea(attrs={
+					**formclasstext,
+					'rows': 5,
+					'readonly': True
+				}),
 			'ws_archivo_key2':
-				forms.Textarea(attrs={**formclasstext, 
-							'rows': 5, 'readonly': True}),
-			# 'ws_vence_h':
-			# 	forms.TextInput(attrs={**formclassdate,
-			# 							'type': 'datetime-local' }),
+				forms.Textarea(attrs={
+					**formclasstext,
+					'rows': 5,
+					'readonly': True
+				}),
 			'ws_vence_h':
 				forms.TextInput(attrs={
 					**formclasstext, 
@@ -85,14 +106,17 @@ class EmpresaForm(CrudGenericForm):
 				}),
 			
 			'ws_archivo_crt_p':
-				forms.Textarea(attrs={**formclasstext, 
-							'rows': 5, 'readonly': True}),
+				forms.Textarea(attrs={
+					**formclasstext,
+					'rows': 5,
+					'readonly': True
+				}),
 			'ws_archivo_key_p':
-				forms.Textarea(attrs={**formclasstext, 
-							'rows': 5, 'readonly': True}),
-			# 'ws_vence_p':
-			# 	forms.TextInput(attrs={**formclassdate,
-			# 							'type': 'datetime-local' }),
+				forms.Textarea(attrs={
+					**formclasstext,
+					'rows': 5,
+					'readonly': True
+				}),
 			'ws_vence_p':
 				forms.TextInput(attrs={
 					**formclasstext, 
@@ -101,15 +125,17 @@ class EmpresaForm(CrudGenericForm):
 				}),
 			
 			'ws_token_h':
-				forms.Textarea(attrs={**formclasstext, 
-							'rows': 3, 'readonly': True}),
+				forms.Textarea(attrs={
+					**formclasstext,
+					'rows': 3,
+					'readonly': True
+				}),
 			'ws_sign_h':
-				forms.Textarea(attrs={**formclasstext, 
-							'rows': 3, 'readonly': True}),
-			# 'ws_expiracion_h':
-			# 	forms.TextInput(attrs={**formclassdate,
-			# 							'type': 'datetime-local', 
-			# 							'readonly': True}),
+				forms.Textarea(attrs={
+					**formclasstext,
+					'rows': 3,
+					'readonly': True
+				}),
 			'ws_expiracion_h':
 				forms.TextInput(attrs={
 					**formclasstext, 
@@ -118,15 +144,17 @@ class EmpresaForm(CrudGenericForm):
 				}),
 			
 			'ws_token_p':
-				forms.Textarea(attrs={**formclasstext, 
-							'rows': 3, 'readonly': True}),
+				forms.Textarea(attrs={
+					**formclasstext,
+					'rows': 3,
+					'readonly': True
+				}),
 			'ws_sign_p':
-				forms.Textarea(attrs={**formclasstext, 
-							'rows': 3, 'readonly': True}),
-			# 'ws_expiracion_p':
-			# 	forms.TextInput(attrs={**formclassdate,
-			# 							'type': 'datetime-local', 
-			# 							'readonly': True}),
+				forms.Textarea(attrs={
+					**formclasstext,
+					'rows': 3,
+					'readonly': True
+				}),
 			'ws_expiracion_p':
 				forms.TextInput(attrs={
 					**formclasstext, 
@@ -137,25 +165,35 @@ class EmpresaForm(CrudGenericForm):
 			'ws_modo':
 				forms.Select(attrs={**formclassselect}),
 			'interes':
-				forms.NumberInput(
-					attrs={**formclasstext,
-						   'min': -99.99, 'max': 99.99}),
+				forms.NumberInput(attrs={
+					**formclasstext,
+					'min': -99.99,
+					'max': 99.99
+				}),
 			'interes_dolar':
-				forms.NumberInput(
-					attrs={**formclasstext, 
-						   'min': -99.99, 'max': 99.99}),
+				forms.NumberInput(attrs={
+					**formclasstext,
+					'min': -99.99,
+					'max': 99.99
+				}),
 			'cotizacion_dolar':
-				forms.NumberInput(
-					attrs={**formclasstext, 
-						   'min': 0, 'max': 9999999999999.99}),
+				forms.NumberInput(attrs={
+					**formclasstext,
+					'min': 0,
+					'max': 9999999999999.99
+				}),
 			'dias_vencimiento':
-				forms.NumberInput(
-					attrs={**formclasstext, 
-						   'min': 0, 'max': 999}),
+				forms.NumberInput(attrs={
+					**formclasstext,
+					'min': 0,
+					'max': 999
+				}),
 			'descuento_maximo':
-				forms.NumberInput(
-					attrs={**formclasstext, 
-						   'min': -99.99, 'max': 99.99}),
+				forms.NumberInput(attrs={
+					**formclasstext,
+					'min': -99.99,
+					'max': 99.99
+				}),
 		}
 	
 	def __init__(self, *args, **kwargs):
@@ -208,6 +246,9 @@ class EmpresaForm(CrudGenericForm):
 		#-- Si hay un logo guardado, mostrar información.
 		if self.instance and self.instance.pk and self.instance.logo_empresa:
 			self.fields['logo_file'].help_text = "Logo actual cargado. Seleccione uno nuevo para reemplazarlo."
+			
+			#-- También podemos agregar un atributo data para el nombre del archivo actual.
+			self.fields['logo_file'].widget.attrs['data-current-file'] = os.path.basename(self.instance.logo_empresa.name)
 	
 	def clean_logo_file(self):
 		"""Validar y procesar el archivo de logo"""
@@ -222,20 +263,22 @@ class EmpresaForm(CrudGenericForm):
 			if logo.size > 2 * 1024 * 1024:
 				raise forms.ValidationError('La imagen no debe exceder los 2MB.')
 			
-			#-- Leer y guardar como bytes.
-			return logo.read()
+			#-- Validar formato (opcional, usando PIL)
+			try:
+				img = Image.open(logo)
+				img.verify()  #-- Verificar que es una imagen válida.
+			except Exception:
+				raise forms.ValidationError('El archivo no es una imagen válida.')
 		
-		return None
+		return logo
 	
 	def clean(self):
 		"""Validación general del formulario"""
 		cleaned_data = super().clean()
 		
-		# Asegurar que el logo_empresa sea bytes si existe
-		if 'logo_empresa' in cleaned_data and cleaned_data['logo_empresa']:
-			logo = cleaned_data['logo_empresa']
-			if isinstance(logo, str):
-				cleaned_data['logo_empresa'] = logo.encode('utf-8')
+		#-- Si se marcó eliminar_logo, establecer logo_empresa como None.
+		if cleaned_data.get('eliminar_logo_flag'):
+			cleaned_data['logo_empresa'] = None
 		
 		return cleaned_data
 	
@@ -246,7 +289,21 @@ class EmpresaForm(CrudGenericForm):
 		#-- Procesar el logo si se subió uno nuevo.
 		logo_data = self.cleaned_data.get('logo_file')
 		if logo_data is not None:
+			#-- Si hay un logo existente, eliminarlo antes de guardar el nuevo.
+			if instance.pk and instance.logo_empresa:
+				old_logo_path = instance.logo_empresa.path
+				if os.path.isfile(old_logo_path):
+					os.remove(old_logo_path)
 			instance.logo_empresa = logo_data
+		
+		elif self.cleaned_data.get('eliminar_logo_flag'):
+			#-- Si se solicitó eliminar el logo.
+			if instance.logo_empresa:
+				#-- Eliminar el archivo físico.
+				logo_path = instance.logo_empresa.path
+				if os.path.isfile(logo_path):
+					os.remove(logo_path)
+			instance.logo_empresa = None
 		
 		if commit:
 			instance.save()

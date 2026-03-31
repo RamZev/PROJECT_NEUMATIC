@@ -146,12 +146,9 @@ class VLEstadisticasVentasInformeView(InformeFormView):
 		agrupar = cleaned_data.get('agrupar', None)
 		mostrar = cleaned_data.get('mostrar', None)
 		
-		# cliente = Cliente.objects.get(pk=id_cliente) if id_cliente else None  #-- de esta manera me arroja error si no existe el cliente por lo tanto hay que manejar la excepción.
-		cliente = Cliente.objects.filter(pk=id_cliente).first() if id_cliente else None   #-- De esta manera si no existe no salta la excepción, sino que retorna None.
+		cliente = Cliente.objects.filter(pk=id_cliente).first() if id_cliente else None
 		
 		fecha_hora_reporte = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-		
-		dominio = f"http://{self.request.get_host()}"
 		
 		param_left = {
 			"Sucursal": sucursal.nombre_sucursal if sucursal else "Todas",
@@ -202,8 +199,7 @@ class VLEstadisticasVentasInformeView(InformeFormView):
 			"parametros_d": param_right,
 			'fecha_hora_reporte': fecha_hora_reporte,
 			'titulo': ConfigViews.report_title,
-			'logo_url': f"{dominio}{static('img/logo_01.png')}",
-			'css_url': f"{dominio}{static('css/reportes.css')}",
+			'css_url': static('css/reportes.css'),
 		}
 	
 	def get_context_data(self, **kwargs):

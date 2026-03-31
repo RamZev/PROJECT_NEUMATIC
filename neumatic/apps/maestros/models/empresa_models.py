@@ -2,11 +2,35 @@
 from django.db import models
 from django.core.exceptions import ValidationError
 import re
+import os
 
 from utils.validator.validaciones import validar_cuit
 from .base_gen_models import ModeloBaseGenerico
 from .base_models import Localidad, Provincia, TipoIva
 from entorno.constantes_base import ESTATUS_GEN, WS_MODO
+
+
+def logo_upload_path(instance, filename):
+	"""Genera la ruta donde se guardará el logo preservando el nombre original"""
+	
+	#-- Obtener el nombre base y extensión.
+	name, ext = os.path.splitext(filename)
+	
+	#-- Limpiar el nombre: solo letras, números, guiones y guiones bajos.
+	clean_name = re.sub(r'[^a-zA-Z0-9_-]', '', name)
+	
+	#-- Si el nombre quedó vacío, usar un nombre por defecto.
+	if not clean_name:
+		clean_name = 'logo'
+	
+	#-- Usar el id de la empresa si existe.
+	empresa_id = instance.id_empresa if instance.id_empresa else 'temp'
+	
+	#-- Preservar el nombre original con el ID de la empresa.
+	new_filename = f'logo_{empresa_id}_{clean_name}{ext}'
+	
+	#-- Guardar en: media/empresas/logos/
+	return os.path.join('empresas', 'logos', new_filename)
 
 
 class Empresa(ModeloBaseGenerico):
@@ -86,13 +110,14 @@ class Empresa(ModeloBaseGenerico):
 		null=True,
 		blank=True
 	)
-	
-	logo_empresa = models.BinaryField(
+	logo_empresa = models.ImageField(
 		verbose_name="Logo",
+		upload_to=logo_upload_path,
 		null=True,
-		blank=True
-	)  # Para el campo 'image'
-	
+		blank=True,
+		max_length=255,
+		help_text="Formatos permitidos: JPG, PNG, GIF. Tamaño máximo: 2MB"
+	)
 	ws_archivo_crt2 = models.TextField(
 		verbose_name="CRT Homologación",
 		null=True,
@@ -202,6 +227,70 @@ class Empresa(ModeloBaseGenerico):
 	def __str__(self):
 		return self.nombre_fiscal
 	
+	@property
+	def logo_url_safe(self):
+		"""
+		Retorna la URL del logo de forma segura.
+		Verifica que el campo tenga valor y que el archivo exista físicamente.
+		"""
+		
+		if not self.logo_empresa:
+			return None
+		
+		try:
+			#-- Verificar que el archivo existe en el sistema de archivos
+			if hasattr(self.logo_empresa, 'path') and os.path.isfile(self.logo_empresa.path):
+				return self.logo_empresa.url
+			else:
+				return None
+		except (ValueError, OSError, AttributeError):
+			return None
+	
+	@property
+	def logo_path_safe(self):
+		"""
+		Retorna la ruta física del logo de forma segura.
+		Verifica que el campo tenga valor y que el archivo exista físicamente.
+		"""
+		
+		if not self.logo_empresa:
+			return None
+		
+		try:
+			#-- Verificar que el archivo existe en el sistema de archivos.
+			if hasattr(self.logo_empresa, 'path') and os.path.isfile(self.logo_empresa.path):
+				return self.logo_empresa.path
+			else:
+				return None
+		except (ValueError, OSError, AttributeError):
+			return None
+	
+	@property
+	def logo_name_safe(self):
+		"""
+		Retorna el nombre del archivo del logo de forma segura.
+		"""
+		
+		if not self.logo_empresa:
+			return None
+		
+		try:
+			#-- Reutilizar la validación.
+			if self.logo_url_safe:
+				return self.logo_empresa.name
+			else:
+				return None
+		except (ValueError, OSError, AttributeError):
+			return None
+		
+	@property
+	def has_logo(self):
+		"""
+		Indica si la empresa tiene un logo válido.
+		"""
+		
+		return self.logo_url_safe is not None
+	
 	def clean(self):
 		super().clean()
 		
@@ -246,3 +335,53 @@ class Empresa(ModeloBaseGenerico):
 	def cuit_formateado(self):
 		cuit = str(self.cuit)
 		return f"{cuit[:2]}-{cuit[2:-1]}-{cuit[-1:]}"
+	
+	def save(self, *args, **kwargs):
+		"""Sobrescribir save para manejar el logo"""
+		
+		#-- Si es un nuevo registro, guardar temporalmente.
+		is_new = self.pk is None
+		
+		#-- Si es un registro existente y el logo ha cambiado, eliminar el anterior
+		if not is_new and hasattr(self, '_old_logo'):
+			old_logo = self._old_logo
+			if old_logo and old_logo != self.logo_empresa:
+				if os.path.isfile(old_logo.path):
+					try:
+						os.remove(old_logo.path)
+					except Exception as e:
+						print(f"Error al eliminar logo antiguo: {e}")
+		
+		#-- Guardar el objeto.
+		super().save(*args, **kwargs)
+		
+		#-- Si es nuevo y hay logo, actualizar la ruta con el ID correcto.
+		if is_new and self.logo_empresa:
+			try:
+				old_path = self.logo_empresa.path
+				#-- Obtener la extensión del archivo.
+				ext = self.logo_empresa.name.split('.')[-1]
+				new_name = f'empresas/logos/logo_{self.pk}.{ext}'
+				
+				#-- Si el archivo existe y no está en la ubicación correcta.
+				if os.path.exists(old_path):
+					#-- Crear la nueva ruta.
+					new_path = os.path.join(os.path.dirname(old_path), f'logo_{self.pk}.{ext}')
+					#-- Renombrar el archivo.
+					os.rename(old_path, new_path)
+					#-- Actualizar el nombre en la base de datos.
+					self.logo_empresa.name = new_name
+					#-- Guardar sin recursión infinita.
+					super().save(update_fields=['logo_empresa'])
+			except Exception as e:
+				print(f"Error al renombrar logo: {e}")
+
+	def __init__(self, *args, **kwargs):
+		"""Sobrescribir init para guardar el logo antiguo"""
+		
+		super().__init__(*args, **kwargs)
+		#-- Guardar una referencia al logo actual para poder comparar después.
+		if self.pk:
+			self._old_logo = self.logo_empresa
+		else:
+			self._old_logo = None

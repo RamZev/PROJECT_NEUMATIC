@@ -20,7 +20,7 @@ from apps.ventas.models.caja_models import CajaDetalle
 from apps.ventas.models.factura_models import Factura
 from apps.ventas.models.recibo_models import ChequeRecibo, TarjetaRecibo, DepositoRecibo, RetencionRecibo
 from ..forms.buscador_planillacaja_forms import BuscadorPlanillaCajaForm
-from utils.utils import deserializar_datos, normalizar, format_date, formato_argentino, formato_argentino_entero
+from utils.utils import deserializar_datos, normalizar, formato_argentino
 from utils.helpers.export_helpers import ExportHelper, PDFGenerator
 
 
@@ -226,8 +226,6 @@ class PlanillaCajaInformeView(InformeFormView):
 		
 		fecha_hora_reporte = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
 		
-		dominio = f"http://{self.request.get_host()}"
-		
 		param_left = {
 			"Sucursal": caja_obj.id_sucursal.nombre_sucursal if caja_obj else "",
 			"Usuario": usuario_caja,
@@ -300,8 +298,7 @@ class PlanillaCajaInformeView(InformeFormView):
 			"parametros_d": param_right,
 			'fecha_hora_reporte': fecha_hora_reporte,
 			'titulo': ConfigViews.report_title,
-			'logo_url': f"{dominio}{static('img/logo_01.png')}",
-			'css_url': f"{dominio}{static('css/reportes.css')}",
+			'css_url': static('css/reportes.css'),
 		}
 	
 	def get_context_data(self, **kwargs):

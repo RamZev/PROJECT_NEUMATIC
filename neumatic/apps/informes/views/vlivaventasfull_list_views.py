@@ -17,6 +17,7 @@ from apps.maestros.models.empresa_models import Empresa
 from ..forms.buscador_vlivaventasfull_forms import BuscadorVLIVAVentasFULLForm
 from utils.utils import deserializar_datos, serializar_queryset, formato_argentino, format_date, normalizar
 from utils.helpers.export_helpers import ExportHelper, PDFGenerator
+from entorno.constantes_base import MESES
 
 
 class ConfigViews:
@@ -175,22 +176,10 @@ class VLIVAVentasFULLInformeView(InformeFormView):
 		mes = cleaned_data.get("mes")
 		folio = cleaned_data.get("folio") or 0
 		
-		meses = {
-			"01": "Enero",
-			"02": "Febrero",
-			"03": "Marzo",
-			"04": "Abril",
-			"05": "Mayo",
-			"06": "Junio",
-			"07": "Julio",
-			"08": "Agosto",
-			"09": "Septiembre",
-			"10": "Octubre",
-			"11": "Noviembre",
-			"12": "Diciembre",
-		}
+		MESES_DICT = dict(MESES)
+		
 		param = {
-			"Mes": meses[mes],
+			"Mes": MESES_DICT[mes],
 			"Año": anno,
 		}
 		
@@ -206,9 +195,6 @@ class VLIVAVentasFULLInformeView(InformeFormView):
 		}
 		
 		fecha_hora_reporte = datetime.now().strftime("%d/%m/%Y %H:%M:%S")		
-		
-		dominio = f"http://{self.request.get_host()}"
-		
 		
 		# **************************************************
 		#-- Inicializar los totales como Decimals.
@@ -243,8 +229,9 @@ class VLIVAVentasFULLInformeView(InformeFormView):
 			"datos_empresa": datos_empresa,
 			'fecha_hora_reporte': fecha_hora_reporte,
 			'titulo': ConfigViews.report_title,
-			'logo_url': "",
-			'css_url': f"{dominio}{static('css/reportes.css')}",
+			'logo_url': None,
+			'logo_path': None,
+			'css_url': static('css/reportes.css'),
 		}
 	
 	def get_context_data(self, **kwargs):

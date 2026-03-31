@@ -5,13 +5,14 @@ from django.views.generic import FormView
 from django.http import HttpResponseRedirect, JsonResponse
 from django.urls import reverse
 from django.template.loader import render_to_string
-
 from django.core.cache import cache
 
 #-- Recursos necesarios para proteger las rutas.
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
-from utils.utils import serializar_datos
+from utils.utils import serializar_datos, obtener_logo
+
+from apps.maestros.models.empresa_models import Empresa
 
 
 # -- Vistas Genéricas Basada en Clases -----------------------------------------------
@@ -27,6 +28,24 @@ class InformeFormView(FormView):
 	Las vistas hijas deberán implementar, al menos, obtener_queryset()
 	y, en caso de necesitar transformación de datos, obtener_contexto_reporte().
 	"""
+	
+	'''
+	def _obtener_logo(self):
+		"""Método auxiliar para obtener el logo de la empresa de forma segura"""
+		
+		logo_url = None
+		logo_path = None
+		
+		try:
+			empresa = Empresa.objects.first()
+			if empresa:
+				logo_url = empresa.logo_url_safe
+				logo_path = empresa.logo_path_safe
+		except Exception:
+			pass
+		
+		return logo_url, logo_path
+	'''
 	
 	def get(self, request, *args, **kwargs):
 		#-- Para evitar posibles errores por formulario no ligado a un modelo.
@@ -44,6 +63,15 @@ class InformeFormView(FormView):
 				
 				#-- Obtiene el contexto del reporte; por defecto, puede ser simplemente el queryset.
 				contexto_reporte = self.obtener_contexto_reporte(queryset, form.cleaned_data)
+				
+				#-- Agregar logo al contexto del reporte (si no fue proporcionado explícitamente por la vista hija).
+				if "logo_url" not in contexto_reporte or "logo_path" not in contexto_reporte:
+					#-- Si las claves no existen, obtener logos por defecto.
+					# logo_url, logo_path = self._obtener_logo()
+					logo_url, logo_path = obtener_logo()
+					contexto_reporte['logo_url'] = logo_url
+					contexto_reporte['logo_path'] = logo_path
+				#-- Si las claves existen, se respetan sus valores (incluso si son None).
 				
 				#-- Procesa la salida.
 				return self.procesar_reporte(contexto_reporte, tipo_salida, form.cleaned_data)
@@ -116,6 +144,7 @@ class InformeFormView(FormView):
 		Debe devolver el queryset filtrado según los datos del formulario.
 		DEBE implementarse en la vista hija.
 		"""
+		
 		raise NotImplementedError("Debe implementarse el método obtener_queryset.")
 		
 	def obtener_contexto_reporte(self, queryset, cleaned_data):
@@ -128,4 +157,5 @@ class InformeFormView(FormView):
 		Si el listado requiere agrupar, subtotalizar o totalizar, la vista hija
 		debe sobreescribir este método.
 		"""
+		
 		return {"objetos": queryset}

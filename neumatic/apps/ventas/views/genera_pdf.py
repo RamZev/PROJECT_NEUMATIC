@@ -18,7 +18,8 @@ from ..models.factura_models import Factura, DetalleFactura, SerialFactura
 from ..models.recibo_models import DetalleRecibo, RetencionRecibo, DepositoRecibo, TarjetaRecibo, ChequeRecibo
 from apps.maestros.models.empresa_models import Empresa
 from apps.maestros.models.base_models import Leyenda
-from utils.utils import formato_argentino, numero_a_letras
+from utils.utils import formato_argentino, numero_a_letras, obtener_logo
+
 
 class GeneraPDFView(View):
 	# def get(self, request, model_string, pk):
@@ -56,6 +57,9 @@ class GeneraPDFView(View):
 		cliente = factura.id_cliente  # No necesitas consulta adicional
 		vendedor = factura.id_vendedor
 		seriales = SerialFactura.objects.filter(id_factura=factura)
+		
+		#-- Obtener la ruta del logo de forma segura.
+		logo_url, logo_path = obtener_logo()
 		
 		#-- Determinar las difrerentes alícuotas de IVA.
 		iva = {}
@@ -103,9 +107,7 @@ class GeneraPDFView(View):
 		#-- Línea vertical divisoria.
 		c.line(x_line, y_position-area_box, x_line, y_position - header_top_height)
 		
-		
 		#-- Configuración inicial del logo.
-		logo_path = path.join(settings.BASE_DIR, 'static', 'img', 'logo_01.png')
 		logo_width = 30*mm
 		logo_height = 12*mm
 		
@@ -609,6 +611,9 @@ class GeneraPDFView(View):
 		
 		usuario = f"{usuario.first_name} {usuario.last_name}" if usuario.first_name or usuario.last_name else str(usuario)
 		
+		#-- Obtener la ruta del logo de forma segura.
+		logo_url, logo_path = obtener_logo()
+		
 		if not empresa:
 			return HttpResponse("No se encontraron datos de empresa configurados", status=400)
 		
@@ -629,7 +634,6 @@ class GeneraPDFView(View):
 		c.line(width/2, y_position, width/2, y_position - header_top_height)
 		
 		#-- Configuración inicial del logo.
-		logo_path = path.join(settings.BASE_DIR, 'static', 'img', 'logo_01.png')
 		logo_width = 30*mm
 		logo_height = 12*mm
 		

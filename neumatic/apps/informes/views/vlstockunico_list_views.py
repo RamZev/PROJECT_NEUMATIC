@@ -94,20 +94,6 @@ class ConfigViews:
 			"excel": True,
 			"csv": True
 		},
-		# "id_marca_id": {
-		# 	"label": "Id Marca",
-		# 	"col_width_pdf": 0,
-		# 	"pdf": False,
-		# 	"excel": True,
-		# 	"csv": True
-		# },
-		# "nombre_producto_marca": {
-		# 	"label": "Marca",
-		# 	"col_width_pdf": 0,
-		# 	"pdf": True,
-		# 	"excel": True,
-		# 	"csv": True
-		# },
 		"id_producto_id": {
 			"label": "Código",
 			"col_width_pdf": 50,
@@ -193,7 +179,6 @@ class VLStockUnicoInformeView(InformeFormView):
 		
 		#-- Parámetros del listado.
 		fecha_hora_reporte = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-		dominio = f"http://{self.request.get_host()}"
 		
 		param_left = {}
 		param_right = {}
@@ -247,8 +232,7 @@ class VLStockUnicoInformeView(InformeFormView):
 			"parametros_d": param_right,
 			'fecha_hora_reporte': fecha_hora_reporte,
 			'titulo': ConfigViews.report_title,
-			'logo_url': f"{dominio}{static('img/logo_01.png')}",
-			'css_url': f"{dominio}{static('css/reportes.css')}",
+			'css_url': static('css/reportes.css')
 		}
 	
 	def get_context_data(self, **kwargs):
