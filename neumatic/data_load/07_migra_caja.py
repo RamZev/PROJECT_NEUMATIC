@@ -14,7 +14,7 @@ SCRIPTS = [
     'caja_detalle_migra.py',
     'caja_arqueo_migra.py',
     'vincular_factura_caja.py',
-    'asocia_mult_caja_migra',
+    'asocia_mult_caja_migra.py',
     'actualiza_factura_id_caja_mult.py'
     
 ]

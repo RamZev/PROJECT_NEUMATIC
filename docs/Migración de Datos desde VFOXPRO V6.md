@@ -342,7 +342,7 @@ actualiza_cliente.sql
 
 actualiza_empresa.sql
 
-actualiza_comprobante_venta.sql
+
 
 **Al finalizar las migraciones:**
 
