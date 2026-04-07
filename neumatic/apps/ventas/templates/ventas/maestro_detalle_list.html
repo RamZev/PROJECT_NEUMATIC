@@ -1,3 +1,4 @@
+<!-- neumatic\apps\ventas\templates\ventas\maestro_detalle_list.html -->
 {% extends 'base.html' %}
 {% load static %}
 {% load custom_tags %}
@@ -56,145 +57,159 @@
 			
 		<!-- Main principalcomponent Start -->
 		{% block principalcomponent %}
-		
-		<div id="layoutSidenav_content">
-			<main>
-				<div class="container-fluid tbl-container">
-					
-					<div class="card border-secondary mb-3 mt-2">
-						<div class="card-header bg-primary bg-opacity-25 text-dark d-flex 
-								justify-content-between p-1">
-							<h4>{{ master_title }}</h4>
-							<!-- Botón cerrar lista -->
-							<button type="button" class="btn-close btn-close-blue" 
-								aria-label="Close"
-								onclick="window.location.href='{% url home_view_name %}'">
-							</button>
-						</div>
-						<div class="card-body">
-							<div class="row">
-								<div class="col col-10">
-									{% include 'buscador.html' %}
+			<div id="layoutSidenav_content">
+				<main>
+					<div class="container-fluid tbl-container">
+						
+						<div class="card border-secondary mb-3 mt-2">
+							<div class="card-header bg-primary bg-opacity-25 text-dark d-flex 
+									justify-content-between p-1">
+								<h4>{{ master_title }}</h4>
+								<!-- Botón cerrar lista -->
+								<button type="button" class="btn-close btn-close-blue" 
+									aria-label="Close"
+									onclick="window.location.href='{% url home_view_name %}'">
+								</button>
+							</div>
+							<div class="card-body">
+								<div class="row">
+									<div class="col col-10">
+										{% include 'buscador.html' %}
+									</div>
+									
+									<div class="col col-2">
+										<a href="{% url create_view_name %}" 
+												class="btn btn-primary opacity-75">
+											Nuevo
+											<i class="bi bi-building-add"></i>
+										</a>
+									</div>
 								</div>
 								
-								<div class="col col-2">
-									<a href="{% url create_view_name %}" 
-											class="btn btn-primary opacity-75">
-										Nuevo
-										<i class="bi bi-building-add"></i>
-									</a>
-								</div>
-							</div>
-							
-							<div class="row tbl-fixed my-2 mx-1">
-								<!-- Inicio Tabla de Maestro -->
-								<table class="table table-bordered table-striped table-hover">
-									<thead class="table-primary">
-										{% for key, value in table_headers.items %}
-											<th class="col-{{ value.0 }}">
-												<a href="{% url list_view_name %}?order_by={{ key }}">
-													{{ value.1 }}
-													{% if key == order_by %}
-														▲
-													{% endif %}
-												</a>
-											</th>
-										{% endfor %}
-									</thead>
-									
-									<tbody>
-										{% for objeto in objetos %}
-											<tr>
-												{% comment %} {% for data_info in table_data %}
-													{% if data_info.date_format %}
-														<td>{{ objeto|get_attribute:data_info.field_name|default:"" |date:data_info.date_format }}</td>
-													{% else %}
-														<td>{{ objeto|get_attribute:data_info.field_name|default:"" }}</td>
-													{% endif %}
-												{% endfor %} {% endcomment %}
-												{% for data_info in table_data %}
-													{% with objeto|get_attribute:data_info.field_name as field_value %}
-														{% if field_value|get_type == 'bool' %}
-															<td>
-																{% if field_value %}
-																	<i class="fa fa-check text-success"></i> <!-- Ícono de check verde -->
-																{% else %}
-																	<i class="fa fa-times text-danger"></i> <!-- Ícono de "X" roja -->
-																{% endif %}
-															</td>
-														{% elif field_value|get_type == 'float' or field_value|get_type == 'Decimal' %}
-															<td class="decimal">{{ objeto|get_attribute:data_info.field_name|formato_es_ar }}</td>
-														{% elif field_value|get_type == 'int' %}
-															<td>{{ objeto|get_attribute:data_info.field_name }}</td>
-														{% else %}
-															{% if data_info.date_format %}
-																<td>{{ objeto|get_attribute:data_info.field_name|default:"" |date:data_info.date_format }}</td>
-															{% else %}
-																<td>{{ objeto|get_attribute:data_info.field_name|default:"" }}</td>
-															{% endif %}
+								<div class="row tbl-fixed my-2 mx-1">
+									<!-- Inicio Tabla de Maestro -->
+									<table class="table table-bordered table-striped table-hover">
+										<thead class="table-primary">
+											{% for key, value in table_headers.items %}
+												<th class="col-{{ value.0 }}">
+													<a href="{% url list_view_name %}?order_by={{ key }}">
+														{{ value.1 }}
+														{% if key == order_by %}
+															▲
 														{% endif %}
-													{% endwith %}
-												{% endfor %}												
-												
-												<td>
-													<!-- Botón Actualizar -->
-													<button type="button" class="btn btn-outline-primary btn-sm btn-edit boton-oculto" data-form-index="{{ forloop.counter0 }}"
-															onclick="window.location.href='{% url update_view_name objeto.pk %}'" 
-															data-bs-toggle="tooltip" data-bs-placement="top" title="Ver Registro"
-															style="font-size: 70%; padding: 0.1rem 0.3rem;">
-														<i class="bi bi-pencil-square"></i>
-													</button>
-
-													{% comment %} <!-- Botón Actualizar -->
-													<a href="{% url update_view_name objeto.pk %}" data-bs-toggle="tooltip" data-bs-placement="top"
-														title="Actualizar Registro">
-														<img src="{% static 'img/update24.png' %}" alt="Actualizar" class="boton-oculto">
-													</a> {% endcomment %}
-													
-													<!-- Botón Eliminar -->
-													<button type="button" class="btn btn-outline-danger btn-sm btn-delete boton-oculto" 
-															data-bs-toggle="modal" data-bs-target="#deleteModal" title="Eliminar Registro"
-															data-bs-whatever-url="{% url delete_view_name objeto.pk %}" data-bs-whatever-name="{{ objeto }}"
-															style="font-size: 70%; padding: 0.1rem 0.3rem;">
-														<i class="bi bi-trash"></i>
-													</button>
-													
-													<!-- Botón Ver -->
-													{% comment %} <button type="button" class="btn btn-outline-success btn-sm btn-view boton-oculto"
-															data-bs-toggle="tooltip" data-bs-placement="top" title="Ver Registro"
-															style="font-size: 70%; padding: 0.1rem 0.3rem;">
-														<i class="bi bi-eye"></i>
-													</button> {% endcomment %}
-
-													<!-- Botón Imprimir PDF -->
-													{% comment %} <a href="{% url 'generic_pdf' model_name=model_string_for_pdf pk=objeto.pk model_string=model_string%}"  {% endcomment %}
-													{% comment %} <a href="{% url 'generic_pdf' model_string=model_string pk=objeto.pk %}" {% endcomment %}
-													<a href="{% url 'generic_pdf' pk=objeto.pk %}" 
-														target="_blank"
-														class="btn btn-outline-secondary btn-sm btn-print boton-oculto"
-														data-bs-toggle="tooltip" 
-														data-bs-placement="top" 
-														title="Generar PDF"
-														style="font-size: 70%; padding: 0.1rem 0.3rem;">
-															<i class="bi bi-printer"></i>
 													</a>
-												</td>
-											</tr>
-										{% endfor %}
-									</tbody>
-								</table>
-								<!-- Final Tabla de Maestro -->
-							</div>
+												</th>
+											{% endfor %}
+										</thead>
+										
+										<tbody>
+											{% for objeto in objetos %}
+												<tr>
+													{% comment %} {% for data_info in table_data %}
+														{% if data_info.date_format %}
+															<td>{{ objeto|get_attribute:data_info.field_name|default:"" |date:data_info.date_format }}</td>
+														{% else %}
+															<td>{{ objeto|get_attribute:data_info.field_name|default:"" }}</td>
+														{% endif %}
+													{% endfor %} {% endcomment %}
+													{% for data_info in table_data %}
+														{% with objeto|get_attribute:data_info.field_name as field_value %}
+															{% if field_value|get_type == 'bool' %}
+																<td>
+																	{% if field_value %}
+																		<i class="fa fa-check text-success"></i> <!-- Ícono de check verde -->
+																	{% else %}
+																		<i class="fa fa-times text-danger"></i> <!-- Ícono de "X" roja -->
+																	{% endif %}
+																</td>
+															{% elif field_value|get_type == 'float' or field_value|get_type == 'Decimal' %}
+																<td class="decimal">{{ objeto|get_attribute:data_info.field_name|formato_es_ar }}</td>
+															{% elif field_value|get_type == 'int' %}
+																<td>{{ objeto|get_attribute:data_info.field_name }}</td>
+															{% else %}
+																{% if data_info.date_format %}
+																	<td>{{ objeto|get_attribute:data_info.field_name|default:"" |date:data_info.date_format }}</td>
+																{% else %}
+																	<td>{{ objeto|get_attribute:data_info.field_name|default:"" }}</td>
+																{% endif %}
+															{% endif %}
+														{% endwith %}
+													{% endfor %}												
+													
+													<td>
+														<!-- Botón Actualizar -->
+														<button type="button" class="btn btn-outline-primary btn-sm btn-edit boton-oculto" data-form-index="{{ forloop.counter0 }}"
+																onclick="window.location.href='{% url update_view_name objeto.pk %}'" 
+																data-bs-toggle="tooltip" data-bs-placement="top" title="Ver Registro"
+																style="font-size: 70%; padding: 0.1rem 0.3rem;">
+															<i class="bi bi-pencil-square"></i>
+														</button>
 
-							{% block paginador %}
-								{% include 'paginador.html' %}
-							{% endblock paginador %}
+														{% comment %} <!-- Botón Actualizar -->
+														<a href="{% url update_view_name objeto.pk %}" data-bs-toggle="tooltip" data-bs-placement="top"
+															title="Actualizar Registro">
+															<img src="{% static 'img/update24.png' %}" alt="Actualizar" class="boton-oculto">
+														</a> {% endcomment %}
+														
+														<!-- Botón Eliminar -->
+														<button type="button" class="btn btn-outline-danger btn-sm btn-delete boton-oculto" 
+																data-bs-toggle="modal" data-bs-target="#deleteModal" title="Eliminar Registro"
+																data-bs-whatever-url="{% url delete_view_name objeto.pk %}" data-bs-whatever-name="{{ objeto }}"
+																style="font-size: 70%; padding: 0.1rem 0.3rem;">
+															<i class="bi bi-trash"></i>
+														</button>
+														
+														<!-- Botón Ver -->
+														{% comment %} <button type="button" class="btn btn-outline-success btn-sm btn-view boton-oculto"
+																data-bs-toggle="tooltip" data-bs-placement="top" title="Ver Registro"
+																style="font-size: 70%; padding: 0.1rem 0.3rem;">
+															<i class="bi bi-eye"></i>
+														</button> {% endcomment %}
+
+														<!-- Botón Imprimir PDF -->
+														{% comment %} <a href="{% url 'generic_pdf' model_name=model_string_for_pdf pk=objeto.pk model_string=model_string%}"  {% endcomment %}
+														{% comment %} <a href="{% url 'generic_pdf' model_string=model_string pk=objeto.pk %}" {% endcomment %}
+														
+														{% comment %} <a href="{% url 'pdf_retencion' pk=objeto.pk %}"  {% endcomment %}
+														{% if model_string == 'compra' %}
+															<a href="{% url 'pdf_retencion' pk=objeto.pk %}" 
+																target="_blank"
+																class="btn btn-outline-secondary btn-sm btn-print boton-oculto"
+																data-bs-toggle="tooltip" 
+																data-bs-placement="top" 
+																title="Generar PDF"
+																style="font-size: 70%; padding: 0.1rem 0.3rem;">
+																	<i class="bi bi-printer"></i>
+															</a>
+														{% else %}
+															<a href="{% url 'generic_pdf' pk=objeto.pk %}" 
+																target="_blank"
+																class="btn btn-outline-secondary btn-sm btn-print boton-oculto"
+																data-bs-toggle="tooltip" 
+																data-bs-placement="top" 
+																title="Generar PDF"
+																style="font-size: 70%; padding: 0.1rem 0.3rem;">
+																<i class="bi bi-printer"></i>
+															</a>
+														{% endif %}
+														
+													</td>
+												</tr>
+											{% endfor %}
+										</tbody>
+									</table>
+									<!-- Final Tabla de Maestro -->
+								</div>
+
+								{% block paginador %}
+									{% include 'paginador.html' %}
+								{% endblock paginador %}
+							</div>
 						</div>
+						
 					</div>
-					
-				</div>
-			</main>
-		</div>
+				</main>
+			</div>
 		{% endblock principalcomponent %}
 		<!-- Main principalcomponent End -->
 		

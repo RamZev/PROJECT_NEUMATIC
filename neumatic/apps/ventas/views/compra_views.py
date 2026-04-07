@@ -65,7 +65,7 @@ class CompraListView(MaestroDetalleListView):
 	]
 	
 	extra_context = {
-		"master_title": "Compras",
+		"master_title": "Compras - Remitos",
 		"home_view_name": home_view_name,
 		"list_view_name": list_view_name,
 		"create_view_name": create_view_name,

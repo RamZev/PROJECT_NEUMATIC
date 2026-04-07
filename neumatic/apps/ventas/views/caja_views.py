@@ -105,6 +105,7 @@ class CajaListView(MaestroListView):
         "delete_view_name": ConfigViews.delete_view_name,
         "table_headers": DataViewList.table_headers,
         "table_data": DataViewList.table_data,
+        "model_string": ConfigViews.model_string,
     }
 
 

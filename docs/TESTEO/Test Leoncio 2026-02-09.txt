@@ -132,8 +132,13 @@ Movimiento Interno.
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 - COMPRAS
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-Remitos
+· En el modelo ComprobanteCompra existen comprobantes: AJUSTE, DEVOLUCIÓN, FACTURA, NOTA DÉBITO, NOTA CRÉDITO, ORDEN PAGO pero sólo está contemplado la elaboración de
+  comprobantes: REMITOS, REMITOS INTERNOS, RETENCIONES.
 
+Remitos
+	1 - Permite modificar la letra del comprobante. Es correcto???
+	2 - Una vez creado el remito, al editarlo permite agregar más detalle. Al darle al botón "Actualizar" avisa que ya existe un docmprobante con ese número.
+	
 Retenciones
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

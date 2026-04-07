@@ -1,69 +1,88 @@
 # neumatic\apps\ventas\urls.py
 from django.urls import path
-from .views.factura_views import (FacturaListView, FacturaCreateView, 
-								FacturaUpdateView, FacturaDeleteView)
-
-from .views.factura2_views import (FacturaManualListView, FacturaManualCreateView, 
-								FacturaManualUpdateView, FacturaManualDeleteView)
-
-from .views.factura3_views import (PresupuestoListView, PresupuestoCreateView, 
-								PresupuestoUpdateView, PresupuestoDeleteView)
-
-from .views.factura4_views import (MovimientoInternoListView, MovimientoInternoCreateView, 
-								MovimientoInternoUpdateView, MovimientoInternoDeleteView)	
-
-from .views.recibo_views import (ReciboListView, ReciboCreateView, 
-								ReciboUpdateView, ReciboDeleteView)
-
+from .views.factura_views import (
+	FacturaListView,
+	FacturaCreateView,
+	FacturaUpdateView,
+	FacturaDeleteView
+)
+from .views.factura2_views import (
+	FacturaManualListView,
+	FacturaManualCreateView,
+	FacturaManualUpdateView,
+	FacturaManualDeleteView
+)
+from .views.factura3_views import (
+	PresupuestoListView,
+	PresupuestoCreateView,
+	PresupuestoUpdateView,
+	PresupuestoDeleteView
+)
+from .views.factura4_views import (
+	MovimientoInternoListView,
+	MovimientoInternoCreateView,
+	MovimientoInternoUpdateView,
+	MovimientoInternoDeleteView
+)
+from .views.recibo_views import (
+	ReciboListView,
+	ReciboCreateView,
+	ReciboUpdateView,
+	ReciboDeleteView
+)
 from .views.compra_views import (
 	CompraListView,
 	CompraCreateView,
 	CompraUpdateView,
-	CompraDeleteView)
-
+	CompraDeleteView
+)
 from .views.caja_views import (
 	CajaListView,
 	CajaCreateView,
 	CajaUpdateView,
-	CajaDeleteView)
-
+	CajaDeleteView
+)
 from .views.caja_detalle_views import (
     CajaDetalleListView, 
 	CajaDetalleCreateView,
 	CajaDetalleUpdateView,
-	CajaDetalleDeleteView)
-
-
-from .views.consultas_factura_views import (buscar_agenda, 
-											buscar_producto,
-											buscar_cliente,
-											validar_documento,
-											detalle_producto,
-											datos_comprobante,
-											obtener_numero_comprobante,
-											obtener_numero_comprobante2,
-											obtener_numero_comprobante3,
-											validar_vencimientos_cliente,
-											validar_deudas_cliente,
-											valida_autorizacion,
-											verificar_remito,
-											buscar_banco,
-											buscar_codigo_banco,
-											obtener_libro_iva,
-											buscar_factura)
-
-from .views.consultas_compra_views import (obtener_numero_compra, 
-										obtener_alicuota_proveedor)
-
+	CajaDetalleDeleteView
+)
+from .views.consultas_factura_views import (
+	buscar_agenda, 
+	buscar_producto,
+	buscar_cliente,
+	validar_documento,
+	detalle_producto,
+	datos_comprobante,
+	obtener_numero_comprobante,
+	obtener_numero_comprobante2,
+	obtener_numero_comprobante3,
+	validar_vencimientos_cliente,
+	validar_deudas_cliente,
+	valida_autorizacion,
+	verificar_remito,
+	buscar_banco,
+	buscar_codigo_banco,
+	obtener_libro_iva,
+	buscar_factura
+)
+from .views.consultas_compra_views import (
+	obtener_numero_compra,
+	obtener_alicuota_proveedor
+)
 from .views.crear_agenda import crear_agenda
 from .views.genera_pdf import GeneraPDFView
 from .views.fe_afiparca_views import fe_dummy
 
 from .views.compra_retencion_views import (
-	CompraRetencionListView, CompraRetencionCreateView,
-	CompraRetencionUpdateView, CompraRetencionDeleteView
+	CompraRetencionListView,
+	CompraRetencionCreateView,
+	CompraRetencionUpdateView,
+	CompraRetencionDeleteView
 )
 from .views.pdf_retenciones import PDFRetencionView
+
 
 urlpatterns = [
 	path('factura/listar/', FacturaListView.as_view(), name='factura_list'),
@@ -95,6 +114,7 @@ urlpatterns = [
 	path('recibo/editar/<int:pk>/', ReciboUpdateView.as_view(), name='recibo_update'),
 	path('recibo/eliminar/<int:pk>/', ReciboDeleteView.as_view(), name='recibo_delete'),
 	
+	#-- Compra - Remitos.
 	path('compra/listar/', CompraListView.as_view(), name='compra_list'),
 	path('compra/crear/', CompraCreateView.as_view(), name='compra_create'),
 	path('compra/editar/<int:pk>/', CompraUpdateView.as_view(), name='compra_update'),
