@@ -132,37 +132,28 @@
 														<button type="button" class="btn btn-outline-primary btn-sm btn-edit boton-oculto" data-form-index="{{ forloop.counter0 }}"
 																onclick="window.location.href='{% url update_view_name objeto.pk %}'" 
 																data-bs-toggle="tooltip" data-bs-placement="top" title="Actualizar Registro"
-																style="font-size: 80%; padding: 0.3rem 0.6rem;">
-															<i class="fa fa-edit"></i>
+																style="font-size: 70%; padding: 0.1rem 0.3rem;">
+															<i class="bi bi-pencil-square"></i>
 														</button>
 														
 														<!-- Botón Eliminar -->
 														<button type="button" class="btn btn-outline-danger btn-sm btn-delete boton-oculto" 
 																data-bs-toggle="modal" title="Eliminar Registro" data-bs-target="#deleteModal" 
 																data-bs-whatever-url="{% url delete_view_name objeto.pk %}" data-bs-whatever-name="{{ objeto }}"
-																style="font-size: 80%; padding: 0.3rem 0.6rem;">
-															<i class="fa fa-trash-alt"></i>
+																style="font-size: 70%; padding: 0.1rem 0.3rem;">
+															<i class="bi bi-trash"></i>
 														</button>
-														
-														{% comment %}
-														<!-- Botón Ver -->
-														<button type="button" class="btn btn-outline-success btn-sm btn-view boton-oculto"
-																data-bs-toggle="tooltip" data-bs-placement="top" title="Ver Registro"
-																style="font-size: 80%; padding: 0.3rem 0.6rem;">
-															<i class="fa fa-eye"></i>
-														</button>
-														{% endcomment %}
 														
 														<!-- Botón Imprimir PDF -->
 														{% if model_string != 'caja' and model_string != 'caja_detalle' %}
 															<a href="{% url 'pdf_retencion' pk=objeto.pk %}" 
-																target="_blank"
-																class="btn btn-outline-secondary btn-sm btn-print boton-oculto"
-																data-bs-toggle="tooltip" 
-																data-bs-placement="top" 
-																title="Generar PDF"
-																style="font-size: 80%; padding: 0.3rem 0.6rem;">
-																	<i class="bi bi-printer"></i>
+																	target="_blank"
+																	class="btn btn-outline-secondary btn-sm btn-print boton-oculto"
+																	data-bs-toggle="tooltip" 
+																	data-bs-placement="top" 
+																	title="Generar PDF"
+																	style="font-size: 70%; padding: 0.1rem 0.3rem;">
+																<i class="bi bi-printer"></i>
 															</a>
 														{% endif %}
 														
@@ -179,7 +170,7 @@
 								{% endblock paginador %}
 							</div>
 						</div>
-						{{ model_string }}
+						
 					</div>
 				</main>
 			</div>

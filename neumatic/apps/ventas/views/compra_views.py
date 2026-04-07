@@ -48,7 +48,7 @@ class CompraListView(MaestroDetalleListView):
 		'letra_comprobante': (1, 'Letra'),
 		'numero_comprobante': (1, 'Nro Comp'),
 		'fecha_comprobante': (1, 'Fecha'),
-		'id_proveedor': (3, 'Proveedor'),
+		'id_proveedor': (4, 'Proveedor'),
 		'total': (2, 'Total'),
 		'opciones': (1, 'Opciones'),
 	}
