@@ -2,8 +2,8 @@
 from django.http import JsonResponse
 from django.views.decorators.http import require_GET
 from afip import Afip
-from zeep import Client
-from zeep.exceptions import Fault
+# from zeep import Client
+# from zeep.exceptions import Fault
 import json
 
 @require_GET
@@ -11,6 +11,9 @@ def fe_dummy(request):
     """
     Verifica el estado de la infraestructura de AFIP mediante el método FEDummy.
     """
+    from zeep import Client
+    from zeep.exceptions import Fault
+
     # Configuración del entorno
     environment = request.GET.get('environment', 'homologacion')
     

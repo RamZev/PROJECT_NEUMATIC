@@ -1,5 +1,4 @@
 BEGIN TRANSACTION;
-INSERT INTO "usuarios_user" VALUES (1,'pbkdf2_sha256$870000$wy7jpR1jfhG06WIjodGEB8$tTwlty8d50QvYGZb6nFIT6jBzjaJKHHkQuOE5iy1zok=','2026-03-31 11:27:56.786187',1,'admin','','',1,1,'2026-03-06 00:30:07.650876','mario@maasoft.com.ar',NULL,NULL,NULL,'Z',0,2,2,1);
 INSERT INTO "usuarios_user" VALUES (3,'pbkdf2_sha256$870000$VxZxUdecBPWNbdOC2NT0O8$v+2pfRIJfBuYNid3z/yeQoHutMVLMS3kIVEOCaNDC94=','2025-10-31 21:31:20.829689',0,'juan','Juan','',0,1,'2025-10-30 01:20:56','123@gmail.com',NULL,NULL,'J','Z',0,2,2,59);
 INSERT INTO "usuarios_user" VALUES (4,'pbkdf2_sha256$870000$2FjwXmFRoOyPNKXGLMzfB7$ceZt+VBs4p2mZn3Y6il7yrc0KBKgTWy0e99vOYnBRNk=','2025-10-31 22:47:15.940314',0,'alberto','Alberto','García',0,1,'2025-10-30 01:25:10','albertogarcia@gmail.com',NULL,NULL,'AG','Z',0,1,2,146);
 INSERT INTO "usuarios_user" VALUES (5,'pbkdf2_sha256$870000$l40YysYnE3ID1ZZIOPsfAj$Aaxjq1481WTHcFDe7lwbOFcCqFVgDv/WmURd/x7EAy0=','2025-10-31 22:31:58.343834',0,'maria','Maria','Diaz',0,1,'2025-10-31 21:51:50.381092','ramosric1410@gmail.com',NULL,NULL,'MD','Z',0,2,2,NULL);
