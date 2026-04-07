@@ -103,12 +103,30 @@ class CompraRetencionListView(MaestroListView):
 		"table_headers": DataViewList.table_headers,
 		"table_data": DataViewList.table_data,
 	}
-
+	
 	def get_queryset(self):
-		#-- Filtrar Compra por comprobantes con código en ["IB", "RG", "RI"].
-		return Compra.objects.filter(
-			id_comprobante_compra__codigo_comprobante_compra__in=["IB", "RG", "RI"]
-		).order_by(*self.ordering)
+		queryset = super().get_queryset()
+		user = self.request.user
+		
+		#-- Filtrar Compra por retenciones.
+		queryset = queryset.filter(id_comprobante_compra__retencion=True)
+		
+		#-- Filtrar por sucursal si no es superusuario.
+		if not user.is_superuser:
+			queryset = queryset.filter(id_sucursal=user.id_sucursal)
+		
+		#-- Aplicar búsqueda si hay un término de búsqueda.
+		query = self.request.GET.get('busqueda')
+		if query:
+			search_conditions = Q()
+			for field in self.search_fields:
+				search_conditions |= Q(**{f"{field}__icontains": query})
+			
+			queryset = queryset.filter(search_conditions)
+			
+		queryset = queryset.order_by(*self.ordering)
+		
+		return queryset
 
 
 class CompraRetencionCreateView(MaestroCreateView):

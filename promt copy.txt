@@ -110,6 +110,8 @@ Preguntas:
 *- En el reporte Remitos Pendientes estoy mostrando los presupuestos que no afectan el Stock y se muestra el Total en 0 (cero).
    Se deben mostrar o solo los comprobantes cuyo total sea diferente a cero?
 
+- En el Reporte de Resumen de Cta. Cte. filtrado por "Resumen de Cuenta Pendiente" en el sistema nuevo obliga indicar un cliente, en VFP no.
+
 
 ##################################################################################################################################
 ##################################################################################################################################

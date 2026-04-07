@@ -25,7 +25,7 @@ CREATE VIEW "VLSaldosClientes" AS
 		factura f 
 		JOIN cliente c ON f.id_cliente_id = c.id_cliente 
 		JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta 
-		JOIN localidad l ON c.id_localidad_id = l.id_localidad
+		LEFT JOIN localidad l ON c.id_localidad_id = l.id_localidad
 	WHERE 
 		f.condicion_comprobante = 2
 		AND cv.mult_saldo <> 0;

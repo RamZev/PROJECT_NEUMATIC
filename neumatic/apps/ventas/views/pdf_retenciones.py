@@ -24,10 +24,10 @@ class PDFRetencionView(View):
 	def get(self, request, pk):
 		comprobante = Compra.objects.filter(pk=pk).first()
 		
-		if comprobante.id_comprobante_compra.nombre_impresion == "RETENCION":
+		if comprobante.id_comprobante_compra.retencion:
 			return self._generar_pdf_retencion(comprobante)
 		
-		elif comprobante.id_comprobante_compra.nombre_impresion == "REMITO":
+		elif comprobante.id_comprobante_compra.remito:
 			return self._generar_pdf_remito(comprobante)
 		
 	def _generar_pdf_retencion(self, retencion):
