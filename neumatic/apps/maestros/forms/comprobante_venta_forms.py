@@ -22,8 +22,8 @@ class ComprobanteVentaForm(CrudGenericForm):
 				forms.TextInput(attrs={**formclasstext, 'oninput': 'this.value = this.value.toUpperCase()'}),
 			'nombre_comprobante_venta': 
 				forms.TextInput(attrs={**formclasstext, 'oninput': 'this.value = this.value.toUpperCase()'}),
-			'nombre_impresion': 
-				forms.TextInput(attrs={**formclasstext}),
+			# 'nombre_impresion': 
+			# 	forms.TextInput(attrs={**formclasstext}),
 			'tipo_comprobante': 
 				forms.Select(attrs={**formclassselect}),
 			'mult_venta': 

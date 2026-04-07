@@ -2,19 +2,15 @@
 from django.views import View
 from django.http import HttpResponse
 from django.conf import settings
-from datetime import date, datetime
+from datetime import date
 
 from os import path
 from io import BytesIO
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import portrait, A4
-from reportlab.lib import colors
-from reportlab.platypus import Table, TableStyle, Paragraph
-from reportlab.lib.styles import ParagraphStyle
-from reportlab.lib.enums import TA_LEFT, TA_RIGHT
 from reportlab.lib.units import mm
 
-from ..models.compra_models import Compra, DetalleCompra
+from ..models.compra_models import Compra
 from apps.maestros.models.empresa_models import Empresa
 from utils.utils import formato_argentino
 
@@ -22,15 +18,10 @@ from utils.utils import formato_argentino
 class PDFRetencionView(View):
 	
 	def get(self, request, pk):
-		comprobante = Compra.objects.filter(pk=pk).first()
-		
-		if comprobante.id_comprobante_compra.nombre_impresion == "RETENCION":
-			return self._generar_pdf_retencion(comprobante)
-		
-		elif comprobante.id_comprobante_compra.nombre_impresion == "REMITO":
-			return self._generar_pdf_remito(comprobante)
-		
-	def _generar_pdf_retencion(self, retencion):
+		retencion = Compra.objects.filter(pk=pk).first()
+		return self.generar_pdf_retencion(retencion)
+	
+	def generar_pdf_retencion(self, retencion):
 		#-- Obtener datos principales.
 		empresa = Empresa.objects.first()
 		proveedor = retencion.id_proveedor
@@ -314,216 +305,5 @@ class PDFRetencionView(View):
 		buffer.seek(0)
 		response = HttpResponse(buffer, content_type='application/pdf')
 		file = f"Retencion_{retencion.compro}_{retencion.letra_comprobante}_{retencion.numero_comprobante_formateado if retencion.numero_comprobante else ''}"
-		response['Content-Disposition'] = f'inline; filename="{file}.pdf"'
-		return response
-	
-	def _generar_pdf_remito(self, remito):
-		"""Se generan Remitos Sin formato para imprimir en formatos pre-impresos."""
-		
-		#-- Obtener datos principales.
-		detalle_remito = DetalleCompra.objects.filter(id_compra=remito)
-		
-		proveedor = remito.id_proveedor
-		
-		buffer = BytesIO()
-		c = canvas.Canvas(buffer, pagesize=portrait(A4))
-		width, height = portrait(A4)
-		margin = 10*mm
-		
-		#-- Posicionamiento inicial.
-		y_position = height - margin
-		
-		#-- Ajuste inicial
-		y_position -= 24*mm
-		
-		#-- Mostrar datos del Remito en la parte derecha.
-		x_datos_remito = 150*mm
-		
-		c.setFont("Helvetica-Bold", 12)
-		nombre_comprobante = remito.id_comprobante_compra.nombre_impresion if remito.id_comprobante_compra.nombre_impresion else remito.id_comprobante_compra.nombre_comprobante_compra
-		c.drawString(x_datos_remito, y_position, nombre_comprobante)
-		
-		c.setFont("Helvetica-Bold", 10)
-		y_position -= 10*mm
-		c.drawString(x_datos_remito, y_position, f"{datetime.now().strftime("%d/%m/%Y %I:%M:%S %p")}")
-		
-		
-		#-- Datos del Proveedor. -------------------------------------------------------------------------------
-		x_text_left = margin + 5*mm
-		x_data_left = x_text_left + 11*mm
-		x_text_right = 95*mm
-		x_data_right = x_text_right + 1*mm
-		
-		y_position -= 26*mm
-		font_size = 9
-		paragraph_style = ParagraphStyle(
-			name='Normal',
-			fontName='Helvetica',
-			fontSize=font_size,
-			leading=10,
-			textColor=colors.black,
-		)
-		
-		c.setFont("Helvetica-Bold", font_size)
-		c.drawString(x_text_left, y_position, "Cuenta")
-		c.setFont("Helvetica", font_size)
-		c.drawString(x_data_left, y_position, f": {proveedor.id_proveedor}")
-		c.setFont("Helvetica-Bold", font_size)
-		c.drawRightString(x_text_right, y_position, "Ap. y Nombre/Razón Social:")
-		c.setFont("Helvetica", font_size)
-		
-		parrafo_proveedor = Paragraph(f"{proveedor.nombre_proveedor}", paragraph_style)
-		max_width = 100*mm
-		w, h = parrafo_proveedor.wrap(max_width, 20*mm)
-		line_height = font_size  # o paragraph_style.leading
-		parrafo_proveedor.drawOn(c, x_data_right, y_position - (h - line_height))
-		
-		y_position = y_position - h - 2
-		c.setFont("Helvetica-Bold", font_size)
-		c.drawString(x_text_left, y_position, "I.V.A.")
-		c.setFont("Helvetica", font_size)
-		c.drawString(x_data_left, y_position, f": {proveedor.id_tipo_iva.nombre_iva if proveedor.id_tipo_iva else ''}")
-		c.setFont("Helvetica-Bold", font_size)
-		c.drawRightString(x_text_right, y_position, "Domicilio:")
-		c.setFont("Helvetica", font_size)
-		c.drawString(x_data_right, y_position, f" {proveedor.domicilio_proveedor}")
-		
-		y_position -= 4*mm
-		c.setFont("Helvetica-Bold", font_size)
-		# c.drawString(x_text_left, y_position, proveedor.nombre_tipo_documento_identidad)
-		c.drawString(x_text_left, y_position, "C.U.I.T.")
-		c.setFont("Helvetica", font_size)
-		c.drawString(x_data_left, y_position, f": {proveedor.cuit_formateado}")
-		c.setFont("Helvetica-Bold", font_size)
-		c.drawRightString(x_text_right, y_position, "Localidad:")
-		c.setFont("Helvetica", font_size)
-		c.drawString(x_data_right, y_position, f" {proveedor.id_localidad} - {proveedor.id_provincia}")
-		
-		#-- Imprimir el detalle del comprobante. -------------------------------------------------------------
-		
-		#-- Estilo de párrafo para la tabla.
-		paragraph_style_normal = ParagraphStyle(
-			name='Normal',
-			fontName='Helvetica',
-			fontSize=7,
-			leading=8,
-			textColor=colors.black,
-			alignment=TA_LEFT,
-		)
-		
-		#-- Información de las columnas de la tabla.
-		table_info = [
-			("CAI", 25*mm),
-			("Medida", 30*mm),
-			("Descripción", 120*mm),
-			("Cantidad", 15*mm),
-		]
-		
-		#-- Establecer estilos iniciales de la tabla
-		table_style = [
-			#-- Estilo general.
-			('FONTSIZE', (0, 0), (-1, -1), 7),
-			('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
-			('TOPPADDING', (0, 0), (-1, -1), 0),
-			('BOTTOMPADDING', (0, 0), (-1, -1), 0),
-			('LEADING', (0, 0), (-1, -1), 8),
-			
-			#-- Estilo Headers.
-			# ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor("#BDBDBD")),  # Gris claro para el encabezado
-			# ('TEXTCOLOR', (0, 0), (-1, 0), colors.black),
-			# ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-			# ('TOPPADDING', (0, 0), (-1, 0), 3),
-			# ('BOTTOMPADDING', (0, 0), (-1, 0), 3),
-			# #-- Solo borde exterior del header:
-			# ('LINEABOVE', (0, 0), (-1, 0), 0.5, colors.black),
-			# ('LINEBELOW', (0, 0), (-1, 0), 0.5, colors.black),
-			# ('LINEBEFORE', (0, 0), (0, 0), 0.5, colors.black),
-			# ('LINEAFTER', (-1, 0), (-1, 0), 0.5, colors.black),
-			
-			#-- Estilo específicos.
-			('ALIGN', (3, 0), (-1, -1), 'RIGHT'),
-			# ('TOPPADDING', (0, 1), (-1, -1), 2),
-		]
-		
-		#-- Extraer encabezados y ancho de columnas.
-		headers = [header for header, width in table_info]
-		col_widths = [width for header, width in table_info]
-		
-		#-- Tabla Sin Encabezados.
-		detail_data = []
-		
-		#-- Establecer un contador de filas agregadas a la tabla (empezando en 0 porque no hay header).
-		current_row = 0
-		
-		#-- Agregar los datos a la tabla.
-		for detalle in detalle_remito:
-			detail_data.append([
-				Paragraph(str(detalle.id_producto.id_cai if detalle.id_producto and detalle.id_producto.id_cai else ""), style=paragraph_style_normal),
-				str(detalle.id_producto.medida if detalle.id_producto else ""),
-				Paragraph(str(detalle.id_producto.nombre_producto if detalle.id_producto else ""), style=paragraph_style_normal),
-				formato_argentino(detalle.cantidad)
-			])
-			current_row += 1
-			if detalle.id_producto.despacho_1 or detalle.id_producto.despacho_2:
-				numero_despacho = detalle.id_producto.despacho_1 if detalle.id_producto.despacho_1 else detalle.id_producto.despacho_2
-				detail_data.append([
-					"",
-					"",
-					f"Nº Despacho: {numero_despacho}",
-					"",
-					"",
-					"",
-					"",
-					""
-				])
-				current_row += 1
-		
-		#-- Agregar una línea de detalle en blaco como separador.
-		detail_data.append([
-			"",
-			"",
-			"",
-			""
-		])
-		current_row += 1
-		
-		#-- Agregar Observaciones si las tiene.
-		if remito.observa_comprobante:
-			detail_data.append([
-				Paragraph(f"Observaciones: {remito.observa_comprobante}", style=paragraph_style_normal),
-				"",
-				"",
-				""
-			])
-			
-			#-- Aplicar estilos a la fila actual.
-			table_style.extend([
-				('SPAN', (0,current_row), (-1,current_row)),
-			])
-			current_row += 1
-		
-		#-- Crear la tabla con sus parámetros.
-		tabla = Table(detail_data, colWidths=col_widths, style=table_style, repeatRows=1)
-		
-		#-- Dibujar tabla.
-		y_table = height - 100*mm  # posición fija debajo del recuadro proveedor
-		tabla.wrapOn(c, width - 2*margin, height)
-		tabla.drawOn(c, margin, y_table - tabla._height)
-		
-		#-- Depósito y Nro. Control. ---------
-		y_position = 35*mm
-		c.setFont("Helvetica", 7)
-		c.drawString(x_text_left, y_position, f"Depósito: {remito.id_deposito.id_producto_deposito}")
-		
-		y_position -= 4*mm
-		c.drawString(x_text_left, y_position, f"Control: {remito}")
-		#-------------------------------------
-		
-		c.showPage()
-		c.save()
-		
-		buffer.seek(0)
-		response = HttpResponse(buffer, content_type='application/pdf')
-		file = f"{remito.compro}_{remito.letra_comprobante}_{remito.numero_comprobante_formateado}"
 		response['Content-Disposition'] = f'inline; filename="{file}.pdf"'
 		return response

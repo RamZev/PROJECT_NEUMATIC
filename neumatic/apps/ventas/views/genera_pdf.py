@@ -32,6 +32,7 @@ class GeneraPDFView(View):
 	def get(self, request, pk):
 		
 		comprobante = Factura.objects.filter(pk=pk).first()
+		compro = comprobante.id_comprobante_venta.codigo_comprobante_venta
 		electronicos = ("FF", "CF", "DF", "FR", "FC", "CE", "DE", "FT")
 		manuales = ("FA", "NC", "ND")
 		presupuestos = ("PR",)
@@ -40,16 +41,16 @@ class GeneraPDFView(View):
 		recibos = ("RB", "RR", "RC", "RE", "RS", "RN")
 		remitos = ("RF", "RD", "RT", "RM", "DM", "MR", "MD", "MS", "MM", "MI")
 		
-		if comprobante.compro in facturas:
-			return self.generar_pdf_factura(comprobante)
+		if compro in facturas:
+			return self._generar_pdf_factura(comprobante)
 		
-		elif comprobante.compro in recibos:
-			return self.generar_pdf_recibo(comprobante)
+		elif compro in recibos:
+			return self._generar_pdf_recibo(comprobante)
 		
-		elif comprobante.compro in remitos:
-			return self.generar_pdf_remito(comprobante)
+		elif compro in remitos:
+			return self._generar_pdf_remito(comprobante)
 	
-	def generar_pdf_factura(self, factura):
+	def _generar_pdf_factura(self, factura):
 		#-- Obtener datos principales.
 		detalles = DetalleFactura.objects.filter(id_factura=factura)
 		
@@ -597,7 +598,7 @@ class GeneraPDFView(View):
 		response['Content-Disposition'] = f'inline; filename="{file}.pdf"'
 		return response
 	
-	def generar_pdf_recibo(self, recibo):
+	def _generar_pdf_recibo(self, recibo):
 		#-- Obtener datos principales.
 		detalle_recibo = DetalleRecibo.objects.filter(id_factura=recibo)
 		retenciones = RetencionRecibo.objects.filter(id_factura=recibo)
@@ -911,7 +912,7 @@ class GeneraPDFView(View):
 		response['Content-Disposition'] = f'inline; filename="{file}.pdf"'
 		return response
 	
-	def generar_pdf_remito(self, remito):
+	def _generar_pdf_remito(self, remito):
 		"""Se generan Remitos Sin formato para imprimir en formatos pre-impresos."""
 		#-- Obtener datos principales.
 		detalle_remito = DetalleFactura.objects.filter(id_factura=remito)
