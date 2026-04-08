@@ -8,7 +8,14 @@ import re
 
 from utils.validator.validaciones import validar_cuit
 from .base_gen_models import ModeloBaseGenerico
-from entorno.constantes_base import ESTATUS_GEN, CONDICION_PAGO, TIPO_CUENTA, TIPO_COMPROBANTE, TIPO_NUMERACION
+from entorno.constantes_base import (
+	ESTATUS_GEN,
+	CONDICION_PAGO,
+	TIPO_CUENTA,
+	TIPO_COMPROBANTE,
+	TIPO_COMPROBANTE_COMPRA,
+	TIPO_NUMERACION
+)
 
 
 class Actividad(ModeloBaseGenerico):
@@ -632,7 +639,9 @@ class ComprobanteCompra(ModeloBaseGenerico):
 	nombre_impresion = models.CharField(
 		verbose_name="Nombre Impresión",
 		max_length=20,
-		default=""
+		null=True,
+		blank=True,
+		choices=TIPO_COMPROBANTE_COMPRA
 	)
 	mult_compra = models.IntegerField(
 		verbose_name="Mult. Compra"
@@ -695,6 +704,9 @@ class ComprobanteCompra(ModeloBaseGenerico):
 		
 		if not self.codigo_comprobante_compra.isupper():
 			errors.update({'codigo_comprobante_compra': 'Debe ingresar solo mayúsculas.'})
+		
+		if not self.nombre_impresion:
+			errors.update({'nombre_impresion': 'Debe indicar un Nombre de Impresión.'})
 		
 		if self.mult_compra != -1 and self.mult_compra != 0 and self.mult_compra != 1:
 			errors.update({"mult_compra": "Los valores permitidos son: -1, 0 y 1"})

@@ -2,7 +2,7 @@
 from django import forms
 from .crud_forms_generics import CrudGenericForm
 from ..models.base_models import ComprobanteVenta
-from diseno_base.diseno_bootstrap import(
+from diseno_base.diseno_bootstrap import (
 	formclasstext,
 	formclassselect,
 	formclasscheck
@@ -22,8 +22,6 @@ class ComprobanteVentaForm(CrudGenericForm):
 				forms.TextInput(attrs={**formclasstext, 'oninput': 'this.value = this.value.toUpperCase()'}),
 			'nombre_comprobante_venta': 
 				forms.TextInput(attrs={**formclasstext, 'oninput': 'this.value = this.value.toUpperCase()'}),
-			# 'nombre_impresion': 
-			# 	forms.TextInput(attrs={**formclasstext}),
 			'tipo_comprobante': 
 				forms.Select(attrs={**formclassselect}),
 			'mult_venta': 

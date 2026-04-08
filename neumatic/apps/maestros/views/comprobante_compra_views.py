@@ -63,15 +63,15 @@ class DataViewList():
 	
 	table_headers = {
 		'estatus_comprobante_compra': (1, 'Estatus'),
-		'nombre_comprobante_compra': (3, 'Nombre Comprobante'),
-		'codigo_comprobante_compra': (1, 'Cód. Comprobante'),
+		'nombre_comprobante_compra': (4, 'Nombre Comprobante'),
+		'codigo_comprobante_compra': (1, 'Código'),
 		'codigo_afip_a': (1, 'Cód. AFIP A'),
 		'codigo_afip_b': (1, 'Cód. AFIP B'),
 		'libro_iva': (1, 'Libro IVA'),
 		'remito': (1, 'Remito'),
 		'retencion': (1, 'Retención'),
 		
-		'acciones': (2, 'Acciones'),
+		'acciones': (1, 'Acciones'),
 	}
 	
 	table_data = [

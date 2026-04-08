@@ -42,7 +42,7 @@
 			
 			{% for obj in objetos %}
 				<tr>
-					<td>{{ obj.nombre_provincia }}</td>
+					<td>{{ obj.nombre_provincia|default:"-" }}</td>
 					<td class="numeric">{{ obj.gravado|formato_es_ar }}</td>
 					<td class="numeric">{{ obj.exento|formato_es_ar }}</td>
 					<td class="numeric">{{ obj.iva|formato_es_ar }}</td>
