@@ -2,7 +2,7 @@
 from django import forms
 from .crud_forms_generics import CrudGenericForm
 from ..models.base_models import ComprobanteCompra
-from diseno_base.diseno_bootstrap import(
+from diseno_base.diseno_bootstrap import (
 	formclasstext,
 	formclassselect,
 	formclasscheck
@@ -23,7 +23,7 @@ class ComprobanteCompraForm(CrudGenericForm):
 			'nombre_comprobante_compra': 
 				forms.TextInput(attrs={**formclasstext, 'oninput': 'this.value = this.value.toUpperCase()'}),
 			'nombre_impresion': 
-				forms.TextInput(attrs={**formclasstext}),
+				forms.Select(attrs={**formclassselect}),
 			'mult_compra': 
 				forms.NumberInput(attrs={**formclasstext, 'min': -1, 'max': 1}),
 			'mult_saldo': 

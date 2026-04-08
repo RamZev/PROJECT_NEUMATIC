@@ -71,7 +71,7 @@ class DataViewList():
 		'pendiente': (1, 'Pend.'),
 		'remito': (1, 'Remito'),
 		'recibo': (1, 'Recibo'),
-		'acciones': (2, 'Acciones'),
+		'acciones': (1, 'Acciones'),
 	}
 	
 	table_data = [
