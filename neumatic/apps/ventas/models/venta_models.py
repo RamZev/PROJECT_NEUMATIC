@@ -26,14 +26,16 @@ class StockCliente(ModeloBaseGenerico):
 		max_digits=7,
 		decimal_places=2,
 		null=True,
-		blank=True
+		blank=True,
+		default=0.0
 	)
 	retirado = models.DecimalField(
 		verbose_name="Retiro",
 		max_digits=7,
 		decimal_places=2,
 		null=True,
-		blank=True
+		blank=True,
+		default=0.0
 	)
 	fecha_retiro = models.DateField(
 		verbose_name="Fecha Retiro",

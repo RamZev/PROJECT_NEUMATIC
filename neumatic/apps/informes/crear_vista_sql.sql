@@ -394,8 +394,8 @@ CREATE VIEW "VLIVAVentasProvincias" AS
 		factura f
 		JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
 		JOIN cliente c ON f.id_cliente_id = c.id_cliente
-		JOIN localidad l ON c.id_localidad_id = l.id_localidad
-		JOIN provincia p ON l.id_provincia_id = p.id_provincia
+		LEFT JOIN localidad l ON c.id_localidad_id = l.id_localidad
+		LEFT JOIN provincia p ON l.id_provincia_id = p.id_provincia
 	WHERE
 		cv.libro_iva;
 
@@ -422,8 +422,8 @@ CREATE VIEW "VLIVAVentasSitrib" AS
 		JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
 		JOIN cliente c ON f.id_cliente_id = c.id_cliente
 		JOIN tipo_iva ti ON c.id_tipo_iva_id = ti.id_tipo_iva
-		JOIN localidad l ON c.id_localidad_id = l.id_localidad
-		JOIN provincia p ON l.id_provincia_id = p.id_provincia
+		LEFT JOIN localidad l ON c.id_localidad_id = l.id_localidad
+		LEFT JOIN provincia p ON l.id_provincia_id = p.id_provincia
 	WHERE
 		cv.libro_iva;
 
@@ -721,7 +721,7 @@ CREATE VIEW "VLVentasResumenIB" AS
 		factura f
 		JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
 		JOIN cliente c ON f.id_cliente_id = c.id_cliente
-		JOIN provincia p ON c.id_provincia_id = p.id_provincia
+		LEFT JOIN provincia p ON c.id_provincia_id = p.id_provincia
 	WHERE
 		cv.libro_iva = True;
 
@@ -1001,7 +1001,7 @@ CREATE VIEW "VLEstadisticasVentasProvincia" AS
 		JOIN producto_marca m ON p.id_marca_id = m.id_producto_marca
 		JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
 		JOIN cliente c ON f.id_cliente_id = c.id_cliente
-		JOIN provincia pr ON c.id_provincia_id = pr.id_provincia
+		LEFT JOIN provincia pr ON c.id_provincia_id = pr.id_provincia
 	WHERE 
 		df.id_producto_id <> 0
 		AND cv.mult_estadistica <> 0
