@@ -1,5 +1,6 @@
 DROP VIEW IF EXISTS "main"."A";
 CREATE VIEW A AS SELECT "prueba";
+
 -- ---------------------------------------------------------------------------
 --  Saldos Clientes.
 --  Modelo: VLSaldosClientes
@@ -30,12 +31,11 @@ CREATE VIEW "VLSaldosClientes" AS
 		f.condicion_comprobante = 2
 		AND cv.mult_saldo <> 0;
 
+
 -- ---------------------------------------------------------------------------
 -- Resumen Cuenta Corriente.
 -- Modelo: VLResumenCtaCte
 -- ---------------------------------------------------------------------------
-DROP VIEW IF EXISTS "main"."VLResumenCtaCte";
-CREATE VIEW "VLResumenCtaCte" AS 
 	SELECT 
 		f.id_cliente_id, 
 		c.nombre_cliente AS razon_social, 
@@ -52,14 +52,26 @@ CREATE VIEW "VLResumenCtaCte" AS
 			ELSE 'Desconocido'
 		END AS condicion,
 		f.total * cv.mult_saldo AS total, 
-		f.entrega * cv.mult_saldo AS entrega, 
-		0 AS intereses
+		f.entrega * cv.mult_saldo AS entrega,
+		CASE
+			WHEN (f.total * cv.mult_saldo) >= 0 THEN (f.total * cv.mult_saldo) * 1.0
+			ELSE 0.0
+		END AS debe,
+		CASE
+			WHEN (f.total * cv.mult_saldo) < 0 THEN (f.total * cv.mult_saldo) * 1.0
+			ELSE 0.0
+		END AS haber,
+		0 AS intereses,
+		0 AS saldo_acumulado
 	FROM
 		factura f 
 		JOIN cliente c ON f.id_cliente_id = c.id_cliente
 		JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
 	WHERE
-		cv.mult_saldo <> 0;
+		cv.mult_saldo <> 0
+	ORDER BY
+		f.id_cliente_id, f.fecha_comprobante, f.numero_comprobante;
+
 
 -- ---------------------------------------------------------------------------
 -- Mercadería por Cliente.
