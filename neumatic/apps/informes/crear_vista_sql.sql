@@ -70,7 +70,7 @@ CREATE VIEW "VLSaldosClientes" AS
 	WHERE
 		cv.mult_saldo <> 0
 	ORDER BY
-		f.id_cliente_id, f.fecha_comprobante, f.numero_comprobante;
+		f.id_cliente_id, f.fecha_comprobante;
 
 
 -- ---------------------------------------------------------------------------

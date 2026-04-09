@@ -132,8 +132,6 @@ class ResumenCtaCteManager(models.Manager):
 				VLResumenCtaCte v
 			WHERE
 				v.id_cliente_id = %s AND v.total <> v.entrega
-			ORDER BY
-				v.fecha_comprobante, v.numero_comprobante
 		"""
 		
 		#-- Se añaden parámetros.
@@ -186,8 +184,6 @@ class ResumenCtaCteManager(models.Manager):
 				v.id_cliente_id = %s 
 				AND v.fecha_comprobante BETWEEN %s AND %s 
 				AND v.condicion_comprobante BETWEEN %s AND %s
-			ORDER BY
-				v.fecha_comprobante, v.numero_comprobante
 		"""
 		
 		#-- Se añaden parámetros.
