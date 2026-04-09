@@ -92,7 +92,8 @@ class ResumenCtaCteManager(models.Manager):
 				VLResumenCtaCte v 
 			WHERE
 				v.id_cliente_id = %s
-				AND v.fecha_comprobante < %s;
+				AND v.fecha_comprobante < %s
+				AND v.condicion_comprobante = 2;
 		"""
 		
 		#-- Ejecutar la consulta y extraer el valor.
@@ -131,7 +132,9 @@ class ResumenCtaCteManager(models.Manager):
 			FROM
 				VLResumenCtaCte v
 			WHERE
-				v.id_cliente_id = %s AND v.total <> v.entrega
+				v.id_cliente_id = %s
+				AND v.total <> v.entrega
+				AND v.condicion_comprobante = 2
 		"""
 		
 		#-- Se añaden parámetros.
@@ -176,7 +179,10 @@ class ResumenCtaCteManager(models.Manager):
 				v.entrega, 
 				v.debe, 
 				v.haber,
-				(v.debe + v.haber) AS saldo_movimiento,  -- Calculamos el saldo del movimiento directamente
+				CASE
+					WHEN v.condicion_comprobante = 2 THEN (v.debe + v.haber)
+					ELSE 0
+				END AS saldo_movimiento,
 				v.intereses
 			FROM
 				VLResumenCtaCte v
