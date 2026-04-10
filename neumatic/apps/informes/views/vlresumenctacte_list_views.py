@@ -178,7 +178,7 @@ class VLResumenCtaCteInformeView(InformeFormView):
 		saldo_anterior = 0
 		
 		param_left = {
-			"Cliente": cliente.nombre_cliente if cliente else "",
+			"Cliente": f"[{cliente.id_cliente}] {cliente.nombre_cliente}" if cliente else "",
 			"Domicilio": cliente.domicilio_cliente if cliente.domicilio_cliente else "",
 			"Cód. Postal": f"{cliente.codigo_postal}  {cliente.id_localidad.nombre_localidad if cliente.id_localidad else ""} - {cliente.id_provincia.nombre_provincia if cliente.id_provincia else ""}",
 			"Teléfono": cliente.telefono_cliente if cliente.telefono_cliente else "",
@@ -211,12 +211,8 @@ class VLResumenCtaCteInformeView(InformeFormView):
 			
 			
 			#-- Determinar Saldo Anterior.
-			saldo_anterior_queryset = VLResumenCtaCte.objects.obtener_saldo_anterior(id_cliente, fecha_desde)
+			saldo_anterior = VLResumenCtaCte.objects.obtener_saldo_anterior(id_cliente, fecha_desde)
 			
-			#-- Extraer el saldo desde el queryset.
-			saldo_anterior = next(iter(saldo_anterior_queryset), None).saldo_anterior if saldo_anterior_queryset else Decimal('0.0')
-			saldo_anterior = Decimal(saldo_anterior or 0.0)  # Conversión explícita
-		
 		#-- Obtener el saldo total desde el último registro del queryset.
 		saldo_total = queryset[-1].saldo_acumulado if queryset else 0
 		
@@ -247,9 +243,8 @@ class VLResumenCtaCteInformeView(InformeFormView):
 		#-- Se retorna un contexto que será consumido tanto para la vista en pantalla como para la generación del PDF.
 		return {
 			"objetos": objetos_serializables,
-			'saldo_total': saldo_total,
 			'intereses_total': intereses_total,
-			'total_general': saldo_anterior + saldo_total + intereses_total,
+			'total_general': saldo_total + intereses_total,
 			"saldo_anterior": saldo_anterior,
 			'observaciones': observaciones,
 			"parametros_i": param_left,

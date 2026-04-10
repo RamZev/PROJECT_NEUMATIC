@@ -77,123 +77,13 @@ class VLSaldosClientes(models.Model):
 # Resumen Cuenta Corriente.
 #-----------------------------------------------------------------------------
 class ResumenCtaCteManager(models.Manager):
-
-	def obtener_fact_pendientes(self, id_cliente):
-		""" Se determina los comprobantes pendientes de un cliente determinado. """
-		
-		#-- Se crea la consulta.
-		query = """
-			WITH acumulado AS (
-				SELECT 
-					id_cliente_id,
-					fecha_comprobante,
-					numero_comprobante,
-					(total - entrega) AS saldo, 
-					ROW_NUMBER() OVER (
-						PARTITION BY id_cliente_id 
-						ORDER BY fecha_comprobante, numero_comprobante
-					) AS row_num
-				FROM VLResumenCtaCte
-				WHERE id_cliente_id = %s AND total <> entrega
-			)
-			SELECT 
-				r.id_cliente_id, 
-				r.razon_social, 
-				r.nombre_comprobante_venta, 
-				r.letra_comprobante, 
-				r.numero_comprobante, 
-				r.numero, 
-				r.fecha_comprobante, 
-				r.remito, 
-				r.condicion_comprobante, 
-				r.condicion, 
-				r.total, 
-				r.entrega, 
-				CASE
-					WHEN r.total >= 0 THEN r.total * 1.0
-					ELSE 0.0
-				END AS debe,
-				CASE
-					WHEN r.total < 0 THEN r.total * 1.0
-					ELSE 0.0
-				END AS haber,
-				(
-					SELECT SUM(a.saldo)
-					FROM acumulado a
-					WHERE a.id_cliente_id = r.id_cliente_id
-					AND a.row_num <= (
-						SELECT row_num 
-						FROM acumulado 
-						WHERE id_cliente_id = r.id_cliente_id 
-						AND fecha_comprobante = r.fecha_comprobante
-						AND numero_comprobante = r.numero_comprobante
-					)
-				) AS saldo_acumulado,
-				r.intereses
-			FROM
-				VLResumenCtaCte r
-			WHERE
-				r.id_cliente_id = %s AND r.total <> r.entrega
-			ORDER BY
-				r.fecha_comprobante, r.numero_comprobante;
-		"""
-		
-		#-- Se añaden parámetros.
-		params = [id_cliente, id_cliente]
-		
-		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
-		return self.raw(query, params)
-	
-	def obtener_resumen_cta_cte(self, id_cliente, fecha_desde, fecha_hasta, condicion_venta1, condicion_venta2):
-		""" Determina el Resumen de Cuenta Corriente de un cliente y período determinados. """
-		
-		#-- Se crea la consulta.
-		query = """
-			SELECT 
-				id_cliente_id, 
-				razon_social, 
-				nombre_comprobante_venta, 
-				letra_comprobante, 
-				numero_comprobante, 
-				numero, 
-				fecha_comprobante, 
-				remito, 
-				condicion_comprobante, 
-				condicion, 
-				total, 
-				entrega, 
-				CASE
-					WHEN total >= 0 THEN total * 1.0
-					ELSE 0.0
-				END AS debe,
-				CASE
-					WHEN total < 0 THEN total * 1.0
-					ELSE 0.0
-				END AS haber,
-				SUM(total) OVER (
-					PARTITION BY id_cliente_id 
-					ORDER BY fecha_comprobante, numero_comprobante
-				) AS saldo_acumulado,
-				intereses
-			FROM
-				VLResumenCtaCte
-			WHERE
-				id_cliente_id = %s 
-				AND fecha_comprobante BETWEEN %s AND %s 
-				AND condicion_comprobante BETWEEN %s AND %s
-			ORDER BY
-				fecha_comprobante, numero_comprobante;
-		"""
-		
-		#-- Se añaden parámetros.
-		params = [id_cliente, fecha_desde, fecha_hasta, condicion_venta1, condicion_venta2]
-		
-		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
-		return self.raw(query, params)
 	
 	def obtener_saldo_anterior(self, id_cliente, fecha_desde):
 		""" Método que calcula y devuelve el saldo anterior a la fecha desde de un cliente dado. """
 		
+		from decimal import Decimal
+		
+		#-- Se crea la consulta.
 		query = """
 			SELECT 
 				v.id_cliente_id, 
@@ -202,14 +92,128 @@ class ResumenCtaCteManager(models.Manager):
 				VLResumenCtaCte v 
 			WHERE
 				v.id_cliente_id = %s
-				AND v.fecha_comprobante < %s;
+				AND v.fecha_comprobante < %s
+				AND v.condicion_comprobante = 2;
+		"""
+		
+		#-- Ejecutar la consulta y extraer el valor.
+		resultados = self.raw(query, [id_cliente, fecha_desde])
+		
+		#-- Extraer el primer valor del resultado.
+		for resultado in resultados:
+			return Decimal(str(resultado.saldo_anterior)) if resultado.saldo_anterior else Decimal('0.00')
+		
+		return Decimal('0.00')
+		
+	def obtener_fact_pendientes(self, id_cliente):
+		""" Se determina los comprobantes pendientes de un cliente determinado. """
+		
+		from decimal import Decimal
+		
+		#-- Se crea la consulta.
+		query = """
+			SELECT 
+				v.id_cliente_id, 
+				v.razon_social, 
+				v.nombre_comprobante_venta, 
+				v.letra_comprobante, 
+				v.numero_comprobante, 
+				v.numero, 
+				v.fecha_comprobante, 
+				v.remito, 
+				v.condicion_comprobante, 
+				v.condicion, 
+				v.total, 
+				v.entrega, 
+				v.debe, 
+				v.haber,
+				(v.debe + v.haber) AS saldo_movimiento,
+				v.intereses
+			FROM
+				VLResumenCtaCte v
+			WHERE
+				v.id_cliente_id = %s
+				AND v.total <> v.entrega
+				AND v.condicion_comprobante = 2
 		"""
 		
 		#-- Se añaden parámetros.
-		params = [id_cliente, fecha_desde]
+		params = [id_cliente]
 		
-		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
-		return self.raw(query, params)
+		#-- Se ejecuta la consulta.
+		resultados_raw = self.raw(query, params)
+		
+		resultados = []
+		saldo_acumulado = Decimal('0.00')
+		
+		for item in resultados_raw:
+			saldo_movimiento = Decimal(str(item.saldo_movimiento)) if hasattr(item, 'saldo_movimiento') and item.saldo_movimiento is not None else Decimal('0.00')
+			saldo_acumulado += saldo_movimiento
+			item.saldo_acumulado = saldo_acumulado
+			resultados.append(item)
+		
+		return resultados
+	
+	def obtener_resumen_cta_cte(self, id_cliente, fecha_desde, fecha_hasta, condicion_venta1, condicion_venta2):
+		""" Determina el Resumen de Cuenta Corriente de un cliente y período determinados. """
+		
+		from decimal import Decimal
+		
+		#-- Obtener el saldo anterior.
+		saldo_anterior = self.obtener_saldo_anterior(id_cliente, fecha_desde)
+		
+		#-- Se crea la consulta.
+		query = """
+			SELECT 
+				v.id_cliente_id, 
+				v.razon_social, 
+				v.nombre_comprobante_venta, 
+				v.letra_comprobante, 
+				v.numero_comprobante, 
+				v.numero, 
+				v.fecha_comprobante, 
+				v.remito, 
+				v.condicion_comprobante, 
+				v.condicion, 
+				v.total, 
+				v.entrega, 
+				v.debe, 
+				v.haber,
+				CASE
+					WHEN v.condicion_comprobante = 2 THEN (v.debe + v.haber)
+					ELSE 0
+				END AS saldo_movimiento,
+				v.intereses
+			FROM
+				VLResumenCtaCte v
+			WHERE
+				v.id_cliente_id = %s 
+				AND v.fecha_comprobante BETWEEN %s AND %s 
+				AND v.condicion_comprobante BETWEEN %s AND %s
+		"""
+		
+		#-- Se añaden parámetros.
+		params = [id_cliente, fecha_desde, fecha_hasta, condicion_venta1, condicion_venta2]
+		
+		#-- Se ejecuta la consulta.
+		resultados_raw = self.raw(query, params)
+		
+		#-- Calcular saldo acumulado en Python.
+		resultados = []
+		saldo_acumulado = saldo_anterior
+		
+		for item in resultados_raw:
+			#-- Convertir saldo_movimiento a Decimal.
+			saldo_movimiento = Decimal(str(item.saldo_movimiento)) if hasattr(item, 'saldo_movimiento') and item.saldo_movimiento is not None else Decimal('0.00')
+			
+			#-- Acumular.
+			saldo_acumulado += saldo_movimiento
+			
+			#-- Asignar el saldo acumulado al objeto.
+			item.saldo_acumulado = saldo_acumulado
+			resultados.append(item)
+		
+		return resultados
 
 
 class VLResumenCtaCte(models.Model):

@@ -290,7 +290,6 @@ class PlanillaCajaInformeView(InformeFormView):
 		# **************************************************
 		#-- Se retorna un contexto que será consumido tanto para la vista en pantalla como para la generación del PDF.
 		return {
-			# "objetos": datos_estructurados,
 			"objetos": queryset,
 			"caja": caja_obj_serialized,
 			"resumen_montos": resumen_montos,
