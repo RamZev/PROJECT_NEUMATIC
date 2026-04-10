@@ -340,6 +340,8 @@ actualiza_cliente.sql
 
 **actualiza_comprobante_venta.sql**
 
+**actualiza_comprobante_compra.sql**
+
 actualiza_empresa.sql
 
 
