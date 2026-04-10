@@ -34,6 +34,7 @@
 				<th class="numeric">Debe</th>
 				<th class="numeric">Haber</th>
 				<th class="numeric">Saldo</th>
+				<th></th>
 			</tr>
 		</thead>
 		<tbody>
@@ -41,6 +42,7 @@
 			<tr>
 				<td class="numeric" colspan="7"><strong>Saldo anterior:</strong></td>
 				<td class="numeric"><strong>{{ saldo_anterior|formato_es_ar }}</strong></td>
+				<td></td>
 			</tr>
 			{% for obj in objetos %}
 				<tr>
@@ -62,15 +64,18 @@
 					<td class="numeric">{{ obj.debe|formato_es_ar }}</td>
 					<td class="numeric">{{ obj.haber|formato_es_ar }}</td>
 					<td class="numeric">{{ obj.saldo_acumulado|formato_es_ar }}</td>
+					<td>{{ obj.marca }}</td>
 				</tr>
 			{% endfor %}
 			<tr style="border-top: 1px solid #000;">
 				<td class="numeric" colspan="7"><strong>Total Intereses:</strong></td>
 				<td class="numeric"><strong>{{ intereses_total|formato_es_ar }}</strong></td>
+				<td></td>
 			</tr>
 			<tr>
 				<td class="numeric" colspan="7"><strong>Total General:</strong></td>
 				<td class="numeric"><strong>{{ total_general|formato_es_ar }}</strong></td>
+				<td></td>
 			</tr>
 		</tbody>
 	</table>

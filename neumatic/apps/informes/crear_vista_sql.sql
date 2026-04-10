@@ -64,7 +64,8 @@ CREATE VIEW "VLResumenCtaCte" AS
 			ELSE 0.0
 		END AS haber,
 		0 AS intereses,
-		0 AS saldo_acumulado
+		0 AS saldo_acumulado,
+		f.marca
 	FROM
 		factura f 
 		JOIN cliente c ON f.id_cliente_id = c.id_cliente
