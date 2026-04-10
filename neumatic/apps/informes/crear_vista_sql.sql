@@ -36,6 +36,8 @@ CREATE VIEW "VLSaldosClientes" AS
 -- Resumen Cuenta Corriente.
 -- Modelo: VLResumenCtaCte
 -- ---------------------------------------------------------------------------
+DROP VIEW IF EXISTS "main"."VLResumenCtaCte";
+CREATE VIEW "VLResumenCtaCte" AS 
 	SELECT 
 		f.id_cliente_id, 
 		c.nombre_cliente AS razon_social, 
