@@ -124,6 +124,20 @@ class ConfigViews:
 			"excel": True,
 			"csv": True
 		},
+		"marca": {
+			"label": "Marca",
+			"col_width_pdf": 0,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+		"no_estadist": {
+			"label": "No Estadíst.",
+			"col_width_pdf": 0,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		}
 	}
 
 
@@ -236,6 +250,7 @@ class VLResumenCtaCteInformeView(InformeFormView):
 				'saldo_acumulado': float(item.saldo_acumulado),
 				'intereses': float(item.intereses),
 				'marca': item.marca,
+				'no_estadist': item.no_estadist
 			}
 			for item in queryset
 		]
@@ -342,7 +357,8 @@ def generar_pdf(contexto_reporte):
 			("Entrega", 70),
 			("Saldo", 70),
 			("Intereses",70),
-			("",10)
+			("",10),
+			("",10),
 		])
 		#-- Estilos específicos adicionales iniciales de la tabla.
 		table_style_config = [
@@ -354,7 +370,8 @@ def generar_pdf(contexto_reporte):
 			("Debe", 70),
 			("Haber", 70),
 			("Saldo", 70),
-			("",10)
+			("",10),
+			("",10),
 		])
 		#-- Estilos específicos adicionales iniciales de la tabla.
 		table_style_config = [
@@ -385,7 +402,8 @@ def generar_pdf(contexto_reporte):
 				formato_argentino(obj['entrega']),
 				formato_argentino(obj['saldo_acumulado']),
 				formato_argentino(obj['intereses']),
-				obj['marca']
+				obj['marca'],
+				obj['no_estadist']
 			])
 			
 			current_row += 1
@@ -395,6 +413,7 @@ def generar_pdf(contexto_reporte):
 		table_data.append([
 			"", "", "", "", "", "", "Saldo Anterior:",
 			formato_argentino(contexto_reporte['saldo_anterior']),
+			"",
 			""
 		])
 		
@@ -416,7 +435,8 @@ def generar_pdf(contexto_reporte):
 				formato_argentino(obj['debe']),
 				formato_argentino(obj['haber']),
 				formato_argentino(obj['saldo_acumulado']),
-				obj['marca']
+				obj['marca'],
+				obj['no_estadist']
 			])
 			
 			current_row += 1
@@ -425,6 +445,7 @@ def generar_pdf(contexto_reporte):
 	table_data.append(
 		["", "", "", "", "", "", "Total Intereses:", 
 			formato_argentino(contexto_reporte['intereses_total']),
+			"",
 			""
 		]
 	)
@@ -443,6 +464,7 @@ def generar_pdf(contexto_reporte):
 	table_data.append(
 		["", "", "", "", "", "", "Total General:", 
 			formato_argentino(contexto_reporte['total_general']),
+			"",
 			""
 		]
 	)
@@ -457,12 +479,12 @@ def generar_pdf(contexto_reporte):
 	current_row += 1
 	
 	#-- Fila divisoria.
-	table_data.append(["", "", "", "", "", "", "", "", ""])
+	table_data.append(["", "", "", "", "", "", "", "", "", ""])
 	
 	current_row += 1
 	
 	#-- Observaciones (Título).
-	table_data.append(["Observaciones:", "", "", "", "", "", "", "", ""])
+	table_data.append(["Observaciones:", "", "", "", "", "", "", "", "", ""])
 	
 	#-- Aplicar estilos a la fila actual.
 	table_style_config.extend([
@@ -473,7 +495,7 @@ def generar_pdf(contexto_reporte):
 	current_row += 1
 	
 	#-- Observaciones (Contenido).
-	table_data.append([Paragraph(str(contexto_reporte['observaciones']), generator.styles['CellStyle']), "", "", "", "", "", "", ""])
+	table_data.append([Paragraph(str(contexto_reporte['observaciones']), generator.styles['CellStyle']), "", "", "", "", "", "", "", "", ""])
 	
 	#-- Aplicar estilos a la fila actual.
 	table_style_config.extend([
