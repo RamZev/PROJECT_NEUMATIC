@@ -128,7 +128,9 @@ class ResumenCtaCteManager(models.Manager):
 				v.debe, 
 				v.haber,
 				(v.debe + v.haber) AS saldo_movimiento,
-				v.intereses
+				v.intereses,
+				v.marca,
+				v.no_estadist
 			FROM
 				VLResumenCtaCte v
 			WHERE
@@ -183,7 +185,9 @@ class ResumenCtaCteManager(models.Manager):
 					WHEN v.condicion_comprobante = 2 THEN (v.debe + v.haber)
 					ELSE 0
 				END AS saldo_movimiento,
-				v.intereses
+				v.intereses,
+				v.marca,
+				v.no_estadist
 			FROM
 				VLResumenCtaCte v
 			WHERE
@@ -230,6 +234,7 @@ class VLResumenCtaCte(models.Model):
 	entrega = models.DecimalField(max_digits=14, decimal_places=2)
 	saldo_acumulado = models.DecimalField(max_digits=14, decimal_places=2)
 	intereses = models.DecimalField(max_digits=14, decimal_places=2)
+	marca = models.CharField(max_length=1)
 	
 	objects = ResumenCtaCteManager()
 	
@@ -257,7 +262,9 @@ class MercaderiaPorClienteManager(models.Manager):
 				VLMercaderiaPorCliente v 
 			WHERE
 				v.id_cliente_id = %s
-				AND v.fecha_comprobante BETWEEN %s AND %s;
+				AND v.fecha_comprobante BETWEEN %s AND %s
+			ORDER BY
+				v.fecha_comprobante, v.numero_comprobante;
 		"""
 		
 		#-- Se añaden parámetros.
@@ -654,7 +661,8 @@ class ComprobantesVencidosManager(models.Manager):
 			params.append(id_sucursal)
 		
 		#-- Agregar el ordenamiento acá por rendimiento en la consulta.
-		query += " ORDER by fecha_comprobante"
+		# query += " ORDER by fecha_comprobante"
+		query += " ORDER by fecha_comprobante, numero_comprobante"
 		
 		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
 		return self.raw(query, params)

@@ -14,6 +14,7 @@ class BuscadorVentaMostradorForm(InformesGenericForm):
 		('T', 'Todas'),
 		('M', 'Mostrador'),
 		('R', 'Reventa'),
+		('E', 'E-Commerce'),
 	]
 	TIPO_CLIENTE = [
 		('T', 'Todos'),
