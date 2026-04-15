@@ -242,10 +242,11 @@ class VLComisionVendedorInformeView(InformeFormView):
 		vendedor = cleaned_data.get("vendedor", None)
 		fecha_desde = cleaned_data.get("fecha_desde")
 		fecha_hasta = cleaned_data.get("fecha_hasta")
+		orden = cleaned_data.get('orden')
 		
 		id_vendedor = vendedor.id_vendedor if vendedor else None
 		
-		return VLComisionVendedor.objects.obtener_datos(id_vendedor, fecha_desde, fecha_hasta)
+		return VLComisionVendedor.objects.obtener_datos(id_vendedor, fecha_desde, fecha_hasta, orden)
 	
 	def obtener_contexto_reporte(self, queryset, cleaned_data):
 		"""
@@ -257,10 +258,14 @@ class VLComisionVendedorInformeView(InformeFormView):
 		vendedor = cleaned_data.get("vendedor")
 		fecha_desde = cleaned_data.get('fecha_desde')
 		fecha_hasta = cleaned_data.get('fecha_hasta')
+		orden = cleaned_data.get('orden')
 		
-		param_left = {}
-		param_right = {
+		param_left = {
 			"Vendedor": vendedor.nombre_vendedor if vendedor else "Todos",
+		}
+		if not vendedor:
+			param_left["Ordenado por"] = "Nombre Vendedor" if orden == "nombre" else "Código Vendedor"
+		param_right = {
 			"Desde": fecha_desde.strftime("%d/%m/%Y"),
 			"Hasta": fecha_hasta.strftime("%d/%m/%Y"),
 		}

@@ -18,6 +18,7 @@ CREATE VIEW "VLSaldosClientes" AS
 		c.telefono_cliente, 
 		c.sub_cuenta, 
 		c.id_vendedor_id, 
+		v.nombre_vendedor,
 		f.total,
 		f.entrega, 
 		f.condicion_comprobante,
@@ -26,6 +27,7 @@ CREATE VIEW "VLSaldosClientes" AS
 		factura f 
 		JOIN cliente c ON f.id_cliente_id = c.id_cliente 
 		JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta 
+		JOIN vendedor v ON c.id_vendedor_id = v.id_vendedor
 		LEFT JOIN localidad l ON c.id_localidad_id = l.id_localidad
 	WHERE 
 		f.condicion_comprobante = 2
@@ -672,7 +674,7 @@ CREATE VIEW "VLComisionOperario" AS
 		p.nombre_producto,
 		(df.total*cv.mult_estadistica) * 1.0 AS total,
 		(pf.comision_operario) * 1.0 AS comision_operario,
-		(((df.total*cv.mult_estadistica) * pf.comision_operario / 100)) * 1.0 AS monto_comision
+		ROUND(((df.total * cv.mult_estadistica) * pf.comision_operario) / 100.0, 2) AS monto_comision
 	FROM
 		detalle_factura df
 		JOIN factura f ON df.id_factura_id = f.id_factura

@@ -10,17 +10,19 @@ class SaldosClientesManager(models.Manager):
 		
 		#-- Se crea la consulta.
 		query = """
-			SELECT 
-				id_cliente_id, 
-				nombre_cliente, 
-				domicilio_cliente, 
-				nombre_localidad, 
-				codigo_postal, 
-				telefono_cliente, 
-				sub_cuenta, 
+			SELECT
+				id_cliente_id,
+				nombre_cliente,
+				domicilio_cliente,
+				nombre_localidad,
+				codigo_postal,
+				telefono_cliente,
+				sub_cuenta,
+				id_vendedor_id,
+				nombre_vendedor,
 				SUM(total * (mult_saldo * 1.00)) AS saldo,
-				MIN(CASE WHEN condicion_comprobante = 2 AND mult_saldo <> 0 AND total <> entrega THEN fecha_comprobante END) AS primer_fact_impaga, 
-				MAX(fecha_pago) AS ultimo_pago 
+				MIN(CASE WHEN condicion_comprobante = 2 AND mult_saldo <> 0 AND total <> entrega THEN fecha_comprobante END) AS primer_fact_impaga,
+				MAX(fecha_pago) AS ultimo_pago
 			FROM
 				VLSaldosClientes
 			WHERE 
@@ -850,13 +852,15 @@ class IVAVentasFULLManager(models.Manager):
 			query += " AND id_sucursal_id = %s"
 			params.append(id_sucursal)
 		
+		#-- Agregar el ordenamiento.
+		query += " ORDER by fecha_comprobante, letra_comprobante, numero_comprobante"
+		
 		#-- Ejecutar la consulta y devolver los resultados.
 		return self.raw(query, params)
 
 
 class VLIVAVentasFULL(models.Model):
 	id_factura = models.IntegerField(primary_key=True)
-	# id_cliente_id = models.IntegerField()
 	nombre_cliente = models.CharField(max_length=50)
 	codigo_iva = models.CharField(max_length=4)
 	cuit = models.IntegerField()
@@ -1017,10 +1021,17 @@ class VLIVAVentasSitrib(models.Model):
 #-----------------------------------------------------------------------------
 class VLPercepIBVendedorTotalesManager(models.Manager):
 	
-	def obtener_datos(self, fecha_desde, fecha_hasta):
+	def obtener_datos(self, fecha_desde, fecha_hasta, orden='nombre'):
 		
-		#-- Se crea la consulta.
-		query = """
+		#-- Mapeo seguro de opciones de orden.
+		orden_map = {
+			'nombre': 'nombre_vendedor',
+			'codigo': 'id_vendedor_id'
+		}
+		order_by = orden_map.get(orden, 'id_vendedor_id')
+		
+		#-- Se crea la consulta con ORDER BY directo (no placeholder).
+		query = f"""
 			SELECT 
 				id_factura,
 				id_vendedor_id,
@@ -1034,10 +1045,10 @@ class VLPercepIBVendedorTotalesManager(models.Manager):
 			GROUP BY
 				id_vendedor_id
 			ORDER BY
-				nombre_vendedor
+				{order_by}
 		"""
 		
-		#-- Se añaden parámetros.
+		#-- Se añaden parámetros (solo las fechas, sin el ORDER BY).
 		params = [fecha_desde, fecha_hasta]
 		
 		#-- Ejecutar la consulta y devolver los resultados.
@@ -1059,7 +1070,6 @@ class VLPercepIBVendedorTotales(models.Model):
 		db_table = 'VLPercepIBVendedorTotales'
 		verbose_name = ('Percepciones por Vendedor - Totales')
 		verbose_name_plural = ('Percepciones por Vendedor - Totales')
-		ordering = ['id_vendedor_id']
 
 
 #-----------------------------------------------------------------------------
@@ -1067,7 +1077,14 @@ class VLPercepIBVendedorTotales(models.Model):
 #-----------------------------------------------------------------------------
 class VLPercepIBVendedorDetalladoManager(models.Manager):
 	
-	def obtener_datos(self, fecha_desde, fecha_hasta):
+	def obtener_datos(self, fecha_desde, fecha_hasta, orden='nombre'):
+		
+		#-- Mapeo seguro de opciones de orden.
+		orden_map = {
+			'nombre': 'nombre_vendedor',
+			'codigo': 'id_vendedor_id'
+		}
+		order_by = orden_map.get(orden, 'id_vendedor_id')
 		
 		#-- Se crea la consulta.
 		query = """
@@ -1083,7 +1100,8 @@ class VLPercepIBVendedorDetalladoManager(models.Manager):
 		params = [fecha_desde, fecha_hasta]
 		
 		#-- Agregar el ordenamiento acá por rendimiento en la consulta.
-		query += " ORDER by nombre_vendedor, fecha_comprobante, numero_comprobante"
+		# query += " ORDER by nombre_vendedor, fecha_comprobante, numero_comprobante"
+		query += f" ORDER by {order_by}, fecha_comprobante, numero_comprobante"
 		
 		#-- Ejecutar la consulta y devolver los resultados.
 		return self.raw(query, params)
@@ -1111,7 +1129,6 @@ class VLPercepIBVendedorDetallado(models.Model):
 		db_table = 'VLPercepIBVendedorDetallado'
 		verbose_name = ('Percepciones por Vendedor - Detallado')
 		verbose_name_plural = ('Percepciones por Vendedor - Detallado')
-		ordering = ['nombre_vendedor']
 
 
 #-----------------------------------------------------------------------------
@@ -1223,7 +1240,14 @@ class VLPercepIBSubcuentaDetallado(models.Model):
 #-----------------------------------------------------------------------------
 class ComisionVendedorIBManager(models.Manager):
 	
-	def obtener_datos(self, id_vendedor, fecha_desde, Fecha_hasta):
+	def obtener_datos(self, id_vendedor, fecha_desde, Fecha_hasta, orden='nombre'):
+		
+		#-- Mapeo seguro de opciones de orden.
+		orden_map = {
+			'nombre': 'nombre_vendedor',
+			'codigo': 'id_vendedor_id'
+		}
+		order_by = orden_map.get(orden, 'id_vendedor_id')
 		
 		#-- Se crea la primera consulta (Recibos).
 		query1 = """
@@ -1259,7 +1283,7 @@ class ComisionVendedorIBManager(models.Manager):
 			params.append(id_vendedor)
 		
 		#-- Unir las consultas.
-		query_full = f"{query1} UNION {query2} ORDER BY nombre_vendedor, consulta, fecha_comprobante, comprobante"
+		query_full = f"{query1} UNION {query2} ORDER BY {order_by}, consulta, fecha_comprobante, comprobante"
 		
 		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
 		return self.raw(query_full, params*2)
@@ -1291,7 +1315,8 @@ class VLComisionVendedor(models.Model):
 		db_table = 'VLComisionVendedor'
 		verbose_name = ('Comisión Según Facturación')
 		verbose_name_plural = ('Comisión Según Facturación')
-		ordering = ['nombre_vendedor','fecha_comprobante','numero_comprobante']
+		# ordering = ['nombre_vendedor','fecha_comprobante','numero_comprobante']
+		ordering = ['id_vendedor_id','fecha_comprobante','numero_comprobante']
 
 
 #-----------------------------------------------------------------------------
@@ -1299,7 +1324,14 @@ class VLComisionVendedor(models.Model):
 #-----------------------------------------------------------------------------
 class ComisionOperarioManager(models.Manager):
 	
-	def obtener_datos(self, id_operario, fecha_desde, fecha_hasta):
+	def obtener_datos(self, id_operario, fecha_desde, fecha_hasta, orden='nombre'):
+		
+		#-- Mapeo seguro de opciones de orden.
+		orden_map = {
+			'nombre': 'nombre_operario',
+			'codigo': 'id_operario_id'
+		}
+		order_by = orden_map.get(orden, 'id_operario_id')
 		
 		#-- Se crea la consulta.
 		query = """
@@ -1320,7 +1352,7 @@ class ComisionOperarioManager(models.Manager):
 			params.append(id_operario)
 		
 		#-- Agregar el ordenamiento acá por rendimiento en la consulta.
-		query += " ORDER by nombre_operario, fecha_comprobante, numero_comprobante"
+		query += f" ORDER by {order_by}, fecha_comprobante, numero_comprobante"
 		
 		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
 		return self.raw(query, params)
@@ -1356,7 +1388,14 @@ class VLComisionOperario(models.Model):
 #-----------------------------------------------------------------------------
 class PrecioDiferenteManager(models.Manager):
 	
-	def obtener_datos(self, fecha_desde, fecha_hasta, id_vendedor_desde, id_vendedor_hasta, comprobantes, dif_mayor=0):
+	def obtener_datos(self, fecha_desde, fecha_hasta, id_vendedor_desde, id_vendedor_hasta, comprobantes, dif_mayor=0, orden='nombre'):
+		
+		#-- Mapeo seguro de opciones de orden.
+		orden_map = {
+			'nombre': 'nombre_vendedor',
+			'codigo': 'id_vendedor_id'
+		}
+		order_by = orden_map.get(orden, 'id_vendedor_id')
 		
 		#-- Determinar cantidad de marcas de parámetros para los comprobantes.
 		placeholders = ','.join(['%s'] * len(comprobantes))
@@ -1381,7 +1420,7 @@ class PrecioDiferenteManager(models.Manager):
 		params.extend(comprobantes)  # Extender con los elementos de la lista
 		
 		#-- Agregar el ordenamiento acá por rendimiento en la consulta.
-		query += " ORDER by nombre_vendedor, fecha_comprobante, numero_comprobante"
+		query += f" ORDER by {order_by}, fecha_comprobante, numero_comprobante"
 		
 		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
 		return self.raw(query, params)
@@ -3064,7 +3103,7 @@ class VLReposicionStockManager(models.Manager):
 			sucursal_columns=", ".join(sucursal_columns),
 			filters=filters
 		)
-		
+		print("Consulta SQL final:", final_query)
 		#-- Ejecutar con cursor y mapear a objetos del modelo.
 		with connection.cursor() as cursor:
 			cursor.execute(final_query, params)

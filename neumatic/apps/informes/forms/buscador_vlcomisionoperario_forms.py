@@ -6,6 +6,7 @@ from datetime import date
 from .informes_generics_forms import InformesGenericForm
 from diseno_base.diseno_bootstrap import formclassselect, formclassdate
 from apps.maestros.models.base_models import Operario
+from entorno.constantes_base import ORDEN_CHOICES
 
 
 class BuscadorComisionOperarioForm(InformesGenericForm):
@@ -25,6 +26,12 @@ class BuscadorComisionOperarioForm(InformesGenericForm):
 		required=False, 
 		label="Hasta Fecha",
 		widget=forms.TextInput(attrs={'type':'date', **formclassdate})
+	)
+	orden = forms.ChoiceField(
+		choices=ORDEN_CHOICES, 
+		label="Ordenar por", 
+		required=False,
+		widget=forms.Select(attrs={**formclassselect})
 	)
 	
 	def __init__(self, *args, **kwargs):
