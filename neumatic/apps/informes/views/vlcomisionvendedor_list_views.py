@@ -261,7 +261,7 @@ class VLComisionVendedorInformeView(InformeFormView):
 		orden = cleaned_data.get('orden')
 		
 		param_left = {
-			"Vendedor": vendedor.nombre_vendedor if vendedor else "Todos",
+			"Vendedor": f"[{vendedor.id_vendedor}] {vendedor.nombre_vendedor}" if vendedor else "Todos",
 		}
 		if not vendedor:
 			param_left["Ordenado por"] = "Nombre Vendedor" if orden == "nombre" else "Código Vendedor"

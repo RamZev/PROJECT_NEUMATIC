@@ -157,6 +157,7 @@ class VLVentaSinEstadisticaInformeView(InformeFormView):
 		sucursal = cleaned_data.get('sucursal', None)
 		fecha_desde = cleaned_data.get('fecha_desde')
 		fecha_hasta = cleaned_data.get('fecha_hasta')
+		orden = cleaned_data.get('orden')
 		
 		id_sucursal = sucursal.id_sucursal if sucursal else None
 		
@@ -164,6 +165,7 @@ class VLVentaSinEstadisticaInformeView(InformeFormView):
 			fecha_desde, 
 			fecha_hasta, 
 			id_sucursal=id_sucursal,
+			orden=orden
 		)
 		
 		return queryset
@@ -178,11 +180,13 @@ class VLVentaSinEstadisticaInformeView(InformeFormView):
 		sucursal = cleaned_data.get('sucursal', None)
 		fecha_desde = cleaned_data.get('fecha_desde')
 		fecha_hasta = cleaned_data.get('fecha_hasta')
+		orden = cleaned_data.get('orden')
 		
 		fecha_hora_reporte = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
 		
 		param_left = {
-			"Sucursal": sucursal.nombre_sucursal if sucursal else "Todas",
+			"Sucursal": f"[{sucursal.id_sucursal}] {sucursal.nombre_sucursal}" if sucursal else "Todas",
+			"Ordenado por": "Nombre Cliente" if orden == "nombre" else "Código Cliente",
 		}
 		param_right = {
 			"Desde": fecha_desde.strftime("%d/%m/%Y"),

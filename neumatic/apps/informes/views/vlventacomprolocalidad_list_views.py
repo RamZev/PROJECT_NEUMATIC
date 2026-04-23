@@ -197,7 +197,7 @@ class VLVentaComproLocalidadInformeView(InformeFormView):
 			"Hasta": fecha_hasta.strftime("%d/%m/%Y"),
 		}
 		param_left = {
-			"Sucursal": sucursal.nombre_sucursal if sucursal else "Todas",
+			"Sucursal": f"[{sucursal.id_sucursal}] {sucursal.nombre_sucursal}" if sucursal else "Todas",
 			"Código Postal": codigo_postal if codigo_postal else "Todos",
 		}
 		

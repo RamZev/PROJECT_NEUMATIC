@@ -161,7 +161,7 @@ class CajaArqueoInformeView(InformeFormView):
 		fecha_hora_reporte = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
 		
 		param_left = {
-			"Sucursal": caja_obj.id_sucursal.nombre_sucursal if caja_obj else "",
+			"Sucursal": f"[{caja_obj.id_sucursal.id_sucursal}] {caja_obj.id_sucursal.nombre_sucursal}" if caja_obj else "",
 			"Usuario": usuario_caja,
 		}
 		param_right = {

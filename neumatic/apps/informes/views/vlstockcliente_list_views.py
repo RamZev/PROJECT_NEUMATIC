@@ -166,8 +166,8 @@ class VLStockClienteInformeView(InformeFormView):
 		
 		param_left = {}
 		param_right = {
-			"Sucursal": sucursal.nombre_sucursal if sucursal else "Todas",
-			"Vendedor": vendedor.nombre_vendedor if vendedor else "Todos",
+			"Sucursal": f"[{sucursal.id_sucursal}] {sucursal.nombre_sucursal}" if sucursal else "Todas",
+			"Vendedor": f"[{vendedor.id_vendedor}] {vendedor.nombre_vendedor}" if vendedor else "Todos",
 		}
 		
 		fecha_hora_reporte = datetime.now().strftime("%d/%m/%Y %H:%M:%S")

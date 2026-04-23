@@ -765,7 +765,7 @@ CREATE VIEW "VLEstadisticasVentas" AS
 		p.id_marca_id,
 		m.nombre_producto_marca,
 		df.cantidad*cv.mult_estadistica AS cantidad,
-		((df.cantidad*df.precio)+(df.cantidad*df.precio*df.descuento/100))*cv.mult_estadistica AS total,
+		ROUND(((df.cantidad*df.precio)+(df.cantidad*df.precio*df.descuento/100.0))*cv.mult_estadistica, 2) AS total,
 		f.fecha_comprobante,
 		f.id_cliente_id,
 		f.id_sucursal_id
@@ -801,7 +801,7 @@ CREATE VIEW "VLEstadisticasVentasVendedor" AS
 		p.id_marca_id,
 		m.nombre_producto_marca,
 		df.cantidad*cv.mult_estadistica AS cantidad,
-		((df.cantidad*df.precio)+(df.cantidad*df.precio*df.descuento/100))*cv.mult_estadistica AS total,
+		ROUND(((df.cantidad*df.precio)+(df.cantidad*df.precio*df.descuento/100.0))*cv.mult_estadistica, 2) AS total,
 		f.fecha_comprobante,
 		p.id_marca_id,
 		f.id_sucursal_id,
@@ -835,7 +835,7 @@ CREATE VIEW "VLEstadisticasVentasVendedorCliente" AS
 		p.id_marca_id,
 		m.nombre_producto_marca,
 		df.cantidad*cv.mult_estadistica AS cantidad,
-		((df.cantidad*df.precio)+(df.cantidad*df.precio*df.descuento/100))*cv.mult_estadistica AS total,
+		ROUND(((df.cantidad*df.precio)+(df.cantidad*df.precio*df.descuento/100.0))*cv.mult_estadistica, 2) AS total,
 		f.fecha_comprobante,
 		f.id_sucursal_id,
 		f.id_cliente_id,
@@ -875,7 +875,7 @@ CREATE VIEW "VLEstadisticasSegunCondicion" AS
 		p.nombre_producto,
 		df.reventa,
 		df.cantidad*cv.mult_estadistica AS cantidad,
-		((df.precio+(df.precio*df.descuento/100))*df.cantidad)*cv.mult_estadistica AS importe,
+		ROUND(((df.precio+(df.precio*df.descuento/100.0))*df.cantidad)*cv.mult_estadistica, 2) AS importe,
 		df.costo*df.cantidad*cv.mult_estadistica AS costo,
 		f.fecha_comprobante,
 		f.id_sucursal_id
@@ -944,9 +944,14 @@ CREATE VIEW "VLEstadisticasVentasMarcaVendedor" AS
 		p.nombre_producto,
 		p.medida,
 		df.cantidad,
-		df.precio,
+		--df.costo,
+		--df.precio,
+		--df.costo*cv.mult_stock*-1 AS precio,
+		p.costo*cv.mult_stock*-1 AS precio,
 		df.descuento,
-		df.total,
+		--df.total,
+		--(df.costo+(df.costo*df.descuento/100.0))*df.cantidad*cv.mult_estadistica AS total,
+		(p.costo*df.cantidad)*(1+(df.descuento/100.0)) * cv.mult_estadistica  AS 'total',
 		f.id_sucursal_id,
 		c.id_vendedor_id,
 		p.id_marca_id,
@@ -1006,7 +1011,7 @@ CREATE VIEW "VLEstadisticasVentasProvincia" AS
 		p.id_marca_id,
 		m.nombre_producto_marca,
 		df.cantidad*cv.mult_estadistica AS cantidad,
-		((df.cantidad*df.precio)+(df.cantidad*df.precio*df.descuento/100))*cv.mult_estadistica AS total,
+		ROUND(((df.cantidad*df.precio)+(df.cantidad*df.precio*df.descuento/100.0))*cv.mult_estadistica, 2) AS total,
 		f.fecha_comprobante,
 		p.id_marca_id,
 		f.id_sucursal_id,
@@ -1159,20 +1164,20 @@ CREATE VIEW "VLTablaDinamicaDetalleVentas" AS
 		mo.nombre_marketing_origen
 	FROM
 		detalle_factura df
-		LEFT JOIN factura f ON df.id_factura_id = f.id_factura
-		LEFT JOIN producto p ON df.id_producto_id = p.id_producto
-		LEFT JOIN producto_familia pf ON p.id_familia_id = pf.id_producto_familia
-		LEFT JOIN producto_marca pm ON p.id_marca_id = pm.id_producto_marca
-		LEFT JOIN operario o ON df.id_operario_id = o.id_operario
-		LEFT JOIN cliente c ON f.id_cliente_id = c.id_cliente
-		LEFT JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
-		LEFT JOIN vendedor v ON c.id_vendedor_id = v.id_vendedor
-		LEFT JOIN sucursal s ON f.id_sucursal_id = s.id_sucursal
+		JOIN factura f ON df.id_factura_id = f.id_factura
+		JOIN producto p ON df.id_producto_id = p.id_producto
+		JOIN producto_familia pf ON p.id_familia_id = pf.id_producto_familia
+		JOIN producto_marca pm ON p.id_marca_id = pm.id_producto_marca
+		JOIN operario o ON df.id_operario_id = o.id_operario
+		JOIN cliente c ON f.id_cliente_id = c.id_cliente
+		JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
+		JOIN vendedor v ON c.id_vendedor_id = v.id_vendedor
+		JOIN sucursal s ON f.id_sucursal_id = s.id_sucursal
 		LEFT JOIN localidad l ON c.id_localidad_id = l.id_localidad
 		LEFT JOIN provincia pr ON l.id_provincia_id = pr.id_provincia
 		LEFT JOIN producto_cai pc ON p.id_cai_id = pc.id_cai
-		LEFT JOIN tipo_iva ti ON c.id_tipo_iva_id = ti.id_tipo_iva
-		LEFT JOIN marketing_origen mo ON f.id_marketing_origen_id = mo.id_marketing_origen;
+		JOIN tipo_iva ti ON c.id_tipo_iva_id = ti.id_tipo_iva
+		JOIN marketing_origen mo ON f.id_marketing_origen_id = mo.id_marketing_origen;
 
 
 -- ---------------------------------------------------------------------------

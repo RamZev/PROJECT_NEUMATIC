@@ -132,7 +132,7 @@ class VLClienteUltimaVentaInformeView(InformeFormView):
 		
 		param_left = {}
 		param_right = {
-			"Vendedor": vendedor.nombre_vendedor,
+			"Vendedor": f"[{vendedor.id_vendedor}] {vendedor.nombre_vendedor}" if vendedor else "Todos",
 			"Sin Movimiento desde": fecha_consulta.strftime("%d/%m/%Y"),
 			"Ordenado por": orden_dic[orden]
 		}

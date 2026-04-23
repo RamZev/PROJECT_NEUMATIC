@@ -193,7 +193,7 @@ class VLSaldosClientesInformeView(InformeFormView):
 		}
 		
 		if vendedor:
-			param_right["Clientes del vendedor"] = vendedor.nombre_vendedor
+			param_right["Clientes del vendedor"] = f"[{vendedor.id_vendedor}] {vendedor.nombre_vendedor}" if vendedor else "Todos los Vendedores"
 		else:
 			param_right["Listado"] = "Todos los Clientes"
 		

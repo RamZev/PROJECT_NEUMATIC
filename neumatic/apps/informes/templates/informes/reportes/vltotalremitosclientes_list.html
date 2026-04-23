@@ -28,7 +28,7 @@
 		
 		<thead>
 			<tr>
-				<th>Cliente</th>
+				<th class="numeric pr-10">Cliente</th>
 				<th>Nombre</th>
 				<th>Domicilio</th>
 				<th>C.P.</th>
@@ -42,7 +42,7 @@
 		<tbody>
 			{% for obj in objetos %}
 				<tr class="compact-line-spacing">
-					<td>{{ obj.id_cliente_id }}</td>
+					<td class="numeric pr-10">{{ obj.id_cliente_id }}</td>
 					<td>{{ obj.nombre_cliente }}</td>
 					<td>{{ obj.domicilio_cliente }}</td>
 					<td>{{ obj.codigo_postal }}</td>

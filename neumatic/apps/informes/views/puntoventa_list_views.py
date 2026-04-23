@@ -166,7 +166,7 @@ class PuntoVentaInformeView(InformeFormView):
 		param_left = {}
 		param_right = {
 			"Estatus": estatus.capitalize(),
-			"Sucursal": sucursal.nombre_sucursal if sucursal else "Todas"
+			"Sucursal": f"[{sucursal.id_sucursal}] {sucursal.nombre_sucursal}" if sucursal else "Todas"
 		}
 		
 		# **************************************************

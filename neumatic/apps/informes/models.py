@@ -663,7 +663,6 @@ class ComprobantesVencidosManager(models.Manager):
 			params.append(id_sucursal)
 		
 		#-- Agregar el ordenamiento acá por rendimiento en la consulta.
-		# query += " ORDER by fecha_comprobante"
 		query += " ORDER by fecha_comprobante, numero_comprobante"
 		
 		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
@@ -1625,8 +1624,7 @@ class EstadisticasVentasVendedorManager(models.Manager):
 			case "Familia":
 				query += " GROUP BY id_familia_id, id_marca_id"
 			case "Modelo":
-				# query += " GROUP BY id_modelo_id, id_marca_id"
-				query += " GROUP BY id_modelo_id"
+				query += " GROUP BY id_modelo_id, id_marca_id"
 			case "Marca":
 				query += " GROUP BY id_marca_id"
 		
@@ -1709,16 +1707,15 @@ class EstadisticasVentasVendedorClienteManager(models.Manager):
 		
 		match agrupar:
 			case "Producto":
-				query += " GROUP BY id_producto_id"
+				query += " GROUP BY id_sucursal_id, id_vendedor_id, id_cliente_id, id_producto_id"
 			case "Familia":
-				query += " GROUP BY id_familia_id, id_marca_id"
+				query += " GROUP BY id_sucursal_id, id_vendedor_id, id_cliente_id, id_familia_id, id_marca_id"
 			case "Modelo":
-				# query += " GROUP BY id_modelo_id, id_marca_id"
-				query += " GROUP BY id_modelo_id"
+				query += " GROUP BY id_sucursal_id, id_vendedor_id, id_cliente_id, id_modelo_id, id_marca_id"
 			case "Marca":
-				query += " GROUP BY id_marca_id"
+				query += " GROUP BY id_sucursal_id, id_vendedor_id, id_cliente_id, id_marca_id"
 		
-		query += " ORDER BY nombre_vendedor, nombre_cliente"
+		query += " ORDER BY id_sucursal_id DESC, id_vendedor_id DESC, id_cliente_id DESC"
 		
 		if mostrar:
 			match mostrar:
@@ -1755,7 +1752,6 @@ class VLEstadisticasVentasVendedorCliente(models.Model):
 		db_table = 'VLEstadisticasVentasVendedorCliente'
 		verbose_name = ('Estadísticas de Ventas Vendedor Clientes')
 		verbose_name_plural = ('Estadísticas de Ventas Vendedor Clientes')
-		# ordering = ['fecha_comprobante']
 
 
 #-----------------------------------------------------------------------------
@@ -1801,7 +1797,6 @@ class EstadisticasSegunCondicionManager(models.Manager):
 		
 		match agrupar:
 			case "Producto":
-				# query += " GROUP BY id_familia_id, id_marca_id, id_modelo_id, id_producto_id"
 				query += " GROUP BY id_familia_id, id_modelo_id, id_producto_id"
 			case "Familia":
 				query += " GROUP BY id_familia_id, id_marca_id"
@@ -2057,16 +2052,21 @@ class EstadisticasVentasProvinciaManager(models.Manager):
 			query += " AND id_provincia = %s"
 			params.append(id_provincia)
 		
+		query += " GROUP BY id_sucursal_id, id_vendedor_id, id_provincia"
 		match agrupar:
 			case "Producto":
-				query += " GROUP BY id_producto_id"
+				# query += " GROUP BY id_producto_id"
+				query += ", id_producto_id"
 			case "Familia":
-				query += " GROUP BY id_familia_id, id_marca_id"
+				# query += " GROUP BY id_familia_id, id_marca_id"
+				query += ", id_familia_id, id_marca_id"
 			case "Modelo":
 				# query += " GROUP BY id_modelo_id, id_marca_id"
-				query += " GROUP BY id_modelo_id"
+				# query += " GROUP BY id_modelo_id"
+				query += ", id_modelo_id"
 			case "Marca":
-				query += " GROUP BY id_marca_id"
+				# query += " GROUP BY id_marca_id"
+				query += ", id_marca_id"
 		
 		query += " ORDER BY nombre_provincia"
 		
@@ -2110,7 +2110,14 @@ class VLEstadisticasVentasProvincia(models.Model):
 #-----------------------------------------------------------------------------
 class VLVentaSinEstadisticaManager(models.Manager):
 	
-	def obtener_datos(self, fecha_desde, fecha_hasta, id_sucursal=None):
+	def obtener_datos(self, fecha_desde, fecha_hasta, id_sucursal=None, orden="nombre"):
+		
+		#-- Mapeo seguro de opciones de orden.
+		orden_map = {
+			'nombre': 'nombre_cliente',
+			'codigo': 'id_cliente_id'
+		}
+		order_by = orden_map.get(orden, 'id_cliente_id')
 		
 		#-- La consulta SQL.
 		query = """
@@ -2132,7 +2139,7 @@ class VLVentaSinEstadisticaManager(models.Manager):
 			params.append(id_sucursal)
 		
 		#-- Agregar el ordenamiento acá por rendimiento en la consulta.
-		query += " ORDER by nombre_cliente, fecha_comprobante, comprobante"
+		query += f" ORDER by {order_by}, fecha_comprobante, comprobante"
 		
 		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
 		return self.raw(query, params)
@@ -3047,9 +3054,12 @@ class VLReposicionStockManager(models.Manager):
 			WHERE
 				ps.stock < pn.minimo
 				AND pn.minimo <> 0
+				AND p.tipo_producto = 'P'
 				{filters}
 			GROUP by
 				pc.cai, ps.id_deposito_id
+			HAVING
+				pn.minimo - SUM(ps.stock) > 0
 			ORDER by
 				p.id_familia_id, p.id_modelo_id, p.id_marca_id
 		"""
@@ -3103,7 +3113,7 @@ class VLReposicionStockManager(models.Manager):
 			sucursal_columns=", ".join(sucursal_columns),
 			filters=filters
 		)
-		print("Consulta SQL final:", final_query)
+		
 		#-- Ejecutar con cursor y mapear a objetos del modelo.
 		with connection.cursor() as cursor:
 			cursor.execute(final_query, params)

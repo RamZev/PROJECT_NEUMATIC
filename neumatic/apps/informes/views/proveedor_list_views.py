@@ -18,6 +18,7 @@ from apps.maestros.models.proveedor_models import Proveedor
 from ..forms.buscador_proveedor_forms import BuscadorProveedorForm
 from utils.utils import deserializar_datos, normalizar
 from utils.helpers.export_helpers import ExportHelper, PDFGenerator, add_row_table
+from entorno.constantes_base import ORDEN_CHOICES
 
 
 class ConfigViews:
@@ -243,7 +244,7 @@ class ProveedorInformeView(InformeFormView):
 			"Estatus": estatus.capitalize(),
 		}
 		param_right = {
-			"Ordenado por": orden,
+			"Ordenado por": dict(ORDEN_CHOICES).get(orden, "nombre"),
 		}
 		if desde and hasta:
 			param_right.update({
