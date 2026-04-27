@@ -20,7 +20,7 @@ from apps.ventas.models.caja_models import CajaDetalle
 from apps.ventas.models.factura_models import Factura
 from apps.ventas.models.recibo_models import ChequeRecibo, TarjetaRecibo, DepositoRecibo, RetencionRecibo
 from ..forms.buscador_planillacaja_forms import BuscadorPlanillaCajaForm
-from utils.utils import deserializar_datos, normalizar, formato_argentino
+from utils.utils import deserializar_datos, normalizar, formato_argentino, format_user_display
 from utils.helpers.export_helpers import ExportHelper, PDFGenerator
 
 
@@ -217,18 +217,17 @@ class PlanillaCajaInformeView(InformeFormView):
 		
 		#-- Parámetros del listado.
 		caja = cleaned_data.get('caja', 0)
-		
 		caja_obj = Caja.objects.filter(numero_caja=caja).first()
 		
-		datos_usuario_caja = caja_obj.id_user if caja_obj else None
-		
-		usuario_caja = f"{datos_usuario_caja.first_name} {datos_usuario_caja.last_name}" if datos_usuario_caja else datos_usuario_caja.username
+		usuario_apertura_caja = format_user_display(caja_obj.id_user)
+		usuario_cierre_caja = format_user_display(caja_obj.id_usercierre)
 		
 		fecha_hora_reporte = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
 		
 		param_left = {
 			"Sucursal": f"[{caja_obj.id_sucursal.id_sucursal}] {caja_obj.id_sucursal.nombre_sucursal}" if caja_obj else "",
-			"Usuario": usuario_caja,
+			"Usuario apertura": usuario_apertura_caja,
+			"Usuario cierre": usuario_cierre_caja,
 		}
 		param_right = {
 			"Número de Caja": f"{str(caja_obj.numero_caja).zfill(8)[:2]}-{str(caja_obj.numero_caja).zfill(8)[2:]}" if caja_obj else "",

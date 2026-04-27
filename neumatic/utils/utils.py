@@ -292,3 +292,28 @@ def obtener_logo():
 		pass
 	
 	return logo_url, logo_path
+
+
+def format_user_display(user):
+	"""
+	Formatea un objeto User de Django para mostrar.
+	
+	Args:
+		user: Instancia de django.contrib.auth.models.User
+	
+	Returns:
+		str: Usuario formateado como "[id] Nombre Apellido" o "[id] username"
+	"""
+	
+	if not user:
+		return "[0] Sin usuario"
+	
+	#-- Obtener nombre completo si existe.
+	if user.first_name and user.last_name:
+		nombre_completo = f"{user.first_name} {user.last_name}"
+	elif user.first_name:
+		nombre_completo = user.first_name
+	else:
+		nombre_completo = user.username
+	
+	return f"[{user.id}] {nombre_completo}"

@@ -758,6 +758,7 @@ CREATE VIEW "VLEstadisticasVentas" AS
 		df.id_producto_id, 
 		pc.cai,
 		p.nombre_producto,
+		p.unidad,
 		p.id_familia_id,
 		pf.nombre_producto_familia, 
 		p.id_modelo_id,
@@ -944,14 +945,12 @@ CREATE VIEW "VLEstadisticasVentasMarcaVendedor" AS
 		p.nombre_producto,
 		p.medida,
 		df.cantidad,
-		--df.costo,
-		--df.precio,
-		--df.costo*cv.mult_stock*-1 AS precio,
-		p.costo*cv.mult_stock*-1 AS precio,
+		df.costo*cv.mult_stock*-1 AS precio,    -- Original (doc. en DRIVE). Toma costo del detalle de factura.
+		--p.costo*cv.mult_stock*-1 AS precio,   -- Para que cuadre con el rep. de la VPN
 		df.descuento,
-		--df.total,
-		--(df.costo+(df.costo*df.descuento/100.0))*df.cantidad*cv.mult_estadistica AS total,
-		(p.costo*df.cantidad)*(1+(df.descuento/100.0)) * cv.mult_estadistica  AS 'total',
+		--(df.costo+(df.costo*df.descuento/100.0))*df.cantidad*cv.mult_estadistica AS total,  -- Consulta original (doc. en DRIVE)
+		--(p.costo*df.cantidad)*(1+(df.descuento/100.0)) * cv.mult_estadistica  AS 'total',   -- Así cuadra con reportes de la VPN
+		(df.costo*df.cantidad)*(1+(df.descuento/100.0)) * cv.mult_estadistica  AS 'total',    -- Tomando costo del detalle de factura.
 		f.id_sucursal_id,
 		c.id_vendedor_id,
 		p.id_marca_id,

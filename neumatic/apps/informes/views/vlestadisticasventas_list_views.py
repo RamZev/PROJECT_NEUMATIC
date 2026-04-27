@@ -472,10 +472,24 @@ def headers_titles(agrupar, mostrar):
 				"excel": True,
 				"csv": True
 			},
+			"id_familia_id": {
+				"label": "ID. Familia",
+				"col_width_pdf": 0,
+				"pdf": False,
+				"excel": True,
+				"csv": True
+			},
 			"nombre_producto_familia": {
 				"label": "Familia",
 				"col_width_pdf": 140,
 				"pdf": True,
+				"excel": True,
+				"csv": True
+			},
+			"id_modelo_id": {
+				"label": "ID. Modelo",
+				"col_width_pdf": 0,
+				"pdf": False,
 				"excel": True,
 				"csv": True
 			},
@@ -486,11 +500,25 @@ def headers_titles(agrupar, mostrar):
 				"excel": True,
 				"csv": True
 			},
+			"unidad": {
+				"label": "Unidad",
+				"col_width_pdf": 60,
+				"pdf": False,
+				"excel": True,
+				"csv": True
+			},
 		}
 		
 		blank_cols = ["", "", "", "", ""]
 	elif agrupar == "Familia":
 		headers = {
+			"id_familia_id": {
+				"label": "ID. Familia",
+				"col_width_pdf": 0,
+				"pdf": False,
+				"excel": True,
+				"csv": True
+			},
 			"nombre_producto_familia": {
 				"label": "Familia",
 				"col_width_pdf": 200,
@@ -502,6 +530,13 @@ def headers_titles(agrupar, mostrar):
 		blank_cols = [""]
 	elif agrupar == "Modelo":
 		headers = {
+			"id_modelo_id": {
+				"label": "ID. Modelo",
+				"col_width_pdf": 0,
+				"pdf": False,
+				"excel": True,
+				"csv": True
+			},
 			"nombre_modelo": {
 				"label": "Modelo",
 				"col_width_pdf": 200,
@@ -516,6 +551,13 @@ def headers_titles(agrupar, mostrar):
 		blank_cols = []
 	
 	headers.update({
+		"id_marca_id": {
+			"label": "ID. Marca",
+			"col_width_pdf": 0,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
 		"nombre_producto_marca": {
 			"label": "Marca",
 			"col_width_pdf": 100,
@@ -535,15 +577,43 @@ def headers_titles(agrupar, mostrar):
 				"csv": True
 			},
 			"porcentaje_cantidad": {
-				"label": "Porcentaje",
+				"label": "Porcentaje Cant.",
 				"col_width_pdf": 50,
 				"pdf": True,
+				"excel": True,
+				"csv": True
+			},
+			"total": {
+				"label": "Total",
+				"col_width_pdf": 60,
+				"pdf": False,
+				"excel": True,
+				"csv": True
+			},
+			"porcentaje_total": {
+				"label": "Porcentaje Importe",
+				"col_width_pdf": 50,
+				"pdf": False,
 				"excel": True,
 				"csv": True
 			},
 		})
 	else:
 		headers.update({
+			"cantidad": {
+				"label": "Cantidad",
+				"col_width_pdf": 60,
+				"pdf": False,
+				"excel": True,
+				"csv": True
+			},
+			"porcentaje_cantidad": {
+				"label": "Porcentaje Cant.",
+				"col_width_pdf": 50,
+				"pdf": False,
+				"excel": True,
+				"csv": True
+			},
 			"total": {
 				"label": "Total",
 				"col_width_pdf": 60,
@@ -552,12 +622,22 @@ def headers_titles(agrupar, mostrar):
 				"csv": True
 			},
 			"porcentaje_total": {
-				"label": "Porcentaje",
+				"label": "Porcentaje Importe",
 				"col_width_pdf": 50,
 				"pdf": True,
 				"excel": True,
 				"csv": True
 			},
 		})
+	
+	headers.update({
+		"id_cliente_id": {
+			"label": "Cliente",
+			"col_width_pdf": 0,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+	})
 	
 	return headers, blank_cols

@@ -67,6 +67,13 @@ class ConfigViews:
 	
 	#-- Establecer las columnas del reporte y sus atributos.
 	table_info = {
+		"id_marca_id": {
+			"label": "ID Marca",
+			"col_width_pdf": 0,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
 		"nombre_producto_marca": {
 			"label": "Marca",
 			"col_width_pdf": 75,
@@ -74,9 +81,23 @@ class ConfigViews:
 			"excel": True,
 			"csv": True
 		},
+		"id_familia_id": {
+			"label": "ID Familia",
+			"col_width_pdf": 0,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
 		"nombre_producto_familia": {
 			"label": "Familia",
 			"col_width_pdf": 75,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+		"id_modelo_id": {
+			"label": "ID Modelo",
+			"col_width_pdf": 0,
 			"pdf": False,
 			"excel": True,
 			"csv": True
@@ -165,7 +186,14 @@ class ConfigViews:
 			"excel": True,
 			"csv": True
 		},
-	}
+		"id_sucursal_id": {
+			"label": "Sucursal",
+			"col_width_pdf": 0,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+}
 
 
 class VLEstadisticasVentasMarcaVendedorInformeView(InformeFormView):

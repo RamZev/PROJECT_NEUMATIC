@@ -1514,11 +1514,16 @@ class EstadisticasVentasManager(models.Manager):
 				id_producto_id,
 				cai,
 				nombre_producto,
+				unidad,
+				id_familia_id,
 				nombre_producto_familia,
+				id_modelo_id,
 				nombre_modelo,
+				id_marca_id,
 				nombre_producto_marca,
 				SUM(cantidad) AS cantidad, 
-				SUM(total) AS total
+				SUM(total) AS total,
+				id_cliente_id
 			FROM 
 				VLEstadisticasVentas
 			WHERE 
@@ -1544,8 +1549,8 @@ class EstadisticasVentasManager(models.Manager):
 			case "Familia":
 				query += " GROUP BY id_familia_id, id_marca_id"
 			case "Modelo":
-				# query += " GROUP BY id_modelo_id, id_marca_id"
-				query += " GROUP BY id_modelo_id"
+				query += " GROUP BY id_modelo_id, id_marca_id"
+				# query += " GROUP BY id_modelo_id"
 			case "Marca":
 				query += " GROUP BY id_marca_id"
 		

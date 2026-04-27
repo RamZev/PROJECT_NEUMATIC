@@ -17,7 +17,7 @@ from .report_views_generics import *
 from apps.ventas.models.recibo_models import TarjetaRecibo
 from apps.ventas.models.caja_models import Caja
 from ..forms.buscador_detallecupones_forms import BuscadorDetalleCuponesForm
-from utils.utils import deserializar_datos, normalizar, format_date, formato_argentino
+from utils.utils import deserializar_datos, normalizar, format_date, formato_argentino, format_user_display
 from utils.helpers.export_helpers import ExportHelper, PDFGenerator
 
 
@@ -212,10 +212,10 @@ class TarjetaReciboInformeView(InformeFormView):
 		
 		#-- Parámetros del listado.
 		caja = cleaned_data.get('caja', 0)
-		fecha_caja = Caja.objects.filter(numero_caja=caja).values_list('fecha_caja', flat=True).first()
-		datos_usuario_caja = Caja.objects.filter(numero_caja=caja).values('id_user__username', 'id_user__first_name', 'id_user__last_name').first()
+		caja_obj = Caja.objects.filter(numero_caja=caja).first()
 		
-		usuario_caja = f"{datos_usuario_caja['id_user__first_name']} {datos_usuario_caja['id_user__last_name']}" if datos_usuario_caja else datos_usuario_caja['id_user__username']
+		usuario_caja = format_user_display(caja_obj.id_user)
+		fecha_caja = caja_obj.fecha_caja if caja_obj else None
 		
 		fecha_hora_reporte = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
 		
