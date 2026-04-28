@@ -2199,7 +2199,7 @@ class VLTablaDinamicaVentasManager(models.Manager):
 			params.append(comprobantes_impositivos)
 		
 		#-- Agregar el ordenamiento acá por rendimiento en la consulta.
-		query += " ORDER by fecha_comprobante, comprobante"
+		query += " ORDER by fecha_comprobante"
 		
 		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
 		return self.raw(query, params)
@@ -2268,7 +2268,7 @@ class VLTablaDinamicaDetalleVentasManager(models.Manager):
 			params.append(comprobantes_impositivos)
 		
 		#-- Agregar el ordenamiento acá por rendimiento en la consulta.
-		query += " ORDER by fecha_comprobante, comprobante"
+		query += " ORDER by fecha_comprobante"
 		
 		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
 		return self.raw(query, params)
@@ -2350,7 +2350,7 @@ class VLTablaDinamicaEstadisticaManager(models.Manager):
 			params.append(comprobantes_impositivos)
 		
 		#-- Agregar el ordenamiento acá por rendimiento en la consulta.
-		query += " ORDER by fecha_comprobante, comprobante"
+		query += " ORDER by fecha_comprobante"
 		
 		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
 		return self.raw(query, params)
