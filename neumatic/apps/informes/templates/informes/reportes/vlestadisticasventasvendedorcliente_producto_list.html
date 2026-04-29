@@ -42,20 +42,20 @@
 		</thead>
 		<tbody>
 			
-			{% for vendedor_data in objetos.values %}
+			{% for id_vendedor, vendedor_data in objetos.items %}
 				<!-- Fila con los datos del Vendedor -->
 				<tr>
 					<td colspan="8" style="padding-top: 5px;">
-						<strong>Vendedor: {{ vendedor_data.vendedor }}</strong>
+						<strong>Vendedor: [{{id_vendedor}}] {{ vendedor_data.vendedor }}</strong>
 					</td>
 				</tr>
 				
-				{% for cliente_data in vendedor_data.clientes.values %}
+				{% for id_cliente, cliente_data in vendedor_data.clientes.items %}
 					<!-- Fila con los datos del Cliente -->
 					<tr>
 						<td></td>
 						<td colspan="7" style="padding-top: 5px;">
-							<strong>Cliente: {{ cliente_data.cliente }}</strong>
+							<strong>Cliente: [{{id_cliente}}] {{ cliente_data.cliente }}</strong>
 						</td>
 					</tr>
 					

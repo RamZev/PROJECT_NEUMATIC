@@ -198,7 +198,7 @@ class VLVentaMostradorInformeView(InformeFormView):
 		tipo_producto_dict = {"T": "Todos", "P": "Producto", "S": "Servicio"}
 		
 		param_right = {
-			"Sucursal": sucursal.nombre_sucursal if sucursal else "Todas",
+			"Sucursal": f"[{sucursal.id_sucursal}] {sucursal.nombre_sucursal}" if sucursal else "Todas",
 			"Desde": fecha_desde.strftime("%d/%m/%Y"),
 			"Hasta": fecha_hasta.strftime("%d/%m/%Y"),
 		}

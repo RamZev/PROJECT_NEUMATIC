@@ -14,7 +14,7 @@ from .report_views_generics import *
 from apps.ventas.models.caja_models import CajaArqueo
 from apps.ventas.models.caja_models import Caja
 from ..forms.buscador_cajaarqueo_forms import BuscadorCajaArqueoForm
-from utils.utils import deserializar_datos, normalizar, formato_argentino, formato_argentino_entero
+from utils.utils import deserializar_datos, normalizar, formato_argentino, formato_argentino_entero, format_user_display
 from utils.helpers.export_helpers import ExportHelper, PDFGenerator
 
 
@@ -151,17 +151,14 @@ class CajaArqueoInformeView(InformeFormView):
 		
 		#-- Parámetros del listado.
 		caja = cleaned_data.get('caja', 0)
-		
 		caja_obj = Caja.objects.filter(numero_caja=caja).first()
 		
-		datos_usuario_caja = caja_obj.id_user if caja_obj else None
-		
-		usuario_caja = f"{datos_usuario_caja.first_name} {datos_usuario_caja.last_name}" if datos_usuario_caja else datos_usuario_caja.username
+		usuario_caja = format_user_display(caja_obj.id_user)
 		
 		fecha_hora_reporte = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
 		
 		param_left = {
-			"Sucursal": caja_obj.id_sucursal.nombre_sucursal if caja_obj else "",
+			"Sucursal": f"[{caja_obj.id_sucursal.id_sucursal}] {caja_obj.id_sucursal.nombre_sucursal}" if caja_obj else "",
 			"Usuario": usuario_caja,
 		}
 		param_right = {

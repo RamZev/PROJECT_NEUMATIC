@@ -7,6 +7,7 @@ from datetime import date
 from .informes_generics_forms import InformesGenericForm
 from diseno_base.diseno_bootstrap import formclassdate, formclasstext, formclassselect, formclassnumb
 from apps.maestros.models.base_models import ComprobanteVenta
+from entorno.constantes_base import ORDEN_CHOICES
 
 
 class BuscadorPrecioDiferenteForm(InformesGenericForm):
@@ -38,7 +39,12 @@ class BuscadorPrecioDiferenteForm(InformesGenericForm):
 		required=False, 
 		label="Dif. superiro a",
 		widget=forms.NumberInput(attrs={**formclasstext})
-		# widget=forms.TextInput(attrs={**formclassnumb})
+	)
+	orden = forms.ChoiceField(
+		choices=ORDEN_CHOICES, 
+		label="Ordenar por", 
+		required=False,
+		widget=forms.Select(attrs={**formclassselect})
 	)
 	comprobantes = forms.ModelMultipleChoiceField(
 		queryset=ComprobanteVenta.objects.filter(estatus_comprobante_venta=True),

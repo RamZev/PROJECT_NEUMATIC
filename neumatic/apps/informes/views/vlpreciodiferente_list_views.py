@@ -181,6 +181,7 @@ class VLPrecioDiferenteInformeView(InformeFormView):
 		id_vendedor_hasta = cleaned_data.get("id_vendedor_hasta")
 		comprobantes = cleaned_data.get("comprobantes")
 		dif_mayor = cleaned_data.get("operario") or 0
+		orden = cleaned_data.get('orden')
 		
 		#-- Convertir a lista explícitamente.
 		codigos_comprobantes = list(comprobantes.values_list('codigo_comprobante_venta', flat=True)) if comprobantes else []
@@ -191,7 +192,8 @@ class VLPrecioDiferenteInformeView(InformeFormView):
 			id_vendedor_desde,
 			id_vendedor_hasta,
 			codigos_comprobantes,
-			dif_mayor
+			dif_mayor,
+			orden
 		)
 	
 	def obtener_contexto_reporte(self, queryset, cleaned_data):
@@ -207,13 +209,14 @@ class VLPrecioDiferenteInformeView(InformeFormView):
 		id_vendedor_hasta = cleaned_data.get("id_vendedor_hasta")
 		comprobantes = cleaned_data.get("comprobantes")
 		dif_mayor = cleaned_data.get("dif_mayor") or 0
+		orden = cleaned_data.get('orden')
 		
 		#-- Obtener los códigos de comprobantes.
 		codigos_comprobantes = ", ".join(list(comprobantes.values_list('codigo_comprobante_venta', flat=True)) if comprobantes else [])
 		
 		param_left = {
-			"Vendedor desde": id_vendedor_desde,
-			"Vendedor hasta": id_vendedor_hasta,
+			"Vendedor": f"Desde: {id_vendedor_desde} - Hasta: {id_vendedor_hasta}",
+			"Ordenado por": "Nombre Vendedor" if orden == "nombre" else "Código Vendedor",
 			"Comprobantes": codigos_comprobantes,
 		}
 		param_right = {

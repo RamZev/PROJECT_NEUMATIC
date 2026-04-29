@@ -251,7 +251,7 @@ class CuponesFechaInformeView(InformeFormView):
 		
 		param_left = {}
 		param_right = {
-			"Sucursal": sucursal.nombre_sucursal if sucursal else "Todas",
+			"Sucursal": f"[{sucursal.id_sucursal}] {sucursal.nombre_sucursal}" if sucursal else "Todas",
 			"Fecha desde": fecha_desde.strftime("%d/%m/%Y") if fecha_desde else "N/A",
 			"Fecha hasta": fecha_hasta.strftime("%d/%m/%Y") if fecha_hasta else "N/A",
 		}

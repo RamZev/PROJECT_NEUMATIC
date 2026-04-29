@@ -182,7 +182,7 @@ class VLVentaComproInformeView(InformeFormView):
 		sucursal = cleaned_data.get('sucursal', None)
 		
 		param_left = {
-			"Sucursal": sucursal.nombre_sucursal if sucursal else "Todas",
+			"Sucursal": f"[{sucursal.id_sucursal}] {sucursal.nombre_sucursal}" if sucursal else "Todas",
 		}
 		param_right = {
 			"Desde": fecha_desde.strftime("%d/%m/%Y"),

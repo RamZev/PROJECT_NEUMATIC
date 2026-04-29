@@ -172,14 +172,14 @@ class VLRemitosPendientesInformeView(InformeFormView):
 		param_right = {}
 		match filtrar_por:
 			case "vendedor":
-				param_right["Vendedor"] = cleaned_data.get("vendedor").nombre_vendedor
+				param_right["Vendedor"] = f"[{cleaned_data.get('vendedor').id_vendedor}] {cleaned_data.get('vendedor').nombre_vendedor}" if cleaned_data.get("vendedor") else "Todos"
 			case "clientes":
 				param_right["Cliente desde"] = str(cleaned_data.get("id_cli_desde", ""))
 				param_right["Cliente hasta"] = str(cleaned_data.get("id_cli_hasta", ""))
 			case "sucursal_fac":
-				param_right["Sucursal (fac)"] = cleaned_data.get("sucursal").nombre_sucursal
+				param_right["Sucursal (fac)"] = f"[{cleaned_data.get('sucursal').id_sucursal}] {cleaned_data.get('sucursal').nombre_sucursal}" if cleaned_data.get("sucursal") else "Todas"
 			case "sucursal_cli":
-				param_right["Sucursal (cli)"] = cleaned_data.get("sucursal").nombre_sucursal
+				param_right["Sucursal (cli)"] = f"[{cleaned_data.get('sucursal').id_sucursal}] {cleaned_data.get('sucursal').nombre_sucursal}" if cleaned_data.get("sucursal") else "Todas"
 		
 		fecha_hora_reporte = datetime.now().strftime("%d/%m/%Y %H:%M:%S")		
 		

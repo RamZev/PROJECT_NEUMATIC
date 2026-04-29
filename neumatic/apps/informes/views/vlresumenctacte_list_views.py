@@ -198,7 +198,7 @@ class VLResumenCtaCteInformeView(InformeFormView):
 			"Teléfono": cliente.telefono_cliente if cliente.telefono_cliente else "",
 		}
 		param_right = {
-			"Vendedor": cliente.id_vendedor.nombre_vendedor if cliente.id_vendedor else None
+			"Vendedor": f"[{cliente.id_vendedor.id_vendedor}] {cliente.id_vendedor.nombre_vendedor}" if cliente.id_vendedor else None
 		}
 		if resumen_pendiente:
 			#-- Reporte Resumen de Cuenta Pendiente.

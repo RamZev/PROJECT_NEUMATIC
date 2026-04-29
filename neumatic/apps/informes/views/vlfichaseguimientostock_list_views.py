@@ -223,6 +223,10 @@ class VLFichaSeguimientoStockInformeView(InformeFormView):
 		fecha_desde = cleaned_data.get('fecha_desde')
 		fecha_hasta = cleaned_data.get('fecha_hasta')
 		
+		# medida = cleaned_data.get('medida', '')
+		# producto = cleaned_data.get('producto', '')
+		# marca = cleaned_data.get('marca', '')
+		
 		fecha_hora_reporte = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
 		
 		buscar = "Código" if codigo else "CAI"
@@ -232,9 +236,12 @@ class VLFichaSeguimientoStockInformeView(InformeFormView):
 			"Medida": queryset[0].medida if queryset else "",
 			"Producto": queryset[0].nombre_producto if queryset else "",
 			"Marca": queryset[0].nombre_producto_marca if queryset else "",
+			# "Medida": medida,
+			# "Producto": producto,
+			# "Marca": marca,
 		}
 		param_right = {
-			"Sucursal": sucursal.nombre_sucursal if sucursal else "Todas",
+			"Sucursal": f"[{sucursal.id_sucursal}] {sucursal.nombre_sucursal}" if sucursal else "Todas",
 			"Desde": fecha_desde.strftime("%d/%m/%Y"),
 			"Hasta": fecha_hasta.strftime("%d/%m/%Y"),
 		}

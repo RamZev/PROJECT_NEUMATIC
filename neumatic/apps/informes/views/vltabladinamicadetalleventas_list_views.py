@@ -76,15 +76,6 @@ class ConfigViews:
 			"excel": True,
 			"csv": True
 		},
-		"nombre_sucursal": {
-			"label": "Sucursal",
-			"col_width_pdf": 0,
-			"pdf_paragraph": False,
-			"date_format": False,
-			"pdf": False,
-			"excel": True,
-			"csv": True
-		},
 		"comprobante": {
 			"label": "Comprobante",
 			"col_width_pdf": 65,
@@ -103,15 +94,6 @@ class ConfigViews:
 			"excel": True,
 			"csv": True
 		},
-		"fecha_comprobante": {
-			"label": "Fecha",
-			"col_width_pdf": 35,
-			"pdf_paragraph": False,
-			"date_format": True,
-			"pdf": True,
-			"excel": True,
-			"csv": True
-		},
 		"letra_comprobante": {
 			"label": "Letra",
 			"col_width_pdf": 0,
@@ -127,6 +109,24 @@ class ConfigViews:
 			"pdf_paragraph": False,
 			"date_format": False,
 			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+		"remito": {
+			"label": "Remito",
+			"col_width_pdf": 0,
+			"pdf_paragraph": False,
+			"date_format": False,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+		"fecha_comprobante": {
+			"label": "Fecha",
+			"col_width_pdf": 35,
+			"pdf_paragraph": False,
+			"date_format": True,
+			"pdf": True,
 			"excel": True,
 			"csv": True
 		},
@@ -177,6 +177,42 @@ class ConfigViews:
 		},
 		"mayorista": {
 			"label": "Mayorista",
+			"col_width_pdf": 0,
+			"pdf_paragraph": False,
+			"date_format": False,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+		"codigo_postal": {
+			"label": "Cód. Postal",
+			"col_width_pdf": 0,
+			"pdf_paragraph": False,
+			"date_format": False,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+		"nombre_localidad": {
+			"label": "Localidad",
+			"col_width_pdf": 0,
+			"pdf_paragraph": False,
+			"date_format": False,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+		"nombre_provincia": {
+			"label": "Provincia",
+			"col_width_pdf": 0,
+			"pdf_paragraph": False,
+			"date_format": False,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+		"nombre_vendedor": {
+			"label": "Vendedor",
 			"col_width_pdf": 0,
 			"pdf_paragraph": False,
 			"date_format": False,
@@ -346,44 +382,8 @@ class ConfigViews:
 			"excel": True,
 			"csv": True
 		},
-		"codigo_postal": {
-			"label": "Cód. Postal",
-			"col_width_pdf": 0,
-			"pdf_paragraph": False,
-			"date_format": False,
-			"pdf": False,
-			"excel": True,
-			"csv": True
-		},
-		"nombre_localidad": {
-			"label": "Localidad",
-			"col_width_pdf": 0,
-			"pdf_paragraph": False,
-			"date_format": False,
-			"pdf": False,
-			"excel": True,
-			"csv": True
-		},
-		"nombre_provincia": {
-			"label": "Provincia",
-			"col_width_pdf": 0,
-			"pdf_paragraph": False,
-			"date_format": False,
-			"pdf": False,
-			"excel": True,
-			"csv": True
-		},
-		"nombre_vendedor": {
-			"label": "Vendedor",
-			"col_width_pdf": 0,
-			"pdf_paragraph": False,
-			"date_format": False,
-			"pdf": False,
-			"excel": True,
-			"csv": True
-		},
-		"comision": {
-			"label": "Comisión",
+		"nombre_sucursal": {
+			"label": "Sucursal",
 			"col_width_pdf": 0,
 			"pdf_paragraph": False,
 			"date_format": False,
@@ -419,7 +419,7 @@ class ConfigViews:
 			"csv": True
 		},
 		"nombre_marketing_origen": {
-			"label": "Marketing",
+			"label": "Conoció en",
 			"col_width_pdf": 0,
 			"pdf_paragraph": False,
 			"date_format": None,

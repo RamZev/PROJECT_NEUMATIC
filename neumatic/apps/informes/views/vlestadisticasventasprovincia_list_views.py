@@ -11,9 +11,11 @@ from reportlab.lib import colors
 from reportlab.lib.pagesizes import A4, landscape, portrait
 from reportlab.platypus import Paragraph
 
+
 from .report_views_generics import *
 from apps.informes.models import VLEstadisticasVentasProvincia
 from apps.maestros.models.vendedor_models import Vendedor
+from apps.maestros.models.base_models import Provincia
 from ..forms.buscador_vlestadisticasventasprovincia_forms import BuscadorEstadisticasVentasProvinciaForm
 from utils.utils import deserializar_datos, formato_argentino, normalizar, raw_to_dict
 from utils.helpers.export_helpers import ExportHelper, PDFGenerator
@@ -143,6 +145,7 @@ class VLEstadisticasVentasProvinciaInformeView(InformeFormView):
 		#-- Parámetros del listado.
 		sucursal = cleaned_data.get('sucursal', None)
 		vendedor = cleaned_data.get('vendedor', None)
+		provincia = cleaned_data.get('provincia', None)
 		fecha_desde = cleaned_data.get('fecha_desde')
 		fecha_hasta = cleaned_data.get('fecha_hasta')
 		id_marca_desde = cleaned_data.get('id_marca_desde')
@@ -151,12 +154,14 @@ class VLEstadisticasVentasProvinciaInformeView(InformeFormView):
 		mostrar = cleaned_data.get('mostrar', None)
 		
 		vendedor = Vendedor.objects.filter(pk=vendedor.id_vendedor).first() if vendedor else None
+		provincia = Provincia.objects.filter(pk=provincia.id_provincia).first() if provincia else None
 		
 		fecha_hora_reporte = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
 		
 		param_left = {
-			"Sucursal": sucursal.nombre_sucursal if sucursal else "Todas",
-			"Vendedor": vendedor.nombre_vendedor if vendedor else "Todos",
+			"Sucursal": f"[{sucursal.id_sucursal}] {sucursal.nombre_sucursal}" if sucursal else "Todas",
+			"Vendedor": f"[{vendedor.id_vendedor}] {vendedor.nombre_vendedor}" if vendedor else "Todos",
+			"Provincia": f"[{provincia.id_provincia}] {provincia.nombre_provincia}" if provincia else "Todas",
 			"Agrupado por": agrupar,
 			"Mostrar por": mostrar
 		}

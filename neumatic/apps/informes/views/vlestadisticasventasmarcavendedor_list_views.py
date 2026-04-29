@@ -67,6 +67,13 @@ class ConfigViews:
 	
 	#-- Establecer las columnas del reporte y sus atributos.
 	table_info = {
+		"id_marca_id": {
+			"label": "ID Marca",
+			"col_width_pdf": 0,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
 		"nombre_producto_marca": {
 			"label": "Marca",
 			"col_width_pdf": 75,
@@ -74,9 +81,23 @@ class ConfigViews:
 			"excel": True,
 			"csv": True
 		},
+		"id_familia_id": {
+			"label": "ID Familia",
+			"col_width_pdf": 0,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
 		"nombre_producto_familia": {
 			"label": "Familia",
 			"col_width_pdf": 75,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+		"id_modelo_id": {
+			"label": "ID Modelo",
+			"col_width_pdf": 0,
 			"pdf": False,
 			"excel": True,
 			"csv": True
@@ -165,7 +186,14 @@ class ConfigViews:
 			"excel": True,
 			"csv": True
 		},
-	}
+		"id_sucursal_id": {
+			"label": "Sucursal",
+			"col_width_pdf": 0,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+}
 
 
 class VLEstadisticasVentasMarcaVendedorInformeView(InformeFormView):
@@ -225,9 +253,9 @@ class VLEstadisticasVentasMarcaVendedorInformeView(InformeFormView):
 		fecha_hora_reporte = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
 		
 		param_left = {
-			"Sucursal": sucursal.nombre_sucursal if sucursal else "Todas",
-			"Marca": marca.nombre_producto_marca if marca else "Todas",
-			"Vendedor": vendedor.nombre_vendedor if vendedor else "Todos",
+			"Sucursal": f"[{sucursal.id_sucursal}] {sucursal.nombre_sucursal}" if sucursal else "Todas",
+			"Marca": f"[{marca.id_producto_marca}] {marca.nombre_producto_marca}" if marca else "Todas",
+			"Vendedor": f"[{vendedor.id_vendedor}] {vendedor.nombre_vendedor}" if vendedor else "Todos",
 		}
 		param_right = {
 			"Desde": fecha_desde.strftime("%d/%m/%Y"),

@@ -121,6 +121,15 @@ class ConfigViews:
 			"excel": True,
 			"csv": True
 		},
+		"remito": {
+			"label": "Remito",
+			"col_width_pdf": 0,
+			"pdf_paragraph": False,
+			"date_format": False,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
 		"condicion_comprobante": {
 			"label": "Condición",
 			"col_width_pdf": 50,
@@ -212,7 +221,7 @@ class ConfigViews:
 			"csv": True
 		},
 		"total": {
-			"label": "Importe",
+			"label": "Total",
 			"col_width_pdf": 80,
 			"pdf_paragraph": False,
 			"date_format": None,
@@ -274,15 +283,6 @@ class ConfigViews:
 			"excel": True,
 			"csv": True
 		},
-		"comision": {
-			"label": "Comisión",
-			"col_width_pdf": 0,
-			"pdf_paragraph": False,
-			"date_format": None,
-			"pdf": False,
-			"excel": True,
-			"csv": True
-		},
 		"promo": {
 			"label": "Promo",
 			"col_width_pdf": 0,
@@ -293,7 +293,7 @@ class ConfigViews:
 			"csv": True
 		},
 		"nombre_marketing_origen": {
-			"label": "Marketing",
+			"label": "Conoció en",
 			"col_width_pdf": 0,
 			"pdf_paragraph": False,
 			"date_format": None,

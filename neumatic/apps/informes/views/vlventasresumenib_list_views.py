@@ -300,7 +300,7 @@ class VLVentasResumenIBInformeView(InformeFormView):
 		MESES_DICT = dict(MESES)
 		
 		param_left = {
-			"Sucursal": sucursal.nombre_sucursal,
+			"Sucursal": f"[{sucursal.id_sucursal}] {sucursal.nombre_sucursal}" if sucursal else "Todas",
 		}
 		param_right = {
 			"Período": f"{MESES_DICT[mes]}/{anno}",

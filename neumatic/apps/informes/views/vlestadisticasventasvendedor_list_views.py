@@ -152,8 +152,8 @@ class VLEstadisticasVentasVendedorInformeView(InformeFormView):
 		fecha_hora_reporte = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
 		
 		param_left = {
-			"Sucursal": sucursal.nombre_sucursal if sucursal else "Todas",
-			"Vendedor": vendedor.nombre_vendedor if vendedor else "Todos",
+			"Sucursal": f"[{sucursal.id_sucursal}] {sucursal.nombre_sucursal}" if sucursal else "Todas",
+			"Vendedor": f"[{vendedor.id_vendedor}] {vendedor.nombre_vendedor}" if vendedor else "Todos",
 			"Agrupado por": agrupar,
 			"Mostrar por": mostrar
 		}

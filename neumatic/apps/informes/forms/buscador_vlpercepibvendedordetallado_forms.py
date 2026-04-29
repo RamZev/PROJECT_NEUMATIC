@@ -4,7 +4,8 @@ from django import forms
 from datetime import date
 
 from .informes_generics_forms import InformesGenericForm
-from diseno_base.diseno_bootstrap import formclassdate
+from diseno_base.diseno_bootstrap import formclassdate, formclassselect
+from entorno.constantes_base import ORDEN_CHOICES
 
 
 class BuscadorPercepIBVendedorDetalladoForm(InformesGenericForm):
@@ -18,6 +19,12 @@ class BuscadorPercepIBVendedorDetalladoForm(InformesGenericForm):
 		required=False, 
 		label="Hasta Fecha",
 		widget=forms.TextInput(attrs={'type':'date', **formclassdate})
+	)
+	orden = forms.ChoiceField(
+		choices=ORDEN_CHOICES, 
+		label="Ordenar por", 
+		required=False,
+		widget=forms.Select(attrs={**formclassselect})
 	)
 	
 	def __init__(self, *args, **kwargs):

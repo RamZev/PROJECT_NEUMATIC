@@ -142,8 +142,8 @@ MOSTRAR = [
 ]
 	
 ESTADISTICAS = [
-	(True, 'Participan en Estadísticas'),
-	(False, 'NO Participan en Estadísticas')
+	(False, 'Participan en Estadísticas'),
+	(True, 'NO Participan en Estadísticas')
 ]
 
 ORDEN = [

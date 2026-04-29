@@ -18,6 +18,7 @@ from apps.maestros.models.vendedor_models import Vendedor
 from ..forms.buscador_vendedor_forms import BuscadorVendedorForm
 from utils.utils import deserializar_datos, normalizar
 from utils.helpers.export_helpers import ExportHelper, PDFGenerator, add_row_table
+from entorno.constantes_base import ORDEN_CHOICES
 
 
 class ConfigViews:
@@ -262,16 +263,11 @@ class VendedorInformeView(InformeFormView):
 		
 		fecha_hora_reporte = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
 		
-		orden_dict = {
-			'nombre': 'Nombre',
-			'codigo': 'Código'
-		}
-		
 		param_left = {
 			"Estatus": estatus.capitalize(),
 		}
 		param_right = {
-			"Ordenado por": orden_dict.get(orden),
+			"Ordenado por": dict(ORDEN_CHOICES).get(orden, "nombre"),
 		}
 		if desde and hasta:
 			param_right.update({

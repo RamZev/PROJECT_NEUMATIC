@@ -18,6 +18,7 @@ from apps.maestros.models.cliente_models import Cliente
 from ..forms.buscador_cliente_forms import BuscadorClienteForm
 from utils.utils import deserializar_datos, normalizar
 from utils.helpers.export_helpers import ExportHelper, PDFGenerator, add_row_table
+from entorno.constantes_base import ORDEN_CHOICES
 
 
 class ConfigViews:
@@ -266,13 +267,13 @@ class ClienteInformeView(InformeFormView):
 		fecha_hora_reporte = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
 		
 		param_left = {
-			"Vendedor": vendedor.nombre_vendedor if vendedor else "Todos",
-			"Provincia": provincia.nombre_provincia if provincia else "Todas",
-			"Localidad": localidad.nombre_localidad if localidad else "Todas",
+			"Vendedor": f"[{vendedor.id_vendedor}] {vendedor.nombre_vendedor}" if vendedor else "Todos",
+			"Provincia": f"[{provincia.id_provincia}] {provincia.nombre_provincia}" if provincia else "Todas",
+			"Localidad": f"[{localidad.id_localidad}] {localidad.nombre_localidad}" if localidad else "Todas",
 		}
 		param_right = {
 			"Estatus": estatus.capitalize(),
-			"Ordenado por": orden,
+			"Ordenado por": dict(ORDEN_CHOICES).get(orden, "nombre"),
 		}
 		if desde and hasta:
 			param_right.update({

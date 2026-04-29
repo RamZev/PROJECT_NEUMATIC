@@ -43,9 +43,9 @@
 			{% for obj in objetos %}
 				<tr>
 					<td>{{ obj.estatus_medida_estado|get_estatus }}</td>
-					<td>{{ obj.cai_valor }}</td>
-					<td>{{ obj.medida_valor }}</td>
-					<td>{{ obj.nombre_producto_valor }}</td>
+					<td>{{ obj.cai_valor|default_if_none:"" }}</td>
+					<td>{{ obj.medida_valor|default_if_none:"" }}</td>
+					<td>{{ obj.nombre_producto_valor|default_if_none:"" }}</td>
 					<td class="numeric pr-15">{{ obj.stock_desde }}</td>
 					<td class="numeric pr-15">{{ obj.stock_hasta }}</td>
 					<td>{{ obj.estado_valor }}</td>

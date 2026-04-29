@@ -109,6 +109,20 @@ class ConfigViews:
 			"excel": True,
 			"csv": True
 		},
+		"id_vendedor_id": {
+			"label": "Vendedor",
+			"col_width_pdf": 40,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+		"nombre_vendedor": {
+			"label": "Nombre",
+			"col_width_pdf": 0,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
 		"saldo": {
 			"label": "Saldo",
 			"col_width_pdf": 60,
@@ -179,10 +193,9 @@ class VLSaldosClientesInformeView(InformeFormView):
 		}
 		
 		if vendedor:
-			param_right["Clientes del vendedor"] = vendedor.nombre_vendedor
+			param_right["Clientes del vendedor"] = f"[{vendedor.id_vendedor}] {vendedor.nombre_vendedor}" if vendedor else "Todos los Vendedores"
 		else:
 			param_right["Listado"] = "Todos los Clientes"
-			
 		
 		fecha_hora_reporte = datetime.now().strftime("%d/%m/%Y %H:%M:%S")		
 		

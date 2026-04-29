@@ -18,6 +18,7 @@ CREATE VIEW "VLSaldosClientes" AS
 		c.telefono_cliente, 
 		c.sub_cuenta, 
 		c.id_vendedor_id, 
+		v.nombre_vendedor,
 		f.total,
 		f.entrega, 
 		f.condicion_comprobante,
@@ -26,6 +27,7 @@ CREATE VIEW "VLSaldosClientes" AS
 		factura f 
 		JOIN cliente c ON f.id_cliente_id = c.id_cliente 
 		JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta 
+		JOIN vendedor v ON c.id_vendedor_id = v.id_vendedor
 		LEFT JOIN localidad l ON c.id_localidad_id = l.id_localidad
 	WHERE 
 		f.condicion_comprobante = 2
@@ -672,7 +674,7 @@ CREATE VIEW "VLComisionOperario" AS
 		p.nombre_producto,
 		(df.total*cv.mult_estadistica) * 1.0 AS total,
 		(pf.comision_operario) * 1.0 AS comision_operario,
-		(((df.total*cv.mult_estadistica) * pf.comision_operario / 100)) * 1.0 AS monto_comision
+		ROUND(((df.total * cv.mult_estadistica) * pf.comision_operario) / 100.0, 2) AS monto_comision
 	FROM
 		detalle_factura df
 		JOIN factura f ON df.id_factura_id = f.id_factura
@@ -756,6 +758,7 @@ CREATE VIEW "VLEstadisticasVentas" AS
 		df.id_producto_id, 
 		pc.cai,
 		p.nombre_producto,
+		p.unidad,
 		p.id_familia_id,
 		pf.nombre_producto_familia, 
 		p.id_modelo_id,
@@ -763,7 +766,7 @@ CREATE VIEW "VLEstadisticasVentas" AS
 		p.id_marca_id,
 		m.nombre_producto_marca,
 		df.cantidad*cv.mult_estadistica AS cantidad,
-		((df.cantidad*df.precio)+(df.cantidad*df.precio*df.descuento/100))*cv.mult_estadistica AS total,
+		ROUND(((df.cantidad*df.precio)+(df.cantidad*df.precio*df.descuento/100.0))*cv.mult_estadistica, 2) AS total,
 		f.fecha_comprobante,
 		f.id_cliente_id,
 		f.id_sucursal_id
@@ -799,7 +802,7 @@ CREATE VIEW "VLEstadisticasVentasVendedor" AS
 		p.id_marca_id,
 		m.nombre_producto_marca,
 		df.cantidad*cv.mult_estadistica AS cantidad,
-		((df.cantidad*df.precio)+(df.cantidad*df.precio*df.descuento/100))*cv.mult_estadistica AS total,
+		ROUND(((df.cantidad*df.precio)+(df.cantidad*df.precio*df.descuento/100.0))*cv.mult_estadistica, 2) AS total,
 		f.fecha_comprobante,
 		p.id_marca_id,
 		f.id_sucursal_id,
@@ -833,7 +836,7 @@ CREATE VIEW "VLEstadisticasVentasVendedorCliente" AS
 		p.id_marca_id,
 		m.nombre_producto_marca,
 		df.cantidad*cv.mult_estadistica AS cantidad,
-		((df.cantidad*df.precio)+(df.cantidad*df.precio*df.descuento/100))*cv.mult_estadistica AS total,
+		ROUND(((df.cantidad*df.precio)+(df.cantidad*df.precio*df.descuento/100.0))*cv.mult_estadistica, 2) AS total,
 		f.fecha_comprobante,
 		f.id_sucursal_id,
 		f.id_cliente_id,
@@ -873,7 +876,7 @@ CREATE VIEW "VLEstadisticasSegunCondicion" AS
 		p.nombre_producto,
 		df.reventa,
 		df.cantidad*cv.mult_estadistica AS cantidad,
-		((df.precio+(df.precio*df.descuento/100))*df.cantidad)*cv.mult_estadistica AS importe,
+		ROUND(((df.precio+(df.precio*df.descuento/100.0))*df.cantidad)*cv.mult_estadistica, 2) AS importe,
 		df.costo*df.cantidad*cv.mult_estadistica AS costo,
 		f.fecha_comprobante,
 		f.id_sucursal_id
@@ -942,9 +945,12 @@ CREATE VIEW "VLEstadisticasVentasMarcaVendedor" AS
 		p.nombre_producto,
 		p.medida,
 		df.cantidad,
-		df.precio,
+		df.costo*cv.mult_stock*-1 AS precio,    -- Original (doc. en DRIVE). Toma costo del detalle de factura.
+		--p.costo*cv.mult_stock*-1 AS precio,   -- Para que cuadre con el rep. de la VPN
 		df.descuento,
-		df.total,
+		--(df.costo+(df.costo*df.descuento/100.0))*df.cantidad*cv.mult_estadistica AS total,  -- Consulta original (doc. en DRIVE)
+		--(p.costo*df.cantidad)*(1+(df.descuento/100.0)) * cv.mult_estadistica  AS 'total',   -- Así cuadra con reportes de la VPN
+		(df.costo*df.cantidad)*(1+(df.descuento/100.0)) * cv.mult_estadistica  AS 'total',    -- Tomando costo del detalle de factura.
 		f.id_sucursal_id,
 		c.id_vendedor_id,
 		p.id_marca_id,
@@ -1004,7 +1010,7 @@ CREATE VIEW "VLEstadisticasVentasProvincia" AS
 		p.id_marca_id,
 		m.nombre_producto_marca,
 		df.cantidad*cv.mult_estadistica AS cantidad,
-		((df.cantidad*df.precio)+(df.cantidad*df.precio*df.descuento/100))*cv.mult_estadistica AS total,
+		ROUND(((df.cantidad*df.precio)+(df.cantidad*df.precio*df.descuento/100.0))*cv.mult_estadistica, 2) AS total,
 		f.fecha_comprobante,
 		p.id_marca_id,
 		f.id_sucursal_id,
@@ -1065,6 +1071,10 @@ CREATE VIEW "VLTablaDinamicaVentas" AS
 		f.fecha_comprobante,
 		f.letra_comprobante,
 		f.numero_comprobante,
+		CASE
+			WHEN f.remito is NOT NULL AND f.remito != '' AND f.remito != '0000-00000000' THEN f.remito
+			ELSE ''
+		END AS 'remito',
 		(f.compro || ' ' || f.letra_comprobante || ' ' || SUBSTR(printf('%012d', f.numero_comprobante), 1, 4) || '-' || SUBSTR(printf('%012d', f.numero_comprobante), 5)) AS comprobante, 
 		CASE f.condicion_comprobante
 			WHEN 1 THEN 'Contado'
@@ -1080,14 +1090,13 @@ CREATE VIEW "VLTablaDinamicaVentas" AS
 		f.exento*cv.mult_venta AS exento,
 		f.iva*cv.mult_venta AS iva,
 		f.percep_ib*cv.mult_venta AS percepcion,
-		f.total*cv.mult_venta AS total,
+		f.'total'*cv.mult_venta AS 'total',
 		f.no_estadist,
 		f.id_user_id,
 		c.codigo_postal,
 		l.nombre_localidad,
 		p.nombre_provincia,
 		v.nombre_vendedor,
-		f.comision,
 		f.promo,
 		cv.libro_iva,
 		mo.nombre_marketing_origen
@@ -1116,6 +1125,10 @@ CREATE VIEW "VLTablaDinamicaDetalleVentas" AS
 		f.fecha_comprobante,
 		f.letra_comprobante,
 		f.numero_comprobante,
+		CASE
+			WHEN f.remito is NOT NULL AND f.remito != '' AND f.remito != '0000-00000000' THEN f.remito
+			ELSE ''
+		END AS 'remito',
 		(f.compro || ' ' || f.letra_comprobante || ' ' || SUBSTR(printf('%012d', f.numero_comprobante), 1, 4) || '-' || SUBSTR(printf('%012d', f.numero_comprobante), 5)) AS comprobante, 
 		CASE f.condicion_comprobante
 			WHEN 1 THEN 'Contado'
@@ -1142,14 +1155,13 @@ CREATE VIEW "VLTablaDinamicaDetalleVentas" AS
 		df.no_gravado*cv.mult_venta AS no_gravado,
 		df.alic_iva,
 		df.iva*cv.mult_venta AS iva,
-		df.total*cv.mult_venta AS total,
+		df.'total'*cv.mult_venta AS 'total',
 		f.no_estadist,
 		f.id_user_id,
 		c.codigo_postal,
 		l.nombre_localidad,
 		pr.nombre_provincia,
 		v.nombre_vendedor,
-		f.comision,
 		df.id_operario_id,
 		o.nombre_operario,
 		f.promo,
@@ -1157,20 +1169,20 @@ CREATE VIEW "VLTablaDinamicaDetalleVentas" AS
 		mo.nombre_marketing_origen
 	FROM
 		detalle_factura df
-		LEFT JOIN factura f ON df.id_factura_id = f.id_factura
-		LEFT JOIN producto p ON df.id_producto_id = p.id_producto
-		LEFT JOIN producto_familia pf ON p.id_familia_id = pf.id_producto_familia
-		LEFT JOIN producto_marca pm ON p.id_marca_id = pm.id_producto_marca
-		LEFT JOIN operario o ON df.id_operario_id = o.id_operario
-		LEFT JOIN cliente c ON f.id_cliente_id = c.id_cliente
-		LEFT JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
-		LEFT JOIN vendedor v ON c.id_vendedor_id = v.id_vendedor
-		LEFT JOIN sucursal s ON f.id_sucursal_id = s.id_sucursal
+		JOIN factura f ON df.id_factura_id = f.id_factura
+		JOIN producto p ON df.id_producto_id = p.id_producto
+		JOIN producto_familia pf ON p.id_familia_id = pf.id_producto_familia
+		JOIN producto_marca pm ON p.id_marca_id = pm.id_producto_marca
+		JOIN operario o ON df.id_operario_id = o.id_operario
+		JOIN cliente c ON f.id_cliente_id = c.id_cliente
+		JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
+		JOIN vendedor v ON c.id_vendedor_id = v.id_vendedor
+		JOIN sucursal s ON f.id_sucursal_id = s.id_sucursal
 		LEFT JOIN localidad l ON c.id_localidad_id = l.id_localidad
 		LEFT JOIN provincia pr ON l.id_provincia_id = pr.id_provincia
 		LEFT JOIN producto_cai pc ON p.id_cai_id = pc.id_cai
-		LEFT JOIN tipo_iva ti ON c.id_tipo_iva_id = ti.id_tipo_iva
-		LEFT JOIN marketing_origen mo ON f.id_marketing_origen_id = mo.id_marketing_origen;
+		JOIN tipo_iva ti ON c.id_tipo_iva_id = ti.id_tipo_iva
+		JOIN marketing_origen mo ON f.id_marketing_origen_id = mo.id_marketing_origen;
 
 
 -- ---------------------------------------------------------------------------
@@ -1186,6 +1198,10 @@ CREATE VIEW "VLTablaDinamicaEstadistica" AS
 		f.fecha_comprobante,
 		f.letra_comprobante,
 		f.numero_comprobante,
+		CASE
+			WHEN f.remito is NOT NULL AND f.remito != '' AND f.remito != '0000-00000000' THEN f.remito
+			ELSE ''
+		END AS 'remito',
 		(f.compro || ' ' || f.letra_comprobante || ' ' || SUBSTR(printf('%012d', f.numero_comprobante), 1, 4) || '-' || SUBSTR(printf('%012d', f.numero_comprobante), 5)) AS comprobante, 
 		CASE f.condicion_comprobante
 			WHEN 1 THEN 'Contado'
@@ -1212,14 +1228,13 @@ CREATE VIEW "VLTablaDinamicaEstadistica" AS
 		df.no_gravado*cv.mult_estadistica AS no_gravado,
 		df.alic_iva,
 		df.iva*cv.mult_estadistica AS iva,
-		df.total*cv.mult_estadistica AS total,
+		df.'total'*cv.mult_estadistica AS 'total',
 		f.no_estadist,
 		f.id_user_id,
 		c.codigo_postal,
 		l.nombre_localidad,
 		pr.nombre_provincia,
 		v.nombre_vendedor,
-		f.comision,
 		df.id_operario_id,
 		o.nombre_operario,
 		f.promo,
@@ -1227,20 +1242,20 @@ CREATE VIEW "VLTablaDinamicaEstadistica" AS
 		mo.nombre_marketing_origen
 	FROM
 		detalle_factura df
-		LEFT JOIN factura f ON df.id_factura_id = f.id_factura
-		LEFT JOIN producto p ON df.id_producto_id = p.id_producto
-		LEFT JOIN producto_familia pf ON p.id_familia_id = pf.id_producto_familia
-		LEFT JOIN producto_marca pm ON p.id_marca_id = pm.id_producto_marca
-		LEFT JOIN operario o ON df.id_operario_id = o.id_operario
-		LEFT JOIN cliente c ON f.id_cliente_id = c.id_cliente
-		LEFT JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
-		LEFT JOIN vendedor v ON c.id_vendedor_id = v.id_vendedor
-		LEFT JOIN sucursal s ON f.id_sucursal_id = s.id_sucursal
+		JOIN factura f ON df.id_factura_id = f.id_factura
+		JOIN producto p ON df.id_producto_id = p.id_producto
+		JOIN producto_familia pf ON p.id_familia_id = pf.id_producto_familia
+		JOIN producto_marca pm ON p.id_marca_id = pm.id_producto_marca
+		JOIN operario o ON df.id_operario_id = o.id_operario
+		JOIN cliente c ON f.id_cliente_id = c.id_cliente
+		JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
+		JOIN vendedor v ON c.id_vendedor_id = v.id_vendedor
+		JOIN sucursal s ON f.id_sucursal_id = s.id_sucursal
 		LEFT JOIN localidad l ON c.id_localidad_id = l.id_localidad
 		LEFT JOIN provincia pr ON l.id_provincia_id = pr.id_provincia
 		LEFT JOIN producto_cai pc ON p.id_cai_id = pc.id_cai
-		LEFT JOIN tipo_iva ti ON c.id_tipo_iva_id = ti.id_tipo_iva
-		LEFT JOIN marketing_origen mo ON f.id_marketing_origen_id = mo.id_marketing_origen
+		JOIN tipo_iva ti ON c.id_tipo_iva_id = ti.id_tipo_iva
+		JOIN marketing_origen mo ON f.id_marketing_origen_id = mo.id_marketing_origen
 	WHERE
 		cv.mult_estadistica<>0
 		AND f.no_estadist=False;
@@ -1381,7 +1396,6 @@ CREATE VIEW "VLStockFecha" AS
 		px.nombre_producto_marca,
 		ps.id_producto_id,
 		p.id_cai_id,
-	--	p.cai,
 		pc.cai,
 		p.medida,
 		p.nombre_producto,
@@ -1583,9 +1597,7 @@ CREATE VIEW VLFichaSeguimientoStock AS
 			f.fecha_comprobante,
 			(f.compro || ' ' || f.letra_comprobante || ' ' || SUBSTR(printf('%012d', f.numero_comprobante), 1, 4) || '-' || SUBSTR(printf('%012d', f.numero_comprobante), 5)) AS comprobante,
 			(df.cantidad * cv.mult_stock) AS cantidad,
-			--df.precio,
 			CAST(COALESCE(df.precio, 0.0) AS DECIMAL) AS precio,
-			--df.total,
 			CAST(COALESCE(df.total, 0.0) AS DECIMAL) AS total,
 			f.id_cliente_id AS id_cliente_proveedor,
 			c.nombre_cliente AS nombre_cliente_proveedor,
@@ -1618,9 +1630,7 @@ CREATE VIEW VLFichaSeguimientoStock AS
 			c.fecha_comprobante,
 			(c.compro || ' ' || c.letra_comprobante || ' ' || SUBSTR(printf('%012d', c.numero_comprobante), 1, 4) || '-' || SUBSTR(printf('%012d', c.numero_comprobante), 5)) AS comprobante,
 			(dc.cantidad * cc.mult_stock) AS cantidad,
-			--dc.precio,
 			CAST(COALESCE(dc.precio, 0.0) AS DECIMAL) AS precio,
-			--dc.total,
 			CAST(COALESCE(dc.total, 0.0) AS DECIMAL) AS total, 
 			c.id_proveedor_id AS id_cliente_proveedor,
 			pr.nombre_proveedor AS nombre_cliente_proveedor,

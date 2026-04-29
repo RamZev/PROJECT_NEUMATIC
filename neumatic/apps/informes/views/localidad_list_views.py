@@ -182,12 +182,12 @@ class LocalidadInformeView(InformeFormView):
 		fecha_hora_reporte = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
 		
 		orden_dict = {
-			"nombre": "Nombre",
-			"codigo": "Código"
+			"nombre": "Nombre Localidad",
+			"codigo": "Código Localidad",
 		}
 		
 		param_left = {
-			"Provincia": provincia.nombre_provincia if provincia else "Todas",
+			"Provincia": f"[{provincia.id_provincia}] {provincia.nombre_provincia}" if provincia else "Todas",
 		}
 		param_right = {
 			"Estatus": estatus.capitalize(),

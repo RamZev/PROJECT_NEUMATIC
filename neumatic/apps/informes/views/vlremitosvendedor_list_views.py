@@ -166,7 +166,7 @@ class VLRemitosVendedorInformeView(InformeFormView):
 		fecha_hasta = cleaned_data.get('fecha_hasta')
 		
 		param_left = {
-			"Vendedor": vendedor.nombre_vendedor,
+			"Vendedor": f"[{vendedor.id_vendedor}] {vendedor.nombre_vendedor}" if vendedor else "Todos",
 		}
 		param_right = {
 			"Desde": fecha_desde.strftime("%d/%m/%Y"),

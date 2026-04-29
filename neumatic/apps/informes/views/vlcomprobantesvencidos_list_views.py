@@ -162,8 +162,8 @@ class VLComprobantesVencidosInformeView(InformeFormView):
 		
 		param_left = {}
 		param_right = {
-			"Vendedor": vendedor.nombre_vendedor if vendedor else "Todos",
-			"Sucursal": sucursal.nombre_sucursal if sucursal else "Todas",
+			"Vendedor": f"[{vendedor.id_vendedor}] {vendedor.nombre_vendedor}" if vendedor else "Todos",
+			"Sucursal": f"[{sucursal.id_sucursal}] {sucursal.nombre_sucursal}" if sucursal else "Todas",
 			"Antigüedad mayor a (días)": dias,
 		}
 		
@@ -171,6 +171,11 @@ class VLComprobantesVencidosInformeView(InformeFormView):
 		
 		#-- Convertir cada objeto del queryset a un diccionario.
 		objetos_serializables = serializar_queryset(queryset)
+		
+		#-- Calcular las sumas de total, entrega y saldo iterando sobre los datos serializados
+		total_sum = sum(obj.get('total', 0) or 0 for obj in objetos_serializables)
+		entrega_sum = sum(obj.get('entrega', 0) or 0 for obj in objetos_serializables)
+		saldo_sum = sum(obj.get('saldo', 0) or 0 for obj in objetos_serializables)
 		
 		#-- Se retorna un contexto que será consumido tanto para la vista en pantalla como para la generación del PDF.
 		return {
@@ -180,6 +185,9 @@ class VLComprobantesVencidosInformeView(InformeFormView):
 			'fecha_hora_reporte': fecha_hora_reporte,
 			'titulo': ConfigViews.report_title,
 			'css_url': static('css/reportes.css'),
+			'total_sum': total_sum,
+			'entrega_sum': entrega_sum,
+			'saldo_sum': saldo_sum,
 		}
 	
 	def get_context_data(self, **kwargs):

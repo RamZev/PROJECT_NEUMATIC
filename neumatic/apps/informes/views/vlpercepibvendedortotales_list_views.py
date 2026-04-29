@@ -114,8 +114,9 @@ class VLPercepIBVendedorTotalesInformeView(InformeFormView):
 	def obtener_queryset(self, cleaned_data):
 		fecha_desde = cleaned_data.get('fecha_desde')
 		fecha_hasta = cleaned_data.get('fecha_hasta')
+		orden = cleaned_data.get('orden')
 		
-		return VLPercepIBVendedorTotales.objects.obtener_datos(fecha_desde, fecha_hasta)
+		return VLPercepIBVendedorTotales.objects.obtener_datos(fecha_desde, fecha_hasta, orden)
 	
 	def obtener_contexto_reporte(self, queryset, cleaned_data):
 		"""
@@ -126,11 +127,13 @@ class VLPercepIBVendedorTotalesInformeView(InformeFormView):
 		#-- Parámetros del listado.
 		fecha_desde = cleaned_data.get('fecha_desde')
 		fecha_hasta = cleaned_data.get('fecha_hasta')
+		orden = cleaned_data.get('orden')
 		
 		param_left = {}
 		param_right = {
 			"Desde": fecha_desde.strftime("%d/%m/%Y"),
 			"Hasta": fecha_hasta.strftime("%d/%m/%Y"),
+			"Ordenado por": "Nombre Vendedor" if orden == "nombre" else "Código Vendedor",
 		}
 		
 		fecha_hora_reporte = datetime.now().strftime("%d/%m/%Y %H:%M:%S")		

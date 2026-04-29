@@ -58,7 +58,7 @@
 						<td>{{ comprobante.id_cliente__nombre_cliente }}</td>
 						<td class="numeric" style="padding-right: 15px">{{ comprobante.contado|formato_es_ar }}</td>
 						<td class="numeric" style="padding-right: 15px">{{ comprobante.cta_cte|formato_es_ar }}</td>
-						<td>{{ comprobante.id_user__iniciales }}</td>
+						<td>{{ comprobante.id_user__iniciales|default_if_none:"" }}</td>
 					</tr>
 				{% endfor %}
 				<!-- Total por tipo de Comprobante -->

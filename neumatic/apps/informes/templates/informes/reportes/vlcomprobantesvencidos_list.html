@@ -52,6 +52,14 @@
 				</tr>
 			{% endfor %}
 			
+			{% comment %} <tr class="total-general" style="border-top: 1px solid #000;"> {% endcomment %}
+			<tr style="border-top: 1px solid #000;">
+				<td class="numeric" colspan="5"><strong>Totales:</strong></td>
+				<td class="numeric" style="padding-right: 10px;"><strong>{{ total_sum|formato_es_ar }}</strong></td>
+				<td class="numeric" style="padding-right: 10px;"><strong>{{ entrega_sum|formato_es_ar }}</strong></td>
+				<td class="numeric" style="padding-right: 10px;"><strong>{{ saldo_sum|formato_es_ar }}</strong></td>
+			</tr>
+			
 		</tbody>
 	</table>
 {% endblock content %}

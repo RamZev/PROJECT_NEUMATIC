@@ -153,8 +153,9 @@ class VLPercepIBVendedorDetalladoInformeView(InformeFormView):
 	def obtener_queryset(self, cleaned_data):
 		fecha_desde = cleaned_data.get('fecha_desde')
 		fecha_hasta = cleaned_data.get('fecha_hasta')
+		orden = cleaned_data.get('orden')
 		
-		return VLPercepIBVendedorDetallado.objects.obtener_datos(fecha_desde, fecha_hasta)
+		return VLPercepIBVendedorDetallado.objects.obtener_datos(fecha_desde, fecha_hasta, orden)
 	
 	def obtener_contexto_reporte(self, queryset, cleaned_data):
 		"""

@@ -178,7 +178,7 @@ class VLStockDepositoInformeView(InformeFormView):
 		
 		param_left = {}
 		param_right = {
-			"Sucursal": sucursal.nombre_sucursal if sucursal else "Todas",
+			"Sucursal": f"[{sucursal.id_sucursal}] {sucursal.nombre_sucursal}" if sucursal else "Todas",
 		}
 		
 		fecha_hora_reporte = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
