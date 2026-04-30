@@ -165,3 +165,15 @@ except locale.Error:
     locale.setlocale(locale.LC_ALL, 'spanish')      # Windows como fallback
 
 
+#-- Datos para la configuración del correo electrónico.
+
+#-- Para desarrollo, se puede usar el backend de consola para ver los correos en la terminal:
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+
+#-- Para producción, se configura el backend SMTP con Gmail (o cualquier otro proveedor):
+# EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+# EMAIL_HOST = "smtp.gmail.com"
+# EMAIL_USE_TLS = True
+# EMAIL_PORT = 587
+# EMAIL_HOST_USER = 'academico.admiraplus@gmail.com'
+# EMAIL_HOST_PASSWORD = 'yakuxvpvwixqigpb'

@@ -110,6 +110,7 @@
 				<td class="numeric pad-r15">Dólares:</td>
 				<td class="numeric pad-r15"><strong>{{ resumen_montos.dolares|formato_es_ar }}</strong></td>
 			</tr>
+			{% comment %}
 			{% if caja.observacion_caja %}
 			<tr>
 				<td colspan="4" style="padding-top: 5px;">
@@ -117,6 +118,7 @@
 				</td>
 			</tr>
 			{% endif %}
+			{% endcomment %}
 		</tbody>
 	</table>
 	<br>
@@ -162,6 +164,14 @@
 				</tr>
 				
 			{% endfor %}
+			
+			{% if caja.observacion_caja %}
+			<tr>
+				<td colspan="4" style="padding-top: 5px;">
+					<strong>Observaciones:</strong> {{ caja.observacion_caja }}
+				</td>
+			</tr>
+			{% endif %}
 			
 		</tbody>
 	</table>

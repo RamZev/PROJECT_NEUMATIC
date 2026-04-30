@@ -1,101 +1,30 @@
-Estructura de directorios generada desde: \\srvadmirape\DISCO_P\Leoncio\ProyectosDjango\PROJECT_NEUMATIC
-Fecha: 2026-01-30 11:17:10
+Estructura de directorios generada desde: \\srvadmirape\DISCO_P\Leoncio\ProyectosDjango\PROJECT_NEUMATIC\neumatic\apps\usuarios
+Fecha: 2026-04-29 11:43:52
 ============================================================
 
-├── 📁 afip_arca/
-│   ├── 📁 comprobantes pd y xml/
-│   ├── 📁 dev-wsaa-cliente-powershell/
-├── 📁 agente/
-├── 📁 back/
-│   ├── 📁 DATA_DBN_drive/
-│   │   └── 📁 DATA/
-│   ├── 📁 datavfox/
-│   ├── 📁 Preguntas a Mario imresión Facturas/
-├── 📁 contexto/
-├── 📁 docs/
-│   ├── 📁 IMG_LOGIN_LOGOUT/
-│   ├── 📁 INFO/
-│   ├── 📁 INFORMES/
-│   │   └── 📁 PROJECT_NEUMATIC_PARCIAL/
-│   │       ├── 📁 apps/
-│   │       ├── 📁 neumatic/
-│   │       ├── 📁 templates/
-│   ├── 📁 Reportes/
-│   │   ├── 📁 Caja/
-│   │   ├── 📁 PDFS/
-│   │   │   ├── 📁 vpn/
-│   │   │   │   ├── 📁 Recibos/
-│   │   │   │   ├── 📁 Remitos/
-│   ├── 📁 SQL/
-│   ├── 📁 TESTEO/
-├── 📁 menu_data/
-├── 📁 neumatic/
-│   ├── 📁 apps/
-│   │   ├── 📁 datatools/
-│   │   │   ├── 📁 forms/
-│   │   │   ├── 📁 migrations/
-│   │   │   ├── 📁 templates/
-│   │   │   │   └── 📁 datatools/
-│   │   │   ├── 📁 templatetags/
-│   │   │   ├── 📁 views/
-│   │   ├── 📁 generador/
-│   │   ├── 📁 informes/
-│   │   │   ├── 📁 forms/
-│   │   │   ├── 📁 migrations/
-│   │   │   ├── 📁 templates/
-│   │   │   │   └── 📁 informes/
-│   │   │   │       ├── 📁 reportes/
-│   │   │   ├── 📁 views/
-│   │   ├── 📁 maestros/
-│   │   │   ├── 📁 forms/
-│   │   │   ├── 📁 migrations/
-│   │   │   ├── 📁 models/
-│   │   │   ├── 📁 signals/
-│   │   │   ├── 📁 templates/
-│   │   │   │   └── 📁 maestros/
-│   │   │   ├── 📁 templatetags/
-│   │   │   ├── 📁 views/
-│   │   ├── 📁 menu/
-│   │   │   ├── 📁 migrations/
-│   │   │   ├── 📁 templates/
-│   │   │   │   └── 📁 menu/
-│   │   │   ├── 📁 templatetags/
-│   │   ├── 📁 usuarios/
-│   │   │   ├── 📁 forms/
-│   │   │   ├── 📁 migrations/
-│   │   │   ├── 📁 templates/
-│   │   │   │   └── 📁 usuarios/
-│   │   │   ├── 📁 views/
-│   │   └── 📁 ventas/
-│   │       ├── 📁 forms/
-│   │       ├── 📁 migrations/
-│   │       ├── 📁 models/
-│   │       ├── 📁 templates/
-│   │       │   └── 📁 ventas/
-│   │       ├── 📁 views/
-│   ├── 📁 certif/
-│   ├── 📁 data/
-│   │   ├── 📁 bak/
-│   ├── 📁 data_load/
-│   │   ├── 📁 datavfox/
-│   │   │   ├── 📁 Desktop/
-│   │   ├── 📁 datavfox_ant/
-│   │   ├── 📁 datavfox_ult2/
-│   ├── 📁 diseno_base/
-│   ├── 📁 entorno/
-│   ├── 📁 neumatic/
-│   ├── 📁 services/
-│   ├── 📁 static/
-│   │   ├── 📁 assets/
-│   │   │   ├── 📁 demo/
-│   │   │   └── 📁 img/
-│   │   ├── 📁 css/
-│   │   ├── 📁 img/
-│   │   │   ├── 📁 RESP/
-│   │   └── 📁 js/
-│   ├── 📁 templates/
-│   ├── 📁 utils/
-│   │   ├── 📁 helpers/
-│   │   ├── 📁 validator/
-│   ├── 📁 xml_afiparca/
-├── 📁 x/
+├── 📁 forms/
+│   └── 🐍 user_form.py
+├── 📁 migrations/
+│   ├── 🐍 0001_initial.py
+│   └── 🐍 __init__.py
+├── 📁 templates/
+│   └── 📁 usuarios/
+│       ├── 🌐 grupo_confirm_delete.html
+│       ├── 🌐 grupo_form.html
+│       ├── 🌐 grupo_list.html
+│       ├── 🌐 sesion_cerrar.html
+│       ├── 🌐 sesion_iniciar.html
+│       ├── 🌐 sesion_iniciar_ini.html
+│       ├── 🌐 usuario_confirm_delete.html
+│       ├── 🌐 usuario_crear_form.html
+│       ├── 🌐 usuario_editar_form.html
+│       └── 🌐 usuario_list.html
+├── 📁 views/
+│   ├── 🐍 user_views.py
+│   └── 🐍 user_views_generics.py
+├── 🐍 __init__.py
+├── 🐍 admin.py
+├── 🐍 apps.py
+├── 🐍 models.py
+├── 🐍 tests.py
+└── 🐍 urls.py

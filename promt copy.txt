@@ -187,3 +187,6 @@ Comparación de Reportes con VPN
 # 13 - Hay 42 registros en medidas_estados con id_cai_id en NULL.
 
 ##################################################################################################################################
+cuenta de correo: leonciobarriosh@gmail.com
+app: neumatic
+Contraseña de Aplicación: pswy oinv nitg bzlh

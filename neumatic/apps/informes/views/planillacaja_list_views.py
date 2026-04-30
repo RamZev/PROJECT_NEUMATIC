@@ -438,11 +438,6 @@ def generar_pdf(contexto_reporte):
 		["Cheques:", formato_argentino(resumen_montos.get("cheques", 0) or 0), "Dólares:", formato_argentino(resumen_montos.get("dolares", 0) or 0)]
 	]
 	
-	if caja.get("observacion_caja"):
-		cuerpo_resumen_data.append(
-			["Observaciones:", Paragraph(caja.get("observacion_caja"), generator.styles['CellStyle']), "", ""]
-		)
-	
 	tabla_cuerpo_resumen = LongTable(cuerpo_resumen_data, colWidths=[100, 85, 100, 85])
 	tabla_cuerpo_resumen_style = TableStyle([
 		('FONTNAME', (0, 0), (-1, -1), 'Helvetica'),
@@ -457,13 +452,6 @@ def generar_pdf(contexto_reporte):
 		('VALIGN', (0, 0), (-1, -1), 'TOP'),  # Añadir alineación vertical
 	])
 	
-	#-- Si existe observación, agregar el span para que ocupe 3 columnas.
-	if caja.get("observacion_caja"):
-		fila_observacion = len(cuerpo_resumen_data) - 1
-		tabla_cuerpo_resumen_style.add('SPAN', (1, fila_observacion), (3, fila_observacion))
-		tabla_cuerpo_resumen_style.add('ALIGN', (1, fila_observacion), (3, fila_observacion), 'LEFT')
-		tabla_cuerpo_resumen_style.add('VALIGN', (1, fila_observacion), (3, fila_observacion), 'TOP')
-
 	tabla_cuerpo_caja.setStyle(tabla_cuerpo_caja_style)
 	tabla_cuerpo_resumen.setStyle(tabla_cuerpo_resumen_style)
 
@@ -535,6 +523,18 @@ def generar_pdf(contexto_reporte):
 		])
 		
 		current_row += 1
+	
+	#-- Si existe observación para la caja, agregarla al final de la tabla principal.
+	if caja.get("observacion_caja"):
+		table_data.append(["", "", "", ""])  #-- Fila vacía para separar visualmente la observación.
+		table_data.append(
+			[ Paragraph("Observaciones: " + caja.get("observacion_caja"), generator.styles['CellStyle']), "", "", ""]
+		)
+		
+		fila_observacion = len(table_data) - 1
+		table_style_config.append(('SPAN', (0, fila_observacion), (3, fila_observacion)))
+		table_style_config.append(('ALIGN', (0, fila_observacion), (3, fila_observacion), 'LEFT'))
+		table_style_config.append(('VALIGN', (0, fila_observacion), (3, fila_observacion), 'TOP'))
 	
 	#-- Crear la tabla principal.
 	table = generator._create_table(table_data, col_widths, table_style_config)
